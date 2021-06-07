@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+}
+
+group 'org.spongeosrs'
+version '1.0-SNAPSHOT'
+
+configurations {
+    shade
+    compile.extendsFrom shade
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven { url = 'https://maven.gegy1000.net/' }
+    flatDir {
+        dirs "libs"
+    }
+}
+
+dependencies {
+    implementation(project(":client"))
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes(
+                'Premain-Class': 'agent.MixinAgentBootstrap',
+                'Agent-Class': 'agent.MixinAgentBootstrap',
+                'Can-Redefine-Classes': 'true',
+                'Can-Retransform-Classes': 'true',
+                'Can-Set-Native-Method-Prefix': 'true'
+        )
+    }
+}

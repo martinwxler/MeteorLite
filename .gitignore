@@ -1,0 +1,7 @@
+.gradle/
+.idea/
+client/build
+agent/build
+build/
+client/.mixin.out
+.mixin.out
