@@ -1,5 +1,6 @@
 rootProject.name = 'SpongeOSRS'
 include 'client'
 include 'agent'
-include 'agent'
+include 'sponge-mixins-bare'
+include 'fernflower'
 

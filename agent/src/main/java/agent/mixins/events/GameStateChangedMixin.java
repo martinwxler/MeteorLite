@@ -1,5 +1,6 @@
 package agent.mixins.events;
 
+import agent.mixins.ClientInstanceMixin;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,5 +18,10 @@ public class GameStateChangedMixin {
     private static void gamestateChanged(int gamestate, CallbackInfo callbackInfo) {
         GameStateChanged gameStateChanged = new GameStateChanged(gamestate);
         SpongeOSRS.eventBus.post(gameStateChanged);
+
+        if (SpongeOSRS.clientInstance != null)
+        {
+            SpongeOSRS.logger.debug("Client instance obtained!s");
+        }
     }
 }

@@ -10,10 +10,6 @@ version '1.0-SNAPSHOT'
 repositories {
     mavenCentral()
     jcenter()
-    maven { url = 'https://maven.gegy1000.net/' }
-    flatDir {
-        dirs "libs"
-    }
 }
 
 configurations {
@@ -23,7 +19,7 @@ configurations {
 
 dependencies {
     shade 'org.apache.logging.log4j:log4j-core:2.5'
-    shade 'org.spongepowered:mixin-bare:0.7.11-SNAPSHOT'
+    shade(project(":sponge-mixins-bare"))
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
     implementation group: 'com.google.guava', name: 'guava', version: '23.2-jre'

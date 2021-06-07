@@ -95,6 +95,10 @@ public class MixinServiceLaunchAgent implements IMixinService, IClassProvider, I
         return Class.forName(name, true, MixinAgentBootstrap.CLASS_LOADER);
     }
 
+    public static Class<?> findClassStatic(String name) throws ClassNotFoundException {
+        return Class.forName(name, true, MixinAgentBootstrap.CLASS_LOADER);
+    }
+
     @Override
     public Class<?> findClass(String name, boolean initialize) throws ClassNotFoundException {
         return Class.forName(name, initialize, MixinAgentBootstrap.CLASS_LOADER);

@@ -6,6 +6,8 @@
   "mixins": [
     "events.GameMessageReceivedMixin",
     "events.GameStateChangedMixin",
-    "sponge.PluginStartupMixin"
+    "sponge.PluginStartupMixin",
+    "GameEngineMixin",
+    "ClientInstanceMixin"
   ]
 }

@@ -2,6 +2,7 @@ package agent.updater;
 
 import org.spongepowered.asm.lib.ClassReader;
 import org.spongepowered.asm.lib.tree.ClassNode;
+import org.spongepowered.asm.lib.tree.FieldNode;
 import org.spongepowered.asm.lib.tree.MethodNode;
 
 import java.io.File;
@@ -27,7 +28,7 @@ public class UpdateMappings {
         long start = System.currentTimeMillis();
         File deob = new File("./client/build/libs/client-1.0-SNAPSHOT.jar");
         scanGamepack(deob);
-        System.out.println("Found " + found + "/" + StaticMethods.expected.size() + "\nUpdate took " + (System.currentTimeMillis() - start) + "ms");
+        System.out.println("Found " + found + "/" + (StaticMethods.expected.size() + StaticFields.expected.size()) + "\nUpdate took " + (System.currentTimeMillis() - start) + "ms");
     }
 
     public static void scanGamepack(File f) {
@@ -44,6 +45,9 @@ public class UpdateMappings {
                     for (MethodNode m : node.methods) {
                         findStaticMethods(m, node);
                     }
+                    for (FieldNode fn : node.fields) {
+                        findStaticFields(fn, node);
+                    }
                 }
             }
             mappings.append("}");
@@ -59,6 +63,10 @@ public class UpdateMappings {
         StaticMethods.findUpdateGameStateClass(m, node);
         StaticMethods.findAddGameMessageClass(m, node);
         StaticMethods.findUpdateNpcsClass(m, node);
+    }
+
+    private static void findStaticFields(FieldNode f, ClassNode node) {
+        StaticFields.findClientInstanceClass(f, node);
     }
 
     public static void buildMappingField(String fieldName, String refClassName) {

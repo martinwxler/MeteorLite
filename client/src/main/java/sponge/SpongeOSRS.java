@@ -1,5 +1,6 @@
 package sponge;
 
+import osrs.Client;
 import sponge.eventbus.EventBus;
 import sponge.logger.Logger;
 
@@ -10,7 +11,6 @@ public class SpongeOSRS {
     public static EventBus eventBus = new EventBus();
     public static Logger logger = new Logger();
 
-    public static boolean init = false;
-
     public static List<Plugin> plugins = new ArrayList<>();
+    public static Client clientInstance;
 }
