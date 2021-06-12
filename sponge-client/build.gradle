@@ -1,0 +1,64 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
+}
+
+group 'org.spongeosrs'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven { url = 'https://maven.gegy1000.net/' }
+}
+
+configurations {
+    shade
+    compile.extendsFrom shade
+}
+
+dependencies {
+    shade 'org.apache.logging.log4j:log4j-core:2.5'
+    shade 'org.spongepowered:mixin-bare:0.7.11-SNAPSHOT'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
+    implementation group: 'com.google.guava', name: 'guava', version: '23.2-jre'
+    implementation(project(":runescape-api"))
+    runtimeClasspath(files("../openosrs-injector/build/injected/injected-client.jar"))
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+compileJava.options.encoding = 'UTF-8'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks {
+    compileJava.dependsOn(project(":openosrs-injector").tasks.getByName("inject"))
+}
+
+application {
+    mainClass.set("Launcher")
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    configurations.shade.each { dep ->
+        from(project.zipTree(dep)){
+            exclude 'META-INF', 'META-INF/**'
+        }
+    }
+}
+
+mainClassName = 'Launcher'
+
+applicationDefaultJvmArgs = ["-javaagent:../sponge-agent/build/libs/sponge-agent-1.0-SNAPSHOT.jar=agent.MixinAgentBootstrap;an_interceptor_optional_parameter", "-noverify"]
