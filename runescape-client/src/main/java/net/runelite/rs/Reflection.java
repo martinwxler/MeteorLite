@@ -55,7 +55,7 @@ public class Reflection
 	{
 		try
 		{
-			Path path = new File("../runescape-client/build/classes/java/main/")
+			Path path = new File("../injected-client/build/classes/java/main/")
 					.toPath();
 
 			Files.walk(path)
@@ -69,7 +69,7 @@ public class Reflection
 
 						try
 						{
-							Class<?> clazz = Class.forName(className);
+							Class<?> clazz = Class.forName("osrs." + className);
 
 							ObfuscatedName obfuscatedName = clazz
 									.getAnnotation(ObfuscatedName.class);

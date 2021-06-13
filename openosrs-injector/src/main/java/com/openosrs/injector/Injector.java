@@ -117,7 +117,6 @@ public class Injector extends InjectData implements InjectTaskHandler
 
 		//Some annotations are still nice to have such as ObfName and ObfSig for Reflection checks
 		//inject(new RemoveAnnotations(this));
-
 		//The Reflection class is skipped during load because the asm doesnt support invokedynamic, ez fix to just put
 		//it back in after doing everything
 		addReflection(vanilla, new File("../runescape-client/build/libs/runescape-client-" + oprsVer + ".jar"));

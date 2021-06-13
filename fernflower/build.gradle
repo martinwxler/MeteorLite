@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+}
+
+group 'org.spongeosrs'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven {url = "https://repo.runelite.net"}
+    maven {url = "https://raw.githubusercontent.com/open-osrs/hosting/master"}
+}
+
+dependencies {
+    implementation(project(":openosrs-injector"))
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+task decompileInjected(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler'
+    args("../openosrs-injector/build/injected/injected-client.jar", "./build/decompiled/")
+}
+
+tasks {
+    compileJava.dependsOn subprojects*.tasks*.findByName('inject')
+}

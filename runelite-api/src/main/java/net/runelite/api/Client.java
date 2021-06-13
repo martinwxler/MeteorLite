@@ -39,7 +39,6 @@ import net.runelite.api.clan.ClanSettings;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.PlayerChanged;
-import net.runelite.api.hooks.Callbacks;
 import net.runelite.api.hooks.DrawCallbacks;
 import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.Widget;
@@ -51,10 +50,6 @@ import org.slf4j.Logger;
  */
 public interface Client extends GameEngine
 {
-	/**
-	 * The injected client invokes these callbacks to send events to us
-	 */
-	Callbacks getCallbacks();
 
 	/**
 	 * The injected client invokes these callbacks for scene drawing, which is
