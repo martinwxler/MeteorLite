@@ -18,6 +18,8 @@ repositories {
 
 dependencies {
     implementation(project(":sponge-client"))
+    implementation(project(":runescape-api"))
+    implementation(project(":runelite-api"))
 }
 
 test {

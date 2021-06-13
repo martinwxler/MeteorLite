@@ -8,4 +8,6 @@ include 'runelite-mixins'
 include 'openosrs-injector'
 include 'runelite-deobfuscator'
 include 'runescape-client'
+include 'fernflower'
+include 'injected-client'
 

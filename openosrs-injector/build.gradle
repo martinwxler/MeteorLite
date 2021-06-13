@@ -39,3 +39,5 @@ task inject(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'com.openosrs.injector.Injector'
 }
+
+

@@ -25,7 +25,7 @@ dependencies {
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
     implementation group: 'com.google.guava', name: 'guava', version: '23.2-jre'
     implementation(project(":runescape-api"))
-    runtimeClasspath(files("../openosrs-injector/build/injected/injected-client.jar"))
+    runtimeClasspath(project(":injected-client"))
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
 
@@ -40,11 +40,11 @@ tasks.withType(JavaCompile) {
 }
 
 tasks {
-    compileJava.dependsOn(project(":openosrs-injector").tasks.getByName("inject"))
+    compileJava.dependsOn subprojects*.tasks*.findByName('decompileInjected')
 }
 
 application {
-    mainClass.set("Launcher")
+    mainClass.set("osrs.Launcher")
 }
 
 test {
