@@ -46,7 +46,7 @@ tasks.withType(JavaCompile) {
 }
 
 tasks {
-    compileJava.dependsOn subprojects*.tasks*.findByName('decompileInjected')
+    compileJava.dependsOn(":runelite-mixins:compileJava")
 }
 
 application {

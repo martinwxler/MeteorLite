@@ -22,11 +22,17 @@ test {
 }
 
 task decompileInjected(type: JavaExec) {
+    onlyIf {
+        !state.upToDate
+    }
     classpath = sourceSets.main.runtimeClasspath
     main = 'org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler'
     args("../openosrs-injector/build/injected/injected-client.jar", "./build/decompiled/")
 }
 
 tasks {
-    compileJava.dependsOn subprojects*.tasks*.findByName('inject')
+    decompileInjected.dependsOn(":openosrs-injector:inject")
+    decompileInjected.outputs.upToDateWhen {
+        tasks.findByPath(":runelite-mixins:compileJava").state.upToDate.booleanValue()
+    }
 }

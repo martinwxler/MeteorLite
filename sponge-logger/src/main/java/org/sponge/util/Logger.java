@@ -60,6 +60,18 @@ public class Logger {
         System.out.print(ANSI_RESET);
     }
 
+    public void error(String message)
+    {
+        String tempName;
+        if (plugin != null)
+            tempName = plugin;
+        else
+            tempName = name;
+        String header = ANSI_RESET + ANSI_RED + "[" + tempName + "] " + ANSI_RESET;
+        System.out.format(format, header, ANSI_RED + message);
+        System.out.print(ANSI_RESET);
+    }
+
     public void warn(String message, Exception ex) {
         warn(message);
     }

@@ -23,6 +23,9 @@ dependencies {
 
 compileJava.options.encoding = 'UTF-8'
 
+tasks {
+    compileJava.dependsOn project(":fernflower").tasks.getByName("decompileInjected")
+}
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
