@@ -1,6 +1,6 @@
 package agent.updater;
 
-import agent.util.Logger;
+import org.sponge.util.Logger;
 import org.spongepowered.asm.lib.tree.ClassNode;
 import org.spongepowered.asm.lib.tree.MethodNode;
 
@@ -13,7 +13,7 @@ import static org.spongepowered.asm.lib.Opcodes.ACC_STATIC;
 public class StaticMethods {
     public static Map<String, Boolean> foundMethods = new HashMap<>();
     public static Map<String, Boolean> expected = new HashMap<>();
-    static Logger logger = new Logger();
+    static Logger logger = new Logger("Agent");
 
     public static void findUpdateGameStateClass(MethodNode m, ClassNode node) {
         checkForStaticMethod("updateGameState", m, node);

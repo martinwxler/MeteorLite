@@ -1,5 +1,6 @@
 package sponge;
 
+import net.runelite.api.Client;
 import org.sponge.util.Logger;
 import sponge.eventbus.EventBus;
 
@@ -11,4 +12,5 @@ public class SpongeOSRS {
     public static Logger logger = new Logger("SpongeOSRS");
 
     public static List<Plugin> plugins = new ArrayList<>();
+    public static Client client;
 }

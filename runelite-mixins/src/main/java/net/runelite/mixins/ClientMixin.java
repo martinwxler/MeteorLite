@@ -65,6 +65,9 @@ public abstract class ClientMixin implements RSClient{
     public static RSClient client;
 
     @Inject
+    private static RSClient clientInstance;
+
+    @Inject
     @javax.inject.Inject
     private Callbacks callbacks;
 
@@ -99,6 +102,7 @@ public abstract class ClientMixin implements RSClient{
     @FieldHook("gameState")
     public static void onGameStateChanged(int idx)
     {
+        clientInstance = client;
         GameStateChanged gameStateChanged = new GameStateChanged();
         gameStateChanged.setGameState(GameState.of(client.api$getRSGameState()));
         client.getCallbacks().post(gameStateChanged);

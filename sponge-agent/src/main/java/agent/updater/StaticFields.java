@@ -1,9 +1,8 @@
 package agent.updater;
 
-import agent.util.Logger;
+import org.sponge.util.Logger;
 import org.spongepowered.asm.lib.tree.ClassNode;
 import org.spongepowered.asm.lib.tree.FieldNode;
-import org.spongepowered.asm.lib.tree.MethodNode;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +13,7 @@ import static org.spongepowered.asm.lib.Opcodes.ACC_STATIC;
 public class StaticFields {
     public static Map<String, Boolean> foundFields = new HashMap<>();
     public static Map<String, Boolean> expected = new HashMap<>();
-    static Logger logger = new Logger();
+    static Logger logger = new Logger("Agent");
 
     public static void findClientInstanceClass(FieldNode f, ClassNode node) {
         checkForStaticField("client", f, node, "clientInstance");

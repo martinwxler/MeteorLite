@@ -46,6 +46,7 @@ tasks.withType(JavaCompile) {
 
 tasks {
     compileJava.dependsOn(":runelite-mixins:compileJava")
+    tasks.getByPath(":sponge-client:run").dependsOn(":sponge-agent:jar")
 }
 
 application {
@@ -67,7 +68,7 @@ jar {
 mainClassName = 'Launcher'
 
 applicationDefaultJvmArgs = [
-        //"-javaagent:../sponge-agent/build/libs/sponge-agent-1.0-SNAPSHOT.jar=agent.MixinAgentBootstrap;",
+        "-javaagent:../sponge-agent/build/libs/sponge-agent-1.0-SNAPSHOT.jar=agent.MixinAgentBootstrap;",
                              "-noverify",
                              "-XX:+DisableAttachMechanism",
                              "-Xmx1G",

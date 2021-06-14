@@ -4,8 +4,6 @@
   "compatibilityLevel": "JAVA_8",
   "minVersion": 0.1,
   "mixins": [
-    "events.GameMessageReceivedMixin",
-    "sponge.PluginStartupMixin",
-    "sponge.MixinMixinMixin"
+    "sponge.RuneLiteMixinMixin"
   ]
 }

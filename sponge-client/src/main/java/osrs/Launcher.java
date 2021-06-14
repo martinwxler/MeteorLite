@@ -19,6 +19,7 @@ package osrs;/*
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Provides;
 import net.runelite.api.Client;
 import org.sponge.util.Logger;
 import sponge.Plugin;
@@ -41,6 +42,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -56,6 +58,8 @@ public final class Launcher implements AppletStub, AppletContext {
 
     public static Injector injector;
 
+    static SpongeOSRSModule module = new SpongeOSRSModule();
+
     @Inject
     public Logger logger;
 
@@ -68,16 +72,23 @@ public final class Launcher implements AppletStub, AppletContext {
 
         loadJagexConfiguration();
 
-        injector = Guice.createInjector(new SpongeOSRSModule());
+        injector = Guice.createInjector(module);
 
         injector.getInstance(Launcher.class).start();
     }
 
     public void start()
     {
+        try {
+            client = (Client) this.getClass().getClassLoader().loadClass("osrs.Client").getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
         injector.injectMembers(client);
 
         SpongeOSRS.plugins.add(new EventLoggerPlugin());
+
         for (Plugin p : SpongeOSRS.plugins)
         {
             injector.injectMembers(p);
