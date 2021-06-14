@@ -6,6 +6,7 @@ public class Logger {
 
     public String name;
     public String plugin;
+    public String cachedMessage;
     String format = "%-35s%s%n";
 
 
@@ -31,7 +32,10 @@ public class Logger {
                 tempName = plugin;
             else
                 tempName = name;
-        String header = ANSI_RESET + ANSI_YELLOW + "[" + tempName + "] " + ANSI_RESET;
+            String header = Message.buildMessage()
+                    .changeColor(ANSI_YELLOW)
+                    .addText("[" + tempName + "] ")
+                    .build();
         System.out.format(format, header, message);
         System.out.print(ANSI_RESET);
     }
@@ -43,7 +47,10 @@ public class Logger {
             tempName = plugin;
         else
             tempName = name;
-        String header = ANSI_RESET + ANSI_YELLOW + "[" + tempName + "] " + ANSI_RESET;
+        String header = Message.buildMessage()
+                .changeColor(ANSI_YELLOW)
+                .addText("[" + tempName + "] ")
+                .build();
         System.out.format(format, header, ANSI_BLUE + message);
         System.out.print(ANSI_RESET);
     }
@@ -55,7 +62,10 @@ public class Logger {
             tempName = plugin;
         else
             tempName = name;
-        String header = ANSI_RESET + ANSI_YELLOW + "[" + tempName + "] " + ANSI_RESET;
+        String header = Message.buildMessage()
+                .changeColor(ANSI_YELLOW)
+                .addText("[" + tempName + "] ")
+                .build();
         System.out.format(format, header, ANSI_GREEN + message);
         System.out.print(ANSI_RESET);
     }
@@ -67,8 +77,10 @@ public class Logger {
             tempName = plugin;
         else
             tempName = name;
-        String header = ANSI_RESET + ANSI_RED + "[" + tempName + "] " + ANSI_RESET;
-        System.out.format(format, header, ANSI_RED + message);
+        String header = Message.buildMessage()
+                .changeColor(ANSI_YELLOW)
+                .addText("[" + tempName + "] ")
+                .build();        System.out.format(format, header, ANSI_RED + message);
         System.out.print(ANSI_RESET);
     }
 
@@ -91,7 +103,10 @@ public class Logger {
             tempName = plugin;
         else
             tempName = name;
-        String header = ANSI_RESET + ANSI_YELLOW + "[" + tempName + "] " + ANSI_RESET;
+        String header = Message.buildMessage()
+                .changeColor(ANSI_YELLOW)
+                .addText("[" + tempName + "] ")
+                .build();
         System.out.format(format, header, ANSI_CYAN + "[" + event + "] " + ANSI_RESET + message);
         System.out.print(ANSI_RESET);
     }

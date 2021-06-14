@@ -22,6 +22,7 @@ import org.jetbrains.java.decompiler.main.extern.IFernflowerLogger;
 import org.jetbrains.java.decompiler.main.extern.IResultSaver;
 import org.jetbrains.java.decompiler.util.InterpreterUtil;
 import org.sponge.util.Logger;
+import org.sponge.util.Message;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -105,7 +106,10 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
 
     decompiler.decompileContext();
 
-    logger.info(ANSI_YELLOW + "[Extracting injected-client]" + ANSI_RESET);
+    logger.info(Message.buildMessage()
+            .changeColor(ANSI_YELLOW)
+            .addText("[Extracting injected-client]")
+            .build());
     File jarFile = new File("./build/decompiled/injected-client.jar");
     String destDir = "../injected-client/src/main/java/";
     File rsDir = new File("../injected-client/src/main/java/net/runelite/rs/");
@@ -147,7 +151,10 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
       e.printStackTrace();
     }
     rogueInjected.delete();
-    logger.info(ANSI_YELLOW + "[Repackage to osrs]" + ANSI_RESET);
+    logger.info(Message.buildMessage()
+            .changeColor(ANSI_YELLOW)
+            .addText("[Repackage to osrs]")
+            .build());
     for (File f : destFolder.listFiles())
     {
       File fout = new File("../injected-client/src/main/java/osrs/" + f.getName());
@@ -193,7 +200,10 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
         if (st.contains("final void resizeCanvas() {"))
         {
           engineLines.add("public void resizeCanvas() {");
-          logger.info(ANSI_YELLOW + "[Patched GameEngine resizeCanvas() access]" + ANSI_RESET);
+          logger.info(Message.buildMessage()
+                  .changeColor(ANSI_YELLOW)
+                  .addText("[Patched GameEngine resizeCanvas() access]")
+                  .build());
         }
         else
           engineLines.add(st);
@@ -223,7 +233,10 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
         if (st.contains("} catch (InterruptedException var18) {"))
         {
           bufferedSinkLines.add("} catch (Exception var18) {");
-          logger.info(ANSI_YELLOW + "[Patched BufferedSink run() Exception runtime crash]" + ANSI_RESET);
+          logger.info(Message.buildMessage()
+                  .changeColor(ANSI_YELLOW)
+                  .addText("[Patched BufferedSink run() Exception runtime crash]")
+                  .build());
         }
         else if (st.contains("this.wait();"))
         {

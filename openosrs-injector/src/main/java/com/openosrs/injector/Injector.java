@@ -31,6 +31,7 @@ import net.runelite.asm.ClassFile;
 import net.runelite.asm.ClassGroup;
 import net.runelite.deob.util.JarUtil;
 import org.sponge.util.Logger;
+import org.sponge.util.Message;
 
 import static net.runelite.deob.util.JarUtil.addReflection;
 import static net.runelite.deob.util.JarUtil.load;
@@ -143,7 +144,12 @@ public class Injector extends InjectData implements InjectTaskHandler
 
 		injector.inject();
 
-		log.info(ANSI_YELLOW + name + " " + ANSI_GREEN + injector.getCompletionMsg() + ANSI_RESET);
+		log.info(Message.buildMessage()
+				.changeColor(ANSI_YELLOW)
+				.addText(name + " ")
+				.changeColor(ANSI_GREEN)
+				.addText(injector.getCompletionMsg())
+				.build());
 
 		if (injector instanceof Validator)
 		{
@@ -169,7 +175,9 @@ public class Injector extends InjectData implements InjectTaskHandler
 
 		transformer.transform();
 
-		log.info(ANSI_YELLOW + name + " " + ANSI_GREEN + transformer.getCompletionMsg() + ANSI_RESET);
+		log.info(Message.buildMessage()
+				.addText(ANSI_YELLOW + name + " " + ANSI_GREEN + transformer.getCompletionMsg())
+				.build());
 	}
 
 	private static void save(ClassGroup group, File output, OutputMode mode)

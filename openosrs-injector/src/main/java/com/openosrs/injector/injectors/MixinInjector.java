@@ -76,6 +76,7 @@ import net.runelite.deob.DeobAnnotations;
 import net.runelite.deob.util.JarUtil;
 import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
+import org.sponge.util.Message;
 
 import static org.sponge.util.Logger.ANSI_GREEN;
 import static org.sponge.util.Logger.ANSI_RESET;
@@ -116,28 +117,36 @@ public class MixinInjector extends AbstractInjector
 			injectInterfaces(entry.getKey(), entry.getValue());
 		}
 
-		log.info(ANSI_GREEN + "Injected " + injectedInterfaces + " interfaces" + ANSI_RESET);
+		log.info(Message.buildMessage()
+				.addText(ANSI_GREEN + "Injected " + injectedInterfaces + " interfaces")
+				.build());
 
 		for (Map.Entry<Provider<ClassFile>, List<ClassFile>> entry : mixinTargets.entrySet())
 		{
 			injectFields(entry.getKey(), entry.getValue());
 		}
 
-		log.info(ANSI_GREEN + "Injected " + injectedFields.size() + " fields" + ANSI_RESET);
+		log.info(Message.buildMessage()
+				.addText(ANSI_GREEN + "Injected " + injectedFields.size() + " fields")
+				.build());
 
 		for (Map.Entry<Provider<ClassFile>, List<ClassFile>> entry : mixinTargets.entrySet())
 		{
 			findShadowFields(entry.getKey());
 		}
 
-		log.info(ANSI_GREEN + "Shadowed " + shadowFields.size() + " fields" + ANSI_RESET);
+		log.info(Message.buildMessage()
+				.addText(ANSI_GREEN + "Shadowed " + shadowFields.size() + " fields")
+				.build());
 
 		for (Map.Entry<Provider<ClassFile>, List<ClassFile>> entry : mixinTargets.entrySet())
 		{
 			injectMethods(entry.getKey(), entry.getValue());
 		}
 
-		log.info(ANSI_GREEN + "Injected " + injected + ", copied " + copied + ", replaced " + replaced + " methods" + ANSI_RESET);
+		log.info(Message.buildMessage()
+				.addText(ANSI_GREEN + "Injected " + injected + ", copied " + copied + ", replaced " + replaced + " methods")
+				.build());
 
 		inject.runChildInjector(new InjectHook(inject, mixinTargets));
 

@@ -24,7 +24,7 @@ public abstract class RuneLiteMixinMixin implements RSClient {
     //This is a test hook and also serves to init SpongeOSRS.client for other SpongeMixins (cant shadow across classes)
     @Inject(method = "onGameStateChanged", at = @At("RETURN"))
     private static void onOnGameStateChanged(int gamestate, CallbackInfo callbackInfo) {
-        if (SpongeOSRS.client == null)
+        if (client == null)
         {
             SpongeOSRS.client = clientInstance;
             client = SpongeOSRS.client;
