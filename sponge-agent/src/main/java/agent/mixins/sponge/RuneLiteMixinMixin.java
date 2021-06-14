@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sponge.SpongeOSRS;
 
 @SuppressWarnings("unused")
-@Mixin(value = osrs.Client.class, remap = false)
+@Mixin(targets = "osrs/Client", remap = false)
 public abstract class RuneLiteMixinMixin implements RSClient {
 
     @Shadow
