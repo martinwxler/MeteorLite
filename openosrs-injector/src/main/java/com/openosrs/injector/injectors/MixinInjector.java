@@ -77,6 +77,9 @@ import net.runelite.deob.util.JarUtil;
 import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
 
+import static org.sponge.util.Logger.ANSI_GREEN;
+import static org.sponge.util.Logger.ANSI_RESET;
+
 public class MixinInjector extends AbstractInjector
 {
 	private static final Type COPY = new Type("Lnet/runelite/api/mixins/Copy;");
@@ -113,28 +116,28 @@ public class MixinInjector extends AbstractInjector
 			injectInterfaces(entry.getKey(), entry.getValue());
 		}
 
-		System.out.println("[INFO] Injected " + injectedInterfaces + " interfaces");
+		log.info(ANSI_GREEN + "Injected " + injectedInterfaces + " interfaces" + ANSI_RESET);
 
 		for (Map.Entry<Provider<ClassFile>, List<ClassFile>> entry : mixinTargets.entrySet())
 		{
 			injectFields(entry.getKey(), entry.getValue());
 		}
 
-		System.out.println("[INFO] Injected " + injectedFields.size() + " fields");
+		log.info(ANSI_GREEN + "Injected " + injectedFields.size() + " fields" + ANSI_RESET);
 
 		for (Map.Entry<Provider<ClassFile>, List<ClassFile>> entry : mixinTargets.entrySet())
 		{
 			findShadowFields(entry.getKey());
 		}
 
-		System.out.println("[INFO] Shadowed " + shadowFields.size() + " fields");
+		log.info(ANSI_GREEN + "Shadowed " + shadowFields.size() + " fields" + ANSI_RESET);
 
 		for (Map.Entry<Provider<ClassFile>, List<ClassFile>> entry : mixinTargets.entrySet())
 		{
 			injectMethods(entry.getKey(), entry.getValue());
 		}
 
-		System.out.println("[INFO] Injected " + injected + ", copied " + copied + ", replaced " + replaced + " methods");
+		log.info(ANSI_GREEN + "Injected " + injected + ", copied " + copied + ", replaced " + replaced + " methods" + ANSI_RESET);
 
 		inject.runChildInjector(new InjectHook(inject, mixinTargets));
 
@@ -432,7 +435,7 @@ public class MixinInjector extends AbstractInjector
 						}
 					}
 
-					log.debug("[DEBUG] Injected mixin method {} to {}", copy, targetClass);
+		//			log.debug("[DEBUG] Injected mixin method {} to {}", copy, targetClass);
 					++injected;
 				}
 				else if (hasInject)
@@ -461,7 +464,7 @@ public class MixinInjector extends AbstractInjector
 
 					targetClass.addMethod(copy);
 
-					log.debug("[DEBUG] Injected mixin method {} to {}", copy, targetClass);
+		//			log.debug("[DEBUG] Injected mixin method {} to {}", copy, targetClass);
 					++injected;
 				}
 				else if (mixinMethod.findAnnotation(REPLACE) != null)
@@ -547,7 +550,7 @@ public class MixinInjector extends AbstractInjector
 
 					setOwnersToTargetClass(mixinClass, targetClass, obMethod, copiedMethods);
 
-					log.debug("[DEBUG] Replaced method {} with mixin method {}", obMethod, mixinMethod);
+		//			log.debug("[DEBUG] Replaced method {} with mixin method {}", obMethod, mixinMethod);
 					replaced++;
 				}
 			}
@@ -593,7 +596,7 @@ public class MixinInjector extends AbstractInjector
 					Type newType = new Type("L" + inject.toVanilla(deobTypeClass).getName() + ";");
 
 					((ANewArray) i).setType(newType);
-					log.debug("[DEBUG] Replaced {} type {} with type {}", i, type, newType);
+		//			log.debug("[DEBUG] Replaced {} type {} with type {}", i, type, newType);
 				}
 			}
 			else if (i instanceof InvokeInstruction)

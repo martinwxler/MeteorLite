@@ -57,7 +57,7 @@ public class RenderDraw extends AbstractInjector
 				if (((InvokeVirtual) i).getMethod().equals(draw))
 				{
 					iterator.set(new InvokeStatic(ins, RENDERDRAW));
-					log.debug("[DEBUG] Replaced method call at {}", i);
+		//			log.debug("[DEBUG] Replaced method call at {}", i);
 					++replaced;
 				}
 			}

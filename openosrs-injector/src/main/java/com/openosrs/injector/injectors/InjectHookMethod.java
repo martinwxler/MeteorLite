@@ -69,7 +69,7 @@ public class InjectHookMethod extends AbstractInjector
 			injectMethods(entry.getKey(), entry.getValue());
 		}
 
-		log.info("[INFO] Injected {} method hooks", injected);
+		//log.info("[INFO] Injected {} method hooks", injected);
 	}
 
 	private void injectMethods(Provider<ClassFile> mixinProvider, List<ClassFile> targetClasses)
@@ -107,7 +107,7 @@ public class InjectHookMethod extends AbstractInjector
 
 				inject(targetMethod, hookMethod, end);
 
-				log.debug("[DEBUG] Injected method hook {} in {}", hookMethod, targetMethod);
+		//		log.debug("[DEBUG] Injected method hook {} in {}", hookMethod, targetMethod);
 				++injected;
 			}
 		}

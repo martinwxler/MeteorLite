@@ -21,6 +21,7 @@ import org.jetbrains.java.decompiler.main.extern.IBytecodeProvider;
 import org.jetbrains.java.decompiler.main.extern.IFernflowerLogger;
 import org.jetbrains.java.decompiler.main.extern.IResultSaver;
 import org.jetbrains.java.decompiler.util.InterpreterUtil;
+import org.sponge.util.Logger;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -32,7 +33,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import static org.sponge.util.Logger.ANSI_RESET;
+import static org.sponge.util.Logger.ANSI_YELLOW;
+
 public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
+
+  static Logger logger = new Logger("Decompiler");
 
   @SuppressWarnings("UseOfSystemOutOrSystemErr")
   public static void main(String[] args) {
@@ -87,8 +93,8 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
       return;
     }
 
-    PrintStreamLogger logger = new PrintStreamLogger(System.out);
-    ConsoleDecompiler decompiler = new ConsoleDecompiler(destination, mapOptions, logger);
+    PrintStreamLogger logger2 = new PrintStreamLogger(System.out);
+    ConsoleDecompiler decompiler = new ConsoleDecompiler(destination, mapOptions, logger2);
 
     for (File source : lstSources) {
       decompiler.addSpace(source, true);
@@ -99,7 +105,7 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
 
     decompiler.decompileContext();
 
-    System.out.println("Extracting injected-client");
+    logger.info(ANSI_YELLOW + "[Extracting injected-client]" + ANSI_RESET);
     File jarFile = new File("./build/decompiled/injected-client.jar");
     String destDir = "../injected-client/src/main/java/";
     File rsDir = new File("../injected-client/src/main/java/net/runelite/rs/");
@@ -141,7 +147,7 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
       e.printStackTrace();
     }
     rogueInjected.delete();
-    System.out.println("Repackage to osrs");
+    logger.info(ANSI_YELLOW + "[Repackage to osrs]" + ANSI_RESET);
     for (File f : destFolder.listFiles())
     {
       File fout = new File("../injected-client/src/main/java/osrs/" + f.getName());
@@ -187,7 +193,7 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
         if (st.contains("final void resizeCanvas() {"))
         {
           engineLines.add("public void resizeCanvas() {");
-          System.out.println("Patched GameEngine resizeCanvas() access");
+          logger.info(ANSI_YELLOW + "[Patched GameEngine resizeCanvas() access]" + ANSI_RESET);
         }
         else
           engineLines.add(st);
@@ -217,7 +223,7 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
         if (st.contains("} catch (InterruptedException var18) {"))
         {
           bufferedSinkLines.add("} catch (Exception var18) {");
-          System.out.println("Patched BufferedSink run() Exception runtime crash");
+          logger.info(ANSI_YELLOW + "[Patched BufferedSink run() Exception runtime crash]" + ANSI_RESET);
         }
         else if (st.contains("this.wait();"))
         {

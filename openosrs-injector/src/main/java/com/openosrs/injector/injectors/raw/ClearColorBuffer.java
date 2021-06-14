@@ -84,7 +84,7 @@ public class ClearColorBuffer extends AbstractInjector
 
 				Instructions ins = instr.getInstructions();
 				ins.replace(instr, new InvokeStatic(ins, CLEARBUFFER));
-				log.debug("[DEBUG] Injected drawRectangle at {}", methodContext.getMethod().getPoolMethod());
+		//		log.debug("[DEBUG] Injected drawRectangle at {}", methodContext.getMethod().getPoolMethod());
 			}
 		}
 	}

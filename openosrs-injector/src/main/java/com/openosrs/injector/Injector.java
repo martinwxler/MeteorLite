@@ -14,18 +14,9 @@ import com.openosrs.injector.injectors.InjectConstruct;
 import com.openosrs.injector.injectors.InterfaceInjector;
 import com.openosrs.injector.injectors.MixinInjector;
 import com.openosrs.injector.injectors.RSApiInjector;
-import com.openosrs.injector.injectors.RemoveAnnotations;
-import com.openosrs.injector.injectors.raw.AddPlayerToMenu;
-import com.openosrs.injector.injectors.raw.ClearColorBuffer;
-import com.openosrs.injector.injectors.raw.DrawMenu;
-import com.openosrs.injector.injectors.raw.Occluder;
-import com.openosrs.injector.injectors.raw.RasterizerAlpha;
-import com.openosrs.injector.injectors.raw.RenderDraw;
-import com.openosrs.injector.injectors.raw.ScriptVM;
 import com.openosrs.injector.rsapi.RSApi;
 import com.openosrs.injector.transformers.InjectTransformer;
 import com.openosrs.injector.transformers.Java8Ifier;
-import com.openosrs.injector.transformers.SourceChanger;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,15 +30,17 @@ import joptsimple.util.EnumConverter;
 import net.runelite.asm.ClassFile;
 import net.runelite.asm.ClassGroup;
 import net.runelite.deob.util.JarUtil;
+import org.sponge.util.Logger;
 
 import static net.runelite.deob.util.JarUtil.addReflection;
 import static net.runelite.deob.util.JarUtil.load;
-import org.gradle.api.logging.Logger;
-import org.gradle.api.logging.Logging;
+import static org.sponge.util.Logger.ANSI_GREEN;
+import static org.sponge.util.Logger.ANSI_RESET;
+import static org.sponge.util.Logger.ANSI_YELLOW;
 
 public class Injector extends InjectData implements InjectTaskHandler
 {
-	static final Logger log = Logging.getLogger(Injector.class);
+	static final Logger log = new Logger("Injector");
 	static Injector injector = new Injector();
 	static String oprsVer;
 
@@ -93,7 +86,7 @@ public class Injector extends InjectData implements InjectTaskHandler
 
 	public void injectVanilla()
 	{
-		log.debug("[DEBUG] Starting injection");
+		log.debug(ANSI_YELLOW + "[Starting injection]" + ANSI_RESET);
 
 		transform(new Java8Ifier(this));
 
@@ -144,13 +137,13 @@ public class Injector extends InjectData implements InjectTaskHandler
 	{
 		final String name = injector.getName();
 
-		log.lifecycle("[INFO] Starting {}", name);
+		//log.info(ANSI_YELLOW + "[Starting " + name + "]" + ANSI_RESET);
 
 		injector.start();
 
 		injector.inject();
 
-		log.lifecycle("{} {}", name, injector.getCompletionMsg());
+		log.info(ANSI_YELLOW + name + " " + ANSI_GREEN + injector.getCompletionMsg() + ANSI_RESET);
 
 		if (injector instanceof Validator)
 		{
@@ -172,11 +165,11 @@ public class Injector extends InjectData implements InjectTaskHandler
 	{
 		final String name = transformer.getName();
 
-		log.info("[INFO] Starting {}", name);
+		//log.info(ANSI_YELLOW + "Starting " + name + ANSI_RESET);
 
 		transformer.transform();
 
-		log.lifecycle("{} {}", name, transformer.getCompletionMsg());
+		log.info(ANSI_YELLOW + name + " " + ANSI_GREEN + transformer.getCompletionMsg() + ANSI_RESET);
 	}
 
 	private static void save(ClassGroup group, File output, OutputMode mode)

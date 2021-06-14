@@ -83,12 +83,12 @@ public class InjectConstruct extends AbstractInjector
 			injected++;
 		}
 
-		log.info("[INFO] Injected {} constructors", injected);
+		//log.info("[INFO] Injected {} constructors", injected);
 	}
 
 	private void injectConstruct(ClassFile targetClass, Method apiMethod)
 	{
-		log.debug("[DEBUG] Injecting constructor for {} into {}", apiMethod, targetClass.getPoolClass());
+		//log.debug("[DEBUG] Injecting constructor for {} into {}", apiMethod, targetClass.getPoolClass());
 
 		final Type returnval = apiMethod.getType().getReturnValue();
 

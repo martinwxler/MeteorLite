@@ -17,10 +17,16 @@ package org.jetbrains.java.decompiler.main.decompiler;
 
 import org.jetbrains.java.decompiler.main.extern.IFernflowerLogger;
 import org.jetbrains.java.decompiler.util.TextUtil;
+import org.sponge.util.Logger;
 
 import java.io.PrintStream;
 
+import static org.sponge.util.Logger.ANSI_CYAN;
+import static org.sponge.util.Logger.ANSI_RESET;
+
 public class PrintStreamLogger extends IFernflowerLogger {
+
+  Logger logger = new Logger("Decompiler");
 
   private final PrintStream stream;
   private int indent;
@@ -48,7 +54,7 @@ public class PrintStreamLogger extends IFernflowerLogger {
   @Override
   public void startReadingClass(String className) {
     if (accepts(Severity.INFO)) {
-      writeMessage("Decompiling class " + className, Severity.INFO);
+      logger.info("Decompiling class " + ANSI_CYAN + className + ANSI_RESET);
       ++indent;
     }
   }
@@ -57,7 +63,7 @@ public class PrintStreamLogger extends IFernflowerLogger {
   public void endReadingClass() {
     if (accepts(Severity.INFO)) {
       --indent;
-      writeMessage("... done", Severity.INFO);
+      //logger.info("... done");
     }
   }
 

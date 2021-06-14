@@ -138,6 +138,6 @@ public class DrawMenu extends AbstractInjector
 		instrs.addInstruction(++idx, new InvokeStatic(instrs, DRAWMENU));
 		instrs.addInstruction(++idx, new IfNe(instrs, labelToJumpTo));
 
-		log.info("[INFO] DrawMenu injected a method call at index {} in method {}. With a comparison jumping to {}", idx, drawLoggedIn, labelToJumpTo);
+		//log.info("[INFO] DrawMenu injected a method call at index {} in method {}. With a comparison jumping to {}", idx, drawLoggedIn, labelToJumpTo);
 	}
 }

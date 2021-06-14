@@ -59,7 +59,7 @@ public class AddPlayerToMenu extends AbstractInjector
 		}
 		catch (InjectException | AssertionError e)
 		{
-			log.warn("[WARN] HidePlayerAttacks failed, but as this doesn't mess up anything other than that functionality, we're carrying on", e);
+		//	log.warn("[WARN] HidePlayerAttacks failed, but as this doesn't mess up anything other than that functionality, we're carrying on", e);
 		}
 	}
 
