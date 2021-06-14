@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sponge.Plugin;
 import sponge.SpongeOSRS;
-import sponge.plugins.HelloWorldPlugin;
+import sponge.plugins.EventLoggerPlugin;
 
 import static agent.Mappings.updateGameStateClass;
 
@@ -19,7 +19,7 @@ public class PluginStartupMixin {
     @Inject(method = "updateGameState", at = @At("RETURN"))
     private static void gamestateChanged(int gamestate, CallbackInfo callbackInfo) {
         if (!hasInit) {
-            SpongeOSRS.plugins.add(new HelloWorldPlugin());
+            SpongeOSRS.plugins.add(new EventLoggerPlugin());
 
             for (Plugin p : SpongeOSRS.plugins)
                 p.init();

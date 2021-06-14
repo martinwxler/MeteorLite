@@ -17,6 +17,7 @@ dependencies {
     compileOnly(project(":runelite-annotations"))
     compileOnly(project(":runescape-api"))
     compileOnly(project(":runelite-api"))
+    compileOnly(project(":sponge-logger"))
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }

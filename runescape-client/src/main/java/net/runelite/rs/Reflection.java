@@ -46,7 +46,7 @@ import net.runelite.mapping.ObfuscatedSignature;
 
 public class Reflection
 {
-	private static final boolean PRINT_DEBUG_MESSAGES = true;
+	private static final boolean PRINT_DEBUG_MESSAGES = false;
 	public static Enumeration<URL> systemResources;
 
 	public static Map<String, Class<?>> classes = new HashMap<>();
@@ -109,16 +109,13 @@ public class Reflection
 
 	public static Field findField(Class<?> clazz, String name) throws NoSuchFieldException
 	{
-		if (PRINT_DEBUG_MESSAGES)
-		{
-			System.out.println("Looking for field " + name + " in " + clazz);
-		}
-
 		for (Field f : clazz.getDeclaredFields())
 		{
 			ObfuscatedName annotation = f.getAnnotation(ObfuscatedName.class);
 			if (annotation != null && annotation.value().equals(name))
 			{
+				if (PRINT_DEBUG_MESSAGES)
+					System.out.println("returned field " + f.getName() + " in " + clazz);
 				return f;
 			}
 		}

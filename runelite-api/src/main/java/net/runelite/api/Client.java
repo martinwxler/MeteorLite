@@ -39,17 +39,23 @@ import net.runelite.api.clan.ClanSettings;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.PlayerChanged;
+import net.runelite.api.hooks.Callbacks;
 import net.runelite.api.hooks.DrawCallbacks;
 import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
-import org.slf4j.Logger;
+import org.sponge.util.Logger;
 
 /**
  * Represents the RuneScape client.
  */
 public interface Client extends GameEngine
 {
+
+	/**
+	 * The injected client invokes these callbacks to send events to us
+	 */
+	Callbacks getCallbacks();
 
 	/**
 	 * The injected client invokes these callbacks for scene drawing, which is
@@ -62,7 +68,8 @@ public interface Client extends GameEngine
 	/**
 	 * Retrieve a global logger for the client.
 	 * This is most useful for mixins which can't have their own.
-	 */
+     * @return
+     */
 	Logger getLogger();
 
 	String getBuildID();

@@ -10,4 +10,5 @@ include 'runelite-deobfuscator'
 include 'runescape-client'
 include 'fernflower'
 include 'injected-client'
+include 'sponge-logger'
 

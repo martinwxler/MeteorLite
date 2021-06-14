@@ -24,10 +24,16 @@ dependencies {
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
     implementation group: 'com.google.guava', name: 'guava', version: '23.2-jre'
+    implementation(group : "com.google.inject", name : "guice", version : "4.1.0", classifier : "no_aop")
+
     implementation(project(":runescape-api"))
+    implementation(project(":runelite-api"))
+    implementation(project(":sponge-logger"))
+    implementation group: 'org.jetbrains', name: 'annotations', version: '21.0.1'
     runtimeClasspath(project(":injected-client"))
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor group: 'org.jetbrains', name: 'annotations', version: '21.0.1'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
@@ -61,4 +67,14 @@ jar {
 
 mainClassName = 'Launcher'
 
-applicationDefaultJvmArgs = ["-javaagent:../sponge-agent/build/libs/sponge-agent-1.0-SNAPSHOT.jar=agent.MixinAgentBootstrap;an_interceptor_optional_parameter", "-noverify"]
+applicationDefaultJvmArgs = [
+        //"-javaagent:../sponge-agent/build/libs/sponge-agent-1.0-SNAPSHOT.jar=agent.MixinAgentBootstrap;",
+                             "-noverify",
+                             "-XX:+DisableAttachMechanism",
+                             "-Xmx1G",
+                             "-Xss2m",
+                             "-XX:CompileThreshold=1500",
+                             "-Xincgc",
+                             "-XX:+UseConcMarkSweepGC",
+                             "-XX:+UseParNewGC",
+                             "-Djna.nosys=true"]

@@ -42,14 +42,14 @@ import javax.annotation.concurrent.ThreadSafe;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import org.sponge.util.Logger;
 import sponge.SpongeOSRS;
-import sponge.logger.Logger;
 
 @RequiredArgsConstructor
 @ThreadSafe
 public class EventBus
 {
-	private static final Logger log = SpongeOSRS.logger = new Logger();
+	private static final Logger log = SpongeOSRS.logger = new Logger("EventBus");
 
 	@Value
 	public static class Subscriber
@@ -149,7 +149,7 @@ public class EventBus
 				}
 				catch (Throwable e)
 				{
-					log.warn("Unable to create lambda for method " + method, e);
+					log.warn("Unable to create lambda for method " + method);
 				}
 
 				final Subscriber subscriber = new Subscriber(object, method, sub.priority(), lambda);

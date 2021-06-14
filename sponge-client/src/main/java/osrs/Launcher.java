@@ -16,6 +16,17 @@ package osrs;/*
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+import com.google.inject.Guice;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import net.runelite.api.Client;
+import org.sponge.util.Logger;
+import sponge.Plugin;
+import sponge.SpongeOSRS;
+import sponge.SpongeOSRSModule;
+import sponge.plugins.EventLoggerPlugin;
+
+import javax.annotation.Nullable;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 import java.applet.Applet;
@@ -43,14 +54,62 @@ import java.util.Map;
 @SuppressWarnings("deprecation")
 public final class Launcher implements AppletStub, AppletContext {
 
+    public static Injector injector;
+
+    @Inject
+    public Logger logger;
+
+    @com.google.inject.Inject
+    @Nullable
+    private Client client;
+
     public static void main(String[] args) throws Exception {
         System.setProperty("sun.awt.noerasebackground", "true"); // fixes resize flickering
 
-        Launcher c = load();
+        loadJagexConfiguration();
 
-        Applet applet = c.loadApplet();
+        injector = Guice.createInjector(new SpongeOSRSModule());
 
-        JFrame frame = new JFrame(c.title());
+        injector.getInstance(Launcher.class).start();
+    }
+
+    public void start()
+    {
+        injector.injectMembers(client);
+
+        SpongeOSRS.plugins.add(new EventLoggerPlugin());
+        for (Plugin p : SpongeOSRS.plugins)
+        {
+            injector.injectMembers(p);
+            p.init();;
+        }
+
+        logger.info("Guice injection completed");
+
+        Applet applet = (Applet) client;
+
+        setAppletConfiguration(applet);
+
+        setupFrame(applet);
+
+        applet.init();
+        applet.start();
+        logger.info("Successfully started");
+
+
+    }
+
+    private static Map<String, String> properties;
+
+    private static Map<String, String> parameters;
+
+    public Launcher()
+    {
+    }
+
+    public void setupFrame(Applet applet)
+    {
+        JFrame frame = new JFrame(title());
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.add(applet);
         frame.pack();
@@ -59,24 +118,9 @@ public final class Launcher implements AppletStub, AppletContext {
         frame.setLocationRelativeTo(null);
 
         frame.setVisible(true);
-
-        applet.init();
-        applet.start();
     }
 
-    private final Map<String, String> properties;
-
-    private final Map<String, String> parameters;
-
-    private Launcher(
-            Map<String, String> properties,
-            Map<String, String> parameters
-    ) {
-        this.properties = properties;
-        this.parameters = parameters;
-    }
-
-    public static Launcher load() throws IOException {
+    public static void loadJagexConfiguration() throws IOException {
         Map<String, String> properties = new HashMap<>();
         Map<String, String> parameters = new HashMap<>();
         URL url = new URL("http://oldschool.runescape.com/jav_config.ws");
@@ -97,11 +141,11 @@ public final class Launcher implements AppletStub, AppletContext {
                 }
             }
         }
-        return new Launcher(properties, parameters);
+        Launcher.properties = properties;
+        Launcher.parameters = parameters;
     }
 
-    public Applet loadApplet() throws Exception {
-        Applet applet = (Applet) this.getClass().getClassLoader().loadClass("osrs.Client").getDeclaredConstructor().newInstance();
+    public Applet setAppletConfiguration(Applet applet) {
         applet.setStub(this);
         applet.setMaximumSize(appletMaxSize());
         applet.setMinimumSize(appletMinSize());
