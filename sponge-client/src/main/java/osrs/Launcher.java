@@ -53,6 +53,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import static org.sponge.util.Logger.ANSI_RESET;
+import static org.sponge.util.Logger.ANSI_YELLOW;
+
 @SuppressWarnings("deprecation")
 public final class Launcher implements AppletStub, AppletContext {
 
@@ -81,7 +84,7 @@ public final class Launcher implements AppletStub, AppletContext {
     {
         try {
             client = (Client) this.getClass().getClassLoader().loadClass("osrs.Client").getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -95,7 +98,7 @@ public final class Launcher implements AppletStub, AppletContext {
             p.init();;
         }
 
-        logger.info("Guice injection completed");
+        logger.info(ANSI_YELLOW + "Guice injection completed" + ANSI_RESET);
 
         Applet applet = (Applet) client;
 
@@ -105,7 +108,7 @@ public final class Launcher implements AppletStub, AppletContext {
 
         applet.init();
         applet.start();
-        logger.info("Successfully started");
+        logger.info(ANSI_YELLOW + "SpongeOSRS started" + ANSI_RESET);
 
 
     }

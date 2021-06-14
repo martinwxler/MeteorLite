@@ -24,6 +24,7 @@
  */
 package agent;
 
+import org.sponge.util.Logger;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
@@ -38,6 +39,9 @@ import java.security.ProtectionDomain;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.sponge.util.Logger.ANSI_RESET;
+import static org.sponge.util.Logger.ANSI_YELLOW;
+
 @SuppressWarnings("Duplicates")
 public class MixinAgentBootstrap {
 
@@ -47,18 +51,20 @@ public class MixinAgentBootstrap {
 
     private static Transformer transformer;
 
+    static Logger logger = new Logger("Agent");
+
     public static void premain(String ops, Instrumentation instrumentation) {
 
-        System.out.println("---SpongeOSRS Agent---");
+
         MixinBootstrap.getPlatform().inject();
         MixinBootstrap.init();
 
         Mixins.addConfiguration("mixins.json");
         gotoPhase(MixinEnvironment.Phase.DEFAULT);
-        System.out.println("SpongeOSRS Agent Started");
 
         Transformer transformer = getTransformer();
         instrumentation.addTransformer(transformer);
+        logger.info(ANSI_YELLOW + "---SpongeOSRS Agent Started---" + ANSI_RESET);
     }
 
 

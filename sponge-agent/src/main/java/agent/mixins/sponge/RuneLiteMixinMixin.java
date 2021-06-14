@@ -19,7 +19,7 @@ public abstract class RuneLiteMixinMixin implements RSClient {
 
     private static Client client;
 
-    private static Logger spongeLogger = new Logger("RuneLiteMixinMixin");
+    private static Logger spongeLogger = new Logger("Agent");
 
     //This is a test hook and also serves to init SpongeOSRS.client for other SpongeMixins (cant shadow across classes)
     @Inject(method = "onGameStateChanged", at = @At("RETURN"))
@@ -30,6 +30,6 @@ public abstract class RuneLiteMixinMixin implements RSClient {
             client = SpongeOSRS.client;
         }
 
-        spongeLogger.info("GameState ValueOf: " + client.api$getRSGameState());
+        spongeLogger.debug("GameState ValueOf: " + client.api$getRSGameState());
     }
 }

@@ -14,8 +14,8 @@ import static org.sponge.util.Logger.ANSI_YELLOW;
 public class EventLoggerPlugin extends Plugin
 {
     public String name = ANSI_CYAN + "EventLoggerPlugin" + ANSI_YELLOW;
-    @Inject
-    Logger logger;
+
+    Logger logger = new Logger(name);
 
     @Inject
     Client client;
@@ -23,16 +23,12 @@ public class EventLoggerPlugin extends Plugin
     @Subscribe
     public void onGameStateChanged(GameStateChanged event)
     {
-        logger.plugin = name;
         logger.event("GameStateChanged", "" +  event.getGameState());
-        logger.plugin = null;
     }
 
     @Subscribe
     public void onGameMessageReceived(GameMessageReceived event)
     {
-        logger.plugin = name;
         logger.event("GameMessageReceived", "" + event.text);
-        logger.plugin = null;
     }
 }
