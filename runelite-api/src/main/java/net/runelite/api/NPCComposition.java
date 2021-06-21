@@ -87,7 +87,7 @@ public interface NPCComposition extends ParamHolder
 	 *
 	 * @throws NullPointerException if {@link #getConfigs()} is null
 	 */
-	NPCComposition transform();
+	NPCComposition transform$api();
 
 	/**
 	 * How many tiles wide this NPC is

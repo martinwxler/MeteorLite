@@ -44,6 +44,7 @@ import net.runelite.asm.attributes.code.instructions.ALoad;
 import net.runelite.asm.attributes.code.instructions.GetField;
 import net.runelite.asm.attributes.code.instructions.GetStatic;
 import net.runelite.asm.signature.Signature;
+import org.sponge.util.Logger;
 
 public class InjectGetter
 {
@@ -51,7 +52,7 @@ public class InjectGetter
 	{
 		if (targetClass.findMethod(apiMethod.getName(), apiMethod.getSignature()) != null)
 		{
-			throw new InjectException("Duplicate getter method " + apiMethod.getMethod().toString());
+			new Logger("InjectGetter").debug("Duplicate getter method " + apiMethod.getMethod().toString());
 		}
 
 		final String name = apiMethod.getName();

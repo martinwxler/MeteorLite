@@ -82,7 +82,7 @@ public interface Model extends Renderable
 
 	int getModelHeight();
 
-	void calculateBoundsCylinder();
+	void calculateBoundsCylinder$api();
 
 	byte[] getFaceRenderPriorities();
 
@@ -105,5 +105,5 @@ public interface Model extends Renderable
 	int getXYZMag();
 	boolean isClickable();
 	
-	void drawFace(int face);
+	void drawFace$api(int face);
 }

@@ -630,7 +630,7 @@ public interface Widget
 	 * @param index  The index of the menu
 	 * @param action The verb to be displayed next to the widget's name in the context menu
 	 */
-	void setAction(int index, String action);
+	void setAction$api(int index, String action);
 
 	/**
 	 * Sets a script to be ran when the a menu action is clicked.
@@ -907,7 +907,7 @@ public interface Widget
 	/**
 	 * Gets the font that this widget uses
 	 */
-	FontTypeFace getFont();
+	FontTypeFace getFont$api();
 
 	/**
 	 * Gets if the rectangle is filled or just stroked

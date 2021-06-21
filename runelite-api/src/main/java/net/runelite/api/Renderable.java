@@ -32,7 +32,7 @@ public interface Renderable extends Node
 	/**
 	 * Gets the model of the object.
 	 */
-	Model getModel();
+	Model getModel$api();
 
 	/**
 	 * Gets the height of the model.
@@ -41,5 +41,5 @@ public interface Renderable extends Node
 
 	void setModelHeight(int modelHeight);
 
-	void draw(int orientation, int pitchSin, int pitchCos, int yawSin, int yawCos, int x, int y, int z, long hash);
+	void draw$api(int orientation, int pitchSin, int pitchCos, int yawSin, int yawCos, int x, int y, int z, long hash);
 }

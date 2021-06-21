@@ -21,7 +21,6 @@ dependencies {
     shade 'org.spongepowered:mixin-bare:0.7.11-SNAPSHOT'
     implementation(project(":runescape-api"))
     implementation(project(":runelite-api"))
-    implementation(project(":injected-client"))
     implementation(project(":sponge-logger"))
     compileOnly(group : "com.google.guava", name : "guava", version : "23.2-jre")
     compileOnly(group : "javax.inject", name : "javax.inject", version : "1")

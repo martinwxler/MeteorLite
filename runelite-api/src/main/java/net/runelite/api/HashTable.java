@@ -14,7 +14,7 @@ public interface HashTable<T extends Node>
 	 * @param value the node value
 	 * @return the associated node
 	 */
-	T get(long value);
+	T get$api(long value);
 
 	/**
 	 * Gets a collection of all nodes stored in this table.

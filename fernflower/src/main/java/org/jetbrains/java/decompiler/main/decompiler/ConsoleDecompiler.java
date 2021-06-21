@@ -111,10 +111,10 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
             .addText("[Extracting injected-client]")
             .build());
     File jarFile = new File("./build/decompiled/injected-client.jar");
-    String destDir = "../injected-client/src/main/java/";
+    String srcDest = "../injected-client/src/main/java/";
     File rsDir = new File("../injected-client/src/main/java/net/runelite/rs/");
     File rogueInjected = new File("../injected-client/src/main/java/injected-client.jar");
-    File destFolder = new File(destDir);
+    File destFolder = new File(srcDest);
     destFolder.mkdirs();
     rsDir.mkdirs();
     new File("../injected-client/src/main/java/osrs/").mkdirs();
@@ -124,7 +124,7 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
       java.util.Enumeration enumEntries = jar.entries();
       while (enumEntries.hasMoreElements()) {
         java.util.jar.JarEntry file = (java.util.jar.JarEntry) enumEntries.nextElement();
-        java.io.File f = new java.io.File(destDir + java.io.File.separator + file.getName());
+        java.io.File f = new java.io.File(srcDest + java.io.File.separator + file.getName());
         if (file.isDirectory()) { // if its a directory, create it
           continue;
         }
@@ -151,44 +151,8 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
       e.printStackTrace();
     }
     rogueInjected.delete();
-    logger.info(Message.buildMessage()
-            .changeColor(ANSI_YELLOW)
-            .addText("[Repackage to osrs]")
-            .build());
-    for (File f : destFolder.listFiles())
-    {
-      File fout = new File("../injected-client/src/main/java/osrs/" + f.getName());
-      if (f.isDirectory())
-        continue;
 
-      ArrayList<String> lines = new ArrayList<>();
-
-      try {
-        BufferedReader br = Files.newBufferedReader(f.toPath(), StandardCharsets.UTF_8);
-
-        String st;
-        lines.add("package osrs;\n");
-        while ((st = br.readLine()) != null)
-        {
-          lines.add(st);
-        }
-        f.delete();
-        BufferedWriter out = new BufferedWriter
-                (new OutputStreamWriter(new FileOutputStream(fout), StandardCharsets.UTF_8));
-        for (String s : lines) {
-          out.write(s);
-          out.newLine();
-        }
-        out.flush();
-        out.close();
-
-      } catch (Exception e) {
-        System.out.println(f.getAbsolutePath());
-        e.printStackTrace();
-      }
-    }
-
-    File engineFile = new File("../injected-client/src/main/java/osrs/GameEngine.java");
+    File engineFile = new File("../injected-client/src/main/java/GameEngine.java");
 
     ArrayList<String> engineLines = new ArrayList<>();
     try {
@@ -221,7 +185,7 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
       e.printStackTrace();
     }
 
-    File bufferedSinkFile = new File("../injected-client/src/main/java/osrs/BufferedSink.java");
+    File bufferedSinkFile = new File("../injected-client/src/main/java/BufferedSink.java");
 
     ArrayList<String> bufferedSinkLines = new ArrayList<>();
     try {

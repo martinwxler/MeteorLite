@@ -65,21 +65,21 @@ public interface Player extends Actor
 	 *
 	 * @return true if the player is a friends chat member, false otherwise
 	 */
-	boolean isFriendsChatMember();
+	boolean isFriendsChatMember$api();
 
 	/**
 	 * Checks whether this player is a friend of the local player.
 	 *
 	 * @return true if the player is a friend, false otherwise
 	 */
-	boolean isFriend();
+	boolean isFriend$api();
 
 	/**
 	 * Checks whether the player is a member of the same clan as the local player.
 	 *
 	 * @return
 	 */
-	boolean isClanMember();
+	boolean isClanMember$api();
 
 	/**
 	 * Gets the displayed overhead icon of the player.

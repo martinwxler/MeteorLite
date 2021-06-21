@@ -67,7 +67,7 @@ public class SpongeOSRSModule extends AbstractModule
 	Applet provideApplet()
 	{
 		try {
-			return (Applet) this.getClass().getClassLoader().loadClass("osrs.Client").getDeclaredConstructor().newInstance();
+			return (Applet) this.getClass().getClassLoader().loadClass("Client").getDeclaredConstructor().newInstance();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

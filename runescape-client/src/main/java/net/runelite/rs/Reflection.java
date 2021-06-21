@@ -25,13 +25,11 @@
 package net.runelite.rs;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigInteger;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -43,10 +41,15 @@ import java.util.Map;
 import net.runelite.mapping.ObfuscatedGetter;
 import net.runelite.mapping.ObfuscatedName;
 import net.runelite.mapping.ObfuscatedSignature;
+import org.sponge.util.Logger;
+
+import javax.swing.*;
 
 public class Reflection
 {
-	private static final boolean PRINT_DEBUG_MESSAGES = false;
+	static Logger logger = new Logger("Reflection");
+	private static int mappedClasses = 0;
+	public static boolean printDebugMessages = false;
 	public static Enumeration<URL> systemResources;
 
 	public static Map<String, Class<?>> classes = new HashMap<>();
@@ -55,7 +58,7 @@ public class Reflection
 	{
 		try
 		{
-			Path path = new File("../injected-client/build/classes/java/main/")
+			Path path = new File("../runescape-client/build/classes/java/main/")
 					.toPath();
 
 			Files.walk(path)
@@ -69,7 +72,7 @@ public class Reflection
 
 						try
 						{
-							Class<?> clazz = Class.forName("osrs." + className);
+							Class<?> clazz = Class.forName(className);
 
 							ObfuscatedName obfuscatedName = clazz
 									.getAnnotation(ObfuscatedName.class);
@@ -77,12 +80,19 @@ public class Reflection
 							if (obfuscatedName != null)
 							{
 								classes.put(obfuscatedName.value(), clazz);
+								mappedClasses++;
 							}
 						}
 						catch (ClassNotFoundException ignore)
 						{
 						}
 					});
+			if (mappedClasses < 300)
+			{
+				JOptionPane.showMessageDialog(null, "Obfuscated Mapping failure" +
+						"!!!Jagex servers will deny total interaction shortly!!!\n" +
+						"!!!Please Log Out immediately!!!");
+			}
 		}
 		catch (Exception e)
 		{
@@ -99,11 +109,6 @@ public class Reflection
 			return clazz;
 		}
 
-		if (PRINT_DEBUG_MESSAGES)
-		{
-			System.out.println("Server requested dummy class " + name);
-		}
-
 		return Class.forName(name);
 	}
 
@@ -114,15 +119,10 @@ public class Reflection
 			ObfuscatedName annotation = f.getAnnotation(ObfuscatedName.class);
 			if (annotation != null && annotation.value().equals(name))
 			{
-				if (PRINT_DEBUG_MESSAGES)
-					System.out.println("returned field " + f.getName() + " in " + clazz);
+				if (printDebugMessages)
+					logger.info("[Get] " + f.getName() + " in " + clazz);
 				return f;
 			}
-		}
-
-		if (PRINT_DEBUG_MESSAGES)
-		{
-			System.out.println("Server requested dummy field " + name + " in " + clazz);
 		}
 
 		return clazz.getDeclaredField(name);
@@ -176,9 +176,9 @@ public class Reflection
 
 	public static int getInt(Field field, Object obj) throws IllegalArgumentException, IllegalAccessException
 	{
-		if (PRINT_DEBUG_MESSAGES)
+		if (printDebugMessages)
 		{
-			System.out.println("Getting field " + field);
+			logger.info("[Get] " + field);
 		}
 
 		boolean unset = false;
@@ -197,10 +197,6 @@ public class Reflection
 		}
 		catch (Exception ex)
 		{
-			if (PRINT_DEBUG_MESSAGES)
-			{
-				ex.printStackTrace();
-			}
 			throw ex;
 		}
 		finally
@@ -225,9 +221,9 @@ public class Reflection
 
 	public static void setInt(Field field, Object obj, int value) throws IllegalArgumentException, IllegalAccessException
 	{
-		if (PRINT_DEBUG_MESSAGES)
+		if (printDebugMessages)
 		{
-			System.out.println("Setting field " + field + " to " + value);
+			logger.error("Jagex SetField - " + field + " to " + value);
 		}
 
 		ObfuscatedGetter og = field.getAnnotation(ObfuscatedGetter.class);
@@ -274,9 +270,9 @@ public class Reflection
 
 	public static Object invoke(Method method, Object object, Object[] args) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
 	{
-		if (PRINT_DEBUG_MESSAGES)
+		if (printDebugMessages)
 		{
-			System.out.println("Invoking " + method);
+			logger.error("Jagex InvokeMethod - " + method);
 		}
 
 		try
@@ -285,10 +281,6 @@ public class Reflection
 		}
 		catch (Throwable ex)
 		{
-			if (PRINT_DEBUG_MESSAGES)
-			{
-				ex.printStackTrace();
-			}
 			throw ex;
 		}
 	}

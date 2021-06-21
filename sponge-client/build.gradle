@@ -29,7 +29,7 @@ dependencies {
     implementation(project(":runelite-api"))
     implementation(project(":sponge-logger"))
     implementation group: 'org.jetbrains', name: 'annotations', version: '21.0.1'
-    runtimeClasspath(project(":injected-client"))
+    runtimeClasspath(files("../openosrs-injector/build/injected/injected-client.jar"))
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
     annotationProcessor group: 'org.jetbrains', name: 'annotations', version: '21.0.1'
@@ -45,6 +45,7 @@ tasks.withType(JavaCompile) {
 }
 
 tasks {
+    compileJava.dependsOn project(":fernflower").tasks.getByName("decompileInjected")
     compileJava.dependsOn(":runelite-mixins:compileJava")
     tasks.getByPath(":sponge-client:run").dependsOn(":sponge-agent:jar")
 }

@@ -24,13 +24,10 @@
  */
 package sponge.callbacks;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
 import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -39,7 +36,7 @@ import java.awt.image.VolatileImage;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import lombok.extern.slf4j.Slf4j;
+
 import net.runelite.api.BufferProvider;
 import net.runelite.api.Client;
 import net.runelite.api.MainBufferProvider;
@@ -212,7 +209,7 @@ public class Hooks implements Callbacks
 
 		WorldMapManager manager = renderOverview.getWorldMapManager();
 
-		if (manager != null && manager.isLoaded())
+		if (manager != null && manager.isLoaded$api())
 		{
 			log.debug("World map was closed, reinitializing");
 			renderOverview.initializeWorldMap(renderOverview.getWorldMapData());
@@ -485,7 +482,7 @@ public class Hooks implements Callbacks
 		}
 		else
 		{
-			renderable.draw(orientation, pitchSin, pitchCos, yawSin, yawCos, x, y, z, hash);
+			renderable.draw$api(orientation, pitchSin, pitchCos, yawSin, yawCos, x, y, z, hash);
 		}
 	}
 

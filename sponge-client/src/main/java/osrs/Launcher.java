@@ -80,12 +80,6 @@ public final class Launcher implements AppletStub, AppletContext {
 
     public void start()
     {
-        try {
-            client = (Client) this.getClass().getClassLoader().loadClass("osrs.Client").getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         injector.injectMembers(client);
 
         SpongeOSRS.plugins.add(new EventLoggerPlugin());
@@ -259,9 +253,5 @@ public final class Launcher implements AppletStub, AppletContext {
 
     @Override public Iterator<String> getStreamKeys() {
         throw new UnsupportedOperationException();
-    }
-
-    private static ClassLoader classLoader(URL jarUrl) throws IOException {
-        return new URLClassLoader(new URL[]{new File("../openosrs-injector/build/injected/injected-client.jar").toURI().toURL()}, Launcher.class.getClassLoader());
     }
 }

@@ -31,5 +31,5 @@ public interface RSClient extends Client
 {
 	@Import("gameState")
 	@Override
-	int api$getRSGameState();
+	int getRSGameState$api();
 }

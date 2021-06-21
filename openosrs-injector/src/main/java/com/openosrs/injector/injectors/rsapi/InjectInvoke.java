@@ -49,6 +49,7 @@ import net.runelite.asm.attributes.code.instructions.InvokeVirtual;
 import net.runelite.asm.attributes.code.instructions.LDC;
 import net.runelite.asm.attributes.code.instructions.SiPush;
 import net.runelite.asm.signature.Signature;
+import org.sponge.util.Logger;
 
 public class InjectInvoke
 {
@@ -56,7 +57,7 @@ public class InjectInvoke
 	{
 		if (targetClass.findMethod(apiMethod.getName(), apiMethod.getSignature()) != null)
 		{
-			throw new InjectException("Duplicate invoker method " + apiMethod.getMethod().toString());
+			new Logger("InjectGetter").debug("Duplicate invoker method " + apiMethod.getMethod().toString());
 		}
 
 		final Method method = new Method(targetClass, apiMethod.getName(), apiMethod.getSignature());

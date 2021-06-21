@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import sponge.SpongeOSRS;
 
 @SuppressWarnings("unused")
-@Mixin(targets = "osrs/Client", remap = false)
+@Mixin(targets = "Client", remap = false)
 public abstract class RuneLiteMixinMixin implements RSClient {
 
     @Shadow
@@ -30,6 +30,6 @@ public abstract class RuneLiteMixinMixin implements RSClient {
             client = SpongeOSRS.client;
         }
 
-        spongeLogger.debug("GameState ValueOf: " + client.api$getRSGameState());
+        spongeLogger.debug("GameState ValueOf: " + client.getGameState());
     }
 }

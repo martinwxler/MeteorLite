@@ -640,7 +640,7 @@ public class Perspective
 		if (ex == -1)
 		{
 			// dynamic models don't get stored when they render where this normally happens
-			m.calculateBoundsCylinder();
+			m.calculateBoundsCylinder$api();
 			m.calculateExtreme(0);
 			ex = m.getExtremeX();
 		}
