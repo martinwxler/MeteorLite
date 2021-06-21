@@ -28,6 +28,9 @@ dependencies {
     implementation(project(":runescape-api"))
     implementation(project(":runelite-api"))
     implementation(project(":sponge-logger"))
+    compileOnly(project(":runescape-client"))
+    implementation group: 'de.jensd', name: 'fontawesomefx-fontawesome', version: '4.7.0-5'
+    implementation 'com.jfoenix:jfoenix:8.0.10'
     implementation group: 'org.jetbrains', name: 'annotations', version: '21.0.1'
     runtimeClasspath(files("../openosrs-injector/build/injected/injected-client.jar"))
     compileOnly 'org.projectlombok:lombok:1.18.20'

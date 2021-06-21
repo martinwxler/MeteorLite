@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXToggleButton?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane id="pluginPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="781.0" prefWidth="275.0" style="-fx-background-color: #1c313a;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sponge.ui.controllers.PluginsFXMLController">
+   <Text fill="AQUA" layoutX="118.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Plugins" AnchorPane.leftAnchor="118.0" />
+   <AnchorPane layoutY="42.0" prefHeight="39.0" prefWidth="275.0">
+      <JFXToggleButton id="reflectionEnabled" fx:id="reflectionEnabled" layoutX="231.0" layoutY="6.0" onAction="#onReflectionPluginToggled" prefHeight="38.0" prefWidth="38.0" size="4.0" style="-fx-text-fill: CYAN;" text=" " />
+      <Text fill="AQUA" layoutX="14.0" layoutY="30.0" strokeType="OUTSIDE" strokeWidth="0.0" text="[DEBUG] Jagex reflection checks" />
+   </AnchorPane>
+   <FontAwesomeIconView fill="AQUA" glyphName="PLUG" layoutX="8.0" layoutY="28.0" text="" AnchorPane.leftAnchor="100.0" />
+</AnchorPane>

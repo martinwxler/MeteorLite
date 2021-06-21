@@ -19,6 +19,12 @@ package osrs;/*
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import javafx.application.Application;
+import javafx.embed.swing.JFXPanel;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import net.runelite.api.Client;
 import org.sponge.util.Logger;
 import sponge.Plugin;
@@ -27,39 +33,35 @@ import sponge.SpongeOSRSModule;
 import sponge.plugins.EventLoggerPlugin;
 
 import javax.annotation.Nullable;
-import javax.swing.JFrame;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import java.applet.Applet;
 import java.applet.AppletContext;
 import java.applet.AppletStub;
 import java.applet.AudioClip;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.Image;
+import java.awt.*;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidParameterException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import static org.sponge.util.Logger.ANSI_RESET;
 import static org.sponge.util.Logger.ANSI_YELLOW;
 
 @SuppressWarnings("deprecation")
-public final class Launcher implements AppletStub, AppletContext {
+public final class Launcher extends Application implements AppletStub, AppletContext {
 
     public static Injector injector;
 
     static SpongeOSRSModule module = new SpongeOSRSModule();
+
+    public static boolean pluginsPanelVisible = false;
+    public static JFXPanel toolbarJFXPanel = new JFXPanel();
+    public static JFXPanel pluginsJFXPanel = new JFXPanel();
 
     @Inject
     public Logger logger;
@@ -68,18 +70,11 @@ public final class Launcher implements AppletStub, AppletContext {
     @Nullable
     private Client client;
 
-    public static void main(String[] args) throws Exception {
-        System.setProperty("sun.awt.noerasebackground", "true"); // fixes resize flickering
+    Applet applet;
+    public static JPanel panel;
+    public static BorderLayout layout = new BorderLayout();
 
-        loadJagexConfiguration();
-
-        injector = Guice.createInjector(module);
-
-        injector.getInstance(Launcher.class).start();
-    }
-
-    public void start()
-    {
+    public void start() throws IOException {
         injector.injectMembers(client);
 
         SpongeOSRS.plugins.add(new EventLoggerPlugin());
@@ -92,14 +87,13 @@ public final class Launcher implements AppletStub, AppletContext {
 
         logger.info(ANSI_YELLOW + "Guice injection completed" + ANSI_RESET);
 
-        Applet applet = (Applet) client;
+        applet = (Applet) client;
 
+        applet.setSize(1280, 720);
         setAppletConfiguration(applet);
 
         setupFrame(applet);
 
-        applet.init();
-        applet.start();
         logger.info(ANSI_YELLOW + "SpongeOSRS started" + ANSI_RESET);
 
 
@@ -113,17 +107,50 @@ public final class Launcher implements AppletStub, AppletContext {
     {
     }
 
-    public void setupFrame(Applet applet)
-    {
-        JFrame frame = new JFrame(title());
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.add(applet);
-        frame.pack();
-        frame.setMinimumSize(frame.getSize());
-        frame.setPreferredSize(frame.getSize());
-        frame.setLocationRelativeTo(null);
+    @Override
+    public void start(Stage primaryStage) throws IOException {
+        System.setProperty("sun.awt.noerasebackground", "true"); // fixes resize flickering
 
+        loadJagexConfiguration();
+
+        injector = Guice.createInjector(module);
+
+        injector.getInstance(Launcher.class).start();
+    }
+
+    public static void togglePluginsPanel() {
+        if (pluginsPanelVisible)
+            pluginsJFXPanel.setVisible(false);
+        else
+            pluginsJFXPanel.setVisible(true);
+
+        pluginsPanelVisible = !pluginsPanelVisible;
+    }
+
+    public void setupFrame(Applet applet) throws IOException {
+        JFrame frame = new JFrame("SpongeOSRS");
+        frame.setSize(1280, 720);
+        panel = new JPanel();
+        panel.setLayout(layout);
+        panel.setSize(1280, 720);
+
+        toolbarJFXPanel.setSize(1280, 100);
+        pluginsJFXPanel.setSize(475, 800);
+        Parent toolbarRoot = FXMLLoader.load(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("toolbar.fxml")));
+        Parent pluginsRoot = FXMLLoader.load(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("plugins.fxml")));
+        toolbarJFXPanel.setScene(new Scene(toolbarRoot, 300, 40));
+        toolbarJFXPanel.setVisible(true);
+        pluginsJFXPanel.setScene(new Scene(pluginsRoot, 275, 800));
+        pluginsJFXPanel.setVisible(false);
+        panel.add(applet, BorderLayout.CENTER);
+        panel.add(toolbarJFXPanel, BorderLayout.NORTH);
+        panel.add(pluginsJFXPanel, BorderLayout.EAST);
+        frame.add(panel);
+        panel.setVisible(true);
         frame.setVisible(true);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        applet.init();
+        applet.start();
     }
 
     public static void loadJagexConfiguration() throws IOException {

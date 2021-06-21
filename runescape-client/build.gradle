@@ -15,6 +15,12 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    disableAutoTargetJvm()
+}
+
 dependencies {
     implementation(project(":runelite-annotations"))
     implementation(project(":sponge-logger"))
