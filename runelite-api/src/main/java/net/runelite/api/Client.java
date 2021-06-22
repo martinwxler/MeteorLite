@@ -252,7 +252,7 @@ public interface Client extends GameEngine
 	 *
 	 * @return the camera x coordinate
 	 */
-	int api$getCameraX();
+	int getCameraX$api();
 
 	/**
 	 * Gets the y-axis coordinate of the camera.
@@ -262,7 +262,7 @@ public interface Client extends GameEngine
 	 *
 	 * @return the camera y coordinate
 	 */
-	int api$getCameraY();
+	int getCameraY$api();
 
 	/**
 	 * Gets the z-axis coordinate of the camera.
@@ -272,7 +272,7 @@ public interface Client extends GameEngine
 	 *
 	 * @return the camera z coordinate
 	 */
-	int api$getCameraZ();
+	int getCameraZ$api();
 
 	/**
 	 * Gets the actual pitch of the camera.
@@ -2228,4 +2228,12 @@ public interface Client extends GameEngine
 	 */
 	@Nullable
 	ClanSettings getGuestClanSettings();
+
+
+	/**
+	 * Set the target camera yaw
+	 *
+	 * @param cameraYawTarget
+	 */
+	void setCameraYawTarget(int cameraYawTarget);
 }

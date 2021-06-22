@@ -30,7 +30,7 @@ import org.sponge.util.Logger;
 import sponge.Plugin;
 import sponge.SpongeOSRS;
 import sponge.SpongeOSRSModule;
-import sponge.plugins.EventLoggerPlugin;
+import sponge.plugins.EventTestPlugin;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
@@ -77,7 +77,7 @@ public final class Launcher extends Application implements AppletStub, AppletCon
     public void start() throws IOException {
         injector.injectMembers(client);
 
-        SpongeOSRS.plugins.add(new EventLoggerPlugin());
+        SpongeOSRS.plugins.add(new EventTestPlugin());
 
         for (Plugin p : SpongeOSRS.plugins)
         {

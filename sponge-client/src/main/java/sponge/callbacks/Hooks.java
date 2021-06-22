@@ -59,6 +59,7 @@ import org.sponge.util.Logger;
 import sponge.eventbus.DeferredEventBus;
 import sponge.eventbus.EventBus;
 import sponge.eventbus.Subscribe;
+import sponge.ui.overlay.OverlayRenderer;
 import sponge.util.RSTimeUnit;
 
 /**
@@ -76,6 +77,7 @@ public class Hooks implements Callbacks
 	private static final BeforeRender BEFORE_RENDER = new BeforeRender();
 
 	private static Client client;
+	private final OverlayRenderer renderer;
 	private final EventBus eventBus;
 	private final DeferredEventBus deferredEventBus;
 
@@ -115,11 +117,13 @@ public class Hooks implements Callbacks
 	@Inject
 	private Hooks(
 		Client client,
+		OverlayRenderer renderer,
 		EventBus eventBus,
 		DeferredEventBus deferredEventBus
 	)
 	{
 		this.client = client;
+		this.renderer = renderer;
 		this.eventBus = eventBus;
 		this.deferredEventBus = deferredEventBus;
 		eventBus.register(this);
@@ -175,7 +179,7 @@ public class Hooks implements Callbacks
 
 			//chatMessageManager.process();
 
-			checkWorldMap();
+			//checkWorldMap();
 		}
 		catch (Exception ex)
 		{
@@ -228,36 +232,12 @@ public class Hooks implements Callbacks
 
 		try
 		{
-			//renderer.renderOverlayLayer(graphics2d, OverlayLayer.ALWAYS_ON_TOP);
+			renderer.renderAlwaysOnTop(graphics2d);
 		}
 		catch (Exception ex)
 		{
 			log.warn("Error during overlay rendering", ex);
 		}
-
-		//notifier.processFlash(graphics2d);
-
-		// Draw clientUI overlays
-		//clientUi.paintOverlays(graphics2d);
-
-		if (client.isGpu())
-		{
-			// processDrawComplete gets called on GPU by the gpu plugin at the end of its
-			// drawing cycle, which is later on.
-			return;
-		}
-
-		// Stretch the game image if the user has that enabled
-		Image image = mainBufferProvider.getImage();
-		final Image finalImage;
-		finalImage = image;
-
-		// Draw the image onto the game canvas
-		graphics.drawImage(finalImage, 0, 0, client.getCanvas());
-
-		// finalImage is backed by the client buffer which will change soon. make a copy
-		// so that callbacks can safely use it later from threads.
-		//drawManager.processDrawComplete(() -> copy(finalImage));
 	}
 
 	/**
@@ -284,7 +264,7 @@ public class Hooks implements Callbacks
 
 		try
 		{
-			//renderer.renderOverlayLayer(graphics2d, OverlayLayer.ABOVE_SCENE);
+			renderer.renderAboveScene(graphics2d);
 		}
 		catch (Exception ex)
 		{
