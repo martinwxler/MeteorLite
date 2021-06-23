@@ -19,6 +19,4 @@ public interface RSFloorDecoration extends GroundObject
 	@Import("renderable")
 	@Override
 	RSRenderable getRenderable();
-
-	void setPlane(int plane);
 }

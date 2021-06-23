@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,26 +22,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api;
+package sponge.input;
 
-import java.awt.Shape;
-
-/**
- * Represents an object on the ground of a tile.
- */
-public interface GroundObject extends TileObject
+public interface KeyListener extends java.awt.event.KeyListener
 {
-	Renderable getRenderable();
-
-	Model getModel();
-
-	/**
-	 * Gets the convex hull of the objects model.
-	 *
-	 * @return the convex hull
-	 * @see net.runelite.api.model.Jarvis
-	 */
-	Shape getConvexHull();
-
-	void setPlane(int plane);
+	default boolean isEnabledOnLoginScreen()
+	{
+		return false;
+	}
 }

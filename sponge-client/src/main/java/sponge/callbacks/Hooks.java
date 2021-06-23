@@ -24,10 +24,7 @@
  */
 package sponge.callbacks;
 
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -56,9 +53,11 @@ import net.runelite.api.widgets.Widget;
 import static net.runelite.api.widgets.WidgetInfo.WORLD_MAP_VIEW;
 import net.runelite.api.widgets.WidgetItem;
 import org.sponge.util.Logger;
+import osrs.Launcher;
 import sponge.eventbus.DeferredEventBus;
 import sponge.eventbus.EventBus;
 import sponge.eventbus.Subscribe;
+import sponge.input.MouseManager;
 import sponge.ui.overlay.OverlayRenderer;
 import sponge.util.RSTimeUnit;
 
@@ -80,6 +79,7 @@ public class Hooks implements Callbacks
 	private final OverlayRenderer renderer;
 	private final EventBus eventBus;
 	private final DeferredEventBus deferredEventBus;
+	private final MouseManager mouseManager;
 
 	private Dimension lastStretchedDimensions;
 	private VolatileImage stretchedImage;
@@ -118,12 +118,14 @@ public class Hooks implements Callbacks
 	private Hooks(
 		Client client,
 		OverlayRenderer renderer,
+		MouseManager mouseManager,
 		EventBus eventBus,
 		DeferredEventBus deferredEventBus
 	)
 	{
 		this.client = client;
 		this.renderer = renderer;
+		this.mouseManager = mouseManager;
 		this.eventBus = eventBus;
 		this.deferredEventBus = deferredEventBus;
 		eventBus.register(this);
@@ -238,6 +240,64 @@ public class Hooks implements Callbacks
 		{
 			log.warn("Error during overlay rendering", ex);
 		}
+
+		if (client.isGpu())
+		{
+			// processDrawComplete gets called on GPU by the gpu plugin at the end of its
+			// drawing cycle, which is later on.
+			return;
+		}
+
+		// Stretch the game image if the user has that enabled
+		Image image = mainBufferProvider.getImage();
+		final Image finalImage;
+		if (client.isStretchedEnabled())
+		{
+			GraphicsConfiguration gc = Launcher.frame.getGraphicsConfiguration();
+			Dimension stretchedDimensions = client.getStretchedDimensions();
+
+			if (lastStretchedDimensions == null || !lastStretchedDimensions.equals(stretchedDimensions)
+					|| (stretchedImage != null && stretchedImage.validate(gc) == VolatileImage.IMAGE_INCOMPATIBLE))
+			{
+				/*
+					Reuse the resulting image instance to avoid creating an extreme amount of objects
+				 */
+				stretchedImage = gc.createCompatibleVolatileImage(stretchedDimensions.width, stretchedDimensions.height);
+
+				if (stretchedGraphics != null)
+				{
+					stretchedGraphics.dispose();
+				}
+				stretchedGraphics = (Graphics2D) stretchedImage.getGraphics();
+
+				lastStretchedDimensions = stretchedDimensions;
+
+				/*
+					Fill Canvas before drawing stretched image to prevent artifacts.
+				*/
+				graphics.setColor(Color.BLACK);
+				graphics.fillRect(0, 0, client.getCanvas().getWidth(), client.getCanvas().getHeight());
+			}
+
+			stretchedGraphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+					client.isStretchedFast()
+							? RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
+							: RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+			stretchedGraphics.drawImage(image, 0, 0, stretchedDimensions.width, stretchedDimensions.height, null);
+
+			finalImage = stretchedImage;
+		}
+		else
+		{
+			finalImage = image;
+		}
+
+		// Draw the image onto the game canvas
+		graphics.drawImage(finalImage, 0, 0, client.getCanvas());
+
+		// finalImage is backed by the client buffer which will change soon. make a copy
+		// so that callbacks can safely use it later from threads.
+		//drawManager.processDrawComplete(() -> copy(finalImage));
 	}
 
 	/**
@@ -357,43 +417,51 @@ public class Hooks implements Callbacks
 	}
 
 	@Override
-	public MouseEvent mousePressed(MouseEvent mouseEvent) {
-		return null;
+	public MouseEvent mousePressed(MouseEvent mouseEvent)
+	{
+		return mouseManager.processMousePressed(mouseEvent);
 	}
 
 	@Override
-	public MouseEvent mouseReleased(MouseEvent mouseEvent) {
-		return null;
+	public MouseEvent mouseReleased(MouseEvent mouseEvent)
+	{
+		return mouseManager.processMouseReleased(mouseEvent);
 	}
 
 	@Override
-	public MouseEvent mouseClicked(MouseEvent mouseEvent) {
-		return null;
+	public MouseEvent mouseClicked(MouseEvent mouseEvent)
+	{
+		return mouseManager.processMouseClicked(mouseEvent);
 	}
 
 	@Override
-	public MouseEvent mouseEntered(MouseEvent mouseEvent) {
-		return null;
+	public MouseEvent mouseEntered(MouseEvent mouseEvent)
+	{
+		return mouseManager.processMouseEntered(mouseEvent);
 	}
 
 	@Override
-	public MouseEvent mouseExited(MouseEvent mouseEvent) {
-		return null;
+	public MouseEvent mouseExited(MouseEvent mouseEvent)
+	{
+		return mouseManager.processMouseExited(mouseEvent);
 	}
 
 	@Override
-	public MouseEvent mouseDragged(MouseEvent mouseEvent) {
-		return null;
+	public MouseEvent mouseDragged(MouseEvent mouseEvent)
+	{
+		return mouseManager.processMouseDragged(mouseEvent);
 	}
 
 	@Override
-	public MouseEvent mouseMoved(MouseEvent mouseEvent) {
-		return null;
+	public MouseEvent mouseMoved(MouseEvent mouseEvent)
+	{
+		return mouseManager.processMouseMoved(mouseEvent);
 	}
 
 	@Override
-	public MouseWheelEvent mouseWheelMoved(MouseWheelEvent event) {
-		return null;
+	public MouseWheelEvent mouseWheelMoved(MouseWheelEvent event)
+	{
+		return mouseManager.processMouseWheelMoved(event);
 	}
 
 	@Override

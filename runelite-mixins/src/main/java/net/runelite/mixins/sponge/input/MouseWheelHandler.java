@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,26 +22,32 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api;
+package net.runelite.mixins.sponge.input;
 
-import java.awt.Shape;
+import net.runelite.api.mixins.Copy;
+import net.runelite.api.mixins.Mixin;
+import net.runelite.api.mixins.Replace;
+import net.runelite.api.mixins.Shadow;
+import net.runelite.rs.api.RSClient;
+import net.runelite.rs.api.RSMouseWheelHandler;
 
-/**
- * Represents an object on the ground of a tile.
- */
-public interface GroundObject extends TileObject
+import java.awt.event.MouseWheelEvent;
+
+@Mixin(RSMouseWheelHandler.class)
+public abstract class MouseWheelHandler implements RSMouseWheelHandler
 {
-	Renderable getRenderable();
+	@Shadow("client")
+	private static RSClient client;
 
-	Model getModel();
-
-	/**
-	 * Gets the convex hull of the objects model.
-	 *
-	 * @return the convex hull
-	 * @see net.runelite.api.model.Jarvis
-	 */
-	Shape getConvexHull();
-
-	void setPlane(int plane);
+	@Override
+	@Copy("mouseWheelMoved")
+	@Replace("mouseWheelMoved")
+	public void mouseWheelMoved(MouseWheelEvent event)
+	{
+		event = client.getCallbacks().mouseWheelMoved(event);
+		if (!event.isConsumed())
+		{
+			mouseWheelMoved(event);
+		}
+	}
 }

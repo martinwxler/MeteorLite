@@ -25,6 +25,8 @@
 package sponge.ui.overlay;
 
 import org.sponge.util.Logger;
+import sponge.Plugin;
+import sponge.SpongeOSRS;
 
 import javax.inject.Singleton;
 
@@ -40,7 +42,7 @@ public class OverlayRenderer
 	}
 
 	public void renderAboveScene(Graphics2D graphics2d) {
-		graphics2d.setColor(Color.CYAN);
-		graphics2d.drawString("Hello World!", 10, 10);
+		for (Plugin p : SpongeOSRS.plugins)
+			p.paintAboveScene(graphics2d);
 	}
 }

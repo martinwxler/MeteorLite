@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,26 +22,51 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api;
+package sponge.input;
 
-import java.awt.Shape;
+import java.awt.event.MouseEvent;
 
-/**
- * Represents an object on the ground of a tile.
- */
-public interface GroundObject extends TileObject
+public abstract class MouseAdapter implements MouseListener
 {
-	Renderable getRenderable();
+	@Override
+	public MouseEvent mouseClicked(MouseEvent mouseEvent)
+	{
+		return mouseEvent;
+	}
 
-	Model getModel();
+	@Override
+	public MouseEvent mousePressed(MouseEvent mouseEvent)
+	{
+		return mouseEvent;
+	}
 
-	/**
-	 * Gets the convex hull of the objects model.
-	 *
-	 * @return the convex hull
-	 * @see net.runelite.api.model.Jarvis
-	 */
-	Shape getConvexHull();
+	@Override
+	public MouseEvent mouseReleased(MouseEvent mouseEvent)
+	{
+		return mouseEvent;
+	}
 
-	void setPlane(int plane);
+	@Override
+	public MouseEvent mouseEntered(MouseEvent mouseEvent)
+	{
+		return mouseEvent;
+	}
+
+	@Override
+	public MouseEvent mouseExited(MouseEvent mouseEvent)
+	{
+		return mouseEvent;
+	}
+
+	@Override
+	public MouseEvent mouseDragged(MouseEvent mouseEvent)
+	{
+		return mouseEvent;
+	}
+
+	@Override
+	public MouseEvent mouseMoved(MouseEvent mouseEvent)
+	{
+		return mouseEvent;
+	}
 }

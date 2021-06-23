@@ -30,7 +30,7 @@ public abstract class RasterProvider implements RSRasterProvider{
     @Replace("drawFull0")
     final void draw(Graphics graphics, int x, int y)
     {
-        draw$copy(graphics, x, y);
+        //draw$copy(graphics, x, y);
         client.getCallbacks().draw(this, graphics, x, y);
     }
 }

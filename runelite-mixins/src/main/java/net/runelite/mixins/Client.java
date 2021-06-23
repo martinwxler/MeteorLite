@@ -4,6 +4,8 @@ import net.runelite.api.*;
 import net.runelite.api.Node;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.NpcSpawned;
+import net.runelite.api.events.PlayerDespawned;
+import net.runelite.api.events.PlayerSpawned;
 import net.runelite.api.hooks.Callbacks;
 import net.runelite.api.hooks.DrawCallbacks;
 import net.runelite.api.mixins.*;
@@ -231,5 +233,32 @@ public abstract class Client implements RSClient{
         }
 
         return graphicsObjects;
+    }
+
+    @Inject
+    private static RSPlayer[] oldPlayers = new RSPlayer[2048];
+
+    @FieldHook("players")
+    @Inject
+    public static void cachedPlayersChanged(int idx)
+    {
+        RSPlayer[] cachedPlayers = client.getCachedPlayers();
+        if (idx < 0 || idx >= cachedPlayers.length)
+        {
+            return;
+        }
+
+        RSPlayer player = cachedPlayers[idx];
+        RSPlayer oldPlayer = oldPlayers[idx];
+        oldPlayers[idx] = player;
+
+        if (oldPlayer != null)
+        {
+            client.getCallbacks().post(new PlayerDespawned(oldPlayer));
+        }
+        if (player != null)
+        {
+            client.getCallbacks().postDeferred(new PlayerSpawned(player));
+        }
     }
 }

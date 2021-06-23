@@ -1,5 +1,7 @@
 package net.runelite.mixins;
 
+import net.runelite.api.Perspective;
+import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.NpcChanged;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.mixins.FieldHook;
@@ -7,8 +9,11 @@ import net.runelite.api.mixins.Inject;
 import net.runelite.api.mixins.Mixin;
 import net.runelite.api.mixins.Shadow;
 import net.runelite.rs.api.RSClient;
+import net.runelite.rs.api.RSModel;
 import net.runelite.rs.api.RSNPC;
 import net.runelite.rs.api.RSNPCComposition;
+
+import java.awt.*;
 
 @Mixin(RSNPC.class)
 public abstract class NPC implements RSNPC{
@@ -80,5 +85,25 @@ public abstract class NPC implements RSNPC{
             composition = composition.transform$api();
         }
         return composition == null ? -1 : composition.getId();
+    }
+
+    @Inject
+    @Override
+    public Shape getConvexHull()
+    {
+        RSModel model = getModel$api();
+        if (model == null)
+        {
+            return null;
+        }
+
+        int size = getComposition().getSize();
+        LocalPoint tileHeightPoint = new LocalPoint(
+                size * Perspective.LOCAL_HALF_TILE_SIZE - Perspective.LOCAL_HALF_TILE_SIZE + getX(),
+                size * Perspective.LOCAL_HALF_TILE_SIZE - Perspective.LOCAL_HALF_TILE_SIZE + getY());
+
+        int tileHeight = Perspective.getTileHeight(client, tileHeightPoint, client.getPlane());
+
+        return model.getConvexHull(getX(), getY(), getOrientation(), tileHeight);
     }
 }
