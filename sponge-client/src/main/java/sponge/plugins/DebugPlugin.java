@@ -20,20 +20,9 @@ import static org.sponge.util.Logger.ANSI_YELLOW;
 public class DebugPlugin extends Plugin
 {
     public String name = ANSI_CYAN + "EventLoggerPlugin" + ANSI_YELLOW;
-
-    Logger logger = new Logger(name);
-
-    @Inject
-    private Client client;
-
-    @Inject
-    private MouseManager mouseManager;
-
-    @Inject
-    private TranslateMouseListener mouseListener;
-
-    @Inject
-    private TranslateMouseWheelListener mouseWheelListener;
+    {
+        logger.name = name;
+    }
 
     public List<GameObject> gameObjects = new ArrayList<>();
     public List<GroundObject> groundObjects = new ArrayList<>();
@@ -44,22 +33,7 @@ public class DebugPlugin extends Plugin
 
     public boolean shouldPaint = true;
 
-    @Override
-    public void onStartup()
-    {
-        client.setGameDrawingMode(2);
 
-        client.setStretchedEnabled(true);
-        client.setStretchedIntegerScaling(false);
-        client.setStretchedKeepAspectRatio(false);
-        client.setStretchedFast(false);
-        client.setScalingFactor(-200);
-
-        client.invalidateStretching(true);
-
-        mouseManager.registerMouseListener(0, mouseListener);
-        mouseManager.registerMouseWheelListener(0, mouseWheelListener);
-    }
 
     @Subscribe
     public void onGameStateChanged(GameStateChanged event)

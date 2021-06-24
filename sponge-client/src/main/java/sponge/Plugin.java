@@ -1,18 +1,25 @@
 package sponge;
 
-import com.google.inject.Inject;
 import net.runelite.api.Client;
+import org.sponge.util.Logger;
 import sponge.eventbus.EventBus;
+import sponge.input.MouseManager;
 
+import javax.inject.Inject;
 import java.awt.*;
 
 public class Plugin {
 
-    @Inject
-    Client client;
+    public Logger logger = new Logger("");
 
     @Inject
-    EventBus eventBus;
+    public Client client;
+
+    @Inject
+    public EventBus eventBus;
+
+    @Inject
+    public MouseManager mouseManager;
 
     public void init()
     {
@@ -20,6 +27,11 @@ public class Plugin {
     }
 
     public void onStartup()
+    {
+
+    }
+
+    public void onShutdown()
     {
 
     }

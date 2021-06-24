@@ -32,6 +32,7 @@ import sponge.SpongeOSRS;
 import sponge.SpongeOSRSModule;
 import sponge.plugins.EventTestPlugin;
 import sponge.plugins.DebugPlugin;
+import sponge.plugins.stretchedmode.StretchedModePlugin;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
@@ -62,7 +63,7 @@ public final class Launcher extends Application implements AppletStub, AppletCon
 
     public static boolean pluginsPanelVisible = false;
     public static JFXPanel toolbarJFXPanel = new JFXPanel();
-    public static JFXPanel pluginsJFXPanel = new JFXPanel();
+    public static JFXPanel rightPanel = new JFXPanel();
 
     @Inject
     public Logger logger;
@@ -73,14 +74,27 @@ public final class Launcher extends Application implements AppletStub, AppletCon
 
     Applet applet;
     public static JPanel panel;
+    public static JPanel gamePanel = new JPanel();
     public static BorderLayout layout = new BorderLayout();
     public static JFrame frame;
+
+    static Parent pluginsRoot;
+    static Scene pluginsRootScene;
+    static {
+        try {
+            pluginsRoot = FXMLLoader.load(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("plugins.fxml")));
+            pluginsRootScene = new Scene(pluginsRoot, 275, 800);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void start() throws IOException {
         injector.injectMembers(client);
 
         SpongeOSRS.plugins.add(new EventTestPlugin());
         SpongeOSRS.plugins.add(new DebugPlugin());
+        SpongeOSRS.plugins.add(new StretchedModePlugin());
         for (Plugin p : SpongeOSRS.plugins)
         {
             injector.injectMembers(p);
@@ -106,8 +120,7 @@ public final class Launcher extends Application implements AppletStub, AppletCon
 
     private static Map<String, String> parameters;
 
-    public Launcher()
-    {
+    public Launcher() throws IOException {
     }
 
     @Override
@@ -123,11 +136,20 @@ public final class Launcher extends Application implements AppletStub, AppletCon
 
     public static void togglePluginsPanel() {
         if (pluginsPanelVisible)
-            pluginsJFXPanel.setVisible(false);
+            rightPanel.setVisible(false);
         else
-            pluginsJFXPanel.setVisible(true);
+        {
+            rightPanel.setScene(pluginsRootScene);
+            rightPanel.setVisible(true);
+        }
+
 
         pluginsPanelVisible = !pluginsPanelVisible;
+    }
+
+    public static void updateRightPanel(Parent root)
+    {
+        rightPanel.setScene(new Scene(root, 275, 800));
     }
 
     public void setupFrame(Applet applet) throws IOException {
@@ -138,16 +160,17 @@ public final class Launcher extends Application implements AppletStub, AppletCon
         panel.setSize(1280, 720);
 
         toolbarJFXPanel.setSize(1280, 100);
-        pluginsJFXPanel.setSize(475, 800);
+        rightPanel.setSize(475, 800);
         Parent toolbarRoot = FXMLLoader.load(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("toolbar.fxml")));
-        Parent pluginsRoot = FXMLLoader.load(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("plugins.fxml")));
+
         toolbarJFXPanel.setScene(new Scene(toolbarRoot, 300, 40));
         toolbarJFXPanel.setVisible(true);
-        pluginsJFXPanel.setScene(new Scene(pluginsRoot, 275, 800));
-        pluginsJFXPanel.setVisible(false);
-        panel.add(applet, BorderLayout.CENTER);
+        rightPanel.setVisible(false);
+        gamePanel.setLayout(new BorderLayout());
+        gamePanel.add(applet, BorderLayout.CENTER);
+        panel.add(gamePanel, BorderLayout.CENTER);
         panel.add(toolbarJFXPanel, BorderLayout.NORTH);
-        panel.add(pluginsJFXPanel, BorderLayout.EAST);
+        panel.add(rightPanel, BorderLayout.EAST);
         frame.add(panel);
         panel.setVisible(true);
         frame.setVisible(true);
