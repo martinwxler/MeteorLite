@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Tomas Slusny <slusnucky@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,29 +22,37 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package sponge.ui.overlay;
+package net.runelite.mixins;
 
-import net.runelite.api.widgets.WidgetItem;
-import org.sponge.util.Logger;
-import sponge.Plugin;
-import sponge.SpongeOSRS;
+import net.runelite.api.IndexDataBase;
+import net.runelite.api.mixins.Inject;
+import net.runelite.api.mixins.MethodHook;
+import net.runelite.api.mixins.Mixin;
+import net.runelite.api.mixins.Shadow;
+import net.runelite.rs.api.RSClient;
+import net.runelite.rs.api.RSTextureProvider;
 
-import javax.inject.Singleton;
-
-import java.awt.*;
-import java.util.List;
-
-@Singleton
-public class OverlayRenderer
+@Mixin(RSTextureProvider.class)
+public abstract class TextureProvider implements RSTextureProvider
 {
-	Logger logger = new Logger("Overlay Renderer");
-	public void renderAlwaysOnTop(Graphics2D graphics2d) {
-		graphics2d.setColor(Color.CYAN);
-		graphics2d.drawString("Hello World!", 10, 10);
+	@Shadow("client")
+	private static RSClient client;
+
+	@MethodHook(value = "<init>", end = true)
+	@Inject
+	public void rl$init(IndexDataBase indexTextures, IndexDataBase indexSprites, int maxSize, double brightness, int width)
+	{
+		// the client's max size is 20, however there are many scenes with >20 textures,
+		// which causes continuous alloc/free of textures with the gl. There are
+		// only ~90 textures in total.
+		setMaxSize(128);
+		setSize(128);
 	}
 
-	public void renderAboveScene(Graphics2D graphics2d) {
-		for (Plugin p : SpongeOSRS.plugins)
-			p.paintAboveScene(graphics2d);
+	@MethodHook(value = "animate", end = true)
+	@Inject
+	public void checkTextures(int diff)
+	{
+		client.getCallbacks().drawAboveOverheads();
 	}
 }

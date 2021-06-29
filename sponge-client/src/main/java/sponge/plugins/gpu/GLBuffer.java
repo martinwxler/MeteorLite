@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2021, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,29 +22,19 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package sponge.ui.overlay;
+package sponge.plugins.gpu;
 
-import net.runelite.api.widgets.WidgetItem;
-import org.sponge.util.Logger;
-import sponge.Plugin;
-import sponge.SpongeOSRS;
+import org.jocl.Pointer;
+import org.jocl.cl_mem;
 
-import javax.inject.Singleton;
-
-import java.awt.*;
-import java.util.List;
-
-@Singleton
-public class OverlayRenderer
+class GLBuffer
 {
-	Logger logger = new Logger("Overlay Renderer");
-	public void renderAlwaysOnTop(Graphics2D graphics2d) {
-		graphics2d.setColor(Color.CYAN);
-		graphics2d.drawString("Hello World!", 10, 10);
-	}
+	int glBufferId = -1;
+	int size = -1;
+	cl_mem cl_mem;
 
-	public void renderAboveScene(Graphics2D graphics2d) {
-		for (Plugin p : SpongeOSRS.plugins)
-			p.paintAboveScene(graphics2d);
+	Pointer ptr()
+	{
+		return cl_mem != null ? Pointer.to(cl_mem) : null;
 	}
 }

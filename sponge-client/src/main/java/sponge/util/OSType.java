@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, arlyon <arlyon@me.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,29 +22,46 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package sponge.ui.overlay;
+package sponge.util;
 
-import net.runelite.api.widgets.WidgetItem;
-import org.sponge.util.Logger;
-import sponge.Plugin;
-import sponge.SpongeOSRS;
-
-import javax.inject.Singleton;
-
-import java.awt.*;
-import java.util.List;
-
-@Singleton
-public class OverlayRenderer
+/**
+ * An enum and util function to determine the OS.
+ */
+public enum OSType
 {
-	Logger logger = new Logger("Overlay Renderer");
-	public void renderAlwaysOnTop(Graphics2D graphics2d) {
-		graphics2d.setColor(Color.CYAN);
-		graphics2d.drawString("Hello World!", 10, 10);
+	Windows,
+	MacOS,
+	Linux,
+	Other;
+
+	private final static OSType OS_TYPE;
+
+	static
+	{
+		final String OS = System
+			.getProperty("os.name", "generic")
+			.toLowerCase();
+
+		if ((OS.contains("mac")) || (OS.contains("darwin")))
+		{
+			OS_TYPE = OSType.MacOS;
+		}
+		else if (OS.contains("win"))
+		{
+			OS_TYPE = OSType.Windows;
+		}
+		else if (OS.contains("nux"))
+		{
+			OS_TYPE = OSType.Linux;
+		}
+		else
+		{
+			OS_TYPE = OSType.Other;
+		}
 	}
 
-	public void renderAboveScene(Graphics2D graphics2d) {
-		for (Plugin p : SpongeOSRS.plugins)
-			p.paintAboveScene(graphics2d);
+	public static OSType getOSType()
+	{
+		return OS_TYPE;
 	}
 }

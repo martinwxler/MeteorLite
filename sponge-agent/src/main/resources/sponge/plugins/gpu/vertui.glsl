@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,29 +22,30 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package sponge.ui.overlay;
+#version 330
 
-import net.runelite.api.widgets.WidgetItem;
-import org.sponge.util.Logger;
-import sponge.Plugin;
-import sponge.SpongeOSRS;
+#define SAMPLING_DEFAULT 0
+#define SAMPLING_MITCHELL 1
+#define SAMPLING_CATROM 2
+#define SAMPLING_XBR 3
 
-import javax.inject.Singleton;
+uniform int samplingMode;
+uniform ivec2 sourceDimensions;
+uniform ivec2 targetDimensions;
 
-import java.awt.*;
-import java.util.List;
+#include scale/xbr_lv2_vert.glsl
 
-@Singleton
-public class OverlayRenderer
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec2 aTexCoord;
+
+out vec2 TexCoord;
+out XBRTable xbrTable;
+
+void main()
 {
-	Logger logger = new Logger("Overlay Renderer");
-	public void renderAlwaysOnTop(Graphics2D graphics2d) {
-		graphics2d.setColor(Color.CYAN);
-		graphics2d.drawString("Hello World!", 10, 10);
-	}
+    gl_Position = vec4(aPos, 1.0);
+    TexCoord = aTexCoord;
 
-	public void renderAboveScene(Graphics2D graphics2d) {
-		for (Plugin p : SpongeOSRS.plugins)
-			p.paintAboveScene(graphics2d);
-	}
+    if (samplingMode == SAMPLING_XBR)
+        xbrTable = xbr_vert(TexCoord, sourceDimensions);
 }

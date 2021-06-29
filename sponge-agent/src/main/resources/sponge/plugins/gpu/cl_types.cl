@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2021, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,29 +22,34 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package sponge.ui.overlay;
 
-import net.runelite.api.widgets.WidgetItem;
-import org.sponge.util.Logger;
-import sponge.Plugin;
-import sponge.SpongeOSRS;
+struct uniform {
+  int cameraYaw;
+  int cameraPitch;
+  int centerX;
+  int centerY;
+  int zoom;
+  int cameraX;
+  int cameraY;
+  int cameraZ;
+  int4 sinCosTable[2048];
+};
 
-import javax.inject.Singleton;
+struct shared_data {
+  int totalNum[12]; // number of faces with a given priority
+  int totalDistance[12]; // sum of distances to faces of a given priority
+  int totalMappedNum[18]; // number of faces with a given adjusted priority
+  int min10; // minimum distance to a face of priority 10
+  int dfs[0]; // packed face id and distance, size 512 for small, 4096 for large
+};
 
-import java.awt.*;
-import java.util.List;
-
-@Singleton
-public class OverlayRenderer
-{
-	Logger logger = new Logger("Overlay Renderer");
-	public void renderAlwaysOnTop(Graphics2D graphics2d) {
-		graphics2d.setColor(Color.CYAN);
-		graphics2d.drawString("Hello World!", 10, 10);
-	}
-
-	public void renderAboveScene(Graphics2D graphics2d) {
-		for (Plugin p : SpongeOSRS.plugins)
-			p.paintAboveScene(graphics2d);
-	}
-}
+struct modelinfo {
+  int offset;   // offset into buffer
+  int uvOffset; // offset into uv buffer
+  int size;     // length in faces
+  int idx;      // write idx in target buffer
+  int flags;    // radius, orientation
+  int x;        // scene position x
+  int y;        // scene position y
+  int z;        // scene position z
+};

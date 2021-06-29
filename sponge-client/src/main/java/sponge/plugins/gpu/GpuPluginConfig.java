@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,29 +22,35 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package sponge.ui.overlay;
+package sponge.plugins.gpu;
 
-import net.runelite.api.widgets.WidgetItem;
-import org.sponge.util.Logger;
-import sponge.Plugin;
-import sponge.SpongeOSRS;
+import sponge.plugins.gpu.config.AntiAliasingMode;
+import sponge.plugins.gpu.config.ColorBlindMode;
+import sponge.plugins.gpu.config.UIScalingMode;
 
-import javax.inject.Singleton;
+import static sponge.plugins.gpu.GpuPlugin.MAX_DISTANCE;
+import static sponge.plugins.gpu.GpuPlugin.MAX_FOG_DEPTH;
 
-import java.awt.*;
-import java.util.List;
-
-@Singleton
-public class OverlayRenderer
+public class GpuPluginConfig
 {
-	Logger logger = new Logger("Overlay Renderer");
-	public void renderAlwaysOnTop(Graphics2D graphics2d) {
-		graphics2d.setColor(Color.CYAN);
-		graphics2d.drawString("Hello World!", 10, 10);
-	}
+	public static int drawDistance = MAX_DISTANCE;
+	public static int drawDistanceMax = MAX_DISTANCE;
+	public static boolean smoothBanding = false;
 
-	public void renderAboveScene(Graphics2D graphics2d) {
-		for (Plugin p : SpongeOSRS.plugins)
-			p.paintAboveScene(graphics2d);
-	}
+	public static AntiAliasingMode antiAliasingMode = AntiAliasingMode.DISABLED;
+
+	public static UIScalingMode uiScalingMode = UIScalingMode.LINEAR;
+
+	public static int fogDepth = 0;
+	public static int fogDepthMax = MAX_FOG_DEPTH;
+
+	public static boolean useComputeShaders = true;
+
+	public static int anisotropicFilteringLevelMin = 0;
+	public static int anisotropicFilteringLevel = anisotropicFilteringLevelMin;
+	public static int anisotropicFilteringLevelMax = 16;
+
+	public static ColorBlindMode colorBlindMode = ColorBlindMode.NONE;
+
+	public static boolean brightTextures = false;
 }

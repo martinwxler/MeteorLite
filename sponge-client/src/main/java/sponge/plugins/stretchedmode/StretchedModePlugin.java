@@ -49,7 +49,7 @@ public class StretchedModePlugin extends Plugin
     }
 
     @Override
-    public void onShutdown()
+    public void shutdown()
     {
         mouseManager.unregisterMouseListener(mouseListener);
         mouseManager.unregisterMouseWheelListener(mouseWheelListener);
