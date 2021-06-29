@@ -303,7 +303,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 				}
 
 				// Surface needs to be unlocked on X11 window otherwise input is blocked
-				if (jawtWindow instanceof X11JAWTWindow)
+				if (jawtWindow instanceof X11JAWTWindow && jawtWindow.getLock().isLocked())
 				{
 					jawtWindow.unlockSurface();
 				}
@@ -388,7 +388,10 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 
 				if (jawtWindow != null)
 				{
-					jawtWindow.lockSurface();
+					if (!jawtWindow.getLock().isLocked())
+					{
+						jawtWindow.lockSurface();
+					}
 
 					if (glContext != null)
 					{
