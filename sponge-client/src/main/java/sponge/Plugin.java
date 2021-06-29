@@ -31,7 +31,7 @@ public class Plugin {
 
     }
 
-    public void onShutdown()
+    public void shutdown()
     {
 
     }

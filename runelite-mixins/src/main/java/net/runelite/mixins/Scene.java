@@ -1,29 +1,76 @@
+/*
+ * Copyright (c) 2018 Abex
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package net.runelite.mixins;
 
 import net.runelite.api.Perspective;
+import net.runelite.api.Tile;
+import net.runelite.api.SceneTileModel;
+import net.runelite.api.SceneTilePaint;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.hooks.DrawCallbacks;
-import net.runelite.api.mixins.*;
+import net.runelite.api.mixins.Copy;
+import net.runelite.api.mixins.Inject;
+import net.runelite.api.mixins.MethodHook;
+import net.runelite.api.mixins.Mixin;
+import net.runelite.api.mixins.Replace;
+import net.runelite.api.mixins.Shadow;
 import net.runelite.rs.api.RSClient;
-import net.runelite.rs.api.RSGameEngine;
+import net.runelite.rs.api.RSNodeDeque;
 import net.runelite.rs.api.RSScene;
 import net.runelite.rs.api.RSTile;
+import net.runelite.rs.api.RSTileItem;
+import net.runelite.rs.api.RSSceneTileModel;
 
 @Mixin(RSScene.class)
-public abstract class Scene implements RSScene{
-
+public abstract class Scene implements RSScene
+{
     private static final int INVALID_HSL_COLOR = 12345678;
     private static final int DEFAULT_DISTANCE = 25;
     private static final int PITCH_LOWER_LIMIT = 128;
     private static final int PITCH_UPPER_LIMIT = 383;
 
     @Shadow("client")
-    private static RSClient client;
+    static RSClient client;
 
-    @Shadow("viewportColor")
-    private static int viewportColor;
+    @Shadow("pitchRelaxEnabled")
+    private static boolean pitchRelaxEnabled;
+
+    @Shadow("hdMinimapEnabled")
+    private static boolean hdMinimapEnabled;
+
+    @Shadow("Rasterizer3D_colorPalette")
+    private static int[] colorPalette;
+
+    @Inject
+    private static int[] tmpX = new int[6];
 
     @Shadow("skyboxColor")
     static int skyboxColor;
+
+    @Inject
+    private static int[] tmpY = new int[6];
 
     @Inject
     private static int rl$drawDistance;
@@ -90,7 +137,21 @@ public abstract class Scene implements RSScene{
             cameraZ = maxZ * Perspective.LOCAL_TILE_SIZE - 1;
         }
 
+        // we store the uncapped pitch for setting camera angle for the pitch relaxer
+        // we still have to cap the pitch in order to access the visibility map, though
         int realPitch = cameraPitch;
+        if (cameraPitch < PITCH_LOWER_LIMIT)
+        {
+            cameraPitch = PITCH_LOWER_LIMIT;
+        }
+        else if (cameraPitch > PITCH_UPPER_LIMIT)
+        {
+            cameraPitch = PITCH_UPPER_LIMIT;
+        }
+        if (!pitchRelaxEnabled)
+        {
+            realPitch = cameraPitch;
+        }
 
         client.setCycle(client.getCycle() + 1);
 
@@ -341,6 +402,572 @@ public abstract class Scene implements RSScene{
         if (client.getDrawCallbacks() != null)
         {
             client.getDrawCallbacks().postDrawScene();
+        }
+    }
+
+    @Copy("drawTileUnderlay")
+    @Replace("drawTileUnderlay")
+    public void copy$drawTileUnderlay(SceneTilePaint tile, int z, int pitchSin, int pitchCos, int yawSin, int yawCos, int x, int y)
+    {
+        if (!client.isGpu())
+        {
+            try
+            {
+                copy$drawTileUnderlay(tile, z, pitchSin, pitchCos, yawSin, yawCos, x, y);
+            }
+            catch (Exception ex)
+            {
+                client.getLogger().warn("error during tile underlay rendering", ex);
+            }
+            return;
+        }
+
+        final DrawCallbacks drawCallbacks = client.getDrawCallbacks();
+
+        if (drawCallbacks == null)
+        {
+            return;
+        }
+
+        try
+        {
+            final int[][][] tileHeights = getTileHeights();
+
+            final int cameraX2 = client.getCameraX2();
+            final int cameraY2 = client.getCameraY2();
+            final int cameraZ2 = client.getCameraZ2();
+
+            final int zoom = client.get3dZoom();
+            final int centerX = client.getCenterX();
+            final int centerY = client.getCenterY();
+
+            final int mouseX2 = client.getMouseX2();
+            final int mouseY2 = client.getMouseY2();
+
+            final boolean checkClick = client.isCheckClick();
+
+            int var9;
+            int var10 = var9 = (x << 7) - cameraX2;
+            int var11;
+            int var12 = var11 = (y << 7) - cameraZ2;
+            int var13;
+            int var14 = var13 = var10 + 128;
+            int var15;
+            int var16 = var15 = var12 + 128;
+            int var17 = tileHeights[z][x][y] - cameraY2;
+            int var18 = tileHeights[z][x + 1][y] - cameraY2;
+            int var19 = tileHeights[z][x + 1][y + 1] - cameraY2;
+            int var20 = tileHeights[z][x][y + 1] - cameraY2;
+            int var21 = var10 * yawCos + yawSin * var12 >> 16;
+            var12 = var12 * yawCos - yawSin * var10 >> 16;
+            var10 = var21;
+            var21 = var17 * pitchCos - pitchSin * var12 >> 16;
+            var12 = pitchSin * var17 + var12 * pitchCos >> 16;
+            var17 = var21;
+            if (var12 >= 50)
+            {
+                var21 = var14 * yawCos + yawSin * var11 >> 16;
+                var11 = var11 * yawCos - yawSin * var14 >> 16;
+                var14 = var21;
+                var21 = var18 * pitchCos - pitchSin * var11 >> 16;
+                var11 = pitchSin * var18 + var11 * pitchCos >> 16;
+                var18 = var21;
+                if (var11 >= 50)
+                {
+                    var21 = var13 * yawCos + yawSin * var16 >> 16;
+                    var16 = var16 * yawCos - yawSin * var13 >> 16;
+                    var13 = var21;
+                    var21 = var19 * pitchCos - pitchSin * var16 >> 16;
+                    var16 = pitchSin * var19 + var16 * pitchCos >> 16;
+                    var19 = var21;
+                    if (var16 >= 50)
+                    {
+                        var21 = var9 * yawCos + yawSin * var15 >> 16;
+                        var15 = var15 * yawCos - yawSin * var9 >> 16;
+                        var9 = var21;
+                        var21 = var20 * pitchCos - pitchSin * var15 >> 16;
+                        var15 = pitchSin * var20 + var15 * pitchCos >> 16;
+                        if (var15 >= 50)
+                        {
+                            int dy = var10 * zoom / var12 + centerX;
+                            int dx = var17 * zoom / var12 + centerY;
+                            int cy = var14 * zoom / var11 + centerX;
+                            int cx = var18 * zoom / var11 + centerY;
+                            int ay = var13 * zoom / var16 + centerX;
+                            int ax = var19 * zoom / var16 + centerY;
+                            int by = var9 * zoom / var15 + centerX;
+                            int bx = var21 * zoom / var15 + centerY;
+
+                            drawCallbacks.drawScenePaint(0, pitchSin, pitchCos, yawSin, yawCos,
+                                    -cameraX2, -cameraY2, -cameraZ2,
+                                    tile, z, x, y,
+                                    zoom, centerX, centerY);
+
+                            if ((ay - by) * (cx - bx) - (ax - bx) * (cy - by) > 0)
+                            {
+                                if (checkClick && client.containsBounds(mouseX2, mouseY2, ax, bx, cx, ay, by, cy))
+                                {
+                                    setTargetTile(x, y);
+                                }
+                            }
+
+                            if ((dy - cy) * (bx - cx) - (dx - cx) * (by - cy) > 0)
+                            {
+                                if (checkClick && client.containsBounds(mouseX2, mouseY2, dx, cx, bx, dy, cy, by))
+                                {
+                                    setTargetTile(x, y);
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            client.getLogger().warn("error during underlay rendering", ex);
+        }
+    }
+
+    @Copy("drawTileOverlay")
+    @Replace("drawTileOverlay")
+    public void copy$drawTileOverlay(SceneTileModel tile, int pitchSin, int pitchCos, int yawSin, int yawCos, int tileX, int tileY)
+    {
+        if (!client.isGpu())
+        {
+            copy$drawTileOverlay(tile, pitchSin, pitchCos, yawSin, yawCos, tileX, tileY);
+            return;
+        }
+
+        final DrawCallbacks drawCallbacks = client.getDrawCallbacks();
+
+        if (drawCallbacks == null)
+        {
+            return;
+        }
+
+        try
+        {
+            final int cameraX2 = client.getCameraX2();
+            final int cameraY2 = client.getCameraY2();
+            final int cameraZ2 = client.getCameraZ2();
+            final int zoom = client.get3dZoom();
+            final int centerX = client.getCenterX();
+            final int centerY = client.getCenterY();
+
+            drawCallbacks.drawSceneModel(0, pitchSin, pitchCos, yawSin, yawCos, -cameraX2, -cameraY2, -cameraZ2,
+                    tile, client.getPlane(), tileX, tileY,
+                    zoom, centerX, centerY);
+
+            final boolean checkClick = client.isCheckClick();
+            if (!checkClick)
+            {
+                return;
+            }
+
+            RSSceneTileModel tileModel = (RSSceneTileModel) tile;
+
+            final int[] faceX = tileModel.getFaceX();
+            final int[] faceY = tileModel.getFaceY();
+            final int[] faceZ = tileModel.getFaceZ();
+
+            final int[] vertexX = tileModel.getVertexX();
+            final int[] vertexY = tileModel.getVertexY();
+            final int[] vertexZ = tileModel.getVertexZ();
+
+            final int vertexCount = vertexX.length;
+            final int faceCount = faceX.length;
+
+            final int mouseX2 = client.getMouseX2();
+            final int mouseY2 = client.getMouseY2();
+
+            for (int i = 0; i < vertexCount; ++i)
+            {
+                int vx = vertexX[i] - cameraX2;
+                int vy = vertexY[i] - cameraY2;
+                int vz = vertexZ[i] - cameraZ2;
+
+                int rotA = vz * yawSin + vx * yawCos >> 16;
+                int rotB = vz * yawCos - vx * yawSin >> 16;
+
+                int var13 = vy * pitchCos - rotB * pitchSin >> 16;
+                int var12 = vy * pitchSin + rotB * pitchCos >> 16;
+                if (var12 < 50)
+                {
+                    return;
+                }
+
+                int ax = rotA * zoom / var12 + centerX;
+                int ay = var13 * zoom / var12 + centerY;
+
+                tmpX[i] = ax;
+                tmpY[i] = ay;
+            }
+
+            for (int i = 0; i < faceCount; ++i)
+            {
+                int va = faceX[i];
+                int vb = faceY[i];
+                int vc = faceZ[i];
+
+                int x1 = tmpX[va];
+                int x2 = tmpX[vb];
+                int x3 = tmpX[vc];
+
+                int y1 = tmpY[va];
+                int y2 = tmpY[vb];
+                int y3 = tmpY[vc];
+
+                if ((x1 - x2) * (y3 - y2) - (y1 - y2) * (x3 - x2) > 0)
+                {
+                    if (client.containsBounds(mouseX2, mouseY2, y1, y2, y3, x1, x2, x3))
+                    {
+                        setTargetTile(tileX, tileY);
+                        break;
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            client.getLogger().warn("error during overlay rendering", ex);
+        }
+    }
+
+    @Inject
+    @Override
+    public int getDrawDistance()
+    {
+        return rl$drawDistance;
+    }
+
+    @Inject
+    @Override
+    public void setDrawDistance(int drawDistance)
+    {
+        rl$drawDistance = drawDistance;
+    }
+
+    @Inject
+    private static void setTargetTile(int targetX, int targetY)
+    {
+        client.setSelectedSceneTileX(targetX);
+        client.setSelectedSceneTileY(targetY);
+    }
+
+    @Override
+    @Inject
+    public void addItem(int id, int quantity, WorldPoint point)
+    {
+        final int sceneX = point.getX() - client.getBaseX();
+        final int sceneY = point.getY() - client.getBaseY();
+        final int plane = point.getPlane();
+
+        if (sceneX < 0 || sceneY < 0 || sceneX >= 104 || sceneY >= 104)
+        {
+            return;
+        }
+
+        RSTileItem item = client.newTileItem();
+        item.setId(id);
+        item.setQuantity(quantity);
+        RSNodeDeque[][][] groundItems = client.getGroundItemDeque();
+
+        if (groundItems[plane][sceneX][sceneY] == null)
+        {
+            groundItems[plane][sceneX][sceneY] = client.newNodeDeque();
+        }
+
+        groundItems[plane][sceneX][sceneY].addFirst(item);
+
+        if (plane == client.getPlane())
+        {
+            client.updateItemPile(sceneX, sceneY);
+        }
+    }
+
+    @Override
+    @Inject
+    public void removeItem(int id, int quantity, WorldPoint point)
+    {
+        final int sceneX = point.getX() - client.getBaseX();
+        final int sceneY = point.getY() - client.getBaseY();
+        final int plane = point.getPlane();
+
+        if (sceneX < 0 || sceneY < 0 || sceneX >= 104 || sceneY >= 104)
+        {
+            return;
+        }
+
+        RSNodeDeque items = client.getGroundItemDeque()[plane][sceneX][sceneY];
+
+        if (items == null)
+        {
+            return;
+        }
+
+        for (RSTileItem item = (RSTileItem) items.last$api(); item != null; item = (RSTileItem) items.previous$api())
+        {
+            if (item.getId() == id && quantity == 1)
+            {
+                item.unlink();
+                break;
+            }
+        }
+
+        if (items.last$api() == null)
+        {
+            client.getGroundItemDeque()[plane][sceneX][sceneY] = null;
+        }
+
+        client.updateItemPile(sceneX, sceneY);
+    }
+
+    @MethodHook(value = "addTile", end = true)
+    @Inject
+    public void rl$addTile(int z, int x, int y, int shape, int rotation, int texture, int heightSw, int heightNw,
+                           int heightNe, int heightSe, int underlaySwColor, int underlayNwColor, int underlayNeColor,
+                           int underlaySeColor, int overlaySwColor, int overlayNwColor, int overlayNeColor,
+                           int overlaySeColor, int underlayRgb, int overlayRgb)
+    {
+        if (shape != 0 && shape != 1)
+        {
+            Tile tile = getTiles()[z][x][y];
+            SceneTileModel sceneTileModel = tile.getSceneTileModel();
+
+            sceneTileModel.setUnderlaySwColor(underlaySwColor);
+            sceneTileModel.setUnderlayNwColor(underlayNwColor);
+            sceneTileModel.setUnderlayNeColor(underlayNeColor);
+            sceneTileModel.setUnderlaySeColor(underlaySeColor);
+
+            sceneTileModel.setOverlaySwColor(overlaySwColor);
+            sceneTileModel.setOverlayNwColor(overlayNwColor);
+            sceneTileModel.setOverlayNeColor(overlayNeColor);
+            sceneTileModel.setOverlaySeColor(overlaySeColor);
+        }
+    }
+
+    @Copy("drawTileMinimap")
+    @Replace("drawTileMinimap")
+    public void copy$drawTile(int[] pixels, int pixelOffset, int width, int z, int x, int y)
+    {
+        if (!hdMinimapEnabled)
+        {
+            copy$drawTile(pixels, pixelOffset, width, z, x, y);
+            return;
+        }
+        Tile tile = getTiles()[z][x][y];
+        if (tile == null)
+        {
+            return;
+        }
+        SceneTilePaint sceneTilePaint = tile.getSceneTilePaint();
+        if (sceneTilePaint != null)
+        {
+            int rgb = sceneTilePaint.getRBG();
+            if (sceneTilePaint.getSwColor() != INVALID_HSL_COLOR)
+            {
+                // hue and saturation
+                int hs = sceneTilePaint.getSwColor() & ~0x7F;
+                // I know this looks dumb (and it probably is) but I don't feel like hunting down the problem
+                int seLightness = sceneTilePaint.getNwColor() & 0x7F;
+                int neLightness = sceneTilePaint.getNeColor() & 0x7F;
+                int southDeltaLightness = (sceneTilePaint.getSwColor() & 0x7F) - seLightness;
+                int northDeltaLightness = (sceneTilePaint.getSeColor() & 0x7F) - neLightness;
+                seLightness <<= 2;
+                neLightness <<= 2;
+                for (int i = 0; i < 4; i++)
+                {
+                    if (sceneTilePaint.getTexture() == -1)
+                    {
+                        pixels[pixelOffset]     = colorPalette[hs | seLightness >> 2];
+                        pixels[pixelOffset + 1] = colorPalette[hs | seLightness * 3 + neLightness >> 4];
+                        pixels[pixelOffset + 2] = colorPalette[hs | seLightness + neLightness >> 3];
+                        pixels[pixelOffset + 3] = colorPalette[hs | seLightness + neLightness * 3 >> 4];
+                    }
+                    else
+                    {
+                        int lig = 0xFF - ((seLightness >> 1) * (seLightness >> 1) >> 8);
+                        pixels[pixelOffset] = ((rgb & 0xFF00FF) * lig & ~0xFF00FF) + ((rgb & 0xFF00) * lig & 0xFF0000) >> 8;
+                        lig = 0xFF - ((seLightness * 3 + neLightness >> 3) * (seLightness * 3 + neLightness >> 3) >> 8);
+                        pixels[pixelOffset + 1] = ((rgb & 0xFF00FF) * lig & ~0xFF00FF) + ((rgb & 0xFF00) * lig & 0xFF0000) >> 8;
+                        lig = 0xFF - ((seLightness + neLightness >> 2) * (seLightness + neLightness >> 2) >> 8);
+                        pixels[pixelOffset + 2] = ((rgb & 0xFF00FF) * lig & ~0xFF00FF) + ((rgb & 0xFF00) * lig & 0xFF0000) >> 8;
+                        lig = 0xFF - ((seLightness + neLightness * 3 >> 3) * (seLightness + neLightness * 3 >> 3) >> 8);
+                        pixels[pixelOffset + 3] = ((rgb & 0xFF00FF) * lig & ~0xFF00FF) + ((rgb & 0xFF00) * lig & 0xFF0000) >> 8;
+                    }
+                    seLightness += southDeltaLightness;
+                    neLightness += northDeltaLightness;
+
+                    pixelOffset += width;
+                }
+            }
+            else if (rgb != 0)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    pixels[pixelOffset] = rgb;
+                    pixels[pixelOffset + 1] = rgb;
+                    pixels[pixelOffset + 2] = rgb;
+                    pixels[pixelOffset + 3] = rgb;
+                    pixelOffset += width;
+                }
+            }
+            return;
+        }
+
+        SceneTileModel sceneTileModel = tile.getSceneTileModel();
+        if (sceneTileModel != null)
+        {
+            int shape = sceneTileModel.getShape();
+            int rotation = sceneTileModel.getRotation();
+            int overlayRgb = sceneTileModel.getModelOverlay();
+            int underlayRgb = sceneTileModel.getModelUnderlay();
+            int[] points = getTileShape2D()[shape];
+            int[] indices = getTileRotation2D()[rotation];
+
+            int shapeOffset = 0;
+
+            if (sceneTileModel.getOverlaySwColor() != INVALID_HSL_COLOR)
+            {
+                // hue and saturation
+                int hs = sceneTileModel.getOverlaySwColor() & ~0x7F;
+                int seLightness = sceneTileModel.getOverlaySeColor() & 0x7F;
+                int neLightness = sceneTileModel.getOverlayNeColor() & 0x7F;
+                int southDeltaLightness = (sceneTileModel.getOverlaySwColor() & 0x7F) - seLightness;
+                int northDeltaLightness = (sceneTileModel.getOverlayNwColor() & 0x7F) - neLightness;
+                seLightness <<= 2;
+                neLightness <<= 2;
+                for (int i = 0; i < 4; i++)
+                {
+                    if (sceneTileModel.getTriangleTextureId() == null)
+                    {
+                        if (points[indices[shapeOffset++]] != 0)
+                        {
+                            pixels[pixelOffset] = colorPalette[hs | (seLightness >> 2)];
+                        }
+                        if (points[indices[shapeOffset++]] != 0)
+                        {
+                            pixels[pixelOffset + 1] = colorPalette[hs | (seLightness * 3 + neLightness >> 4)];
+                        }
+                        if (points[indices[shapeOffset++]] != 0)
+                        {
+                            pixels[pixelOffset + 2] = colorPalette[hs | (seLightness + neLightness >> 3)];
+                        }
+                        if (points[indices[shapeOffset++]] != 0)
+                        {
+                            pixels[pixelOffset + 3] = colorPalette[hs | (seLightness + neLightness * 3 >> 4)];
+                        }
+                    }
+                    else
+                    {
+                        if (points[indices[shapeOffset++]] != 0)
+                        {
+                            int lig = 0xFF - ((seLightness >> 1) * (seLightness >> 1) >> 8);
+                            pixels[pixelOffset] = ((overlayRgb & 0xFF00FF) * lig & ~0xFF00FF) +
+                                    ((overlayRgb & 0xFF00) * lig & 0xFF0000) >> 8;
+                        }
+                        if (points[indices[shapeOffset++]] != 0)
+                        {
+                            int lig = 0xFF - ((seLightness * 3 + neLightness >> 3) *
+                                    (seLightness * 3 + neLightness >> 3) >> 8);
+                            pixels[pixelOffset + 1] = ((overlayRgb & 0xFF00FF) * lig & ~0xFF00FF) +
+                                    ((overlayRgb & 0xFF00) * lig & 0xFF0000) >> 8;
+                        }
+                        if (points[indices[shapeOffset++]] != 0)
+                        {
+                            int lig = 0xFF - ((seLightness + neLightness >> 2) *
+                                    (seLightness + neLightness >> 2) >> 8);
+                            pixels[pixelOffset + 2] = ((overlayRgb & 0xFF00FF) * lig & ~0xFF00FF) +
+                                    ((overlayRgb & 0xFF00) * lig & 0xFF0000) >> 8;
+                        }
+                        if (points[indices[shapeOffset++]] != 0)
+                        {
+                            int lig = 0xFF - ((seLightness + neLightness * 3 >> 3) *
+                                    (seLightness + neLightness * 3 >> 3) >> 8);
+                            pixels[pixelOffset + 3] = ((overlayRgb & 0xFF00FF) * lig & ~0xFF00FF) +
+                                    ((overlayRgb & 0xFF00) * lig & 0xFF0000) >> 8;
+                        }
+                    }
+                    seLightness += southDeltaLightness;
+                    neLightness += northDeltaLightness;
+
+                    pixelOffset += width;
+                }
+                if (underlayRgb != 0 && sceneTileModel.getUnderlaySwColor() != INVALID_HSL_COLOR)
+                {
+                    pixelOffset -= width << 2;
+                    shapeOffset -= 16;
+                    hs = sceneTileModel.getUnderlaySwColor() & ~0x7F;
+                    seLightness = sceneTileModel.getUnderlaySeColor() & 0x7F;
+                    neLightness = sceneTileModel.getUnderlayNeColor() & 0x7F;
+                    southDeltaLightness = (sceneTileModel.getUnderlaySwColor() & 0x7F) - seLightness;
+                    northDeltaLightness = (sceneTileModel.getUnderlayNwColor() & 0x7F) - neLightness;
+                    seLightness <<= 2;
+                    neLightness <<= 2;
+                    for (int i = 0; i < 4; i++)
+                    {
+                        if (points[indices[shapeOffset++]] == 0)
+                        {
+                            pixels[pixelOffset] = colorPalette[hs | (seLightness >> 2)];
+                        }
+                        if (points[indices[shapeOffset++]] == 0)
+                        {
+                            pixels[pixelOffset + 1] = colorPalette[hs | (seLightness * 3 + neLightness >> 4)];
+                        }
+                        if (points[indices[shapeOffset++]] == 0)
+                        {
+                            pixels[pixelOffset + 2] = colorPalette[hs | (seLightness + neLightness >> 3)];
+                        }
+                        if (points[indices[shapeOffset++]] == 0)
+                        {
+                            pixels[pixelOffset + 3] = colorPalette[hs | (seLightness + neLightness * 3 >> 4)];
+                        }
+                        seLightness += southDeltaLightness;
+                        neLightness += northDeltaLightness;
+
+                        pixelOffset += width;
+                    }
+                }
+            }
+            else if (underlayRgb != 0)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    pixels[pixelOffset] = points[indices[shapeOffset++]] != 0 ? overlayRgb : underlayRgb;
+                    pixels[pixelOffset + 1] =
+                            points[indices[shapeOffset++]] != 0 ? overlayRgb : underlayRgb;
+                    pixels[pixelOffset + 2] =
+                            points[indices[shapeOffset++]] != 0 ? overlayRgb : underlayRgb;
+                    pixels[pixelOffset + 3] =
+                            points[indices[shapeOffset++]] != 0 ? overlayRgb : underlayRgb;
+                    pixelOffset += width;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    if (points[indices[shapeOffset++]] != 0)
+                    {
+                        pixels[pixelOffset] = overlayRgb;
+                    }
+                    if (points[indices[shapeOffset++]] != 0)
+                    {
+                        pixels[pixelOffset + 1] = overlayRgb;
+                    }
+                    if (points[indices[shapeOffset++]] != 0)
+                    {
+                        pixels[pixelOffset + 2] = overlayRgb;
+                    }
+                    if (points[indices[shapeOffset++]] != 0)
+                    {
+                        pixels[pixelOffset + 3] = overlayRgb;
+                    }
+                    pixelOffset += width;
+                }
+            }
         }
     }
 }

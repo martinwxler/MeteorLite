@@ -9,11 +9,16 @@ import net.runelite.api.events.PlayerSpawned;
 import net.runelite.api.hooks.Callbacks;
 import net.runelite.api.hooks.DrawCallbacks;
 import net.runelite.api.mixins.*;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.widgets.WidgetItem;
+import net.runelite.api.widgets.WidgetType;
 import net.runelite.rs.api.*;
 import org.sponge.util.Logger;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -101,6 +106,13 @@ public abstract class Client implements RSClient{
     public boolean isGpu()
     {
         return gpu;
+    }
+
+    @Inject
+    @Override
+    public void setGpu(boolean gpu)
+    {
+        this.gpu = gpu;
     }
 
     @Inject
@@ -260,5 +272,207 @@ public abstract class Client implements RSClient{
         {
             client.getCallbacks().postDeferred(new PlayerSpawned(player));
         }
+    }
+
+    @Inject
+    private static boolean hdMinimapEnabled = false;
+
+    @Inject
+    @Override
+    public boolean isHdMinimapEnabled()
+    {
+        return hdMinimapEnabled;
+    }
+
+    @Inject
+    private static ArrayList<WidgetItem> widgetItems = new ArrayList<>();
+
+    @Inject
+    private static ArrayList<Widget> hiddenWidgets = new ArrayList<>();
+
+    @MethodHook("drawInterface")
+    @Inject
+    public static void preRenderWidgetLayer(Widget[] widgets, int parentId, int minX, int minY, int maxX, int maxY, int x, int y, int var8)
+    {
+        @SuppressWarnings("unchecked") HashTable<WidgetNode> componentTable = client.getComponentTable();
+
+        for (int i = 0; i < widgets.length; i++)
+        {
+            RSWidget widget = (RSWidget) widgets[i];
+            if (widget == null || widget.getRSParentId() != parentId || widget.isSelfHidden())
+            {
+                continue;
+            }
+
+            if (parentId != -1)
+            {
+                widget.setRenderParentId(parentId);
+            }
+
+            final int renderX = x + widget.getRelativeX();
+            final int renderY = y + widget.getRelativeY();
+            widget.setRenderX(renderX);
+            widget.setRenderY(renderY);
+
+            if (widget.getType() == WidgetType.RECTANGLE && renderX == client.getViewportXOffset() && renderY == client.getViewportYOffset()
+                    && widget.getWidth() == client.getViewportWidth() && widget.getHeight() == client.getViewportHeight()
+                    && widget.getOpacity() > 0 && widget.isFilled() && widget.getFillMode().getOrdinal() == 0 && client.isGpu())
+            {
+                int tc = widget.getTextColor();
+                int alpha = widget.getOpacity() & 0xFF;
+                int inverseAlpha = 256 - alpha;
+                int vpc = viewportColor;
+                int c1 = (inverseAlpha * (tc & 0xFF00FF) >> 8 & 0xFF00FF) + (inverseAlpha * (tc & 0x00FF00) >> 8 & 0x00FF00);
+                int c2 = (alpha * (vpc & 0xFF00FF) >> 8 & 0xFF00FF) + (alpha * (vpc & 0x00FF00) >> 8 & 0x00FF00);
+                int outAlpha = inverseAlpha + ((vpc >>> 24) * (255 - inverseAlpha) * 0x8081 >>> 23);
+                viewportColor = outAlpha << 24 | c1 + c2;
+                widget.setHidden(true);
+                hiddenWidgets.add(widget);
+            }
+            else
+            {
+                WidgetNode childNode = componentTable.get$api(widget.getId());
+                if (childNode != null)
+                {
+                    int widgetId = widget.getId();
+                    int groupId = childNode.getId();
+                    RSWidget[] children = client.getWidgets()[groupId];
+
+                    for (RSWidget child : children)
+                    {
+                        if (child.getRSParentId() == -1)
+                        {
+                            child.setRenderParentId(widgetId);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Inject
+    @MethodHook(value = "drawInterface", end = true)
+    public static void postRenderWidgetLayer(Widget[] widgets, int parentId, int minX, int minY, int maxX, int maxY, int x, int y, int var8)
+    {
+        Callbacks callbacks = client.getCallbacks();
+        int oldSize = widgetItems.size();
+
+        for (Widget rlWidget : widgets)
+        {
+            RSWidget widget = (RSWidget) rlWidget;
+            if (widget == null || widget.getRSParentId() != parentId || widget.isSelfHidden())
+            {
+                continue;
+            }
+
+            int type = widget.getType();
+            if (type == WidgetType.GRAPHIC && widget.getItemId() != -1)
+            {
+                final int renderX = x + widget.getRelativeX();
+                final int renderY = y + widget.getRelativeY();
+                if (renderX >= minX && renderX <= maxX && renderY >= minY && renderY <= maxY)
+                {
+                    WidgetItem widgetItem = new WidgetItem(widget.getItemId(), widget.getItemQuantity(), -1, widget.getBounds(), widget, null);
+                    widgetItems.add(widgetItem);
+                }
+            }
+            else if (type == WidgetType.INVENTORY)
+            {
+                widgetItems.addAll(widget.getWidgetItems());
+            }
+        }
+
+        List<WidgetItem> subList = Collections.emptyList();
+        if (oldSize < widgetItems.size())
+        {
+            if (oldSize > 0)
+            {
+                subList = widgetItems.subList(oldSize, widgetItems.size());
+            }
+            else
+            {
+                subList = widgetItems;
+            }
+        }
+
+        if (parentId == 0xabcdabcd)
+        {
+            widgetItems.clear();
+        }
+        else if (parentId != -1)
+        {
+            Widget widget = client.getWidget(parentId);
+            Widget[] children = widget.getChildren();
+            if (children == null || children == widgets)
+            {
+                callbacks.drawLayer(widget, subList);
+            }
+        }
+        else
+        {
+            int group = -1;
+            for (Widget widget : widgets)
+            {
+                if (widget != null)
+                {
+                    group = WidgetInfo.TO_GROUP(widget.getId());
+                    break;
+                }
+            }
+
+            if (group == -1)
+            {
+                return;
+            }
+
+            callbacks.drawInterface(group, widgetItems);
+            widgetItems.clear();
+            for (int i = hiddenWidgets.size() - 1; i >= 0; i--)
+            {
+                Widget widget = hiddenWidgets.get(i);
+                if (WidgetInfo.TO_GROUP(widget.getId()) == group)
+                {
+                    widget.setHidden(false);
+                    hiddenWidgets.remove(i);
+                }
+            }
+        }
+    }
+
+    @Inject
+    @Override
+    public Widget getWidget(int id)
+    {
+        return getWidget(WidgetInfo.TO_GROUP(id), WidgetInfo.TO_CHILD(id));
+    }
+
+    @Inject
+    @Override
+    public Widget getWidget(int groupId, int childId)
+    {
+        RSWidget[][] widgets = getWidgets();
+
+        if (widgets == null || widgets.length <= groupId)
+        {
+            return null;
+        }
+
+        RSWidget[] childWidgets = widgets[groupId];
+        if (childWidgets == null || childWidgets.length <= childId)
+        {
+            return null;
+        }
+
+        return childWidgets[childId];
+    }
+
+    @Inject
+    private static boolean interpolateWidgetAnimations;
+
+    @Inject
+    @Override
+    public boolean isInterpolateWidgetAnimations()
+    {
+        return interpolateWidgetAnimations;
     }
 }

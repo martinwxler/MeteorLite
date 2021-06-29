@@ -32,6 +32,7 @@ import sponge.SpongeOSRS;
 import sponge.SpongeOSRSModule;
 import sponge.plugins.EventTestPlugin;
 import sponge.plugins.DebugPlugin;
+import sponge.plugins.gpu.GpuPlugin;
 import sponge.plugins.stretchedmode.StretchedModePlugin;
 
 import javax.annotation.Nullable;
@@ -93,8 +94,9 @@ public final class Launcher extends Application implements AppletStub, AppletCon
         injector.injectMembers(client);
 
         SpongeOSRS.plugins.add(new EventTestPlugin());
-        SpongeOSRS.plugins.add(new DebugPlugin());
+        //SpongeOSRS.plugins.add(new DebugPlugin());
         SpongeOSRS.plugins.add(new StretchedModePlugin());
+        SpongeOSRS.plugins.add(new GpuPlugin());
         for (Plugin p : SpongeOSRS.plugins)
         {
             injector.injectMembers(p);
