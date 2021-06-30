@@ -107,7 +107,7 @@ public class EventTestPlugin extends Plugin
     @Subscribe
     public void test14(GroundObjectDespawned event)
     {
-        logger.event("GroundObjectDespawned", event.getGroundObject().getName());
+        //logger.event("GroundObjectDespawned", event.getGroundObject().getName());
     }
 
     @Subscribe
