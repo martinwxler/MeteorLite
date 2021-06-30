@@ -8,7 +8,7 @@ import net.runelite.api.mixins.Shadow;
 import net.runelite.rs.api.RSClient;
 
 @Mixin(RSClient.class)
-public abstract class Rasterizer2D implements RSClient
+public abstract class Rasterizer2DMixin implements RSClient
 {
 	@Shadow("client")
 	private static RSClient client;

@@ -9,7 +9,7 @@ import net.runelite.rs.api.RSNode;
 import net.runelite.rs.api.RSWallDecoration;
 
 @Mixin(RSNode.class)
-public abstract class Node implements RSNode{
+public abstract class NodeMixin implements RSNode{
 
     @Inject
     public void onUnlink()

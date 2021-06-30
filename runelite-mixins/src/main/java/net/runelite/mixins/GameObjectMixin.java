@@ -15,7 +15,7 @@ import net.runelite.rs.api.RSRenderable;
 import java.awt.*;
 
 @Mixin(RSGameObject.class)
-public abstract class GameObject implements RSGameObject{
+public abstract class GameObjectMixin implements RSGameObject{
 
     @Shadow("client")
     private static RSClient client;

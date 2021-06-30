@@ -6,7 +6,7 @@ import net.runelite.rs.api.RSSceneTileModel;
 import net.runelite.rs.api.RSSceneTilePaint;
 
 @Mixin(RSSceneTileModel.class)
-public abstract class SceneTileModel implements RSSceneTileModel
+public abstract class SceneTileModelMixin implements RSSceneTileModel
 {
 	@Inject
 	private int rl$modelBufferOffset;

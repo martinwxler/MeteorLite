@@ -75,7 +75,7 @@ import net.runelite.rs.api.RSWallDecoration;
 import org.sponge.util.Logger;
 
 @Mixin(RSTile.class)
-public abstract class Tile implements RSTile
+public abstract class TileMixin implements RSTile
 {
     @Shadow("client")
     private static RSClient client;

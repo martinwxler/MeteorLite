@@ -11,73 +11,86 @@ import net.runelite.rs.api.*;
 
 import java.awt.*;
 
-@Mixin(RSBoundaryObject.class)
-public abstract class BoundaryObject implements RSBoundaryObject{
+@Mixin(RSWallDecoration.class)
+public abstract class WallDecorationMixin implements RSWallDecoration{
 
     @Shadow("client")
     private static RSClient client;
 
     @Inject
-    private int wallPlane;
+    private int decorativeObjectPlane;
 
     @Inject
     @Override
     public int getPlane()
     {
-        return wallPlane;
+        return decorativeObjectPlane;
     }
 
     @Inject
     @Override
     public void setPlane(int plane)
     {
-        this.wallPlane = plane;
+        this.decorativeObjectPlane = plane;
     }
 
     @Inject
-    public RSModel getModelA()
+    @Override
+    public RSModel getModel1()
     {
-        RSRenderable entity = getRenderable1();
-        if (entity == null)
+        RSRenderable renderable = getRenderable();
+        if (renderable == null)
         {
             return null;
         }
 
-        if (entity instanceof net.runelite.api.Model)
+        RSModel model;
+
+        if (renderable instanceof net.runelite.api.Model)
         {
-            return (RSModel) entity;
+            model = (RSModel) renderable;
         }
         else
         {
-            return entity.getModel$api();
+            model = renderable.getModel$api();
         }
+
+        return model;
     }
 
     @Inject
-    public RSModel getModelB()
+    @Override
+    public RSModel getModel2()
     {
-        RSRenderable entity = getRenderable2();
-        if (entity == null)
+        RSRenderable renderable = getRenderable2();
+        if (renderable == null)
         {
             return null;
         }
 
-        if (entity instanceof Model)
+        RSModel model;
+
+        if (renderable instanceof Model)
         {
-            return (RSModel) entity;
+            model = (RSModel) renderable;
         }
         else
         {
-            return entity.getModel$api();
+            model = renderable.getModel$api();
         }
+
+        return model;
     }
 
     @Inject
     @Override
     public Shape getClickbox()
     {
-        Shape clickboxA = Perspective.getClickbox(client, getModelA(), 0, getLocalLocation());
-        Shape clickboxB = Perspective.getClickbox(client, getModelB(), 0, getLocalLocation());
+        LocalPoint lp = getLocalLocation();
+
+        Shape clickboxA = Perspective.getClickbox(client, getModel1(), 0,
+                new LocalPoint(lp.getX() + getXOffset(), lp.getY() + getYOffset()));
+        Shape clickboxB = Perspective.getClickbox(client, getModel2(), 0, lp);
 
         if (clickboxA == null && clickboxB == null)
         {
@@ -101,7 +114,7 @@ public abstract class BoundaryObject implements RSBoundaryObject{
     @Override
     public Shape getConvexHull()
     {
-        RSModel model = getModelA();
+        RSModel model = getModel1();
 
         if (model == null)
         {
@@ -110,14 +123,14 @@ public abstract class BoundaryObject implements RSBoundaryObject{
 
         int tileHeight = Perspective.getTileHeight(client, new LocalPoint(getX(), getY()), client.getPlane());
 
-        return model.getConvexHull(getX(), getY(), 0, tileHeight);
+        return model.getConvexHull(getX() + getXOffset(), getY() + getYOffset(), 0, tileHeight);
     }
 
     @Inject
     @Override
     public Shape getConvexHull2()
     {
-        RSModel model = getModelB();
+        RSModel model = getModel2();
 
         if (model == null)
         {

@@ -13,7 +13,7 @@ import net.runelite.rs.api.*;
 import java.awt.*;
 
 @Mixin(RSPlayer.class)
-public abstract class Player implements RSPlayer{
+public abstract class PlayerMixin implements RSPlayer{
 
     @Shadow("client")
     private static RSClient client;

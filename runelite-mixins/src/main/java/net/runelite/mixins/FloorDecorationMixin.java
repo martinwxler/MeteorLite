@@ -11,7 +11,7 @@ import net.runelite.rs.api.*;
 import java.awt.*;
 
 @Mixin(RSFloorDecoration.class)
-public abstract class FloorDecoration implements RSFloorDecoration{
+public abstract class FloorDecorationMixin implements RSFloorDecoration{
 
     @Shadow("client")
     private static RSClient client;

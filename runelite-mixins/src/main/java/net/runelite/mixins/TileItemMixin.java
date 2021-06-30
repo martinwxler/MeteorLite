@@ -11,7 +11,7 @@ import net.runelite.rs.api.RSFloorDecoration;
 import net.runelite.rs.api.RSTileItem;
 
 @Mixin(RSTileItem.class)
-public abstract class TileItem implements RSTileItem{
+public abstract class TileItemMixin implements RSTileItem{
 
     @Shadow("client")
     private static RSClient client;
@@ -23,7 +23,7 @@ public abstract class TileItem implements RSTileItem{
     private int rl$sceneY = -1;
 
     @Inject
-    TileItem()
+    TileItemMixin()
     {
     }
 

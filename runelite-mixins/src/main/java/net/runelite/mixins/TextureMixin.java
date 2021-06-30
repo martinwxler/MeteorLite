@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(RSTexture.class)
-public abstract class Texture implements RSTexture
+public abstract class TextureMixin implements RSTexture
 {
     @Shadow("client")
     private static RSClient client;

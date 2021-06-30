@@ -16,7 +16,7 @@ import net.runelite.rs.api.RSNPCComposition;
 import java.awt.*;
 
 @Mixin(RSNPC.class)
-public abstract class NPC implements RSNPC{
+public abstract class NPCMixin implements RSNPC{
 
     @Shadow("client")
     private static RSClient client;

@@ -11,7 +11,7 @@ import java.nio.IntBuffer;
 import java.util.Hashtable;
 
 @Mixin(RSRasterProvider.class)
-public abstract class RasterProvider implements RSRasterProvider{
+public abstract class RasterProviderMixin implements RSRasterProvider{
 
     @Shadow("client")
     private static RSClient client;

@@ -7,7 +7,7 @@ import net.runelite.rs.api.RSMouseHandler;
 import java.awt.event.MouseEvent;
 
 @Mixin(RSMouseHandler.class)
-public abstract class MouseHandler implements RSMouseHandler
+public abstract class MouseHandlerMixin implements RSMouseHandler
 {
 	@Shadow("client")
 	private static RSClient client;

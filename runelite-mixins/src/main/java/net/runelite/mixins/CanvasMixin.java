@@ -12,7 +12,7 @@ import net.runelite.rs.api.RSModel;
 import java.awt.*;
 
 @Mixin(RSCanvas.class)
-public abstract class Canvas extends java.awt.Canvas implements RSCanvas
+public abstract class CanvasMixin extends java.awt.Canvas implements RSCanvas
 {
 
     @Shadow("client")

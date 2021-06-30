@@ -19,7 +19,7 @@ import java.awt.*;
         @Mixin(RSItemLayer.class),
         @Mixin(RSBoundaryObject.class)
 })
-public abstract class TileObject implements net.runelite.api.TileObject {
+public abstract class TileObjectMixin implements net.runelite.api.TileObject {
 
     @Shadow("client")
     private static RSClient client;

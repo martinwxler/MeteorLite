@@ -52,7 +52,7 @@ import static net.runelite.api.widgets.WidgetInfo.TO_CHILD;
 import static net.runelite.api.widgets.WidgetInfo.TO_GROUP;
 
 @Mixin(RSWidget.class)
-public abstract class Widget implements RSWidget
+public abstract class WidgetMixin implements RSWidget
 {
     private static final int ITEM_SLOT_SIZE = 32;
     @Shadow("client")
@@ -67,7 +67,7 @@ public abstract class Widget implements RSWidget
     private int rl$y;
 
     @Inject
-    Widget()
+    WidgetMixin()
     {
         rl$parentId = -1;
         rl$x = -1;
@@ -369,13 +369,13 @@ public abstract class Widget implements RSWidget
 
     @Inject
     @Override
-    public Widget[] getDynamicChildren()
+    public WidgetMixin[] getDynamicChildren()
     {
         RSWidget[] children = getChildren();
 
         if (children == null)
         {
-            return new Widget[0];
+            return new WidgetMixin[0];
         }
 
         List<net.runelite.api.widgets.Widget> widgets = new ArrayList<>();
@@ -386,7 +386,7 @@ public abstract class Widget implements RSWidget
                 widgets.add(widget);
             }
         }
-        return widgets.toArray(new Widget[widgets.size()]);
+        return widgets.toArray(new WidgetMixin[widgets.size()]);
     }
 
     @Inject
@@ -396,7 +396,7 @@ public abstract class Widget implements RSWidget
         if (getRSParentId() == getId())
         {
             // This is a dynamic widget, so it can't have static children
-            return new Widget[0];
+            return new WidgetMixin[0];
         }
 
         List<net.runelite.api.widgets.Widget> widgets = new ArrayList<>();
@@ -419,7 +419,7 @@ public abstract class Widget implements RSWidget
         if (getRSParentId() == getId())
         {
             // This is a dynamic widget, so it can't have nested children
-            return new Widget[0];
+            return new WidgetMixin[0];
         }
 
         @SuppressWarnings("unchecked") HashTable<WidgetNode> componentTable = client.getComponentTable();

@@ -35,7 +35,7 @@ import net.runelite.rs.api.RSModel;
 import net.runelite.rs.api.RSModelData;
 
 @Mixin(RSModelData.class)
-public abstract class ModelData implements RSModelData
+public abstract class ModelDataMixin implements RSModelData
 {
 	@Shadow("client")
 	private static RSClient client;

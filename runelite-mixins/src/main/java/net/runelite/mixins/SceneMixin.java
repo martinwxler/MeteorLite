@@ -44,7 +44,7 @@ import net.runelite.rs.api.RSTileItem;
 import net.runelite.rs.api.RSSceneTileModel;
 
 @Mixin(RSScene.class)
-public abstract class Scene implements RSScene
+public abstract class SceneMixin implements RSScene
 {
     private static final int INVALID_HSL_COLOR = 12345678;
     private static final int DEFAULT_DISTANCE = 25;

@@ -6,7 +6,7 @@ import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSGameEngine;
 
 @Mixin(RSGameEngine.class)
-public abstract class GameEngine implements RSGameEngine{
+public abstract class GameEngineMixin implements RSGameEngine{
 
     @Shadow("client")
     private static RSClient client;

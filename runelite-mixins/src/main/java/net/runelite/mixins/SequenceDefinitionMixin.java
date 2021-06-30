@@ -10,7 +10,7 @@ import net.runelite.rs.api.RSModel;
 import net.runelite.rs.api.RSSequenceDefinition;
 
 @Mixin(RSSequenceDefinition.class)
-public abstract class SequenceDefinition implements RSSequenceDefinition
+public abstract class SequenceDefinitionMixin implements RSSequenceDefinition
 {
 	@Shadow("client")
 	private static RSClient client;

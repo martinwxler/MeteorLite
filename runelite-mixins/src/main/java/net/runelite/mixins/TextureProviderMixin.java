@@ -33,7 +33,7 @@ import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSTextureProvider;
 
 @Mixin(RSTextureProvider.class)
-public abstract class TextureProvider implements RSTextureProvider
+public abstract class TextureProviderMixin implements RSTextureProvider
 {
 	@Shadow("client")
 	private static RSClient client;

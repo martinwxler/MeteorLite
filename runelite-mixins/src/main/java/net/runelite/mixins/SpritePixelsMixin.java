@@ -35,7 +35,7 @@ import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSSpritePixels;
 
 @Mixin(RSSpritePixels.class)
-public abstract class SpritePixels implements RSSpritePixels
+public abstract class SpritePixelsMixin implements RSSpritePixels
 {
 	private static final int ALPHA = 0xFF000000;
 

@@ -5,7 +5,7 @@ import net.runelite.rs.Reflection;
 import net.runelite.rs.api.RSClient;
 
 @Mixin(RSClient.class)
-public abstract class CheatManager implements RSClient{
+public abstract class CheatManagerMixin implements RSClient{
 
     @Shadow("client")
     public static RSClient client;

@@ -23,7 +23,7 @@ import java.util.List;
 
 
 @Mixin(RSClient.class)
-public abstract class Client implements RSClient{
+public abstract class ClientMixin implements RSClient{
 
     @Shadow("client")
     public static RSClient client;
@@ -212,7 +212,7 @@ public abstract class Client implements RSClient{
     @Override
     public void setLastItemDespawn(RSTileItem lastItemDespawn)
     {
-        Client.lastItemDespawn = lastItemDespawn;
+        ClientMixin.lastItemDespawn = lastItemDespawn;
     }
 
     @Inject
