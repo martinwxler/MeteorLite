@@ -23,7 +23,7 @@ java {
 
 dependencies {
     implementation(project(":runelite-annotations"))
-    implementation(project(":sponge-logger"))
+    implementation(project(":meteor-logger"))
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }

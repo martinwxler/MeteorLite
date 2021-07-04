@@ -14,7 +14,7 @@ dependencies {
     implementation(project(":runescape-api"))
     implementation(project(":runescape-client"))
     implementation(project(":runelite-api"))
-    implementation(project(":sponge-logger"))
+    implementation(project(":meteor-logger"))
     implementation group: 'javax.inject', name: 'javax.inject', version: '1'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'

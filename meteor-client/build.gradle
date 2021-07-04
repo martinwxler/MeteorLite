@@ -1,0 +1,102 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group 'org.spongeosrs'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven { url = 'https://maven.gegy1000.net/' }
+    maven { url = 'https://repo.runelite.net/'}
+    maven{ url = 'https://raw.githubusercontent.com/open-osrs/hosting/master/'}
+}
+
+configurations {
+    shade
+    compile.extendsFrom shade
+}
+
+dependencies {
+    shade 'org.apache.logging.log4j:log4j-core:2.5'
+    shade 'org.spongepowered:mixin-bare:0.7.11-SNAPSHOT'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
+    implementation group: 'com.google.guava', name: 'guava', version: '23.2-jre'
+    implementation(group : "com.google.inject", name : "guice", version : "4.1.0", classifier : "no_aop")
+
+    implementation(project(":runescape-api"))
+    implementation(project(":runelite-api"))
+    implementation(project(":meteor-logger"))
+    compileOnly(project(":runescape-client"))
+    implementation group: 'de.jensd', name: 'fontawesomefx-fontawesome', version: '4.7.0-5'
+    implementation 'com.jfoenix:jfoenix:8.0.10'
+    implementation group: 'org.jetbrains', name: 'annotations', version: '21.0.1'
+    runtimeClasspath(files("../openosrs-injector/build/injected/injected-client.jar"))
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor group: 'org.jetbrains', name: 'annotations', version: '21.0.1'
+    implementation(group : "net.runelite.gluegen", name : "gluegen-rt", version : "2.4.0-rc-20200429")
+    implementation(group:"net.runelite.jogl", name:"jogl-all", version:"2.4.0-rc-20200429")
+    implementation(group:"net.runelite.jocl", name:"jocl", version:"1.0")
+    implementation(group : "io.reactivex.rxjava3", name : "rxjava", version : "3.0.10")
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
+
+    runtimeOnly(group:"net.runelite.pushingpixels", name:"trident", version:"1.5.00")
+    runtimeOnly(group:"net.runelite.gluegen", name:"gluegen-rt", version:"2.4.0-rc-20200429", classifier:"natives-linux-amd64")
+    runtimeOnly(group:"net.runelite.gluegen", name:"gluegen-rt", version:"2.4.0-rc-20200429", classifier:"natives-windows-amd64")
+    runtimeOnly(group:"net.runelite.gluegen", name:"gluegen-rt", version:"2.4.0-rc-20200429", classifier:"natives-windows-i586")
+    runtimeOnly(group:"net.runelite.gluegen", name:"gluegen-rt-natives-macosx", version:"2.4.0-rc-20210117")
+    runtimeOnly(group:"net.runelite.jogl", name:"jogl-all", version:"2.4.0-rc-20200429", classifier:"natives-linux-amd64")
+    runtimeOnly(group:"net.runelite.jogl", name:"jogl-all", version:"2.4.0-rc-20200429", classifier:"natives-windows-amd64")
+    runtimeOnly(group:"net.runelite.jogl", name:"jogl-all", version:"2.4.0-rc-20200429", classifier:"natives-windows-i586")
+    runtimeOnly(group:"net.runelite.jogl", name:"jogl-all-natives-macosx", version:"2.4.0-rc-20210117")
+    runtimeOnly(group:"net.runelite.jocl", name:"jocl", version:"1.0", classifier:"macos-x64")
+    runtimeOnly(group:"net.runelite.jocl", name:"jocl", version:"1.0", classifier:"macos-arm64")
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+compileJava.options.encoding = 'UTF-8'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks {
+    compileJava.dependsOn project(":fernflower").tasks.getByName("decompileInjected")
+    compileJava.dependsOn(":runelite-mixins:compileJava")
+    tasks.getByPath(":meteor-client:run").dependsOn(":meteor-agent:jar")
+}
+
+application {
+    mainClass.set("osrs.Launcher")
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    configurations.shade.each { dep ->
+        from(project.zipTree(dep)){
+            exclude 'META-INF', 'META-INF/**'
+        }
+    }
+}
+
+mainClassName = 'Launcher'
+
+applicationDefaultJvmArgs = [
+        "-javaagent:../meteor-agent/build/libs/meteor-agent-1.0-SNAPSHOT.jar=agent.MixinAgentBootstrap;",
+                             "-noverify",
+                             "-XX:+DisableAttachMechanism",
+                             "-Xmx1G",
+                             "-Xss2m",
+                             "-XX:CompileThreshold=1500",
+                             "-Xincgc",
+                             "-XX:+UseConcMarkSweepGC",
+                             "-XX:+UseParNewGC",
+                             "-Djna.nosys=true"]

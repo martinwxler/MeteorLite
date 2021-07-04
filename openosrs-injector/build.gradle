@@ -21,7 +21,7 @@ dependencies {
     implementation(project(":runescape-api"))
     implementation(project(":runescape-client"))
     implementation(project(":runelite-mixins"))
-    implementation(project(":sponge-logger"))
+    implementation(project(":meteor-logger"))
 
     implementation(group : "org.ow2.asm", name : "asm", version : "8.0.1")
     implementation(group : "org.ow2.asm", name : "asm-util", version : "8.0.1")
