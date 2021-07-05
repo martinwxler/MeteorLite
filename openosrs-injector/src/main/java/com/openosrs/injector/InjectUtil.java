@@ -289,8 +289,7 @@ public interface InjectUtil
 
 	static Field findField(InjectData data, String name, String hintClass)
 	{
-		final ClassGroup deob = data.getDeobfuscated();
-		return data.toVanilla(findField(deob, name, hintClass));
+		return data.getVanilla().findClass(hintClass).findField(name);
 	}
 
 	static Field findField(ClassGroup group, String name, String hintClass)
@@ -431,8 +430,7 @@ public interface InjectUtil
 	 */
 	static <T extends Annotated & Named> String getObfuscatedName(T from)
 	{
-		Annotation name = from.findAnnotation(DeobAnnotations.OBFUSCATED_NAME);
-		return name == null ? from.getName() : name.getValueString();
+		return from.getName();
 	}
 
 	/**

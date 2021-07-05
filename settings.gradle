@@ -11,4 +11,5 @@ include 'runescape-client'
 include 'fernflower'
 include 'injected-client'
 include 'meteor-logger'
+include 'runelite-script-assembler'
 

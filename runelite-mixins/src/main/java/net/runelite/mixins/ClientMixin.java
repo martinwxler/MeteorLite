@@ -475,4 +475,50 @@ public abstract class ClientMixin implements RSClient{
     {
         return interpolateWidgetAnimations;
     }
+
+    @Inject
+    private final ArrayList<String> outdatedScripts = new ArrayList<>();
+
+    @Inject
+    @Override
+    public void setOutdatedScript(String outdatedScript)
+    {
+        if (!outdatedScripts.contains(outdatedScript))
+        {
+            outdatedScripts.add(outdatedScript);
+        }
+    }
+
+    @Inject
+    @Override
+    public List<String> getOutdatedScripts()
+    {
+        return this.outdatedScripts;
+    }
+
+    @Inject
+    @Override
+    public int getVar(VarPlayer varPlayer)
+    {
+        int[] varps = getVarps();
+        return varps[varPlayer.getId()];
+    }
+
+    @Inject
+    @Override
+    public ScriptEvent createScriptEvent(Object... args)
+    {
+        return createRSScriptEvent(args);
+    }
+
+    @Inject
+    @Override
+    public RSScriptEvent createRSScriptEvent(Object... args)
+    {
+        RSScriptEvent event = createScriptEvent();
+        event.setArguments(args);
+        return event;
+    }
+
+
 }

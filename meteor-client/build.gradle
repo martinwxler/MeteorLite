@@ -75,6 +75,11 @@ application {
     mainClass.set("osrs.Launcher")
 }
 
+processResources {
+    dependsOn(":runelite-script-assembler:assembleScripts")
+    from("${buildDir}/scripts")
+}
+
 test {
     useJUnitPlatform()
 }

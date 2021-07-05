@@ -23,6 +23,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import meteor.plugins.BankPin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.neverlog.NeverLogoutPlugin;
 import net.runelite.api.Client;
@@ -116,6 +117,7 @@ public final class Launcher extends Application implements AppletStub, AppletCon
         MeteorLite.plugins.add(new GpuPlugin());
         MeteorLite.plugins.add(new AoeWarningPlugin());
         MeteorLite.plugins.add(new NeverLogoutPlugin());
+        //MeteorLite.plugins.add(new BankPin());
         for (Plugin plugin : MeteorLite.plugins)
         {
             Injector injector = plugin.getInjector();

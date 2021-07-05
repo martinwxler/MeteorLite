@@ -109,7 +109,7 @@ public class ScriptVM extends AbstractInjector
 		final Field scriptInstructions = InjectUtil.findField(inject, "opcodes", "Script");
 		final Field scriptStatePC = InjectUtil.findField(inject, "pc", "ScriptFrame");
 
-		final ClassFile vanillaClient = vanilla.findClass("client");
+		final ClassFile vanillaClient = vanilla.findClass("Client");
 
 		// Next 4 should be injected by mixins, so don't need fail fast
 		final Method runScript = vanillaClient.findStaticMethod("copy$runScript");
@@ -174,12 +174,7 @@ public class ScriptVM extends AbstractInjector
 					InstructionContext mulctx = pc.pushed;
 					assert mulctx.getInstruction() instanceof IMul;
 
-					pcLocalVar = mulctx.getPops().stream()
-						.map(StackContext::getPushed)
-						.filter(i -> i.getInstruction() instanceof ILoad)
-						.map(i -> ((ILoad) i.getInstruction()).getVariableIndex())
-						.findFirst()
-						.orElse(null);
+					pcLocalVar = 6;
 				}
 			}
 		}
@@ -208,10 +203,10 @@ public class ScriptVM extends AbstractInjector
 					{
 						//Find the istore
 						IStore istore = (IStore) instrCtx.getPushes().get(0).getPopped().stream()
-							.map(InstructionContext::getInstruction)
-							.filter(i -> i instanceof IStore)
-							.findFirst()
-							.orElse(null);
+								.map(InstructionContext::getInstruction)
+								.filter(i -> i instanceof IStore)
+								.findFirst()
+								.orElse(null);
 						if (istore != null)
 						{
 							currentOpcodeStore = istore;
@@ -225,10 +220,9 @@ public class ScriptVM extends AbstractInjector
 		// Add PutStatics to all Script AStores
 		{
 			int outerSciptIdx = scriptStores.stream()
-				.mapToInt(AStore::getVariableIndex)
-				.reduce(Math::min)
-				.orElseThrow(() -> new InjectException("Unable to find any Script AStores in runScript"));
-		//	log.debug("[DEBUG] Found script index {}", outerSciptIdx);
+					.mapToInt(AStore::getVariableIndex)
+					.reduce(Math::min)
+					.orElseThrow(() -> new InjectException("Unable to find any Script AStores in runScript"));
 
 			ListIterator<Instruction> instrIter = instrs.getInstructions().listIterator();
 			while (instrIter.hasNext())
@@ -255,7 +249,6 @@ public class ScriptVM extends AbstractInjector
 			{
 				throw new InjectException("Unable to find ILoad for invokedFromPc IStore");
 			}
-		//	log.debug("[DEBUG] Found pc index {}", pcLocalVar);
 
 			ListIterator<Instruction> instrIter = instrs.getInstructions().listIterator();
 			while (instrIter.hasNext())
@@ -287,7 +280,6 @@ public class ScriptVM extends AbstractInjector
 		}
 
 		// Inject call to vmExecuteOpcode
-		//log.debug("[DEBUG] Found instruction array index {}", instructionArrayLocalVar);
 		if (currentOpcodeStore == null)
 		{
 			throw new InjectException("Unable to find IStore for current opcode");
