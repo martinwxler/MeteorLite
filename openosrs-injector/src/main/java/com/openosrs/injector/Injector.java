@@ -117,7 +117,7 @@ public class Injector extends InjectData implements InjectTaskHandler
 		addReflection(vanilla, new File("../runescape-client/build/libs/runescape-client-" + oprsVer + ".jar"));
 		//inject(new DrawAfterWidgets(this));
 
-		//inject(new ScriptVM(this));
+		inject(new ScriptVM(this));
 
 		// All GPU raw injectors should probably be combined, especially RenderDraw and Occluder
 		inject(new ClearColorBuffer(this));

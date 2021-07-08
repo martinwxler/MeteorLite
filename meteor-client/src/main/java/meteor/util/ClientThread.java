@@ -101,7 +101,7 @@ public class ClientThread implements Executor
 		invokes.add(r);
 	}
 
-	void invoke()
+	public void invoke()
 	{
 		assert client.isClientThread();
 		Iterator<BooleanSupplier> ir = invokes.iterator();

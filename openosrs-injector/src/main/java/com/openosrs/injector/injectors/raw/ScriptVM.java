@@ -44,6 +44,7 @@ import net.runelite.asm.Field;
 import net.runelite.asm.Method;
 import net.runelite.asm.Type;
 import net.runelite.asm.attributes.code.Instruction;
+import net.runelite.asm.attributes.code.InstructionType;
 import net.runelite.asm.attributes.code.Instructions;
 import net.runelite.asm.attributes.code.Label;
 import net.runelite.asm.attributes.code.instructions.ALoad;
@@ -143,7 +144,6 @@ public class ScriptVM extends AbstractInjector
 			{
 				AStore store = (AStore) instr;
 				StackContext storedVarCtx = instrCtx.getPops().get(0);
-
 				// Find AStores that store a Script
 				if (storedVarCtx.getType().getInternalName().equals(scriptObName))
 				{
@@ -169,12 +169,7 @@ public class ScriptVM extends AbstractInjector
 				if (put.getMyField() == scriptStatePC)
 				{
 					StackContext pc = instrCtx.getPops().get(0);
-					assert Type.INT.equals(pc.getType()) : pc.getType();
-
-					InstructionContext mulctx = pc.pushed;
-					assert mulctx.getInstruction() instanceof IMul;
-
-					pcLocalVar = 6;
+					pcLocalVar = ((ILoad)pc.pushed.getInstruction()).getVariableIndex();
 				}
 			}
 		}
@@ -287,10 +282,19 @@ public class ScriptVM extends AbstractInjector
 
 		int istorepc = instrs.getInstructions().indexOf(currentOpcodeStore);
 		assert istorepc >= 0;
-
 		Label nextIteration = instrs.createLabelFor(localInstructionLoad);
+		IInc inc = new IInc(instrs, InstructionType.IINC);
+		inc.setVariableIndex(pcLocalVar);
+		inc.setIncrement(1);
 		instrs.addInstruction(istorepc + 1, new ILoad(instrs, currentOpcodeStore.getVariableIndex()));
 		instrs.addInstruction(istorepc + 2, new InvokeStatic(instrs, vmExecuteOpcode.getPoolMethod()));
-		instrs.addInstruction(istorepc + 3, new IfNe(instrs, nextIteration));
+		instrs.addInstruction(istorepc + 3, inc);
+		instrs.addInstruction(istorepc + 4, new ILoad(instrs, pcLocalVar));
+		instrs.addInstruction(istorepc + 5, new PutStatic(instrs, currentScriptPCField));
+		instrs.addInstruction(istorepc + 6, new IfNe(instrs, nextIteration));
+		IInc dec = new IInc(instrs, InstructionType.IINC);
+		dec.setVariableIndex(pcLocalVar);
+		dec.setIncrement(-1);
+		instrs.addInstruction(istorepc + 7, dec);
 	}
 }

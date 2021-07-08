@@ -1170,7 +1170,14 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 		// Texture on UI
 		drawUi(overlayColor, canvasHeight, canvasWidth);
 
-		glDrawable.swapBuffers();
+		try
+		{
+			glDrawable.swapBuffers();
+		}
+		catch (Exception e)
+		{
+			log.error("swapBuffers failed.");
+		}
 
 		drawManager.processDrawComplete(this::screenshot);
 	}

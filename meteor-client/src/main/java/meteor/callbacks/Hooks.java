@@ -34,6 +34,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import meteor.util.ClientThread;
 import net.runelite.api.BufferProvider;
 import net.runelite.api.Client;
 import net.runelite.api.MainBufferProvider;
@@ -80,6 +81,7 @@ public class Hooks implements Callbacks
 	private final EventBus eventBus;
 	private final DeferredEventBus deferredEventBus;
 	private final MouseManager mouseManager;
+	private final ClientThread clientThread;
 
 	private Dimension lastStretchedDimensions;
 	private VolatileImage stretchedImage;
@@ -118,12 +120,14 @@ public class Hooks implements Callbacks
 	private Hooks(
 		Client client,
 		OverlayRenderer renderer,
+		ClientThread clientThread,
 		MouseManager mouseManager,
 		EventBus eventBus,
 		DeferredEventBus deferredEventBus
 	)
 	{
 		this.client = client;
+		this.clientThread = clientThread;
 		this.renderer = renderer;
 		this.mouseManager = mouseManager;
 		this.eventBus = eventBus;
@@ -160,7 +164,7 @@ public class Hooks implements Callbacks
 
 		eventBus.post(BEFORE_RENDER);
 
-		//clientThread.invoke();
+		clientThread.invoke();
 
 		long now = System.nanoTime();
 
