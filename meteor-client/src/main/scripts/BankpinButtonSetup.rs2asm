@@ -116,6 +116,6 @@
    iload                  1 ; 0-9
    sconst                 "bankpinButtonSetup"
    runelite_callback
-   ;pop_int                  ; 0-9
-   ;pop_int                  ; button component id
+   pop_int                  ; 0-9
+   pop_int                  ; button component id
    return                
