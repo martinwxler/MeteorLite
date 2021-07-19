@@ -2,6 +2,7 @@ package net.runelite.mixins;
 
 import net.runelite.api.Perspective;
 import net.runelite.api.Point;
+import net.runelite.api.TileObject;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.mixins.Inject;
@@ -19,7 +20,7 @@ import java.awt.*;
         @Mixin(RSItemLayer.class),
         @Mixin(RSBoundaryObject.class)
 })
-public abstract class TileObjectMixin implements net.runelite.api.TileObject {
+public abstract class TileObjectMixin implements TileObject {
 
     @Shadow("client")
     private static RSClient client;

@@ -23,7 +23,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import meteor.eventbus.EventBus;
+import meteor.eventbus.Subscribe;
+import meteor.events.ToggleToolbarEvent;
 import meteor.plugins.BankPin;
+import meteor.plugins.agility.AgilityPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.neverlog.NeverLogoutPlugin;
 import net.runelite.api.Client;
@@ -64,10 +68,15 @@ public final class Launcher extends Application implements AppletStub, AppletCon
 
     public static boolean pluginsPanelVisible = false;
     public static JFXPanel toolbarJFXPanel = new JFXPanel();
+    public static JFXPanel hudbarJFXPanel = new JFXPanel();
     public static JFXPanel rightPanel = new JFXPanel();
+    private static boolean toolbarVisible = true;
 
     @Inject
     public Logger logger;
+
+    @Inject
+    public EventBus eventBus;
 
     @com.google.inject.Inject
     @Nullable
@@ -93,6 +102,8 @@ public final class Launcher extends Application implements AppletStub, AppletCon
     public void start() throws IOException {
 
         injector.injectMembers(client);
+        injector.injectMembers(this);
+        eventBus.register(this);
 
         startPlugins();
 
@@ -118,6 +129,7 @@ public final class Launcher extends Application implements AppletStub, AppletCon
         MeteorLite.plugins.add(new AoeWarningPlugin());
         MeteorLite.plugins.add(new NeverLogoutPlugin());
         MeteorLite.plugins.add(new BankPin());
+        MeteorLite.plugins.add(new AgilityPlugin());
         for (Plugin plugin : MeteorLite.plugins)
         {
             Injector injector = plugin.getInjector();
@@ -187,21 +199,43 @@ public final class Launcher extends Application implements AppletStub, AppletCon
         toolbarJFXPanel.setSize(1280, 100);
         rightPanel.setSize(475, 800);
         Parent toolbarRoot = FXMLLoader.load(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("toolbar.fxml")));
+        Parent hudbarRoot = FXMLLoader.load(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("hudbar.fxml")));
 
-        toolbarJFXPanel.setScene(new Scene(toolbarRoot, 300, 40));
+        toolbarJFXPanel.setScene(new Scene(toolbarRoot, 300, 50));
         toolbarJFXPanel.setVisible(true);
+        hudbarJFXPanel.setScene(new Scene(hudbarRoot, 300, 75));
+        hudbarJFXPanel.setVisible(true);
         rightPanel.setVisible(false);
         gamePanel.setLayout(new BorderLayout());
         gamePanel.add(applet, BorderLayout.CENTER);
         panel.add(gamePanel, BorderLayout.CENTER);
         panel.add(toolbarJFXPanel, BorderLayout.NORTH);
+        panel.add(hudbarJFXPanel, BorderLayout.SOUTH);
         panel.add(rightPanel, BorderLayout.EAST);
         frame.add(panel);
         panel.setVisible(true);
         frame.setVisible(true);
+        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         applet.init();
         applet.start();
+    }
+
+    @Subscribe
+    public void onToggleToolbar(ToggleToolbarEvent event)
+    {
+        if (toolbarVisible)
+        {
+            panel.remove(toolbarJFXPanel);
+            toolbarVisible = false;
+            panel.validate();
+        }
+        else
+        {
+            panel.add(toolbarJFXPanel, BorderLayout.NORTH);
+            toolbarVisible = true;
+            panel.validate();
+        }
     }
 
     public static void loadJagexConfiguration() throws IOException {

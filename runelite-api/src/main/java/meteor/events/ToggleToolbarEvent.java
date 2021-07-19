@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018 Tomas Slusny <slusnucky@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,35 +22,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.gpu;
+package meteor.events;
 
-import meteor.plugins.gpu.config.AntiAliasingMode;
-import meteor.plugins.gpu.config.ColorBlindMode;
-import meteor.plugins.gpu.config.UIScalingMode;
-
-import static meteor.plugins.gpu.GpuPlugin.MAX_DISTANCE;
-import static meteor.plugins.gpu.GpuPlugin.MAX_FOG_DEPTH;
-
-public class GpuPluginConfig
+public class ToggleToolbarEvent
 {
-	public static int drawDistance = MAX_DISTANCE;
-	public static int drawDistanceMax = MAX_DISTANCE;
-	public static boolean smoothBanding = false;
+	public static final ToggleToolbarEvent INSTANCE = new ToggleToolbarEvent();
 
-	public static AntiAliasingMode antiAliasingMode = AntiAliasingMode.MSAA_8;
-
-	public static UIScalingMode uiScalingMode = UIScalingMode.CATMULL_ROM;
-
-	public static int fogDepth = 0;
-	public static int fogDepthMax = MAX_FOG_DEPTH;
-
-	public static boolean useComputeShaders = true;
-
-	public static int anisotropicFilteringLevelMin = 0;
-	public static int anisotropicFilteringLevelMax = 16;
-	public static int anisotropicFilteringLevel = anisotropicFilteringLevelMax;
-
-	public static ColorBlindMode colorBlindMode = ColorBlindMode.NONE;
-
-	public static boolean brightTextures = false;
+	private ToggleToolbarEvent()
+	{
+		// noop
+	}
 }

@@ -31,6 +31,7 @@ import com.jogamp.opengl.*;
 import com.jogamp.opengl.math.Matrix4;
 import jogamp.nativewindow.SurfaceScaleUtils;
 import jogamp.nativewindow.jawt.x11.X11JAWTWindow;
+import jogamp.nativewindow.macosx.OSXUtil;
 import jogamp.newt.awt.NewtFactoryAWT;
 import net.runelite.api.*;
 import net.runelite.api.events.GameStateChanged;
@@ -69,7 +70,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 	static final int SMALL_TRIANGLE_COUNT = 512;
 	private static final int FLAG_SCENE_BUFFER = Integer.MIN_VALUE;
 	private static final int DEFAULT_DISTANCE = 25;
-	static final int MAX_DISTANCE = 90;
+	static final int MAX_DISTANCE = 100;
 	static final int MAX_FOG_DEPTH = 100;
 
 	@Inject
@@ -1600,8 +1601,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 
 	private int getDrawDistance()
 	{
-		final int limit = computeMode != ComputeMode.NONE ? MAX_DISTANCE : DEFAULT_DISTANCE;
-		return Ints.constrainToRange(GpuPluginConfig.drawDistance, 0, limit);
+		return MAX_DISTANCE;
 	}
 
 	private static void invokeOnMainThread(Runnable runnable)
@@ -1609,7 +1609,7 @@ public class GpuPlugin extends Plugin implements DrawCallbacks
 		if (OSType.getOSType() == OSType.MacOS)
 		{
 
-			//OSXUtil.RunOnMainThread(true, false, runnable);
+			OSXUtil.RunOnMainThread(true, false, runnable);
 		}
 		else
 		{

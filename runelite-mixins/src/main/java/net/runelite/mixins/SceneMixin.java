@@ -36,12 +36,7 @@ import net.runelite.api.mixins.MethodHook;
 import net.runelite.api.mixins.Mixin;
 import net.runelite.api.mixins.Replace;
 import net.runelite.api.mixins.Shadow;
-import net.runelite.rs.api.RSClient;
-import net.runelite.rs.api.RSNodeDeque;
-import net.runelite.rs.api.RSScene;
-import net.runelite.rs.api.RSTile;
-import net.runelite.rs.api.RSTileItem;
-import net.runelite.rs.api.RSSceneTileModel;
+import net.runelite.rs.api.*;
 
 @Mixin(RSScene.class)
 public abstract class SceneMixin implements RSScene
@@ -74,6 +69,15 @@ public abstract class SceneMixin implements RSScene
 
     @Inject
     private static int rl$drawDistance;
+
+    @Shadow("Scene_planeOccluders")
+    static RSOccluder[][] occluders;
+
+    @Shadow("Scene_planesCount")
+    static int planesCount;
+
+    @Shadow("Scene_planeOccluderCounts")
+    static int[] occluderCounts;
 
     @Replace("draw")
     void drawScene(int cameraX, int cameraY, int cameraZ, int cameraPitch, int cameraYaw, int plane)
@@ -969,5 +973,18 @@ public abstract class SceneMixin implements RSScene
                 }
             }
         }
+    }
+
+    @Copy("occlude")
+    private void rs$occlude()
+    {
+
+    }
+
+    @Replace("occlude")
+    private void rl$occlude()
+    {
+        if (!client.isGpu() || client.getOccluderEnabled())
+            rs$occlude();
     }
 }

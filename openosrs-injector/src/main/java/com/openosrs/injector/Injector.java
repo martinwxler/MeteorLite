@@ -124,7 +124,7 @@ public class Injector extends InjectData implements InjectTaskHandler
 
 		inject(new RenderDraw(this));
 
-		inject(new Occluder(this));
+		//inject(new Occluder(this));
 
 		//inject(new DrawMenu(this));
 

@@ -2,10 +2,7 @@ package net.runelite.mixins;
 
 import net.runelite.api.*;
 import net.runelite.api.Node;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.NpcSpawned;
-import net.runelite.api.events.PlayerDespawned;
-import net.runelite.api.events.PlayerSpawned;
+import net.runelite.api.events.*;
 import net.runelite.api.hooks.Callbacks;
 import net.runelite.api.hooks.DrawCallbacks;
 import net.runelite.api.mixins.*;
@@ -520,5 +517,111 @@ public abstract class ClientMixin implements RSClient{
         return event;
     }
 
+    @Inject
+    boolean occluderEnabled = false;
 
+    @Inject
+    @Override
+    public boolean getOccluderEnabled()
+    {
+        return occluderEnabled;
+    }
+
+    @Inject
+    @Override
+    public void setOccluderEnabled(boolean enabled)
+    {
+        occluderEnabled = enabled;
+    }
+
+    @Inject
+    @Override
+    public int getBoostedSkillLevel(Skill skill)
+    {
+        int[] boostedLevels = getBoostedSkillLevels();
+        return boostedLevels[skill.ordinal()];
+    }
+
+    @Inject
+    @Override
+    public int getRealSkillLevel(Skill skill)
+    {
+        int[] realLevels = getRealSkillLevels();
+        return realLevels[skill.ordinal()];
+    }
+
+    /**
+     * Returns the local player's current experience in the specified
+     * {@link Skill}.
+     *
+     * @param skill the {@link Skill} to retrieve the experience for
+     * @return the local player's current experience in the specified
+     * {@link Skill}, or -1 if the {@link Skill} isn't valid
+     */
+    @Inject
+    @Override
+    public int getSkillExperience(Skill skill)
+    {
+        int[] experiences = getSkillExperiences();
+
+        if (skill == Skill.OVERALL)
+        {
+            return (int) getOverallExperience();
+        }
+
+        int idx = skill.ordinal();
+
+        // I'm not certain exactly how needed this is, but if the Skill enum is updated in the future
+        // to hold something else that's not reported it'll save us from an ArrayIndexOutOfBoundsException.
+        if (idx >= experiences.length)
+        {
+            return -1;
+        }
+
+        return experiences[idx];
+    }
+
+    @FieldHook("experience")
+    @Inject
+    public static void experiencedChanged(int idx)
+    {
+        Skill[] possibleSkills = Skill.values();
+
+        // We subtract one here because 'Overall' isn't considered a skill that's updated.
+        if (idx < possibleSkills.length - 1)
+        {
+            Skill updatedSkill = possibleSkills[idx];
+            StatChanged statChanged = new StatChanged(
+                    updatedSkill,
+                    client.getSkillExperience(updatedSkill),
+                    client.getRealSkillLevel(updatedSkill),
+                    client.getBoostedSkillLevel(updatedSkill)
+            );
+            client.getCallbacks().post(statChanged);
+        }
+    }
+
+    @FieldHook("changedSkills")
+    @Inject
+    public static void boostedSkillLevelsChanged(int idx)
+    {
+        if (idx == -1)
+        {
+            return;
+        }
+
+        int changedSkillIdx = idx - 1 & 31;
+        int skillIdx = client.getChangedSkillLevels()[changedSkillIdx];
+        Skill[] skills = Skill.values();
+        if (skillIdx >= 0 && skillIdx < skills.length - 1)
+        {
+            StatChanged statChanged = new StatChanged(
+                    skills[skillIdx],
+                    client.getSkillExperiences()[skillIdx],
+                    client.getRealSkillLevels()[skillIdx],
+                    client.getBoostedSkillLevels()[skillIdx]
+            );
+            client.getCallbacks().post(statChanged);
+        }
+    }
 }

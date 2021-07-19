@@ -2236,4 +2236,8 @@ public interface Client extends GameEngine
 	 * @param cameraYawTarget
 	 */
 	void setCameraYawTarget(int cameraYawTarget);
+
+	boolean getOccluderEnabled();
+
+	void setOccluderEnabled(boolean enabled);
 }

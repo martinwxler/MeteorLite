@@ -37,10 +37,11 @@ import net.runelite.cache.script.assembler.Assembler;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.sponge.util.Logger;
+
 import static java.lang.Integer.parseInt;
 
 @Mojo(
@@ -61,7 +62,7 @@ public class AssembleMojo extends AbstractMojo
 		this.outputDirectory = outputDirectory;
 	}
 
-	private final Log log = getLog();
+	private final Logger log = new Logger("Script-Assembler");
 
 	public static void main(String[] args) throws Exception
 	{

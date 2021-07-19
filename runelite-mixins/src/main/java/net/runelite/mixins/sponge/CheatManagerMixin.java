@@ -1,5 +1,6 @@
 package net.runelite.mixins.sponge;
 
+import meteor.events.ToggleToolbarEvent;
 import net.runelite.api.mixins.*;
 import net.runelite.rs.Reflection;
 import net.runelite.rs.api.RSClient;
@@ -25,6 +26,18 @@ public abstract class CheatManagerMixin implements RSClient{
         {
             Reflection.printDebugMessages = !Reflection.printDebugMessages;
             client.getLogger().debug("Toggled Reflection debug messages");
+            foundCustomCheat = true;
+        }
+        if (s.equals("occluder"))
+        {
+            client.setOccluderEnabled(!client.getOccluderEnabled());
+            client.getLogger().debug("Toggled Occluder");
+            foundCustomCheat = true;
+        }
+        if (s.equals("toolbar"))
+        {
+            client.getCallbacks().post(ToggleToolbarEvent.INSTANCE);
+            client.getLogger().debug("Toggled Toolbar");
             foundCustomCheat = true;
         }
 

@@ -42,6 +42,7 @@ public class OverlayRenderer
 	}
 
 	public void renderAboveScene(Graphics2D graphics2d) {
+		graphics2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		for (Plugin p : MeteorLite.plugins)
 			p.paintAboveScene(graphics2d);
 	}

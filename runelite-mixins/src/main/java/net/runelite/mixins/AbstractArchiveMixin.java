@@ -33,6 +33,12 @@ public abstract class AbstractArchiveMixin implements RSAbstractArchive
     private Map<String, String> scriptNames;
 
     @Inject
+    byte[] terrain = null;
+
+    @Inject
+    byte[] locations = null;
+
+    @Inject
     @Override
     public boolean isOverlayOutdated()
     {
@@ -50,6 +56,11 @@ public abstract class AbstractArchiveMixin implements RSAbstractArchive
         if (!OverlayIndex.hasOverlay(archiveId, groupId))
         {
             return rsData;
+        }
+
+        if (terrain == null)
+        {
+            getConfigData(5, 0);
         }
 
         if (scriptNames == null)
