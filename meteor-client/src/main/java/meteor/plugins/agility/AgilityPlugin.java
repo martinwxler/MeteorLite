@@ -183,12 +183,14 @@ public class AgilityPlugin extends Plugin {
         overlayFillColor = new Color(activeColor.darker().getRed(), activeColor.darker().getGreen(), activeColor.darker().getBlue(), 125);
 
         graphics2D.setColor(activeColor);
-
+        AgilityShortcut as;
+        Color prevColor;
+        Color prevOverlayFillColor;
         for (TileObject o : obstacles.keySet())
         {
-            Color prevColor = activeColor;
-            Color prevOverlayFillColor = overlayFillColor;
-            AgilityShortcut as = obstacles.get(o).getShortcut();
+           prevColor = activeColor;
+           prevOverlayFillColor = overlayFillColor;
+            as = obstacles.get(o).getShortcut();
             if (as != null)
             {
                 if (as.getLevel() > client.getBoostedSkillLevel(Skill.AGILITY))
@@ -206,13 +208,13 @@ public class AgilityPlugin extends Plugin {
             activeColor = prevColor;
             overlayFillColor = prevOverlayFillColor;
         }
-
+        Point p;
         for (TileItem tileItem : marks)
         {
             graphics2D.setColor(activeColor);
             graphics2D.draw(Perspective.getCanvasTileAreaPoly(client, tileItem.getTile().getLocalLocation(), 1));
             graphics2D.setColor(Color.white);
-            Point p = Perspective.getCanvasTextLocation(client, graphics2D,  tileItem.getTile().getLocalLocation(), MARK_OF_GRACE, OFFSET_Z);
+            p = Perspective.getCanvasTextLocation(client, graphics2D,  tileItem.getTile().getLocalLocation(), MARK_OF_GRACE, OFFSET_Z);
             if (p != null)
                 graphics2D.drawString(MARK_OF_GRACE, p.getX(), p.getY());
         }
