@@ -3,7 +3,7 @@ plugins {
     id 'application'
 }
 
-group 'org.spongeosrs'
+group 'org.meteorlite'
 version '1.0-SNAPSHOT'
 
 repositories {

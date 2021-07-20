@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Frame {
-    JFrame mainFrame = new JFrame("SpongeOSRS");
+    JFrame mainFrame = new JFrame("MeteorLite");
     JPanel mainPanel = new JPanel();
     JFXPanel toolbarPanel = new JFXPanel();
 

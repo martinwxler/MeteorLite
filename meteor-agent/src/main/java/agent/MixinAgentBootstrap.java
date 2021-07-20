@@ -64,7 +64,7 @@ public class MixinAgentBootstrap {
 
         Transformer transformer = getTransformer();
         instrumentation.addTransformer(transformer);
-        logger.info(ANSI_YELLOW + "---SpongeOSRS Agent Started---" + ANSI_RESET);
+        logger.info(ANSI_YELLOW + "---Sponge Mixins Agent Started---" + ANSI_RESET);
     }
 
 

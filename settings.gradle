@@ -1,4 +1,4 @@
-rootProject.name = 'SpongeOSRS'
+rootProject.name = 'MeteorLite'
 include 'meteor-client'
 include 'meteor-agent'
 include 'runelite-annotations'

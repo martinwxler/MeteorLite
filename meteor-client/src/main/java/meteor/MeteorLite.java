@@ -9,7 +9,7 @@ import java.util.List;
 
 public class MeteorLite {
     public static EventBus eventBus = new EventBus();
-    public static Logger logger = new Logger("SpongeOSRS");
+    public static Logger logger = new Logger("MeteorLite");
 
     public static List<Plugin> plugins = new ArrayList<>();
     public static Client client;

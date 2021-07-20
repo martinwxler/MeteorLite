@@ -24,7 +24,7 @@ public class UpdateMappings {
     private static int found = 0;
 
     public static void main(String args[]) {
-        System.out.println("---SpongeOSRS Mappings Generator---");
+        System.out.println("---Sponge Mixins Mappings Generator---");
         long start = System.currentTimeMillis();
         File deob = new File("./client/build/libs/client-1.0-SNAPSHOT.jar");
         scanGamepack(deob);

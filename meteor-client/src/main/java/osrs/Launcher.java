@@ -133,14 +133,14 @@ public final class Launcher extends Application implements AppletStub, AppletCon
 
         setupFrame(applet);
 
-        logger.info(ANSI_YELLOW + "SpongeOSRS started" + ANSI_RESET);
+        logger.info(ANSI_YELLOW + "MeteorLite started" + ANSI_RESET);
 
 
     }
 
     private void startPlugins() {
         MeteorLite.plugins.add(new EventTestPlugin());
-        //SpongeOSRS.plugins.add(new DebugPlugin());
+        //MeteorLite.plugins.add(new DebugPlugin());
         MeteorLite.plugins.add(new StretchedModePlugin());
         MeteorLite.plugins.add(new GpuPlugin());
         MeteorLite.plugins.add(new AoeWarningPlugin());
@@ -206,7 +206,7 @@ public final class Launcher extends Application implements AppletStub, AppletCon
     }
 
     public void setupFrame(Applet applet) throws IOException {
-        frame = new JFrame("SpongeOSRS");
+        frame = new JFrame("MeteorLite");
         Image image = Toolkit.getDefaultToolkit().getImage(ClassLoader.getSystemClassLoader().getResource("MeteorLite_icon.png"));
         frame.setIconImage(image);
         frame.setSize(1280, 720);
