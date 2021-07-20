@@ -218,12 +218,14 @@ public class ConfigManager
 
 	private synchronized void loadFromFile()
 	{
+		boolean loaded = false;
 		consumers.clear();
 
 		Properties newProperties = new Properties();
 		try (FileInputStream in = new FileInputStream(propertiesFile))
 		{
 			newProperties.load(new InputStreamReader(in, StandardCharsets.UTF_8));
+			loaded = true;
 		}
 		catch (FileNotFoundException ex)
 		{
@@ -236,6 +238,12 @@ public class ConfigManager
 
 		log.debug("Loading in config from disk");
 		swapProperties(newProperties, false);
+		if (!loaded)
+		try {
+			saveToFile(propertiesFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void saveToFile(final File propertiesFile) throws IOException
