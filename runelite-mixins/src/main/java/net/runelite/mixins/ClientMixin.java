@@ -641,4 +641,113 @@ public abstract class ClientMixin implements RSClient{
     {
         return new Point(getMouseX(), getMouseY());
     }
+
+    @Inject
+    @Override
+    public MenuEntry[] getMenuEntries()
+    {
+        int count = getMenuOptionCount();
+        String[] menuOptions = getMenuOptions();
+        String[] menuTargets = getMenuTargets();
+        int[] menuIdentifiers = getMenuIdentifiers();
+        int[] menuTypes = getMenuOpcodes();
+        int[] params0 = getMenuArguments1();
+        int[] params1 = getMenuArguments2();
+        boolean[] leftClick = getMenuForceLeftClick();
+
+        MenuEntry[] entries = new MenuEntry[count];
+        for (int i = 0; i < count; ++i)
+        {
+            MenuEntry entry = entries[i] = new MenuEntry();
+            entry.setOption(menuOptions[i]);
+            entry.setTarget(menuTargets[i]);
+            entry.setIdentifier(menuIdentifiers[i]);
+            entry.setOpcode(menuTypes[i]);
+            entry.setActionParam(params0[i]);
+            entry.setActionParam1(params1[i]);
+            entry.setForceLeftClick(leftClick[i]);
+        }
+        return entries;
+    }
+
+    @Inject
+    private static int oldMenuEntryCount;
+
+    @Inject
+    @Override
+    public void setMenuEntries(MenuEntry[] entries)
+    {
+        int count = 0;
+        String[] menuOptions = getMenuOptions();
+        String[] menuTargets = getMenuTargets();
+        int[] menuIdentifiers = getMenuIdentifiers();
+        int[] menuTypes = getMenuOpcodes();
+        int[] params0 = getMenuArguments1();
+        int[] params1 = getMenuArguments2();
+        boolean[] leftClick = getMenuForceLeftClick();
+
+        for (MenuEntry entry : entries)
+        {
+            if (entry == null)
+            {
+                continue;
+            }
+
+            menuOptions[count] = entry.getOption();
+            menuTargets[count] = entry.getTarget();
+            menuIdentifiers[count] = entry.getIdentifier();
+            menuTypes[count] = entry.getOpcode();
+            params0[count] = entry.getActionParam();
+            params1[count] = entry.getActionParam1();
+            leftClick[count] = entry.isForceLeftClick();
+            ++count;
+        }
+
+        setMenuOptionCount(count);
+        oldMenuEntryCount = count;
+    }
+
+    @FieldHook("menuOptionsCount")
+    @Inject
+    public static void onMenuOptionsChanged(int idx)
+    {
+        int oldCount = oldMenuEntryCount;
+        int newCount = client.getMenuOptionCount();
+
+        oldMenuEntryCount = newCount;
+
+        final String[] options = client.getMenuOptions();
+        final String[] targets = client.getMenuTargets();
+        final int[] identifiers = client.getMenuIdentifiers();
+        final int[] opcodes = client.getMenuOpcodes();
+        final int[] arguments1 = client.getMenuArguments1();
+        final int[] arguments2 = client.getMenuArguments2();
+        final boolean[] forceLeftClick = client.getMenuForceLeftClick();
+
+        if (newCount == oldCount + 1)
+        {
+            MenuEntryAdded event = new MenuEntryAdded(
+                    options[oldCount],
+                    targets[oldCount],
+                    identifiers[oldCount],
+                    opcodes[oldCount],
+                    arguments1[oldCount],
+                    arguments2[oldCount],
+                    forceLeftClick[oldCount]
+            );
+
+            client.getCallbacks().post(event);
+
+            if (event.isModified() && client.getMenuOptionCount() == newCount)
+            {
+                options[oldCount] = event.getOption();
+                targets[oldCount] = event.getTarget();
+                identifiers[oldCount] = event.getIdentifier();
+                opcodes[oldCount] = event.getOpcode();
+                arguments1[oldCount] = event.getActionParam();
+                arguments2[oldCount] = event.getActionParam1();
+                forceLeftClick[oldCount] = event.isForceLeftClick();
+            }
+        }
+    }
 }

@@ -30,6 +30,7 @@ import meteor.events.ToggleToolbarEvent;
 import meteor.plugins.BankPin;
 import meteor.plugins.agility.AgilityPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
+import meteor.plugins.mousetooltips.MouseTooltipPlugin;
 import meteor.plugins.neverlog.NeverLogoutPlugin;
 import meteor.ui.overlay.OverlayManager;
 import meteor.ui.overlay.tooltip.TooltipOverlay;
@@ -146,6 +147,7 @@ public final class Launcher extends Application implements AppletStub, AppletCon
         MeteorLite.plugins.add(new NeverLogoutPlugin());
         MeteorLite.plugins.add(new BankPin());
         MeteorLite.plugins.add(new AgilityPlugin());
+        MeteorLite.plugins.add(new MouseTooltipPlugin());
         for (Plugin plugin : MeteorLite.plugins)
         {
             Injector injector = plugin.getInjector();

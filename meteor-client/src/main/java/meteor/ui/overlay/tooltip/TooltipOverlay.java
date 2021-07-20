@@ -42,6 +42,8 @@ import meteor.ui.overlay.components.PanelComponent;
 import meteor.ui.overlay.components.TooltipComponent;
 import net.runelite.api.Client;
 import net.runelite.api.widgets.WidgetID;
+import org.sponge.util.Logger;
+
 @Singleton
 public class TooltipOverlay extends Overlay
 {
