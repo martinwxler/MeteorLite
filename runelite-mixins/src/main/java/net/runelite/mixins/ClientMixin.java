@@ -16,6 +16,7 @@ import org.sponge.util.Logger;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 
 
@@ -749,5 +750,13 @@ public abstract class ClientMixin implements RSClient{
                 forceLeftClick[oldCount] = event.isForceLeftClick();
             }
         }
+    }
+
+    @Inject
+    @Override
+    public EnumSet<WorldType> getWorldType()
+    {
+        int flags = getFlags();
+        return WorldType.fromMask(flags);
     }
 }

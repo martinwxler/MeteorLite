@@ -23,6 +23,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import meteor.config.ConfigManager;
 import meteor.config.RuneLiteConfig;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
@@ -30,6 +31,7 @@ import meteor.events.ToggleToolbarEvent;
 import meteor.plugins.BankPin;
 import meteor.plugins.agility.AgilityPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
+import meteor.plugins.combatlevel.CombatLevelPlugin;
 import meteor.plugins.mousetooltips.MouseTooltipPlugin;
 import meteor.plugins.neverlog.NeverLogoutPlugin;
 import meteor.ui.overlay.OverlayManager;
@@ -89,6 +91,9 @@ public final class Launcher extends Application implements AppletStub, AppletCon
     @Inject
     public EventBus eventBus;
 
+    @Inject
+    public ConfigManager configManager;
+
     @com.google.inject.Inject
     @Nullable
     private Client client;
@@ -123,6 +128,8 @@ public final class Launcher extends Application implements AppletStub, AppletCon
         eventBus.register(this);
 
         startPlugins();
+        configManager.load();
+
         overlayManager.add(tooltipOverlay.get());
         logger.info(ANSI_YELLOW + "Guice injection completed" + ANSI_RESET);
 
@@ -148,6 +155,7 @@ public final class Launcher extends Application implements AppletStub, AppletCon
         MeteorLite.plugins.add(new BankPin());
         MeteorLite.plugins.add(new AgilityPlugin());
         MeteorLite.plugins.add(new MouseTooltipPlugin());
+        MeteorLite.plugins.add(new CombatLevelPlugin());
         for (Plugin plugin : MeteorLite.plugins)
         {
             Injector injector = plugin.getInjector();
