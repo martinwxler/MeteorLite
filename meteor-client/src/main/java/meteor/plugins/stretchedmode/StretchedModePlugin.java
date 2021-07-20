@@ -32,7 +32,7 @@ public class StretchedModePlugin extends Plugin
     public static boolean isStretchedFast = false;
     public static int scalingFactor = 100;
 
-    public static boolean enabled = false;
+    public static boolean enabled = true;
 
     @Override
     public void startup()
