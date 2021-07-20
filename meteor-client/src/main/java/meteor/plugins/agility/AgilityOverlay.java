@@ -66,7 +66,7 @@ public class AgilityOverlay extends Overlay {
             graphics.setColor(Color.white);
             p = Perspective.getCanvasTextLocation(client, graphics,  tile.getLocalLocation(), MARK_OF_GRACE, OFFSET_Z);
             if (p != null)
-                graphics.drawString(MARK_OF_GRACE, p.getX(), p.getY());
+                drawShadowText(graphics, MARK_OF_GRACE, p.getX(), p.getY());
         }
         return null;
     }
@@ -84,4 +84,16 @@ public class AgilityOverlay extends Overlay {
             }
         }
     }
+
+    private void drawShadowText(Graphics2D graphics, String s, int x, int y) {
+        graphics.setColor(Color.black);
+        graphics.drawString(s, x, y + 1);
+        graphics.drawString(s, x, y - 1);
+        graphics.drawString(s, x + 1, y);
+        graphics.drawString(s, x - 1, y);
+        graphics.setColor(Color.white);
+        graphics.drawString(s, x, y);
+        graphics.setColor(activeColor);
+    }
+
 }

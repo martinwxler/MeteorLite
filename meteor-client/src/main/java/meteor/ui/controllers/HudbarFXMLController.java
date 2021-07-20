@@ -3,6 +3,7 @@ package meteor.ui.controllers;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXProgressBar;
 import com.jfoenix.controls.JFXTextArea;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
@@ -62,10 +63,12 @@ public class HudbarFXMLController {
     {
         if (p != null)
         {
-            healthBar.setProgress((client.getBoostedSkillLevel(Skill.HITPOINTS) / (double) client.getRealSkillLevel(Skill.HITPOINTS)));
-            healthText.setText(client.getBoostedSkillLevel(Skill.HITPOINTS) + "");
-            prayerBar.setProgress((client.getBoostedSkillLevel(Skill.PRAYER) / (double) client.getRealSkillLevel(Skill.PRAYER)));
-            prayerText.setText(client.getBoostedSkillLevel(Skill.PRAYER) + "");
+            Platform.runLater(() -> {
+                healthBar.setProgress((client.getBoostedSkillLevel(Skill.HITPOINTS) / (double) client.getRealSkillLevel(Skill.HITPOINTS)));
+                healthText.setText(client.getBoostedSkillLevel(Skill.HITPOINTS) + "");
+                prayerBar.setProgress((client.getBoostedSkillLevel(Skill.PRAYER) / (double) client.getRealSkillLevel(Skill.PRAYER)));
+                prayerText.setText(client.getBoostedSkillLevel(Skill.PRAYER) + "");
+            });
         }
         else
         p = client.getLocalPlayer();
@@ -82,9 +85,11 @@ public class HudbarFXMLController {
         double nextLvlPercentage = (currentLvlProgress / (double) currentLvl.neededXP);
         if (p != null)
         {
-            xpBar.setProgress(nextLvlPercentage);
-            String no = String.format("%.4f", nextLvlPercentage * 100);
-            xpText.setText(no + "%");
+            Platform.runLater(() -> {
+                xpBar.setProgress(nextLvlPercentage);
+                String no = String.format("%.4f", nextLvlPercentage * 100);
+                xpText.setText(no + "%");
+            });
         }
         else
             p = client.getLocalPlayer();
