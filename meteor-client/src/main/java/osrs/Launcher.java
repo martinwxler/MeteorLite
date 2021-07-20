@@ -23,6 +23,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import meteor.config.RuneLiteConfig;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.events.ToggleToolbarEvent;
@@ -30,6 +31,8 @@ import meteor.plugins.BankPin;
 import meteor.plugins.agility.AgilityPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.neverlog.NeverLogoutPlugin;
+import meteor.ui.overlay.OverlayManager;
+import meteor.ui.overlay.tooltip.TooltipOverlay;
 import net.runelite.api.Client;
 import org.sponge.util.Logger;
 import meteor.Plugin;
@@ -40,16 +43,14 @@ import meteor.plugins.gpu.GpuPlugin;
 import meteor.plugins.stretchedmode.StretchedModePlugin;
 
 import javax.annotation.Nullable;
+import javax.inject.Named;
 import javax.swing.*;
 import java.applet.Applet;
 import java.applet.AppletContext;
 import java.applet.AppletStub;
 import java.applet.AudioClip;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -72,6 +73,15 @@ public final class Launcher extends Application implements AppletStub, AppletCon
     public static JFXPanel rightPanel = new JFXPanel();
     private static boolean toolbarVisible = true;
 
+    public static final File METEOR_DIR = new File(System.getProperty("user.home"), ".meteorlite");
+    public static final File CACHE_DIR = new File(METEOR_DIR, "cache");
+    public static final File PLUGINS_DIR = new File(METEOR_DIR, "plugin-hub");
+    public static final File PROFILES_DIR = new File(METEOR_DIR, "profiles");
+    public static final File SCREENSHOT_DIR = new File(METEOR_DIR, "screenshots");
+    public static final File LOGS_DIR = new File(METEOR_DIR, "logs");
+    public static final File DEFAULT_SESSION_FILE = new File(METEOR_DIR, "session");
+    public static final File DEFAULT_CONFIG_FILE = new File(METEOR_DIR, "settings.properties");
+
     @Inject
     public Logger logger;
 
@@ -81,6 +91,12 @@ public final class Launcher extends Application implements AppletStub, AppletCon
     @com.google.inject.Inject
     @Nullable
     private Client client;
+
+    @Inject
+    private OverlayManager overlayManager;
+
+    @Inject
+    private javax.inject.Provider<TooltipOverlay> tooltipOverlay;
 
     Applet applet;
     public static JPanel panel;
@@ -106,7 +122,7 @@ public final class Launcher extends Application implements AppletStub, AppletCon
         eventBus.register(this);
 
         startPlugins();
-
+        overlayManager.add(tooltipOverlay.get());
         logger.info(ANSI_YELLOW + "Guice injection completed" + ANSI_RESET);
 
         applet = (Applet) client;

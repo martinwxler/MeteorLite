@@ -40,14 +40,10 @@ public class Plugin implements Module {
 
     }
 
-    public void paintAboveScene(Graphics2D graphics2D)
-    {
-
-    }
-
     public Injector getInjector() {
         return injector;
     }
+
     public void setInjector(Injector injector)
     {
         this.injector = injector;
@@ -55,6 +51,16 @@ public class Plugin implements Module {
 
     @Override
     public void configure(Binder binder) {
+
+    }
+
+    public void paintAboveScene(Graphics2D graphics2D)
+    {
+
+    }
+
+    public void paintAlwaysOnTop(Graphics2D graphics2d)
+    {
 
     }
 }

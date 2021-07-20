@@ -75,6 +75,8 @@ public class HudbarFXMLController {
     public void onStatChanged(StatChanged event)
     {
         XpTable currentLvl = XpTable.of(event.getLevel());
+        if (currentLvl == null)
+            return;
         int currentSkillXP = client.getSkillExperience(event.getSkill());
         int currentLvlProgress = currentSkillXP - currentLvl.startXP;
         double nextLvlPercentage = (currentLvlProgress / (double) currentLvl.neededXP);

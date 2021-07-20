@@ -34,6 +34,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import meteor.ui.overlay.OverlayLayer;
 import meteor.util.ClientThread;
 import net.runelite.api.BufferProvider;
 import net.runelite.api.Client;
@@ -238,7 +239,7 @@ public class Hooks implements Callbacks
 
 		try
 		{
-			renderer.renderAlwaysOnTop(graphics2d);
+			renderer.renderOverlayLayer(graphics2d, OverlayLayer.ALWAYS_ON_TOP);
 		}
 		catch (Exception ex)
 		{
@@ -328,7 +329,7 @@ public class Hooks implements Callbacks
 
 		try
 		{
-			renderer.renderAboveScene(graphics2d);
+			renderer.renderOverlayLayer(graphics2d, OverlayLayer.ABOVE_SCENE);
 		}
 		catch (Exception ex)
 		{
@@ -344,7 +345,7 @@ public class Hooks implements Callbacks
 
 		try
 		{
-			//renderer.renderOverlayLayer(graphics2d, OverlayLayer.UNDER_WIDGETS);
+			renderer.renderOverlayLayer(graphics2d, OverlayLayer.UNDER_WIDGETS);
 		}
 		catch (Exception ex)
 		{
@@ -396,7 +397,7 @@ public class Hooks implements Callbacks
 
 		try
 		{
-			//renderer.renderAfterInterface(graphics2d, interfaceId, widgetItems);
+			renderer.renderAfterInterface(graphics2d, interfaceId, widgetItems);
 		}
 		catch (Exception ex)
 		{
@@ -412,7 +413,7 @@ public class Hooks implements Callbacks
 
 		try
 		{
-			//renderer.renderAfterLayer(graphics2d, layer, widgetItems);
+			renderer.renderAfterLayer(graphics2d, layer, widgetItems);
 		}
 		catch (Exception ex)
 		{

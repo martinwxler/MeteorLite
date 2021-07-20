@@ -103,9 +103,9 @@ public class ColorUtil
 		final double b2 = b.getBlue();
 
 		return new Color(
-			(int) Math.round(r1 + (t * (r2 - r1))),
-			(int) Math.round(g1 + (t * (g2 - g1))),
-			(int) Math.round(b1 + (t * (b2 - b1)))
+				(int) Math.round(r1 + (t * (r2 - r1))),
+				(int) Math.round(g1 + (t * (g2 - g1))),
+				(int) Math.round(b1 + (t * (b2 - b1)))
 		);
 	}
 

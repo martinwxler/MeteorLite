@@ -28,6 +28,9 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.name.Names;
+import meteor.config.ConfigManager;
+import meteor.config.RuneLiteConfig;
+import meteor.util.ExecutorServiceExceptionLogger;
 import net.runelite.api.Client;
 import net.runelite.api.hooks.Callbacks;
 import org.sponge.util.Logger;
@@ -35,24 +38,26 @@ import meteor.callbacks.Hooks;
 import meteor.eventbus.DeferredEventBus;
 import meteor.eventbus.EventBus;
 import meteor.util.NonScheduledExecutorServiceExceptionLogger;
+import osrs.Launcher;
 
 import javax.annotation.Nullable;
 import javax.inject.Singleton;
 import java.applet.Applet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.io.File;
+import java.util.concurrent.*;
+
+import static osrs.Launcher.DEFAULT_CONFIG_FILE;
 
 public class MeteorLiteModule extends AbstractModule
 {
 
-	public Logger logger = new Logger("SpongeOSRS");
+	public Logger logger = new Logger("MeteorLite");
 
 	@Override
 	protected void configure()
 	{
 		bind(Callbacks.class).to(Hooks.class);
+		bind(ScheduledExecutorService.class).toInstance(new ExecutorServiceExceptionLogger(Executors.newSingleThreadScheduledExecutor()));
 
 		bind(EventBus.class)
 			.toInstance(new EventBus());
@@ -61,6 +66,15 @@ public class MeteorLiteModule extends AbstractModule
 			.annotatedWith(Names.named("Deferred EventBus"))
 			.to(DeferredEventBus.class);
 	}
+
+	@com.google.inject.name.Named("config")
+	@Provides
+	@javax.inject.Singleton
+	File provideMeteorLiteConfig()
+	{
+		return DEFAULT_CONFIG_FILE;
+	}
+
 
 	@Provides
 	@Singleton
@@ -86,6 +100,13 @@ public class MeteorLiteModule extends AbstractModule
 	Client provideClient(@Nullable Applet applet)
 	{
 		return applet instanceof Client ? (Client) applet : null;
+	}
+
+	@Provides
+	@Singleton
+	RuneLiteConfig provideConfig(ConfigManager configManager)
+	{
+		return configManager.getConfig(RuneLiteConfig.class);
 	}
 
 	@Provides

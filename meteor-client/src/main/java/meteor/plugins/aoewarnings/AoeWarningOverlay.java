@@ -46,10 +46,6 @@ import net.runelite.api.Point;
 import net.runelite.api.ProjectileID;
 import net.runelite.api.Varbits;
 import net.runelite.api.coords.WorldPoint;
-import osrs.Launcher;
-
-import static meteor.plugins.aoewarnings.ColorUtil.setAlphaComponent;
-
 @Singleton
 public class AoeWarningOverlay
 {
@@ -165,7 +161,7 @@ public class AoeWarningOverlay
 
 			if (config.isOutlineEnabled())
 			{
-				graphics.setColor(new Color(setAlphaComponent(config.overlayColor().getRGB(), outlineAlpha), true));
+				graphics.setColor(new Color(ColorUtil.setAlphaComponent(config.overlayColor().getRGB(), outlineAlpha), true));
 				graphics.drawPolygon(tilePoly);
 			}
 			if (config.tickTimers() && tickProgress >= 0)
@@ -174,7 +170,7 @@ public class AoeWarningOverlay
 					config.fontStyle().getFont(), color, centerPoint(tilePoly.getBounds()), config.shadows(), 0);
 			}
 
-			graphics.setColor(new Color(setAlphaComponent(config.overlayColor().getRGB(), fillAlpha), true));
+			graphics.setColor(new Color(ColorUtil.setAlphaComponent(config.overlayColor().getRGB(), fillAlpha), true));
 			graphics.fillPolygon(tilePoly);
 		});
 		projectiles.removeIf(proj -> now.isAfter(proj.getStartTime().plus(Duration.ofMillis(proj.getLifetime()))));

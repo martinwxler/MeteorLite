@@ -2,10 +2,13 @@ package meteor.plugins.agility;
 
 import meteor.Plugin;
 import meteor.eventbus.Subscribe;
+import meteor.ui.overlay.OverlayLayer;
+import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.*;
 import net.runelite.api.Point;
 import net.runelite.api.events.*;
 
+import javax.inject.Inject;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,13 +17,20 @@ import java.util.Map;
 
 public class AgilityPlugin extends Plugin {
 
-    private final Map<TileObject, Obstacle> obstacles = new HashMap<>();
-    public List<TileItem> marks = new ArrayList<>();
+    public final Map<TileObject, Obstacle> obstacles = new HashMap<>();
+    public List<Tile> marks = new ArrayList<>();
 
-    Color overlayFillColor;
-    private Color activeColor;
-    private final int OFFSET_Z = 20;
-    private final String MARK_OF_GRACE = "Mark of Grace";
+    @Inject
+    OverlayManager overlayManager;
+
+    AgilityOverlay overlay = new AgilityOverlay(this);
+
+    @Override
+    public void startup()
+    {
+        overlay.setLayer(OverlayLayer.ABOVE_SCENE);
+        overlayManager.add(overlay);
+    }
 
     @Subscribe
     public void onGameStateChanged(GameStateChanged event)
@@ -107,14 +117,14 @@ public class AgilityPlugin extends Plugin {
     public void onItemSpawned(ItemSpawned event)
     {
         if (event.getItem().getId() == ItemID.MARK_OF_GRACE)
-            marks.add(event.getItem());
+            marks.add(event.getTile());
     }
 
     @Subscribe
     public void onItemDespawned(ItemDespawned event)
     {
         if (event.getItem().getId() == ItemID.MARK_OF_GRACE)
-            marks.remove(event.getItem());
+            marks.remove(event.getTile());
     }
 
     private void onTileObject(Tile tile, TileObject oldObject, TileObject newObject)
@@ -175,62 +185,8 @@ public class AgilityPlugin extends Plugin {
     @Override
     public void paintAboveScene(Graphics2D graphics2D)
     {
-        if (marks.size() > 0)
-            activeColor = Color.red;
-        else
-            activeColor = Color.cyan;
 
-        overlayFillColor = new Color(activeColor.darker().getRed(), activeColor.darker().getGreen(), activeColor.darker().getBlue(), 125);
-
-        graphics2D.setColor(activeColor);
-        AgilityShortcut as;
-        Color prevColor;
-        Color prevOverlayFillColor;
-        for (TileObject o : obstacles.keySet())
-        {
-           prevColor = activeColor;
-           prevOverlayFillColor = overlayFillColor;
-            as = obstacles.get(o).getShortcut();
-            if (as != null)
-            {
-                if (as.getLevel() > client.getBoostedSkillLevel(Skill.AGILITY))
-                {
-                    activeColor = Color.red;
-                }
-                else
-                {
-                    activeColor = Color.green;
-                }
-                prevOverlayFillColor = overlayFillColor;
-                overlayFillColor = new Color(activeColor.darker().getRed(), activeColor.darker().getGreen(), activeColor.darker().getBlue(), 125);
-            }
-            paintClickBox(graphics2D, o.getPlane(), o.getClickbox());
-            activeColor = prevColor;
-            overlayFillColor = prevOverlayFillColor;
-        }
-        Point p;
-        for (TileItem tileItem : marks)
-        {
-            graphics2D.setColor(activeColor);
-            graphics2D.draw(Perspective.getCanvasTileAreaPoly(client, tileItem.getTile().getLocalLocation(), 1));
-            graphics2D.setColor(Color.white);
-            p = Perspective.getCanvasTextLocation(client, graphics2D,  tileItem.getTile().getLocalLocation(), MARK_OF_GRACE, OFFSET_Z);
-            if (p != null)
-                graphics2D.drawString(MARK_OF_GRACE, p.getX(), p.getY());
-        }
     }
 
-    private void paintClickBox(Graphics2D graphics2D, int plane, Shape clickbox) {
 
-        if (plane == client.getPlane())
-        {
-            if (clickbox != null)
-            {
-                graphics2D.setColor(activeColor);
-                graphics2D.draw(clickbox);
-                graphics2D.setColor(overlayFillColor);
-                graphics2D.fill(clickbox);
-            }
-        }
-    }
 }

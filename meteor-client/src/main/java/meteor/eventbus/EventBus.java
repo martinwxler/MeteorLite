@@ -218,6 +218,7 @@ public class EventBus
 			}
 			catch (Exception e)
 			{
+				e.printStackTrace();
 				exceptionHandler.accept(e);
 			}
 		}

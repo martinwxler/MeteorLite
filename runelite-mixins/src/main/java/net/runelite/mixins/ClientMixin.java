@@ -624,4 +624,21 @@ public abstract class ClientMixin implements RSClient{
             client.getCallbacks().post(statChanged);
         }
     }
+
+    @Inject
+    @Override
+    public Widget getWidget(WidgetInfo widget)
+    {
+        int groupId = widget.getGroupId();
+        int childId = widget.getChildId();
+
+        return getWidget(groupId, childId);
+    }
+
+    @Inject
+    @Override
+    public Point getMouseCanvasPosition()
+    {
+        return new Point(getMouseX(), getMouseY());
+    }
 }
