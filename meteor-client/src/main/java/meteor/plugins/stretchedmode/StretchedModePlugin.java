@@ -2,7 +2,7 @@ package meteor.plugins.stretchedmode;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import osrs.Launcher;
+import meteor.MeteorLite;
 import meteor.Plugin;
 import meteor.ui.TranslateMouseListener;
 import meteor.ui.TranslateMouseWheelListener;
@@ -58,7 +58,7 @@ public class StretchedModePlugin extends Plugin
 
     public static void showConfig() throws IOException {
         Parent configRoot = FXMLLoader.load(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("meteor/plugins/stretchedmode/config.fxml")));
-        Launcher.updateRightPanel(configRoot);
+        MeteorLite.updateRightPanel(configRoot);
     }
 
     public void updateConfig()

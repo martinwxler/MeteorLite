@@ -1,4 +1,4 @@
-package net.runelite.mixins.sponge.input;
+package net.runelite.mixins.meteor.input;
 
 import net.runelite.api.mixins.*;
 import net.runelite.rs.api.RSClient;

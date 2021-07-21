@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
+import static net.runelite.api.MenuAction.UNKNOWN;
+
 
 @Mixin(RSClient.class)
 public abstract class ClientMixin implements RSClient{
@@ -759,4 +761,69 @@ public abstract class ClientMixin implements RSClient{
         int flags = getFlags();
         return WorldType.fromMask(flags);
     }
+
+    @Inject
+    @Override
+    public Tile getSelectedSceneTile()
+    {
+        int tileX = getSelectedSceneTileX();
+        int tileY = getSelectedSceneTileY();
+
+        if (tileX == -1 || tileY == -1)
+        {
+            return null;
+        }
+
+        return getScene().getTiles()[getPlane()][tileX][tileY];
+    }
+
+    @Copy("menuAction")
+    @Replace("menuAction")
+    static void copy$menuAction(int param0, int param1, int opcode, int id, String option, String target, int canvasX, int canvasY)
+    {
+        /*
+         * The RuneScape client may deprioritize an action in the menu by incrementing the opcode with 2000,
+         * undo it here so we can get the correct opcode
+         */
+        boolean decremented = false;
+        if (opcode >= 2000)
+        {
+            decremented = true;
+            opcode -= 2000;
+        }
+
+        final MenuOptionClicked menuOptionClicked = new MenuOptionClicked();
+        menuOptionClicked.setActionParam(param0);
+        menuOptionClicked.setMenuOption(option);
+        menuOptionClicked.setMenuTarget(target);
+        menuOptionClicked.setMenuAction(MenuAction.of(opcode));
+        menuOptionClicked.setId(id);
+        menuOptionClicked.setWidgetId(param1);
+        menuOptionClicked.setSelectedItemIndex(client.getSelectedItemSlot());
+
+        client.getCallbacks().post(menuOptionClicked);
+
+        if (menuOptionClicked.isConsumed())
+        {
+            return;
+        }
+
+        if (false)
+        {
+            /*
+            client.getLogger().info(
+                    "|MenuAction|: MenuOption={} MenuTarget={} Id={} Opcode={}/{} Param0={} Param1={} CanvasX={} CanvasY={}",
+                    menuOptionClicked.getMenuOption(), menuOptionClicked.getMenuTarget(), menuOptionClicked.getId(),
+                    menuOptionClicked.getMenuAction(), opcode + (decremented ? 2000 : 0),
+                    menuOptionClicked.getActionParam(), menuOptionClicked.getWidgetId(), canvasX, canvasY
+            );
+            */
+        }
+
+        copy$menuAction(menuOptionClicked.getActionParam(), menuOptionClicked.getWidgetId(),
+                menuOptionClicked.getMenuAction() == UNKNOWN ? opcode : menuOptionClicked.getMenuAction().getId(),
+                menuOptionClicked.getId(), menuOptionClicked.getMenuOption(), menuOptionClicked.getMenuTarget(),
+                canvasX, canvasY);
+    }
+
 }

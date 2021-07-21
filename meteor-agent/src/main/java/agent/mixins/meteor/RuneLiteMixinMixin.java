@@ -26,8 +26,7 @@ public abstract class RuneLiteMixinMixin implements RSClient {
     private static void onOnGameStateChanged(int gamestate, CallbackInfo callbackInfo) {
         if (client == null)
         {
-            MeteorLite.client = clientInstance;
-            client = MeteorLite.client;
+            client = MeteorLite.clientInstance = clientInstance;
         }
 
         spongeLogger.debug("GameState ValueOf: " + client.getGameState());

@@ -1,4 +1,4 @@
-package net.runelite.mixins.sponge;
+package net.runelite.mixins.meteor;
 
 import net.runelite.api.Model;
 import net.runelite.api.Perspective;

@@ -28,7 +28,6 @@
 package meteor.plugins.aoewarnings;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Rectangle;
@@ -40,6 +39,7 @@ import javax.inject.Singleton;
 
 import meteor.MeteorLite;
 import meteor.Plugin;
+import meteor.ui.overlay.OverlayUtil;
 import net.runelite.api.Client;
 import net.runelite.api.Perspective;
 import net.runelite.api.Point;

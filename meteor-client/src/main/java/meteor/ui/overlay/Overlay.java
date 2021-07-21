@@ -35,11 +35,11 @@ import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import meteor.MeteorLite;
 import meteor.Plugin;
 import meteor.ui.overlay.components.LayoutableRenderableEntity;
 import net.runelite.api.Client;
 import net.runelite.api.widgets.WidgetInfo;
-import osrs.Launcher;
 
 @Getter
 @Setter
@@ -73,13 +73,13 @@ public abstract class Overlay implements LayoutableRenderableEntity
 	protected Overlay()
 	{
 		plugin = null;
-		Launcher.injector.injectMembers(this);
+		MeteorLite.injector.injectMembers(this);
 	}
 
 	protected Overlay(Plugin plugin)
 	{
 		this.plugin = plugin;
-		Launcher.injector.injectMembers(this);
+		MeteorLite.injector.injectMembers(this);
 	}
 
 	/**

@@ -1,4 +1,4 @@
-package net.runelite.mixins.sponge;
+package net.runelite.mixins.meteor;
 
 import meteor.events.ToggleToolbarEvent;
 import net.runelite.api.mixins.*;

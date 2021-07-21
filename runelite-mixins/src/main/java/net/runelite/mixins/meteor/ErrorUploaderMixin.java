@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Lotto <https://github.com/devLotto>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,32 +22,34 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.mixins.sponge.input;
+package net.runelite.mixins.meteor;
 
-import net.runelite.api.mixins.Copy;
 import net.runelite.api.mixins.Mixin;
 import net.runelite.api.mixins.Replace;
 import net.runelite.api.mixins.Shadow;
 import net.runelite.rs.api.RSClient;
-import net.runelite.rs.api.RSMouseWheelHandler;
+import net.runelite.rs.api.RSRunException;
 
-import java.awt.event.MouseWheelEvent;
-
-@Mixin(RSMouseWheelHandler.class)
-public abstract class MouseWheelHandlerMixin implements RSMouseWheelHandler
+@Mixin(RSClient.class)
+public abstract class ErrorUploaderMixin implements RSClient
 {
 	@Shadow("client")
 	private static RSClient client;
 
-	@Override
-	@Copy("mouseWheelMoved")
-	@Replace("mouseWheelMoved")
-	public void mouseWheelMoved(MouseWheelEvent event)
+	@Replace("RunException_sendStackTrace")
+	static void processClientError(String string, Throwable throwable)
 	{
-		event = client.getCallbacks().mouseWheelMoved(event);
-		if (!event.isConsumed())
+		if (throwable != null)
 		{
-			mouseWheelMoved(event);
+			Throwable throwableToScan = throwable;
+
+			if (throwable instanceof RSRunException)
+			{
+				throwableToScan = ((RSRunException) throwable).getParent();
+			}
+
+			client.getLogger().error("Game crash:");
+			throwableToScan.printStackTrace();
 		}
 	}
 }

@@ -66,7 +66,7 @@ import meteor.eventbus.Subscribe;
 import meteor.plugins.gpu.config.AntiAliasingMode;
 import meteor.plugins.gpu.config.UIScalingMode;
 import meteor.plugins.gpu.template.Template;
-import meteor.util.ClientThread;
+import meteor.callback.ClientThread;
 import meteor.util.DrawManager;
 import meteor.util.OSType;
 import net.runelite.api.BufferProvider;

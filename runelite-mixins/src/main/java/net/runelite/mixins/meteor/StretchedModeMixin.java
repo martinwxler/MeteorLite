@@ -1,4 +1,4 @@
-package net.runelite.mixins.sponge;
+package net.runelite.mixins.meteor;
 
 import net.runelite.api.Constants;
 import net.runelite.api.mixins.Inject;

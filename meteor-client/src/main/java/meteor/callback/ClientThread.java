@@ -22,7 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.util;
+package meteor.callback;
 
 import com.google.inject.Inject;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;

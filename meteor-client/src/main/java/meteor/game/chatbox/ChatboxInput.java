@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Lotto <https://github.com/devLotto>
+ * Copyright (c) 2018 Abex
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,34 +22,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.mixins.sponge;
+package meteor.game.chatbox;
 
-import net.runelite.api.mixins.Mixin;
-import net.runelite.api.mixins.Replace;
-import net.runelite.api.mixins.Shadow;
-import net.runelite.rs.api.RSClient;
-import net.runelite.rs.api.RSRunException;
-
-@Mixin(RSClient.class)
-public abstract class ErrorUploaderMixin implements RSClient
+/**
+ * A modal input that lives in the chatbox panel.
+ */
+public abstract class ChatboxInput
 {
-	@Shadow("client")
-	private static RSClient client;
-
-	@Replace("RunException_sendStackTrace")
-	static void processClientError(String string, Throwable throwable)
+	protected void open()
 	{
-		if (throwable != null)
-		{
-			Throwable throwableToScan = throwable;
+	}
 
-			if (throwable instanceof RSRunException)
-			{
-				throwableToScan = ((RSRunException) throwable).getParent();
-			}
-
-			client.getLogger().error("Game crash:");
-			throwableToScan.printStackTrace();
-		}
+	protected void close()
+	{
 	}
 }

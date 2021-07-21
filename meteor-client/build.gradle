@@ -30,6 +30,7 @@ dependencies {
     implementation(project(":runescape-api"))
     implementation(project(":runelite-api"))
     implementation(project(":meteor-logger"))
+    implementation(project(":http-api"))
     compileOnly(project(":runescape-client"))
     implementation group: 'de.jensd', name: 'fontawesomefx-fontawesome', version: '4.7.0-5'
     implementation 'com.jfoenix:jfoenix:8.0.10'
@@ -43,6 +44,7 @@ dependencies {
     implementation(group:"net.runelite.jocl", name:"jocl", version:"1.0")
     implementation(group : "io.reactivex.rxjava3", name : "rxjava", version : "3.0.10")
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
+    implementation(group : "com.squareup.okhttp3", name : "okhttp", version : "3.7.0")
 
     runtimeOnly(group:"net.runelite.pushingpixels", name:"trident", version:"1.5.00")
     runtimeOnly(group:"net.runelite.gluegen", name:"gluegen-rt", version:"2.4.0-rc-20200429", classifier:"natives-linux-amd64")
@@ -72,7 +74,7 @@ tasks {
 }
 
 application {
-    mainClass.set("osrs.Launcher")
+    mainClass.set("meteor.MeteorLite")
 }
 
 processResources {

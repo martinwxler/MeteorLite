@@ -34,11 +34,10 @@ import meteor.util.ExecutorServiceExceptionLogger;
 import net.runelite.api.Client;
 import net.runelite.api.hooks.Callbacks;
 import org.sponge.util.Logger;
-import meteor.callbacks.Hooks;
+import meteor.callback.Hooks;
 import meteor.eventbus.DeferredEventBus;
 import meteor.eventbus.EventBus;
 import meteor.util.NonScheduledExecutorServiceExceptionLogger;
-import osrs.Launcher;
 
 import javax.annotation.Nullable;
 import javax.inject.Singleton;
@@ -46,7 +45,7 @@ import java.applet.Applet;
 import java.io.File;
 import java.util.concurrent.*;
 
-import static osrs.Launcher.DEFAULT_CONFIG_FILE;
+import static meteor.MeteorLite.DEFAULT_CONFIG_FILE;
 
 public class MeteorLiteModule extends AbstractModule
 {

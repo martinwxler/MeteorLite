@@ -2,7 +2,7 @@ package meteor.plugins;
 
 import meteor.Plugin;
 import meteor.eventbus.Subscribe;
-import meteor.util.ClientThread;
+import meteor.callback.ClientThread;
 import net.runelite.api.ScriptID;
 import net.runelite.api.VarClientStr;
 import net.runelite.api.events.ScriptCallbackEvent;

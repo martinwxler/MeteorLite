@@ -22,7 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.callbacks;
+package meteor.callback;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -34,8 +34,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import meteor.MeteorLite;
 import meteor.ui.overlay.OverlayLayer;
-import meteor.util.ClientThread;
 import net.runelite.api.BufferProvider;
 import net.runelite.api.Client;
 import net.runelite.api.MainBufferProvider;
@@ -55,7 +55,6 @@ import net.runelite.api.widgets.Widget;
 import static net.runelite.api.widgets.WidgetInfo.WORLD_MAP_VIEW;
 import net.runelite.api.widgets.WidgetItem;
 import org.sponge.util.Logger;
-import osrs.Launcher;
 import meteor.eventbus.DeferredEventBus;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
@@ -258,7 +257,7 @@ public class Hooks implements Callbacks
 		final Image finalImage;
 		if (client.isStretchedEnabled())
 		{
-			GraphicsConfiguration gc = Launcher.frame.getGraphicsConfiguration();
+			GraphicsConfiguration gc = MeteorLite.frame.getGraphicsConfiguration();
 			Dimension stretchedDimensions = client.getStretchedDimensions();
 
 			if (lastStretchedDimensions == null || !lastStretchedDimensions.equals(stretchedDimensions)
