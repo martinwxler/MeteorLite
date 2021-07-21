@@ -93,7 +93,7 @@ public class HudbarFXMLController {
             if (i > 0)
             {
                 double d = ((client.getBoostedSkillLevel(Skill.HITPOINTS) + i) / (double) client.getRealSkillLevel(Skill.HITPOINTS));
-                if (d < 1.0)
+                if (d <= 1.0)
                 {
                     healthBar.lookup(".secondary-bar").lookup(".secondary-bar").setStyle("-fx-background-color: #087f23");
                 }
