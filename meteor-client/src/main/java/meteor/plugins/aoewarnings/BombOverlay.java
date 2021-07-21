@@ -24,10 +24,7 @@
  */
 package meteor.plugins.aoewarnings;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Polygon;
+import java.awt.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.Instant;
@@ -37,6 +34,8 @@ import javax.inject.Singleton;
 
 import meteor.MeteorLite;
 import meteor.Plugin;
+import meteor.ui.overlay.Overlay;
+import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayUtil;
 import net.runelite.api.Client;
 import net.runelite.api.Perspective;
@@ -45,7 +44,7 @@ import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 
 @Singleton
-public class BombOverlay
+public class BombOverlay extends Overlay
 {
 
 	private static final String SAFE = "#00cc00";
@@ -71,16 +70,9 @@ public class BombOverlay
 	@Inject
 	public BombOverlay(final Client client, final AoeWarningConfig config)
 	{
+		setLayer(OverlayLayer.ABOVE_SCENE);
 		this.client = client;
 		this.config = config;
-	}
-
-	public void paintAboveScene(Graphics2D graphics)
-	{
-		if (config.bombDisplay())
-		{
-			drawDangerZone(graphics);
-		}
 	}
 
 	private void drawDangerZone(Graphics2D graphics)
@@ -152,5 +144,14 @@ public class BombOverlay
 				OverlayUtil.renderTextLocation(graphics, canvasCenterPoint, bombTimerString, color_code);
 			}
 		});
+	}
+
+	@Override
+	public Dimension render(Graphics2D graphics) {
+		if (config.bombDisplay())
+		{
+			drawDangerZone(graphics);
+		}
+		return null;
 	}
 }

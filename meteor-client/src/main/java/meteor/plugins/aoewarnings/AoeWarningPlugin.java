@@ -41,6 +41,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import meteor.Plugin;
 import meteor.eventbus.Subscribe;
+import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
@@ -77,6 +78,9 @@ public class AoeWarningPlugin extends Plugin
 	@Inject
 	private Client client;
 
+	@Inject
+	private OverlayManager overlayManager;
+
 	@Getter(AccessLevel.PACKAGE)
 	private List<WorldPoint> lightningTrail = new ArrayList<>();
 
@@ -104,12 +108,16 @@ public class AoeWarningPlugin extends Plugin
 	@Override
 	public void startup()
 	{
+		overlayManager.add(coreOverlay);
+		overlayManager.add(bombOverlay);
 		reset();
 	}
 
 	@Override
 	public void shutdown()
 	{
+		overlayManager.remove(coreOverlay);
+		overlayManager.remove(bombOverlay);
 		reset();
 	}
 
@@ -348,12 +356,5 @@ public class AoeWarningPlugin extends Plugin
 	private boolean regionCheck(int region)
 	{
 		return ArrayUtils.contains(client.getMapRegions(), region);
-	}
-
-	@Override
-	public void paintAboveScene(Graphics2D graphics2D)
-	{
-		coreOverlay.paintAboveScene(graphics2D);
-		bombOverlay.paintAboveScene(graphics2D);
 	}
 }

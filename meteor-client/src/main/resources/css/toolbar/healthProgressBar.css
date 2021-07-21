@@ -29,7 +29,7 @@
 
 .jfx-progress-bar > .secondary-bar,
 .jfx-progress-bar:indeterminate > .secondary-bar{
-    -fx-background-color: #e1b7b7;
+    -fx-background-color: #ffeb3b;
 }
 
 .jfx-progress-bar > .track,

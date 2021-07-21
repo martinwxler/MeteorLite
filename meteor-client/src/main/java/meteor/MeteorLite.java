@@ -197,9 +197,7 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
     }
 
     public void setupFrame(Applet applet) throws IOException {
-        frame = new JFrame("MeteorLite");
-        Image image = Toolkit.getDefaultToolkit().getImage(ClassLoader.getSystemClassLoader().getResource("MeteorLite_icon.png"));
-        frame.setIconImage(image);
+        frame = new JFrame();
         frame.setSize(1280, 720);
         panel = new JPanel();
         panel.setLayout(layout);
@@ -210,7 +208,7 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
         Parent toolbarRoot = FXMLLoader.load(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("toolbar.fxml")));
         Parent hudbarRoot = FXMLLoader.load(Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("hudbar.fxml")));
 
-        toolbarJFXPanel.setScene(new Scene(toolbarRoot, 300, 50));
+        toolbarJFXPanel.setScene(new Scene(toolbarRoot, 300, 45));
         toolbarJFXPanel.setVisible(true);
         hudbarJFXPanel.setScene(new Scene(hudbarRoot, 300, 75));
         hudbarJFXPanel.setVisible(true);
