@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018 Charlie Waters
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,34 +22,38 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.util;
+package meteor.plugins.itemprices;
 
-import lombok.RequiredArgsConstructor;
-import org.sponge.util.Logger;
+import com.google.inject.Provides;
+import meteor.Plugin;
+import meteor.config.ConfigManager;
+import meteor.ui.overlay.OverlayManager;
 
-@RequiredArgsConstructor
-public class RunnableExceptionLogger implements Runnable
+import javax.inject.Inject;
+
+public class ItemPricesPlugin extends Plugin
 {
-	public Logger log = new Logger("Runnable");
-	private final Runnable runnable;
+	@Inject
+	private OverlayManager overlayManager;
 
-	@Override
-	public void run()
+	@Inject
+	private ItemPricesOverlay overlay;
+
+	@Provides
+	ItemPricesConfig getConfig(ConfigManager configManager)
 	{
-		try
-		{
-			runnable.run();
-		}
-		catch (Throwable ex)
-		{
-			log.warn("Uncaught exception in runnable {}", runnable, ex);
-			ex.printStackTrace();
-			throw ex;
-		}
+		return configManager.getConfig(ItemPricesConfig.class);
 	}
 
-	public static RunnableExceptionLogger wrap(Runnable runnable)
+	@Override
+	public void startup()
 	{
-		return new RunnableExceptionLogger(runnable);
+		overlayManager.add(overlay);
+	}
+
+	@Override
+	public void shutdown()
+	{
+		overlayManager.remove(overlay);
 	}
 }

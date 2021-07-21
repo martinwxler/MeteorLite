@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2016-2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,34 +22,66 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.util;
+package meteor.plugins.itemstats;
 
-import lombok.RequiredArgsConstructor;
-import org.sponge.util.Logger;
+import lombok.Data;
+import meteor.plugins.itemstats.stats.Stat;
 
-@RequiredArgsConstructor
-public class RunnableExceptionLogger implements Runnable
+/**
+ * A single stat change
+ */
+@Data
+public class StatChange
 {
-	public Logger log = new Logger("Runnable");
-	private final Runnable runnable;
+	/**
+	 * The stat which will be boosted (or damaged).
+	 */
+	private Stat stat;
 
-	@Override
-	public void run()
+	/**
+	 * Relative change that will occur if the stat boost is applied now.
+	 */
+	private int relative;
+
+	/**
+	 * Theoretical change that can occur before boost cap is enforced.
+	 */
+	private int theoretical;
+
+	/**
+	 * Absolute total of the stat after applying the boost.
+	 */
+	private int absolute;
+
+	/**
+	 * How beneficial this stat boost will be to the player.
+	 */
+	private Positivity positivity;
+
+	/**
+	 * Returns a human-readable formatted relative boost.
+	 * Should be the boost amount prefixed by "+" or "-".
+	 *
+	 * @return The formatted relative boost amount
+	 */
+	public String getFormattedRelative()
 	{
-		try
-		{
-			runnable.run();
-		}
-		catch (Throwable ex)
-		{
-			log.warn("Uncaught exception in runnable {}", runnable, ex);
-			ex.printStackTrace();
-			throw ex;
-		}
+		return formatBoost(relative);
 	}
 
-	public static RunnableExceptionLogger wrap(Runnable runnable)
+	/**
+	 * Returns a human-readable formatted theoretical boost.
+	 * Should be the boost amount prefixed by "+" or "-".
+	 *
+	 * @return The formatted theoretical boost amount
+	 */
+	public String getFormattedTheoretical()
 	{
-		return new RunnableExceptionLogger(runnable);
+		return formatBoost(theoretical);
+	}
+
+	static String formatBoost(int boost)
+	{
+		return String.format("%+d", boost);
 	}
 }

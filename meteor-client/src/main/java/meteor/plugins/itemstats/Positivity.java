@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018 Abex
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,34 +22,56 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.util;
+package meteor.plugins.itemstats;
 
-import lombok.RequiredArgsConstructor;
-import org.sponge.util.Logger;
+import java.awt.*;
 
-@RequiredArgsConstructor
-public class RunnableExceptionLogger implements Runnable
+/**
+ * Positivity represents how positive or negative a stat change is. This is
+ * turned into the color shown to the user in the toolip.
+ */
+public enum Positivity
 {
-	public Logger log = new Logger("Runnable");
-	private final Runnable runnable;
+	/**
+	 * The stat is lower than it was before.
+	 */
+	WORSE,
+	/**
+	 * There is no change, ie: The stat is already capped.
+	 */
+	NO_CHANGE,
+	/**
+	 * The stat change goes over the cap, but does not net 0
+	 */
+	BETTER_CAPPED,
+	/**
+	 * Some stat changes were fully consumed, some were not. This should NOT
+	 * be returned by a single stat change. This should only be used by a
+	 * <code>StatChangeCalculator</code>
+	 */
+	BETTER_SOMECAPPED,
+	/**
+	 * The stat change is fully consumed. NB: a boost that hits the cap, but
+	 * does not go over it is still considered <code>BETTER_UNCAPPED</code>
+	 */
+	BETTER_UNCAPPED;
 
-	@Override
-	public void run()
+	public static Color getColor(ItemStatConfig config, Positivity positivity)
 	{
-		try
+		switch (positivity)
 		{
-			runnable.run();
+			case BETTER_UNCAPPED:
+				return config.colorBetterUncapped();
+			case BETTER_SOMECAPPED:
+				return config.colorBetterSomeCapped();
+			case BETTER_CAPPED:
+				return config.colorBetterCapped();
+			case NO_CHANGE:
+				return config.colorNoChange();
+			case WORSE:
+				return config.colorWorse();
+			default:
+				return Color.WHITE;
 		}
-		catch (Throwable ex)
-		{
-			log.warn("Uncaught exception in runnable {}", runnable, ex);
-			ex.printStackTrace();
-			throw ex;
-		}
-	}
-
-	public static RunnableExceptionLogger wrap(Runnable runnable)
-	{
-		return new RunnableExceptionLogger(runnable);
 	}
 }

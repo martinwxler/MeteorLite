@@ -13,12 +13,18 @@ import javafx.scene.text.Text;
 import meteor.MeteorLite;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
+import meteor.plugins.itemstats.Effect;
+import meteor.plugins.itemstats.ItemStatChangesService;
+import meteor.plugins.itemstats.StatChange;
 import meteor.util.XpTable;
 import net.runelite.api.Client;
+import net.runelite.api.MenuEntry;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
+import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.StatChanged;
+import net.runelite.api.widgets.WidgetInfo;
 
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
@@ -36,8 +42,13 @@ public class HudbarFXMLController {
     @Inject
     EventBus eventBus;
 
+    @Inject
+    ItemStatChangesService service;
+
     Player p;
     HashMap<String, Image> skillIconMap = new HashMap<>();
+
+    boolean updatingHud = false;
 
     @FXML private JFXButton pluginsButton;
     @FXML private JFXButton optionsButton;
@@ -69,6 +80,34 @@ public class HudbarFXMLController {
         xpText.editableProperty().setValue(false);
         currentLevel.editableProperty().setValue(false);
         nextLevel.editableProperty().setValue(false);
+    }
+
+    //TODO: Do this better.
+    @Subscribe
+    public void onClientTick(ClientTick event)
+    {
+        if (p != null && !updatingHud)
+        Platform.runLater(() -> {
+            updatingHud = true; //prevent stacking runs
+            int i = getRestoreValue(Skill.HITPOINTS.getName());
+            if (i > 0)
+            {
+                double d = ((client.getBoostedSkillLevel(Skill.HITPOINTS) + i) / (double) client.getRealSkillLevel(Skill.HITPOINTS));
+                if (d < 1.0)
+                {
+                    healthBar.lookup(".secondary-bar").lookup(".secondary-bar").setStyle("-fx-background-color: #087f23");
+                }
+                else
+                {
+                    healthBar.lookup(".secondary-bar").lookup(".secondary-bar").setStyle("-fx-background-color: #ffeb3b");
+                }
+                healthBar.setSecondaryProgress(d);
+            }
+            else
+                healthBar.setSecondaryProgress(0.0);
+
+            updatingHud = false;
+        });
     }
 
     @Subscribe
@@ -134,4 +173,31 @@ public class HudbarFXMLController {
             p = client.getLocalPlayer();
     }
 
+    private int getRestoreValue(String skill)
+    {
+        final MenuEntry[] menu = client.getMenuEntries();
+        final int menuSize = menu.length;
+        final MenuEntry entry = menuSize > 0 ? menu[menuSize - 1] : null;
+        int restoreValue = 0;
+
+        if (entry != null && entry.getParam1() == WidgetInfo.INVENTORY.getId())
+        {
+            final Effect change = service.getItemStatChanges(entry.getIdentifier());
+
+            if (change != null)
+            {
+                for (final StatChange c : change.calculate(client).getStatChanges())
+                {
+                    final int value = c.getTheoretical();
+
+                    if (value != 0 && c.getStat().getName().equals(skill))
+                    {
+                        restoreValue = value;
+                    }
+                }
+            }
+        }
+
+        return restoreValue;
+    }
 }

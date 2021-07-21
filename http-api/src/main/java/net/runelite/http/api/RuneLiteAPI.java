@@ -57,30 +57,12 @@ public class RuneLiteAPI
 
 	private static final String METEOR_SESSION = "https://session.openosrs.dev";
 
-	private static final Properties properties = new Properties();
 	private static String version;
 
 	static
 	{
-		try
-		{
-			InputStream in = RuneLiteAPI.class.getResourceAsStream("/runelite.properties");
-			properties.load(in);
-
-			version = properties.getProperty("runelite.version");
-			String commit = properties.getProperty("runelite.commit");
-			boolean dirty = Boolean.parseBoolean(properties.getProperty("runelite.dirty"));
-
-			userAgent = "RuneLite/" + version + "-" + commit + (dirty ? "+" : "");
-		}
-		catch (NumberFormatException e)
-		{
-			throw new RuntimeException("Version string has not been substituted; Re-run maven");
-		}
-		catch (IOException ex)
-		{
-			ex.printStackTrace();
-		}
+		version = "1.7.16";
+		userAgent = "RuneLite/" + version + "-";
 
 		CLIENT = new OkHttpClient.Builder()
 			.pingInterval(30, TimeUnit.SECONDS)

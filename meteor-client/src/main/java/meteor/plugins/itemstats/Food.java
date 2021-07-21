@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2016-2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,34 +22,24 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.util;
+package meteor.plugins.itemstats;
 
-import lombok.RequiredArgsConstructor;
-import org.sponge.util.Logger;
+import net.runelite.api.Client;
+import meteor.plugins.itemstats.delta.DeltaCalculator;
 
-@RequiredArgsConstructor
-public class RunnableExceptionLogger implements Runnable
+public class Food extends FoodBase
 {
-	public Logger log = new Logger("Runnable");
-	private final Runnable runnable;
+	private final DeltaCalculator p;
+
+	public Food(DeltaCalculator p)
+	{
+		this.p = p;
+	}
 
 	@Override
-	public void run()
+	public int heals(Client client)
 	{
-		try
-		{
-			runnable.run();
-		}
-		catch (Throwable ex)
-		{
-			log.warn("Uncaught exception in runnable {}", runnable, ex);
-			ex.printStackTrace();
-			throw ex;
-		}
+		return p.calculateDelta(getStat().getMaximum(client));
 	}
 
-	public static RunnableExceptionLogger wrap(Runnable runnable)
-	{
-		return new RunnableExceptionLogger(runnable);
-	}
 }

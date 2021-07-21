@@ -17,6 +17,8 @@ import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.combatlevel.CombatLevelPlugin;
 import meteor.plugins.gpu.GpuPlugin;
 import meteor.plugins.groundmarkers.GroundMarkerPlugin;
+import meteor.plugins.itemprices.ItemPricesPlugin;
+import meteor.plugins.itemstats.ItemStatPlugin;
 import meteor.plugins.mousetooltips.MouseTooltipPlugin;
 import meteor.plugins.neverlog.NeverLogoutPlugin;
 import meteor.plugins.stretchedmode.StretchedModePlugin;
@@ -139,6 +141,8 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
         MeteorLite.plugins.add(new MouseTooltipPlugin());
         MeteorLite.plugins.add(new CombatLevelPlugin());
         MeteorLite.plugins.add(new GroundMarkerPlugin());
+        MeteorLite.plugins.add(new ItemStatPlugin());
+        MeteorLite.plugins.add(new ItemPricesPlugin());
         for (Plugin plugin : MeteorLite.plugins)
         {
             Injector injector = plugin.getInjector();

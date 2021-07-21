@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018 Abex
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,34 +22,37 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.util;
+package meteor.plugins.itemstats.stats;
 
-import lombok.RequiredArgsConstructor;
-import org.sponge.util.Logger;
+import net.runelite.api.Client;
+import net.runelite.api.Skill;
 
-@RequiredArgsConstructor
-public class RunnableExceptionLogger implements Runnable
+/**
+ * Abstract stat of a player.
+ * This includes {@link Skill}s and other player variables, such as <code>RUN_ENERGY</code>.
+ * @see Stats
+ */
+public abstract class Stat
 {
-	public Logger log = new Logger("Runnable");
-	private final Runnable runnable;
+	private final String name;
 
-	@Override
-	public void run()
+	Stat(String name)
 	{
-		try
-		{
-			runnable.run();
-		}
-		catch (Throwable ex)
-		{
-			log.warn("Uncaught exception in runnable {}", runnable, ex);
-			ex.printStackTrace();
-			throw ex;
-		}
+		this.name = name;
 	}
 
-	public static RunnableExceptionLogger wrap(Runnable runnable)
+	public String getName()
 	{
-		return new RunnableExceptionLogger(runnable);
+		return name;
 	}
+
+	/**
+	 * Get the current stat value including any boosts or damage.
+	 */
+	public abstract int getValue(Client client);
+
+	/**
+	 * Get the base stat maximum. (ie. the bottom half of the stat fraction)
+	 */
+	public abstract int getMaximum(Client client);
 }

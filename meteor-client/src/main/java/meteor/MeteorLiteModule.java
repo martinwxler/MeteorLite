@@ -30,6 +30,8 @@ import com.google.inject.Provides;
 import com.google.inject.name.Names;
 import meteor.config.ConfigManager;
 import meteor.config.RuneLiteConfig;
+import meteor.plugins.itemstats.ItemStatChangesService;
+import meteor.plugins.itemstats.ItemStatChangesServiceImpl;
 import meteor.util.ExecutorServiceExceptionLogger;
 import net.runelite.api.Client;
 import net.runelite.api.hooks.Callbacks;
@@ -64,6 +66,8 @@ public class MeteorLiteModule extends AbstractModule
 		bind(EventBus.class)
 			.annotatedWith(Names.named("Deferred EventBus"))
 			.to(DeferredEventBus.class);
+
+		bind(ItemStatChangesService.class).to(ItemStatChangesServiceImpl.class);
 	}
 
 	@com.google.inject.name.Named("config")

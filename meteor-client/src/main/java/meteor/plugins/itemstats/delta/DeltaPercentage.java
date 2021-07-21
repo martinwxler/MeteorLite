@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2016-2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,34 +22,19 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.util;
+package meteor.plugins.itemstats.delta;
 
 import lombok.RequiredArgsConstructor;
-import org.sponge.util.Logger;
 
 @RequiredArgsConstructor
-public class RunnableExceptionLogger implements Runnable
+public class DeltaPercentage implements DeltaCalculator
 {
-	public Logger log = new Logger("Runnable");
-	private final Runnable runnable;
+	private final double perc;
+	private final int delta;
 
 	@Override
-	public void run()
+	public int calculateDelta(int max)
 	{
-		try
-		{
-			runnable.run();
-		}
-		catch (Throwable ex)
-		{
-			log.warn("Uncaught exception in runnable {}", runnable, ex);
-			ex.printStackTrace();
-			throw ex;
-		}
-	}
-
-	public static RunnableExceptionLogger wrap(Runnable runnable)
-	{
-		return new RunnableExceptionLogger(runnable);
+		return (((int) (max * perc)) * (delta >= 0 ? 1 : -1)) + delta;
 	}
 }

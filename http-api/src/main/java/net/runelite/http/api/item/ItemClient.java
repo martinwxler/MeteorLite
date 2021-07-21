@@ -52,7 +52,7 @@ public class ItemClient
 		this.client = client;
 	}
 
-	public ItemPrice[] getPrices() throws IOException
+	public ItemPrice[] getPrices()
 	{
 		HttpUrl.Builder urlBuilder = RuneLiteAPI.getApiBase().newBuilder()
 			.addPathSegment("item")
@@ -77,10 +77,11 @@ public class ItemClient
 			InputStream in = response.body().byteStream();
 			return RuneLiteAPI.GSON.fromJson(new InputStreamReader(in, StandardCharsets.UTF_8), ItemPrice[].class);
 		}
-		catch (JsonParseException ex)
+		catch (JsonParseException | IOException ex)
 		{
-			throw new IOException(ex);
+			ex.printStackTrace();
 		}
+		return null;
 	}
 
 	public Map<Integer, ItemStats> getStats() throws IOException

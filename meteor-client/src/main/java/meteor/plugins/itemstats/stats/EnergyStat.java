@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2016-2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,34 +22,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.util;
+package meteor.plugins.itemstats.stats;
 
-import lombok.RequiredArgsConstructor;
-import org.sponge.util.Logger;
+import net.runelite.api.Client;
 
-@RequiredArgsConstructor
-public class RunnableExceptionLogger implements Runnable
+public class EnergyStat extends Stat
 {
-	public Logger log = new Logger("Runnable");
-	private final Runnable runnable;
+	EnergyStat()
+	{
+		super("Run Energy");
+	}
 
 	@Override
-	public void run()
+	public int getValue(Client client)
 	{
-		try
-		{
-			runnable.run();
-		}
-		catch (Throwable ex)
-		{
-			log.warn("Uncaught exception in runnable {}", runnable, ex);
-			ex.printStackTrace();
-			throw ex;
-		}
+		return client.getEnergy();
 	}
 
-	public static RunnableExceptionLogger wrap(Runnable runnable)
+	@Override
+	public int getMaximum(Client client)
 	{
-		return new RunnableExceptionLogger(runnable);
+		return 100;
 	}
+
 }

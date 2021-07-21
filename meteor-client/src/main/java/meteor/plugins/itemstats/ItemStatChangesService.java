@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Jos <Malevolentdev@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,34 +22,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.util;
+package meteor.plugins.itemstats;
 
-import lombok.RequiredArgsConstructor;
-import org.sponge.util.Logger;
-
-@RequiredArgsConstructor
-public class RunnableExceptionLogger implements Runnable
+public interface ItemStatChangesService
 {
-	public Logger log = new Logger("Runnable");
-	private final Runnable runnable;
-
-	@Override
-	public void run()
-	{
-		try
-		{
-			runnable.run();
-		}
-		catch (Throwable ex)
-		{
-			log.warn("Uncaught exception in runnable {}", runnable, ex);
-			ex.printStackTrace();
-			throw ex;
-		}
-	}
-
-	public static RunnableExceptionLogger wrap(Runnable runnable)
-	{
-		return new RunnableExceptionLogger(runnable);
-	}
+	/**
+	 * Get the item stat value
+	 *
+	 * @return ItemStatChanges
+	 */
+	Effect getItemStatChanges(int id);
 }

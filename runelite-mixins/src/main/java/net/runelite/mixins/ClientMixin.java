@@ -826,4 +826,19 @@ public abstract class ClientMixin implements RSClient{
                 canvasX, canvasY);
     }
 
+    @Inject
+    @Override
+    public RSItemContainer getItemContainer(InventoryID inventory)
+    {
+        RSNodeHashTable itemContainers = getItemContainers();
+        return (RSItemContainer) itemContainers.get$api(inventory.getId());
+    }
+
+    @Inject
+    @FieldHook("cycleCntr")
+    public static void onCycleCntrChanged(int idx)
+    {
+        client.getCallbacks().post(ClientTick.INSTANCE);
+    }
+
 }

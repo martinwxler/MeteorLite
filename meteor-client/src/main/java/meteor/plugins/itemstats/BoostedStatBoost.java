@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2016-2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,34 +22,30 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.util;
+package meteor.plugins.itemstats;
 
-import lombok.RequiredArgsConstructor;
-import org.sponge.util.Logger;
+import net.runelite.api.Client;
+import meteor.plugins.itemstats.delta.DeltaCalculator;
+import meteor.plugins.itemstats.stats.Stat;
 
-@RequiredArgsConstructor
-public class RunnableExceptionLogger implements Runnable
+/**
+ * A stat boost using the current boosted (or drained) stat.
+ */
+public class BoostedStatBoost extends StatBoost
 {
-	public Logger log = new Logger("Runnable");
-	private final Runnable runnable;
+	private final DeltaCalculator deltaCalculator;
+
+	public BoostedStatBoost(Stat stat, boolean boost, DeltaCalculator deltaCalculator)
+	{
+		super(stat, boost);
+		this.deltaCalculator = deltaCalculator;
+	}
 
 	@Override
-	public void run()
+	public int heals(Client client)
 	{
-		try
-		{
-			runnable.run();
-		}
-		catch (Throwable ex)
-		{
-			log.warn("Uncaught exception in runnable {}", runnable, ex);
-			ex.printStackTrace();
-			throw ex;
-		}
+		int value = getStat().getValue(client);
+		return deltaCalculator.calculateDelta(value);
 	}
 
-	public static RunnableExceptionLogger wrap(Runnable runnable)
-	{
-		return new RunnableExceptionLogger(runnable);
-	}
 }

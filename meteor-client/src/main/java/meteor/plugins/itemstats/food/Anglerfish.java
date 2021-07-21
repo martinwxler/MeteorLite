@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2016-2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,34 +22,45 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.util;
+package meteor.plugins.itemstats.food;
 
-import lombok.RequiredArgsConstructor;
-import org.sponge.util.Logger;
+import meteor.plugins.itemstats.FoodBase;
+import net.runelite.api.Client;
 
-@RequiredArgsConstructor
-public class RunnableExceptionLogger implements Runnable
+public class Anglerfish extends FoodBase
 {
-	public Logger log = new Logger("Runnable");
-	private final Runnable runnable;
+	public Anglerfish()
+	{
+		setBoost(true);
+	}
 
 	@Override
-	public void run()
+	public int heals(Client client)
 	{
-		try
+		int maxHP = getStat().getMaximum(client);
+
+		int C;
+		if (maxHP <= 24)
 		{
-			runnable.run();
+			C = 2;
 		}
-		catch (Throwable ex)
+		else if (maxHP <= 49)
 		{
-			log.warn("Uncaught exception in runnable {}", runnable, ex);
-			ex.printStackTrace();
-			throw ex;
+			C = 4;
 		}
+		else if (maxHP <= 74)
+		{
+			C = 6;
+		}
+		else if (maxHP <= 92)
+		{
+			C = 8;
+		}
+		else
+		{
+			C = 13;
+		}
+		return (maxHP / 10) + C;
 	}
 
-	public static RunnableExceptionLogger wrap(Runnable runnable)
-	{
-		return new RunnableExceptionLogger(runnable);
-	}
 }

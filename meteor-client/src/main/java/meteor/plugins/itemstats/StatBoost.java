@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2016-2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,34 +22,75 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.util;
+package meteor.plugins.itemstats;
 
-import lombok.RequiredArgsConstructor;
-import org.sponge.util.Logger;
+import lombok.Getter;
+import lombok.Setter;
+import net.runelite.api.Client;
+import meteor.plugins.itemstats.stats.Stat;
 
-@RequiredArgsConstructor
-public class RunnableExceptionLogger implements Runnable
+public abstract class StatBoost extends SingleEffect
 {
-	public Logger log = new Logger("Runnable");
-	private final Runnable runnable;
+	@Getter
+	@Setter
+	private Stat stat;
+	@Getter
+	@Setter
+	private boolean boost;
 
-	@Override
-	public void run()
+	public StatBoost(Stat stat, boolean boost)
 	{
-		try
-		{
-			runnable.run();
-		}
-		catch (Throwable ex)
-		{
-			log.warn("Uncaught exception in runnable {}", runnable, ex);
-			ex.printStackTrace();
-			throw ex;
-		}
+		this.stat = stat;
+		this.boost = boost;
 	}
 
-	public static RunnableExceptionLogger wrap(Runnable runnable)
+	public abstract int heals(Client client);
+
+	@Override
+	public StatChange effect(Client client)
 	{
-		return new RunnableExceptionLogger(runnable);
+		int value = stat.getValue(client);
+		int max = stat.getMaximum(client);
+
+		boolean hitCap = false;
+
+		int calcedDelta = heals(client);
+		if (boost && calcedDelta > 0)
+		{
+			max += calcedDelta;
+		}
+		if (value > max)
+		{
+			max = value;
+		}
+		int newValue = value + calcedDelta;
+		if (newValue > max)
+		{
+			newValue = max;
+			hitCap = true;
+		}
+		if (newValue < 0)
+		{
+			newValue = 0;
+		}
+		int delta = newValue - value;
+		StatChange out = new StatChange();
+		out.setStat(stat);
+		if (delta > 0)
+		{
+			out.setPositivity(hitCap ? Positivity.BETTER_CAPPED : Positivity.BETTER_UNCAPPED);
+		}
+		else if (delta == 0)
+		{
+			out.setPositivity(Positivity.NO_CHANGE);
+		}
+		else
+		{
+			out.setPositivity(Positivity.WORSE);
+		}
+		out.setAbsolute(newValue);
+		out.setRelative(delta);
+		out.setTheoretical(calcedDelta);
+		return out;
 	}
 }

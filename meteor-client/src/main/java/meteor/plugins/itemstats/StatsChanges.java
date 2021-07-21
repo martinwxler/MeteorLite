@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2016-2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,34 +22,28 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.util;
+package meteor.plugins.itemstats;
 
-import lombok.RequiredArgsConstructor;
-import org.sponge.util.Logger;
+import lombok.Getter;
+import lombok.Setter;
 
-@RequiredArgsConstructor
-public class RunnableExceptionLogger implements Runnable
+public class StatsChanges
 {
-	public Logger log = new Logger("Runnable");
-	private final Runnable runnable;
+	/**
+	 * How positive the entire set of stat changes is
+	 *
+	 * @see Positivity
+	 */
+	@Getter
+	@Setter
+	private Positivity positivity;
+	@Getter
+	@Setter
+	private StatChange[] statChanges;
 
-	@Override
-	public void run()
+	public StatsChanges(int len)
 	{
-		try
-		{
-			runnable.run();
-		}
-		catch (Throwable ex)
-		{
-			log.warn("Uncaught exception in runnable {}", runnable, ex);
-			ex.printStackTrace();
-			throw ex;
-		}
-	}
-
-	public static RunnableExceptionLogger wrap(Runnable runnable)
-	{
-		return new RunnableExceptionLogger(runnable);
+		this.statChanges = new StatChange[len];
+		this.positivity = Positivity.NO_CHANGE;
 	}
 }

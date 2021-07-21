@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2016-2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,34 +22,45 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.util;
+package meteor.plugins.itemstats;
 
-import lombok.RequiredArgsConstructor;
-import org.sponge.util.Logger;
+import net.runelite.api.Client;
 
-@RequiredArgsConstructor
-public class RunnableExceptionLogger implements Runnable
+public class Combo implements Effect
 {
-	public Logger log = new Logger("Runnable");
-	private final Runnable runnable;
+	private final SingleEffect[] calcs;
+	private final int numPrimaries;
+
+	public Combo(SingleEffect[] calcs)
+	{
+		this(1, calcs);
+	}
+
+	public Combo(int numPrimaries, SingleEffect[] calcs)
+	{
+		this.numPrimaries = numPrimaries;
+		this.calcs = calcs;
+	}
 
 	@Override
-	public void run()
+	public StatsChanges calculate(Client client)
 	{
-		try
+		StatsChanges out = new StatsChanges(calcs.length);
+		StatChange[] statChanges = out.getStatChanges();
+		for (int i = 0; i < calcs.length; i++)
 		{
-			runnable.run();
+			statChanges[i] = calcs[i].effect(client);
 		}
-		catch (Throwable ex)
+		Positivity positivity = Positivity.NO_CHANGE;
+		for (int i = 0; i < numPrimaries; i++)
 		{
-			log.warn("Uncaught exception in runnable {}", runnable, ex);
-			ex.printStackTrace();
-			throw ex;
+			if (positivity.ordinal() < statChanges[i].getPositivity().ordinal())
+			{
+				positivity = statChanges[i].getPositivity();
+			}
 		}
+		out.setPositivity(positivity);
+		return out;
 	}
 
-	public static RunnableExceptionLogger wrap(Runnable runnable)
-	{
-		return new RunnableExceptionLogger(runnable);
-	}
 }

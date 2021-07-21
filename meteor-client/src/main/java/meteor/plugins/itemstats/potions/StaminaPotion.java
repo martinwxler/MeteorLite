@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2016-2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2021, Tanlines <tanlines@outlook.com.au>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,34 +23,32 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.util;
+package meteor.plugins.itemstats.potions;
 
-import lombok.RequiredArgsConstructor;
-import org.sponge.util.Logger;
+import net.runelite.api.*;
+import meteor.plugins.itemstats.StatBoost;
 
-@RequiredArgsConstructor
-public class RunnableExceptionLogger implements Runnable
+import static meteor.plugins.itemstats.stats.Stats.RUN_ENERGY;
+
+public class StaminaPotion extends StatBoost
 {
-	public Logger log = new Logger("Runnable");
-	private final Runnable runnable;
-
-	@Override
-	public void run()
+	public StaminaPotion()
 	{
-		try
-		{
-			runnable.run();
-		}
-		catch (Throwable ex)
-		{
-			log.warn("Uncaught exception in runnable {}", runnable, ex);
-			ex.printStackTrace();
-			throw ex;
-		}
+		super(RUN_ENERGY, false);
 	}
 
-	public static RunnableExceptionLogger wrap(Runnable runnable)
+	@Override
+	public int heals(Client client)
 	{
-		return new RunnableExceptionLogger(runnable);
+		ItemContainer equipContainer = client.getItemContainer(InventoryID.EQUIPMENT);
+		if (equipContainer != null)
+		{
+			Item ring = equipContainer.getItem(EquipmentInventorySlot.RING.getSlotIdx());
+			if (ring != null && ring.getId() == ItemID.RING_OF_ENDURANCE)
+			{
+				return 40;
+			}
+		}
+		return 20;
 	}
 }

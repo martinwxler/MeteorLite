@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2019, TheStonedTurtle <https://github.com/TheStonedTurtle>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,34 +22,38 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.util;
+package meteor.plugins.itemstats.potions;
 
 import lombok.RequiredArgsConstructor;
-import org.sponge.util.Logger;
+import net.runelite.api.Client;
+import net.runelite.api.Skill;
+import meteor.plugins.itemstats.Effect;
+import meteor.plugins.itemstats.StatChange;
+import meteor.plugins.itemstats.StatsChanges;
+import meteor.plugins.itemstats.stats.Stats;
 
+import static meteor.plugins.itemstats.Builders.heal;
+
+/**
+ * Acts like a prayer potion and stamina dose combined but restores 40 energy instead of 20
+ */
 @RequiredArgsConstructor
-public class RunnableExceptionLogger implements Runnable
+public class GauntletPotion implements Effect
 {
-	public Logger log = new Logger("Runnable");
-	private final Runnable runnable;
+	private static final int PRAYER_RESTORE_DELTA = 7;
+	private static final double PRAYER_RESTORE_PERCENT = .25;
 
 	@Override
-	public void run()
+	public StatsChanges calculate(Client client)
 	{
-		try
-		{
-			runnable.run();
-		}
-		catch (Throwable ex)
-		{
-			log.warn("Uncaught exception in runnable {}", runnable, ex);
-			ex.printStackTrace();
-			throw ex;
-		}
-	}
+		// Restores prayer similar to PrayerPotion but there aren't any possible boost so simplify the calculation
+		final int restorePerc = (int) (client.getRealSkillLevel(Skill.PRAYER) * PRAYER_RESTORE_PERCENT);
+		final StatChange prayer =  heal(Stats.PRAYER, restorePerc + PRAYER_RESTORE_DELTA).effect(client);
 
-	public static RunnableExceptionLogger wrap(Runnable runnable)
-	{
-		return new RunnableExceptionLogger(runnable);
+		final StatChange runEnergy = heal(Stats.RUN_ENERGY, 40).effect(client);
+
+		final StatsChanges changes = new StatsChanges(2);
+		changes.setStatChanges(new StatChange[]{runEnergy, prayer});
+		return changes;
 	}
 }

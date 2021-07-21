@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018 Abex
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,34 +22,41 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.util;
+package meteor.plugins.itemstats;
 
-import lombok.RequiredArgsConstructor;
-import org.sponge.util.Logger;
+import net.runelite.api.Client;
 
-@RequiredArgsConstructor
-public class RunnableExceptionLogger implements Runnable
+public class RangeStatBoost extends SingleEffect
 {
-	public Logger log = new Logger("Runnable");
-	private final Runnable runnable;
+	private final StatBoost a;
+	private final StatBoost b;
 
-	@Override
-	public void run()
+	RangeStatBoost(StatBoost a, StatBoost b)
 	{
-		try
-		{
-			runnable.run();
-		}
-		catch (Throwable ex)
-		{
-			log.warn("Uncaught exception in runnable {}", runnable, ex);
-			ex.printStackTrace();
-			throw ex;
-		}
+		assert a.getStat() == b.getStat();
+
+		this.a = a;
+		this.b = b;
 	}
 
-	public static RunnableExceptionLogger wrap(Runnable runnable)
+	@Override
+	public StatChange effect(Client client)
 	{
-		return new RunnableExceptionLogger(runnable);
+		final StatChange changeA = this.a.effect(client);
+		final StatChange changeB = this.b.effect(client);
+
+		final RangeStatChange r = new RangeStatChange();
+		r.setMinAbsolute(Math.min(changeA.getAbsolute(), changeB.getAbsolute()));
+		r.setAbsolute(Math.max(changeA.getAbsolute(), changeB.getAbsolute()));
+		r.setMinRelative(Math.min(changeA.getRelative(), changeB.getRelative()));
+		r.setRelative(Math.max(changeA.getRelative(), changeB.getRelative()));
+		r.setMinTheoretical(Math.min(changeA.getTheoretical(), changeB.getTheoretical()));
+		r.setTheoretical(Math.max(changeA.getTheoretical(), changeB.getTheoretical()));
+		r.setStat(changeA.getStat());
+
+		final int avg = (changeA.getPositivity().ordinal() + changeB.getPositivity().ordinal()) / 2;
+		r.setPositivity(Positivity.values()[avg]);
+
+		return r;
 	}
 }
