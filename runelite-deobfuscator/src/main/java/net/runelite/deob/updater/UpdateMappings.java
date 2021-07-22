@@ -36,67 +36,61 @@ import net.runelite.deob.util.JarUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UpdateMappings
-{
-	private static final Logger logger = LoggerFactory.getLogger(UpdateMappings.class);
+public class UpdateMappings {
 
-	private final ClassGroup group1, group2;
+  private static final Logger logger = LoggerFactory.getLogger(UpdateMappings.class);
 
-	public UpdateMappings(ClassGroup group1, ClassGroup group2)
-	{
-		this.group1 = group1;
-		this.group2 = group2;
-	}
+  private final ClassGroup group1, group2;
 
-	public void update()
-	{
-		Mapper mapper = new Mapper(group1, group2);
-		mapper.run();
-		ParallelExecutorMapping mapping = mapper.getMapping();
+  public UpdateMappings(ClassGroup group1, ClassGroup group2) {
+    this.group1 = group1;
+    this.group2 = group2;
+  }
 
-		AnnotationMapper amapper = new AnnotationMapper(group1, group2, mapping);
-		amapper.run();
+  public static void main(String[] args) throws IOException {
+    if (args.length < 3) {
+      System.exit(-1);
+    }
 
-		AnnotationIntegrityChecker aic = new AnnotationIntegrityChecker(group1, group2, mapping);
-		aic.run();
+    UpdateMappings u = new UpdateMappings(
+        JarUtil.load(new File(args[0])),
+        JarUtil.load(new File(args[1]))
+    );
+    u.update();
+    u.save(new File(args[2]));
+  }
 
-		int errors = aic.getErrors();
+  public void update() {
+    Mapper mapper = new Mapper(group1, group2);
+    mapper.run();
+    ParallelExecutorMapping mapping = mapper.getMapping();
 
-		if (errors > 0)
-		{
-			logger.warn("Errors in annotation checker, exiting");
-			System.exit(-1);
-		}
+    AnnotationMapper amapper = new AnnotationMapper(group1, group2, mapping);
+    amapper.run();
 
-		AnnotationRenamer an = new AnnotationRenamer(group2);
-		an.run();
+    AnnotationIntegrityChecker aic = new AnnotationIntegrityChecker(group1, group2, mapping);
+    aic.run();
 
-		ParameterRenamer pr = new ParameterRenamer(group1, group2, mapping);
-		pr.run();
+    int errors = aic.getErrors();
 
-		AnnotationAdder ad = new AnnotationAdder(group2);
-		ad.run();
+    if (errors > 0) {
+      logger.warn("Errors in annotation checker, exiting");
+      System.exit(-1);
+    }
 
-		new ScriptOpcodesTransformer().transform(group2);
-	}
+    AnnotationRenamer an = new AnnotationRenamer(group2);
+    an.run();
 
-	public void save(File out) throws IOException
-	{
-		JarUtil.save(group2, out);
-	}
+    ParameterRenamer pr = new ParameterRenamer(group1, group2, mapping);
+    pr.run();
 
-	public static void main(String[] args) throws IOException
-	{
-		if (args.length < 3)
-		{
-			System.exit(-1);
-		}
+    AnnotationAdder ad = new AnnotationAdder(group2);
+    ad.run();
 
-		UpdateMappings u = new UpdateMappings(
-			JarUtil.load(new File(args[0])),
-			JarUtil.load(new File(args[1]))
-		);
-		u.update();
-		u.save(new File(args[2]));
-	}
+    new ScriptOpcodesTransformer().transform(group2);
+  }
+
+  public void save(File out) throws IOException {
+    JarUtil.save(group2, out);
+  }
 }

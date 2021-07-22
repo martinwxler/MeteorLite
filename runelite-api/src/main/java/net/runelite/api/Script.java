@@ -24,9 +24,9 @@
  */
 package net.runelite.api;
 
-public interface Script extends Node
-{
-	int[] getIntOperands();
+public interface Script extends Node {
 
-	int[] getInstructions();
+  int[] getIntOperands();
+
+  int[] getInstructions();
 }

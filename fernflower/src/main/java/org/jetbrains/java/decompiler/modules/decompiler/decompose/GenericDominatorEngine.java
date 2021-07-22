@@ -15,10 +15,9 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.decompose;
 
-import org.jetbrains.java.decompiler.util.VBStyleCollection;
-
 import java.util.List;
 import java.util.Set;
+import org.jetbrains.java.decompiler.util.VBStyleCollection;
 
 public class GenericDominatorEngine {
 
@@ -32,27 +31,14 @@ public class GenericDominatorEngine {
     this.graph = graph;
   }
 
-  public void initialize() {
-    calcIDoms();
-  }
-
-  private void orderNodes() {
-
-    setRoots = graph.getRoots();
-
-    for (IGraphNode node : graph.getReversePostOrderList()) {
-      colOrderedIDoms.addWithKey(null, node);
-    }
-  }
-
-  private static IGraphNode getCommonIDom(IGraphNode node1, IGraphNode node2, VBStyleCollection<IGraphNode, IGraphNode> orderedIDoms) {
+  private static IGraphNode getCommonIDom(IGraphNode node1, IGraphNode node2,
+      VBStyleCollection<IGraphNode, IGraphNode> orderedIDoms) {
 
     IGraphNode nodeOld;
 
     if (node1 == null) {
       return node2;
-    }
-    else if (node2 == null) {
+    } else if (node2 == null) {
       return node1;
     }
 
@@ -69,8 +55,7 @@ public class GenericDominatorEngine {
         }
 
         index1 = orderedIDoms.getIndexByKey(node1);
-      }
-      else {
+      } else {
         nodeOld = node2;
         node2 = orderedIDoms.getWithKey(node2);
 
@@ -83,6 +68,19 @@ public class GenericDominatorEngine {
     }
 
     return node1;
+  }
+
+  public void initialize() {
+    calcIDoms();
+  }
+
+  private void orderNodes() {
+
+    setRoots = graph.getRoots();
+
+    for (IGraphNode node : graph.getReversePostOrderList()) {
+      colOrderedIDoms.addWithKey(null, node);
+    }
   }
 
   private void calcIDoms() {
@@ -138,11 +136,9 @@ public class GenericDominatorEngine {
 
       if (idom == node) {
         return false; // root node or merging point
-      }
-      else if (idom == null) {
+      } else if (idom == null) {
         throw new RuntimeException("Inconsistent idom sequence discovered!");
-      }
-      else {
+      } else {
         node = idom;
       }
     }

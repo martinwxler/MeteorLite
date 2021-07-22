@@ -30,15 +30,15 @@ import lombok.Value;
  * A member of a clan.
  */
 @Value
-public class ClanMember
-{
-	/**
-	 * The clan member's name
-	 */
-	String name;
+public class ClanMember {
 
-	/**
-	 * The clan member's rank
-	 */
-	ClanRank rank;
+  /**
+   * The clan member's name
+   */
+  String name;
+
+  /**
+   * The clan member's rank
+   */
+  ClanRank rank;
 }

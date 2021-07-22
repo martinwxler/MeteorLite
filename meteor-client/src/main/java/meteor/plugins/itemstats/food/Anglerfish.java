@@ -27,40 +27,29 @@ package meteor.plugins.itemstats.food;
 import meteor.plugins.itemstats.FoodBase;
 import net.runelite.api.Client;
 
-public class Anglerfish extends FoodBase
-{
-	public Anglerfish()
-	{
-		setBoost(true);
-	}
+public class Anglerfish extends FoodBase {
 
-	@Override
-	public int heals(Client client)
-	{
-		int maxHP = getStat().getMaximum(client);
+  public Anglerfish() {
+    setBoost(true);
+  }
 
-		int C;
-		if (maxHP <= 24)
-		{
-			C = 2;
-		}
-		else if (maxHP <= 49)
-		{
-			C = 4;
-		}
-		else if (maxHP <= 74)
-		{
-			C = 6;
-		}
-		else if (maxHP <= 92)
-		{
-			C = 8;
-		}
-		else
-		{
-			C = 13;
-		}
-		return (maxHP / 10) + C;
-	}
+  @Override
+  public int heals(Client client) {
+    int maxHP = getStat().getMaximum(client);
+
+    int C;
+    if (maxHP <= 24) {
+      C = 2;
+    } else if (maxHP <= 49) {
+      C = 4;
+    } else if (maxHP <= 74) {
+      C = 6;
+    } else if (maxHP <= 92) {
+      C = 8;
+    } else {
+      C = 13;
+    }
+    return (maxHP / 10) + C;
+  }
 
 }

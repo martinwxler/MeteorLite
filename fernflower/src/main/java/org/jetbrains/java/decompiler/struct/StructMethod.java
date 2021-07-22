@@ -15,19 +15,96 @@
  */
 package org.jetbrains.java.decompiler.struct;
 
-import org.jetbrains.java.decompiler.code.*;
-import org.jetbrains.java.decompiler.struct.attr.StructGeneralAttribute;
-import org.jetbrains.java.decompiler.struct.attr.StructLocalVariableTableAttribute;
-import org.jetbrains.java.decompiler.struct.consts.ConstantPool;
-import org.jetbrains.java.decompiler.util.DataInputFullStream;
-import org.jetbrains.java.decompiler.util.VBStyleCollection;
+import static org.jetbrains.java.decompiler.code.CodeConstants.GROUP_FIELDACCESS;
+import static org.jetbrains.java.decompiler.code.CodeConstants.GROUP_GENERAL;
+import static org.jetbrains.java.decompiler.code.CodeConstants.GROUP_INVOCATION;
+import static org.jetbrains.java.decompiler.code.CodeConstants.GROUP_JUMP;
+import static org.jetbrains.java.decompiler.code.CodeConstants.GROUP_RETURN;
+import static org.jetbrains.java.decompiler.code.CodeConstants.GROUP_SWITCH;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_aload;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_aload_3;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_anewarray;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_areturn;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_astore;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_astore_3;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_athrow;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_bipush;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_checkcast;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_dload;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_dreturn;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_dstore;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_fload;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_freturn;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_fstore;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_getfield;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_getstatic;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_goto;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_goto_w;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_iconst_5;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_iconst_m1;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_if_acmpeq;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_if_acmpne;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_if_icmpeq;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_if_icmpge;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_if_icmpgt;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_if_icmple;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_if_icmplt;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_if_icmpne;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_ifeq;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_ifge;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_ifgt;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_ifle;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_iflt;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_ifne;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_ifnonnull;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_ifnull;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_iinc;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_iload;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_iload_0;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_instanceof;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_invokedynamic;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_invokeinterface;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_invokespecial;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_invokestatic;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_invokevirtual;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_ireturn;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_istore;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_istore_0;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_jsr;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_jsr_w;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_ldc;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_ldc2_w;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_ldc_w;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_lload;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_lookupswitch;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_lreturn;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_lstore;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_multianewarray;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_new;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_newarray;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_putfield;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_putstatic;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_ret;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_return;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_sipush;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_tableswitch;
+import static org.jetbrains.java.decompiler.code.CodeConstants.opc_wide;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static org.jetbrains.java.decompiler.code.CodeConstants.*;
+import org.jetbrains.java.decompiler.code.ConstantsUtil;
+import org.jetbrains.java.decompiler.code.ExceptionHandler;
+import org.jetbrains.java.decompiler.code.ExceptionTable;
+import org.jetbrains.java.decompiler.code.FullInstructionSequence;
+import org.jetbrains.java.decompiler.code.Instruction;
+import org.jetbrains.java.decompiler.code.InstructionSequence;
+import org.jetbrains.java.decompiler.struct.attr.StructGeneralAttribute;
+import org.jetbrains.java.decompiler.struct.attr.StructLocalVariableTableAttribute;
+import org.jetbrains.java.decompiler.struct.consts.ConstantPool;
+import org.jetbrains.java.decompiler.util.DataInputFullStream;
+import org.jetbrains.java.decompiler.util.VBStyleCollection;
 
 /*
   method_info {
@@ -39,10 +116,13 @@ import static org.jetbrains.java.decompiler.code.CodeConstants.*;
   }
 */
 public class StructMethod extends StructMember {
+
   private static final int[] opr_iconst = {-1, 0, 1, 2, 3, 4, 5};
-  private static final int[] opr_loadstore = {0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3};
+  private static final int[] opr_loadstore = {0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1,
+      2, 3};
   private static final int[] opcs_load = {opc_iload, opc_lload, opc_fload, opc_dload, opc_aload};
-  private static final int[] opcs_store = {opc_istore, opc_lstore, opc_fstore, opc_dstore, opc_astore};
+  private static final int[] opcs_store = {opc_istore, opc_lstore, opc_fstore, opc_dstore,
+      opc_astore};
 
   private final StructClass classStruct;
   private final String name;
@@ -64,7 +144,8 @@ public class StructMethod extends StructMember {
     int descriptorIndex = in.readUnsignedShort();
 
     ConstantPool pool = clStruct.getPool();
-    String[] values = pool.getClassElement(ConstantPool.METHOD, clStruct.qualifiedName, nameIndex, descriptorIndex);
+    String[] values = pool
+        .getClassElement(ConstantPool.METHOD, clStruct.qualifiedName, nameIndex, descriptorIndex);
     name = values[0];
     descriptor = values[1];
 
@@ -76,15 +157,15 @@ public class StructMethod extends StructMember {
   }
 
   @Override
-  protected StructGeneralAttribute readAttribute(DataInputFullStream in, ConstantPool pool, String name) throws IOException {
+  protected StructGeneralAttribute readAttribute(DataInputFullStream in, ConstantPool pool,
+      String name) throws IOException {
     if (StructGeneralAttribute.ATTRIBUTE_CODE.equals(name)) {
       if (!classStruct.isOwn()) {
         // skip code in foreign classes
         in.discard(8);
         in.discard(in.readInt());
         in.discard(8 * in.readUnsignedShort());
-      }
-      else {
+      } else {
         containsCode = true;
         in.discard(6);
         localVariables = in.readUnsignedShort();
@@ -119,7 +200,8 @@ public class StructMethod extends StructMember {
   }
 
   @SuppressWarnings("AssignmentToForLoopParameter")
-  private InstructionSequence parseBytecode(DataInputFullStream in, int length, ConstantPool pool) throws IOException {
+  private InstructionSequence parseBytecode(DataInputFullStream in, int length, ConstantPool pool)
+      throws IOException {
     VBStyleCollection<Instruction, Integer> instructions = new VBStyleCollection<>();
 
     int bytecode_version = classStruct.getBytecodeVersion();
@@ -143,16 +225,13 @@ public class StructMethod extends StructMember {
       if (opcode >= opc_iconst_m1 && opcode <= opc_iconst_5) {
         operands.add(opr_iconst[opcode - opc_iconst_m1]);
         opcode = opc_bipush;
-      }
-      else if (opcode >= opc_iload_0 && opcode <= opc_aload_3) {
+      } else if (opcode >= opc_iload_0 && opcode <= opc_aload_3) {
         operands.add(opr_loadstore[opcode - opc_iload_0]);
         opcode = opcs_load[(opcode - opc_iload_0) / 4];
-      }
-      else if (opcode >= opc_istore_0 && opcode <= opc_astore_3) {
+      } else if (opcode >= opc_istore_0 && opcode <= opc_astore_3) {
         operands.add(opr_loadstore[opcode - opc_istore_0]);
         opcode = opcs_store[(opcode - opc_istore_0) / 4];
-      }
-      else {
+      } else {
         switch (opcode) {
           case opc_bipush:
             operands.add(Integer.valueOf(in.readByte()));
@@ -205,8 +284,7 @@ public class StructMethod extends StructMember {
             i += 2;
             if (opcode >= opc_getstatic && opcode <= opc_putfield) {
               group = GROUP_FIELDACCESS;
-            }
-            else if (opcode >= opc_invokevirtual && opcode <= opc_invokestatic) {
+            } else if (opcode >= opc_invokevirtual && opcode <= opc_invokestatic) {
               group = GROUP_INVOCATION;
             }
             break;
@@ -232,8 +310,7 @@ public class StructMethod extends StructMember {
             if (wide) {
               operands.add(in.readUnsignedShort());
               i += 2;
-            }
-            else {
+            } else {
               operands.add(in.readUnsignedByte());
               i++;
             }
@@ -246,8 +323,7 @@ public class StructMethod extends StructMember {
               operands.add(in.readUnsignedShort());
               operands.add(Integer.valueOf(in.readShort()));
               i += 4;
-            }
-            else {
+            } else {
               operands.add(in.readUnsignedByte());
               operands.add(Integer.valueOf(in.readByte()));
               i += 2;
@@ -327,7 +403,8 @@ public class StructMethod extends StructMember {
         }
       }
 
-      Instruction instr = ConstantsUtil.getInstructionInstance(opcode, wide, group, bytecode_version, ops);
+      Instruction instr = ConstantsUtil
+          .getInstructionInstance(opcode, wide, group, bytecode_version, ops);
 
       instructions.addWithKey(instr, offset);
 
@@ -353,7 +430,8 @@ public class StructMethod extends StructMember {
       lstHandlers.add(handler);
     }
 
-    InstructionSequence seq = new FullInstructionSequence(instructions, new ExceptionTable(lstHandlers));
+    InstructionSequence seq = new FullInstructionSequence(instructions,
+        new ExceptionTable(lstHandlers));
 
     // initialize instructions
     int i = seq.length() - 1;
@@ -395,7 +473,8 @@ public class StructMethod extends StructMember {
   }
 
   public StructLocalVariableTableAttribute getLocalVariableAttr() {
-    return (StructLocalVariableTableAttribute)getAttribute(StructGeneralAttribute.ATTRIBUTE_LOCAL_VARIABLE_TABLE);
+    return (StructLocalVariableTableAttribute) getAttribute(
+        StructGeneralAttribute.ATTRIBUTE_LOCAL_VARIABLE_TABLE);
   }
 
   @Override

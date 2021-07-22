@@ -26,22 +26,17 @@ package net.runelite.http.api.item;
 
 import org.sponge.util.Logger;
 
-public enum ItemType
-{
-	DEFAULT;
+public enum ItemType {
+  DEFAULT;
 
-	private static final Logger logger = new Logger("ItemClient");
+  private static final Logger logger = new Logger("ItemClient");
 
-	public static ItemType of(String type)
-	{
-		try
-		{
-			return ItemType.valueOf(type.toUpperCase());
-		}
-		catch (IllegalArgumentException ex)
-		{
-			logger.warn("unable to convert type", ex);
-			return DEFAULT;
-		}
-	}
+  public static ItemType of(String type) {
+    try {
+      return ItemType.valueOf(type.toUpperCase());
+    } catch (IllegalArgumentException ex) {
+      logger.warn("unable to convert type", ex);
+      return DEFAULT;
+    }
+  }
 }

@@ -24,17 +24,17 @@
  */
 package net.runelite.api.events;
 
-import net.runelite.api.GameState;
 import lombok.Data;
+import net.runelite.api.GameState;
 
 /**
  * An event where the clients game state has changed.
  */
 @Data
-public class GameStateChanged
-{
-	/**
-	 * The new game state.
-	 */
-	private GameState gameState;
+public class GameStateChanged {
+
+  /**
+   * The new game state.
+   */
+  private GameState gameState;
 }

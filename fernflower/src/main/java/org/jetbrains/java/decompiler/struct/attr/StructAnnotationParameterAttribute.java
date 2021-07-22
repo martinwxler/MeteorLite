@@ -15,14 +15,13 @@
  */
 package org.jetbrains.java.decompiler.struct.attr;
 
-import org.jetbrains.java.decompiler.modules.decompiler.exps.AnnotationExprent;
-import org.jetbrains.java.decompiler.struct.consts.ConstantPool;
-import org.jetbrains.java.decompiler.util.DataInputFullStream;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.jetbrains.java.decompiler.modules.decompiler.exps.AnnotationExprent;
+import org.jetbrains.java.decompiler.struct.consts.ConstantPool;
+import org.jetbrains.java.decompiler.util.DataInputFullStream;
 
 public class StructAnnotationParameterAttribute extends StructGeneralAttribute {
 
@@ -34,11 +33,11 @@ public class StructAnnotationParameterAttribute extends StructGeneralAttribute {
     if (len > 0) {
       paramAnnotations = new ArrayList<>(len);
       for (int i = 0; i < len; i++) {
-        List<AnnotationExprent> annotations = StructAnnotationAttribute.parseAnnotations(pool, data);
+        List<AnnotationExprent> annotations = StructAnnotationAttribute
+            .parseAnnotations(pool, data);
         paramAnnotations.add(annotations);
       }
-    }
-    else {
+    } else {
       paramAnnotations = Collections.emptyList();
     }
   }

@@ -33,84 +33,68 @@ import net.runelite.asm.attributes.code.instruction.types.InvokeInstruction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RWOpcodeFinder
-{
-	private static final Logger logger = LoggerFactory.getLogger(RWOpcodeFinder.class);
+public class RWOpcodeFinder {
 
-	private final ClassGroup group;
+  private static final Logger logger = LoggerFactory.getLogger(RWOpcodeFinder.class);
 
-	private Method readOpcode;
-	private Method writeOpcode;
+  private final ClassGroup group;
 
-	public RWOpcodeFinder(ClassGroup group)
-	{
-		this.group = group;
-	}
+  private Method readOpcode;
+  private Method writeOpcode;
 
-	public Method getReadOpcode()
-	{
-		return readOpcode;
-	}
+  public RWOpcodeFinder(ClassGroup group) {
+    this.group = group;
+  }
 
-	public Method getWriteOpcode()
-	{
-		return writeOpcode;
-	}
+  public Method getReadOpcode() {
+    return readOpcode;
+  }
 
-	public ClassFile getSecretBuffer()
-	{
-		assert writeOpcode.getClassFile() == readOpcode.getClassFile();
-		return writeOpcode.getClassFile();
-	}
+  public Method getWriteOpcode() {
+    return writeOpcode;
+  }
 
-	public ClassFile getBuffer()
-	{
-		return getSecretBuffer().getParent();
-	}
+  public ClassFile getSecretBuffer() {
+    assert writeOpcode.getClassFile() == readOpcode.getClassFile();
+    return writeOpcode.getClassFile();
+  }
 
-	public void find()
-	{
-		IsaacCipherFinder ic = new IsaacCipherFinder(group);
-		ic.find();
+  public ClassFile getBuffer() {
+    return getSecretBuffer().getParent();
+  }
 
-		for (ClassFile cf : group.getClasses())
-		{
-			for (Method m : cf.getMethods())
-			{
-				Code code = m.getCode();
+  public void find() {
+    IsaacCipherFinder ic = new IsaacCipherFinder(group);
+    ic.find();
 
-				find(ic, m, code);
-			}
-		}
+    for (ClassFile cf : group.getClasses()) {
+      for (Method m : cf.getMethods()) {
+        Code code = m.getCode();
 
-		logger.debug("Found readOpcode {}, writeOpcode {}", readOpcode, writeOpcode);
-	}
+        find(ic, m, code);
+      }
+    }
 
-	private void find(IsaacCipherFinder ic, Method method, Code code)
-	{
-		if (code == null)
-		{
-			return;
-		}
+    logger.debug("Found readOpcode {}, writeOpcode {}", readOpcode, writeOpcode);
+  }
 
-		for (Instruction i : code.getInstructions().getInstructions())
-		{
-			if (i instanceof InvokeInstruction)
-			{
-				if (((InvokeInstruction) i).getMethods().contains(ic.getGetNext()))
-				{
-					if (method.getDescriptor().size() == 0)
-					{
-						// read opcode
-						readOpcode = method;
-					}
-					else
-					{
-						// write opcode
-						writeOpcode = method;
-					}
-				}
-			}
-		}
-	}
+  private void find(IsaacCipherFinder ic, Method method, Code code) {
+    if (code == null) {
+      return;
+    }
+
+    for (Instruction i : code.getInstructions().getInstructions()) {
+      if (i instanceof InvokeInstruction) {
+        if (((InvokeInstruction) i).getMethods().contains(ic.getGetNext())) {
+          if (method.getDescriptor().size() == 0) {
+            // read opcode
+            readOpcode = method;
+          } else {
+            // write opcode
+            writeOpcode = method;
+          }
+        }
+      }
+    }
+  }
 }

@@ -15,6 +15,15 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.exps;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import org.jetbrains.java.decompiler.code.CodeConstants;
 import org.jetbrains.java.decompiler.main.ClassesProcessor.ClassNode;
 import org.jetbrains.java.decompiler.main.DecompilerContext;
@@ -40,10 +49,6 @@ import org.jetbrains.java.decompiler.util.InterpreterUtil;
 import org.jetbrains.java.decompiler.util.ListStack;
 import org.jetbrains.java.decompiler.util.TextUtil;
 
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.Map.Entry;
-
 public class InvocationExprent extends Exprent {
 
   public static final int INVOKE_SPECIAL = 1;
@@ -57,6 +62,19 @@ public class InvocationExprent extends Exprent {
   public static final int TYP_CLINIT = 3;
 
   private static final BitSet EMPTY_BIT_SET = new BitSet(0);
+  private static final Map<String, String> UNBOXING_METHODS;
+
+  static {
+    UNBOXING_METHODS = new HashMap<>();
+    UNBOXING_METHODS.put("booleanValue", "java/lang/Boolean");
+    UNBOXING_METHODS.put("byteValue", "java/lang/Byte");
+    UNBOXING_METHODS.put("shortValue", "java/lang/Short");
+    UNBOXING_METHODS.put("intValue", "java/lang/Integer");
+    UNBOXING_METHODS.put("longValue", "java/lang/Long");
+    UNBOXING_METHODS.put("floatValue", "java/lang/Float");
+    UNBOXING_METHODS.put("doubleValue", "java/lang/Double");
+    UNBOXING_METHODS.put("charValue", "java/lang/Character");
+  }
 
   private String name;
   private String classname;
@@ -76,10 +94,10 @@ public class InvocationExprent extends Exprent {
   }
 
   public InvocationExprent(int opcode,
-                           LinkConstant cn,
-                           List<PooledConstant> bootstrapArguments,
-                           ListStack<Exprent> stack,
-                           Set<Integer> bytecodeOffsets) {
+      LinkConstant cn,
+      List<PooledConstant> bootstrapArguments,
+      ListStack<Exprent> stack,
+      Set<Integer> bytecodeOffsets) {
     this();
 
     name = cn.elementname;
@@ -107,8 +125,7 @@ public class InvocationExprent extends Exprent {
 
     if (CodeConstants.INIT_NAME.equals(name)) {
       functype = TYP_INIT;
-    }
-    else if (CodeConstants.CLINIT_NAME.equals(name)) {
+    } else if (CodeConstants.CLINIT_NAME.equals(name)) {
       functype = TYP_CLINIT;
     }
 
@@ -125,24 +142,21 @@ public class InvocationExprent extends Exprent {
         if (bootstrapArguments.size() > 1) { // INVOKEDYNAMIC is used not only for lambdas
           PooledConstant link = bootstrapArguments.get(1);
           if (link instanceof LinkConstant) {
-            dynamicInvocationType = ((LinkConstant)link).index1;
+            dynamicInvocationType = ((LinkConstant) link).index1;
           }
         }
       }
       if (dynamicInvocationType == CodeConstants.CONSTANT_MethodHandle_REF_invokeStatic) {
         isStatic = true;
-      }
-      else {
+      } else {
         // FIXME: remove the first parameter completely from the list. It's the object type for a virtual lambda method.
         if (!lstParameters.isEmpty()) {
           instance = lstParameters.get(0);
         }
       }
-    }
-    else if (opcode == CodeConstants.opc_invokestatic) {
+    } else if (opcode == CodeConstants.opc_invokestatic) {
       isStatic = true;
-    }
-    else {
+    } else {
       instance = stack.pop();
     }
 
@@ -170,6 +184,39 @@ public class InvocationExprent extends Exprent {
 
     addBytecodeOffsets(expr.bytecode);
     bootstrapArguments = expr.getBootstrapArguments();
+  }
+
+  public static Exprent unboxIfNeeded(Exprent param) {
+    // "unbox" invocation parameters, e.g. 'byteSet.add((byte)123)' or 'new ShortContainer((short)813)'
+    if (param.type == Exprent.EXPRENT_INVOCATION && ((InvocationExprent) param).isBoxingCall()) {
+      param = ((InvocationExprent) param).lstParameters.get(0);
+    }
+    return param;
+  }
+
+  // TODO: move to CodeConstants ???
+  private static String getClassNameForPrimitiveType(int type) {
+    switch (type) {
+      case CodeConstants.TYPE_BOOLEAN:
+        return "java/lang/Boolean";
+      case CodeConstants.TYPE_BYTE:
+      case CodeConstants.TYPE_BYTECHAR:
+        return "java/lang/Byte";
+      case CodeConstants.TYPE_CHAR:
+        return "java/lang/Character";
+      case CodeConstants.TYPE_SHORT:
+      case CodeConstants.TYPE_SHORTCHAR:
+        return "java/lang/Short";
+      case CodeConstants.TYPE_INT:
+        return "java/lang/Integer";
+      case CodeConstants.TYPE_LONG:
+        return "java/lang/Long";
+      case CodeConstants.TYPE_FLOAT:
+        return "java/lang/Float";
+      case CodeConstants.TYPE_DOUBLE:
+        return "java/lang/Double";
+    }
+    return null;
   }
 
   @Override
@@ -203,7 +250,6 @@ public class InvocationExprent extends Exprent {
     return lst;
   }
 
-
   @Override
   public Exprent copy() {
     return new InvocationExprent(this);
@@ -226,24 +272,28 @@ public class InvocationExprent extends Exprent {
       if (isBoxingCall() && canIgnoreBoxing) {
         // process general "boxing" calls, e.g. 'Object[] data = { true }' or 'Byte b = 123'
         // here 'byte' and 'short' values do not need an explicit narrowing type cast
-        ExprProcessor.getCastedExprent(lstParameters.get(0), descriptor.params[0], buf, indent, false, false, false, tracer);
+        ExprProcessor
+            .getCastedExprent(lstParameters.get(0), descriptor.params[0], buf, indent, false, false,
+                false, tracer);
         return buf;
       }
 
-      ClassNode node = (ClassNode)DecompilerContext.getProperty(DecompilerContext.CURRENT_CLASS_NODE);
+      ClassNode node = (ClassNode) DecompilerContext
+          .getProperty(DecompilerContext.CURRENT_CLASS_NODE);
       if (node == null || !classname.equals(node.classStruct.qualifiedName)) {
-        buf.append(DecompilerContext.getImportCollector().getShortNameInClassContext(ExprProcessor.buildJavaClassName(classname)));
+        buf.append(DecompilerContext.getImportCollector()
+            .getShortNameInClassContext(ExprProcessor.buildJavaClassName(classname)));
       }
-    }
-    else {
+    } else {
 
       if (instance != null && instance.type == Exprent.EXPRENT_VAR) {
-        VarExprent instVar = (VarExprent)instance;
+        VarExprent instVar = (VarExprent) instance;
         VarVersionPair varPair = new VarVersionPair(instVar);
 
         VarProcessor varProc = instVar.getProcessor();
         if (varProc == null) {
-          MethodWrapper currentMethod = (MethodWrapper)DecompilerContext.getProperty(DecompilerContext.CURRENT_METHOD_WRAPPER);
+          MethodWrapper currentMethod = (MethodWrapper) DecompilerContext
+              .getProperty(DecompilerContext.CURRENT_METHOD_WRAPPER);
           if (currentMethod != null) {
             varProc = currentMethod.varproc;
           }
@@ -268,8 +318,7 @@ public class InvocationExprent extends Exprent {
       if (functype == TYP_GENERAL) {
         if (super_qualifier != null) {
           TextUtil.writeQualifiedSuper(buf, super_qualifier);
-        }
-        else if (instance != null) {
+        } else if (instance != null) {
           TextBuffer res = instance.toJava(indent, tracer);
 
           if (isUnboxingCall()) {
@@ -284,15 +333,14 @@ public class InvocationExprent extends Exprent {
           if (rightType.equals(VarType.VARTYPE_OBJECT) && !leftType.equals(rightType)) {
             buf.append("((").append(ExprProcessor.getCastTypeName(leftType)).append(")");
 
-            if (instance.getPrecedence() >= FunctionExprent.getPrecedence(FunctionExprent.FUNCTION_CAST)) {
+            if (instance.getPrecedence() >= FunctionExprent
+                .getPrecedence(FunctionExprent.FUNCTION_CAST)) {
               res.enclose("(", ")");
             }
             buf.append(res).append(")");
-          }
-          else if (instance.getPrecedence() > getPrecedence()) {
+          } else if (instance.getPrecedence() > getPrecedence()) {
             buf.append("(").append(res).append(")");
-          }
-          else {
+          } else {
             buf.append(res);
           }
         }
@@ -321,15 +369,12 @@ public class InvocationExprent extends Exprent {
       case TYP_INIT:
         if (super_qualifier != null) {
           buf.append("super(");
-        }
-        else if (isInstanceThis) {
+        } else if (isInstanceThis) {
           buf.append("this(");
-        }
-        else {
+        } else {
           if (instance != null) {
             buf.append(instance.toJava(indent, tracer)).append(".<init>(");
-          }
-          else {
+          } else {
             throw new RuntimeException("Unrecognized invocation of " + CodeConstants.INIT_NAME);
           }
         }
@@ -342,15 +387,18 @@ public class InvocationExprent extends Exprent {
 
       if (newNode != null) {  // own class
         if (newNode.getWrapper() != null) {
-          sigFields = newNode.getWrapper().getMethodWrapper(CodeConstants.INIT_NAME, stringDescriptor).signatureFields;
-        }
-        else {
-          if (newNode.type == ClassNode.CLASS_MEMBER && (newNode.access & CodeConstants.ACC_STATIC) == 0) { // non-static member class
-            sigFields = new ArrayList<>(Collections.nCopies(lstParameters.size(), (VarVersionPair)null));
+          sigFields = newNode.getWrapper()
+              .getMethodWrapper(CodeConstants.INIT_NAME, stringDescriptor).signatureFields;
+        } else {
+          if (newNode.type == ClassNode.CLASS_MEMBER
+              && (newNode.access & CodeConstants.ACC_STATIC) == 0) { // non-static member class
+            sigFields = new ArrayList<>(
+                Collections.nCopies(lstParameters.size(), (VarVersionPair) null));
             sigFields.set(0, new VarVersionPair(-1, 0));
           }
         }
-        isEnum = newNode.classStruct.hasModifier(CodeConstants.ACC_ENUM) && DecompilerContext.getOption(IFernflowerPreferences.DECOMPILE_ENUM);
+        isEnum = newNode.classStruct.hasModifier(CodeConstants.ACC_ENUM) && DecompilerContext
+            .getOption(IFernflowerPreferences.DECOMPILE_ENUM);
       }
     }
 
@@ -373,7 +421,9 @@ public class InvocationExprent extends Exprent {
 
         Exprent param = unboxIfNeeded(lstParameters.get(i));
         // 'byte' and 'short' literals need an explicit narrowing type cast when used as a parameter
-        ExprProcessor.getCastedExprent(param, descriptor.params[i], buff, indent, true, ambiguous, true, tracer);
+        ExprProcessor
+            .getCastedExprent(param, descriptor.params[i], buff, indent, true, ambiguous, true,
+                tracer);
 
         // the last "new Object[0]" in the vararg call is not printed
         if (buff.length() > 0) {
@@ -392,14 +442,6 @@ public class InvocationExprent extends Exprent {
     return buf;
   }
 
-  public static Exprent unboxIfNeeded(Exprent param) {
-    // "unbox" invocation parameters, e.g. 'byteSet.add((byte)123)' or 'new ShortContainer((short)813)'
-    if (param.type == Exprent.EXPRENT_INVOCATION && ((InvocationExprent)param).isBoxingCall()) {
-      param = ((InvocationExprent)param).lstParameters.get(0);
-    }
-    return param;
-  }
-
   private boolean isVarArgCall() {
     StructClass cl = DecompilerContext.getStructContext().getClass(classname);
     if (cl != null) {
@@ -407,8 +449,7 @@ public class InvocationExprent extends Exprent {
       if (mt != null) {
         return mt.hasModifier(CodeConstants.ACC_VARARGS);
       }
-    }
-    else {
+    } else {
       // TODO: tap into IDEA indices to access libraries methods details
 
       // try to check the class on the classpath
@@ -450,52 +491,15 @@ public class InvocationExprent extends Exprent {
     canIgnoreBoxing = false;
   }
 
-  // TODO: move to CodeConstants ???
-  private static String getClassNameForPrimitiveType(int type) {
-    switch (type) {
-      case CodeConstants.TYPE_BOOLEAN:
-        return "java/lang/Boolean";
-      case CodeConstants.TYPE_BYTE:
-      case CodeConstants.TYPE_BYTECHAR:
-        return "java/lang/Byte";
-      case CodeConstants.TYPE_CHAR:
-        return "java/lang/Character";
-      case CodeConstants.TYPE_SHORT:
-      case CodeConstants.TYPE_SHORTCHAR:
-        return "java/lang/Short";
-      case CodeConstants.TYPE_INT:
-        return "java/lang/Integer";
-      case CodeConstants.TYPE_LONG:
-        return "java/lang/Long";
-      case CodeConstants.TYPE_FLOAT:
-        return "java/lang/Float";
-      case CodeConstants.TYPE_DOUBLE:
-        return "java/lang/Double";
-    }
-    return null;
-  }
-
-  private static final Map<String, String> UNBOXING_METHODS;
-
-  static {
-    UNBOXING_METHODS = new HashMap<>();
-    UNBOXING_METHODS.put("booleanValue", "java/lang/Boolean");
-    UNBOXING_METHODS.put("byteValue", "java/lang/Byte");
-    UNBOXING_METHODS.put("shortValue", "java/lang/Short");
-    UNBOXING_METHODS.put("intValue", "java/lang/Integer");
-    UNBOXING_METHODS.put("longValue", "java/lang/Long");
-    UNBOXING_METHODS.put("floatValue", "java/lang/Float");
-    UNBOXING_METHODS.put("doubleValue", "java/lang/Double");
-    UNBOXING_METHODS.put("charValue", "java/lang/Character");
-  }
-
   private boolean isUnboxingCall() {
     return !isStatic && lstParameters.size() == 0 && classname.equals(UNBOXING_METHODS.get(name));
   }
 
   private BitSet getAmbiguousParameters() {
     StructClass cl = DecompilerContext.getStructContext().getClass(classname);
-    if (cl == null) return EMPTY_BIT_SET;
+    if (cl == null) {
+      return EMPTY_BIT_SET;
+    }
 
     // check number of matches
     List<MethodDescriptor> matches = new ArrayList<>();
@@ -513,7 +517,9 @@ public class InvocationExprent extends Exprent {
         }
       }
     }
-    if (matches.size() == 1) return EMPTY_BIT_SET;
+    if (matches.size() == 1) {
+      return EMPTY_BIT_SET;
+    }
 
     // check if a call is unambiguous
     StructMethod mt = cl.getMethod(InterpreterUtil.makeUniqueKey(name, stringDescriptor));
@@ -527,7 +533,9 @@ public class InvocationExprent extends Exprent {
             break;
           }
         }
-        if (exact) return EMPTY_BIT_SET;
+        if (exact) {
+          return EMPTY_BIT_SET;
+        }
       }
     }
 
@@ -560,17 +568,21 @@ public class InvocationExprent extends Exprent {
 
   @Override
   public boolean equals(Object o) {
-    if (o == this) return true;
-    if (o == null || !(o instanceof InvocationExprent)) return false;
+    if (o == this) {
+      return true;
+    }
+    if (o == null || !(o instanceof InvocationExprent)) {
+      return false;
+    }
 
-    InvocationExprent it = (InvocationExprent)o;
+    InvocationExprent it = (InvocationExprent) o;
     return InterpreterUtil.equalObjects(name, it.getName()) &&
-           InterpreterUtil.equalObjects(classname, it.getClassname()) &&
-           isStatic == it.isStatic() &&
-           InterpreterUtil.equalObjects(instance, it.getInstance()) &&
-           InterpreterUtil.equalObjects(descriptor, it.getDescriptor()) &&
-           functype == it.getFunctype() &&
-           InterpreterUtil.equalLists(lstParameters, it.getLstParameters());
+        InterpreterUtil.equalObjects(classname, it.getClassname()) &&
+        isStatic == it.isStatic() &&
+        InterpreterUtil.equalObjects(instance, it.getInstance()) &&
+        InterpreterUtil.equalObjects(descriptor, it.getDescriptor()) &&
+        functype == it.getFunctype() &&
+        InterpreterUtil.equalLists(lstParameters, it.getLstParameters());
   }
 
   public List<Exprent> getLstParameters() {
@@ -665,16 +677,15 @@ public class InvocationExprent extends Exprent {
       MatchProperties key = rule.getKey();
       if (key == MatchProperties.EXPRENT_INVOCATION_PARAMETER) {
         if (value.isVariable() && (value.parameter >= lstParameters.size() ||
-                                   !engine.checkAndSetVariableValue(value.value.toString(), lstParameters.get(value.parameter)))) {
+            !engine.checkAndSetVariableValue(value.value.toString(),
+                lstParameters.get(value.parameter)))) {
           return false;
         }
-      }
-      else if (key == MatchProperties.EXPRENT_INVOCATION_CLASS) {
+      } else if (key == MatchProperties.EXPRENT_INVOCATION_CLASS) {
         if (!value.value.equals(this.classname)) {
           return false;
         }
-      }
-      else if (key == MatchProperties.EXPRENT_INVOCATION_SIGNATURE) {
+      } else if (key == MatchProperties.EXPRENT_INVOCATION_SIGNATURE) {
         if (!value.value.equals(this.name + this.stringDescriptor)) {
           return false;
         }

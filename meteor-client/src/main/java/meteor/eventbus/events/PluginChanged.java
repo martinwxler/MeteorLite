@@ -28,8 +28,8 @@ import lombok.Data;
 import meteor.Plugin;
 
 @Data
-public class PluginChanged
-{
-	private final Plugin plugin;
-	private final boolean loaded;
+public class PluginChanged {
+
+  private final Plugin plugin;
+  private final boolean loaded;
 }

@@ -24,139 +24,130 @@
  */
 package meteor.plugins.itemstats.special;
 
-import net.runelite.api.Client;
-import net.runelite.api.Varbits;
-import meteor.plugins.itemstats.*;
-import meteor.plugins.itemstats.stats.Stat;
-import meteor.plugins.itemstats.stats.Stats;
-
 import java.util.ArrayList;
 import java.util.List;
+import meteor.plugins.itemstats.Effect;
+import meteor.plugins.itemstats.Positivity;
+import meteor.plugins.itemstats.RangeStatChange;
+import meteor.plugins.itemstats.StatChange;
+import meteor.plugins.itemstats.StatsChanges;
+import meteor.plugins.itemstats.stats.Stat;
+import meteor.plugins.itemstats.stats.Stats;
+import net.runelite.api.Client;
+import net.runelite.api.Varbits;
 
-public class SpicyStew implements Effect
-{
+public class SpicyStew implements Effect {
 
-	@Override
-	public StatsChanges calculate(Client client)
-	{
-		/*
-		 * Spice boosts listed in the colour order of [Spicy stew -> Smell]
-		 */
-		int redBoost = spiceBoostOf(client.getVar(Varbits.SPICY_STEW_RED_SPICES));
-		int yellowBoost = spiceBoostOf(client.getVar(Varbits.SPICY_STEW_YELLOW_SPICES));
-		int orangeBoost = spiceBoostOf(client.getVar(Varbits.SPICY_STEW_ORANGE_SPICES));
-		int brownBoost = spiceBoostOf(client.getVar(Varbits.SPICY_STEW_BROWN_SPICES));
+  /**
+   * Calculate the potential boost that a spice currently offers, based on its number of doses in
+   * the stew.
+   *
+   * @param spiceDoses Number of doses between 0 and 3.
+   * @return Either 0, +1, +3, or +5.
+   */
+  private static int spiceBoostOf(int spiceDoses) {
+    return Math.max(0, (spiceDoses * 2) - 1);
+  }
 
-		List<StatChange> changes = new ArrayList<>();
+  /**
+   * Calculate the fields of a stat change tooltip row.
+   *
+   * @param stat       Stat that the spice boost affects.
+   * @param spiceBoost Potential spice boost before capping.
+   * @param client     Client API, needed to check current stat values.
+   * @return StatChange object with all required values.
+   */
+  private static StatChange statChangeOf(Stat stat, int spiceBoost, Client client) {
+    int currentValue = stat.getValue(client);
+    int currentBase = stat.getMaximum(client);
 
-		/*
-		 * Red spices: Attack, Strength, Defence, Ranged, Magic
-		 */
-		if (redBoost > 0)
-		{
-			changes.add(statChangeOf(Stats.ATTACK, redBoost, client));
-			changes.add(statChangeOf(Stats.STRENGTH, redBoost, client));
-			changes.add(statChangeOf(Stats.DEFENCE, redBoost, client));
-			changes.add(statChangeOf(Stats.RANGED, redBoost, client));
-			changes.add(statChangeOf(Stats.MAGIC, redBoost, client));
-		}
+    int currentBoost = currentValue - currentBase; // Can be negative
+    int spiceBoostCapped =
+        (currentBoost <= 0) ? spiceBoost : Math.max(0, spiceBoost - currentBoost);
 
-		/*
-		 * Yellow spices: Prayer, Agility, Thieving, Slayer, Hunter
-		 */
-		if (yellowBoost > 0)
-		{
-			changes.add(statChangeOf(Stats.PRAYER, yellowBoost, client));
-			changes.add(statChangeOf(Stats.AGILITY, yellowBoost, client));
-			changes.add(statChangeOf(Stats.THIEVING, yellowBoost, client));
-			changes.add(statChangeOf(Stats.SLAYER, yellowBoost, client));
-			changes.add(statChangeOf(Stats.HUNTER, yellowBoost, client));
-		}
+    final RangeStatChange change = new RangeStatChange();
+    change.setStat(stat);
+    change.setMinRelative(-spiceBoost);
+    change.setRelative(spiceBoostCapped);
+    change.setMinTheoretical(-spiceBoost);
+    change.setTheoretical(spiceBoost);
+    change.setMinAbsolute(Math.max(-spiceBoost, -currentValue));
+    change.setAbsolute(stat.getValue(client) + spiceBoostCapped);
 
-		/*
-		 * Orange spices: Smithing, Cooking, Crafting, Firemaking, Fletching, Runecraft, Construction
-		 */
-		if (orangeBoost > 0)
-		{
-			changes.add(statChangeOf(Stats.SMITHING, orangeBoost, client));
-			changes.add(statChangeOf(Stats.COOKING, orangeBoost, client));
-			changes.add(statChangeOf(Stats.CRAFTING, orangeBoost, client));
-			changes.add(statChangeOf(Stats.FIREMAKING, orangeBoost, client));
-			changes.add(statChangeOf(Stats.FLETCHING, orangeBoost, client));
-			changes.add(statChangeOf(Stats.RUNECRAFT, orangeBoost, client));
-			changes.add(statChangeOf(Stats.CONSTRUCTION, orangeBoost, client));
-		}
+    Positivity positivity;
+    if (spiceBoostCapped == 0) {
+      positivity = Positivity.NO_CHANGE;
+    } else if (spiceBoost > spiceBoostCapped) {
+      positivity = Positivity.BETTER_CAPPED;
+    } else {
+      positivity = Positivity.BETTER_UNCAPPED;
+    }
+    change.setPositivity(positivity);
 
-		/*
-		 * Brown spices: Mining, Herblore, Fishing, Woodcutting, Farming
-		 */
-		if (brownBoost > 0)
-		{
-			changes.add(statChangeOf(Stats.MINING, brownBoost, client));
-			changes.add(statChangeOf(Stats.HERBLORE, brownBoost, client));
-			changes.add(statChangeOf(Stats.FISHING, brownBoost, client));
-			changes.add(statChangeOf(Stats.WOODCUTTING, brownBoost, client));
-			changes.add(statChangeOf(Stats.FARMING, brownBoost, client));
-		}
+    return change;
+  }
 
-		StatsChanges changesReturn = new StatsChanges(4);
-		changesReturn.setStatChanges(changes.toArray(new StatChange[changes.size()]));
+  @Override
+  public StatsChanges calculate(Client client) {
+    /*
+     * Spice boosts listed in the colour order of [Spicy stew -> Smell]
+     */
+    int redBoost = spiceBoostOf(client.getVar(Varbits.SPICY_STEW_RED_SPICES));
+    int yellowBoost = spiceBoostOf(client.getVar(Varbits.SPICY_STEW_YELLOW_SPICES));
+    int orangeBoost = spiceBoostOf(client.getVar(Varbits.SPICY_STEW_ORANGE_SPICES));
+    int brownBoost = spiceBoostOf(client.getVar(Varbits.SPICY_STEW_BROWN_SPICES));
 
-		return changesReturn;
-	}
+    List<StatChange> changes = new ArrayList<>();
 
-	/**
-	 * Calculate the potential boost that a spice currently offers,
-	 * based on its number of doses in the stew.
-	 *
-	 * @param spiceDoses Number of doses between 0 and 3.
-	 * @return Either 0, +1, +3, or +5.
-	 */
-	private static int spiceBoostOf(int spiceDoses)
-	{
-		return Math.max(0, (spiceDoses * 2) - 1);
-	}
+    /*
+     * Red spices: Attack, Strength, Defence, Ranged, Magic
+     */
+    if (redBoost > 0) {
+      changes.add(statChangeOf(Stats.ATTACK, redBoost, client));
+      changes.add(statChangeOf(Stats.STRENGTH, redBoost, client));
+      changes.add(statChangeOf(Stats.DEFENCE, redBoost, client));
+      changes.add(statChangeOf(Stats.RANGED, redBoost, client));
+      changes.add(statChangeOf(Stats.MAGIC, redBoost, client));
+    }
 
-	/**
-	 * Calculate the fields of a stat change tooltip row.
-	 *
-	 * @param stat Stat that the spice boost affects.
-	 * @param spiceBoost Potential spice boost before capping.
-	 * @param client Client API, needed to check current stat values.
-	 * @return StatChange object with all required values.
-	 */
-	private static StatChange statChangeOf(Stat stat, int spiceBoost, Client client)
-	{
-		int currentValue = stat.getValue(client);
-		int currentBase = stat.getMaximum(client);
+    /*
+     * Yellow spices: Prayer, Agility, Thieving, Slayer, Hunter
+     */
+    if (yellowBoost > 0) {
+      changes.add(statChangeOf(Stats.PRAYER, yellowBoost, client));
+      changes.add(statChangeOf(Stats.AGILITY, yellowBoost, client));
+      changes.add(statChangeOf(Stats.THIEVING, yellowBoost, client));
+      changes.add(statChangeOf(Stats.SLAYER, yellowBoost, client));
+      changes.add(statChangeOf(Stats.HUNTER, yellowBoost, client));
+    }
 
-		int currentBoost = currentValue - currentBase; // Can be negative
-		int spiceBoostCapped = (currentBoost <= 0) ? spiceBoost : Math.max(0, spiceBoost - currentBoost);
+    /*
+     * Orange spices: Smithing, Cooking, Crafting, Firemaking, Fletching, Runecraft, Construction
+     */
+    if (orangeBoost > 0) {
+      changes.add(statChangeOf(Stats.SMITHING, orangeBoost, client));
+      changes.add(statChangeOf(Stats.COOKING, orangeBoost, client));
+      changes.add(statChangeOf(Stats.CRAFTING, orangeBoost, client));
+      changes.add(statChangeOf(Stats.FIREMAKING, orangeBoost, client));
+      changes.add(statChangeOf(Stats.FLETCHING, orangeBoost, client));
+      changes.add(statChangeOf(Stats.RUNECRAFT, orangeBoost, client));
+      changes.add(statChangeOf(Stats.CONSTRUCTION, orangeBoost, client));
+    }
 
-		final RangeStatChange change = new RangeStatChange();
-		change.setStat(stat);
-		change.setMinRelative(-spiceBoost);
-		change.setRelative(spiceBoostCapped);
-		change.setMinTheoretical(-spiceBoost);
-		change.setTheoretical(spiceBoost);
-		change.setMinAbsolute(Math.max(-spiceBoost, -currentValue));
-		change.setAbsolute(stat.getValue(client) + spiceBoostCapped);
+    /*
+     * Brown spices: Mining, Herblore, Fishing, Woodcutting, Farming
+     */
+    if (brownBoost > 0) {
+      changes.add(statChangeOf(Stats.MINING, brownBoost, client));
+      changes.add(statChangeOf(Stats.HERBLORE, brownBoost, client));
+      changes.add(statChangeOf(Stats.FISHING, brownBoost, client));
+      changes.add(statChangeOf(Stats.WOODCUTTING, brownBoost, client));
+      changes.add(statChangeOf(Stats.FARMING, brownBoost, client));
+    }
 
-		Positivity positivity;
-		if (spiceBoostCapped == 0)
-		{
-			positivity = Positivity.NO_CHANGE;
-		}
-		else if (spiceBoost > spiceBoostCapped)
-		{
-			positivity = Positivity.BETTER_CAPPED;
-		}
-		else
-		{
-			positivity = Positivity.BETTER_UNCAPPED;
-		}
-		change.setPositivity(positivity);
+    StatsChanges changesReturn = new StatsChanges(4);
+    changesReturn.setStatChanges(changes.toArray(new StatChange[changes.size()]));
 
-		return change;
-	}
+    return changesReturn;
+  }
 }

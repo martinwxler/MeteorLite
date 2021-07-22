@@ -15,11 +15,10 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.stats;
 
-import org.jetbrains.java.decompiler.main.TextBuffer;
-import org.jetbrains.java.decompiler.main.collectors.BytecodeMappingTracer;
-
 import java.util.Collection;
 import java.util.HashSet;
+import org.jetbrains.java.decompiler.main.TextBuffer;
+import org.jetbrains.java.decompiler.main.collectors.BytecodeMappingTracer;
 
 
 public class GeneralStatement extends Statement {
@@ -57,7 +56,8 @@ public class GeneralStatement extends Statement {
     TextBuffer buf = new TextBuffer();
 
     if (isLabeled()) {
-      buf.appendIndent(indent).append("label").append(this.id.toString()).append(":").appendLineSeparator();
+      buf.appendIndent(indent).append("label").append(this.id.toString()).append(":")
+          .appendLineSeparator();
     }
 
     buf.appendIndent(indent).append("abstract statement {").appendLineSeparator();

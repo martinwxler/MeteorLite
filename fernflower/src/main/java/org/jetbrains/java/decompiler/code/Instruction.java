@@ -58,7 +58,8 @@ public class Instruction implements CodeConstants {
   }
 
   public Instruction clone() {
-    return ConstantsUtil.getInstructionInstance(opcode, wide, group, bytecode_version, operands == null ? null : operands.clone());
+    return ConstantsUtil.getInstructionInstance(opcode, wide, group, bytecode_version,
+        operands == null ? null : operands.clone());
   }
 
   public String toString() {
@@ -71,8 +72,7 @@ public class Instruction implements CodeConstants {
       int op = operands[i];
       if (op < 0) {
         res += " -" + Integer.toHexString(-op);
-      }
-      else {
+      } else {
         res += " " + Integer.toHexString(op);
       }
     }
@@ -82,8 +82,8 @@ public class Instruction implements CodeConstants {
 
   public boolean canFallthrough() {
     return opcode != opc_goto && opcode != opc_goto_w && opcode != opc_ret &&
-           !(opcode >= opc_ireturn && opcode <= opc_return) && opcode != opc_athrow
-           && opcode != opc_jsr && opcode != opc_tableswitch && opcode != opc_lookupswitch;
+        !(opcode >= opc_ireturn && opcode <= opc_return) && opcode != opc_athrow
+        && opcode != opc_jsr && opcode != opc_tableswitch && opcode != opc_lookupswitch;
   }
 
   public boolean equalsInstruction(Instruction instr) {

@@ -23,128 +23,109 @@ import net.runelite.asm.Type;
 import net.runelite.asm.signature.Signature;
 
 /**
- * Abstract class meant as the interface of {@link com.openosrs.injector.Injector injection} for injectors
+ * Abstract class meant as the interface of {@link com.openosrs.injector.Injector injection} for
+ * injectors
  */
-public abstract class InjectData
-{
-	public static final String HOOKS = "meteor/callback/Hooks";
-	public static final String CALLBACKS = "net/runelite/api/hooks/Callbacks";
+public abstract class InjectData {
 
-	@Getter
-	public ClassGroup vanilla;
+  public static final String HOOKS = "meteor/callback/Hooks";
+  public static final String CALLBACKS = "net/runelite/api/hooks/Callbacks";
+  /**
+   * Strings -> Deobfuscated ClassFiles keys: - Obfuscated name - RSApi implementing name
+   */
+  private final Map<String, ClassFile> toDeob = new HashMap<>();
+  @Getter
+  public ClassGroup vanilla;
+  @Getter
+  public ClassGroup deobfuscated;
+  @Getter
+  public ClassGroup mixins;
+  @Getter
+  public RSApi rsApi;
+  /**
+   * Deobfuscated ClassFiles -> Vanilla ClassFiles
+   */
+  public Map<ClassFile, ClassFile> toVanilla;
 
-	@Getter
-	public ClassGroup deobfuscated;
+  public abstract void runChildInjector(Injector injector);
 
-	@Getter
-	public ClassGroup mixins;
+  public void initToVanilla() {
+    ImmutableMap.Builder<ClassFile, ClassFile> toVanillaB = ImmutableMap.builder();
 
-	@Getter
-	public RSApi rsApi;
+    for (final ClassFile deobClass : deobfuscated) {
+      if (deobClass.getName().startsWith("net/runelite/")) {
+        continue;
+      }
 
-	/**
-	 * Deobfuscated ClassFiles -> Vanilla ClassFiles
-	 */
-	public Map<ClassFile, ClassFile> toVanilla;
+      final String obName = InjectUtil.getObfuscatedName(deobClass);
+      if (obName != null) {
+        toDeob.put(obName, deobClass);
 
-	/**
-	 * Strings -> Deobfuscated ClassFiles
-	 * keys:
-	 * - Obfuscated name
-	 * - RSApi implementing name
-	 */
-	private final Map<String, ClassFile> toDeob = new HashMap<>();
+        // Can't be null
+        final ClassFile obClass = this.vanilla.findClass(deobClass.getName());
+        toVanillaB.put(deobClass, obClass);
+      }
+    }
 
-	public abstract void runChildInjector(Injector injector);
+    this.toVanilla = toVanillaB.build();
+  }
 
-	public void initToVanilla()
-	{
-		ImmutableMap.Builder<ClassFile, ClassFile> toVanillaB = ImmutableMap.builder();
+  /**
+   * Deobfuscated ClassFile -> Vanilla ClassFile
+   */
+  public ClassFile toVanilla(ClassFile deobClass) {
 
-		for (final ClassFile deobClass : deobfuscated)
-		{
-			if (deobClass.getName().startsWith("net/runelite/"))
-			{
-				continue;
-			}
+    return toVanilla.get(deobClass);
+  }
 
-			final String obName = InjectUtil.getObfuscatedName(deobClass);
-			if (obName != null)
-			{
-				toDeob.put(obName, deobClass);
+  /**
+   * Deobfuscated Method -> Vanilla Method
+   */
+  public Method toVanilla(Method deobMeth) {
+    final ClassFile obC = vanilla.findClass(deobMeth.getClassFile().getName());
 
-				// Can't be null
-				final ClassFile obClass = this.vanilla.findClass(deobClass.getName());
-				toVanillaB.put(deobClass, obClass);
-			}
-		}
+    String name = deobMeth.getName();
 
-		this.toVanilla = toVanillaB.build();
-	}
+    Signature sig = deobMeth.getDescriptor();
 
-	/**
-	 * Deobfuscated ClassFile -> Vanilla ClassFile
-	 */
-	public ClassFile toVanilla(ClassFile deobClass)
-	{
+    return obC.findMethod(name, sig);
+  }
 
-		return toVanilla.get(deobClass);
-	}
+  /**
+   * Deobfuscated Field -> Vanilla Field
+   */
+  public Field toVanilla(Field deobField) {
+    final ClassFile obC = vanilla.findClass(deobField.getClassFile().getName());
 
-	/**
-	 * Deobfuscated Method -> Vanilla Method
-	 */
-	public Method toVanilla(Method deobMeth)
-	{
-		final ClassFile obC = vanilla.findClass(deobMeth.getClassFile().getName());
+    String name = deobField.getName();
 
-		String name = deobMeth.getName();
+    Type type = deobField.getType();
 
-		Signature sig = deobMeth.getDescriptor();
+    return obC.findField(name, type);
+  }
 
-		return obC.findMethod(name, sig);
-	}
+  /**
+   * Vanilla ClassFile -> Deobfuscated ClassFile
+   */
+  public ClassFile toDeob(String str) {
+    return this.toDeob.get(str);
+  }
 
-	/**
-	 * Deobfuscated Field -> Vanilla Field
-	 */
-	public Field toVanilla(Field deobField)
-	{
-		final ClassFile obC = vanilla.findClass(deobField.getClassFile().getName());
+  /**
+   * Adds a string mapping for a deobfuscated class
+   */
+  public void addToDeob(String key, ClassFile value) {
+    toDeob.put(key, value);
+  }
 
-		String name = deobField.getName();
-
-		Type type = deobField.getType();
-
-		return obC.findField(name, type);
-	}
-
-	/**
-	 * Vanilla ClassFile -> Deobfuscated ClassFile
-	 */
-	public ClassFile toDeob(String str)
-	{
-		return this.toDeob.get(str);
-	}
-
-	/**
-	 * Adds a string mapping for a deobfuscated class
-	 */
-	public void addToDeob(String key, ClassFile value)
-	{
-		toDeob.put(key, value);
-	}
-
-	/**
-	 * Do something with all paired classes.
-	 * <p>
-	 * Key = deobfuscated, Value = vanilla
-	 */
-	public void forEachPair(BiConsumer<ClassFile, ClassFile> action)
-	{
-		for (Map.Entry<ClassFile, ClassFile> pair : toVanilla.entrySet())
-		{
-			action.accept(pair.getKey(), pair.getValue());
-		}
-	}
+  /**
+   * Do something with all paired classes.
+   * <p>
+   * Key = deobfuscated, Value = vanilla
+   */
+  public void forEachPair(BiConsumer<ClassFile, ClassFile> action) {
+    for (Map.Entry<ClassFile, ClassFile> pair : toVanilla.entrySet()) {
+      action.accept(pair.getKey(), pair.getValue());
+    }
+  }
 }

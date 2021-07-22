@@ -3,91 +3,93 @@ package net.runelite.rs.api;
 import net.runelite.api.ItemComposition;
 import net.runelite.mapping.Import;
 
-public interface RSItemComposition extends ItemComposition
-{
-	@Import("name")
-	@Override
-	String getName();
+public interface RSItemComposition extends ItemComposition {
 
-	@Import("name")
-	@Override
-	void setName(String name);
+  @Import("name")
+  @Override
+  String getName();
 
-	@Import("id")
-	@Override
-	int getId();
+  @Import("name")
+  @Override
+  void setName(String name);
 
-	@Import("noteTemplate")
-	@Override
-	int getNote();
+  @Import("id")
+  @Override
+  int getId();
 
-	@Import("note")
-	@Override
-	int getLinkedNoteId();
+  @Import("noteTemplate")
+  @Override
+  int getNote();
 
-	@Import("placeholder")
-	@Override
-	int getPlaceholderId();
+  @Import("note")
+  @Override
+  int getLinkedNoteId();
 
-	@Import("placeholderTemplate")
-	@Override
-	int getPlaceholderTemplateId();
+  @Import("placeholder")
+  @Override
+  int getPlaceholderId();
 
-	@Import("price")
-	@Override
-	int getPrice();
+  @Import("placeholderTemplate")
+  @Override
+  int getPlaceholderTemplateId();
 
-	@Import("isMembersOnly")
-	@Override
-	boolean isMembers();
+  @Import("price")
+  @Override
+  int getPrice();
 
-	@Import("isTradable")
-	@Override
-	boolean isTradeable();
+  @Import("isMembersOnly")
+  @Override
+  boolean isMembers();
 
-	@Import("isTradable")
-	@Override
-	void setTradeable(boolean yes);
+  @Import("isTradable")
+  @Override
+  boolean isTradeable();
 
-	/**
-	 * You probably want {@link #isStackable}
-	 * <p>
-	 * This is the <b>{@code int}</b> that client code uses internally to represent this true/false value. It appears to only ever be set to 1 or 0
-	 * @return 0 when this type of item isn't stackable, 1 otherwise
-	 */
-	@Import("isStackable")
-	int getIsStackable();
+  @Import("isTradable")
+  @Override
+  void setTradeable(boolean yes);
 
-	@Import("maleModel")
-	int getMaleModel();
+  /**
+   * You probably want {@link #isStackable}
+   * <p>
+   * This is the <b>{@code int}</b> that client code uses internally to represent this true/false
+   * value. It appears to only ever be set to 1 or 0
+   *
+   * @return 0 when this type of item isn't stackable, 1 otherwise
+   */
+  @Import("isStackable")
+  int getIsStackable();
 
-	@Import("inventoryActions")
-	@Override
-	String[] getInventoryActions();
+  @Import("maleModel")
+  int getMaleModel();
 
-	@Import("groundActions")
-	@Override
-	String[] getGroundActions();
+  @Import("inventoryActions")
+  @Override
+  String[] getInventoryActions();
 
-	@Import("getShiftClickIndex")
-	@Override
-	int getShiftClickActionIndex();
+  @Import("groundActions")
+  @Override
+  String[] getGroundActions();
 
-	@Import("getModel")
-	RSModel getModel$api(int quantity);
+  @Import("getShiftClickIndex")
+  @Override
+  int getShiftClickActionIndex();
 
-	@Import("unnotedId")
-	int getInventoryModel();
+  @Import("getModel")
+  RSModel getModel$api(int quantity);
 
-	@Import("recolorTo")
-	short[] getColorToReplaceWith();
+  @Import("unnotedId")
+  int getInventoryModel();
 
-	@Import("retextureTo")
-	short[] getTextureToReplaceWith();
+  @Import("recolorTo")
+  short[] getColorToReplaceWith();
 
-	@Import("params")
-	RSIterableNodeHashTable getParams();
+  @Import("retextureTo")
+  short[] getTextureToReplaceWith();
 
-	@Import("params")
-	void setParams(RSIterableNodeHashTable params);
+  @Import("params")
+  RSIterableNodeHashTable getParams();
+
+  @Import("params")
+  void setParams(RSIterableNodeHashTable params);
 }

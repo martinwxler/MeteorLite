@@ -30,63 +30,61 @@ import java.util.List;
 import net.runelite.asm.Method;
 import net.runelite.asm.Type;
 
-public class Stack
-{
-	private int size;
-	private final StackContext[] stack;
+public class Stack {
 
-	public Stack(int sz)
-	{
-		stack = new StackContext[sz * 2]; // XXX FIXME
-	}
+  private final StackContext[] stack;
+  private int size;
 
-	public Stack(Stack other)
-	{
-		this.size = other.size;
-		this.stack = other.stack.clone();
-	}
+  public Stack(int sz) {
+    stack = new StackContext[sz * 2]; // XXX FIXME
+  }
 
-	private void printStack(StackContext ctx, int level)
-	{
-		for (int i = 0; i < level; ++i)
-			System.err.print(" ");
-		System.err.println(ctx.getType() + " pushed by " + ctx.getPushed().getInstruction().getType().getName());// + " at " + ctx.getPushed().getInstruction().getPc());
-		for (StackContext c : ctx.getPushed().getPops())
-			printStack(c, level + 2);
-	}
+  public Stack(Stack other) {
+    this.size = other.size;
+    this.stack = other.stack.clone();
+  }
 
-	public void push(StackContext i)
-	{
-		if (size == stack.length)
-		{
-			Method m = i.getPushed().getInstruction().getInstructions().getCode().getMethod();
-			System.err.println("stack overflow in " + m.getClassFile().getName() + " method " + m.getName());
-			for (int c = 0; c < stack.length; ++c)
-				printStack(stack[c], 0);
-			throw new RuntimeException("Stack overflow");
-		}
+  private void printStack(StackContext ctx, int level) {
+    for (int i = 0; i < level; ++i) {
+      System.err.print(" ");
+    }
+    System.err.println(ctx.getType() + " pushed by " + ctx.getPushed().getInstruction().getType()
+        .getName());// + " at " + ctx.getPushed().getInstruction().getPc());
+    for (StackContext c : ctx.getPushed().getPops()) {
+      printStack(c, level + 2);
+    }
+  }
 
-		assert !i.getType().equals(Type.VOID);
+  public void push(StackContext i) {
+    if (size == stack.length) {
+      Method m = i.getPushed().getInstruction().getInstructions().getCode().getMethod();
+      System.err
+          .println("stack overflow in " + m.getClassFile().getName() + " method " + m.getName());
+      for (int c = 0; c < stack.length; ++c) {
+        printStack(stack[c], 0);
+      }
+      throw new RuntimeException("Stack overflow");
+    }
 
-		stack[size] = i;
-		++size;
-	}
+    assert !i.getType().equals(Type.VOID);
 
-	public StackContext pop()
-	{
-		if (size <= 0)
-			throw new RuntimeException("Stack underflow");
+    stack[size] = i;
+    ++size;
+  }
 
-		return stack[--size];
-	}
+  public StackContext pop() {
+    if (size <= 0) {
+      throw new RuntimeException("Stack underflow");
+    }
 
-	public int getSize()
-	{
-		return size;
-	}
+    return stack[--size];
+  }
 
-	public List<StackContext> getStack()
-	{
-		return Arrays.asList(stack);
-	}
+  public int getSize() {
+    return size;
+  }
+
+  public List<StackContext> getStack() {
+    return Arrays.asList(stack);
+  }
 }

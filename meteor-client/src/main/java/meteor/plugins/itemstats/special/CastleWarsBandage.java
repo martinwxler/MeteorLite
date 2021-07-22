@@ -24,59 +24,59 @@
  */
 package meteor.plugins.itemstats.special;
 
-import com.google.common.collect.ImmutableSet;
-import net.runelite.api.*;
-import meteor.plugins.itemstats.Effect;
-import meteor.plugins.itemstats.StatChange;
-import meteor.plugins.itemstats.StatsChanges;
-
-import java.util.Comparator;
-import java.util.stream.Stream;
-
 import static meteor.plugins.itemstats.Builders.heal;
 import static meteor.plugins.itemstats.Builders.perc;
 import static meteor.plugins.itemstats.stats.Stats.HITPOINTS;
 import static meteor.plugins.itemstats.stats.Stats.RUN_ENERGY;
 
-public class CastleWarsBandage implements Effect
-{
-	private static final ImmutableSet<Integer> BRACELETS = ImmutableSet.of(
-			ItemID.CASTLE_WARS_BRACELET1, ItemID.CASTLE_WARS_BRACELET2, ItemID.CASTLE_WARS_BRACELET3
-	);
+import com.google.common.collect.ImmutableSet;
+import java.util.Comparator;
+import java.util.stream.Stream;
+import meteor.plugins.itemstats.Effect;
+import meteor.plugins.itemstats.StatChange;
+import meteor.plugins.itemstats.StatsChanges;
+import net.runelite.api.Client;
+import net.runelite.api.EquipmentInventorySlot;
+import net.runelite.api.InventoryID;
+import net.runelite.api.Item;
+import net.runelite.api.ItemContainer;
+import net.runelite.api.ItemID;
 
-	private static final double BASE_HP_PERC = .10;
-	private static final double BRACELET_HP_PERC = .15;
+public class CastleWarsBandage implements Effect {
 
-	@Override
-	public StatsChanges calculate(Client client)
-	{
-		final ItemContainer equipmentContainer = client.getItemContainer(InventoryID.EQUIPMENT);
-		final double percH = hasBracelet(equipmentContainer) ? BRACELET_HP_PERC : BASE_HP_PERC;
-		final StatChange hitPoints = heal(HITPOINTS, perc(percH, 0)).effect(client);
-		final StatChange runEnergy = heal(RUN_ENERGY, 30).effect(client);
-		final StatsChanges changes = new StatsChanges(2);
-		changes.setStatChanges(new StatChange[]{hitPoints, runEnergy});
-		changes.setPositivity(Stream.of(changes.getStatChanges())
-			.map(StatChange::getPositivity)
-			.max(Comparator.comparing(Enum::ordinal)).get());
+  private static final ImmutableSet<Integer> BRACELETS = ImmutableSet.of(
+      ItemID.CASTLE_WARS_BRACELET1, ItemID.CASTLE_WARS_BRACELET2, ItemID.CASTLE_WARS_BRACELET3
+  );
 
-		return changes;
-	}
+  private static final double BASE_HP_PERC = .10;
+  private static final double BRACELET_HP_PERC = .15;
 
-	private boolean hasBracelet(ItemContainer equipmentContainer)
-	{
-		if (equipmentContainer == null)
-		{
-			return false;
-		}
+  @Override
+  public StatsChanges calculate(Client client) {
+    final ItemContainer equipmentContainer = client.getItemContainer(InventoryID.EQUIPMENT);
+    final double percH = hasBracelet(equipmentContainer) ? BRACELET_HP_PERC : BASE_HP_PERC;
+    final StatChange hitPoints = heal(HITPOINTS, perc(percH, 0)).effect(client);
+    final StatChange runEnergy = heal(RUN_ENERGY, 30).effect(client);
+    final StatsChanges changes = new StatsChanges(2);
+    changes.setStatChanges(new StatChange[]{hitPoints, runEnergy});
+    changes.setPositivity(Stream.of(changes.getStatChanges())
+        .map(StatChange::getPositivity)
+        .max(Comparator.comparing(Enum::ordinal)).get());
 
-		final Item gloves = equipmentContainer.getItem(EquipmentInventorySlot.GLOVES.getSlotIdx());
+    return changes;
+  }
 
-		if (gloves != null)
-		{
-			return BRACELETS.contains(gloves.getId());
-		}
+  private boolean hasBracelet(ItemContainer equipmentContainer) {
+    if (equipmentContainer == null) {
+      return false;
+    }
 
-		return false;
-	}
+    final Item gloves = equipmentContainer.getItem(EquipmentInventorySlot.GLOVES.getSlotIdx());
+
+    if (gloves != null) {
+      return BRACELETS.contains(gloves.getId());
+    }
+
+    return false;
+  }
 }

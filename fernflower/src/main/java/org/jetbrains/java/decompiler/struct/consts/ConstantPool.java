@@ -15,6 +15,11 @@
  */
 package org.jetbrains.java.decompiler.struct.consts;
 
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
 import org.jetbrains.java.decompiler.code.CodeConstants;
 import org.jetbrains.java.decompiler.main.DecompilerContext;
 import org.jetbrains.java.decompiler.modules.renamer.PoolInterceptor;
@@ -24,14 +29,9 @@ import org.jetbrains.java.decompiler.struct.gen.NewClassNameBuilder;
 import org.jetbrains.java.decompiler.struct.gen.VarType;
 import org.jetbrains.java.decompiler.util.DataInputFullStream;
 
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.List;
-
 @SuppressWarnings("AssignmentToForLoopParameter")
 public class ConstantPool implements NewClassNameBuilder {
+
   public static final int FIELD = 1;
   public static final int METHOD = 2;
 
@@ -48,7 +48,7 @@ public class ConstantPool implements NewClassNameBuilder {
 
     // first pass: read the elements
     for (int i = 1; i < size; i++) {
-      byte tag = (byte)in.readUnsignedByte();
+      byte tag = (byte) in.readUnsignedByte();
 
       switch (tag) {
         case CodeConstants.CONSTANT_Utf8:
@@ -56,11 +56,13 @@ public class ConstantPool implements NewClassNameBuilder {
           break;
 
         case CodeConstants.CONSTANT_Integer:
-          pool.add(new PrimitiveConstant(CodeConstants.CONSTANT_Integer, Integer.valueOf(in.readInt())));
+          pool.add(
+              new PrimitiveConstant(CodeConstants.CONSTANT_Integer, Integer.valueOf(in.readInt())));
           break;
 
         case CodeConstants.CONSTANT_Float:
-          pool.add(new PrimitiveConstant(CodeConstants.CONSTANT_Float, Float.valueOf(in.readFloat())));
+          pool.add(
+              new PrimitiveConstant(CodeConstants.CONSTANT_Float, Float.valueOf(in.readFloat())));
           break;
 
         case CodeConstants.CONSTANT_Long:
@@ -70,7 +72,8 @@ public class ConstantPool implements NewClassNameBuilder {
           break;
 
         case CodeConstants.CONSTANT_Double:
-          pool.add(new PrimitiveConstant(CodeConstants.CONSTANT_Double, Double.valueOf(in.readDouble())));
+          pool.add(new PrimitiveConstant(CodeConstants.CONSTANT_Double,
+              Double.valueOf(in.readDouble())));
           pool.add(null);
           i++;
           break;
@@ -155,9 +158,10 @@ public class ConstantPool implements NewClassNameBuilder {
     return pool.size();
   }
 
-  public String[] getClassElement(int elementType, String className, int nameIndex, int descriptorIndex) {
-    String elementName = ((PrimitiveConstant)getConstant(nameIndex)).getString();
-    String descriptor = ((PrimitiveConstant)getConstant(descriptorIndex)).getString();
+  public String[] getClassElement(int elementType, String className, int nameIndex,
+      int descriptorIndex) {
+    String elementName = ((PrimitiveConstant) getConstant(nameIndex)).getString();
+    String descriptor = ((PrimitiveConstant) getConstant(descriptorIndex)).getString();
 
     if (interceptor != null) {
       String oldClassName = interceptor.getOldName(className);
@@ -184,7 +188,7 @@ public class ConstantPool implements NewClassNameBuilder {
   }
 
   public PrimitiveConstant getPrimitiveConstant(int index) {
-    PrimitiveConstant cn = (PrimitiveConstant)getConstant(index);
+    PrimitiveConstant cn = (PrimitiveConstant) getConstant(index);
 
     if (cn != null && interceptor != null) {
       if (cn.type == CodeConstants.CONSTANT_Class) {
@@ -199,15 +203,17 @@ public class ConstantPool implements NewClassNameBuilder {
   }
 
   public LinkConstant getLinkConstant(int index) {
-    LinkConstant ln = (LinkConstant)getConstant(index);
+    LinkConstant ln = (LinkConstant) getConstant(index);
 
     if (ln != null && interceptor != null &&
         (ln.type == CodeConstants.CONSTANT_Fieldref ||
-         ln.type == CodeConstants.CONSTANT_Methodref ||
-         ln.type == CodeConstants.CONSTANT_InterfaceMethodref)) {
+            ln.type == CodeConstants.CONSTANT_Methodref ||
+            ln.type == CodeConstants.CONSTANT_InterfaceMethodref)) {
       String newClassName = buildNewClassname(ln.classname);
-      String newElement = interceptor.getName(ln.classname + ' ' + ln.elementname + ' ' + ln.descriptor);
-      String newDescriptor = buildNewDescriptor(ln.type == CodeConstants.CONSTANT_Fieldref, ln.descriptor);
+      String newElement = interceptor
+          .getName(ln.classname + ' ' + ln.elementname + ' ' + ln.descriptor);
+      String newDescriptor = buildNewDescriptor(ln.type == CodeConstants.CONSTANT_Fieldref,
+          ln.descriptor);
       //TODO: Fix newElement being null caused by ln.classname being a leaf class instead of the class that declared the field/method.
       //See the comments of IDEA-137253 for more information.
       if (newClassName != null || newElement != null || newDescriptor != null) {
@@ -235,8 +241,7 @@ public class ConstantPool implements NewClassNameBuilder {
         }
 
         buffer.append('L').append(newName).append(';');
-      }
-      else {
+      } else {
         buffer.append(newName);
       }
 
@@ -249,8 +254,7 @@ public class ConstantPool implements NewClassNameBuilder {
   private String buildNewDescriptor(boolean isField, String descriptor) {
     if (isField) {
       return FieldDescriptor.parseDescriptor(descriptor).buildNewDescriptor(this);
-    }
-    else {
+    } else {
       return MethodDescriptor.parseDescriptor(descriptor).buildNewDescriptor(this);
     }
   }

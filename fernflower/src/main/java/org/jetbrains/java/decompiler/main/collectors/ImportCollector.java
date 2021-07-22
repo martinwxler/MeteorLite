@@ -15,6 +15,12 @@
  */
 package org.jetbrains.java.decompiler.main.collectors;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.jetbrains.java.decompiler.main.ClassesProcessor.ClassNode;
 import org.jetbrains.java.decompiler.main.DecompilerContext;
 import org.jetbrains.java.decompiler.main.TextBuffer;
@@ -22,10 +28,8 @@ import org.jetbrains.java.decompiler.struct.StructClass;
 import org.jetbrains.java.decompiler.struct.StructContext;
 import org.jetbrains.java.decompiler.struct.StructField;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 public class ImportCollector {
+
   private static final String JAVA_LANG_PACKAGE = "java.lang";
 
   private final Map<String, String> mapSimpleNames = new HashMap<>();
@@ -42,8 +46,7 @@ public class ImportCollector {
       String packageName = clName.substring(0, index);
       currentPackageSlash = packageName + '/';
       currentPackagePoint = packageName.replace('/', '.');
-    }
-    else {
+    } else {
       currentPackageSlash = "";
       currentPackagePoint = "";
     }
@@ -57,13 +60,15 @@ public class ImportCollector {
       }
 
       // .. and traverse through parent.
-      currentClass = currentClass.superClass != null ? classes.get(currentClass.superClass.getString()) : null;
+      currentClass =
+          currentClass.superClass != null ? classes.get(currentClass.superClass.getString()) : null;
     }
   }
 
   /**
-   * Check whether the package-less name ClassName is shaded by variable in a context of
-   * the decompiled class
+   * Check whether the package-less name ClassName is shaded by variable in a context of the
+   * decompiled class
+   *
    * @param classToName - pkg.name.ClassName - class to find shortname for
    * @return ClassName if the name is not shaded by local field, pkg.name.ClassName otherwise
    */
@@ -71,8 +76,7 @@ public class ImportCollector {
     String shortName = getShortName(classToName);
     if (setFieldNames.contains(shortName)) {
       return classToName;
-    }
-    else {
+    } else {
       return shortName;
     }
   }
@@ -82,7 +86,8 @@ public class ImportCollector {
   }
 
   public String getShortName(String fullName, boolean imported) {
-    ClassNode node = DecompilerContext.getClassProcessor().getMapRootClasses().get(fullName.replace('.', '/'));
+    ClassNode node = DecompilerContext.getClassProcessor().getMapRootClasses()
+        .get(fullName.replace('.', '/'));
 
     String result = null;
     if (node != null && node.classStruct.isOwn()) {
@@ -96,12 +101,10 @@ public class ImportCollector {
       if (node.type == ClassNode.CLASS_ROOT) {
         fullName = node.classStruct.qualifiedName;
         fullName = fullName.replace('/', '.');
-      }
-      else {
+      } else {
         return result;
       }
-    }
-    else {
+    } else {
       fullName = fullName.replace('$', '.');
     }
 
@@ -120,15 +123,17 @@ public class ImportCollector {
     // 1) class with the same short name in the current package
     // 2) class with the same short name in the default package
     boolean existsDefaultClass =
-      (context.getClass(currentPackageSlash + shortName) != null && !packageName.equals(currentPackagePoint)) || // current package
-      (context.getClass(shortName) != null && !currentPackagePoint.isEmpty());  // default package
+        (context.getClass(currentPackageSlash + shortName) != null && !packageName
+            .equals(currentPackagePoint)) || // current package
+            (context.getClass(shortName) != null && !currentPackagePoint
+                .isEmpty());  // default package
 
     if (existsDefaultClass ||
-        (mapSimpleNames.containsKey(shortName) && !packageName.equals(mapSimpleNames.get(shortName)))) {
+        (mapSimpleNames.containsKey(shortName) && !packageName
+            .equals(mapSimpleNames.get(shortName)))) {
       //  don't return full name because if the class is a inner class, full name refers to the parent full name, not the child full name
       return result == null ? fullName : (packageName + "." + result);
-    }
-    else if (!mapSimpleNames.containsKey(shortName)) {
+    } else if (!mapSimpleNames.containsKey(shortName)) {
       mapSimpleNames.put(shortName, packageName);
       if (!imported) {
         setNotImportedNames.add(shortName);
@@ -157,16 +162,17 @@ public class ImportCollector {
 
   private List<String> packImports() {
     return mapSimpleNames.entrySet().stream()
-      .filter(ent ->
-                // exclude the current class or one of the nested ones
-                // empty, java.lang and the current packages
-                !setNotImportedNames.contains(ent.getKey()) &&
+        .filter(ent ->
+            // exclude the current class or one of the nested ones
+            // empty, java.lang and the current packages
+            !setNotImportedNames.contains(ent.getKey()) &&
                 !ent.getValue().isEmpty() &&
                 !JAVA_LANG_PACKAGE.equals(ent.getValue()) &&
                 !ent.getValue().equals(currentPackagePoint)
-      )
-      .sorted(Map.Entry.<String, String>comparingByValue().thenComparing(Map.Entry.comparingByKey()))
-      .map(ent -> ent.getValue() + "." + ent.getKey())
-      .collect(Collectors.toList());
+        )
+        .sorted(
+            Map.Entry.<String, String>comparingByValue().thenComparing(Map.Entry.comparingByKey()))
+        .map(ent -> ent.getValue() + "." + ent.getKey())
+        .collect(Collectors.toList());
   }
 }

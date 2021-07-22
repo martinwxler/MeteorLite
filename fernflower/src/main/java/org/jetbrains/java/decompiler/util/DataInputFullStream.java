@@ -20,6 +20,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 public class DataInputFullStream extends DataInputStream {
+
   public DataInputFullStream(byte[] bytes) {
     super(new ByteArrayInputStream(bytes));
   }

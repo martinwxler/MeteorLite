@@ -43,7 +43,6 @@ public class LinkConstant extends PooledConstant {
 
   public boolean returnCategory2 = false;
 
-
   // *****************************************************************************
   // constructors
   // *****************************************************************************
@@ -63,7 +62,6 @@ public class LinkConstant extends PooledConstant {
     this.index2 = index2;
   }
 
-
   // *****************************************************************************
   // public methods
   // *****************************************************************************
@@ -73,15 +71,13 @@ public class LinkConstant extends PooledConstant {
     if (type == CONSTANT_NameAndType) {
       elementname = pool.getPrimitiveConstant(index1).getString();
       descriptor = pool.getPrimitiveConstant(index2).getString();
-    }
-    else if (type == CONSTANT_MethodHandle) {
+    } else if (type == CONSTANT_MethodHandle) {
       LinkConstant ref_info = pool.getLinkConstant(index2);
 
       classname = ref_info.classname;
       elementname = ref_info.elementname;
       descriptor = ref_info.descriptor;
-    }
-    else {
+    } else {
       if (type != CONSTANT_InvokeDynamic) {
         classname = pool.getPrimitiveConstant(index1).getString();
       }
@@ -98,8 +94,7 @@ public class LinkConstant extends PooledConstant {
     out.writeByte(type);
     if (type == CONSTANT_MethodHandle) {
       out.writeByte(index1);
-    }
-    else {
+    } else {
       out.writeShort(index1);
     }
     out.writeShort(index2);
@@ -107,14 +102,18 @@ public class LinkConstant extends PooledConstant {
 
 
   public boolean equals(Object o) {
-    if (o == this) return true;
-    if (o == null || !(o instanceof LinkConstant)) return false;
+    if (o == this) {
+      return true;
+    }
+    if (o == null || !(o instanceof LinkConstant)) {
+      return false;
+    }
 
-    LinkConstant cn = (LinkConstant)o;
+    LinkConstant cn = (LinkConstant) o;
     return this.type == cn.type &&
-           this.elementname.equals(cn.elementname) &&
-           this.descriptor.equals(cn.descriptor) &&
-           (this.type != CONSTANT_NameAndType || this.classname.equals(cn.classname));
+        this.elementname.equals(cn.elementname) &&
+        this.descriptor.equals(cn.descriptor) &&
+        (this.type != CONSTANT_NameAndType || this.classname.equals(cn.classname));
   }
 
   // *****************************************************************************
@@ -128,8 +127,7 @@ public class LinkConstant extends PooledConstant {
         type == CONSTANT_InvokeDynamic ||
         type == CONSTANT_MethodHandle) {
       resolveDescriptor(descriptor);
-    }
-    else if (type == CONSTANT_Fieldref) {
+    } else if (type == CONSTANT_Fieldref) {
       returnCategory2 = ("D".equals(descriptor) || "J".equals(descriptor));
     }
   }
@@ -147,8 +145,7 @@ public class LinkConstant extends PooledConstant {
         char c = descr.charAt(index);
         if (c == 'L') {
           index = descr.indexOf(";", index);
-        }
-        else if (c == '[') {
+        } else if (c == '[') {
           index++;
           continue;
         }
@@ -161,6 +158,6 @@ public class LinkConstant extends PooledConstant {
     char retChar = descr.charAt(parenth + 1);
     isVoid = retChar == 'V';
     returnCategory2 = (retChar == 'D') || (retChar == 'J');
-   }
+  }
 }
 

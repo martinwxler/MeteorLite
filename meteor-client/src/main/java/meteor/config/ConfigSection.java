@@ -31,21 +31,24 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface ConfigSection
-{
-	String name();
+public @interface ConfigSection {
 
-	String description();
+  String name();
 
-	int position();
+  String description();
 
-	boolean closedByDefault() default false;
+  int position();
 
-	/*
-	OpenOSRS Lazy Helpers tm
-	 */
-	String keyName() default "";
-	String section() default "";
-	boolean hidden() default false;
-	String unhide() default "";
+  boolean closedByDefault() default false;
+
+  /*
+  OpenOSRS Lazy Helpers tm
+   */
+  String keyName() default "";
+
+  String section() default "";
+
+  boolean hidden() default false;
+
+  String unhide() default "";
 }

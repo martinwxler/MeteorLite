@@ -31,12 +31,12 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(
-	{
-		ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.FIELD
-	})
-public @interface ObfuscatedSignature
-{
-	String descriptor();
+    {
+        ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.FIELD
+    })
+public @interface ObfuscatedSignature {
 
-	String garbageValue() default ""; // valid garbage value for last parameter. can't be an Object because Java.
+  String descriptor();
+
+  String garbageValue() default ""; // valid garbage value for last parameter. can't be an Object because Java.
 }

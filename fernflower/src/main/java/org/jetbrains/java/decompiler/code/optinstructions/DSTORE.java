@@ -15,14 +15,14 @@
  */
 package org.jetbrains.java.decompiler.code.optinstructions;
 
-import org.jetbrains.java.decompiler.code.Instruction;
-
 import java.io.DataOutputStream;
 import java.io.IOException;
+import org.jetbrains.java.decompiler.code.Instruction;
 
 public class DSTORE extends Instruction {
 
-  private static final int[] opcodes = new int[]{opc_dstore_0, opc_dstore_1, opc_dstore_2, opc_dstore_3};
+  private static final int[] opcodes = new int[]{opc_dstore_0, opc_dstore_1, opc_dstore_2,
+      opc_dstore_3};
 
   public void writeToStream(DataOutputStream out, int offset) throws IOException {
     int index = getOperand(0);
@@ -33,12 +33,10 @@ public class DSTORE extends Instruction {
       out.writeByte(opc_dstore);
       if (wide) {
         out.writeShort(index);
-      }
-      else {
+      } else {
         out.writeByte(index);
       }
-    }
-    else {
+    } else {
       out.writeByte(opcodes[index]);
     }
   }
@@ -48,12 +46,10 @@ public class DSTORE extends Instruction {
     if (index > 3) {
       if (wide) {
         return 4;
-      }
-      else {
+      } else {
         return 2;
       }
-    }
-    else {
+    } else {
       return 1;
     }
   }

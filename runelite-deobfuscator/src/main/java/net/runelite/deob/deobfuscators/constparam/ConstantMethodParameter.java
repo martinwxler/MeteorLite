@@ -30,45 +30,39 @@ import java.util.Objects;
 import net.runelite.asm.Method;
 import net.runelite.asm.attributes.code.Instruction;
 
-class ConstantMethodParameter
-{
-	List<Method> methods; // methods this is a parameter for
-	int paramIndex;
-	int lvtIndex;
-	List<Number> values = new ArrayList<>(); // possible values for the parameter
-	List<Instruction> operations = new ArrayList<>(); // conditional jumps based on the parameter
-	Boolean result; // result of the jumps (branch taken or not)
-	boolean invalid;
+class ConstantMethodParameter {
 
-	@Override
-	public int hashCode()
-	{
-		int hash = 3;
-		hash = 47 * hash + Objects.hashCode(this.methods);
-		hash = 47 * hash + this.lvtIndex;
-		return hash;
-	}
+  List<Method> methods; // methods this is a parameter for
+  int paramIndex;
+  int lvtIndex;
+  List<Number> values = new ArrayList<>(); // possible values for the parameter
+  List<Instruction> operations = new ArrayList<>(); // conditional jumps based on the parameter
+  Boolean result; // result of the jumps (branch taken or not)
+  boolean invalid;
 
-	@Override
-	public boolean equals(Object obj)
-	{
-		if (obj == null)
-		{
-			return false;
-		}
-		if (getClass() != obj.getClass())
-		{
-			return false;
-		}
-		final ConstantMethodParameter other = (ConstantMethodParameter) obj;
-		if (!Objects.equals(this.methods, other.methods))
-		{
-			return false;
-		}
-		if (this.lvtIndex != other.lvtIndex)
-		{
-			return false;
-		}
-		return true;
-	}
+  @Override
+  public int hashCode() {
+    int hash = 3;
+    hash = 47 * hash + Objects.hashCode(this.methods);
+    hash = 47 * hash + this.lvtIndex;
+    return hash;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final ConstantMethodParameter other = (ConstantMethodParameter) obj;
+    if (!Objects.equals(this.methods, other.methods)) {
+      return false;
+    }
+    if (this.lvtIndex != other.lvtIndex) {
+      return false;
+    }
+    return true;
+  }
 }

@@ -30,78 +30,78 @@ import javax.annotation.Nullable;
 /**
  * Represents a player entity in the game.
  */
-public interface Player extends Actor
-{
-	@Override
-	int getCombatLevel();
+public interface Player extends Actor {
 
-	int getPlayerId();
+  @Override
+  int getCombatLevel();
 
-	/**
-	 * Gets the composition of this player.
-	 *
-	 * @return the composition
-	 */
-	@Nullable
-	PlayerComposition getPlayerComposition();
+  int getPlayerId();
 
-	/**
-	 * Gets the polygons that make up the players model.
-	 *
-	 * @return the model polygons
-	 */
-	Polygon[] getPolygons();
+  /**
+   * Gets the composition of this player.
+   *
+   * @return the composition
+   */
+  @Nullable
+  PlayerComposition getPlayerComposition();
 
-	/**
-	 * Gets the current team cape team number the player is on.
-	 *
-	 * @return team number, or 0 if not on any team
-	 */
-	int getTeam();
+  /**
+   * Gets the polygons that make up the players model.
+   *
+   * @return the model polygons
+   */
+  Polygon[] getPolygons();
 
-	/**
-	 * Checks whether this player is a member of the same friends chat
-	 * the local player.
-	 *
-	 * @return true if the player is a friends chat member, false otherwise
-	 */
-	boolean isFriendsChatMember$api();
+  /**
+   * Gets the current team cape team number the player is on.
+   *
+   * @return team number, or 0 if not on any team
+   */
+  int getTeam();
 
-	/**
-	 * Checks whether this player is a friend of the local player.
-	 *
-	 * @return true if the player is a friend, false otherwise
-	 */
-	boolean isFriend$api();
+  /**
+   * Checks whether this player is a member of the same friends chat the local player.
+   *
+   * @return true if the player is a friends chat member, false otherwise
+   */
+  boolean isFriendsChatMember$api();
 
-	/**
-	 * Checks whether the player is a member of the same clan as the local player.
-	 *
-	 * @return
-	 */
-	boolean isClanMember$api();
+  /**
+   * Checks whether this player is a friend of the local player.
+   *
+   * @return true if the player is a friend, false otherwise
+   */
+  boolean isFriend$api();
 
-	/**
-	 * Gets the displayed overhead icon of the player.
-	 *
-	 * @return the overhead icon
-	 */
-	@Nullable
-	HeadIcon getOverheadIcon();
+  /**
+   * Checks whether the player is a member of the same clan as the local player.
+   *
+   * @return
+   */
+  boolean isClanMember$api();
 
-	/**
-	 * Gets the displayed skull icon of the player.
-	 *
-	 * @return the skull icon
-	 */
-	@Nullable
-	SkullIcon getSkullIcon();
+  /**
+   * Gets the displayed overhead icon of the player.
+   *
+   * @return the overhead icon
+   */
+  @Nullable
+  HeadIcon getOverheadIcon();
 
-	/**
-	 * This is almost always not what you want
-	 * @return literal 0
-	 */
-	int getRSSkillLevel();
+  /**
+   * Gets the displayed skull icon of the player.
+   *
+   * @return the skull icon
+   */
+  @Nullable
+  SkullIcon getSkullIcon();
 
-	String[] getActions();
+  /**
+   * This is almost always not what you want
+   *
+   * @return literal 0
+   */
+  int getRSSkillLevel();
+
+  String[] getActions();
 }

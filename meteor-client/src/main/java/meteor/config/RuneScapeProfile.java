@@ -27,19 +27,19 @@ package meteor.config;
 import lombok.Data;
 
 /**
- * A profile/save of a OSRS account. Each account can 1 profile per {@link net.runelite.client.config.RuneScapeProfileType}
- * (ie Standard/League/DMM}.
+ * A profile/save of a OSRS account. Each account can 1 profile per {@link
+ * net.runelite.client.config.RuneScapeProfileType} (ie Standard/League/DMM}.
  */
 @Data
-public class RuneScapeProfile
-{
-	private final String displayName;
-	private final RuneScapeProfileType type;
-	private final byte[] loginHash;
+public class RuneScapeProfile {
 
-	/**
-	 * Profile key used to save configs for this profile to the config store. This will
-	 * always start with {@link ConfigManager#RSPROFILE_GROUP}
-	 */
-	private final String key;
+  private final String displayName;
+  private final RuneScapeProfileType type;
+  private final byte[] loginHash;
+
+  /**
+   * Profile key used to save configs for this profile to the config store. This will always start
+   * with {@link ConfigManager#RSPROFILE_GROUP}
+   */
+  private final String key;
 }

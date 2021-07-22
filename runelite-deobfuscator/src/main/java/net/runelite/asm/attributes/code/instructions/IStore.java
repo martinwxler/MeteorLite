@@ -37,66 +37,58 @@ import net.runelite.asm.execution.VariableContext;
 import net.runelite.asm.execution.Variables;
 import org.objectweb.asm.MethodVisitor;
 
-public class IStore extends Instruction implements LVTInstruction
-{
-	private int index;
+public class IStore extends Instruction implements LVTInstruction {
 
-	public IStore(Instructions instructions, int index)
-	{
-		super(instructions, InstructionType.ISTORE);
+  private int index;
 
-		this.index = index;
-	}
+  public IStore(Instructions instructions, int index) {
+    super(instructions, InstructionType.ISTORE);
 
-	public IStore(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
+    this.index = index;
+  }
 
-	@Override
-	public void accept(MethodVisitor visitor)
-	{
-		visitor.visitVarInsn(this.getType().getCode(), this.getVariableIndex());
-	}
+  public IStore(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ins = new InstructionContext(this, frame);
-		Stack stack = frame.getStack();
-		Variables variables = frame.getVariables();
+  @Override
+  public void accept(MethodVisitor visitor) {
+    visitor.visitVarInsn(this.getType().getCode(), this.getVariableIndex());
+  }
 
-		StackContext value = stack.pop();
-		assert value.getType().isStackInt();
-		ins.pop(value);
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ins = new InstructionContext(this, frame);
+    Stack stack = frame.getStack();
+    Variables variables = frame.getVariables();
 
-		variables.set(index, new VariableContext(ins, value));
+    StackContext value = stack.pop();
+    assert value.getType().isStackInt();
+    ins.pop(value);
 
-		return ins;
-	}
+    variables.set(index, new VariableContext(ins, value));
 
-	@Override
-	public int getVariableIndex()
-	{
-		return index;
-	}
+    return ins;
+  }
 
-	@Override
-	public boolean store()
-	{
-		return true;
-	}
+  @Override
+  public int getVariableIndex() {
+    return index;
+  }
 
-	@Override
-	public Instruction setVariableIndex(int idx)
-	{
-		index = idx;
-		return this;
-	}
+  @Override
+  public boolean store() {
+    return true;
+  }
 
-	@Override
-	public LVTInstructionType type()
-	{
-		return LVTInstructionType.INT;
-	}
+  @Override
+  public Instruction setVariableIndex(int idx) {
+    index = idx;
+    return this;
+  }
+
+  @Override
+  public LVTInstructionType type() {
+    return LVTInstructionType.INT;
+  }
 }

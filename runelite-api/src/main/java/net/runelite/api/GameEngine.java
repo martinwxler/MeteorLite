@@ -29,30 +29,30 @@ import java.awt.Canvas;
 /**
  * Represents the client game engine.
  */
-public interface GameEngine
-{
-	/**
-	 * Gets the canvas that contains everything.
-	 *
-	 * @return the game canvas
-	 */
-	Canvas getCanvas();
+public interface GameEngine {
 
-	/**
-	 * Gets the client main thread.
-	 *
-	 * @return the main thread
-	 */
-	Thread getClientThread();
+  /**
+   * Gets the canvas that contains everything.
+   *
+   * @return the game canvas
+   */
+  Canvas getCanvas();
 
-	/**
-	 * Checks whether this code is executing on the client main thread.
-	 *
-	 * @return true if on the main thread, false otherwise
-	 */
-	boolean isClientThread();
+  /**
+   * Gets the client main thread.
+   *
+   * @return the main thread
+   */
+  Thread getClientThread();
 
-	void resizeCanvas$api();
+  /**
+   * Checks whether this code is executing on the client main thread.
+   *
+   * @return true if on the main thread, false otherwise
+   */
+  boolean isClientThread();
 
-	void setReplaceCanvasNextFrame(boolean replace);
+  void resizeCanvas$api();
+
+  void setReplaceCanvasNextFrame(boolean replace);
 }

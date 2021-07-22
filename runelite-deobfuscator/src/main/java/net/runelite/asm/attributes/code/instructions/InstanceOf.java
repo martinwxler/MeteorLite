@@ -38,65 +38,57 @@ import net.runelite.asm.execution.StackContext;
 import net.runelite.asm.execution.Value;
 import org.objectweb.asm.MethodVisitor;
 
-public class InstanceOf extends Instruction implements TypeInstruction
-{
-	private Type type;
-	private ClassFile myClass;
+public class InstanceOf extends Instruction implements TypeInstruction {
 
-	public InstanceOf(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
+  private Type type;
+  private ClassFile myClass;
 
-	@Override
-	public void accept(MethodVisitor visitor)
-	{
-		visitor.visitTypeInsn(this.getType().getCode(), type.toAsmString());
-	}
+  public InstanceOf(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ins = new InstructionContext(this, frame);
-		Stack stack = frame.getStack();
+  @Override
+  public void accept(MethodVisitor visitor) {
+    visitor.visitTypeInsn(this.getType().getCode(), type.toAsmString());
+  }
 
-		StackContext obj = stack.pop();
-		ins.pop(obj);
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ins = new InstructionContext(this, frame);
+    Stack stack = frame.getStack();
 
-		StackContext ctx = new StackContext(ins, Type.INT, Value.UNKNOWN);
-		stack.push(ctx);
+    StackContext obj = stack.pop();
+    ins.pop(obj);
 
-		ins.push(ctx);
+    StackContext ctx = new StackContext(ins, Type.INT, Value.UNKNOWN);
+    stack.push(ctx);
 
-		return ins;
-	}
+    ins.push(ctx);
 
-	@Override
-	public void lookup()
-	{
-		ClassGroup group = this.getInstructions().getCode().getMethod().getClassFile().getGroup();
-		myClass = group.findClass(type.getInternalName());
-	}
+    return ins;
+  }
 
-	@Override
-	public void regeneratePool()
-	{
-		if (myClass != null)
-		{
-			int dimms = type.getDimensions();
-			type = Type.getType("L" + myClass.getName() + ";", dimms);
-		}
-	}
+  @Override
+  public void lookup() {
+    ClassGroup group = this.getInstructions().getCode().getMethod().getClassFile().getGroup();
+    myClass = group.findClass(type.getInternalName());
+  }
 
-	@Override
-	public Type getType_()
-	{
-		return type;
-	}
+  @Override
+  public void regeneratePool() {
+    if (myClass != null) {
+      int dimms = type.getDimensions();
+      type = Type.getType("L" + myClass.getName() + ";", dimms);
+    }
+  }
 
-	@Override
-	public void setType(Type type)
-	{
-		this.type = type;
-	}
+  @Override
+  public Type getType_() {
+    return type;
+  }
+
+  @Override
+  public void setType(Type type) {
+    this.type = type;
+  }
 }

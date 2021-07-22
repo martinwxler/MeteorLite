@@ -37,107 +37,93 @@ import net.runelite.deob.Deobfuscator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ControlFlowDeobfuscator implements Deobfuscator
-{
-	private static final Logger logger = LoggerFactory.getLogger(ControlFlowDeobfuscator.class);
+public class ControlFlowDeobfuscator implements Deobfuscator {
 
-	private int insertedJump;
-	private int placedBlocks;
-	private int removedJumps;
+  private static final Logger logger = LoggerFactory.getLogger(ControlFlowDeobfuscator.class);
 
-	@Override
-	public void run(ClassGroup group)
-	{
-		for (ClassFile cf : group.getClasses())
-		{
-			for (Method m : cf.getMethods())
-			{
-				Code code = m.getCode();
+  private int insertedJump;
+  private int placedBlocks;
+  private int removedJumps;
 
-				if (code == null || !code.getExceptions().getExceptions().isEmpty())
-				{
-					continue;
-				}
+  @Override
+  public void run(ClassGroup group) {
+    for (ClassFile cf : group.getClasses()) {
+      for (Method m : cf.getMethods()) {
+        Code code = m.getCode();
 
-				run(code);
-				runJumpLabel(code);
-			}
-		}
+        if (code == null || !code.getExceptions().getExceptions().isEmpty()) {
+          continue;
+        }
 
-		logger.info("Inserted {} jumps, reordered {} blocks, and removed {} jumps. jump delta {}",
-			insertedJump, placedBlocks, removedJumps, insertedJump - removedJumps);
-	}
+        run(code);
+        runJumpLabel(code);
+      }
+    }
 
-	private void run(Code code)
-	{
-		Instructions ins = code.getInstructions();
+    logger.info("Inserted {} jumps, reordered {} blocks, and removed {} jumps. jump delta {}",
+        insertedJump, placedBlocks, removedJumps, insertedJump - removedJumps);
+  }
 
-		ControlFlowGraph graph = new ControlFlowGraph(code);
+  private void run(Code code) {
+    Instructions ins = code.getInstructions();
 
-		if (logger.isDebugEnabled()) // graph.toString() is expensive
-		{
-			logger.debug(graph.toString());
-		}
+    ControlFlowGraph graph = new ControlFlowGraph(code);
 
-		// Clear existing instructions as we are going to rebuild them
-		ins.clear();
-		final List<Block> sorted = graph.topologicalSort();
-		for (Block b : sorted)
-		{
-			++placedBlocks;
-			for (Instruction i : b.getInstructions())
-			{
-				ins.addInstruction(i);
-				i.setInstructions(ins);
-			}
-			if (b.getSucc() != null && b.getInstructions().size() > 0)
-			{
-				final Instruction i = b.getInstructions().get(b.getInstructions().size() - 1);
-				if (!i.isTerminal())
-				{
-					final Block next = b.getSucc();
-					Instruction maybeLabel = next.getInstructions().get(0);
-					if (!(maybeLabel instanceof Label))
-					{
-						maybeLabel = new Label(ins);
-						next.getInstructions().add(0, maybeLabel);
-					}
-					ins.addInstruction(new Goto(ins, (Label) maybeLabel));
-					++insertedJump;
-				}
-			}
-		}
-	}
+    if (logger.isDebugEnabled()) // graph.toString() is expensive
+    {
+      logger.debug(graph.toString());
+    }
 
-	/**
-	 * remove jumps followed immediately by the label they are jumping to
-	 */
-	private void runJumpLabel(Code code)
-	{
-		Instructions ins = code.getInstructions();
-		List<Instruction> instructions = ins.getInstructions();
+    // Clear existing instructions as we are going to rebuild them
+    ins.clear();
+    final List<Block> sorted = graph.topologicalSort();
+    for (Block b : sorted) {
+      ++placedBlocks;
+      for (Instruction i : b.getInstructions()) {
+        ins.addInstruction(i);
+        i.setInstructions(ins);
+      }
+      if (b.getSucc() != null && b.getInstructions().size() > 0) {
+        final Instruction i = b.getInstructions().get(b.getInstructions().size() - 1);
+        if (!i.isTerminal()) {
+          final Block next = b.getSucc();
+          Instruction maybeLabel = next.getInstructions().get(0);
+          if (!(maybeLabel instanceof Label)) {
+            maybeLabel = new Label(ins);
+            next.getInstructions().add(0, maybeLabel);
+          }
+          ins.addInstruction(new Goto(ins, (Label) maybeLabel));
+          ++insertedJump;
+        }
+      }
+    }
+  }
 
-		for (int i = 0; i < instructions.size() - 1; ++i)
-		{
-			Instruction i1 = instructions.get(i),
-				i2 = instructions.get(i + 1);
+  /**
+   * remove jumps followed immediately by the label they are jumping to
+   */
+  private void runJumpLabel(Code code) {
+    Instructions ins = code.getInstructions();
+    List<Instruction> instructions = ins.getInstructions();
 
-			if (!(i1 instanceof Goto))
-			{
-				continue;
-			}
+    for (int i = 0; i < instructions.size() - 1; ++i) {
+      Instruction i1 = instructions.get(i),
+          i2 = instructions.get(i + 1);
 
-			Goto g = (Goto) i1;
-			assert g.getJumps().size() == 1;
-			if (g.getJumps().get(0) != i2)
-			{
-				continue;
-			}
+      if (!(i1 instanceof Goto)) {
+        continue;
+      }
 
-			ins.remove(i1); // remove jump
-			++removedJumps;
+      Goto g = (Goto) i1;
+      assert g.getJumps().size() == 1;
+      if (g.getJumps().get(0) != i2) {
+        continue;
+      }
 
-			// i now points to i2, so next loop we go to next instruction
-		}
-	}
+      ins.remove(i1); // remove jump
+      ++removedJumps;
+
+      // i now points to i2, so next loop we go to next instruction
+    }
+  }
 }

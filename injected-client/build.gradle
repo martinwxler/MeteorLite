@@ -24,7 +24,7 @@ dependencies {
 compileJava.options.encoding = 'UTF-8'
 
 tasks {
-    outputs.upToDateWhen {true}
+    outputs.upToDateWhen { true }
     compileJava.enabled(false)
 }
 tasks.withType(JavaCompile) {

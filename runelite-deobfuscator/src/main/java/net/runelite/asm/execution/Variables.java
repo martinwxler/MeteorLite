@@ -25,32 +25,27 @@
 
 package net.runelite.asm.execution;
 
-public class Variables
-{
-	private final VariableContext[] variables;
+public class Variables {
 
-	public Variables(int sz)
-	{
-		variables = new VariableContext[sz];
-	}
-	
-	public Variables(Variables other)
-	{
-		this.variables = other.variables.clone();
-	}
+  private final VariableContext[] variables;
 
-	public void set(int index, VariableContext value)
-	{
-		variables[index] = value;
-	}
+  public Variables(int sz) {
+    variables = new VariableContext[sz];
+  }
 
-	public VariableContext get(int index)
-	{
-		return variables[index];
-	}
+  public Variables(Variables other) {
+    this.variables = other.variables.clone();
+  }
 
-	public int size()
-	{
-		return variables.length;
-	}
+  public void set(int index, VariableContext value) {
+    variables[index] = value;
+  }
+
+  public VariableContext get(int index) {
+    return variables[index];
+  }
+
+  public int size() {
+    return variables.length;
+  }
 }

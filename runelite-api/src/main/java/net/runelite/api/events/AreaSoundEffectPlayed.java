@@ -29,21 +29,20 @@ import lombok.Data;
 import net.runelite.api.Actor;
 
 @Data
-public class AreaSoundEffectPlayed
-{
-	@Nullable
-	private final Actor source;
+public class AreaSoundEffectPlayed {
 
-	private int soundId;
-	private int sceneX;
-	private int sceneY;
-	private int range;
-	private int delay;
+  @Nullable
+  private final Actor source;
 
-	private boolean consumed;
+  private int soundId;
+  private int sceneX;
+  private int sceneY;
+  private int range;
+  private int delay;
 
-	public void consume()
-	{
-		consumed = true;
-	}
+  private boolean consumed;
+
+  public void consume() {
+    consumed = true;
+  }
 }

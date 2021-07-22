@@ -17,23 +17,23 @@
  * under the License.
  */
 
-.jfx-progress-bar > .track{
-    -fx-background-color: #242424;
+.jfx-progress-bar > .track {
+  -fx-background-color: #242424;
 }
 
 .jfx-progress-bar > .bar,
-.jfx-progress-bar:indeterminate > .bar{
-    -fx-background-color: #9d0f0f;
-    -fx-padding: 1.5;
+.jfx-progress-bar:indeterminate > .bar {
+  -fx-background-color: #9d0f0f;
+  -fx-padding: 1.5;
 }
 
 .jfx-progress-bar > .secondary-bar,
-.jfx-progress-bar:indeterminate > .secondary-bar{
-    -fx-background-color: #087f23;
+.jfx-progress-bar:indeterminate > .secondary-bar {
+  -fx-background-color: #087f23;
 }
 
 .jfx-progress-bar > .track,
 .jfx-progress-bar > .bar {
-    -fx-background-radius: 0;
-    -fx-background-insets: 0;
+  -fx-background-radius: 0;
+  -fx-background-insets: 0;
 }

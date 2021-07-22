@@ -27,12 +27,13 @@ package meteor.ui.overlay.components;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
-
 import meteor.ui.RenderableEntity;
 
-public interface LayoutableRenderableEntity extends RenderableEntity
-{
-	Rectangle getBounds();
-	void setPreferredLocation(Point position);
-	void setPreferredSize(Dimension dimension);
+public interface LayoutableRenderableEntity extends RenderableEntity {
+
+  Rectangle getBounds();
+
+  void setPreferredLocation(Point position);
+
+  void setPreferredSize(Dimension dimension);
 }

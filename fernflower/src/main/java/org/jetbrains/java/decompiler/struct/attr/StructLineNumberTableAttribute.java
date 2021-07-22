@@ -15,21 +15,18 @@
  */
 package org.jetbrains.java.decompiler.struct.attr;
 
+import java.io.IOException;
 import org.jetbrains.java.decompiler.struct.consts.ConstantPool;
 import org.jetbrains.java.decompiler.util.DataInputFullStream;
 import org.jetbrains.java.decompiler.util.InterpreterUtil;
 
-import java.io.IOException;
-
 /**
- * u2 line_number_table_length;
- * {  u2 start_pc;
- *    u2 line_number;
- * } line_number_table[line_number_table_length];
- *
+ * u2 line_number_table_length; {  u2 start_pc; u2 line_number; } line_number_table[line_number_table_length];
+ * <p>
  * Created by Egor on 05.10.2014.
  */
 public class StructLineNumberTableAttribute extends StructGeneralAttribute {
+
   private int[] myLineInfo = InterpreterUtil.EMPTY_INT_ARRAY;
 
   @Override
@@ -41,8 +38,7 @@ public class StructLineNumberTableAttribute extends StructGeneralAttribute {
         myLineInfo[i] = data.readUnsignedShort();
         myLineInfo[i + 1] = data.readUnsignedShort();
       }
-    }
-    else if (myLineInfo.length > 0) {
+    } else if (myLineInfo.length > 0) {
       myLineInfo = InterpreterUtil.EMPTY_INT_ARRAY;
     }
   }

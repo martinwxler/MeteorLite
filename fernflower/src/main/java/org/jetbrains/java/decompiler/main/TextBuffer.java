@@ -15,9 +15,16 @@
  */
 package org.jetbrains.java.decompiler.main;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import org.jetbrains.java.decompiler.main.extern.IFernflowerPreferences;
-
-import java.util.*;
 
 /**
  * Allows to connect text with resulting lines
@@ -25,10 +32,13 @@ import java.util.*;
  * @author egor
  */
 public class TextBuffer {
+
   private final String myLineSeparator = DecompilerContext.getNewLineSeparator();
-  private final String myIndent = (String)DecompilerContext.getProperty(IFernflowerPreferences.INDENT_STRING);
+  private final String myIndent = (String) DecompilerContext
+      .getProperty(IFernflowerPreferences.INDENT_STRING);
   private final StringBuilder myStringBuilder;
   private Map<Integer, Integer> myLineToOffsetMapping = null;
+  private Map<Integer, Set<Integer>> myLineMapping = null; // new to original
 
   public TextBuffer() {
     myStringBuilder = new StringBuilder();
@@ -40,6 +50,36 @@ public class TextBuffer {
 
   public TextBuffer(String text) {
     myStringBuilder = new StringBuilder(text);
+  }
+
+  private static List<String> compactLines(List<String> srcLines, int requiredLineNumber) {
+    if (srcLines.size() < 2 || srcLines.size() <= requiredLineNumber) {
+      return srcLines;
+    }
+    List<String> res = new LinkedList<>(srcLines);
+    // first join lines with a single { or }
+    for (int i = res.size() - 1; i > 0; i--) {
+      String s = res.get(i);
+      if (s.trim().equals("{") || s.trim().equals("}")) {
+        res.set(i - 1, res.get(i - 1).concat(s));
+        res.remove(i);
+      }
+      if (res.size() <= requiredLineNumber) {
+        return res;
+      }
+    }
+    // now join empty lines
+    for (int i = res.size() - 1; i > 0; i--) {
+      String s = res.get(i);
+      if (s.trim().isEmpty()) {
+        res.set(i - 1, res.get(i - 1).concat(s));
+        res.remove(i);
+      }
+      if (res.size() <= requiredLineNumber) {
+        return res;
+      }
+    }
+    return res;
   }
 
   public TextBuffer append(String str) {
@@ -97,8 +137,7 @@ public class TextBuffer {
         return addOriginalLineNumbers();
       }
       return original;
-    }
-    else {
+    } else {
       StringBuilder res = new StringBuilder();
       String[] srcLines = original.split(myLineSeparator);
       int currentLineStartOffset = 0;
@@ -125,7 +164,8 @@ public class TextBuffer {
         }
       }
       if (previousMarkLine < srcLines.length) {
-        appendLines(res, srcLines, previousMarkLine, srcLines.length, srcLines.length - previousMarkLine);
+        appendLines(res, srcLines, previousMarkLine, srcLines.length,
+            srcLines.length - previousMarkLine);
       }
 
       return res.toString();
@@ -155,9 +195,11 @@ public class TextBuffer {
     return sb.toString();
   }
 
-  private void appendLines(StringBuilder res, String[] srcLines, int from, int to, int requiredLineNumber) {
+  private void appendLines(StringBuilder res, String[] srcLines, int from, int to,
+      int requiredLineNumber) {
     if (to - from > requiredLineNumber) {
-      List<String> strings = compactLines(Arrays.asList(srcLines).subList(from, to) ,requiredLineNumber);
+      List<String> strings = compactLines(Arrays.asList(srcLines).subList(from, to),
+          requiredLineNumber);
       int separatorsRequired = requiredLineNumber - 1;
       for (String s : strings) {
         res.append(s);
@@ -166,8 +208,7 @@ public class TextBuffer {
         }
       }
       res.append(myLineSeparator);
-    }
-    else if (to - from <= requiredLineNumber) {
+    } else if (to - from <= requiredLineNumber) {
       for (int i = from; i < to; i++) {
         res.append(srcLines[i]).append(myLineSeparator);
       }
@@ -259,38 +300,6 @@ public class TextBuffer {
     }
     return count;
   }
-
-  private static List<String> compactLines(List<String> srcLines, int requiredLineNumber) {
-    if (srcLines.size() < 2 || srcLines.size() <= requiredLineNumber) {
-      return srcLines;
-    }
-    List<String> res = new LinkedList<>(srcLines);
-    // first join lines with a single { or }
-    for (int i = res.size()-1; i > 0 ; i--) {
-      String s = res.get(i);
-      if (s.trim().equals("{") || s.trim().equals("}")) {
-        res.set(i-1, res.get(i-1).concat(s));
-        res.remove(i);
-      }
-      if (res.size() <= requiredLineNumber) {
-        return res;
-      }
-    }
-    // now join empty lines
-    for (int i = res.size()-1; i > 0 ; i--) {
-      String s = res.get(i);
-      if (s.trim().isEmpty()) {
-        res.set(i-1, res.get(i-1).concat(s));
-        res.remove(i);
-      }
-      if (res.size() <= requiredLineNumber) {
-        return res;
-      }
-    }
-    return res;
-  }
-
-  private Map<Integer, Set<Integer>> myLineMapping = null; // new to original
 
   public void dumpOriginalLineNumbers(int[] lineMapping) {
     if (lineMapping.length > 0) {

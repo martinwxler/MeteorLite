@@ -3,26 +3,26 @@ package net.runelite.rs.api;
 import net.runelite.api.PlayerComposition;
 import net.runelite.mapping.Import;
 
-public interface RSPlayerComposition extends PlayerComposition
-{
-	@Import("isFemale")
-	boolean isFemale();
+public interface RSPlayerComposition extends PlayerComposition {
 
-	@Import("bodyColors")
-	int[] getColors();
+  @Import("isFemale")
+  boolean isFemale();
 
-	@Import("hash")
-	long getHash();
+  @Import("bodyColors")
+  int[] getColors();
 
-	@Import("equipment")
-	@Override
-	int[] getEquipmentIds();
+  @Import("hash")
+  long getHash();
 
-	@Import("npcTransformId")
-	@Override
-	void setTransformedNpcId(int id);
+  @Import("equipment")
+  @Override
+  int[] getEquipmentIds();
 
-	@Import("setHash")
-	@Override
-	void setHash$api();
+  @Import("npcTransformId")
+  @Override
+  void setTransformedNpcId(int id);
+
+  @Import("setHash")
+  @Override
+  void setHash$api();
 }

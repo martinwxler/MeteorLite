@@ -34,43 +34,34 @@ import com.openosrs.injector.injection.InjectData;
 import net.runelite.asm.ClassFile;
 import net.runelite.asm.Field;
 import net.runelite.asm.Method;
-import net.runelite.deob.DeobAnnotations;
 
 /*
  * This handles creating "virtual" annotations to clean up rs-client in the main project
  */
-public class RemoveAnnotations extends AbstractInjector
-{
+public class RemoveAnnotations extends AbstractInjector {
 
-	public RemoveAnnotations(InjectData inject)
-	{
-		super(inject);
-	}
+  public RemoveAnnotations(InjectData inject) {
+    super(inject);
+  }
 
-	public void inject()
-	{
-		for (final ClassFile deobClass : inject.getVanilla())
-		{
-			injectFields(deobClass);
-			injectMethods(deobClass);
+  public void inject() {
+    for (final ClassFile deobClass : inject.getVanilla()) {
+      injectFields(deobClass);
+      injectMethods(deobClass);
 
-			deobClass.getAnnotations().clear();
-		}
-	}
+      deobClass.getAnnotations().clear();
+    }
+  }
 
-	private void injectFields(ClassFile deobClass)
-	{
-		for (Field deobField : deobClass.getFields())
-		{
-			deobField.getAnnotations().clear();
-		}
-	}
+  private void injectFields(ClassFile deobClass) {
+    for (Field deobField : deobClass.getFields()) {
+      deobField.getAnnotations().clear();
+    }
+  }
 
-	private void injectMethods(ClassFile deobClass)
-	{
-		for (Method deobMethod : deobClass.getMethods())
-		{
-			deobMethod.getAnnotations().clear();
-		}
-	}
+  private void injectMethods(ClassFile deobClass) {
+    for (Method deobMethod : deobClass.getMethods()) {
+      deobMethod.getAnnotations().clear();
+    }
+  }
 }

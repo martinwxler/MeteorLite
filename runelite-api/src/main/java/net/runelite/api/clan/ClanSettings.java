@@ -30,34 +30,38 @@ import javax.annotation.Nullable;
 /**
  * A clan's settings.
  */
-public interface ClanSettings
-{
-	/**
-	 * The clan name
-	 * @return
-	 */
-	String getName();
+public interface ClanSettings {
 
-	/**
-	 * The members of the clan. This includes all members, whether online or offline.
-	 * @return
-	 */
-	List<ClanMember> getMembers();
+  /**
+   * The clan name
+   *
+   * @return
+   */
+  String getName();
 
-	/**
-	 * Find a member of the clan.
-	 * @param name
-	 * @return
-	 */
-	@Nullable
-	ClanMember findMember(String name);
+  /**
+   * The members of the clan. This includes all members, whether online or offline.
+   *
+   * @return
+   */
+  List<ClanMember> getMembers();
 
-	/**
-	 * Get the clan title for a clan rank.
-	 * @param clanRank the rank
-	 * @see ClanRank
-	 * @return
-	 */
-	@Nullable
-	ClanTitle titleForRank(ClanRank clanRank);
+  /**
+   * Find a member of the clan.
+   *
+   * @param name
+   * @return
+   */
+  @Nullable
+  ClanMember findMember(String name);
+
+  /**
+   * Get the clan title for a clan rank.
+   *
+   * @param clanRank the rank
+   * @return
+   * @see ClanRank
+   */
+  @Nullable
+  ClanTitle titleForRank(ClanRank clanRank);
 }

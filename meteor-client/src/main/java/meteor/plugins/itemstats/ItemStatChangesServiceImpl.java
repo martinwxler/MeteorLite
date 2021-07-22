@@ -29,19 +29,17 @@ import javax.inject.Singleton;
 
 @Singleton
 public
-class ItemStatChangesServiceImpl implements ItemStatChangesService
-{
-	private final ItemStatChanges itemstatchanges;
+class ItemStatChangesServiceImpl implements ItemStatChangesService {
 
-	@Inject
-	private ItemStatChangesServiceImpl(ItemStatChanges itemstatchanges)
-	{
-		this.itemstatchanges = itemstatchanges;
-	}
+  private final ItemStatChanges itemstatchanges;
 
-	@Override
-	public Effect getItemStatChanges(int id)
-	{
-		return itemstatchanges.get(id);
-	}
+  @Inject
+  private ItemStatChangesServiceImpl(ItemStatChanges itemstatchanges) {
+    this.itemstatchanges = itemstatchanges;
+  }
+
+  @Override
+  public Effect getItemStatChanges(int id) {
+    return itemstatchanges.get(id);
+  }
 }

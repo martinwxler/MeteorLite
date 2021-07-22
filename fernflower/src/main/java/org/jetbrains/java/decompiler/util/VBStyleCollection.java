@@ -85,8 +85,7 @@ public class VBStyleCollection<E, K> extends ArrayList<E> {
     Integer index = map.get(key);
     if (index == null) {
       addWithKey(element, key);
-    }
-    else {
+    } else {
       return super.set(index, element);
     }
     return null;

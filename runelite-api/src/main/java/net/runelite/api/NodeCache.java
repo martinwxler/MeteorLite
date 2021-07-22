@@ -27,14 +27,14 @@ package net.runelite.api;
 /**
  * Represents a doubly linked node cache.
  */
-public interface NodeCache
-{
-	/**
-	 * Resets cache.
-	 */
-	void reset();
+public interface NodeCache {
 
-	void setCapacity(int capacity);
+  /**
+   * Resets cache.
+   */
+  void reset();
 
-	void setRemainingCapacity(int remainingCapacity);
+  void setCapacity(int capacity);
+
+  void setRemainingCapacity(int remainingCapacity);
 }

@@ -26,7 +26,7 @@ package meteor.plugins.itemstats;
 
 import net.runelite.api.Client;
 
-public interface Effect
-{
-	StatsChanges calculate(Client client);
+public interface Effect {
+
+  StatsChanges calculate(Client client);
 }

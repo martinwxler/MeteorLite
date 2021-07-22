@@ -31,12 +31,11 @@ import lombok.Data;
  * An event where a draggable widget has been pressed.
  */
 @Data
-public class WidgetPressed
-{
-	public static final WidgetPressed INSTANCE = new WidgetPressed();
+public class WidgetPressed {
 
-	private WidgetPressed()
-	{
-		// noop
-	}
+  public static final WidgetPressed INSTANCE = new WidgetPressed();
+
+  private WidgetPressed() {
+    // noop
+  }
 }

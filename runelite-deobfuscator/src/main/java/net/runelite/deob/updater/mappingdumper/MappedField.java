@@ -8,40 +8,38 @@ import net.runelite.asm.pool.Method;
 import net.runelite.deob.DeobAnnotations;
 import net.runelite.deob.updater.MappingDumper;
 
-public class MappedField
-{
-	@SerializedName("field")
-	public String exportedName;
-	public String owner;
-	@SerializedName("name")
-	public String obfuscatedName;
-	public int access;
-	public String descriptor;
-	public Number decoder;
-	// method name, amt of times
-	public Map<Method, Integer> puts = new HashMap<>();
-	public Map<Method, Integer> gets = new HashMap<>();
+public class MappedField {
 
-	public MappedField visitField(final Field f, final MappingDump dump)
-	{
-		MappingDumper.putMap(f.getPoolField(), this);
+  @SerializedName("field")
+  public String exportedName;
+  public String owner;
+  @SerializedName("name")
+  public String obfuscatedName;
+  public int access;
+  public String descriptor;
+  public Number decoder;
+  // method name, amt of times
+  public Map<Method, Integer> puts = new HashMap<>();
+  public Map<Method, Integer> gets = new HashMap<>();
 
-		exportedName = DeobAnnotations.getExportedName(f);
+  public MappedField visitField(final Field f, final MappingDump dump) {
+    MappingDumper.putMap(f.getPoolField(), this);
 
-		owner = MappingDumper.getMap(f.getClassFile()).obfuscatedName;
+    exportedName = DeobAnnotations.getExportedName(f);
 
-		obfuscatedName = DeobAnnotations.getObfuscatedName(f);
-		if (obfuscatedName == null)
-		{
-			obfuscatedName = f.getName();
-		}
+    owner = MappingDumper.getMap(f.getClassFile()).obfuscatedName;
 
-		access = f.getAccessFlags();
+    obfuscatedName = DeobAnnotations.getObfuscatedName(f);
+    if (obfuscatedName == null) {
+      obfuscatedName = f.getName();
+    }
 
-		descriptor = f.getObfuscatedType().toString();
+    access = f.getAccessFlags();
 
-		decoder = DeobAnnotations.getObfuscatedGetter(f);
+    descriptor = f.getObfuscatedType().toString();
 
-		return this;
-	}
+    decoder = DeobAnnotations.getObfuscatedGetter(f);
+
+    return this;
+  }
 }

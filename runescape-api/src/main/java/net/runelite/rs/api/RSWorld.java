@@ -3,59 +3,59 @@ package net.runelite.rs.api;
 import net.runelite.api.World;
 import net.runelite.mapping.Import;
 
-public interface RSWorld extends World
-{
-	@Import("properties")
-	int getMask();
+public interface RSWorld extends World {
 
-	@Import("properties")
-	void setMask(int mask);
+  @Import("properties")
+  int getMask();
 
-	@Import("population")
-	@Override
-	int getPlayerCount();
+  @Import("properties")
+  void setMask(int mask);
 
-	@Import("population")
-	@Override
-	void setPlayerCount(int playerCount);
+  @Import("population")
+  @Override
+  int getPlayerCount();
 
-	@Import("location")
-	@Override
-	int getLocation();
+  @Import("population")
+  @Override
+  void setPlayerCount(int playerCount);
 
-	@Import("location")
-	@Override
-	void setLocation(int location);
+  @Import("location")
+  @Override
+  int getLocation();
 
-	@Import("index")
-	@Override
-	int getIndex();
+  @Import("location")
+  @Override
+  void setLocation(int location);
 
-	@Import("index")
-	@Override
-	void setIndex(int index);
+  @Import("index")
+  @Override
+  int getIndex();
 
-	@Import("id")
-	@Override
-	int getId();
+  @Import("index")
+  @Override
+  void setIndex(int index);
 
-	@Import("id")
-	@Override
-	void setId(int id);
+  @Import("id")
+  @Override
+  int getId();
 
-	@Import("activity")
-	@Override
-	String getActivity();
+  @Import("id")
+  @Override
+  void setId(int id);
 
-	@Import("activity")
-	@Override
-	void setActivity(String activity);
+  @Import("activity")
+  @Override
+  String getActivity();
 
-	@Import("host")
-	@Override
-	String getAddress();
+  @Import("activity")
+  @Override
+  void setActivity(String activity);
 
-	@Import("host")
-	@Override
-	void setAddress(String address);
+  @Import("host")
+  @Override
+  String getAddress();
+
+  @Import("host")
+  @Override
+  void setAddress(String address);
 }

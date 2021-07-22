@@ -27,23 +27,22 @@ package meteor.plugins.itemstats;
 import lombok.Getter;
 import lombok.Setter;
 
-public class StatsChanges
-{
-	/**
-	 * How positive the entire set of stat changes is
-	 *
-	 * @see Positivity
-	 */
-	@Getter
-	@Setter
-	private Positivity positivity;
-	@Getter
-	@Setter
-	private StatChange[] statChanges;
+public class StatsChanges {
 
-	public StatsChanges(int len)
-	{
-		this.statChanges = new StatChange[len];
-		this.positivity = Positivity.NO_CHANGE;
-	}
+  /**
+   * How positive the entire set of stat changes is
+   *
+   * @see Positivity
+   */
+  @Getter
+  @Setter
+  private Positivity positivity;
+  @Getter
+  @Setter
+  private StatChange[] statChanges;
+
+  public StatsChanges(int len) {
+    this.statChanges = new StatChange[len];
+    this.positivity = Positivity.NO_CHANGE;
+  }
 }

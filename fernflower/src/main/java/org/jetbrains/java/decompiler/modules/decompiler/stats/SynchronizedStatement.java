@@ -15,6 +15,8 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.stats;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.jetbrains.java.decompiler.code.CodeConstants;
 import org.jetbrains.java.decompiler.code.cfg.BasicBlock;
 import org.jetbrains.java.decompiler.main.TextBuffer;
@@ -24,15 +26,11 @@ import org.jetbrains.java.decompiler.modules.decompiler.SequenceHelper;
 import org.jetbrains.java.decompiler.modules.decompiler.StatEdge;
 import org.jetbrains.java.decompiler.modules.decompiler.exps.Exprent;
 
-import java.util.ArrayList;
-import java.util.List;
-
 
 public class SynchronizedStatement extends Statement {
 
-  private Statement body;
-
   private final List<Exprent> headexprent = new ArrayList<>(1);
+  private Statement body;
 
   // *****************************************************************************
   // constructors
@@ -65,7 +63,6 @@ public class SynchronizedStatement extends Statement {
     }
   }
 
-
   // *****************************************************************************
   // public methods
   // *****************************************************************************
@@ -76,11 +73,13 @@ public class SynchronizedStatement extends Statement {
     buf.append(first.toJava(indent, tracer));
 
     if (isLabeled()) {
-      buf.appendIndent(indent).append("label").append(this.id.toString()).append(":").appendLineSeparator();
+      buf.appendIndent(indent).append("label").append(this.id.toString()).append(":")
+          .appendLineSeparator();
       tracer.incrementCurrentSourceLine();
     }
 
-    buf.appendIndent(indent).append(headexprent.get(0).toJava(indent, tracer)).append(" {").appendLineSeparator();
+    buf.appendIndent(indent).append(headexprent.get(0).toJava(indent, tracer)).append(" {")
+        .appendLineSeparator();
     tracer.incrementCurrentSourceLine();
 
     buf.append(ExprProcessor.jmpWrapper(body, indent + 1, true, tracer));
@@ -94,9 +93,12 @@ public class SynchronizedStatement extends Statement {
 
   private void mapMonitorExitInstr(BytecodeMappingTracer tracer) {
     BasicBlock block = body.getBasichead().getBlock();
-    if (!block.getSeq().isEmpty() && block.getLastInstruction().opcode == CodeConstants.opc_monitorexit) {
+    if (!block.getSeq().isEmpty()
+        && block.getLastInstruction().opcode == CodeConstants.opc_monitorexit) {
       Integer offset = block.getOldOffset(block.size() - 1);
-      if (offset > -1) tracer.addMapping(offset);
+      if (offset > -1) {
+        tracer.addMapping(offset);
+      }
     }
   }
 

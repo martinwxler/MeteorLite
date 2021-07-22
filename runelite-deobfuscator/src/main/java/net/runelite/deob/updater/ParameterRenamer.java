@@ -32,61 +32,55 @@ import net.runelite.asm.attributes.code.LocalVariable;
 import net.runelite.asm.attributes.code.Parameter;
 import net.runelite.deob.deobfuscators.mapping.ParallelExecutorMapping;
 
-public class ParameterRenamer
-{
-	private final ClassGroup source;
-	private final ClassGroup dest;
-	private final ParallelExecutorMapping mapping;
+public class ParameterRenamer {
 
-	public ParameterRenamer(ClassGroup source, ClassGroup dest, ParallelExecutorMapping mapping)
-	{
-		this.source = source;
-		this.dest = dest;
-		this.mapping = mapping;
-	}
+  private final ClassGroup source;
+  private final ClassGroup dest;
+  private final ParallelExecutorMapping mapping;
 
-	public void run()
-	{
-		for (ClassFile sourceCF : source.getClasses())
-		{
-			for (Method sourceM : sourceCF.getMethods())
-			{
-				Method destM = (Method) mapping.get(sourceM);
-				if (destM != null && destM.getParameters().size() > 0 && sourceM.getParameters() != null && !sourceM.getParameters().isEmpty() && sourceM.getParameters().size() >= 1)
-				{
-					List<Parameter> oldParams = destM.getParameters();
-					for (int i = 0; i < sourceM.getParameters().size(); i++)
-					{
-						String name = sourceM.getParameters().get(i).getName();
-						if (name.matches("var[0-9]") || name.length() <= 2 && (name.charAt(0) != 'x' || name.charAt(0) != 'y' || name.charAt(0) != 'z'))
-						{
-							continue;
-						}
+  public ParameterRenamer(ClassGroup source, ClassGroup dest, ParallelExecutorMapping mapping) {
+    this.source = source;
+    this.dest = dest;
+    this.mapping = mapping;
+  }
 
-						Parameter oldParam = oldParams.get(i);
-						LocalVariable oldVar = oldParam.getLocalVariable();
+  public void run() {
+    for (ClassFile sourceCF : source.getClasses()) {
+      for (Method sourceM : sourceCF.getMethods()) {
+        Method destM = (Method) mapping.get(sourceM);
+        if (destM != null && destM.getParameters().size() > 0 && sourceM.getParameters() != null
+            && !sourceM.getParameters().isEmpty() && sourceM.getParameters().size() >= 1) {
+          List<Parameter> oldParams = destM.getParameters();
+          for (int i = 0; i < sourceM.getParameters().size(); i++) {
+            String name = sourceM.getParameters().get(i).getName();
+            if (name.matches("var[0-9]") || name.length() <= 2 && (name.charAt(0) != 'x'
+                || name.charAt(0) != 'y' || name.charAt(0) != 'z')) {
+              continue;
+            }
 
-						Parameter newParam = new Parameter(name, oldParam.getAccess());
-						oldParams.set(i, newParam);
+            Parameter oldParam = oldParams.get(i);
+            LocalVariable oldVar = oldParam.getLocalVariable();
 
-						if (oldVar == null)
-						{
-							continue;
-						}
+            Parameter newParam = new Parameter(name, oldParam.getAccess());
+            oldParams.set(i, newParam);
 
-						LocalVariable newVar = new LocalVariable(
-							name,
-							oldVar.getDesc(),
-							oldVar.getSignature(),
-							oldVar.getStart(),
-							oldVar.getEnd(),
-							oldVar.getIndex()
-						);
+            if (oldVar == null) {
+              continue;
+            }
 
-						newParam.setLocalVariable(newVar);
-					}
-				}
-			}
-		}
-	}
+            LocalVariable newVar = new LocalVariable(
+                name,
+                oldVar.getDesc(),
+                oldVar.getSignature(),
+                oldVar.getStart(),
+                oldVar.getEnd(),
+                oldVar.getIndex()
+            );
+
+            newParam.setLocalVariable(newVar);
+          }
+        }
+      }
+    }
+  }
 }

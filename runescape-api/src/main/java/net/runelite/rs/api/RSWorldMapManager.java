@@ -3,18 +3,18 @@ package net.runelite.rs.api;
 import net.runelite.api.WorldMapManager;
 import net.runelite.mapping.Import;
 
-public interface RSWorldMapManager extends WorldMapManager
-{
-	@Import("isLoaded")
-	@Override
-	boolean isLoaded$api();
+public interface RSWorldMapManager extends WorldMapManager {
 
-	@Import("tileX")
-	int getSurfaceOffsetX();
+  @Import("isLoaded")
+  @Override
+  boolean isLoaded$api();
 
-	@Import("tileY")
-	int getSurfaceOffsetY();
+  @Import("tileX")
+  int getSurfaceOffsetX();
 
-	@Import("getPixelsPerTile")
-	float getPixelsPerTile$api(int graphicsDiff, int worldDiff);
+  @Import("tileY")
+  int getSurfaceOffsetY();
+
+  @Import("getPixelsPerTile")
+  float getPixelsPerTile$api(int graphicsDiff, int worldDiff);
 }

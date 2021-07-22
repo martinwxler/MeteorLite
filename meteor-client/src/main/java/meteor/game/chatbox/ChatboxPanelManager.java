@@ -28,8 +28,14 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import meteor.callback.ClientThread;
+import meteor.eventbus.EventBus;
+import meteor.eventbus.Subscribe;
+import meteor.input.KeyListener;
+import meteor.input.KeyManager;
+import meteor.input.MouseListener;
+import meteor.input.MouseManager;
+import meteor.input.MouseWheelListener;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.ScriptID;
@@ -40,173 +46,142 @@ import net.runelite.api.vars.InputType;
 import net.runelite.api.widgets.JavaScriptCallback;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
-import meteor.eventbus.EventBus;
-import meteor.eventbus.Subscribe;
-import meteor.input.KeyListener;
-import meteor.input.KeyManager;
-import meteor.input.MouseListener;
-import meteor.input.MouseManager;
-import meteor.input.MouseWheelListener;
 
 @Singleton
-public class ChatboxPanelManager
-{
-	private final Client client;
-	private final ClientThread clientThread;
-	private final EventBus eventBus;
+public class ChatboxPanelManager {
 
-	private final KeyManager keyManager;
-	private final MouseManager mouseManager;
+  private final Client client;
+  private final ClientThread clientThread;
+  private final EventBus eventBus;
 
-	private final Provider<ChatboxTextMenuInput> chatboxTextMenuInputProvider;
-	private final Provider<ChatboxTextInput> chatboxTextInputProvider;
+  private final KeyManager keyManager;
+  private final MouseManager mouseManager;
 
-	@Getter
-	private ChatboxInput currentInput = null;
+  private final Provider<ChatboxTextMenuInput> chatboxTextMenuInputProvider;
+  private final Provider<ChatboxTextInput> chatboxTextInputProvider;
 
-	@Inject
-	private ChatboxPanelManager(EventBus eventBus, Client client, ClientThread clientThread,
-		KeyManager keyManager, MouseManager mouseManager,
-		Provider<ChatboxTextMenuInput> chatboxTextMenuInputProvider, Provider<ChatboxTextInput> chatboxTextInputProvider)
-	{
-		this.client = client;
-		this.clientThread = clientThread;
-		this.eventBus = eventBus;
+  @Getter
+  private ChatboxInput currentInput = null;
 
-		this.keyManager = keyManager;
-		this.mouseManager = mouseManager;
+  @Inject
+  private ChatboxPanelManager(EventBus eventBus, Client client, ClientThread clientThread,
+      KeyManager keyManager, MouseManager mouseManager,
+      Provider<ChatboxTextMenuInput> chatboxTextMenuInputProvider,
+      Provider<ChatboxTextInput> chatboxTextInputProvider) {
+    this.client = client;
+    this.clientThread = clientThread;
+    this.eventBus = eventBus;
 
-		this.chatboxTextMenuInputProvider = chatboxTextMenuInputProvider;
-		this.chatboxTextInputProvider = chatboxTextInputProvider;
+    this.keyManager = keyManager;
+    this.mouseManager = mouseManager;
 
-		eventBus.register(this);
-	}
+    this.chatboxTextMenuInputProvider = chatboxTextMenuInputProvider;
+    this.chatboxTextInputProvider = chatboxTextInputProvider;
 
-	public void close()
-	{
-		clientThread.invokeLater(this::unsafeCloseInput);
-	}
+    eventBus.register(this);
+  }
 
-	private void unsafeCloseInput()
-	{
-		client.runScript(
-			ScriptID.MESSAGE_LAYER_CLOSE,
-			0,
-			1,
-			0
-		);
-		if (currentInput != null)
-		{
-			killCurrentPanel();
-		}
-	}
+  public void close() {
+    clientThread.invokeLater(this::unsafeCloseInput);
+  }
 
-	private void unsafeOpenInput(ChatboxInput input)
-	{
-		client.runScript(ScriptID.MESSAGE_LAYER_OPEN, 0);
+  private void unsafeCloseInput() {
+    client.runScript(
+        ScriptID.MESSAGE_LAYER_CLOSE,
+        0,
+        1,
+        0
+    );
+    if (currentInput != null) {
+      killCurrentPanel();
+    }
+  }
 
-		eventBus.register(input);
-		if (input instanceof KeyListener)
-		{
-			keyManager.registerKeyListener((KeyListener) input);
-		}
-		if (input instanceof MouseListener)
-		{
-			mouseManager.registerMouseListener((MouseListener) input);
-		}
-		if (input instanceof MouseWheelListener)
-		{
-			mouseManager.registerMouseWheelListener((MouseWheelListener) input);
-		}
+  private void unsafeOpenInput(ChatboxInput input) {
+    client.runScript(ScriptID.MESSAGE_LAYER_OPEN, 0);
 
-		if (currentInput != null)
-		{
-			killCurrentPanel();
-		}
+    eventBus.register(input);
+    if (input instanceof KeyListener) {
+      keyManager.registerKeyListener((KeyListener) input);
+    }
+    if (input instanceof MouseListener) {
+      mouseManager.registerMouseListener((MouseListener) input);
+    }
+    if (input instanceof MouseWheelListener) {
+      mouseManager.registerMouseWheelListener((MouseWheelListener) input);
+    }
 
-		currentInput = input;
-		client.setVar(VarClientInt.INPUT_TYPE, InputType.RUNELITE_CHATBOX_PANEL.getType());
-		client.getWidget(WidgetInfo.CHATBOX_TITLE).setHidden(true);
-		client.getWidget(WidgetInfo.CHATBOX_FULL_INPUT).setHidden(true);
+    if (currentInput != null) {
+      killCurrentPanel();
+    }
 
-		Widget c = getContainerWidget();
-		c.deleteAllChildren();
-		c.setOnDialogAbortListener((JavaScriptCallback) ev -> this.unsafeCloseInput());
-		input.open();
-	}
+    currentInput = input;
+    client.setVar(VarClientInt.INPUT_TYPE, InputType.RUNELITE_CHATBOX_PANEL.getType());
+    client.getWidget(WidgetInfo.CHATBOX_TITLE).setHidden(true);
+    client.getWidget(WidgetInfo.CHATBOX_FULL_INPUT).setHidden(true);
 
-	public void openInput(ChatboxInput input)
-	{
-		clientThread.invokeLater(() -> unsafeOpenInput(input));
-	}
+    Widget c = getContainerWidget();
+    c.deleteAllChildren();
+    c.setOnDialogAbortListener((JavaScriptCallback) ev -> this.unsafeCloseInput());
+    input.open();
+  }
 
-	public ChatboxTextMenuInput openTextMenuInput(String title)
-	{
-		return chatboxTextMenuInputProvider.get()
-			.title(title);
-	}
+  public void openInput(ChatboxInput input) {
+    clientThread.invokeLater(() -> unsafeOpenInput(input));
+  }
 
-	public ChatboxTextInput openTextInput(String prompt)
-	{
-		return chatboxTextInputProvider.get()
-			.prompt(prompt);
-	}
+  public ChatboxTextMenuInput openTextMenuInput(String title) {
+    return chatboxTextMenuInputProvider.get()
+        .title(title);
+  }
 
-	@Subscribe
-	public void onScriptPreFired(ScriptPreFired ev)
-	{
-		if (currentInput != null && ev.getScriptId() == ScriptID.MESSAGE_LAYER_CLOSE)
-		{
-			killCurrentPanel();
-		}
-	}
+  public ChatboxTextInput openTextInput(String prompt) {
+    return chatboxTextInputProvider.get()
+        .prompt(prompt);
+  }
 
-	@Subscribe
-	private void onGameStateChanged(GameStateChanged ev)
-	{
-		if (currentInput != null && ev.getGameState() == GameState.LOGIN_SCREEN)
-		{
-			killCurrentPanel();
-		}
-	}
+  @Subscribe
+  public void onScriptPreFired(ScriptPreFired ev) {
+    if (currentInput != null && ev.getScriptId() == ScriptID.MESSAGE_LAYER_CLOSE) {
+      killCurrentPanel();
+    }
+  }
 
-	private void killCurrentPanel()
-	{
-		try
-		{
-			currentInput.close();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+  @Subscribe
+  private void onGameStateChanged(GameStateChanged ev) {
+    if (currentInput != null && ev.getGameState() == GameState.LOGIN_SCREEN) {
+      killCurrentPanel();
+    }
+  }
 
-		eventBus.unregister(currentInput);
-		if (currentInput instanceof KeyListener)
-		{
-			keyManager.unregisterKeyListener((KeyListener) currentInput);
-		}
-		if (currentInput instanceof MouseListener)
-		{
-			mouseManager.unregisterMouseListener((MouseListener) currentInput);
-		}
-		if (currentInput instanceof MouseWheelListener)
-		{
-			mouseManager.unregisterMouseWheelListener((MouseWheelListener) currentInput);
-		}
-		currentInput = null;
-	}
+  private void killCurrentPanel() {
+    try {
+      currentInput.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 
-	public Widget getContainerWidget()
-	{
-		return client.getWidget(WidgetInfo.CHATBOX_CONTAINER);
-	}
+    eventBus.unregister(currentInput);
+    if (currentInput instanceof KeyListener) {
+      keyManager.unregisterKeyListener((KeyListener) currentInput);
+    }
+    if (currentInput instanceof MouseListener) {
+      mouseManager.unregisterMouseListener((MouseListener) currentInput);
+    }
+    if (currentInput instanceof MouseWheelListener) {
+      mouseManager.unregisterMouseWheelListener((MouseWheelListener) currentInput);
+    }
+    currentInput = null;
+  }
 
-	public boolean shouldTakeInput()
-	{
-		// the search box on the world map can be focused, and chat input goes there, even
-		// though the chatbox still has its key listener.
-		Widget worldMapSearch = client.getWidget(WidgetInfo.WORLD_MAP_SEARCH);
-		return worldMapSearch == null || client.getVar(VarClientInt.WORLD_MAP_SEARCH_FOCUSED) != 1;
-	}
+  public Widget getContainerWidget() {
+    return client.getWidget(WidgetInfo.CHATBOX_CONTAINER);
+  }
+
+  public boolean shouldTakeInput() {
+    // the search box on the world map can be focused, and chat input goes there, even
+    // though the chatbox still has its key listener.
+    Widget worldMapSearch = client.getWidget(WidgetInfo.WORLD_MAP_SEARCH);
+    return worldMapSearch == null || client.getVar(VarClientInt.WORLD_MAP_SEARCH_FOCUSED) != 1;
+  }
 }

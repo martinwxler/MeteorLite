@@ -24,23 +24,20 @@
  */
 package net.runelite.asm.attributes.code.instruction.types;
 
-public enum LVTInstructionType
-{
-	INT(1),
-	LONG(2),
-	FLOAT(1),
-	DOUBLE(2),
-	OBJECT(1);
+public enum LVTInstructionType {
+  INT(1),
+  LONG(2),
+  FLOAT(1),
+  DOUBLE(2),
+  OBJECT(1);
 
-	private final int slots;
+  private final int slots;
 
-	LVTInstructionType(int slots)
-	{
-		this.slots = slots;
-	}
+  LVTInstructionType(int slots) {
+    this.slots = slots;
+  }
 
-	public int getSlots()
-	{
-		return slots;
-	}
+  public int getSlots() {
+    return slots;
+  }
 }

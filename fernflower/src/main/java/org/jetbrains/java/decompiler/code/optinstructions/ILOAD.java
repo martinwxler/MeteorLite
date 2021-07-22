@@ -15,14 +15,14 @@
  */
 package org.jetbrains.java.decompiler.code.optinstructions;
 
-import org.jetbrains.java.decompiler.code.Instruction;
-
 import java.io.DataOutputStream;
 import java.io.IOException;
+import org.jetbrains.java.decompiler.code.Instruction;
 
 public class ILOAD extends Instruction {
 
-  private static final int[] opcodes = new int[]{opc_iload_0, opc_iload_1, opc_iload_2, opc_iload_3};
+  private static final int[] opcodes = new int[]{opc_iload_0, opc_iload_1, opc_iload_2,
+      opc_iload_3};
 
   public void writeToStream(DataOutputStream out, int offset) throws IOException {
     int index = getOperand(0);
@@ -33,12 +33,10 @@ public class ILOAD extends Instruction {
       out.writeByte(opc_iload);
       if (wide) {
         out.writeShort(index);
-      }
-      else {
+      } else {
         out.writeByte(index);
       }
-    }
-    else {
+    } else {
       out.writeByte(opcodes[index]);
     }
   }
@@ -47,8 +45,7 @@ public class ILOAD extends Instruction {
     int index = getOperand(0);
     if (index > 3) {
       return wide ? 4 : 2;
-    }
-    else {
+    } else {
       return 1;
     }
   }

@@ -23,6 +23,7 @@ import java.util.Set;
  * @author egor
  */
 public class DummyExitStatement extends Statement {
+
   public Set<Integer> bytecode = null;  // offsets of bytecode instructions mapped to dummy exit
 
   public DummyExitStatement() {
@@ -33,8 +34,7 @@ public class DummyExitStatement extends Statement {
     if (bytecodeOffsets != null && !bytecodeOffsets.isEmpty()) {
       if (bytecode == null) {
         bytecode = new HashSet<>(bytecodeOffsets);
-      }
-      else {
+      } else {
         bytecode.addAll(bytecodeOffsets);
       }
     }

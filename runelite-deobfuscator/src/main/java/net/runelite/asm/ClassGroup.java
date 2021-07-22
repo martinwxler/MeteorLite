@@ -24,6 +24,8 @@
  */
 package net.runelite.asm;
 
+import static net.runelite.deob.DeobAnnotations.getObfuscatedName;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,143 +35,118 @@ import java.util.Map;
 import java.util.function.Consumer;
 import net.runelite.asm.attributes.Code;
 import net.runelite.asm.signature.Signature;
-import static net.runelite.deob.DeobAnnotations.*;
 import org.jetbrains.annotations.NotNull;
 
-public class ClassGroup implements Iterable<ClassFile>
-{
-	private final List<ClassFile> classes = new ArrayList<>(); // to keep order
-	private final Map<String, ClassFile> classMap = new HashMap<>();
+public class ClassGroup implements Iterable<ClassFile> {
 
-	public void addClass(ClassFile cf)
-	{
-		assert cf.getGroup() == this || cf.getGroup() == null;
-		cf.setGroup(this);
+  private final List<ClassFile> classes = new ArrayList<>(); // to keep order
+  private final Map<String, ClassFile> classMap = new HashMap<>();
 
-		classes.add(cf);
-		classMap.put(cf.getName(), cf);
-	}
+  public void addClass(ClassFile cf) {
+    assert cf.getGroup() == this || cf.getGroup() == null;
+    cf.setGroup(this);
 
-	public void removeClass(ClassFile cf)
-	{
-		classes.remove(cf);
-		classMap.remove(cf.getName());
-	}
+    classes.add(cf);
+    classMap.put(cf.getName(), cf);
+  }
 
-	public void renameClass(ClassFile cf, String newName)
-	{
-		assert classes.contains(cf);
-		assert classMap.get(cf.getName()) == cf;
+  public void removeClass(ClassFile cf) {
+    classes.remove(cf);
+    classMap.remove(cf.getName());
+  }
 
-		classMap.remove(cf.getName());
-		cf.setName(newName);
-		classMap.put(cf.getName(), cf);
-	}
+  public void renameClass(ClassFile cf, String newName) {
+    assert classes.contains(cf);
+    assert classMap.get(cf.getName()) == cf;
 
-	public List<ClassFile> getClasses()
-	{
-		return Collections.unmodifiableList(classes);
-	}
+    classMap.remove(cf.getName());
+    cf.setName(newName);
+    classMap.put(cf.getName(), cf);
+  }
 
-	public ClassFile findClass(String name)
-	{
-		return classMap.get(name);
-	}
+  public List<ClassFile> getClasses() {
+    return Collections.unmodifiableList(classes);
+  }
 
-	public void initialize()
-	{
-		buildClassGraph();
-		lookup();
-	}
+  public ClassFile findClass(String name) {
+    return classMap.get(name);
+  }
 
-	public void buildClassGraph()
-	{
-		for (ClassFile c : classes)
-		{
-			c.clearClassGraph();
-		}
+  public void initialize() {
+    buildClassGraph();
+    lookup();
+  }
 
-		for (ClassFile c : classes)
-		{
-			c.buildClassGraph();
-		}
-	}
+  public void buildClassGraph() {
+    for (ClassFile c : classes) {
+      c.clearClassGraph();
+    }
 
-	public void lookup()
-	{
-		for (ClassFile cf : this.getClasses())
-		{
-			for (Method m : cf.getMethods())
-			{
-				Code code = m.getCode();
+    for (ClassFile c : classes) {
+      c.buildClassGraph();
+    }
+  }
 
-				if (code == null)
-				{
-					continue;
-				}
+  public void lookup() {
+    for (ClassFile cf : this.getClasses()) {
+      for (Method m : cf.getMethods()) {
+        Code code = m.getCode();
 
-				code.getInstructions().lookup();
-			}
-		}
-	}
+        if (code == null) {
+          continue;
+        }
 
-	public Method findStaticMethod(String name, Signature type)
-	{
-		Method m = null;
+        code.getInstructions().lookup();
+      }
+    }
+  }
 
-		for (ClassFile cf : classes)
-		{
-			m = cf.findStaticMethod(name, type);
+  public Method findStaticMethod(String name, Signature type) {
+    Method m = null;
 
-			if (m != null)
-			{
-				break;
-			}
-		}
+    for (ClassFile cf : classes) {
+      m = cf.findStaticMethod(name, type);
 
-		return m;
-	}
+      if (m != null) {
+        break;
+      }
+    }
 
-	public Method findStaticMethod(String name)
-	{
-		Method m = null;
+    return m;
+  }
 
-		for (ClassFile cf : classes)
-		{
-			m = cf.findStaticMethod(name);
+  public Method findStaticMethod(String name) {
+    Method m = null;
 
-			if (m != null)
-			{
-				break;
-			}
-		}
+    for (ClassFile cf : classes) {
+      m = cf.findStaticMethod(name);
 
-		return m;
-	}
+      if (m != null) {
+        break;
+      }
+    }
 
-	public ClassFile findObfuscatedName(String name)
-	{
-		for (ClassFile cf : classes)
-		{
-			if (name.equals(getObfuscatedName(cf)))
-			{
-				return cf;
-			}
-		}
+    return m;
+  }
 
-		return findClass(name);
-	}
+  public ClassFile findObfuscatedName(String name) {
+    for (ClassFile cf : classes) {
+      if (name.equals(getObfuscatedName(cf))) {
+        return cf;
+      }
+    }
 
-	@NotNull
-	@Override
-	public Iterator<ClassFile> iterator()
-	{
-		return this.classes.iterator();
-	}
+    return findClass(name);
+  }
 
-	@Override
-	public void forEach(Consumer<? super ClassFile> action)
-	{
-		this.classes.forEach(action);
-	}
+  @NotNull
+  @Override
+  public Iterator<ClassFile> iterator() {
+    return this.classes.iterator();
+  }
+
+  @Override
+  public void forEach(Consumer<? super ClassFile> action) {
+    this.classes.forEach(action);
+  }
 }

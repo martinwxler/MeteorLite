@@ -28,9 +28,9 @@ import lombok.Value;
 import net.runelite.api.MenuAction;
 
 @Value
-public class OverlayMenuEntry
-{
-	private MenuAction menuAction;
-	private String option;
-	private String target;
+public class OverlayMenuEntry {
+
+  private MenuAction menuAction;
+  private String option;
+  private String target;
 }

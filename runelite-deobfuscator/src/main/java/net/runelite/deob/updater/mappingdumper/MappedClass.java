@@ -7,61 +7,58 @@ import net.runelite.asm.ClassFile;
 import net.runelite.deob.DeobAnnotations;
 import net.runelite.deob.updater.MappingDumper;
 
-public class MappedClass
-{
-	@SerializedName("class")
-	public String implementingName;
-	@SerializedName("name")
-	public String obfuscatedName;
-	@SerializedName("super")
-	public String superClass;
-	public int access;
-	public List<String> interfaces;
-	public List<MappedField> fields;
-	public List<MappedMethod> methods;
-	public List<MappedMethod> constructors;
+public class MappedClass {
 
-	public MappedClass visitClass(final ClassFile c, final MappingDump dump)
-	{
-		MappingDumper.putMap(c, this);
+  @SerializedName("class")
+  public String implementingName;
+  @SerializedName("name")
+  public String obfuscatedName;
+  @SerializedName("super")
+  public String superClass;
+  public int access;
+  public List<String> interfaces;
+  public List<MappedField> fields;
+  public List<MappedMethod> methods;
+  public List<MappedMethod> constructors;
 
-		implementingName = DeobAnnotations.getImplements(c);
+  public MappedClass visitClass(final ClassFile c, final MappingDump dump) {
+    MappingDumper.putMap(c, this);
 
-		obfuscatedName = DeobAnnotations.getObfuscatedName(c);
-		if (obfuscatedName == null)
-		{
-			obfuscatedName = c.getName();
-		}
+    implementingName = DeobAnnotations.getImplements(c);
 
-		ClassFile parent = c.getParent();
-		if (parent != null)
-		{
-			superClass = DeobAnnotations.getObfuscatedName(parent);
-		}
+    obfuscatedName = DeobAnnotations.getObfuscatedName(c);
+    if (obfuscatedName == null) {
+      obfuscatedName = c.getName();
+    }
 
-		access = c.getAccess();
+    ClassFile parent = c.getParent();
+    if (parent != null) {
+      superClass = DeobAnnotations.getObfuscatedName(parent);
+    }
 
-		interfaces = c.getInterfaces()
-			.getMyInterfaces()
-			.stream()
-			.map(DeobAnnotations::getObfuscatedName)
-			.collect(Collectors.toList());
+    access = c.getAccess();
 
-		fields = c.getFields()
-			.stream()
-			.map(f -> new MappedField().visitField(f, dump))
-			.collect(Collectors.toList());
+    interfaces = c.getInterfaces()
+        .getMyInterfaces()
+        .stream()
+        .map(DeobAnnotations::getObfuscatedName)
+        .collect(Collectors.toList());
 
-		methods = c.getMethods()
-			.stream()
-			.map(m -> new MappedMethod().visitMethod(m, dump))
-			.collect(Collectors.toList());
+    fields = c.getFields()
+        .stream()
+        .map(f -> new MappedField().visitField(f, dump))
+        .collect(Collectors.toList());
 
-		constructors = methods
-			.stream()
-			.filter(m -> m.obfuscatedName.endsWith("init>"))
-			.collect(Collectors.toList());
+    methods = c.getMethods()
+        .stream()
+        .map(m -> new MappedMethod().visitMethod(m, dump))
+        .collect(Collectors.toList());
 
-		return this;
-	}
+    constructors = methods
+        .stream()
+        .filter(m -> m.obfuscatedName.endsWith("init>"))
+        .collect(Collectors.toList());
+
+    return this;
+  }
 }

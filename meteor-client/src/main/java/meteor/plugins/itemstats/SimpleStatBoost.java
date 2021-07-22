@@ -24,28 +24,26 @@
  */
 package meteor.plugins.itemstats;
 
-import net.runelite.api.Client;
 import meteor.plugins.itemstats.delta.DeltaCalculator;
 import meteor.plugins.itemstats.stats.Stat;
+import net.runelite.api.Client;
 
 /**
  * A stat boost using the real stat level. Eg, non-boosted.
  */
-public class SimpleStatBoost extends StatBoost
-{
-	private final DeltaCalculator deltaCalculator;
+public class SimpleStatBoost extends StatBoost {
 
-	public SimpleStatBoost(Stat stat, boolean boost, DeltaCalculator deltaCalculator)
-	{
-		super(stat, boost);
-		this.deltaCalculator = deltaCalculator;
-	}
+  private final DeltaCalculator deltaCalculator;
 
-	@Override
-	public int heals(Client client)
-	{
-		int max = getStat().getMaximum(client);
-		return deltaCalculator.calculateDelta(max);
-	}
+  public SimpleStatBoost(Stat stat, boolean boost, DeltaCalculator deltaCalculator) {
+    super(stat, boost);
+    this.deltaCalculator = deltaCalculator;
+  }
+
+  @Override
+  public int heals(Client client) {
+    int max = getStat().getMaximum(client);
+    return deltaCalculator.calculateDelta(max);
+  }
 
 }

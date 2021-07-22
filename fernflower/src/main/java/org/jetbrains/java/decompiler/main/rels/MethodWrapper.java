@@ -15,6 +15,8 @@
  */
 package org.jetbrains.java.decompiler.main.rels;
 
+import java.util.HashSet;
+import java.util.List;
 import org.jetbrains.java.decompiler.main.collectors.CounterContainer;
 import org.jetbrains.java.decompiler.modules.decompiler.sforms.DirectGraph;
 import org.jetbrains.java.decompiler.modules.decompiler.sforms.FlattenStatementsHelper;
@@ -23,10 +25,8 @@ import org.jetbrains.java.decompiler.modules.decompiler.vars.VarProcessor;
 import org.jetbrains.java.decompiler.modules.decompiler.vars.VarVersionPair;
 import org.jetbrains.java.decompiler.struct.StructMethod;
 
-import java.util.HashSet;
-import java.util.List;
-
 public class MethodWrapper {
+
   public final RootStatement root;
   public final VarProcessor varproc;
   public final StructMethod methodStruct;
@@ -37,7 +37,8 @@ public class MethodWrapper {
   public List<VarVersionPair> signatureFields;
   public boolean decompiledWithErrors;
 
-  public MethodWrapper(RootStatement root, VarProcessor varproc, StructMethod methodStruct, CounterContainer counter) {
+  public MethodWrapper(RootStatement root, VarProcessor varproc, StructMethod methodStruct,
+      CounterContainer counter) {
     this.root = root;
     this.varproc = varproc;
     this.methodStruct = methodStruct;

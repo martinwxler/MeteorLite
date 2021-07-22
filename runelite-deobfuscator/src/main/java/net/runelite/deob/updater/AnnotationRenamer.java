@@ -25,64 +25,60 @@
 
 package net.runelite.deob.updater;
 
+import net.runelite.asm.Annotation;
 import net.runelite.asm.ClassFile;
 import net.runelite.asm.ClassGroup;
 import net.runelite.asm.Field;
 import net.runelite.asm.Method;
-import net.runelite.asm.Annotation;
 import net.runelite.asm.attributes.Annotated;
 import net.runelite.deob.DeobAnnotations;
 import net.runelite.deob.deobfuscators.Renamer;
 import net.runelite.deob.util.NameMappings;
 
-public class AnnotationRenamer
-{
-	private ClassGroup group;
+public class AnnotationRenamer {
 
-	public AnnotationRenamer(ClassGroup group)
-	{
-		this.group = group;
-	}
+  private ClassGroup group;
 
-	public void run()
-	{
-		NameMappings mappings = buildMappings();
+  public AnnotationRenamer(ClassGroup group) {
+    this.group = group;
+  }
 
-		Renamer renamer = new Renamer(mappings);
-		renamer.run(group);
-	}
+  public void run() {
+    NameMappings mappings = buildMappings();
 
-	private NameMappings buildMappings()
-	{
-		NameMappings mappings = new NameMappings();
+    Renamer renamer = new Renamer(mappings);
+    renamer.run(group);
+  }
 
-		for (ClassFile cf : group.getClasses())
-		{
-			String name = getImplements(cf);
-			if (name != null)
-				mappings.map(cf.getPoolClass(), name);
+  private NameMappings buildMappings() {
+    NameMappings mappings = new NameMappings();
 
-			for (Field f : cf.getFields())
-			{
-				name = DeobAnnotations.getExportedName(f);
-				if (name != null)
-					mappings.map(f.getPoolField(), name);
-			}
+    for (ClassFile cf : group.getClasses()) {
+      String name = getImplements(cf);
+      if (name != null) {
+        mappings.map(cf.getPoolClass(), name);
+      }
 
-			for (Method m : cf.getMethods())
-			{
-				name = DeobAnnotations.getExportedName(m);
-				if (name != null)
-					mappings.map(m.getPoolMethod(), name);
-			}
-		}
+      for (Field f : cf.getFields()) {
+        name = DeobAnnotations.getExportedName(f);
+        if (name != null) {
+          mappings.map(f.getPoolField(), name);
+        }
+      }
 
-		return mappings;
-	}
+      for (Method m : cf.getMethods()) {
+        name = DeobAnnotations.getExportedName(m);
+        if (name != null) {
+          mappings.map(m.getPoolMethod(), name);
+        }
+      }
+    }
 
-	private String getImplements(Annotated cf)
-	{
-		Annotation an = cf.findAnnotation(DeobAnnotations.IMPLEMENTS);
-		return an == null ? null : an.getValueString();
-	}
+    return mappings;
+  }
+
+  private String getImplements(Annotated cf) {
+    Annotation an = cf.findAnnotation(DeobAnnotations.IMPLEMENTS);
+    return an == null ? null : an.getValueString();
+  }
 }

@@ -42,185 +42,170 @@ import javax.annotation.concurrent.ThreadSafe;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
-import org.sponge.util.Logger;
 import meteor.MeteorLite;
+import org.sponge.util.Logger;
 
 @RequiredArgsConstructor
 @ThreadSafe
-public class EventBus
-{
-	private static final Logger log = MeteorLite.logger = new Logger("EventBus");
+public class EventBus {
 
-	@Value
-	public static class Subscriber
-	{
-		private final Object object;
-		private final Method method;
-		private final float priority;
-		@EqualsAndHashCode.Exclude
-		private final Consumer<Object> lambda;
+  private static final Logger log = MeteorLite.logger = new Logger("EventBus");
+  private final Consumer<Throwable> exceptionHandler;
+  @Nonnull
+  private ImmutableMultimap<Class<?>, Subscriber> subscribers = ImmutableMultimap.of();
 
-		void invoke(final Object arg) throws Exception
-		{
-			if (lambda != null)
-			{
-				lambda.accept(arg);
-			}
-			else
-			{
-				method.invoke(object, arg);
-			}
-		}
-	}
+  /**
+   * Instantiates EventBus with default exception handler
+   */
+  public EventBus() {
+    exceptionHandler = throwable -> log.warn("Uncaught exception in event subscriber");
+  }
 
-	private final Consumer<Throwable> exceptionHandler;
+  /**
+   * Registers subscriber to EventBus. All methods in subscriber and it's parent classes are checked
+   * for {@link Subscribe} annotation and then added to map of subscriptions.
+   *
+   * @param object subscriber to register
+   * @throws IllegalArgumentException in case subscriber method name is wrong (correct format is
+   *                                  'on' + EventName
+   */
+  public synchronized void register(@Nonnull final Object object) {
+    final ImmutableMultimap.Builder<Class<?>, Subscriber> builder = ImmutableMultimap.builder();
+    builder.putAll(subscribers);
+    builder.orderValuesBy(Comparator.comparing(Subscriber::getPriority).reversed()
+        .thenComparing(s -> s.object.getClass().getName()));
 
-	@Nonnull
-	private ImmutableMultimap<Class<?>, Subscriber> subscribers = ImmutableMultimap.of();
+    for (Class<?> clazz = object.getClass(); clazz != null; clazz = clazz.getSuperclass()) {
+      for (final Method method : clazz.getDeclaredMethods()) {
+        final Subscribe sub = method.getAnnotation(Subscribe.class);
 
-	/**
-	 * Instantiates EventBus with default exception handler
-	 */
-	public EventBus()
-	{
-		exceptionHandler = throwable -> log.warn("Uncaught exception in event subscriber");
-	}
+        if (sub == null) {
+          continue;
+        }
 
-	/**
-	 * Registers subscriber to EventBus. All methods in subscriber and it's parent classes are checked for
-	 * {@link Subscribe} annotation and then added to map of subscriptions.
-	 *
-	 * @param object subscriber to register
-	 * @throws IllegalArgumentException in case subscriber method name is wrong (correct format is 'on' + EventName
-	 */
-	public synchronized void register(@Nonnull final Object object)
-	{
-		final ImmutableMultimap.Builder<Class<?>, Subscriber> builder = ImmutableMultimap.builder();
-		builder.putAll(subscribers);
-		builder.orderValuesBy(Comparator.comparing(Subscriber::getPriority).reversed()
-				.thenComparing(s -> s.object.getClass().getName()));
+        Preconditions.checkArgument(method.getReturnType() == Void.TYPE,
+            "@Subscribed method \"" + method + "\" cannot return a value");
+        Preconditions.checkArgument(method.getParameterCount() == 1,
+            "@Subscribed method \"" + method + "\" must take exactly 1 argument");
+        Preconditions.checkArgument(!Modifier.isStatic(method.getModifiers()),
+            "@Subscribed method \"" + method + "\" cannot be static");
 
-		for (Class<?> clazz = object.getClass(); clazz != null; clazz = clazz.getSuperclass())
-		{
-			for (final Method method : clazz.getDeclaredMethods())
-			{
-				final Subscribe sub = method.getAnnotation(Subscribe.class);
+        final Class<?> parameterClazz = method.getParameterTypes()[0];
 
-				if (sub == null)
-				{
-					continue;
-				}
+        Preconditions.checkArgument(!parameterClazz.isPrimitive(),
+            "@Subscribed method \"" + method + "\" cannot subscribe to primitives");
+        Preconditions.checkArgument(
+            (parameterClazz.getModifiers() & (Modifier.ABSTRACT | Modifier.INTERFACE)) == 0,
+            "@Subscribed method \"" + method + "\" cannot subscribe to polymorphic classes");
 
-				Preconditions.checkArgument(method.getReturnType() == Void.TYPE, "@Subscribed method \"" + method + "\" cannot return a value");
-				Preconditions.checkArgument(method.getParameterCount() == 1, "@Subscribed method \"" + method + "\" must take exactly 1 argument");
-				Preconditions.checkArgument(!Modifier.isStatic(method.getModifiers()), "@Subscribed method \"" + method + "\" cannot be static");
+        for (Class<?> psc = parameterClazz.getSuperclass(); psc != null;
+            psc = psc.getSuperclass()) {
+          if (subscribers.containsKey(psc)) {
+            throw new IllegalArgumentException("@Subscribed method \"" + method
+                + "\" cannot subscribe to class which inherits from subscribed class \"" + psc
+                + "\"");
+          }
+        }
 
-				final Class<?> parameterClazz = method.getParameterTypes()[0];
+        method.setAccessible(true);
+        Consumer<Object> lambda = null;
 
-				Preconditions.checkArgument(!parameterClazz.isPrimitive(), "@Subscribed method \"" + method + "\" cannot subscribe to primitives");
-				Preconditions.checkArgument((parameterClazz.getModifiers() & (Modifier.ABSTRACT | Modifier.INTERFACE)) == 0, "@Subscribed method \"" + method + "\" cannot subscribe to polymorphic classes");
+        try {
+          final MethodHandles.Lookup caller = ReflectUtil.privateLookupIn(clazz);
+          final MethodType subscription = MethodType.methodType(void.class, parameterClazz);
+          final MethodHandle target = caller.findVirtual(clazz, method.getName(), subscription);
+          final CallSite site = LambdaMetafactory.metafactory(
+              caller,
+              "accept",
+              MethodType.methodType(Consumer.class, clazz),
+              subscription.changeParameterType(0, Object.class),
+              target,
+              subscription);
 
-				for (Class<?> psc = parameterClazz.getSuperclass(); psc != null; psc = psc.getSuperclass())
-				{
-					if (subscribers.containsKey(psc))
-					{
-						throw new IllegalArgumentException("@Subscribed method \"" + method + "\" cannot subscribe to class which inherits from subscribed class \"" + psc + "\"");
-					}
-				}
+          final MethodHandle factory = site.getTarget();
+          lambda = (Consumer<Object>) factory.bindTo(object).invokeExact();
+        } catch (Throwable e) {
+          log.warn("Unable to create lambda for method " + method);
+        }
 
-				method.setAccessible(true);
-				Consumer<Object> lambda = null;
+        final Subscriber subscriber = new Subscriber(object, method, sub.priority(), lambda);
+        builder.put(parameterClazz, subscriber);
+        log.debug("Registering " + parameterClazz + " - " + subscriber);
+      }
+    }
 
-				try
-				{
-					final MethodHandles.Lookup caller = ReflectUtil.privateLookupIn(clazz);
-					final MethodType subscription = MethodType.methodType(void.class, parameterClazz);
-					final MethodHandle target = caller.findVirtual(clazz, method.getName(), subscription);
-					final CallSite site = LambdaMetafactory.metafactory(
-							caller,
-							"accept",
-							MethodType.methodType(Consumer.class, clazz),
-							subscription.changeParameterType(0, Object.class),
-							target,
-							subscription);
+    subscribers = builder.build();
+  }
 
-					final MethodHandle factory = site.getTarget();
-					lambda = (Consumer<Object>) factory.bindTo(object).invokeExact();
-				}
-				catch (Throwable e)
-				{
-					log.warn("Unable to create lambda for method " + method);
-				}
+  public synchronized <T> Subscriber register(Class<T> clazz, Consumer<T> subFn, float priority) {
+    final ImmutableMultimap.Builder<Class<?>, Subscriber> builder = ImmutableMultimap.builder();
+    builder.putAll(subscribers);
+    builder.orderValuesBy(Comparator.comparing(Subscriber::getPriority).reversed()
+        .thenComparing(s -> s.object.getClass().getName()));
 
-				final Subscriber subscriber = new Subscriber(object, method, sub.priority(), lambda);
-				builder.put(parameterClazz, subscriber);
-				log.debug("Registering " + parameterClazz + " - " + subscriber);
-			}
-		}
+    Subscriber sub = new Subscriber(subFn, null, priority, (Consumer<Object>) subFn);
+    builder.put(clazz, sub);
 
-		subscribers = builder.build();
-	}
+    subscribers = builder.build();
 
-	public synchronized <T> Subscriber register(Class<T> clazz, Consumer<T> subFn, float priority)
-	{
-		final ImmutableMultimap.Builder<Class<?>, Subscriber> builder = ImmutableMultimap.builder();
-		builder.putAll(subscribers);
-		builder.orderValuesBy(Comparator.comparing(Subscriber::getPriority).reversed()
-				.thenComparing(s -> s.object.getClass().getName()));
+    return sub;
+  }
 
-		Subscriber sub = new Subscriber(subFn, null, priority, (Consumer<Object>) subFn);
-		builder.put(clazz, sub);
+  /**
+   * Unregisters all subscribed methods from provided subscriber object.
+   *
+   * @param object object to unsubscribe from
+   */
+  public synchronized void unregister(@Nonnull final Object object) {
+    subscribers = ImmutableMultimap.copyOf(Iterables.filter(
+        subscribers.entries(),
+        e -> e.getValue().getObject() != object
+    ));
+  }
 
-		subscribers = builder.build();
+  public synchronized void unregister(Subscriber sub) {
+    if (sub == null) {
+      return;
+    }
 
-		return sub;
-	}
+    subscribers = ImmutableMultimap.copyOf(Iterables.filter(
+        subscribers.entries(),
+        e -> sub != e.getValue()
+    ));
+  }
 
-	/**
-	 * Unregisters all subscribed methods from provided subscriber object.
-	 *
-	 * @param object object to unsubscribe from
-	 */
-	public synchronized void unregister(@Nonnull final Object object)
-	{
-		subscribers = ImmutableMultimap.copyOf(Iterables.filter(
-				subscribers.entries(),
-				e -> e.getValue().getObject() != object
-		));
-	}
+  /**
+   * Posts provided event to all registered subscribers. Subscriber calls are invoked immediately,
+   * ordered by priority then their declaring class' name.
+   *
+   * @param event event to post
+   */
+  public void post(@Nonnull final Object event) {
+    for (final Subscriber subscriber : subscribers.get(event.getClass())) {
+      try {
+        subscriber.invoke(event);
+      } catch (Exception e) {
+        e.printStackTrace();
+        exceptionHandler.accept(e);
+      }
+    }
+  }
 
-	public synchronized void unregister(Subscriber sub)
-	{
-		if (sub == null)
-		{
-			return;
-		}
+  @Value
+  public static class Subscriber {
 
-		subscribers = ImmutableMultimap.copyOf(Iterables.filter(
-				subscribers.entries(),
-				e -> sub != e.getValue()
-		));
-	}
+    private final Object object;
+    private final Method method;
+    private final float priority;
+    @EqualsAndHashCode.Exclude
+    private final Consumer<Object> lambda;
 
-	/**
-	 * Posts provided event to all registered subscribers. Subscriber calls are invoked immediately,
-	 * ordered by priority then their declaring class' name.
-	 *
-	 * @param event event to post
-	 */
-	public void post(@Nonnull final Object event)
-	{
-		for (final Subscriber subscriber : subscribers.get(event.getClass()))
-		{
-			try
-			{
-				subscriber.invoke(event);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				exceptionHandler.accept(e);
-			}
-		}
-	}
+    void invoke(final Object arg) throws Exception {
+      if (lambda != null) {
+        lambda.accept(arg);
+      } else {
+        method.invoke(object, arg);
+      }
+    }
+  }
 }

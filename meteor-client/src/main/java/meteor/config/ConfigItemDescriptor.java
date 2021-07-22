@@ -27,29 +27,26 @@ package meteor.config;
 import lombok.Value;
 
 @Value
-public class ConfigItemDescriptor implements ConfigObject
-{
-	private final ConfigItem item;
-	private final Class<?> type;
-	private final Range range;
-	private final Alpha alpha;
-	private final Units units;
+public class ConfigItemDescriptor implements ConfigObject {
 
-	@Override
-	public String key()
-	{
-		return item.keyName();
-	}
+  private final ConfigItem item;
+  private final Class<?> type;
+  private final Range range;
+  private final Alpha alpha;
+  private final Units units;
 
-	@Override
-	public String name()
-	{
-		return item.name();
-	}
+  @Override
+  public String key() {
+    return item.keyName();
+  }
 
-	@Override
-	public int position()
-	{
-		return item.position();
-	}
+  @Override
+  public String name() {
+    return item.name();
+  }
+
+  @Override
+  public int position() {
+    return item.position();
+  }
 }

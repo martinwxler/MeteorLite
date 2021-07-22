@@ -41,170 +41,150 @@ import net.runelite.asm.execution.StackContext;
 import net.runelite.deob.deobfuscators.mapping.ParallelExecutorMapping;
 import org.objectweb.asm.MethodVisitor;
 
-public class TableSwitch extends Instruction implements JumpingInstruction, MappableInstruction
-{
-	private List<Label> branchi = new ArrayList<>();
-	private Label defi;
+public class TableSwitch extends Instruction implements JumpingInstruction, MappableInstruction {
 
-	private int low;
-	private int high;
+  private List<Label> branchi = new ArrayList<>();
+  private Label defi;
 
-	public TableSwitch(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
+  private int low;
+  private int high;
 
-	@Override
-	public Instruction clone()
-	{
-		TableSwitch i = (TableSwitch) super.clone();
-		i.branchi = new ArrayList<>(branchi);
-		return i;
-	}
+  public TableSwitch(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
 
-	@Override
-	public void accept(MethodVisitor visitor)
-	{
-		visitor.visitTableSwitchInsn(low, high, defi.getLabel(),
-			branchi.stream().map(l -> l.getLabel()).toArray(org.objectweb.asm.Label[]::new));
-	}
+  @Override
+  public Instruction clone() {
+    TableSwitch i = (TableSwitch) super.clone();
+    i.branchi = new ArrayList<>(branchi);
+    return i;
+  }
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ins = new InstructionContext(this, frame);
-		Stack stack = frame.getStack();
+  @Override
+  public void accept(MethodVisitor visitor) {
+    visitor.visitTableSwitchInsn(low, high, defi.getLabel(),
+        branchi.stream().map(l -> l.getLabel()).toArray(org.objectweb.asm.Label[]::new));
+  }
 
-		StackContext value = stack.pop();
-		ins.pop(value);
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ins = new InstructionContext(this, frame);
+    Stack stack = frame.getStack();
 
-		for (Label i : branchi)
-		{
-			Frame other = frame.dup();
-			other.jump(ins, i);
+    StackContext value = stack.pop();
+    ins.pop(value);
 
-			ins.branch(other);
-		}
+    for (Label i : branchi) {
+      Frame other = frame.dup();
+      other.jump(ins, i);
 
-		frame.jump(ins, defi);
+      ins.branch(other);
+    }
 
-		return ins;
-	}
+    frame.jump(ins, defi);
 
-	@Override
-	public boolean isTerminal()
-	{
-		return true;
-	}
+    return ins;
+  }
 
-	@Override
-	public List<Label> getJumps()
-	{
-		List<Label> list = new ArrayList<>();
-		for (Label i : branchi)
-		{
-			list.add(i);
-		}
-		list.add(defi);
-		return list.stream().distinct().collect(Collectors.toList());
-	}
+  @Override
+  public boolean isTerminal() {
+    return true;
+  }
 
-	@Override
-	public void setJumps(List<Label> labels)
-	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
+  @Override
+  public List<Label> getJumps() {
+    List<Label> list = new ArrayList<>();
+    for (Label i : branchi) {
+      list.add(i);
+    }
+    list.add(defi);
+    return list.stream().distinct().collect(Collectors.toList());
+  }
 
-	@Override
-	public void setLabel(org.objectweb.asm.Label label)
-	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
+  @Override
+  public void setJumps(List<Label> labels) {
+    throw new UnsupportedOperationException(
+        "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
 
-	public int getLow()
-	{
-		return low;
-	}
+  @Override
+  public void setLabel(org.objectweb.asm.Label label) {
+    throw new UnsupportedOperationException(
+        "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
 
-	public void setLow(int low)
-	{
-		this.low = low;
-	}
+  public int getLow() {
+    return low;
+  }
 
-	public int getHigh()
-	{
-		return high;
-	}
+  public void setLow(int low) {
+    this.low = low;
+  }
 
-	public void setHigh(int high)
-	{
-		this.high = high;
-	}
+  public int getHigh() {
+    return high;
+  }
 
-	public List<Label> getBranchi()
-	{
-		return branchi;
-	}
+  public void setHigh(int high) {
+    this.high = high;
+  }
 
-	public void setBranchi(List<Label> branchi)
-	{
-		this.branchi = branchi;
-	}
+  public List<Label> getBranchi() {
+    return branchi;
+  }
 
-	public Label getDefi()
-	{
-		return defi;
-	}
+  public void setBranchi(List<Label> branchi) {
+    this.branchi = branchi;
+  }
 
-	public void setDefi(Label defi)
-	{
-		this.defi = defi;
-	}
+  public Label getDefi() {
+    return defi;
+  }
 
-	@Override
-	public void map(ParallelExecutorMapping mappings, InstructionContext ctx, InstructionContext other)
-	{
-		// Map branches for step executor
+  public void setDefi(Label defi) {
+    this.defi = defi;
+  }
 
-		List<Frame> br1 = ctx.getBranches(),
-			br2 = other.getBranches();
+  @Override
+  public void map(ParallelExecutorMapping mappings, InstructionContext ctx,
+      InstructionContext other) {
+    // Map branches for step executor
 
-		assert br1.size() == br2.size();
+    List<Frame> br1 = ctx.getBranches(),
+        br2 = other.getBranches();
 
-		for (int i = 0; i < br1.size(); ++i)
-		{
-			Frame fr1 = br1.get(i), fr2 = br2.get(i);
+    assert br1.size() == br2.size();
 
-			assert fr1.other == null;
-			assert fr2.other == null;
+    for (int i = 0; i < br1.size(); ++i) {
+      Frame fr1 = br1.get(i), fr2 = br2.get(i);
 
-			fr1.other = fr2;
-			fr2.other = fr1;
-		}
-	}
+      assert fr1.other == null;
+      assert fr2.other == null;
 
-	@Override
-	public boolean isSame(InstructionContext thisIc, InstructionContext otherIc)
-	{
-		if (thisIc.getInstruction().getType() != otherIc.getInstruction().getType())
-		{
-			return false;
-		}
+      fr1.other = fr2;
+      fr2.other = fr1;
+    }
+  }
 
-		TableSwitch sw1 = (TableSwitch) thisIc.getInstruction();
-		TableSwitch sw2 = (TableSwitch) otherIc.getInstruction();
+  @Override
+  public boolean isSame(InstructionContext thisIc, InstructionContext otherIc) {
+    if (thisIc.getInstruction().getType() != otherIc.getInstruction().getType()) {
+      return false;
+    }
 
-		assert sw1 == this;
+    TableSwitch sw1 = (TableSwitch) thisIc.getInstruction();
+    TableSwitch sw2 = (TableSwitch) otherIc.getInstruction();
 
-		return sw1.branchi.size() == sw2.branchi.size();
-	}
+    assert sw1 == this;
 
-	@Override
-	public boolean canMap(InstructionContext thisIc)
-	{
-		Method method = thisIc.getFrame().getMethod();
-		// client init has randomally scrambled tableswitch
-		return method.getName().equals("init") == false;
-	}
+    return sw1.branchi.size() == sw2.branchi.size();
+  }
+
+  @Override
+  public boolean canMap(InstructionContext thisIc) {
+    Method method = thisIc.getFrame().getMethod();
+    // client init has randomally scrambled tableswitch
+    return method.getName().equals("init") == false;
+  }
 
 }

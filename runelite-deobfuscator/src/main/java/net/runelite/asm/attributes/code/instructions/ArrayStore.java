@@ -35,105 +35,96 @@ import net.runelite.asm.execution.StackContext;
 import net.runelite.deob.deobfuscators.mapping.MappingExecutorUtil;
 import net.runelite.deob.deobfuscators.mapping.ParallelExecutorMapping;
 
-public abstract class ArrayStore extends Instruction implements ArrayStoreInstruction
-{
-	public ArrayStore(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
+public abstract class ArrayStore extends Instruction implements ArrayStoreInstruction {
 
-	public Field getMyField(InstructionContext thisIc)
-	{
-		StackContext sctx = thisIc.getPops().get(2);
-		InstructionContext pushed = sctx.getPushed();
+  public ArrayStore(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
 
-		InstructionContext r = pushed.resolve(sctx);
+  public Field getMyField(InstructionContext thisIc) {
+    StackContext sctx = thisIc.getPops().get(2);
+    InstructionContext pushed = sctx.getPushed();
 
-		if (r.getInstruction() instanceof GetFieldInstruction)
-		{
-			GetFieldInstruction gf = (GetFieldInstruction) r.getInstruction();
-			return gf.getMyField();
-		}
+    InstructionContext r = pushed.resolve(sctx);
 
-		return null;
-	}
+    if (r.getInstruction() instanceof GetFieldInstruction) {
+      GetFieldInstruction gf = (GetFieldInstruction) r.getInstruction();
+      return gf.getMyField();
+    }
 
-	@Override
-	public boolean canMap(InstructionContext thisIc)
-	{
-		return getMyField(thisIc) != null;
-	}
+    return null;
+  }
 
-	@Override
-	public void map(ParallelExecutorMapping mapping, InstructionContext ctx, InstructionContext other)
-	{
-		assert ctx.getInstruction().getClass() == other.getInstruction().getClass();
+  @Override
+  public boolean canMap(InstructionContext thisIc) {
+    return getMyField(thisIc) != null;
+  }
 
-		Field myField = this.getMyField(ctx),
-			otherField = ((ArrayStore) other.getInstruction()).getMyField(other);
+  @Override
+  public void map(ParallelExecutorMapping mapping, InstructionContext ctx,
+      InstructionContext other) {
+    assert ctx.getInstruction().getClass() == other.getInstruction().getClass();
 
-		mapping.map(this, myField, otherField);
+    Field myField = this.getMyField(ctx),
+        otherField = ((ArrayStore) other.getInstruction()).getMyField(other);
 
-		// map value
-		StackContext object1 = ctx.getPops().get(0), // value set to.
-			object2 = other.getPops().get(0);
+    mapping.map(this, myField, otherField);
 
-		InstructionContext base1 = MappingExecutorUtil.resolve(object1.getPushed(), object1);
-		InstructionContext base2 = MappingExecutorUtil.resolve(object2.getPushed(), object2);
+    // map value
+    StackContext object1 = ctx.getPops().get(0), // value set to.
+        object2 = other.getPops().get(0);
 
-		if (base1.getInstruction() instanceof GetFieldInstruction && base2.getInstruction() instanceof GetFieldInstruction)
-		{
-			GetFieldInstruction gf1 = (GetFieldInstruction) base1.getInstruction(),
-				gf2 = (GetFieldInstruction) base2.getInstruction();
+    InstructionContext base1 = MappingExecutorUtil.resolve(object1.getPushed(), object1);
+    InstructionContext base2 = MappingExecutorUtil.resolve(object2.getPushed(), object2);
 
-			Field f1 = gf1.getMyField(),
-				f2 = gf2.getMyField();
+    if (base1.getInstruction() instanceof GetFieldInstruction && base2
+        .getInstruction() instanceof GetFieldInstruction) {
+      GetFieldInstruction gf1 = (GetFieldInstruction) base1.getInstruction(),
+          gf2 = (GetFieldInstruction) base2.getInstruction();
 
-			assert MappingExecutorUtil.isMaybeEqual(f1, f2);
+      Field f1 = gf1.getMyField(),
+          f2 = gf2.getMyField();
 
-			if (f1 != null && f2 != null)
-			{
-				mapping.map(this, f1, f2);
-			}
-		}
-	}
+      assert MappingExecutorUtil.isMaybeEqual(f1, f2);
 
-	@Override
-	public boolean isSame(InstructionContext thisIc, InstructionContext otherIc)
-	{
-		if (thisIc.getInstruction().getClass() != otherIc.getInstruction().getClass())
-		{
-			return false;
-		}
+      if (f1 != null && f2 != null) {
+        mapping.map(this, f1, f2);
+      }
+    }
+  }
 
-		Field myField = this.getMyField(thisIc),
-			otherField = ((ArrayStore) otherIc.getInstruction()).getMyField(otherIc);
+  @Override
+  public boolean isSame(InstructionContext thisIc, InstructionContext otherIc) {
+    if (thisIc.getInstruction().getClass() != otherIc.getInstruction().getClass()) {
+      return false;
+    }
 
-		if (!MappingExecutorUtil.isMaybeEqual(myField, otherField))
-		{
-			return false;
-		}
+    Field myField = this.getMyField(thisIc),
+        otherField = ((ArrayStore) otherIc.getInstruction()).getMyField(otherIc);
 
-		StackContext object1 = thisIc.getPops().get(0), // value set to.
-			object2 = otherIc.getPops().get(0);
+    if (!MappingExecutorUtil.isMaybeEqual(myField, otherField)) {
+      return false;
+    }
 
-		InstructionContext base1 = MappingExecutorUtil.resolve(object1.getPushed(), object1);
-		InstructionContext base2 = MappingExecutorUtil.resolve(object2.getPushed(), object2);
+    StackContext object1 = thisIc.getPops().get(0), // value set to.
+        object2 = otherIc.getPops().get(0);
 
-		if (base1.getInstruction() instanceof GetFieldInstruction && base2.getInstruction() instanceof GetFieldInstruction)
-		{
-			GetFieldInstruction gf1 = (GetFieldInstruction) base1.getInstruction(),
-				gf2 = (GetFieldInstruction) base2.getInstruction();
+    InstructionContext base1 = MappingExecutorUtil.resolve(object1.getPushed(), object1);
+    InstructionContext base2 = MappingExecutorUtil.resolve(object2.getPushed(), object2);
 
-			Field f1 = gf1.getMyField(),
-				f2 = gf2.getMyField();
+    if (base1.getInstruction() instanceof GetFieldInstruction && base2
+        .getInstruction() instanceof GetFieldInstruction) {
+      GetFieldInstruction gf1 = (GetFieldInstruction) base1.getInstruction(),
+          gf2 = (GetFieldInstruction) base2.getInstruction();
 
-			if (!MappingExecutorUtil.isMaybeEqual(f1, f2))
-			{
-				return false;
-			}
-		}
+      Field f1 = gf1.getMyField(),
+          f2 = gf2.getMyField();
 
-		return true;
-	}
+      if (!MappingExecutorUtil.isMaybeEqual(f1, f2)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 }

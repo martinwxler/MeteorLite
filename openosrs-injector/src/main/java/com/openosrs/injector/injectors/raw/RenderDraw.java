@@ -7,6 +7,8 @@
  */
 package com.openosrs.injector.injectors.raw;
 
+import static com.openosrs.injector.injection.InjectData.HOOKS;
+
 import com.openosrs.injector.InjectException;
 import com.openosrs.injector.InjectUtil;
 import com.openosrs.injector.injection.InjectData;
@@ -19,53 +21,47 @@ import net.runelite.asm.attributes.code.instructions.InvokeStatic;
 import net.runelite.asm.attributes.code.instructions.InvokeVirtual;
 import net.runelite.asm.pool.Class;
 import net.runelite.asm.signature.Signature;
-import static com.openosrs.injector.injection.InjectData.HOOKS;
 
-public class RenderDraw extends AbstractInjector
-{
-	private static final net.runelite.asm.pool.Method RENDERDRAW = new net.runelite.asm.pool.Method(
-		new Class(HOOKS),
-		"renderDraw",
-		new Signature("(Lnet/runelite/api/Renderable;IIIIIIIIJ)V")
-	);
-	private static final int EXPECTED = 21;
+public class RenderDraw extends AbstractInjector {
 
-	public RenderDraw(InjectData inject)
-	{
-		super(inject);
-	}
+  private static final net.runelite.asm.pool.Method RENDERDRAW = new net.runelite.asm.pool.Method(
+      new Class(HOOKS),
+      "renderDraw",
+      new Signature("(Lnet/runelite/api/Renderable;IIIIIIIIJ)V")
+  );
+  private static final int EXPECTED = 21;
 
-	@Override
-	public void inject()
-	{
-		int replaced = 0;
+  public RenderDraw(InjectData inject) {
+    super(inject);
+  }
 
-		/*
-		 * This class replaces entity draw invocation instructions
-		 * with the renderDraw method on drawcallbacks
-		 */
-		final net.runelite.asm.pool.Method draw = InjectUtil.findMethod(inject, "draw", "Renderable", null, true, false).getPoolMethod();
+  @Override
+  public void inject() {
+    int replaced = 0;
 
-		final Method drawTile = InjectUtil.findMethod(inject, "drawTile", "Scene", null, true, false);
+    /*
+     * This class replaces entity draw invocation instructions
+     * with the renderDraw method on drawcallbacks
+     */
+    final net.runelite.asm.pool.Method draw = InjectUtil
+        .findMethod(inject, "draw", "Renderable", null, true, false).getPoolMethod();
 
-		Instructions ins = drawTile.getCode().getInstructions();
-		for (ListIterator<Instruction> iterator = ins.listIterator(); iterator.hasNext(); )
-		{
-			Instruction i = iterator.next();
-			if (i instanceof InvokeVirtual)
-			{
-				if (((InvokeVirtual) i).getMethod().equals(draw))
-				{
-					iterator.set(new InvokeStatic(ins, RENDERDRAW));
-		//			log.debug("[DEBUG] Replaced method call at {}", i);
-					++replaced;
-				}
-			}
-		}
+    final Method drawTile = InjectUtil.findMethod(inject, "drawTile", "Scene", null, true, false);
 
-		if (replaced != EXPECTED)
-		{
-			throw new InjectException("Didn't replace the expected amount of method calls");
-		}
-	}
+    Instructions ins = drawTile.getCode().getInstructions();
+    for (ListIterator<Instruction> iterator = ins.listIterator(); iterator.hasNext(); ) {
+      Instruction i = iterator.next();
+      if (i instanceof InvokeVirtual) {
+        if (((InvokeVirtual) i).getMethod().equals(draw)) {
+          iterator.set(new InvokeStatic(ins, RENDERDRAW));
+          //			log.debug("[DEBUG] Replaced method call at {}", i);
+          ++replaced;
+        }
+      }
+    }
+
+    if (replaced != EXPECTED) {
+      throw new InjectException("Didn't replace the expected amount of method calls");
+    }
+  }
 }

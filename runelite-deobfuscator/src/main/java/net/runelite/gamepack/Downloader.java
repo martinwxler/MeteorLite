@@ -6,60 +6,49 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class Downloader
-{
-	private static final String REPLACE = "%archive%";
-	private static final String GAMEPACK_URL = "http://oldschool1.runescape.com/" + REPLACE;
+public class Downloader {
 
-	private static String getGamepackUrl()
-	{
-		String archive = Checker.getGamePack();
-		return archive == null ? "" : GAMEPACK_URL.replace(REPLACE, archive);
-	}
+  private static final String REPLACE = "%archive%";
+  private static final String GAMEPACK_URL = "http://oldschool1.runescape.com/" + REPLACE;
 
-	public static String gamepack()
-	{
-		Path path = Paths.get(System.getProperty("user.home"), "gamepack");
-		final File folder = new File(String.valueOf(path));
+  private static String getGamepackUrl() {
+    String archive = Checker.getGamePack();
+    return archive == null ? "" : GAMEPACK_URL.replace(REPLACE, archive);
+  }
 
-		if (!folder.exists())
-		{
-			folder.mkdir();
-		}
+  public static String gamepack() {
+    Path path = Paths.get(System.getProperty("user.home"), "gamepack");
+    final File folder = new File(String.valueOf(path));
 
-		downloadLatest(folder);
+    if (!folder.exists()) {
+      folder.mkdir();
+    }
 
-		return path + File.separator + "gamepack.jar";
-	}
+    downloadLatest(folder);
 
-	private static void downloadLatest(File folder)
-	{
-		File output = new File(folder, "gamepack.jar");
+    return path + File.separator + "gamepack.jar";
+  }
 
-		try
-		{
-			URL url = new URL(getGamepackUrl());
+  private static void downloadLatest(File folder) {
+    File output = new File(folder, "gamepack.jar");
 
-			final URLDownloader downloader = new URLDownloader(url, output);
-			downloader.download();
+    try {
+      URL url = new URL(getGamepackUrl());
 
-			try
-			{
-				Thread.sleep(100);
-			}
-			catch (InterruptedException e)
-			{
-				e.printStackTrace();
-			}
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-	}
+      final URLDownloader downloader = new URLDownloader(url, output);
+      downloader.download();
 
-	public static void main(String[] args)
-	{
-		gamepack();
-	}
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public static void main(String[] args) {
+    gamepack();
+  }
 }

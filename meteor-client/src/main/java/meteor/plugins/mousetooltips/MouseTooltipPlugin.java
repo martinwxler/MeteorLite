@@ -25,35 +25,31 @@
 package meteor.plugins.mousetooltips;
 
 import com.google.inject.Provides;
+import javax.inject.Inject;
 import meteor.Plugin;
 import meteor.config.ConfigManager;
 import meteor.ui.overlay.OverlayManager;
 
-import javax.inject.Inject;
+public class MouseTooltipPlugin extends Plugin {
 
-public class MouseTooltipPlugin extends Plugin
-{
-	@Inject
-	private OverlayManager overlayManager;
+  @Inject
+  private OverlayManager overlayManager;
 
-	@Inject
-	private MouseTooltipOverlay overlay;
+  @Inject
+  private MouseTooltipOverlay overlay;
 
-	@Provides
-	MouseTooltipConfig provideConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(MouseTooltipConfig.class);
-	}
+  @Provides
+  MouseTooltipConfig provideConfig(ConfigManager configManager) {
+    return configManager.getConfig(MouseTooltipConfig.class);
+  }
 
-	@Override
-	public void startup()
-	{
-		overlayManager.add(overlay);
-	}
+  @Override
+  public void startup() {
+    overlayManager.add(overlay);
+  }
 
-	@Override
-	public void shutdown()
-	{
-		overlayManager.remove(overlay);
-	}
+  @Override
+  public void shutdown() {
+    overlayManager.remove(overlay);
+  }
 }

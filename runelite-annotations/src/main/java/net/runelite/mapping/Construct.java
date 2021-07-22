@@ -31,18 +31,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Inject a method to create and construct an object.
- * The object type is inferred from the return value
- * of the method.
- *
- * {@code
- * {@literal @}Construct
- * RSIndexedImage createIndexedImage();
- * }
+ * Inject a method to create and construct an object. The object type is inferred from the return
+ * value of the method.
+ * <p>
+ * {@code {@literal @}Construct RSIndexedImage createIndexedImage(); }
  *
  * @author Adam
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Documented
-public @interface Construct {}
+public @interface Construct {
+
+}

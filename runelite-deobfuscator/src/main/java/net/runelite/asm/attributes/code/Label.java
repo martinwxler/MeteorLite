@@ -27,107 +27,88 @@ package net.runelite.asm.attributes.code;
 import net.runelite.asm.attributes.code.instructions.NOP;
 import org.objectweb.asm.MethodVisitor;
 
-public class Label extends NOP
-{
-	private org.objectweb.asm.Label label;
-	private Integer lineNumber;
+public class Label extends NOP {
 
-	public Label(Instructions instructions)
-	{
-		super(instructions);
-	}
+  private org.objectweb.asm.Label label;
+  private Integer lineNumber;
 
-	public Label(Instructions instructions, org.objectweb.asm.Label label)
-	{
-		super(instructions);
-		this.label = label;
-	}
+  public Label(Instructions instructions) {
+    super(instructions);
+  }
 
-	@Override
-	public String toString()
-	{
-		String string;
+  public Label(Instructions instructions, org.objectweb.asm.Label label) {
+    super(instructions);
+    this.label = label;
+  }
 
-		if (this.getInstructions() == null)
-		{
-			string = "label <unattached>";
-		}
-		else
-		{
-			Instruction next = next();
+  @Override
+  public String toString() {
+    String string;
 
-			if (next == null)
-			{
-				string = "label with no next instruction";
-			}
-			else
-			{
-				string = "label " + next.toString();
-			}
-		}
+    if (this.getInstructions() == null) {
+      string = "label <unattached>";
+    } else {
+      Instruction next = next();
 
-		if (lineNumber != null)
-		{
-			string += " on line number " + lineNumber;
-		}
+      if (next == null) {
+        string = "label with no next instruction";
+      } else {
+        string = "label " + next.toString();
+      }
+    }
 
-		return string;
-	}
+    if (lineNumber != null) {
+      string += " on line number " + lineNumber;
+    }
 
-	@Override
-	public Instruction clone()
-	{
-		Label l = (Label) super.clone();
-		l.label = new org.objectweb.asm.Label();
-		l.lineNumber = lineNumber;
-		return l;
-	}
+    return string;
+  }
 
-	@Override
-	public void accept(MethodVisitor visitor)
-	{
-		visitor.visitLabel(label);
+  @Override
+  public Instruction clone() {
+    Label l = (Label) super.clone();
+    l.label = new org.objectweb.asm.Label();
+    l.lineNumber = lineNumber;
+    return l;
+  }
 
-		if (lineNumber != null)
-		{
-			visitor.visitLineNumber(lineNumber, label);
-		}
-	}
+  @Override
+  public void accept(MethodVisitor visitor) {
+    visitor.visitLabel(label);
 
-	public org.objectweb.asm.Label getLabel()
-	{
-		return label;
-	}
+    if (lineNumber != null) {
+      visitor.visitLineNumber(lineNumber, label);
+    }
+  }
 
-	public void setLabel(org.objectweb.asm.Label label)
-	{
-		this.label = label;
-	}
+  public org.objectweb.asm.Label getLabel() {
+    return label;
+  }
 
-	public void setLineNumber(Integer lineNumber)
-	{
-		this.lineNumber = lineNumber;
-	}
+  public void setLabel(org.objectweb.asm.Label label) {
+    this.label = label;
+  }
 
-	public Integer getLineNumber()
-	{
-		return this.lineNumber;
-	}
+  public Integer getLineNumber() {
+    return this.lineNumber;
+  }
 
-	public Instruction next()
-	{
-		Instructions ins = this.getInstructions();
-		int i = ins.getInstructions().indexOf(this);
-		assert i != -1;
+  public void setLineNumber(Integer lineNumber) {
+    this.lineNumber = lineNumber;
+  }
 
-		Instruction next;
-		do
-		{
-			next = ins.getInstructions().get(i + 1);
-			++i;
-		}
-		while (next instanceof Label);
+  public Instruction next() {
+    Instructions ins = this.getInstructions();
+    int i = ins.getInstructions().indexOf(this);
+    assert i != -1;
 
-		return next;
-	}
+    Instruction next;
+    do {
+      next = ins.getInstructions().get(i + 1);
+      ++i;
+    }
+    while (next instanceof Label);
+
+    return next;
+  }
 }

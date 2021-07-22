@@ -24,42 +24,40 @@
  */
 package net.runelite.api.model;
 
-import net.runelite.api.Perspective;
 import lombok.Value;
+import net.runelite.api.Perspective;
 
 /**
  * Represents a point in a three-dimensional space.
  */
 @Value
-public class Vertex
-{
-	private final int x;
-	private final int y;
-	private final int z;
+public class Vertex {
 
-	/**
-	 * Rotates the triangle by the given orientation.
-	 *
-	 * @param orientation passed orientation
-	 * @return new instance
-	 */
-	public Vertex rotate(int orientation)
-	{
-		// models are orientated north (1024) and there are 2048 angles total
-		orientation = (orientation + 1024) % 2048;
+  private final int x;
+  private final int y;
+  private final int z;
 
-		if (orientation == 0)
-		{
-			return this;
-		}
+  /**
+   * Rotates the triangle by the given orientation.
+   *
+   * @param orientation passed orientation
+   * @return new instance
+   */
+  public Vertex rotate(int orientation) {
+    // models are orientated north (1024) and there are 2048 angles total
+    orientation = (orientation + 1024) % 2048;
 
-		int sin = Perspective.SINE[orientation];
-		int cos = Perspective.COSINE[orientation];
+    if (orientation == 0) {
+      return this;
+    }
 
-		return new Vertex(
-			x * cos + z * sin >> 16,
-			y,
-			z * cos - x * sin >> 16
-		);
-	}
+    int sin = Perspective.SINE[orientation];
+    int cos = Perspective.COSINE[orientation];
+
+    return new Vertex(
+        x * cos + z * sin >> 16,
+        y,
+        z * cos - x * sin >> 16
+    );
+  }
 }

@@ -27,75 +27,74 @@ package net.runelite.api;
 /**
  * Information about a specific {@link NpcID}
  */
-public interface NPCComposition extends ParamHolder
-{
-	/**
-	 * Gets the name of the NPC.
-	 */
-	String getName();
+public interface NPCComposition extends ParamHolder {
 
-	/**
-	 * Gets the model IDs that compose this NPC.
-	 */
-	int[] getModels();
+  /**
+   * Gets the name of the NPC.
+   */
+  String getName();
 
-	/**
-	 * The 5 menuops this NPC has when in world. Index 0 corresponds to
-	 * {@link MenuAction#NPC_FIRST_OPTION}, Index 2 to
-	 * {@link MenuAction#NPC_SECOND_OPTION} and so on.
-	 */
-	String[] getActions();
+  /**
+   * Gets the model IDs that compose this NPC.
+   */
+  int[] getModels();
 
-	boolean isClickable();
+  /**
+   * The 5 menuops this NPC has when in world. Index 0 corresponds to {@link
+   * MenuAction#NPC_FIRST_OPTION}, Index 2 to {@link MenuAction#NPC_SECOND_OPTION} and so on.
+   */
+  String[] getActions();
 
-	boolean isFollower();
+  boolean isClickable();
 
-	/**
-	 * NPC can be interacting with via menu options
-	 * @return
-	 */
-	boolean isInteractible();
+  boolean isFollower();
 
-	/**
-	 * Gets whether the NPC is visible on the mini-map.
-	 */
-	boolean isMinimapVisible();
+  /**
+   * NPC can be interacting with via menu options
+   *
+   * @return
+   */
+  boolean isInteractible();
 
-	boolean isVisible();
+  /**
+   * Gets whether the NPC is visible on the mini-map.
+   */
+  boolean isMinimapVisible();
 
-	/**
-	 * Gets the ID of the NPC.
-	 *
-	 * @see NpcID
-	 */
-	int getId();
+  boolean isVisible();
 
-	/**
-	 * @return the combat level, -1 if none
-	 */
-	int getCombatLevel();
+  /**
+   * Gets the ID of the NPC.
+   *
+   * @see NpcID
+   */
+  int getId();
 
-	/**
-	 * Get the {@link NpcID}s of NPCs this can transform into, depending
-	 * on a {@link Varbits} or {@link VarPlayer}
-	 */
-	int[] getConfigs();
+  /**
+   * @return the combat level, -1 if none
+   */
+  int getCombatLevel();
 
-	/**
-	 * Get the NPC composition the player's state says this NPC should
-	 * transmogrify into.
-	 *
-	 * @throws NullPointerException if {@link #getConfigs()} is null
-	 */
-	NPCComposition transform$api();
+  /**
+   * Get the {@link NpcID}s of NPCs this can transform into, depending on a {@link Varbits} or
+   * {@link VarPlayer}
+   */
+  int[] getConfigs();
 
-	/**
-	 * How many tiles wide this NPC is
-	 */
-	int getSize();
+  /**
+   * Get the NPC composition the player's state says this NPC should transmogrify into.
+   *
+   * @throws NullPointerException if {@link #getConfigs()} is null
+   */
+  NPCComposition transform$api();
 
-	/**
-	 * Gets the displayed overhead icon of the NPC.
-	 */
-	HeadIcon getOverheadIcon();
+  /**
+   * How many tiles wide this NPC is
+   */
+  int getSize();
+
+  /**
+   * Gets the displayed overhead icon of the NPC.
+   */
+  HeadIcon getOverheadIcon();
 }

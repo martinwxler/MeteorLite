@@ -15,11 +15,9 @@
  */
 package org.jetbrains.java.decompiler.struct.attr;
 
+import java.io.IOException;
 import org.jetbrains.java.decompiler.struct.consts.ConstantPool;
 import org.jetbrains.java.decompiler.util.DataInputFullStream;
-
-import java.io.IOException;
-import java.util.Set;
 
 /*
   u2 local_variable_type_table_length;
@@ -31,6 +29,7 @@ import java.util.Set;
     } local_variable_type_table[local_variable_type_table_length];
 */
 public class StructLocalVariableTypeTableAttribute extends StructGeneralAttribute {
+
   // store signature instead of descriptor
   private final StructLocalVariableTableAttribute backingAttribute = new StructLocalVariableTableAttribute();
 

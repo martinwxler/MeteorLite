@@ -27,43 +27,39 @@ package net.runelite.api;
 /**
  * An enumeration of equipment slots in the inventory {@link ItemContainer}.
  * <p>
- * These values are intended for use with the local players equipment
- * {@link ItemContainer} corresponding. For obtaining information about equipment
- * in the {@link PlayerComposition}, use {@link net.runelite.api.kit.KitType}.
+ * These values are intended for use with the local players equipment {@link ItemContainer}
+ * corresponding. For obtaining information about equipment in the {@link PlayerComposition}, use
+ * {@link net.runelite.api.kit.KitType}.
  *
  * @see Client#getItemContainer(InventoryID)
  * @see InventoryID#EQUIPMENT
  */
-public enum EquipmentInventorySlot
-{
-	HEAD(0),
-	CAPE(1),
-	AMULET(2),
-	WEAPON(3),
-	BODY(4),
-	SHIELD(5),
-	LEGS(7),
-	GLOVES(9),
-	BOOTS(10),
-	RING(12),
-	AMMO(13);
+public enum EquipmentInventorySlot {
+  HEAD(0),
+  CAPE(1),
+  AMULET(2),
+  WEAPON(3),
+  BODY(4),
+  SHIELD(5),
+  LEGS(7),
+  GLOVES(9),
+  BOOTS(10),
+  RING(12),
+  AMMO(13);
 
-	private final int slotIdx;
+  private final int slotIdx;
 
-	EquipmentInventorySlot(int slotIdx)
-	{
-		this.slotIdx = slotIdx;
-	}
+  EquipmentInventorySlot(int slotIdx) {
+    this.slotIdx = slotIdx;
+  }
 
-	/**
-	 * Gets the index into the item array obtained from
-	 * {@link ItemContainer#getItems()}.
-	 *
-	 * @return the raw index
-	 */
-	public int getSlotIdx()
-	{
-		return slotIdx;
-	}
+  /**
+   * Gets the index into the item array obtained from {@link ItemContainer#getItems()}.
+   *
+   * @return the raw index
+   */
+  public int getSlotIdx() {
+    return slotIdx;
+  }
 
 }

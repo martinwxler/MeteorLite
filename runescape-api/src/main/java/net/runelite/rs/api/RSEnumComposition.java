@@ -3,27 +3,27 @@ package net.runelite.rs.api;
 import net.runelite.api.EnumComposition;
 import net.runelite.mapping.Import;
 
-public interface RSEnumComposition extends EnumComposition, RSDualNode
-{
-	@Import("size")
-	@Override
-	int size$api();
+public interface RSEnumComposition extends EnumComposition, RSDualNode {
 
-	@Import("keys")
-	@Override
-	int[] getKeys();
+  @Import("size")
+  @Override
+  int size$api();
 
-	@Import("intVals")
-	@Override
-	int[] getIntVals();
+  @Import("keys")
+  @Override
+  int[] getKeys();
 
-	@Import("strVals")
-	@Override
-	String[] getStringVals();
+  @Import("intVals")
+  @Override
+  int[] getIntVals();
 
-	@Import("defaultInt")
-	int getDefaultInt();
+  @Import("strVals")
+  @Override
+  String[] getStringVals();
 
-	@Import("defaultStr")
-	String getDefaultString();
+  @Import("defaultInt")
+  int getDefaultInt();
+
+  @Import("defaultStr")
+  String getDefaultString();
 }

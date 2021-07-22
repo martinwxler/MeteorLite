@@ -23,11 +23,11 @@ import org.jetbrains.java.decompiler.modules.decompiler.exps.VarExprent;
 import org.jetbrains.java.decompiler.modules.decompiler.vars.VarVersionPair;
 
 public class Statements {
+
   public static Statement findFirstData(Statement stat) {
     if (stat.getExprents() != null) {
       return stat;
-    }
-    else if (stat.isLabeled()) { // FIXME: Why??
+    } else if (stat.isLabeled()) { // FIXME: Why??
       return null;
     }
 
@@ -43,9 +43,11 @@ public class Statements {
     }
   }
 
-  public static boolean isInvocationInitConstructor(InvocationExprent inv, MethodWrapper method, ClassWrapper wrapper, boolean withThis) {
-    if (inv.getFunctype() == InvocationExprent.TYP_INIT && inv.getInstance().type == Exprent.EXPRENT_VAR) {
-      VarExprent instVar = (VarExprent)inv.getInstance();
+  public static boolean isInvocationInitConstructor(InvocationExprent inv, MethodWrapper method,
+      ClassWrapper wrapper, boolean withThis) {
+    if (inv.getFunctype() == InvocationExprent.TYP_INIT
+        && inv.getInstance().type == Exprent.EXPRENT_VAR) {
+      VarExprent instVar = (VarExprent) inv.getInstance();
       VarVersionPair varPair = new VarVersionPair(instVar);
       String classname = method.varproc.getThisVars().get(varPair);
       if (classname != null) { // any this instance. TODO: Restrict to current class?

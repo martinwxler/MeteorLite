@@ -27,7 +27,7 @@ package net.runelite.deob;
 
 import net.runelite.asm.ClassGroup;
 
-public interface Transformer
-{
-	void transform(ClassGroup group);
+public interface Transformer {
+
+  void transform(ClassGroup group);
 }

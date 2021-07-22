@@ -28,28 +28,23 @@ import lombok.RequiredArgsConstructor;
 import org.sponge.util.Logger;
 
 @RequiredArgsConstructor
-public class RunnableExceptionLogger implements Runnable
-{
-	public Logger log = new Logger("Runnable");
-	private final Runnable runnable;
+public class RunnableExceptionLogger implements Runnable {
 
-	@Override
-	public void run()
-	{
-		try
-		{
-			runnable.run();
-		}
-		catch (Throwable ex)
-		{
-			log.warn("Uncaught exception in runnable {}", runnable, ex);
-			ex.printStackTrace();
-			throw ex;
-		}
-	}
+  private final Runnable runnable;
+  public Logger log = new Logger("Runnable");
 
-	public static RunnableExceptionLogger wrap(Runnable runnable)
-	{
-		return new RunnableExceptionLogger(runnable);
-	}
+  public static RunnableExceptionLogger wrap(Runnable runnable) {
+    return new RunnableExceptionLogger(runnable);
+  }
+
+  @Override
+  public void run() {
+    try {
+      runnable.run();
+    } catch (Throwable ex) {
+      log.warn("Uncaught exception in runnable {}", runnable, ex);
+      ex.printStackTrace();
+      throw ex;
+    }
+  }
 }

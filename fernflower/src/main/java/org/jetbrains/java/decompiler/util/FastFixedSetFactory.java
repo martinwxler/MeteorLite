@@ -15,7 +15,12 @@
  */
 package org.jetbrains.java.decompiler.util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class FastFixedSetFactory<E> {
 
@@ -173,10 +178,14 @@ public class FastFixedSetFactory<E> {
 
 
     public boolean equals(Object o) {
-      if (o == this) return true;
-      if (o == null || !(o instanceof FastFixedSet)) return false;
+      if (o == this) {
+        return true;
+      }
+      if (o == null || !(o instanceof FastFixedSet)) {
+        return false;
+      }
 
-      int[] extdata = ((FastFixedSet)o).getData();
+      int[] extdata = ((FastFixedSet) o).getData();
       int[] intdata = data;
 
       for (int i = intdata.length - 1; i >= 0; i--) {
@@ -258,8 +267,7 @@ public class FastFixedSetFactory<E> {
         if ((intdata[index[0]] & index[1]) != 0) {
           if (first) {
             first = false;
-          }
-          else {
+          } else {
             buffer.append(",");
           }
           buffer.append(colValuesInternal.getKey(i));
@@ -319,8 +327,7 @@ public class FastFixedSetFactory<E> {
             dindex++;
             ret++;
           }
-        }
-        else {
+        } else {
           ret += (32 - dindex);
         }
 
@@ -339,8 +346,7 @@ public class FastFixedSetFactory<E> {
     public E next() {
       if (next_pointer >= 0) {
         pointer = next_pointer;
-      }
-      else {
+      } else {
         pointer = getNextIndex(pointer);
         if (pointer == -1) {
           pointer = size;

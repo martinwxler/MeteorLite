@@ -15,14 +15,13 @@
  */
 package org.jetbrains.java.decompiler.code.cfg;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.jetbrains.java.decompiler.code.Instruction;
 import org.jetbrains.java.decompiler.code.InstructionSequence;
 import org.jetbrains.java.decompiler.code.SimpleInstructionSequence;
 import org.jetbrains.java.decompiler.main.DecompilerContext;
 import org.jetbrains.java.decompiler.modules.decompiler.decompose.IGraphNode;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class BasicBlock implements IGraphNode {
 
@@ -30,22 +29,16 @@ public class BasicBlock implements IGraphNode {
   // public fields
   // *****************************************************************************
 
+  private final List<Integer> instrOldOffsets = new ArrayList<>();
   public int id = 0;
-
-  public int mark = 0;
 
   // *****************************************************************************
   // private fields
   // *****************************************************************************
-
+  public int mark = 0;
   private InstructionSequence seq = new SimpleInstructionSequence();
-
   private List<BasicBlock> preds = new ArrayList<>();
-
   private List<BasicBlock> succs = new ArrayList<>();
-
-  private final List<Integer> instrOldOffsets = new ArrayList<>();
-
   private List<BasicBlock> predExceptions = new ArrayList<>();
 
   private List<BasicBlock> succExceptions = new ArrayList<>();
@@ -82,14 +75,13 @@ public class BasicBlock implements IGraphNode {
   public Instruction getLastInstruction() {
     if (seq.isEmpty()) {
       return null;
-    }
-    else {
+    } else {
       return seq.getLastInstr();
     }
   }
 
   public Integer getOldOffset(int index) {
-    if(index < instrOldOffsets.size()) {
+    if (index < instrOldOffsets.size()) {
       return instrOldOffsets.get(index);
     } else {
       return -1;
@@ -105,7 +97,9 @@ public class BasicBlock implements IGraphNode {
   }
 
   public void removePredecessor(BasicBlock block) {
-    while (preds.remove(block)) ;
+    while (preds.remove(block)) {
+      ;
+    }
   }
 
   public void addSuccessor(BasicBlock block) {
@@ -114,7 +108,9 @@ public class BasicBlock implements IGraphNode {
   }
 
   public void removeSuccessor(BasicBlock block) {
-    while (succs.remove(block)) ;
+    while (succs.remove(block)) {
+      ;
+    }
     block.removePredecessor(this);
   }
 
@@ -142,7 +138,9 @@ public class BasicBlock implements IGraphNode {
   }
 
   public void removePredecessorException(BasicBlock block) {
-    while (predExceptions.remove(block)) ;
+    while (predExceptions.remove(block)) {
+      ;
+    }
   }
 
   public void addSuccessorException(BasicBlock block) {
@@ -153,7 +151,9 @@ public class BasicBlock implements IGraphNode {
   }
 
   public void removeSuccessorException(BasicBlock block) {
-    while (succExceptions.remove(block)) ;
+    while (succExceptions.remove(block)) {
+      ;
+    }
     block.removePredecessorException(this);
   }
 
@@ -177,8 +177,7 @@ public class BasicBlock implements IGraphNode {
     for (int i = 0; i < seq.length(); i++) {
       if (i < instrOldOffsets.size()) {
         buf.append(instrOldOffsets.get(i));
-      }
-      else {
+      } else {
         buf.append("-1");
       }
       buf.append(": ");

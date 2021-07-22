@@ -24,26 +24,25 @@
  */
 package net.runelite.api.events;
 
+import lombok.Data;
 import net.runelite.api.Actor;
 import net.runelite.api.Hitsplat;
-import lombok.Data;
 
 /**
  * An event called when a {@link Hitsplat} is processed on an {@link Actor}.
  * <p>
- * This event is called regardless of whether or not the hitsplat was
- * rendered. An example of this occuring would be if the actor has 4
- * visible hitsplats.
+ * This event is called regardless of whether or not the hitsplat was rendered. An example of this
+ * occuring would be if the actor has 4 visible hitsplats.
  */
 @Data
-public class HitsplatApplied
-{
-	/**
-	 * The actor the hitsplat was applied to.
-	 */
-	private Actor actor;
-	/**
-	 * The applied hitsplat.
-	 */
-	private Hitsplat hitsplat;
+public class HitsplatApplied {
+
+  /**
+   * The actor the hitsplat was applied to.
+   */
+  private Actor actor;
+  /**
+   * The applied hitsplat.
+   */
+  private Hitsplat hitsplat;
 }

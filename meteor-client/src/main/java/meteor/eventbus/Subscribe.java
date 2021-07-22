@@ -36,7 +36,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Documented
-public @interface Subscribe
-{
-	float priority() default 0;
+public @interface Subscribe {
+
+  float priority() default 0;
 }

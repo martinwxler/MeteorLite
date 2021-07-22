@@ -3,27 +3,27 @@ package net.runelite.rs.api;
 import net.runelite.api.TextureProvider;
 import net.runelite.mapping.Import;
 
-public interface RSTextureProvider extends TextureProvider
-{
-	@Import("brightness")
-	@Override
-	double getBrightness();
+public interface RSTextureProvider extends TextureProvider {
 
-	@Import("setBrightness")
-	@Override
-	void setBrightness$api(double brightness);
+  @Import("brightness")
+  @Override
+  double getBrightness();
 
-	@Import("capacity")
-	void setMaxSize(int maxSize);
+  @Import("setBrightness")
+  @Override
+  void setBrightness$api(double brightness);
 
-	@Import("remaining")
-	void setSize(int size);
+  @Import("capacity")
+  void setMaxSize(int maxSize);
 
-	@Import("textures")
-	@Override
-	RSTexture[] getTextures();
+  @Import("remaining")
+  void setSize(int size);
 
-	@Import("getTexturePixels")
-	@Override
-	int[] load(int textureId);
+  @Import("textures")
+  @Override
+  RSTexture[] getTextures();
+
+  @Import("getTexturePixels")
+  @Override
+  int[] load(int textureId);
 }

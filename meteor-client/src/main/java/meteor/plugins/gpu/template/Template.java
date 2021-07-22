@@ -25,7 +25,6 @@
 package meteor.plugins.gpu.template;
 
 import com.google.common.io.CharStreams;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -34,71 +33,56 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public class Template
-{
-	private final List<Function<String, String>> resourceLoaders = new ArrayList<>();
+public class Template {
 
-	public String process(String str)
-	{
-		StringBuilder sb = new StringBuilder();
-		for (String line : str.split("\r?\n"))
-		{
-			if (line.startsWith("#include "))
-			{
-				String resource = line.substring(9);
-				String resourceStr = load(resource);
-				sb.append(resourceStr);
-			}
-			else
-			{
-				sb.append(line).append('\n');
-			}
-		}
-		return sb.toString();
-	}
+  private final List<Function<String, String>> resourceLoaders = new ArrayList<>();
 
-	public String load(String filename)
-	{
-		for (Function<String, String> loader : resourceLoaders)
-		{
-			String value = loader.apply(filename);
-			if (value != null)
-			{
-				return process(value);
-			}
-		}
+  private static String inputStreamToString(InputStream in) {
+    try {
+      return CharStreams.toString(new InputStreamReader(in, StandardCharsets.UTF_8));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-		return "";
-	}
+  public String process(String str) {
+    StringBuilder sb = new StringBuilder();
+    for (String line : str.split("\r?\n")) {
+      if (line.startsWith("#include ")) {
+        String resource = line.substring(9);
+        String resourceStr = load(resource);
+        sb.append(resourceStr);
+      } else {
+        sb.append(line).append('\n');
+      }
+    }
+    return sb.toString();
+  }
 
-	public Template add(Function<String, String> fn)
-	{
-		resourceLoaders.add(fn);
-		return this;
-	}
+  public String load(String filename) {
+    for (Function<String, String> loader : resourceLoaders) {
+      String value = loader.apply(filename);
+      if (value != null) {
+        return process(value);
+      }
+    }
 
-	public Template addInclude(Class<?> clazz)
-	{
-		return add(f ->
-		{
-			InputStream is = clazz.getResourceAsStream(f);
-			if (is != null)
-			{
-				return inputStreamToString(is);
-			}
-			return null;
-		});
-	}
+    return "";
+  }
 
-	private static String inputStreamToString(InputStream in)
-	{
-		try
-		{
-			return CharStreams.toString(new InputStreamReader(in, StandardCharsets.UTF_8));
-		}
-		catch (IOException e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
+  public Template add(Function<String, String> fn) {
+    resourceLoaders.add(fn);
+    return this;
+  }
+
+  public Template addInclude(Class<?> clazz) {
+    return add(f ->
+    {
+      InputStream is = clazz.getResourceAsStream(f);
+      if (is != null) {
+        return inputStreamToString(is);
+      }
+      return null;
+    });
+  }
 }

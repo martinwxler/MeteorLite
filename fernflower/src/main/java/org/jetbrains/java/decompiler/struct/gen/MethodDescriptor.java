@@ -15,11 +15,10 @@
  */
 package org.jetbrains.java.decompiler.struct.gen;
 
-import org.jetbrains.java.decompiler.code.CodeConstants;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.jetbrains.java.decompiler.code.CodeConstants;
 
 public class MethodDescriptor {
 
@@ -68,14 +67,23 @@ public class MethodDescriptor {
       for (int i = 0; i < lst.size(); i++) {
         params[i] = new VarType(lst.get(i));
       }
-    }
-    else {
+    } else {
       params = VarType.EMPTY_ARRAY;
     }
 
     VarType ret = new VarType(descriptor.substring(parenth + 1));
 
     return new MethodDescriptor(params, ret);
+  }
+
+  private static VarType buildNewType(VarType type, NewClassNameBuilder builder) {
+    if (type.type == CodeConstants.TYPE_OBJECT) {
+      String newClassName = builder.buildNewClassname(type.value);
+      if (newClassName != null) {
+        return new VarType(type.type, type.arrayDim, newClassName);
+      }
+    }
+    return null;
   }
 
   public String buildNewDescriptor(NewClassNameBuilder builder) {
@@ -92,8 +100,7 @@ public class MethodDescriptor {
           updated = true;
         }
       }
-    }
-    else {
+    } else {
       newParams = VarType.EMPTY_ARRAY;
     }
 
@@ -116,22 +123,16 @@ public class MethodDescriptor {
     return null;
   }
 
-  private static VarType buildNewType(VarType type, NewClassNameBuilder builder) {
-    if (type.type == CodeConstants.TYPE_OBJECT) {
-      String newClassName = builder.buildNewClassname(type.value);
-      if (newClassName != null) {
-        return new VarType(type.type, type.arrayDim, newClassName);
-      }
-    }
-    return null;
-  }
-
   @Override
   public boolean equals(Object o) {
-    if (o == this) return true;
-    if (o == null || !(o instanceof MethodDescriptor)) return false;
+    if (o == this) {
+      return true;
+    }
+    if (o == null || !(o instanceof MethodDescriptor)) {
+      return false;
+    }
 
-    MethodDescriptor md = (MethodDescriptor)o;
+    MethodDescriptor md = (MethodDescriptor) o;
     return ret.equals(md.ret) && Arrays.equals(params, md.params);
   }
 

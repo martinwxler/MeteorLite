@@ -15,6 +15,12 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.stats;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.jetbrains.java.decompiler.code.SwitchInstruction;
 import org.jetbrains.java.decompiler.code.cfg.BasicBlock;
 import org.jetbrains.java.decompiler.main.DecompilerContext;
@@ -31,23 +37,17 @@ import org.jetbrains.java.decompiler.modules.decompiler.exps.FieldExprent;
 import org.jetbrains.java.decompiler.modules.decompiler.exps.SwitchExprent;
 import org.jetbrains.java.decompiler.struct.gen.VarType;
 
-import java.util.*;
-
 public class SwitchStatement extends Statement {
 
   // *****************************************************************************
   // private fields
   // *****************************************************************************
 
-  private List<Statement> caseStatements = new ArrayList<>();
-
-  private List<List<StatEdge>> caseEdges = new ArrayList<>();
-
-  private List<List<Exprent>> caseValues = new ArrayList<>();
-
-  private StatEdge default_edge;
-
   private final List<Exprent> headexprent = new ArrayList<>(1);
+  private List<Statement> caseStatements = new ArrayList<>();
+  private List<List<StatEdge>> caseEdges = new ArrayList<>();
+  private List<List<Exprent>> caseValues = new ArrayList<>();
+  private StatEdge default_edge;
 
   // *****************************************************************************
   // constructors
@@ -67,7 +67,8 @@ public class SwitchStatement extends Statement {
     stats.addWithKey(head, head.id);
 
     // find post node
-    Set<Statement> lstNodes = new HashSet<>(head.getNeighbours(StatEdge.TYPE_REGULAR, DIRECTION_FORWARD));
+    Set<Statement> lstNodes = new HashSet<>(
+        head.getNeighbours(StatEdge.TYPE_REGULAR, DIRECTION_FORWARD));
 
     // cluster nodes
     if (poststat != null) {
@@ -88,7 +89,8 @@ public class SwitchStatement extends Statement {
 
   public static Statement isHead(Statement head) {
 
-    if (head.type == Statement.TYPE_BASICBLOCK && head.getLastBasicType() == Statement.LASTBASICTYPE_SWITCH) {
+    if (head.type == Statement.TYPE_BASICBLOCK
+        && head.getLastBasicType() == Statement.LASTBASICTYPE_SWITCH) {
 
       List<Statement> lst = new ArrayList<>();
       if (DecHelper.isChoiceStatement(head, lst)) {
@@ -117,11 +119,13 @@ public class SwitchStatement extends Statement {
     buf.append(first.toJava(indent, tracer));
 
     if (isLabeled()) {
-      buf.appendIndent(indent).append("label").append(this.id.toString()).append(":").appendLineSeparator();
+      buf.appendIndent(indent).append("label").append(this.id.toString()).append(":")
+          .appendLineSeparator();
       tracer.incrementCurrentSourceLine();
     }
 
-    buf.appendIndent(indent).append(headexprent.get(0).toJava(indent, tracer)).append(" {").appendLineSeparator();
+    buf.appendIndent(indent).append(headexprent.get(0).toJava(indent, tracer)).append(" {")
+        .appendLineSeparator();
     tracer.incrementCurrentSourceLine();
 
     VarType switch_type = headexprent.get(0).getExprType();
@@ -136,18 +140,16 @@ public class SwitchStatement extends Statement {
         if (edges.get(j) == default_edge) {
           buf.appendIndent(indent).append("default:").appendLineSeparator();
           tracer.incrementCurrentSourceLine();
-        }
-        else {
+        } else {
           buf.appendIndent(indent).append("case ");
           Exprent value = values.get(j);
           if (value instanceof ConstExprent) {
             value = value.copy();
-            ((ConstExprent)value).setConstType(switch_type);
+            ((ConstExprent) value).setConstType(switch_type);
           }
-          if (value instanceof FieldExprent && ((FieldExprent)value).isStatic()) { // enum values
-            buf.append(((FieldExprent)value).getName());
-          }
-          else {
+          if (value instanceof FieldExprent && ((FieldExprent) value).isStatic()) { // enum values
+            buf.append(((FieldExprent) value).getName());
+          } else {
             buf.append(value.toJava(indent, tracer));
           }
 
@@ -166,7 +168,8 @@ public class SwitchStatement extends Statement {
   }
 
   public void initExprents() {
-    SwitchExprent swexpr = (SwitchExprent)first.getExprents().remove(first.getExprents().size() - 1);
+    SwitchExprent swexpr = (SwitchExprent) first.getExprents()
+        .remove(first.getExprents().size() - 1);
     swexpr.setCaseValues(caseValues);
 
     headexprent.set(0, swexpr);
@@ -222,8 +225,8 @@ public class SwitchStatement extends Statement {
     }
 
     // case values
-    BasicBlockStatement bbstat = (BasicBlockStatement)first;
-    int[] values = ((SwitchInstruction)bbstat.getBlock().getLastInstruction()).getValues();
+    BasicBlockStatement bbstat = (BasicBlockStatement) first;
+    int[] values = ((SwitchInstruction) bbstat.getBlock().getLastInstruction()).getValues();
 
     List<Statement> nodes = new ArrayList<>(stats.size() - 1);
     List<List<Integer>> edges = new ArrayList<>(stats.size() - 1);
@@ -246,14 +249,16 @@ public class SwitchStatement extends Statement {
     }
 
     // collect exit edges
-    List<StatEdge> lstExitEdges = first.getSuccessorEdges(StatEdge.TYPE_BREAK | StatEdge.TYPE_CONTINUE);
+    List<StatEdge> lstExitEdges = first
+        .getSuccessorEdges(StatEdge.TYPE_BREAK | StatEdge.TYPE_CONTINUE);
     while (!lstExitEdges.isEmpty()) {
       StatEdge edge = lstExitEdges.get(0);
 
       List<Integer> lst = new ArrayList<>();
       for (int i = lstExitEdges.size() - 1; i >= 0; i--) {
         StatEdge edgeTemp = lstExitEdges.get(i);
-        if (edgeTemp.getDestination() == edge.getDestination() && edgeTemp.getType() == edge.getType()) {
+        if (edgeTemp.getDestination() == edge.getDestination() && edgeTemp.getType() == edge
+            .getType()) {
           lst.add(mapEdgeIndex.get(edgeTemp));
           lstExitEdges.remove(i);
         }
@@ -279,12 +284,14 @@ public class SwitchStatement extends Statement {
       Statement stat = nodes.get(index);
 
       if (stat != null) {
-        HashSet<Statement> setPreds = new HashSet<>(stat.getNeighbours(StatEdge.TYPE_REGULAR, DIRECTION_BACKWARD));
+        HashSet<Statement> setPreds = new HashSet<>(
+            stat.getNeighbours(StatEdge.TYPE_REGULAR, DIRECTION_BACKWARD));
         setPreds.remove(first);
 
         if (!setPreds.isEmpty()) {
           Statement pred =
-            setPreds.iterator().next(); // assumption: at most one predecessor node besides the head. May not hold true for obfuscated code.
+              setPreds.iterator()
+                  .next(); // assumption: at most one predecessor node besides the head. May not hold true for obfuscated code.
           for (int j = 0; j < nodes.size(); j++) {
             if (j != (index - 1) && nodes.get(j) == pred) {
               nodes.add(j + 1, stat);
@@ -294,8 +301,7 @@ public class SwitchStatement extends Statement {
                 nodes.remove(index);
                 edges.remove(index);
                 index--;
-              }
-              else {
+              } else {
                 nodes.remove(index + 1);
                 edges.remove(index + 1);
               }
@@ -329,11 +335,13 @@ public class SwitchStatement extends Statement {
     for (int i = 0; i < nodes.size(); i++) {
       if (nodes.get(i) == null) {
         BasicBlockStatement bstat = new BasicBlockStatement(new BasicBlock(
-          DecompilerContext.getCounterContainer().getCounterAndIncrement(CounterContainer.STATEMENT_COUNTER)));
+            DecompilerContext.getCounterContainer()
+                .getCounterAndIncrement(CounterContainer.STATEMENT_COUNTER)));
 
         StatEdge sample_edge = lstEdges.get(i).get(0);
 
-        bstat.addSuccessor(new StatEdge(sample_edge.getType(), bstat, sample_edge.getDestination(), sample_edge.closure));
+        bstat.addSuccessor(new StatEdge(sample_edge.getType(), bstat, sample_edge.getDestination(),
+            sample_edge.closure));
 
         for (StatEdge edge : lstEdges.get(i)) {
 

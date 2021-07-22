@@ -36,209 +36,178 @@ import lombok.Setter;
 import net.runelite.api.IndexedSprite;
 
 @Setter
-public class TooltipComponent implements LayoutableRenderableEntity
-{
-	private static final Pattern BR = Pattern.compile("</br>");
-	private static final int OFFSET = 4;
-	private static final int MOD_ICON_WIDTH = 13; // they are generally 13px wide
+public class TooltipComponent implements LayoutableRenderableEntity {
 
-	private String text;
-	private Color backgroundColor = ComponentConstants.STANDARD_BACKGROUND_COLOR;
-	private Point position = new Point();
-	private IndexedSprite[] modIcons;
+  private static final Pattern BR = Pattern.compile("</br>");
+  private static final int OFFSET = 4;
+  private static final int MOD_ICON_WIDTH = 13; // they are generally 13px wide
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		// Tooltip size
-		final FontMetrics metrics = graphics.getFontMetrics();
-		final int textDescent = metrics.getDescent();
-		final int textHeight = metrics.getHeight();
-		int tooltipWidth = 0;
-		int tooltipHeight = 0;
-		String[] lines = BR.split(text);
+  private String text;
+  private Color backgroundColor = ComponentConstants.STANDARD_BACKGROUND_COLOR;
+  private Point position = new Point();
+  private IndexedSprite[] modIcons;
 
-		// Calculate tooltip size
-		for (String line : lines)
-		{
-			int textWidth = calculateTextWidth(metrics, line);
+  @VisibleForTesting
+  static int calculateTextWidth(FontMetrics metrics, String line) {
+    char[] chars = line.toCharArray();
+    int textWidth = 0;
 
-			if (textWidth > tooltipWidth)
-			{
-				tooltipWidth = textWidth;
-			}
+    int begin = 0;
+    boolean inTag = false;
+    for (int j = 0; j < chars.length; j++) {
+      if (chars[j] == '<') {
+        textWidth += metrics.stringWidth(line.substring(begin, j));
 
-			tooltipHeight += textHeight;
-		}
+        begin = j;
+        inTag = true;
+      } else if (chars[j] == '>' && inTag) {
+        String subLine = line.substring(begin + 1, j);
 
-		// Tooltip position
-		int x = position.x;
-		int y = position.y;
+        if (subLine.startsWith("img=")) {
+          textWidth += MOD_ICON_WIDTH;
+        } else if (!subLine.startsWith("col=") && !subLine.startsWith("/col")) {
+          textWidth += metrics.stringWidth(line.substring(begin, j + 1));
+        }
 
-		// Render tooltip - background
-		final Rectangle tooltipBackground = new Rectangle(x, y,
-			tooltipWidth + OFFSET * 2, tooltipHeight + OFFSET * 2);
-		final BackgroundComponent backgroundComponent = new BackgroundComponent();
-		backgroundComponent.setBackgroundColor(backgroundColor);
-		backgroundComponent.setRectangle(tooltipBackground);
-		backgroundComponent.render(graphics);
-		graphics.setColor(Color.WHITE);
+        begin = j + 1;
+        inTag = false;
+      }
+    }
 
-		// Render tooltip - text - line by line
-		int textX = x + OFFSET;
-		int textY = y + OFFSET;
-		int lineX;
-		Color nextColor = Color.WHITE;
-		for (int i = 0; i < lines.length; i++)
-		{
-			lineX = textX;
-			final String line = lines[i];
-			char[] chars = line.toCharArray();
+    // Include trailing text (after last tag)
+    textWidth += metrics.stringWidth(line.substring(begin));
 
-			int begin = 0;
-			boolean inTag = false;
-			for (int j = 0; j < chars.length; j++)
-			{
-				if (chars[j] == '<')
-				{
-					TextComponent textComponent = new TextComponent();
-					textComponent.setColor(nextColor);
-					String text = line.substring(begin, j);
-					textComponent.setText(text);
-					textComponent.setPosition(new Point(lineX, textY + (i + 1) * textHeight - textDescent));
-					textComponent.render(graphics);
+    return textWidth;
+  }
 
-					lineX += metrics.stringWidth(text);
+  @Override
+  public Dimension render(Graphics2D graphics) {
+    // Tooltip size
+    final FontMetrics metrics = graphics.getFontMetrics();
+    final int textDescent = metrics.getDescent();
+    final int textHeight = metrics.getHeight();
+    int tooltipWidth = 0;
+    int tooltipHeight = 0;
+    String[] lines = BR.split(text);
 
-					begin = j;
-					inTag = true;
-				}
-				else if (chars[j] == '>' && inTag)
-				{
-					String subLine = line.substring(begin + 1, j);
+    // Calculate tooltip size
+    for (String line : lines) {
+      int textWidth = calculateTextWidth(metrics, line);
 
-					if (subLine.startsWith("col="))
-					{
-						String argument = subLine.substring(4);
-						nextColor = Color.decode("#" + argument);
-					}
-					else if (subLine.equals("/col"))
-					{
-						nextColor = Color.WHITE;
-					}
-					else if (subLine.startsWith("img="))
-					{
-						if (modIcons != null)
-						{
-							String argument = subLine.substring(4);
-							int iconId = Integer.parseInt(argument);
-							IndexedSprite modIcon = modIcons[iconId];
-							renderModIcon(graphics, lineX, textY + i * textHeight - textDescent, modIcon);
-							lineX += modIcon.getWidth();
-						}
-					}
-					else
-					{
-						TextComponent textComponent = new TextComponent();
-						textComponent.setColor(nextColor);
-						String text = line.substring(begin, j + 1);
-						textComponent.setText(text);
-						textComponent.setPosition(new Point(lineX, textY + (i + 1) * textHeight - textDescent));
-						textComponent.render(graphics);
+      if (textWidth > tooltipWidth) {
+        tooltipWidth = textWidth;
+      }
 
-						lineX += metrics.stringWidth(text);
-					}
+      tooltipHeight += textHeight;
+    }
 
-					begin = j + 1;
-					inTag = false;
-				}
-			}
+    // Tooltip position
+    int x = position.x;
+    int y = position.y;
 
-			// Draw trailing text (after last tag)
-			final TextComponent textComponent = new TextComponent();
-			textComponent.setColor(nextColor);
-			textComponent.setText(line.substring(begin));
-			textComponent.setPosition(new Point(lineX, textY + (i + 1) * textHeight - textDescent));
-			textComponent.render(graphics);
-		}
+    // Render tooltip - background
+    final Rectangle tooltipBackground = new Rectangle(x, y,
+        tooltipWidth + OFFSET * 2, tooltipHeight + OFFSET * 2);
+    final BackgroundComponent backgroundComponent = new BackgroundComponent();
+    backgroundComponent.setBackgroundColor(backgroundColor);
+    backgroundComponent.setRectangle(tooltipBackground);
+    backgroundComponent.render(graphics);
+    graphics.setColor(Color.WHITE);
 
-		return new Dimension(tooltipWidth + OFFSET * 2, tooltipHeight + OFFSET * 2);
-	}
+    // Render tooltip - text - line by line
+    int textX = x + OFFSET;
+    int textY = y + OFFSET;
+    int lineX;
+    Color nextColor = Color.WHITE;
+    for (int i = 0; i < lines.length; i++) {
+      lineX = textX;
+      final String line = lines[i];
+      char[] chars = line.toCharArray();
 
-	@VisibleForTesting
-	static int calculateTextWidth(FontMetrics metrics, String line)
-	{
-		char[] chars = line.toCharArray();
-		int textWidth = 0;
+      int begin = 0;
+      boolean inTag = false;
+      for (int j = 0; j < chars.length; j++) {
+        if (chars[j] == '<') {
+          TextComponent textComponent = new TextComponent();
+          textComponent.setColor(nextColor);
+          String text = line.substring(begin, j);
+          textComponent.setText(text);
+          textComponent.setPosition(new Point(lineX, textY + (i + 1) * textHeight - textDescent));
+          textComponent.render(graphics);
 
-		int begin = 0;
-		boolean inTag = false;
-		for (int j = 0; j < chars.length; j++)
-		{
-			if (chars[j] == '<')
-			{
-				textWidth += metrics.stringWidth(line.substring(begin, j));
+          lineX += metrics.stringWidth(text);
 
-				begin = j;
-				inTag = true;
-			}
-			else if (chars[j] == '>' && inTag)
-			{
-				String subLine = line.substring(begin + 1, j);
+          begin = j;
+          inTag = true;
+        } else if (chars[j] == '>' && inTag) {
+          String subLine = line.substring(begin + 1, j);
 
-				if (subLine.startsWith("img="))
-				{
-					textWidth += MOD_ICON_WIDTH;
-				}
-				else if (!subLine.startsWith("col=") && !subLine.startsWith("/col"))
-				{
-					textWidth += metrics.stringWidth(line.substring(begin, j + 1));
-				}
+          if (subLine.startsWith("col=")) {
+            String argument = subLine.substring(4);
+            nextColor = Color.decode("#" + argument);
+          } else if (subLine.equals("/col")) {
+            nextColor = Color.WHITE;
+          } else if (subLine.startsWith("img=")) {
+            if (modIcons != null) {
+              String argument = subLine.substring(4);
+              int iconId = Integer.parseInt(argument);
+              IndexedSprite modIcon = modIcons[iconId];
+              renderModIcon(graphics, lineX, textY + i * textHeight - textDescent, modIcon);
+              lineX += modIcon.getWidth();
+            }
+          } else {
+            TextComponent textComponent = new TextComponent();
+            textComponent.setColor(nextColor);
+            String text = line.substring(begin, j + 1);
+            textComponent.setText(text);
+            textComponent.setPosition(new Point(lineX, textY + (i + 1) * textHeight - textDescent));
+            textComponent.render(graphics);
 
-				begin = j + 1;
-				inTag = false;
-			}
-		}
+            lineX += metrics.stringWidth(text);
+          }
 
-		// Include trailing text (after last tag)
-		textWidth += metrics.stringWidth(line.substring(begin));
+          begin = j + 1;
+          inTag = false;
+        }
+      }
 
-		return textWidth;
-	}
+      // Draw trailing text (after last tag)
+      final TextComponent textComponent = new TextComponent();
+      textComponent.setColor(nextColor);
+      textComponent.setText(line.substring(begin));
+      textComponent.setPosition(new Point(lineX, textY + (i + 1) * textHeight - textDescent));
+      textComponent.render(graphics);
+    }
 
-	private void renderModIcon(Graphics2D graphics, int x, int y, IndexedSprite modIcon)
-	{
-		int sourceOffset = 0;
+    return new Dimension(tooltipWidth + OFFSET * 2, tooltipHeight + OFFSET * 2);
+  }
 
-		for (int y2 = 0; y2 < modIcon.getHeight(); y2++)
-		{
-			for (int x2 = 0; x2 < modIcon.getWidth(); x2++)
-			{
-				int index = modIcon.getPixels()[sourceOffset++] & 0xff;
+  private void renderModIcon(Graphics2D graphics, int x, int y, IndexedSprite modIcon) {
+    int sourceOffset = 0;
 
-				if (index != 0)
-				{
-					graphics.setColor(new Color(modIcon.getPalette()[index]));
-					graphics.drawLine(x + x2, y + y2, x + x2, y + y2);
-				}
-			}
-		}
-	}
+    for (int y2 = 0; y2 < modIcon.getHeight(); y2++) {
+      for (int x2 = 0; x2 < modIcon.getWidth(); x2++) {
+        int index = modIcon.getPixels()[sourceOffset++] & 0xff;
 
-	@Override
-	public Rectangle getBounds()
-	{
-		return null;
-	}
+        if (index != 0) {
+          graphics.setColor(new Color(modIcon.getPalette()[index]));
+          graphics.drawLine(x + x2, y + y2, x + x2, y + y2);
+        }
+      }
+    }
+  }
 
-	@Override
-	public void setPreferredLocation(Point position)
-	{
-		this.position = position;
-	}
+  @Override
+  public Rectangle getBounds() {
+    return null;
+  }
 
-	@Override
-	public void setPreferredSize(Dimension dimension)
-	{
-	}
+  @Override
+  public void setPreferredLocation(Point position) {
+    this.position = position;
+  }
+
+  @Override
+  public void setPreferredSize(Dimension dimension) {
+  }
 }

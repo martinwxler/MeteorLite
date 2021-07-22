@@ -15,6 +15,14 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.vars;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import org.jetbrains.java.decompiler.code.CodeConstants;
 import org.jetbrains.java.decompiler.main.DecompilerContext;
 import org.jetbrains.java.decompiler.main.collectors.CounterContainer;
@@ -30,10 +38,8 @@ import org.jetbrains.java.decompiler.struct.gen.MethodDescriptor;
 import org.jetbrains.java.decompiler.struct.gen.VarType;
 import org.jetbrains.java.decompiler.util.FastSparseSetFactory.FastSparseSet;
 
-import java.util.*;
-import java.util.Map.Entry;
-
 public class VarVersionsProcessor {
+
   private final StructMethod method;
   private Map<Integer, Integer> mapOriginalVarIndices = Collections.emptyMap();
   private VarTypeProcessor typeProcessor;
@@ -41,26 +47,6 @@ public class VarVersionsProcessor {
   public VarVersionsProcessor(StructMethod mt, MethodDescriptor md) {
     method = mt;
     typeProcessor = new VarTypeProcessor(mt, md);
-  }
-
-  public void setVarVersions(RootStatement root, VarVersionsProcessor previousVersionsProcessor) {
-    SSAConstructorSparseEx ssa = new SSAConstructorSparseEx();
-    ssa.splitVariables(root, method);
-
-    FlattenStatementsHelper flattenHelper = new FlattenStatementsHelper();
-    DirectGraph graph = flattenHelper.buildDirectGraph(root);
-
-    mergePhiVersions(ssa, graph);
-
-    typeProcessor.calculateVarTypes(root, graph);
-
-    simpleMerge(typeProcessor, graph, method);
-
-    // FIXME: advanced merging
-
-    eliminateNonJavaTypes(typeProcessor);
-
-    setNewVarIndices(typeProcessor, graph, previousVersionsProcessor);
   }
 
   private static void mergePhiVersions(SSAConstructorSparseEx ssa, DirectGraph graph) {
@@ -104,7 +90,8 @@ public class VarVersionsProcessor {
     updateVersions(graph, phiVersions);
   }
 
-  private static void updateVersions(DirectGraph graph, final Map<VarVersionPair, Integer> versions) {
+  private static void updateVersions(DirectGraph graph,
+      final Map<VarVersionPair, Integer> versions) {
     graph.iterateExprents(new DirectGraph.ExprentIterator() {
       @Override
       public int processExprent(Exprent exprent) {
@@ -113,7 +100,7 @@ public class VarVersionsProcessor {
 
         for (Exprent expr : lst) {
           if (expr.type == Exprent.EXPRENT_VAR) {
-            VarExprent var = (VarExprent)expr;
+            VarExprent var = (VarExprent) expr;
             Integer version = versions.get(new VarVersionPair(var));
             if (version != null) {
               var.setVersion(version);
@@ -137,21 +124,21 @@ public class VarVersionsProcessor {
       if (type.type == CodeConstants.TYPE_BYTECHAR || type.type == CodeConstants.TYPE_SHORTCHAR) {
         if (maxType != null && maxType.type == CodeConstants.TYPE_CHAR) {
           type = VarType.VARTYPE_CHAR;
-        }
-        else {
-          type = type.type == CodeConstants.TYPE_BYTECHAR ? VarType.VARTYPE_BYTE : VarType.VARTYPE_SHORT;
+        } else {
+          type = type.type == CodeConstants.TYPE_BYTECHAR ? VarType.VARTYPE_BYTE
+              : VarType.VARTYPE_SHORT;
         }
         mapExprentMinTypes.put(paar, type);
         //} else if(type.type == CodeConstants.TYPE_CHAR && (maxType == null || maxType.type == CodeConstants.TYPE_INT)) { // when possible, lift char to int
         //	mapExprentMinTypes.put(paar, VarType.VARTYPE_INT);
-      }
-      else if (type.type == CodeConstants.TYPE_NULL) {
+      } else if (type.type == CodeConstants.TYPE_NULL) {
         mapExprentMinTypes.put(paar, VarType.VARTYPE_OBJECT);
       }
     }
   }
 
-  private static void simpleMerge(VarTypeProcessor typeProcessor, DirectGraph graph, StructMethod mt) {
+  private static void simpleMerge(VarTypeProcessor typeProcessor, DirectGraph graph,
+      StructMethod mt) {
     Map<VarVersionPair, VarType> mapExprentMaxTypes = typeProcessor.getMapExprentMaxTypes();
     Map<VarVersionPair, VarType> mapExprentMinTypes = typeProcessor.getMapExprentMinTypes();
 
@@ -191,14 +178,16 @@ public class VarVersionsProcessor {
             VarType secondType = mapExprentMinTypes.get(secondPair);
 
             if (firstType.equals(secondType) ||
-                (firstType.equals(VarType.VARTYPE_NULL) && secondType.type == CodeConstants.TYPE_OBJECT) ||
-                (secondType.equals(VarType.VARTYPE_NULL) && firstType.type == CodeConstants.TYPE_OBJECT)) {
+                (firstType.equals(VarType.VARTYPE_NULL)
+                    && secondType.type == CodeConstants.TYPE_OBJECT) ||
+                (secondType.equals(VarType.VARTYPE_NULL)
+                    && firstType.type == CodeConstants.TYPE_OBJECT)) {
 
               VarType firstMaxType = mapExprentMaxTypes.get(firstPair);
               VarType secondMaxType = mapExprentMaxTypes.get(secondPair);
               VarType type = firstMaxType == null ? secondMaxType :
-                             secondMaxType == null ? firstMaxType :
-                             VarType.getCommonMinType(firstMaxType, secondMaxType);
+                  secondMaxType == null ? firstMaxType :
+                      VarType.getCommonMinType(firstMaxType, secondMaxType);
 
               mapExprentMaxTypes.put(firstPair, type);
               mapMergedVersions.put(secondPair, firstPair.version);
@@ -226,7 +215,28 @@ public class VarVersionsProcessor {
     }
   }
 
-  private void setNewVarIndices(VarTypeProcessor typeProcessor, DirectGraph graph, VarVersionsProcessor previousVersionsProcessor) {
+  public void setVarVersions(RootStatement root, VarVersionsProcessor previousVersionsProcessor) {
+    SSAConstructorSparseEx ssa = new SSAConstructorSparseEx();
+    ssa.splitVariables(root, method);
+
+    FlattenStatementsHelper flattenHelper = new FlattenStatementsHelper();
+    DirectGraph graph = flattenHelper.buildDirectGraph(root);
+
+    mergePhiVersions(ssa, graph);
+
+    typeProcessor.calculateVarTypes(root, graph);
+
+    simpleMerge(typeProcessor, graph, method);
+
+    // FIXME: advanced merging
+
+    eliminateNonJavaTypes(typeProcessor);
+
+    setNewVarIndices(typeProcessor, graph, previousVersionsProcessor);
+  }
+
+  private void setNewVarIndices(VarTypeProcessor typeProcessor, DirectGraph graph,
+      VarVersionsProcessor previousVersionsProcessor) {
     final Map<VarVersionPair, VarType> mapExprentMaxTypes = typeProcessor.getMapExprentMaxTypes();
     Map<VarVersionPair, VarType> mapExprentMinTypes = typeProcessor.getMapExprentMinTypes();
     Map<VarVersionPair, Integer> mapFinalVars = typeProcessor.getMapFinalVars();
@@ -240,7 +250,8 @@ public class VarVersionsProcessor {
     for (VarVersionPair pair : new ArrayList<>(mapExprentMinTypes.keySet())) {
 
       if (pair.version >= 0) {
-        int newIndex = pair.version == 1 ? pair.var : counters.getCounterAndIncrement(CounterContainer.VAR_COUNTER);
+        int newIndex = pair.version == 1 ? pair.var
+            : counters.getCounterAndIncrement(CounterContainer.VAR_COUNTER);
 
         VarVersionPair newVar = new VarVersionPair(newIndex, 0);
 
@@ -265,17 +276,16 @@ public class VarVersionsProcessor {
 
         for (Exprent expr : lst) {
           if (expr.type == Exprent.EXPRENT_VAR) {
-            VarExprent newVar = (VarExprent)expr;
+            VarExprent newVar = (VarExprent) expr;
             Integer newVarIndex = mapVarPaar.get(new VarVersionPair(newVar));
             if (newVarIndex != null) {
               newVar.setIndex(newVarIndex);
               newVar.setVersion(0);
             }
-          }
-          else if (expr.type == Exprent.EXPRENT_CONST) {
+          } else if (expr.type == Exprent.EXPRENT_CONST) {
             VarType maxType = mapExprentMaxTypes.get(new VarVersionPair(expr.id, -1));
             if (maxType != null && maxType.equals(VarType.VARTYPE_CHAR)) {
-              ((ConstExprent)expr).setConstType(maxType);
+              ((ConstExprent) expr).setConstType(maxType);
             }
           }
         }
@@ -293,8 +303,7 @@ public class VarVersionsProcessor {
         value = oldValue != null ? oldValue : value;
         this.mapOriginalVarIndices.put(entry.getKey(), value);
       }
-    }
-    else {
+    } else {
       this.mapOriginalVarIndices = mapOriginalVarIndices;
     }
   }

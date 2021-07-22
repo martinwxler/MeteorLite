@@ -5,56 +5,50 @@ import net.runelite.api.mixins.Mixin;
 import net.runelite.rs.api.RSSceneTilePaint;
 
 @Mixin(RSSceneTilePaint.class)
-public abstract class SceneTilePaintMixin implements RSSceneTilePaint
-{
-	@Inject
-	private int rl$paintModelBufferOffset;
+public abstract class SceneTilePaintMixin implements RSSceneTilePaint {
 
-	@Inject
-	private int rl$paintModelUvBufferOffset;
+  @Inject
+  private int rl$paintModelBufferOffset;
 
-	@Inject
-	private int rl$paintModelBufferLen;
+  @Inject
+  private int rl$paintModelUvBufferOffset;
 
-	@Inject
-	@Override
-	public int getBufferOffset()
-	{
-		return rl$paintModelBufferOffset;
-	}
+  @Inject
+  private int rl$paintModelBufferLen;
 
-	@Inject
-	@Override
-	public void setBufferOffset(int bufferOffset)
-	{
-		rl$paintModelBufferOffset = bufferOffset;
-	}
+  @Inject
+  @Override
+  public int getBufferOffset() {
+    return rl$paintModelBufferOffset;
+  }
 
-	@Inject
-	@Override
-	public int getUvBufferOffset()
-	{
-		return rl$paintModelUvBufferOffset;
-	}
+  @Inject
+  @Override
+  public void setBufferOffset(int bufferOffset) {
+    rl$paintModelBufferOffset = bufferOffset;
+  }
 
-	@Inject
-	@Override
-	public void setUvBufferOffset(int bufferOffset)
-	{
-		rl$paintModelUvBufferOffset = bufferOffset;
-	}
+  @Inject
+  @Override
+  public int getUvBufferOffset() {
+    return rl$paintModelUvBufferOffset;
+  }
 
-	@Inject
-	@Override
-	public int getBufferLen()
-	{
-		return rl$paintModelBufferLen;
-	}
+  @Inject
+  @Override
+  public void setUvBufferOffset(int bufferOffset) {
+    rl$paintModelUvBufferOffset = bufferOffset;
+  }
 
-	@Inject
-	@Override
-	public void setBufferLen(int bufferLen)
-	{
-		rl$paintModelBufferLen = bufferLen;
-	}
+  @Inject
+  @Override
+  public int getBufferLen() {
+    return rl$paintModelBufferLen;
+  }
+
+  @Inject
+  @Override
+  public void setBufferLen(int bufferLen) {
+    rl$paintModelBufferLen = bufferLen;
+  }
 }

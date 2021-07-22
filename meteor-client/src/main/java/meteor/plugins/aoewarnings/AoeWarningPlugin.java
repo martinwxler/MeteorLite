@@ -27,16 +27,12 @@
 package meteor.plugins.aoewarnings;
 
 import com.google.inject.Provides;
-
-import java.awt.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import meteor.Plugin;
@@ -58,303 +54,262 @@ import net.runelite.api.events.ProjectileMoved;
 import net.runelite.api.events.ProjectileSpawned;
 import org.apache.commons.lang3.ArrayUtils;
 
-public class AoeWarningPlugin extends Plugin
-{
-	@Getter(AccessLevel.PACKAGE)
-	private final Set<CrystalBomb> bombs = new HashSet<>();
+public class AoeWarningPlugin extends Plugin {
 
-	@Getter(AccessLevel.PACKAGE)
-	private final Set<ProjectileContainer> projectiles = new HashSet<>();
+  private static final int VERZIK_REGION = 12611;
+  private static final int GROTESQUE_GUARDIANS_REGION = 6727;
+  @Getter(AccessLevel.PACKAGE)
+  private final Set<CrystalBomb> bombs = new HashSet<>();
+  @Getter(AccessLevel.PACKAGE)
+  private final Set<ProjectileContainer> projectiles = new HashSet<>();
+  @Inject
+  public AoeWarningConfig config = AoeWarningConfig.getInstance();
+  @Inject
+  private AoeWarningOverlay coreOverlay;
+  @Inject
+  private BombOverlay bombOverlay;
+  @Inject
+  private Client client;
+  @Inject
+  private OverlayManager overlayManager;
+  @Getter(AccessLevel.PACKAGE)
+  private List<WorldPoint> lightningTrail = new ArrayList<>();
+  @Getter(AccessLevel.PACKAGE)
+  private List<GameObject> acidTrail = new ArrayList<>();
+  @Getter(AccessLevel.PACKAGE)
+  private List<GameObject> crystalSpike = new ArrayList<>();
+  @Getter(AccessLevel.PACKAGE)
+  private List<GameObject> wintertodtSnowFall = new ArrayList<>();
 
-	@Inject
-	public AoeWarningConfig config = AoeWarningConfig.getInstance();
+  public AoeWarningPlugin() {
+  }
 
-	@Inject
-	private AoeWarningOverlay coreOverlay;
+  @Provides
+  AoeWarningConfig getConfig() {
+    return config;
+  }
 
-	@Inject
-	private BombOverlay bombOverlay;
+  @Override
+  public void startup() {
+    overlayManager.add(coreOverlay);
+    overlayManager.add(bombOverlay);
+    reset();
+  }
 
-	@Inject
-	private Client client;
+  @Override
+  public void shutdown() {
+    overlayManager.remove(coreOverlay);
+    overlayManager.remove(bombOverlay);
+    reset();
+  }
 
-	@Inject
-	private OverlayManager overlayManager;
+  @Subscribe
+  private void onProjectileSpawned(ProjectileSpawned event) {
+    final Projectile projectile = event.getProjectile();
 
-	@Getter(AccessLevel.PACKAGE)
-	private List<WorldPoint> lightningTrail = new ArrayList<>();
+    if (AoeProjectileInfo.getById(projectile.getId()) == null) {
+      return;
+    }
 
-	@Getter(AccessLevel.PACKAGE)
-	private List<GameObject> acidTrail = new ArrayList<>();
+    final int id = projectile.getId();
+    final int lifetime = config.delay() + (projectile.getRemainingCycles() * 20);
+    int ticksRemaining = projectile.getRemainingCycles() / 30;
+    if (!isTickTimersEnabledForProjectileID(id)) {
+      ticksRemaining = 0;
+    }
+    final int tickCycle = client.getTickCount() + ticksRemaining;
+    if (isConfigEnabledForProjectileId(id, false)) {
+      projectiles.add(new ProjectileContainer(projectile, Instant.now(), lifetime, tickCycle));
 
-	@Getter(AccessLevel.PACKAGE)
-	private List<GameObject> crystalSpike = new ArrayList<>();
+    }
+  }
 
-	@Getter(AccessLevel.PACKAGE)
-	private List<GameObject> wintertodtSnowFall = new ArrayList<>();
+  @Subscribe
+  private void onProjectileMoved(ProjectileMoved event) {
+    if (projectiles.isEmpty()) {
+      return;
+    }
 
-	private static final int VERZIK_REGION = 12611;
-	private static final int GROTESQUE_GUARDIANS_REGION = 6727;
+    final Projectile projectile = event.getProjectile();
 
-	public AoeWarningPlugin() {
-	}
+    projectiles.forEach(proj ->
+    {
+      if (proj.getProjectile() == projectile) {
+        proj.setTargetPoint(event.getPosition());
+      }
+    });
+  }
 
-	@Provides
-	AoeWarningConfig getConfig()
-	{
-		return config;
-	}
+  @Subscribe
+  private void onGameObjectSpawned(GameObjectSpawned event) {
+    final GameObject gameObject = event.getGameObject();
 
-	@Override
-	public void startup()
-	{
-		overlayManager.add(coreOverlay);
-		overlayManager.add(bombOverlay);
-		reset();
-	}
+    switch (gameObject.getId()) {
+      case ObjectID.CRYSTAL_BOMB:
+        bombs.add(new CrystalBomb(gameObject, client.getTickCount()));
 
-	@Override
-	public void shutdown()
-	{
-		overlayManager.remove(coreOverlay);
-		overlayManager.remove(bombOverlay);
-		reset();
-	}
+        break;
+      case ObjectID.ACID_POOL:
+        acidTrail.add(gameObject);
+        break;
+      case ObjectID.SMALL_CRYSTALS:
+        crystalSpike.add(gameObject);
+        break;
+      case NullObjectID.NULL_26690:
+        if (config.isWintertodtEnabled()) {
+          wintertodtSnowFall.add(gameObject);
+        }
+        break;
+    }
+  }
 
-	@Subscribe
-	private void onProjectileSpawned(ProjectileSpawned event)
-	{
-		final Projectile projectile = event.getProjectile();
+  @Subscribe
+  private void onGameObjectDespawned(GameObjectDespawned event) {
+    final GameObject gameObject = event.getGameObject();
 
-		if (AoeProjectileInfo.getById(projectile.getId()) == null)
-		{
-			return;
-		}
+    switch (gameObject.getId()) {
+      case ObjectID.CRYSTAL_BOMB:
+        bombs.removeIf(o -> o.getGameObject() == gameObject);
+        break;
+      case ObjectID.ACID_POOL:
+        acidTrail.remove(gameObject);
+        break;
+      case ObjectID.SMALL_CRYSTALS:
+        crystalSpike.remove(gameObject);
+        break;
+      case NullObjectID.NULL_26690:
+        wintertodtSnowFall.remove(gameObject);
+        break;
+    }
+  }
 
-		final int id = projectile.getId();
-		final int lifetime = config.delay() + (projectile.getRemainingCycles() * 20);
-		int ticksRemaining = projectile.getRemainingCycles() / 30;
-		if (!isTickTimersEnabledForProjectileID(id))
-		{
-			ticksRemaining = 0;
-		}
-		final int tickCycle = client.getTickCount() + ticksRemaining;
-		if (isConfigEnabledForProjectileId(id, false))
-		{
-			projectiles.add(new ProjectileContainer(projectile, Instant.now(), lifetime, tickCycle));
+  @Subscribe
+  private void onGameStateChanged(GameStateChanged event) {
+    if (event.getGameState() == GameState.LOGGED_IN) {
+      return;
+    }
+    reset();
+  }
 
-		}
-	}
+  @Subscribe
+  private void onGameTick(GameTick event) {
+    lightningTrail.clear();
 
-	@Subscribe
-	private void onProjectileMoved(ProjectileMoved event)
-	{
-		if (projectiles.isEmpty())
-		{
-			return;
-		}
+    if (config.LightningTrail()) {
+      client.getGraphicsObjects().forEach(o ->
+      {
+        if (o.getId() == GraphicID.OLM_LIGHTNING) {
+          lightningTrail.add(WorldPoint.fromLocal(client, o.getLocation()));
+        }
+      });
+    }
 
-		final Projectile projectile = event.getProjectile();
+    bombs.forEach(CrystalBomb::bombClockUpdate);
+  }
 
-		projectiles.forEach(proj ->
-		{
-			if (proj.getProjectile() == projectile)
-			{
-				proj.setTargetPoint(event.getPosition());
-			}
-		});
-	}
+  private boolean isTickTimersEnabledForProjectileID(int projectileId) {
+    AoeProjectileInfo projectileInfo = AoeProjectileInfo.getById(projectileId);
 
-	@Subscribe
-	private void onGameObjectSpawned(GameObjectSpawned event)
-	{
-		final GameObject gameObject = event.getGameObject();
+    if (projectileInfo == null) {
+      return false;
+    }
 
-		switch (gameObject.getId())
-		{
-			case ObjectID.CRYSTAL_BOMB:
-				bombs.add(new CrystalBomb(gameObject, client.getTickCount()));
+    switch (projectileInfo) {
+      case VASA_RANGED_AOE:
+      case VORKATH_POISON_POOL:
+      case VORKATH_SPAWN:
+      case VORKATH_TICK_FIRE:
+      case OLM_BURNING:
+      case OLM_FALLING_CRYSTAL_TRAIL:
+      case OLM_ACID_TRAIL:
+      case OLM_FIRE_LINE:
+        return false;
+    }
 
-				break;
-			case ObjectID.ACID_POOL:
-				acidTrail.add(gameObject);
-				break;
-			case ObjectID.SMALL_CRYSTALS:
-				crystalSpike.add(gameObject);
-				break;
-			case NullObjectID.NULL_26690:
-				if (config.isWintertodtEnabled())
-				{
-					wintertodtSnowFall.add(gameObject);
-				}
-				break;
-		}
-	}
+    return true;
+  }
 
-	@Subscribe
-	private void onGameObjectDespawned(GameObjectDespawned event)
-	{
-		final GameObject gameObject = event.getGameObject();
+  private boolean isConfigEnabledForProjectileId(int projectileId, boolean notify) {
+    AoeProjectileInfo projectileInfo = AoeProjectileInfo.getById(projectileId);
+    if (projectileInfo == null) {
+      return false;
+    }
 
-		switch (gameObject.getId())
-		{
-			case ObjectID.CRYSTAL_BOMB:
-				bombs.removeIf(o -> o.getGameObject() == gameObject);
-				break;
-			case ObjectID.ACID_POOL:
-				acidTrail.remove(gameObject);
-				break;
-			case ObjectID.SMALL_CRYSTALS:
-				crystalSpike.remove(gameObject);
-				break;
-			case NullObjectID.NULL_26690:
-				wintertodtSnowFall.remove(gameObject);
-				break;
-		}
-	}
+    if (notify && config.aoeNotifyAll()) {
+      return true;
+    }
 
-	@Subscribe
-	private void onGameStateChanged(GameStateChanged event)
-	{
-		if (event.getGameState() == GameState.LOGGED_IN)
-		{
-			return;
-		}
-		reset();
-	}
+    switch (projectileInfo) {
+      case LIZARDMAN_SHAMAN_AOE:
+        return notify ? config.isShamansNotifyEnabled() : config.isShamansEnabled();
+      case CRAZY_ARCHAEOLOGIST_AOE:
+        return notify ? config.isArchaeologistNotifyEnabled() : config.isArchaeologistEnabled();
+      case ICE_DEMON_RANGED_AOE:
+      case ICE_DEMON_ICE_BARRAGE_AOE:
+        return notify ? config.isIceDemonNotifyEnabled() : config.isIceDemonEnabled();
+      case VASA_AWAKEN_AOE:
+      case VASA_RANGED_AOE:
+        return notify ? config.isVasaNotifyEnabled() : config.isVasaEnabled();
+      case TEKTON_METEOR_AOE:
+        return notify ? config.isTektonNotifyEnabled() : config.isTektonEnabled();
+      case VORKATH_BOMB:
+      case VORKATH_POISON_POOL:
+      case VORKATH_SPAWN:
+      case VORKATH_TICK_FIRE:
+        return notify ? config.isVorkathNotifyEnabled()
+            : config.vorkathModes().contains(AoeWarningConfig.VorkathMode.of(projectileInfo));
+      case VETION_LIGHTNING:
+        return notify ? config.isVetionNotifyEnabled() : config.isVetionEnabled();
+      case CHAOS_FANATIC:
+        return notify ? config.isChaosFanaticNotifyEnabled() : config.isChaosFanaticEnabled();
+      case GALVEK_BOMB:
+      case GALVEK_MINE:
+        return notify ? config.isGalvekNotifyEnabled() : config.isGalvekEnabled();
+      case DAWN_FREEZE:
+      case DUSK_CEILING:
+        if (regionCheck(GROTESQUE_GUARDIANS_REGION)) {
+          return notify ? config.isGargBossNotifyEnabled() : config.isGargBossEnabled();
+        }
+      case VERZIK_P1_ROCKS:
+        if (regionCheck(VERZIK_REGION)) {
+          return notify ? config.isVerzikNotifyEnabled() : config.isVerzikEnabled();
+        }
+      case OLM_FALLING_CRYSTAL:
+      case OLM_BURNING:
+      case OLM_FALLING_CRYSTAL_TRAIL:
+      case OLM_ACID_TRAIL:
+      case OLM_FIRE_LINE:
+        return notify ? config.isOlmNotifyEnabled() : config.isOlmEnabled();
+      case CORPOREAL_BEAST:
+      case CORPOREAL_BEAST_DARK_CORE:
+        return notify ? config.isCorpNotifyEnabled() : config.isCorpEnabled();
+      case XARPUS_POISON_AOE:
+        return notify ? config.isXarpusNotifyEnabled() : config.isXarpusEnabled();
+      case ADDY_DRAG_POISON:
+        return notify ? config.addyDragsNotifyEnabled() : config.addyDrags();
+      case DRAKE_BREATH:
+        return notify ? config.isDrakeNotifyEnabled() : config.isDrakeEnabled();
+      case CERB_FIRE:
+        return notify ? config.isCerbFireNotifyEnabled() : config.isCerbFireEnabled();
+      case DEMONIC_GORILLA_BOULDER:
+        return notify ? config.isDemonicGorillaNotifyEnabled() : config.isDemonicGorillaEnabled();
+      case VERZIK_PURPLE_SPAWN:
+        return notify ? config.isVerzikNotifyEnabled() : config.isVerzikEnabled();
+    }
 
-	@Subscribe
-	private void onGameTick(GameTick event)
-	{
-		lightningTrail.clear();
+    return false;
+  }
 
-		if (config.LightningTrail())
-		{
-			client.getGraphicsObjects().forEach(o ->
-			{
-				if (o.getId() == GraphicID.OLM_LIGHTNING)
-				{
-					lightningTrail.add(WorldPoint.fromLocal(client, o.getLocation()));
-				}
-			});
-		}
+  private void reset() {
+    lightningTrail.clear();
+    acidTrail.clear();
+    crystalSpike.clear();
+    wintertodtSnowFall.clear();
+    bombs.clear();
+    projectiles.clear();
+  }
 
-		bombs.forEach(CrystalBomb::bombClockUpdate);
-	}
-
-	private boolean isTickTimersEnabledForProjectileID(int projectileId)
-	{
-		AoeProjectileInfo projectileInfo = AoeProjectileInfo.getById(projectileId);
-
-		if (projectileInfo == null)
-		{
-			return false;
-		}
-
-		switch (projectileInfo)
-		{
-			case VASA_RANGED_AOE:
-			case VORKATH_POISON_POOL:
-			case VORKATH_SPAWN:
-			case VORKATH_TICK_FIRE:
-			case OLM_BURNING:
-			case OLM_FALLING_CRYSTAL_TRAIL:
-			case OLM_ACID_TRAIL:
-			case OLM_FIRE_LINE:
-				return false;
-		}
-
-		return true;
-	}
-
-	private boolean isConfigEnabledForProjectileId(int projectileId, boolean notify)
-	{
-		AoeProjectileInfo projectileInfo = AoeProjectileInfo.getById(projectileId);
-		if (projectileInfo == null)
-		{
-			return false;
-		}
-
-		if (notify && config.aoeNotifyAll())
-		{
-			return true;
-		}
-
-		switch (projectileInfo)
-		{
-			case LIZARDMAN_SHAMAN_AOE:
-				return notify ? config.isShamansNotifyEnabled() : config.isShamansEnabled();
-			case CRAZY_ARCHAEOLOGIST_AOE:
-				return notify ? config.isArchaeologistNotifyEnabled() : config.isArchaeologistEnabled();
-			case ICE_DEMON_RANGED_AOE:
-			case ICE_DEMON_ICE_BARRAGE_AOE:
-				return notify ? config.isIceDemonNotifyEnabled() : config.isIceDemonEnabled();
-			case VASA_AWAKEN_AOE:
-			case VASA_RANGED_AOE:
-				return notify ? config.isVasaNotifyEnabled() : config.isVasaEnabled();
-			case TEKTON_METEOR_AOE:
-				return notify ? config.isTektonNotifyEnabled() : config.isTektonEnabled();
-			case VORKATH_BOMB:
-			case VORKATH_POISON_POOL:
-			case VORKATH_SPAWN:
-			case VORKATH_TICK_FIRE:
-				return notify ? config.isVorkathNotifyEnabled() : config.vorkathModes().contains(AoeWarningConfig.VorkathMode.of(projectileInfo));
-			case VETION_LIGHTNING:
-				return notify ? config.isVetionNotifyEnabled() : config.isVetionEnabled();
-			case CHAOS_FANATIC:
-				return notify ? config.isChaosFanaticNotifyEnabled() : config.isChaosFanaticEnabled();
-			case GALVEK_BOMB:
-			case GALVEK_MINE:
-				return notify ? config.isGalvekNotifyEnabled() : config.isGalvekEnabled();
-			case DAWN_FREEZE:
-			case DUSK_CEILING:
-				if (regionCheck(GROTESQUE_GUARDIANS_REGION))
-				{
-					return notify ? config.isGargBossNotifyEnabled() : config.isGargBossEnabled();
-				}
-			case VERZIK_P1_ROCKS:
-				if (regionCheck(VERZIK_REGION))
-				{
-					return notify ? config.isVerzikNotifyEnabled() : config.isVerzikEnabled();
-				}
-			case OLM_FALLING_CRYSTAL:
-			case OLM_BURNING:
-			case OLM_FALLING_CRYSTAL_TRAIL:
-			case OLM_ACID_TRAIL:
-			case OLM_FIRE_LINE:
-				return notify ? config.isOlmNotifyEnabled() : config.isOlmEnabled();
-			case CORPOREAL_BEAST:
-			case CORPOREAL_BEAST_DARK_CORE:
-				return notify ? config.isCorpNotifyEnabled() : config.isCorpEnabled();
-			case XARPUS_POISON_AOE:
-				return notify ? config.isXarpusNotifyEnabled() : config.isXarpusEnabled();
-			case ADDY_DRAG_POISON:
-				return notify ? config.addyDragsNotifyEnabled() : config.addyDrags();
-			case DRAKE_BREATH:
-				return notify ? config.isDrakeNotifyEnabled() : config.isDrakeEnabled();
-			case CERB_FIRE:
-				return notify ? config.isCerbFireNotifyEnabled() : config.isCerbFireEnabled();
-			case DEMONIC_GORILLA_BOULDER:
-				return notify ? config.isDemonicGorillaNotifyEnabled() : config.isDemonicGorillaEnabled();
-			case VERZIK_PURPLE_SPAWN:
-				return notify ? config.isVerzikNotifyEnabled() : config.isVerzikEnabled();
-		}
-
-		return false;
-	}
-
-	private void reset()
-	{
-		lightningTrail.clear();
-		acidTrail.clear();
-		crystalSpike.clear();
-		wintertodtSnowFall.clear();
-		bombs.clear();
-		projectiles.clear();
-	}
-
-	private boolean regionCheck(int region)
-	{
-		return ArrayUtils.contains(client.getMapRegions(), region);
-	}
+  private boolean regionCheck(int region) {
+    return ArrayUtils.contains(client.getMapRegions(), region);
+  }
 }

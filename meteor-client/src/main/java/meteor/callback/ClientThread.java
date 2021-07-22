@@ -36,95 +36,79 @@ import net.runelite.api.Client;
 import org.jetbrains.annotations.NotNull;
 
 @Singleton
-public class ClientThread implements Executor
-{
-	private final ConcurrentLinkedQueue<BooleanSupplier> invokes = new ConcurrentLinkedQueue<>();
+public class ClientThread implements Executor {
 
-	private final Client client;
+  private final ConcurrentLinkedQueue<BooleanSupplier> invokes = new ConcurrentLinkedQueue<>();
 
-	@Inject
-	private ClientThread(Client client)
-	{
-		this.client = client;
-		
-		RxJavaPlugins.setSingleSchedulerHandler(old -> Schedulers.from(this));
-	}
+  private final Client client;
 
-	@Override
-	public void execute(@NotNull Runnable r)
-	{
-		invoke(r);
-	}
+  @Inject
+  private ClientThread(Client client) {
+    this.client = client;
 
-	public void invoke(Runnable r)
-	{
-		invoke(() ->
-		{
-			r.run();
-			return true;
-		});
-	}
+    RxJavaPlugins.setSingleSchedulerHandler(old -> Schedulers.from(this));
+  }
 
-	/**
-	 * Will run r on the game thread, at a unspecified point in the future.
-	 * If r returns false, r will be ran again, at a later point
-	 */
-	public void invoke(BooleanSupplier r)
-	{
-		if (client.isClientThread())
-		{
-			if (!r.getAsBoolean())
-			{
-				invokes.add(r);
-			}
-			return;
-		}
+  @Override
+  public void execute(@NotNull Runnable r) {
+    invoke(r);
+  }
 
-		invokeLater(r);
-	}
+  public void invoke(Runnable r) {
+    invoke(() ->
+    {
+      r.run();
+      return true;
+    });
+  }
 
-	/**
-	 * Will run r on the game thread after this method returns
-	 * If r returns false, r will be ran again, at a later point
-	 */
-	public void invokeLater(Runnable r)
-	{
-		invokeLater(() ->
-		{
-			r.run();
-			return true;
-		});
-	}
+  /**
+   * Will run r on the game thread, at a unspecified point in the future. If r returns false, r will
+   * be ran again, at a later point
+   */
+  public void invoke(BooleanSupplier r) {
+    if (client.isClientThread()) {
+      if (!r.getAsBoolean()) {
+        invokes.add(r);
+      }
+      return;
+    }
 
-	public void invokeLater(BooleanSupplier r)
-	{
-		invokes.add(r);
-	}
+    invokeLater(r);
+  }
 
-	public void invoke()
-	{
-		assert client.isClientThread();
-		Iterator<BooleanSupplier> ir = invokes.iterator();
-		while (ir.hasNext())
-		{
-			BooleanSupplier r = ir.next();
-			boolean remove = true;
-			try
-			{
-				remove = r.getAsBoolean();
-			}
-			catch (ThreadDeath d)
-			{
-				throw d;
-			}
-			catch (Throwable e)
-			{
-				e.printStackTrace();
-			}
-			if (remove)
-			{
-				ir.remove();
-			}
-		}
-	}
+  /**
+   * Will run r on the game thread after this method returns If r returns false, r will be ran
+   * again, at a later point
+   */
+  public void invokeLater(Runnable r) {
+    invokeLater(() ->
+    {
+      r.run();
+      return true;
+    });
+  }
+
+  public void invokeLater(BooleanSupplier r) {
+    invokes.add(r);
+  }
+
+  public void invoke() {
+    assert client.isClientThread();
+    Iterator<BooleanSupplier> ir = invokes.iterator();
+    while (ir.hasNext()) {
+      BooleanSupplier r = ir.next();
+      boolean remove = true;
+      try {
+        remove = r.getAsBoolean();
+      } catch (ThreadDeath d) {
+        throw d;
+      } catch (Throwable e) {
+        e.printStackTrace();
+      }
+      if (remove) {
+        ir.remove();
+      }
+    }
+  }
 }

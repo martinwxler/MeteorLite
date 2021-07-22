@@ -27,143 +27,142 @@ package net.runelite.api;
 /**
  * Represents a projectile entity. (ie. cannonball, arrow)
  */
-public interface Projectile extends Renderable
-{
-	/**
-	 * Gets the ID of the projectile.
-	 *
-	 * @return the projectile ID
-	 * @see ProjectileID
-	 */
-	int getId();
+public interface Projectile extends Renderable {
 
-	/**
-	 * Gets the actor that is targeted by this projectile.
-	 *
-	 * @return the target actor, or null if this projectile is an AoE attack
-	 */
-	Actor getInteracting();
+  /**
+   * Gets the ID of the projectile.
+   *
+   * @return the projectile ID
+   * @see ProjectileID
+   */
+  int getId();
 
-	/**
-	 * Gets the original x-axis coordinate that this projectile started from.
-	 *
-	 * @return the original coordinate
-	 */
-	int getX1();
+  /**
+   * Gets the actor that is targeted by this projectile.
+   *
+   * @return the target actor, or null if this projectile is an AoE attack
+   */
+  Actor getInteracting();
 
-	/**
-	 * Gets the original y-axis coordinate that this projectile started from.
-	 *
-	 * @return the original coordinate
-	 */
-	int getY1();
+  /**
+   * Gets the original x-axis coordinate that this projectile started from.
+   *
+   * @return the original coordinate
+   */
+  int getX1();
 
-	/**
-	 * Gets the plane that the projectile is on.
-	 *
-	 * @return the plane
-	 */
-	int getFloor();
+  /**
+   * Gets the original y-axis coordinate that this projectile started from.
+   *
+   * @return the original coordinate
+   */
+  int getY1();
 
-	/**
-	 * Gets the height of the projectile.
-	 *
-	 * @return the height
-	 */
-	int getHeight();
+  /**
+   * Gets the plane that the projectile is on.
+   *
+   * @return the plane
+   */
+  int getFloor();
 
-	/**
-	 * Gets the ending height of the projectile.
-	 *
-	 * @return the ending height
-	 */
-	int getEndHeight();
+  /**
+   * Gets the height of the projectile.
+   *
+   * @return the height
+   */
+  int getHeight();
 
-	/**
-	 * Gets the game cycle that the projectile begun movement at.
-	 *
-	 * @return the start game cycle
-	 */
-	int getStartMovementCycle();
+  /**
+   * Gets the ending height of the projectile.
+   *
+   * @return the ending height
+   */
+  int getEndHeight();
 
-	/**
-	 * Gets the game cycle that the projectile will reach its target at.
-	 *
-	 * @return the end game cycle
-	 */
-	int getEndCycle();
+  /**
+   * Gets the game cycle that the projectile begun movement at.
+   *
+   * @return the start game cycle
+   */
+  int getStartMovementCycle();
 
-	/**
-	 * Gets the remaining game cycles until the projectile reaches its
-	 * target and despawns.
-	 *
-	 * @return the remaining game cycles
-	 */
-	int getRemainingCycles();
+  /**
+   * Gets the game cycle that the projectile will reach its target at.
+   *
+   * @return the end game cycle
+   */
+  int getEndCycle();
 
-	/**
-	 * Gets the slope of the projectile.
-	 * <p>
-	 * This value indicates how much arc the projectile can have. Projectiles
-	 * with larger slopes have a more noticeable arc when thrown.
-	 *
-	 * @return the slope of the projectile
-	 */
-	int getSlope();
+  /**
+   * Gets the remaining game cycles until the projectile reaches its target and despawns.
+   *
+   * @return the remaining game cycles
+   */
+  int getRemainingCycles();
 
-	/**
-	 * Gets the starting height of the projectile.
-	 *
-	 * @return the starting height
-	 */
-	int getStartHeight();
+  /**
+   * Gets the slope of the projectile.
+   * <p>
+   * This value indicates how much arc the projectile can have. Projectiles with larger slopes have
+   * a more noticeable arc when thrown.
+   *
+   * @return the slope of the projectile
+   */
+  int getSlope();
 
-	/**
-	 * Gets the current x-axis coordinate of the projectile.
-	 *
-	 * @return the x-axis coordinate
-	 */
-	double getX();
+  /**
+   * Gets the starting height of the projectile.
+   *
+   * @return the starting height
+   */
+  int getStartHeight();
 
-	/**
-	 * Gets the current y-axis coordinate of the projectile.
-	 *
-	 * @return the y-axis coordinate
-	 */
-	double getY();
+  /**
+   * Gets the current x-axis coordinate of the projectile.
+   *
+   * @return the x-axis coordinate
+   */
+  double getX();
 
-	/**
-	 * Gets the current z-axis coordinate of the projectile.
-	 *
-	 * @return the z-axis coordinate
-	 */
-	double getZ();
+  /**
+   * Gets the current y-axis coordinate of the projectile.
+   *
+   * @return the y-axis coordinate
+   */
+  double getY();
 
-	/**
-	 * Gets the scalar quantity (speed) at which the projectile is travelling.
-	 *
-	 * @return the scalar quantity
-	 */
-	double getScalar();
+  /**
+   * Gets the current z-axis coordinate of the projectile.
+   *
+   * @return the z-axis coordinate
+   */
+  double getZ();
 
-	/**
-	 * Gets the x-axis velocity of the projectile.
-	 *
-	 * @return the x-axis velocity
-	 */
-	double getVelocityX();
+  /**
+   * Gets the scalar quantity (speed) at which the projectile is travelling.
+   *
+   * @return the scalar quantity
+   */
+  double getScalar();
 
-	/**
-	 * Gets the y-axis velocity of the projectile.
-	 *
-	 * @return the y-axis velocity
-	 */
-	double getVelocityY();
+  /**
+   * Gets the x-axis velocity of the projectile.
+   *
+   * @return the x-axis velocity
+   */
+  double getVelocityX();
 
-	/**
-	 * Gets the z-axis velocity of the projectile.
-	 *
-	 * @return the z-axis velocity
-	 */
-	double getVelocityZ();
+  /**
+   * Gets the y-axis velocity of the projectile.
+   *
+   * @return the y-axis velocity
+   */
+  double getVelocityY();
+
+  /**
+   * Gets the z-axis velocity of the projectile.
+   *
+   * @return the z-axis velocity
+   */
+  double getVelocityZ();
 }

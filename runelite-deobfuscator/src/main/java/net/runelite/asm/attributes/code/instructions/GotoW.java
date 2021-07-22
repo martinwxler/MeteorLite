@@ -35,65 +35,57 @@ import net.runelite.asm.execution.Frame;
 import net.runelite.asm.execution.InstructionContext;
 import org.objectweb.asm.MethodVisitor;
 
-public class GotoW extends Instruction implements JumpingInstruction
-{
-	private org.objectweb.asm.Label asmlabel;
-	private Label to;
+public class GotoW extends Instruction implements JumpingInstruction {
 
-	public GotoW(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
+  private org.objectweb.asm.Label asmlabel;
+  private Label to;
 
-	@Override
-	public void accept(MethodVisitor visitor)
-	{
-		assert getJumps().size() == 1;
+  public GotoW(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
 
-		visitor.visitJumpInsn(this.getType().getCode(), getJumps().get(0).getLabel());
-	}
+  @Override
+  public void accept(MethodVisitor visitor) {
+    assert getJumps().size() == 1;
 
-	@Override
-	public void resolve()
-	{
-		Instructions ins = this.getInstructions();
+    visitor.visitJumpInsn(this.getType().getCode(), getJumps().get(0).getLabel());
+  }
 
-		to = ins.findLabel(asmlabel);
-		assert to != null;
-	}
+  @Override
+  public void resolve() {
+    Instructions ins = this.getInstructions();
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ctx = new InstructionContext(this, frame);
+    to = ins.findLabel(asmlabel);
+    assert to != null;
+  }
 
-		frame.jump(ctx, to);
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ctx = new InstructionContext(this, frame);
 
-		return ctx;
-	}
+    frame.jump(ctx, to);
 
-	@Override
-	public boolean isTerminal()
-	{
-		return true;
-	}
+    return ctx;
+  }
 
-	@Override
-	public List<Label> getJumps()
-	{
-		return Collections.singletonList(to);
-	}
+  @Override
+  public boolean isTerminal() {
+    return true;
+  }
 
-	@Override
-	public void setJumps(List<Label> labels)
-	{
-		assert labels.size() == 1;
-		to = labels.get(0);
-	}
+  @Override
+  public List<Label> getJumps() {
+    return Collections.singletonList(to);
+  }
 
-	@Override
-	public void setLabel(org.objectweb.asm.Label label)
-	{
-		asmlabel = label;
-	}
+  @Override
+  public void setJumps(List<Label> labels) {
+    assert labels.size() == 1;
+    to = labels.get(0);
+  }
+
+  @Override
+  public void setLabel(org.objectweb.asm.Label label) {
+    asmlabel = label;
+  }
 }

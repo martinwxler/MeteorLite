@@ -8,159 +8,131 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-public class Checker
-{
-	private static final String GAME_URL = "http://oldschool1.runescape.com/";
-	private static final Split[] splits = {
-		new Split("document.write('archive=", 1),
-		new Split(" ');", 0)
-	};
+public class Checker {
 
-	static String getGamePack()
-	{
-		URL url;
-		try
-		{
-			url = new URL(GAME_URL);
-		}
-		catch (MalformedURLException e)
-		{
-			e.printStackTrace();
-			return null;
-		}
+  private static final String GAME_URL = "http://oldschool1.runescape.com/";
+  private static final Split[] splits = {
+      new Split("document.write('archive=", 1),
+      new Split(" ');", 0)
+  };
 
-		String content;
-		try
-		{
-			content = getContent(url);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-			return null;
-		}
+  static String getGamePack() {
+    URL url;
+    try {
+      url = new URL(GAME_URL);
+    } catch (MalformedURLException e) {
+      e.printStackTrace();
+      return null;
+    }
 
-		for (Split split : splits)
-		{
-			String[] str = splitAtFirst(content, split.splitAt);
-			content = str[split.index];
-		}
+    String content;
+    try {
+      content = getContent(url);
+    } catch (IOException e) {
+      e.printStackTrace();
+      return null;
+    }
 
-		return content;
-	}
+    for (Split split : splits) {
+      String[] str = splitAtFirst(content, split.splitAt);
+      content = str[split.index];
+    }
 
-	private static String[] splitAtFirst(String subject, String splitAt)
-	{
-		if (subject == null || subject.length() == 0)
-		{
-			return new String[]{"", ""};
-		}
+    return content;
+  }
 
-		if (splitAt == null || splitAt.length() == 0)
-		{
-			return new String[]{subject, ""};
-		}
+  private static String[] splitAtFirst(String subject, String splitAt) {
+    if (subject == null || subject.length() == 0) {
+      return new String[]{"", ""};
+    }
 
-		char[] subjectArray = subject.toCharArray();
-		char[] split = splitAt.toCharArray();
+    if (splitAt == null || splitAt.length() == 0) {
+      return new String[]{subject, ""};
+    }
 
-		StringBuilder builder = null;
-		for (int i = 0; i < subjectArray.length; i++)
-		{
-			char c = subjectArray[i];
+    char[] subjectArray = subject.toCharArray();
+    char[] split = splitAt.toCharArray();
 
-			if (builder == null && c == split[0])
-			{
-				builder = new StringBuilder();
-			}
+    StringBuilder builder = null;
+    for (int i = 0; i < subjectArray.length; i++) {
+      char c = subjectArray[i];
 
-			if (builder != null)
-			{
-				builder.append(c);
+      if (builder == null && c == split[0]) {
+        builder = new StringBuilder();
+      }
 
-				if (startsWith(splitAt, builder.toString()))
-				{
-					if (builder.length() == splitAt.length())
-					{
-						return new String[]{subject.substring(0, i - builder.length() + 1), subject.substring(i + 1)};
-					}
-				}
-				else
-				{
-					builder = null;
-				}
-			}
-		}
+      if (builder != null) {
+        builder.append(c);
 
-		return new String[]{subject, ""};
-	}
+        if (startsWith(splitAt, builder.toString())) {
+          if (builder.length() == splitAt.length()) {
+            return new String[]{subject.substring(0, i - builder.length() + 1),
+                subject.substring(i + 1)};
+          }
+        } else {
+          builder = null;
+        }
+      }
+    }
 
-	private static boolean startsWith(String subject, String start)
-	{
-		if (subject == null || subject.length() == 0 || start == null || start.length() == 0 || start.length() > subject.length())
-		{
-			return false;
-		}
+    return new String[]{subject, ""};
+  }
 
-		char[] c1 = subject.toCharArray();
-		char[] c2 = start.toCharArray();
-		for (int i = 0; i < c2.length; i++)
-		{
-			if (c1[i] != c2[i])
-			{
-				return false;
-			}
-		}
+  private static boolean startsWith(String subject, String start) {
+    if (subject == null || subject.length() == 0 || start == null || start.length() == 0
+        || start.length() > subject.length()) {
+      return false;
+    }
 
-		return true;
-	}
+    char[] c1 = subject.toCharArray();
+    char[] c2 = start.toCharArray();
+    for (int i = 0; i < c2.length; i++) {
+      if (c1[i] != c2[i]) {
+        return false;
+      }
+    }
 
-	private static String getContent(URL url) throws IOException
-	{
-		BufferedReader rd = null;
+    return true;
+  }
 
-		try
-		{
-			URLConnection conn = url.openConnection();
+  private static String getContent(URL url) throws IOException {
+    BufferedReader rd = null;
 
-			if (conn instanceof HttpURLConnection)
-			{
-				((HttpURLConnection) conn).setInstanceFollowRedirects(false);
-			}
+    try {
+      URLConnection conn = url.openConnection();
 
-			HttpURLConnection.setFollowRedirects(false);
+      if (conn instanceof HttpURLConnection) {
+        ((HttpURLConnection) conn).setInstanceFollowRedirects(false);
+      }
 
-			rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			StringBuilder sb = new StringBuilder();
+      HttpURLConnection.setFollowRedirects(false);
 
-			String line;
-			while ((line = rd.readLine()) != null)
-			{
-				sb.append(line);
-				sb.append('\n');
-			}
+      rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+      StringBuilder sb = new StringBuilder();
 
-			return sb.toString();
+      String line;
+      while ((line = rd.readLine()) != null) {
+        sb.append(line);
+        sb.append('\n');
+      }
 
-		}
-		finally
-		{
-			if (rd != null)
-			{
-				rd.close();
-			}
-		}
-	}
+      return sb.toString();
 
-	public static class Split
-	{
-		public int index;
-		String splitAt;
+    } finally {
+      if (rd != null) {
+        rd.close();
+      }
+    }
+  }
 
-		Split(String splitAt, int index)
-		{
-			this.splitAt = splitAt;
-			this.index = index;
-		}
-	}
+  public static class Split {
+
+    public int index;
+    String splitAt;
+
+    Split(String splitAt, int index) {
+      this.splitAt = splitAt;
+      this.index = index;
+    }
+  }
 }

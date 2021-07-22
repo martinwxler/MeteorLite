@@ -15,11 +15,10 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler;
 
+import java.util.List;
 import org.jetbrains.java.decompiler.modules.decompiler.stats.IfStatement;
 import org.jetbrains.java.decompiler.modules.decompiler.stats.Statement;
 import org.jetbrains.java.decompiler.modules.decompiler.stats.SynchronizedStatement;
-
-import java.util.List;
 
 public class LowBreakHelper {
 
@@ -66,13 +65,11 @@ public class LowBreakHelper {
 
       if (parent == closure) {
         return false;
-      }
-      else {
+      } else {
         return isBreakEdgeLabeled(parent, closure) ||
-               (parent.type == Statement.TYPE_DO || parent.type == Statement.TYPE_SWITCH);
+            (parent.type == Statement.TYPE_DO || parent.type == Statement.TYPE_SWITCH);
       }
-    }
-    else {
+    } else {
       return true;
     }
   }
@@ -92,11 +89,10 @@ public class LowBreakHelper {
           }
           break;
         case Statement.TYPE_IF:
-          IfStatement ifclosure = (IfStatement)closure;
+          IfStatement ifclosure = (IfStatement) closure;
           if (isOkClosure(closure, source, ifclosure.getIfstat())) {
             newclosure = ifclosure.getIfstat();
-          }
-          else if (isOkClosure(closure, source, ifclosure.getElsestat())) {
+          } else if (isOkClosure(closure, source, ifclosure.getElsestat())) {
             newclosure = ifclosure.getElsestat();
           }
           break;
@@ -109,7 +105,7 @@ public class LowBreakHelper {
           }
           break;
         case Statement.TYPE_SYNCRONIZED:
-          Statement body = ((SynchronizedStatement)closure).getBody();
+          Statement body = ((SynchronizedStatement) closure).getBody();
 
           if (isOkClosure(closure, source, body)) {
             newclosure = body;
@@ -150,7 +146,6 @@ public class LowBreakHelper {
     for (Statement st : stat.getStats()) {
       liftBreakLabels(st);
     }
-
 
     while (true) {
 

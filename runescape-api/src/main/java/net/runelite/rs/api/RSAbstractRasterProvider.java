@@ -31,20 +31,20 @@ package net.runelite.rs.api;
 import net.runelite.api.BufferProvider;
 import net.runelite.mapping.Import;
 
-public interface RSAbstractRasterProvider extends BufferProvider
-{
-	@Import("pixels")
-	@Override
-	int[] getPixels();
+public interface RSAbstractRasterProvider extends BufferProvider {
 
-	@Import("width")
-	@Override
-	int getWidth();
+  @Import("pixels")
+  @Override
+  int[] getPixels();
 
-	@Import("height")
-	@Override
-	int getHeight();
+  @Import("width")
+  @Override
+  int getWidth();
 
-	@Import("apply")
-	void setRaster();
+  @Import("height")
+  @Override
+  int getHeight();
+
+  @Import("apply")
+  void setRaster();
 }

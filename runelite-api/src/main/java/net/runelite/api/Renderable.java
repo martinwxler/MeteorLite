@@ -27,19 +27,20 @@ package net.runelite.api;
 /**
  * Represents an object that can be rendered.
  */
-public interface Renderable extends Node
-{
-	/**
-	 * Gets the model of the object.
-	 */
-	Model getModel$api();
+public interface Renderable extends Node {
 
-	/**
-	 * Gets the height of the model.
-	 */
-	int getModelHeight();
+  /**
+   * Gets the model of the object.
+   */
+  Model getModel$api();
 
-	void setModelHeight(int modelHeight);
+  /**
+   * Gets the height of the model.
+   */
+  int getModelHeight();
 
-	void draw$api(int orientation, int pitchSin, int pitchCos, int yawSin, int yawCos, int x, int y, int z, long hash);
+  void setModelHeight(int modelHeight);
+
+  void draw$api(int orientation, int pitchSin, int pitchCos, int yawSin, int yawCos, int x, int y,
+      int z, long hash);
 }

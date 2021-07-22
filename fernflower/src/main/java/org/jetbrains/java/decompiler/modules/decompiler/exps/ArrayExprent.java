@@ -15,6 +15,9 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.exps;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import org.jetbrains.java.decompiler.main.TextBuffer;
 import org.jetbrains.java.decompiler.main.collectors.BytecodeMappingTracer;
 import org.jetbrains.java.decompiler.modules.decompiler.ExprProcessor;
@@ -22,16 +25,14 @@ import org.jetbrains.java.decompiler.modules.decompiler.vars.CheckTypesResult;
 import org.jetbrains.java.decompiler.struct.gen.VarType;
 import org.jetbrains.java.decompiler.util.InterpreterUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 public class ArrayExprent extends Exprent {
+
+  private final VarType hardType;
   private Exprent array;
   private Exprent index;
-  private final VarType hardType;
 
-  public ArrayExprent(Exprent array, Exprent index, VarType hardType, Set<Integer> bytecodeOffsets) {
+  public ArrayExprent(Exprent array, Exprent index, VarType hardType,
+      Set<Integer> bytecodeOffsets) {
     super(EXPRENT_ARRAY);
     this.array = array;
     this.index = index;
@@ -50,8 +51,7 @@ public class ArrayExprent extends Exprent {
     VarType exprType = array.getExprType();
     if (exprType.equals(VarType.VARTYPE_NULL)) {
       return hardType.copy();
-    }
-    else {
+    } else {
       return exprType.decreaseArrayDim();
     }
   }
@@ -105,12 +105,16 @@ public class ArrayExprent extends Exprent {
 
   @Override
   public boolean equals(Object o) {
-    if (o == this) return true;
-    if (o == null || !(o instanceof ArrayExprent)) return false;
+    if (o == this) {
+      return true;
+    }
+    if (o == null || !(o instanceof ArrayExprent)) {
+      return false;
+    }
 
-    ArrayExprent arr = (ArrayExprent)o;
+    ArrayExprent arr = (ArrayExprent) o;
     return InterpreterUtil.equalObjects(array, arr.getArray()) &&
-           InterpreterUtil.equalObjects(index, arr.getIndex());
+        InterpreterUtil.equalObjects(index, arr.getIndex());
   }
 
   public Exprent getArray() {

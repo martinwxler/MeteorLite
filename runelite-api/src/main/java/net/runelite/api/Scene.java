@@ -29,45 +29,47 @@ import net.runelite.api.coords.WorldPoint;
 /**
  * Represents the entire 3D scene
  */
-public interface Scene
-{
-	/**
-	 * Gets the tiles in the scene
-	 *
-	 * @return the tiles in [plane][x][y]
-	 */
-	Tile[][][] getTiles();
+public interface Scene {
 
-	/**
-	 * Adds an item to the scene
-	 */
-	void addItem(int id, int quantity, WorldPoint point);
+  /**
+   * Gets the tiles in the scene
+   *
+   * @return the tiles in [plane][x][y]
+   */
+  Tile[][][] getTiles();
 
-	/**
-	 * Removes an item from the scene
-	 */
-	void removeItem(int id, int quantity, WorldPoint point);
+  /**
+   * Adds an item to the scene
+   */
+  void addItem(int id, int quantity, WorldPoint point);
 
-	int getDrawDistance();
-	void setDrawDistance(int drawDistance);
+  /**
+   * Removes an item from the scene
+   */
+  void removeItem(int id, int quantity, WorldPoint point);
 
-	/**
-	 * Get the minimum scene level which will be rendered
-	 *
-	 * @return the plane of the minimum level
-	 */
-	int getMinLevel();
+  int getDrawDistance();
 
-	/**
-	 * Set the minimum scene level which will be rendered
-	 *
-	 * @param minLevel the plane of the minimum level
-	 */
-	void setMinLevel(int minLevel);
+  void setDrawDistance(int drawDistance);
 
-	/**
-	 * Remove a game object from the scene
-	 * @param gameObject
-	 */
-	void removeGameObject(GameObject gameObject);
+  /**
+   * Get the minimum scene level which will be rendered
+   *
+   * @return the plane of the minimum level
+   */
+  int getMinLevel();
+
+  /**
+   * Set the minimum scene level which will be rendered
+   *
+   * @param minLevel the plane of the minimum level
+   */
+  void setMinLevel(int minLevel);
+
+  /**
+   * Remove a game object from the scene
+   *
+   * @param gameObject
+   */
+  void removeGameObject(GameObject gameObject);
 }

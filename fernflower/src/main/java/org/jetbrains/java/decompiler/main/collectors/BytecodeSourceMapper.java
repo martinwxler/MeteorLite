@@ -15,22 +15,27 @@
  */
 package org.jetbrains.java.decompiler.main.collectors;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import org.jetbrains.java.decompiler.main.DecompilerContext;
 import org.jetbrains.java.decompiler.main.TextBuffer;
 
-import java.util.*;
-import java.util.Map.Entry;
-
 public class BytecodeSourceMapper {
-
-  private int offset_total;
 
   // class, method, bytecode offset, source line
   private final Map<String, Map<String, Map<Integer, Integer>>> mapping = new LinkedHashMap<>();
-
   // original line to decompiled line
   private final Map<Integer, Integer> linesMapping = new HashMap<>();
   private final Set<Integer> unmappedLines = new TreeSet<>();
+  private int offset_total;
 
   public void addMapping(String className, String methodName, int bytecodeOffset, int sourceLine) {
     Map<String, Map<Integer, Integer>> class_mapping = mapping.get(className);
@@ -85,7 +90,8 @@ public class BytecodeSourceMapper {
           Integer line = method_mapping.get(offset);
 
           String strOffset = offsetsToHex ? Integer.toHexString(offset) : line.toString();
-          buffer.appendIndent(2).append(strOffset).appendIndent(2).append((line + offset_total) + lineSeparator);
+          buffer.appendIndent(2).append(strOffset).appendIndent(2)
+              .append((line + offset_total) + lineSeparator);
         }
         buffer.appendIndent(1).append("}").appendLineSeparator();
 
@@ -99,7 +105,8 @@ public class BytecodeSourceMapper {
     buffer.append("Lines mapping:").appendLineSeparator();
     Map<Integer, Integer> sorted = new TreeMap<>(linesMapping);
     for (Entry<Integer, Integer> entry : sorted.entrySet()) {
-      buffer.append(entry.getKey()).append(" <-> ").append(entry.getValue() + offset_total + 1).appendLineSeparator();
+      buffer.append(entry.getKey()).append(" <-> ").append(entry.getValue() + offset_total + 1)
+          .appendLineSeparator();
     }
 
     if (!unmappedLines.isEmpty()) {

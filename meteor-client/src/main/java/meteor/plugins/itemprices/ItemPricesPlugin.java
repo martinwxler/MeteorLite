@@ -25,35 +25,31 @@
 package meteor.plugins.itemprices;
 
 import com.google.inject.Provides;
+import javax.inject.Inject;
 import meteor.Plugin;
 import meteor.config.ConfigManager;
 import meteor.ui.overlay.OverlayManager;
 
-import javax.inject.Inject;
+public class ItemPricesPlugin extends Plugin {
 
-public class ItemPricesPlugin extends Plugin
-{
-	@Inject
-	private OverlayManager overlayManager;
+  @Inject
+  private OverlayManager overlayManager;
 
-	@Inject
-	private ItemPricesOverlay overlay;
+  @Inject
+  private ItemPricesOverlay overlay;
 
-	@Provides
-	ItemPricesConfig getConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(ItemPricesConfig.class);
-	}
+  @Provides
+  ItemPricesConfig getConfig(ConfigManager configManager) {
+    return configManager.getConfig(ItemPricesConfig.class);
+  }
 
-	@Override
-	public void startup()
-	{
-		overlayManager.add(overlay);
-	}
+  @Override
+  public void startup() {
+    overlayManager.add(overlay);
+  }
 
-	@Override
-	public void shutdown()
-	{
-		overlayManager.remove(overlay);
-	}
+  @Override
+  public void shutdown() {
+    overlayManager.remove(overlay);
+  }
 }

@@ -15,43 +15,27 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.sforms;
 
-import org.jetbrains.java.decompiler.modules.decompiler.exps.Exprent;
-import org.jetbrains.java.decompiler.modules.decompiler.sforms.FlattenStatementsHelper.FinallyPathWrapper;
-import org.jetbrains.java.decompiler.util.VBStyleCollection;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import org.jetbrains.java.decompiler.modules.decompiler.exps.Exprent;
+import org.jetbrains.java.decompiler.modules.decompiler.sforms.FlattenStatementsHelper.FinallyPathWrapper;
+import org.jetbrains.java.decompiler.util.VBStyleCollection;
 
 
 public class DirectGraph {
 
   public final VBStyleCollection<DirectNode, String> nodes = new VBStyleCollection<>();
-
-  public DirectNode first;
-
   // exit, [source, destination]
   public final HashMap<String, List<FinallyPathWrapper>> mapShortRangeFinallyPaths = new HashMap<>();
-
   // exit, [source, destination]
   public final HashMap<String, List<FinallyPathWrapper>> mapLongRangeFinallyPaths = new HashMap<>();
-
   // negative if branches (recorded for handling of && and ||)
   public final HashMap<String, String> mapNegIfBranch = new HashMap<>();
-
   // nodes, that are exception exits of a finally block with monitor variable
   public final HashMap<String, String> mapFinallyMonitorExceptionPathExits = new HashMap<>();
-
-  public void sortReversePostOrder() {
-    LinkedList<DirectNode> res = new LinkedList<>();
-    addToReversePostOrderListIterative(first, res);
-
-    nodes.clear();
-    for (DirectNode node : res) {
-      nodes.addWithKey(node, node.id);
-    }
-  }
+  public DirectNode first;
 
   private static void addToReversePostOrderListIterative(DirectNode root, List<DirectNode> lst) {
 
@@ -91,6 +75,15 @@ public class DirectGraph {
     }
   }
 
+  public void sortReversePostOrder() {
+    LinkedList<DirectNode> res = new LinkedList<>();
+    addToReversePostOrderListIterative(first, res);
+
+    nodes.clear();
+    for (DirectNode node : res) {
+      nodes.addWithKey(node, node.id);
+    }
+  }
 
   public boolean iterateExprents(ExprentIterator iter) {
 
@@ -128,6 +121,7 @@ public class DirectGraph {
   }
 
   public interface ExprentIterator {
+
     // 0 - success, do nothing
     // 1 - cancel iteration
     // 2 - success, delete exprent

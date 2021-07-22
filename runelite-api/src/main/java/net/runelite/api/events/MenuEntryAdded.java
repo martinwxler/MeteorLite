@@ -30,31 +30,28 @@ import net.runelite.api.MenuEntry;
 /**
  * An event when a new entry is added to a right-click menu.
  */
-public class MenuEntryAdded extends MenuEntry
-{
-	// Here for RuneLite compatibility (different parameter order)
-	public MenuEntryAdded(String option, String target, int type, int identifier, int actionParam0, int actionParam1)
-	{
-		super(option, target, identifier, type, actionParam0, actionParam1, false);
-	}
+public class MenuEntryAdded extends MenuEntry {
 
-	public MenuEntryAdded(String option, String target, int identifier, int opcode, int param0, int param1, boolean forceLeftClick)
-	{
-		super(option, target, identifier, opcode, param0, param1, forceLeftClick);
-	}
+  /**
+   * If this is set to true client mixin will update the menu entry with the modified values.
+   * <p>
+   * Checks if count is the same, but doesn't check if there's been multiple changes
+   */
+  @Getter
+  private boolean modified;
 
-	/**
-	 * If this is set to true client mixin will update
-	 * the menu entry with the modified values.
-	 *
-	 * Checks if count is the same, but doesn't check if there's
-	 * been multiple changes
-	 */
-	@Getter
-	private boolean modified;
+  // Here for RuneLite compatibility (different parameter order)
+  public MenuEntryAdded(String option, String target, int type, int identifier, int actionParam0,
+      int actionParam1) {
+    super(option, target, identifier, type, actionParam0, actionParam1, false);
+  }
 
-	public void setModified()
-	{
-		this.modified = true;
-	}
+  public MenuEntryAdded(String option, String target, int identifier, int opcode, int param0,
+      int param1, boolean forceLeftClick) {
+    super(option, target, identifier, opcode, param0, param1, forceLeftClick);
+  }
+
+  public void setModified() {
+    this.modified = true;
+  }
 }

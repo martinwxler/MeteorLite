@@ -25,72 +25,61 @@
  */
 package net.runelite.mixins;
 
-import net.runelite.api.Node;
-import net.runelite.api.TileItem;
-import net.runelite.api.*;
-import net.runelite.api.coords.LocalPoint;
-import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.*;
-import net.runelite.api.mixins.*;
-import net.runelite.rs.api.*;
-import org.sponge.util.Logger;
-
-import java.util.ArrayList;
-import java.util.List;
+import net.runelite.api.mixins.Copy;
+import net.runelite.api.mixins.Inject;
+import net.runelite.api.mixins.Mixin;
+import net.runelite.api.mixins.Replace;
+import net.runelite.api.mixins.Shadow;
+import net.runelite.rs.api.RSClient;
+import net.runelite.rs.api.RSTexture;
 
 @Mixin(RSTexture.class)
-public abstract class TextureMixin implements RSTexture
-{
-    @Shadow("client")
-    private static RSClient client;
-    @Inject
-    private float rl$u;
+public abstract class TextureMixin implements RSTexture {
 
-    @Inject
-    private float rl$v;
+  @Shadow("client")
+  private static RSClient client;
+  @Inject
+  private float rl$u;
 
-    @Copy("animate")
-    @Replace("animate")
-    public void copy$animate(int diff)
-    {
-        // The client animates textures by cycling the backing pixels of the texture each fram
-        // based on how long it was since the last tick. On GPU we let the plugin manage this
-        // which will calculate uvs instead.
-        if (!client.isGpu())
-        {
-            copy$animate(diff);
-            return;
-        }
-        assert client.getDrawCallbacks() != null;
+  @Inject
+  private float rl$v;
 
-        client.getDrawCallbacks().animate(this, diff);
+  @Copy("animate")
+  @Replace("animate")
+  public void copy$animate(int diff) {
+    // The client animates textures by cycling the backing pixels of the texture each fram
+    // based on how long it was since the last tick. On GPU we let the plugin manage this
+    // which will calculate uvs instead.
+    if (!client.isGpu()) {
+      copy$animate(diff);
+      return;
     }
+    assert client.getDrawCallbacks() != null;
 
-    @Inject
-    @Override
-    public float getU()
-    {
-        return rl$u;
-    }
+    client.getDrawCallbacks().animate(this, diff);
+  }
 
-    @Inject
-    @Override
-    public void setU(float u)
-    {
-        this.rl$u = u;
-    }
+  @Inject
+  @Override
+  public float getU() {
+    return rl$u;
+  }
 
-    @Inject
-    @Override
-    public float getV()
-    {
-        return rl$v;
-    }
+  @Inject
+  @Override
+  public void setU(float u) {
+    this.rl$u = u;
+  }
 
-    @Inject
-    @Override
-    public void setV(float v)
-    {
-        this.rl$v = v;
-    }
+  @Inject
+  @Override
+  public float getV() {
+    return rl$v;
+  }
+
+  @Inject
+  @Override
+  public void setV(float v) {
+    this.rl$v = v;
+  }
 }

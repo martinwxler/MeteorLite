@@ -32,90 +32,76 @@ import net.runelite.asm.pool.Class;
 import net.runelite.deob.DeobAnnotations;
 import org.jetbrains.annotations.NotNull;
 
-public class Interfaces implements Iterable<Class>
-{
-	private final ClassFile classFile;
+public class Interfaces implements Iterable<Class> {
 
-	private final List<Class> interfaces = new ArrayList<>();
+  private final ClassFile classFile;
 
-	Interfaces(ClassFile c)
-	{
-		classFile = c;
-	}
+  private final List<Class> interfaces = new ArrayList<>();
 
-	public boolean addInterface(Class clazz)
-	{
-		if (interfaces.stream().noneMatch((itf) -> itf.getName().equals(clazz.getName())))
-		{
-			interfaces.add(clazz);
-			return true;
-		}
+  Interfaces(ClassFile c) {
+    classFile = c;
+  }
 
-		return false;
-	}
+  public boolean addInterface(Class clazz) {
+    if (interfaces.stream().noneMatch((itf) -> itf.getName().equals(clazz.getName()))) {
+      interfaces.add(clazz);
+      return true;
+    }
 
-	public List<Class> getInterfaces()
-	{
-		return interfaces;
-	}
+    return false;
+  }
 
-	public void clear()
-	{
-		interfaces.clear();
-	}
+  public List<Class> getInterfaces() {
+    return interfaces;
+  }
 
-	public List<ClassFile> getMyInterfaces()
-	{
-		List<ClassFile> l = new ArrayList<>();
-		for (Class clazz : interfaces)
-		{
-			ClassFile iface = classFile.getGroup().findClass(clazz.getName());
-			if (iface != null)
-			{
-				l.add(iface);
-			}
-		}
-		return l;
-	}
+  public void clear() {
+    interfaces.clear();
+  }
 
-	public List<Class> getNonMyInterfaces()
-	{
-		return interfaces.stream().filter(clazz -> classFile.getGroup().findClass(clazz.getName()) == null).collect(Collectors.toList());
-	}
+  public List<ClassFile> getMyInterfaces() {
+    List<ClassFile> l = new ArrayList<>();
+    for (Class clazz : interfaces) {
+      ClassFile iface = classFile.getGroup().findClass(clazz.getName());
+      if (iface != null) {
+        l.add(iface);
+      }
+    }
+    return l;
+  }
 
-	public boolean instanceOf(ClassFile cf)
-	{
-		for (Class clazz : interfaces)
-		{
-			ClassFile iface = classFile.getGroup().findClass(clazz.getName());
-			if (iface.instanceOf(cf))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+  public List<Class> getNonMyInterfaces() {
+    return interfaces.stream()
+        .filter(clazz -> classFile.getGroup().findClass(clazz.getName()) == null)
+        .collect(Collectors.toList());
+  }
 
-	public List<String> getIntfNames()
-	{
-		final List<String> names = new ArrayList<>();
-		for (ClassFile c : getMyInterfaces())
-		{
-			String name = DeobAnnotations.getObfuscatedName(c);
-			if (name == null)
-			{
-				continue;
-			}
+  public boolean instanceOf(ClassFile cf) {
+    for (Class clazz : interfaces) {
+      ClassFile iface = classFile.getGroup().findClass(clazz.getName());
+      if (iface.instanceOf(cf)) {
+        return true;
+      }
+    }
+    return false;
+  }
 
-			names.add(name);
-		}
+  public List<String> getIntfNames() {
+    final List<String> names = new ArrayList<>();
+    for (ClassFile c : getMyInterfaces()) {
+      String name = DeobAnnotations.getObfuscatedName(c);
+      if (name == null) {
+        continue;
+      }
 
-		return names;
-	}
+      names.add(name);
+    }
 
-	@NotNull
-	public Iterator<Class> iterator()
-	{
-		return this.interfaces.iterator();
-	}
+    return names;
+  }
+
+  @NotNull
+  public Iterator<Class> iterator() {
+    return this.interfaces.iterator();
+  }
 }

@@ -25,11 +25,11 @@
 package net.runelite.deob.deobfuscators.arithmetic;
 
 // a constant associated to a field
-class AssociatedConstant
-{
-	Number value;
-	boolean other; // whether or not another field is involved
-	boolean constant; // whether or not the constant is a constant field assignment
-	boolean getter; // whether or not this is associated as a getter
-	boolean setter; // whether or not this is associated as a setter
+class AssociatedConstant {
+
+  Number value;
+  boolean other; // whether or not another field is involved
+  boolean constant; // whether or not the constant is a constant field assignment
+  boolean getter; // whether or not this is associated as a getter
+  boolean setter; // whether or not this is associated as a setter
 }

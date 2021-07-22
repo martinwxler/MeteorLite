@@ -24,12 +24,12 @@
  */
 package net.runelite.api.events;
 
-import net.runelite.api.ItemContainer;
 import lombok.Value;
+import net.runelite.api.ItemContainer;
 
 /**
- * An event called whenever the stack size of an {@link net.runelite.api.Item}
- * in an {@link ItemContainer} is modified.
+ * An event called whenever the stack size of an {@link net.runelite.api.Item} in an {@link
+ * ItemContainer} is modified.
  * <p>
  * Examples of when this event may trigger include:
  * <ul>
@@ -39,15 +39,15 @@ import lombok.Value;
  * </ul>
  */
 @Value
-public class ItemContainerChanged
-{
-	/**
-	 * The modified container's ID.
-	 */
-	int containerId;
+public class ItemContainerChanged {
 
-	/**
-	 * The modified item container.
-	 */
-	ItemContainer itemContainer;
+  /**
+   * The modified container's ID.
+   */
+  int containerId;
+
+  /**
+   * The modified item container.
+   */
+  ItemContainer itemContainer;
 }

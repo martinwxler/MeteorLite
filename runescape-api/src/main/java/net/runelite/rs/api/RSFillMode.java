@@ -26,8 +26,8 @@ package net.runelite.rs.api;
 
 import net.runelite.mapping.Import;
 
-public interface RSFillMode
-{
-	@Import("rsOrdinal")
-	int getOrdinal();
+public interface RSFillMode {
+
+  @Import("rsOrdinal")
+  int getOrdinal();
 }

@@ -41,8 +41,7 @@ public class SwitchInstruction extends Instruction {
 
     if (opcode == CodeConstants.opc_lookupswitch) {
       len /= 2;
-    }
-    else {
+    } else {
       low = this.getOperand(1);
     }
 
@@ -53,8 +52,7 @@ public class SwitchInstruction extends Instruction {
       if (opcode == CodeConstants.opc_lookupswitch) {
         values[i] = this.getOperand(pref + k);
         k++;
-      }
-      else {
+      } else {
         values[i] = low + k;
       }
       destinations[i] = seq.getPointerByRelOffset(this.getOperand(pref + k));
@@ -62,7 +60,7 @@ public class SwitchInstruction extends Instruction {
   }
 
   public SwitchInstruction clone() {
-    SwitchInstruction newinstr = (SwitchInstruction)super.clone();
+    SwitchInstruction newinstr = (SwitchInstruction) super.clone();
 
     newinstr.defaultdest = defaultdest;
     newinstr.destinations = destinations.clone();

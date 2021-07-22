@@ -46,217 +46,190 @@ import net.runelite.deob.Deobfuscator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EnumDeobfuscator implements Deobfuscator
-{
-	private static final Logger logger = LoggerFactory.getLogger(EnumDeobfuscator.class);
+public class EnumDeobfuscator implements Deobfuscator {
 
-	private static final net.runelite.asm.pool.Method ENUM_INIT = new net.runelite.asm.pool.Method(
-		new net.runelite.asm.pool.Class("java/lang/Enum"),
-		"<init>",
-		new Signature("(Ljava/lang/String;I)V")
-	);
+  private static final Logger logger = LoggerFactory.getLogger(EnumDeobfuscator.class);
 
-	@Override
-	public void run(ClassGroup group)
-	{
-		for (ClassFile cf : group.getClasses())
-		{
-			if (!isEnum(cf) || cf.isEnum())
-			{
-				continue;
-			}
+  private static final net.runelite.asm.pool.Method ENUM_INIT = new net.runelite.asm.pool.Method(
+      new net.runelite.asm.pool.Class("java/lang/Enum"),
+      "<init>",
+      new Signature("(Ljava/lang/String;I)V")
+  );
 
-			logger.info("Converting {} to an enum", cf.getName());
-			makeEnum(cf);
-		}
-	}
+  @Override
+  public void run(ClassGroup group) {
+    for (ClassFile cf : group.getClasses()) {
+      if (!isEnum(cf) || cf.isEnum()) {
+        continue;
+      }
 
-	private boolean isEnum(ClassFile cf)
-	{
-		if (cf.getInterfaces().getMyInterfaces().size() != 1
-			|| cf.getInterfaces().getInterfaces().size() != 1)
-		{
-			return false;
-		}
+      logger.info("Converting {} to an enum", cf.getName());
+      makeEnum(cf);
+    }
+  }
 
-		if (!interfaceIsEnum(cf.getInterfaces().getMyInterfaces().get(0)))
-		{
-			return false;
-		}
+  private boolean isEnum(ClassFile cf) {
+    if (cf.getInterfaces().getMyInterfaces().size() != 1
+        || cf.getInterfaces().getInterfaces().size() != 1) {
+      return false;
+    }
 
-		// number of non static methods should be 1
-		long count = cf.getMethods()
-			.stream()
-			.filter(m -> !m.isStatic())
-			.filter(m -> !m.getName().startsWith("<"))
-			.count();
-		if (count != 1)
-		{
-			return false;
-		}
+    if (!interfaceIsEnum(cf.getInterfaces().getMyInterfaces().get(0))) {
+      return false;
+    }
 
-		return true;
-	}
+    // number of non static methods should be 1
+    long count = cf.getMethods()
+        .stream()
+        .filter(m -> !m.isStatic())
+        .filter(m -> !m.getName().startsWith("<"))
+        .count();
+    if (count != 1) {
+      return false;
+    }
 
-	private boolean interfaceIsEnum(ClassFile cf)
-	{
-		assert cf.isInterface();
+    return true;
+  }
 
-		if (cf.getMethods().size() != 1)
-		{
-			return false;
-		}
+  private boolean interfaceIsEnum(ClassFile cf) {
+    assert cf.isInterface();
 
-		Method method = cf.getMethods().get(0);
-		return method.getDescriptor().toString().equals("()I"); // ordinal
-	}
+    if (cf.getMethods().size() != 1) {
+      return false;
+    }
 
-	private void makeEnum(ClassFile cf)
-	{
-		cf.setEnum(); // make class an enum
+    Method method = cf.getMethods().get(0);
+    return method.getDescriptor().toString().equals("()I"); // ordinal
+  }
 
-		// enums super class is java/lang/Enum
-		assert cf.getParentClass().getName().equals("java/lang/Object");
-		cf.setSuperName("java/lang/Enum");
+  private void makeEnum(ClassFile cf) {
+    cf.setEnum(); // make class an enum
 
-		// all static fields of the type of the class become enum members
-		for (Field field : cf.getFields())
-		{
-			if (field.isStatic() && field.getType().equals(new Type("L" + cf.getName() + ";")))
-			{
-				field.setEnum();
-			}
-		}
+    // enums super class is java/lang/Enum
+    assert cf.getParentClass().getName().equals("java/lang/Object");
+    cf.setSuperName("java/lang/Enum");
 
-		for (Method method : cf.getMethods())
-		{
-			if (!method.getName().equals("<init>"))
-			{
-				continue;
-			}
+    // all static fields of the type of the class become enum members
+    for (Field field : cf.getFields()) {
+      if (field.isStatic() && field.getType().equals(new Type("L" + cf.getName() + ";"))) {
+        field.setEnum();
+      }
+    }
 
-			// Add string as first argument, which is the field name,
-			// and ordinal as second argument
-			Signature signature = new Signature.Builder()
-				.setReturnType(method.getDescriptor().getReturnValue())
-				.addArgument(Type.STRING)
-				.addArgument(Type.INT)
-				.addArguments(method.getDescriptor().getArguments())
-				.build();
+    for (Method method : cf.getMethods()) {
+      if (!method.getName().equals("<init>")) {
+        continue;
+      }
 
-			method.setDescriptor(signature);
+      // Add string as first argument, which is the field name,
+      // and ordinal as second argument
+      Signature signature = new Signature.Builder()
+          .setReturnType(method.getDescriptor().getReturnValue())
+          .addArgument(Type.STRING)
+          .addArgument(Type.INT)
+          .addArguments(method.getDescriptor().getArguments())
+          .build();
 
-			// Remove instructions up to invokespecial
-			Instructions ins = method.getCode().getInstructions();
-			Instruction i;
-			do
-			{
-				i = ins.getInstructions().get(0);
-				ins.remove(i);
-			}
-			while (i.getType() != InstructionType.INVOKESPECIAL);
+      method.setDescriptor(signature);
 
-			ins.addInstruction(0, new ALoad(ins, 0)); // load this
-			ins.addInstruction(1, new ALoad(ins, 1)); // load constant name
-			ins.addInstruction(2, new ILoad(ins, 2)); // ordinal
-			ins.addInstruction(3, new InvokeSpecial(ins, ENUM_INIT)); // invoke enum constructor
+      // Remove instructions up to invokespecial
+      Instructions ins = method.getCode().getInstructions();
+      Instruction i;
+      do {
+        i = ins.getInstructions().get(0);
+        ins.remove(i);
+      }
+      while (i.getType() != InstructionType.INVOKESPECIAL);
 
-			// Shift all indexes after this up +2 because of the new String and int argument
-			for (int j = 4; j < ins.getInstructions().size(); ++j)
-			{
-				i = ins.getInstructions().get(j);
+      ins.addInstruction(0, new ALoad(ins, 0)); // load this
+      ins.addInstruction(1, new ALoad(ins, 1)); // load constant name
+      ins.addInstruction(2, new ILoad(ins, 2)); // ordinal
+      ins.addInstruction(3, new InvokeSpecial(ins, ENUM_INIT)); // invoke enum constructor
 
-				if (i instanceof LVTInstruction)
-				{
-					LVTInstruction lvt = ((LVTInstruction) i);
-					int idx = lvt.getVariableIndex();
-					if (idx != 0)
-					{
-						lvt.setVariableIndex(idx + 2);
-					}
-				}
-			}
-		}
+      // Shift all indexes after this up +2 because of the new String and int argument
+      for (int j = 4; j < ins.getInstructions().size(); ++j) {
+        i = ins.getInstructions().get(j);
 
-		// Order of fields being set in clinit, which is the order
-		// the enum fields are actually in
-		List<Field> order = new ArrayList<>();
+        if (i instanceof LVTInstruction) {
+          LVTInstruction lvt = ((LVTInstruction) i);
+          int idx = lvt.getVariableIndex();
+          if (idx != 0) {
+            lvt.setVariableIndex(idx + 2);
+          }
+        }
+      }
+    }
 
-		for (Method method : cf.getMethods())
-		{
-			if (!method.getName().equals("<clinit>"))
-			{
-				continue;
-			}
+    // Order of fields being set in clinit, which is the order
+    // the enum fields are actually in
+    List<Field> order = new ArrayList<>();
 
-			Instructions ins = method.getCode().getInstructions();
+    for (Method method : cf.getMethods()) {
+      if (!method.getName().equals("<clinit>")) {
+        continue;
+      }
 
-			int count = 0;
-			// sometimes there is new new invokespecial invokespecial putfield
-			// for eg enum member field30(1, 2, String.class, new class5());
-			boolean seenDup = false;
-			for (int j = 0; j < ins.getInstructions().size(); ++j)
-			{
-				Instruction i = ins.getInstructions().get(j);
+      Instructions ins = method.getCode().getInstructions();
 
-				if (i.getType() == InstructionType.DUP && !seenDup)
-				{
-					// XXX this should actually be the field name, but it seems to have no effect on fernflower
-					ins.addInstruction(j + 1, new LDC(ins, "runelite"));
-					ins.addInstruction(j + 2, new LDC(ins, count++));
-					seenDup = true;
-				}
-				else if (i.getType() == InstructionType.INVOKESPECIAL)
-				{
-					Instruction next = ins.getInstructions().get(j + 1);
+      int count = 0;
+      // sometimes there is new new invokespecial invokespecial putfield
+      // for eg enum member field30(1, 2, String.class, new class5());
+      boolean seenDup = false;
+      for (int j = 0; j < ins.getInstructions().size(); ++j) {
+        Instruction i = ins.getInstructions().get(j);
 
-					// check if this is the invokespecial on the enum, putstatic comes next
-					if (next.getType() == InstructionType.PUTSTATIC)
-					{
-						InvokeSpecial is = (InvokeSpecial) i;
-						PutStatic ps = (PutStatic) next;
+        if (i.getType() == InstructionType.DUP && !seenDup) {
+          // XXX this should actually be the field name, but it seems to have no effect on fernflower
+          ins.addInstruction(j + 1, new LDC(ins, "runelite"));
+          ins.addInstruction(j + 2, new LDC(ins, count++));
+          seenDup = true;
+        } else if (i.getType() == InstructionType.INVOKESPECIAL) {
+          Instruction next = ins.getInstructions().get(j + 1);
 
-						net.runelite.asm.pool.Method pmethod = new net.runelite.asm.pool.Method(
-							is.getMethod().getClazz(),
-							is.getMethod().getName(),
-							new Signature.Builder()
-								.setReturnType(is.getMethod().getType().getReturnValue())
-								.addArgument(Type.STRING)
-								.addArgument(Type.INT)
-								.addArguments(is.getMethod().getType().getArguments())
-								.build()
-						);
+          // check if this is the invokespecial on the enum, putstatic comes next
+          if (next.getType() == InstructionType.PUTSTATIC) {
+            InvokeSpecial is = (InvokeSpecial) i;
+            PutStatic ps = (PutStatic) next;
 
-						is.setMethod(pmethod);
+            net.runelite.asm.pool.Method pmethod = new net.runelite.asm.pool.Method(
+                is.getMethod().getClazz(),
+                is.getMethod().getName(),
+                new Signature.Builder()
+                    .setReturnType(is.getMethod().getType().getReturnValue())
+                    .addArgument(Type.STRING)
+                    .addArgument(Type.INT)
+                    .addArguments(is.getMethod().getType().getArguments())
+                    .build()
+            );
 
-						Field field = ps.getMyField();
-						assert field != null;
-						order.add(field);
+            is.setMethod(pmethod);
 
-						seenDup = false;
-					}
-				}
-			}
-		}
+            Field field = ps.getMyField();
+            assert field != null;
+            order.add(field);
 
-		// Enum fields must be first. Also they are in order in clinit.
-		// Sort fields
-		Collections.sort(cf.getFields(), (f1, f2) ->
-		{
-			int idx1 = order.indexOf(f1);
-			int idx2 = order.indexOf(f2);
+            seenDup = false;
+          }
+        }
+      }
+    }
 
-			if (idx1 == -1)
-			{
-				idx1 = Integer.MAX_VALUE;
-			}
-			if (idx2 == -1)
-			{
-				idx2 = Integer.MAX_VALUE;
-			}
+    // Enum fields must be first. Also they are in order in clinit.
+    // Sort fields
+    Collections.sort(cf.getFields(), (f1, f2) ->
+    {
+      int idx1 = order.indexOf(f1);
+      int idx2 = order.indexOf(f2);
 
-			return Integer.compare(idx1, idx2);
-		});
+      if (idx1 == -1) {
+        idx1 = Integer.MAX_VALUE;
+      }
+      if (idx2 == -1) {
+        idx2 = Integer.MAX_VALUE;
+      }
 
-	}
+      return Integer.compare(idx1, idx2);
+    });
+
+  }
 }

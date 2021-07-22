@@ -3,43 +3,43 @@ package net.runelite.rs.api;
 import net.runelite.api.MessageNode;
 import net.runelite.mapping.Import;
 
-public interface RSMessage extends MessageNode
-{
-	@Import("count")
-	@Override
-	int getId();
+public interface RSMessage extends MessageNode {
 
-	@Import("type")
-	int getRSType();
+  @Import("count")
+  @Override
+  int getId();
 
-	@Import("sender")
-	@Override
-	String getName();
+  @Import("type")
+  int getRSType();
 
-	@Import("sender")
-	@Override
-	void setName(String name);
+  @Import("sender")
+  @Override
+  String getName();
 
-	@Import("prefix")
-	@Override
-	String getSender();
+  @Import("sender")
+  @Override
+  void setName(String name);
 
-	@Import("prefix")
-	@Override
-	void setSender(String sender);
+  @Import("prefix")
+  @Override
+  String getSender();
 
-	@Import("text")
-	@Override
-	String getValue();
+  @Import("prefix")
+  @Override
+  void setSender(String sender);
 
-	@Import("text")
-	@Override
-	void setValue(String value);
+  @Import("text")
+  @Override
+  String getValue();
 
-	@Import("isFromFriend")
-	@Override
-	boolean isFromFriend$api();
+  @Import("text")
+  @Override
+  void setValue(String value);
 
-	@Import("senderUsername")
-	RSUsername getSenderUsername();
+  @Import("isFromFriend")
+  @Override
+  boolean isFromFriend$api();
+
+  @Import("senderUsername")
+  RSUsername getSenderUsername();
 }

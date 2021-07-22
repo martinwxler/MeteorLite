@@ -25,83 +25,73 @@
  */
 package meteor.ui;
 
-import net.runelite.api.Client;
-import meteor.input.MouseListener;
-
-import javax.inject.Inject;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.MouseEvent;
+import javax.inject.Inject;
+import meteor.input.MouseListener;
+import net.runelite.api.Client;
 
-public class TranslateMouseListener implements MouseListener
-{
-	private final Client client;
+public class TranslateMouseListener implements MouseListener {
 
-	@Inject
-	public TranslateMouseListener(Client client)
-	{
-		this.client = client;
-	}
+  private final Client client;
 
-	@Override
-	public MouseEvent mouseClicked(MouseEvent mouseEvent)
-	{
-		return translateEvent(mouseEvent);
-	}
+  @Inject
+  public TranslateMouseListener(Client client) {
+    this.client = client;
+  }
 
-	@Override
-	public MouseEvent mousePressed(MouseEvent mouseEvent)
-	{
-		return translateEvent(mouseEvent);
-	}
+  @Override
+  public MouseEvent mouseClicked(MouseEvent mouseEvent) {
+    return translateEvent(mouseEvent);
+  }
 
-	@Override
-	public MouseEvent mouseReleased(MouseEvent mouseEvent)
-	{
-		return translateEvent(mouseEvent);
-	}
+  @Override
+  public MouseEvent mousePressed(MouseEvent mouseEvent) {
+    return translateEvent(mouseEvent);
+  }
 
-	@Override
-	public MouseEvent mouseEntered(MouseEvent mouseEvent)
-	{
-		return translateEvent(mouseEvent);
-	}
+  @Override
+  public MouseEvent mouseReleased(MouseEvent mouseEvent) {
+    return translateEvent(mouseEvent);
+  }
 
-	@Override
-	public MouseEvent mouseExited(MouseEvent mouseEvent)
-	{
-		return translateEvent(mouseEvent);
-	}
+  @Override
+  public MouseEvent mouseEntered(MouseEvent mouseEvent) {
+    return translateEvent(mouseEvent);
+  }
 
-	@Override
-	public MouseEvent mouseDragged(MouseEvent mouseEvent)
-	{
-		return translateEvent(mouseEvent);
-	}
+  @Override
+  public MouseEvent mouseExited(MouseEvent mouseEvent) {
+    return translateEvent(mouseEvent);
+  }
 
-	@Override
-	public MouseEvent mouseMoved(MouseEvent mouseEvent)
-	{
-		return translateEvent(mouseEvent);
-	}
+  @Override
+  public MouseEvent mouseDragged(MouseEvent mouseEvent) {
+    return translateEvent(mouseEvent);
+  }
 
-	private MouseEvent translateEvent(MouseEvent e)
-	{
-		if (!client.isStretchedEnabled())
-		{
-			return e;
-		}
-		Dimension stretchedDimensions = client.getStretchedDimensions();
-		Dimension realDimensions = client.getRealDimensions();
+  @Override
+  public MouseEvent mouseMoved(MouseEvent mouseEvent) {
+    return translateEvent(mouseEvent);
+  }
 
-		int newX = (int) (e.getX() / (stretchedDimensions.width / realDimensions.getWidth()));
-		int newY = (int) (e.getY() / (stretchedDimensions.height / realDimensions.getHeight()));
+  private MouseEvent translateEvent(MouseEvent e) {
+    if (!client.isStretchedEnabled()) {
+      return e;
+    }
+    Dimension stretchedDimensions = client.getStretchedDimensions();
+    Dimension realDimensions = client.getRealDimensions();
 
-		MouseEvent mouseEvent = new MouseEvent((Component) e.getSource(), e.getID(), e.getWhen(), e.getModifiersEx(),
-			newX, newY, e.getClickCount(), e.isPopupTrigger(), e.getButton());
-		if (e.isConsumed())
-		{
-			mouseEvent.consume();
-		}
-		return mouseEvent;
-	}
+    int newX = (int) (e.getX() / (stretchedDimensions.width / realDimensions.getWidth()));
+    int newY = (int) (e.getY() / (stretchedDimensions.height / realDimensions.getHeight()));
+
+    MouseEvent mouseEvent = new MouseEvent((Component) e.getSource(), e.getID(), e.getWhen(),
+        e.getModifiersEx(),
+        newX, newY, e.getClickCount(), e.isPopupTrigger(), e.getButton());
+    if (e.isConsumed()) {
+      mouseEvent.consume();
+    }
+    return mouseEvent;
+  }
 }

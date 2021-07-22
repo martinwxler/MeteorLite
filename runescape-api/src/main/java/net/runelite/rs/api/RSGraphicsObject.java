@@ -3,31 +3,31 @@ package net.runelite.rs.api;
 import net.runelite.api.GraphicsObject;
 import net.runelite.mapping.Import;
 
-public interface RSGraphicsObject extends GraphicsObject, RSRenderable
-{
-	@Import("id")
-	@Override
-	int getId();
+public interface RSGraphicsObject extends GraphicsObject, RSRenderable {
 
-	@Import("x")
-	int getX();
+  @Import("id")
+  @Override
+  int getId();
 
-	@Import("y")
-	int getY();
+  @Import("x")
+  int getX();
 
-	@Import("cycleStart")
-	@Override
-	int getStartCycle();
+  @Import("y")
+  int getY();
 
-	@Import("plane")
-	@Override
-	int getLevel();
+  @Import("cycleStart")
+  @Override
+  int getStartCycle();
 
-	@Import("height")
-	@Override
-	int getHeight();
+  @Import("plane")
+  @Override
+  int getLevel();
 
-	@Import("isFinished")
-	@Override
-	boolean finished();
+  @Import("height")
+  @Override
+  int getHeight();
+
+  @Import("isFinished")
+  @Override
+  boolean finished();
 }

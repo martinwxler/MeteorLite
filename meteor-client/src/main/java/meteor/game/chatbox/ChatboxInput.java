@@ -27,13 +27,11 @@ package meteor.game.chatbox;
 /**
  * A modal input that lives in the chatbox panel.
  */
-public abstract class ChatboxInput
-{
-	protected void open()
-	{
-	}
+public abstract class ChatboxInput {
 
-	protected void close()
-	{
-	}
+  protected void open() {
+  }
+
+  protected void close() {
+  }
 }

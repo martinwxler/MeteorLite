@@ -27,24 +27,24 @@ package net.runelite.api;
 /**
  * Represents a byte buffer
  */
-public interface Buffer extends Node
-{
-	byte[] getPayload();
+public interface Buffer extends Node {
 
-	int getOffset();
+  byte[] getPayload();
 
-	/**
-	 * Use this api to write to byte buffers
-	 */
-	void writeByte$api(int var1);
+  int getOffset();
 
-	void writeShort$api(int var1);
+  /**
+   * Use this api to write to byte buffers
+   */
+  void writeByte$api(int var1);
 
-	void writeMedium$api(int var1);
+  void writeShort$api(int var1);
 
-	void writeInt$api(int var1);
+  void writeMedium$api(int var1);
 
-	void writeLong$api(long var1);
+  void writeInt$api(int var1);
 
-	void writeStringCp1252NullTerminated$api(String string);
+  void writeLong$api(long var1);
+
+  void writeStringCp1252NullTerminated$api(String string);
 }

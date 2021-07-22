@@ -15,33 +15,19 @@
  */
 package org.jetbrains.java.decompiler.struct.attr;
 
-import org.jetbrains.java.decompiler.modules.decompiler.exps.AnnotationExprent;
-import org.jetbrains.java.decompiler.modules.decompiler.exps.TypeAnnotation;
-import org.jetbrains.java.decompiler.struct.consts.ConstantPool;
-import org.jetbrains.java.decompiler.util.DataInputFullStream;
-
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.jetbrains.java.decompiler.modules.decompiler.exps.AnnotationExprent;
+import org.jetbrains.java.decompiler.modules.decompiler.exps.TypeAnnotation;
+import org.jetbrains.java.decompiler.struct.consts.ConstantPool;
+import org.jetbrains.java.decompiler.util.DataInputFullStream;
 
 public class StructTypeAnnotationAttribute extends StructGeneralAttribute {
-  private List<TypeAnnotation> annotations = Collections.emptyList();
 
-  @Override
-  public void initContent(DataInputFullStream data, ConstantPool pool) throws IOException {
-    int len = data.readUnsignedShort();
-    if (len > 0) {
-      annotations = new ArrayList<>(len);
-      for (int i = 0; i < len; i++) {
-        annotations.add(parse(data, pool));
-      }
-    }
-    else {
-      annotations = Collections.emptyList();
-    }
-  }
+  private List<TypeAnnotation> annotations = Collections.emptyList();
 
   private static TypeAnnotation parse(DataInputStream data, ConstantPool pool) throws IOException {
     int targetType = data.readUnsignedByte();
@@ -98,6 +84,19 @@ public class StructTypeAnnotationAttribute extends StructGeneralAttribute {
     AnnotationExprent annotation = StructAnnotationAttribute.parseAnnotation(data, pool);
 
     return new TypeAnnotation(target, path, annotation);
+  }
+
+  @Override
+  public void initContent(DataInputFullStream data, ConstantPool pool) throws IOException {
+    int len = data.readUnsignedShort();
+    if (len > 0) {
+      annotations = new ArrayList<>(len);
+      for (int i = 0; i < len; i++) {
+        annotations.add(parse(data, pool));
+      }
+    } else {
+      annotations = Collections.emptyList();
+    }
   }
 
   public List<TypeAnnotation> getAnnotations() {

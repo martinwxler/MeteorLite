@@ -26,174 +26,158 @@
 package meteor.plugins.combatlevel;
 
 import com.google.inject.Provides;
+import java.text.DecimalFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.inject.Inject;
 import meteor.Plugin;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.ui.overlay.OverlayManager;
-import net.runelite.api.*;
+import net.runelite.api.Client;
+import net.runelite.api.Experience;
+import net.runelite.api.GameState;
+import net.runelite.api.ScriptID;
+import net.runelite.api.Skill;
+import net.runelite.api.WorldType;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 
-import javax.inject.Inject;
-import java.text.DecimalFormat;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+public class CombatLevelPlugin extends Plugin {
 
-public class CombatLevelPlugin extends Plugin
-{
-	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.###");
-	private static final String CONFIG_GROUP = "combatlevel";
-	private static final String ATTACK_RANGE_CONFIG_KEY = "wildernessAttackLevelRange";
-	private static final Pattern WILDERNESS_LEVEL_PATTERN = Pattern.compile("^Level: (\\d+)$");
-	private static final int MIN_COMBAT_LEVEL = 3;
+  private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.###");
+  private static final String CONFIG_GROUP = "combatlevel";
+  private static final String ATTACK_RANGE_CONFIG_KEY = "wildernessAttackLevelRange";
+  private static final Pattern WILDERNESS_LEVEL_PATTERN = Pattern.compile("^Level: (\\d+)$");
+  private static final int MIN_COMBAT_LEVEL = 3;
 
-	@Inject
-	private Client client;
+  @Inject
+  private Client client;
 
-	@Inject
-	private CombatLevelConfig config;
+  @Inject
+  private CombatLevelConfig config;
 
-	@Inject
-	private CombatLevelOverlay overlay;
+  @Inject
+  private CombatLevelOverlay overlay;
 
-	@Inject
-	private OverlayManager overlayManager;
+  @Inject
+  private OverlayManager overlayManager;
 
-	@Provides
-	CombatLevelConfig provideConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(CombatLevelConfig.class);
-	}
+  private static String combatAttackRange(final int combatLevel, final int wildernessLevel) {
+    return Math.max(MIN_COMBAT_LEVEL, combatLevel - wildernessLevel) + "-" + Math
+        .min(Experience.MAX_COMBAT_LEVEL, combatLevel + wildernessLevel);
+  }
 
-	@Override
-	public void startup()
-	{
-		overlayManager.add(overlay);
+  @Provides
+  CombatLevelConfig provideConfig(ConfigManager configManager) {
+    return configManager.getConfig(CombatLevelConfig.class);
+  }
 
-		if (config.wildernessAttackLevelRange())
-		{
-			appendAttackLevelRangeText();
-		}
-	}
+  @Override
+  public void startup() {
+    overlayManager.add(overlay);
 
-	@Override
-	public void shutdown()
-	{
-		overlayManager.remove(overlay);
-		Widget combatLevelWidget = client.getWidget(WidgetInfo.COMBAT_LEVEL);
+    if (config.wildernessAttackLevelRange()) {
+      appendAttackLevelRangeText();
+    }
+  }
 
-		if (combatLevelWidget != null)
-		{
-			String widgetText = combatLevelWidget.getText();
+  @Override
+  public void shutdown() {
+    overlayManager.remove(overlay);
+    Widget combatLevelWidget = client.getWidget(WidgetInfo.COMBAT_LEVEL);
 
-			if (widgetText.contains("."))
-			{
-				combatLevelWidget.setText(widgetText.substring(0, widgetText.indexOf(".")));
-			}
-		}
+    if (combatLevelWidget != null) {
+      String widgetText = combatLevelWidget.getText();
 
-		shutDownAttackLevelRange();
-	}
+      if (widgetText.contains(".")) {
+        combatLevelWidget.setText(widgetText.substring(0, widgetText.indexOf(".")));
+      }
+    }
 
-	@Subscribe
-	public void onGameTick(GameTick event)
-	{
-		if (client.getGameState() != GameState.LOGGED_IN)
-		{
-			return;
-		}
+    shutDownAttackLevelRange();
+  }
 
-		Widget combatLevelWidget = client.getWidget(WidgetInfo.COMBAT_LEVEL);
-		if (combatLevelWidget == null || !config.showPreciseCombatLevel())
-		{
-			return;
-		}
+  @Subscribe
+  public void onGameTick(GameTick event) {
+    if (client.getGameState() != GameState.LOGGED_IN) {
+      return;
+    }
 
-		double combatLevelPrecise = Experience.getCombatLevelPrecise(
-				client.getRealSkillLevel(Skill.ATTACK),
-				client.getRealSkillLevel(Skill.STRENGTH),
-				client.getRealSkillLevel(Skill.DEFENCE),
-				client.getRealSkillLevel(Skill.HITPOINTS),
-				client.getRealSkillLevel(Skill.MAGIC),
-				client.getRealSkillLevel(Skill.RANGED),
-				client.getRealSkillLevel(Skill.PRAYER)
-		);
+    Widget combatLevelWidget = client.getWidget(WidgetInfo.COMBAT_LEVEL);
+    if (combatLevelWidget == null || !config.showPreciseCombatLevel()) {
+      return;
+    }
 
-		combatLevelWidget.setText("Combat Lvl: " + DECIMAL_FORMAT.format(combatLevelPrecise));
-	}
+    double combatLevelPrecise = Experience.getCombatLevelPrecise(
+        client.getRealSkillLevel(Skill.ATTACK),
+        client.getRealSkillLevel(Skill.STRENGTH),
+        client.getRealSkillLevel(Skill.DEFENCE),
+        client.getRealSkillLevel(Skill.HITPOINTS),
+        client.getRealSkillLevel(Skill.MAGIC),
+        client.getRealSkillLevel(Skill.RANGED),
+        client.getRealSkillLevel(Skill.PRAYER)
+    );
 
-	@Subscribe
-	public void onConfigChanged(ConfigChanged event)
-	{
-		if (!CONFIG_GROUP.equals(event.getGroup()) || !ATTACK_RANGE_CONFIG_KEY.equals(event.getKey()))
-		{
-			return;
-		}
+    combatLevelWidget.setText("Combat Lvl: " + DECIMAL_FORMAT.format(combatLevelPrecise));
+  }
 
-		if (config.wildernessAttackLevelRange())
-		{
-			appendAttackLevelRangeText();
-		}
-		else
-		{
-			shutDownAttackLevelRange();
-		}
-	}
+  @Subscribe
+  public void onConfigChanged(ConfigChanged event) {
+    if (!CONFIG_GROUP.equals(event.getGroup()) || !ATTACK_RANGE_CONFIG_KEY.equals(event.getKey())) {
+      return;
+    }
 
-	@Subscribe
-	public void onScriptPostFired(ScriptPostFired scriptPostFired)
-	{
-		if (scriptPostFired.getScriptId() == ScriptID.PVP_WIDGET_BUILDER && config.wildernessAttackLevelRange())
-		{
-			appendAttackLevelRangeText();
-		}
-	}
+    if (config.wildernessAttackLevelRange()) {
+      appendAttackLevelRangeText();
+    } else {
+      shutDownAttackLevelRange();
+    }
+  }
 
-	private void appendAttackLevelRangeText()
-	{
-		final Widget wildernessLevelWidget = client.getWidget(WidgetInfo.PVP_WILDERNESS_LEVEL);
-		if (wildernessLevelWidget == null)
-		{
-			return;
-		}
+  @Subscribe
+  public void onScriptPostFired(ScriptPostFired scriptPostFired) {
+    if (scriptPostFired.getScriptId() == ScriptID.PVP_WIDGET_BUILDER && config
+        .wildernessAttackLevelRange()) {
+      appendAttackLevelRangeText();
+    }
+  }
 
-		final String wildernessLevelText = wildernessLevelWidget.getText();
-		final Matcher m = WILDERNESS_LEVEL_PATTERN.matcher(wildernessLevelText);
-		if (!m.matches()
-			|| WorldType.isPvpWorld(client.getWorldType()))
-		{
-			return;
-		}
+  private void appendAttackLevelRangeText() {
+    final Widget wildernessLevelWidget = client.getWidget(WidgetInfo.PVP_WILDERNESS_LEVEL);
+    if (wildernessLevelWidget == null) {
+      return;
+    }
 
-		final int wildernessLevel = Integer.parseInt(m.group(1));
-		final int combatLevel = client.getLocalPlayer().getCombatLevel();
+    final String wildernessLevelText = wildernessLevelWidget.getText();
+    final Matcher m = WILDERNESS_LEVEL_PATTERN.matcher(wildernessLevelText);
+    if (!m.matches()
+        || WorldType.isPvpWorld(client.getWorldType())) {
+      return;
+    }
 
-		wildernessLevelWidget.setText(wildernessLevelText + "<br>" + combatAttackRange(combatLevel, wildernessLevel));
-	}
+    final int wildernessLevel = Integer.parseInt(m.group(1));
+    final int combatLevel = client.getLocalPlayer().getCombatLevel();
 
-	private void shutDownAttackLevelRange()
-	{
-		if (WorldType.isPvpWorld(client.getWorldType()))
-		{
-			return;
-		}
+    wildernessLevelWidget
+        .setText(wildernessLevelText + "<br>" + combatAttackRange(combatLevel, wildernessLevel));
+  }
 
-		final Widget wildernessLevelWidget = client.getWidget(WidgetInfo.PVP_WILDERNESS_LEVEL);
-		if (wildernessLevelWidget != null)
-		{
-			String wildernessLevelText = wildernessLevelWidget.getText();
-			if (wildernessLevelText.contains("<br>"))
-			{
-				wildernessLevelWidget.setText(wildernessLevelText.substring(0, wildernessLevelText.indexOf("<br>")));
-			}
-		}
-	}
+  private void shutDownAttackLevelRange() {
+    if (WorldType.isPvpWorld(client.getWorldType())) {
+      return;
+    }
 
-	private static String combatAttackRange(final int combatLevel, final int wildernessLevel)
-	{
-		return Math.max(MIN_COMBAT_LEVEL, combatLevel - wildernessLevel) + "-" + Math.min(Experience.MAX_COMBAT_LEVEL, combatLevel + wildernessLevel);
-	}
+    final Widget wildernessLevelWidget = client.getWidget(WidgetInfo.PVP_WILDERNESS_LEVEL);
+    if (wildernessLevelWidget != null) {
+      String wildernessLevelText = wildernessLevelWidget.getText();
+      if (wildernessLevelText.contains("<br>")) {
+        wildernessLevelWidget
+            .setText(wildernessLevelText.substring(0, wildernessLevelText.indexOf("<br>")));
+      }
+    }
+  }
 }

@@ -7,15 +7,14 @@ import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSScriptEvent;
 
 @Mixin(RSScriptEvent.class)
-public abstract class ScriptEventMixin implements RSScriptEvent
-{
-	@Shadow("client")
-	private static RSClient client;
+public abstract class ScriptEventMixin implements RSScriptEvent {
 
-	@Inject
-	@Override
-	public void run()
-	{
-		client.runScriptEvent(this);
-	}
+  @Shadow("client")
+  private static RSClient client;
+
+  @Inject
+  @Override
+  public void run() {
+    client.runScriptEvent(this);
+  }
 }

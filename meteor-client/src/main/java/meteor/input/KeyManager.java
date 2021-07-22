@@ -24,129 +24,104 @@
  */
 package meteor.input;
 
+import java.awt.event.KeyEvent;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import org.sponge.util.Logger;
 
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.awt.event.KeyEvent;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 @Singleton
-public class KeyManager
-{
-	private final Client client;
-	public Logger log = new Logger("KeyManager");
+public class KeyManager {
 
-	@Inject
-	private KeyManager(@Nullable final Client client)
-	{
-		this.client = client;
-	}
+  private final Client client;
+  private final List<meteor.input.KeyListener> keyListeners = new CopyOnWriteArrayList<>();
+  public Logger log = new Logger("KeyManager");
 
-	private final List<meteor.input.KeyListener> keyListeners = new CopyOnWriteArrayList<>();
+  @Inject
+  private KeyManager(@Nullable final Client client) {
+    this.client = client;
+  }
 
-	public void registerKeyListener(meteor.input.KeyListener keyListener)
-	{
-		if (!keyListeners.contains(keyListener))
-		{
-			log.debug("Registering key listener: " + keyListener);
-			keyListeners.add(keyListener);
-		}
-	}
+  public void registerKeyListener(meteor.input.KeyListener keyListener) {
+    if (!keyListeners.contains(keyListener)) {
+      log.debug("Registering key listener: " + keyListener);
+      keyListeners.add(keyListener);
+    }
+  }
 
-	public void unregisterKeyListener(meteor.input.KeyListener keyListener)
-	{
-		final boolean unregistered = keyListeners.remove(keyListener);
-		if (unregistered)
-		{
-			log.debug("Unregistered key listener: " + keyListener);
-		}
-	}
+  public void unregisterKeyListener(meteor.input.KeyListener keyListener) {
+    final boolean unregistered = keyListeners.remove(keyListener);
+    if (unregistered) {
+      log.debug("Unregistered key listener: " + keyListener);
+    }
+  }
 
-	public void processKeyPressed(KeyEvent keyEvent)
-	{
-		if (keyEvent.isConsumed())
-		{
-			return;
-		}
+  public void processKeyPressed(KeyEvent keyEvent) {
+    if (keyEvent.isConsumed()) {
+      return;
+    }
 
-		for (meteor.input.KeyListener keyListener : keyListeners)
-		{
-			if (!shouldProcess(keyListener))
-			{
-				continue;
-			}
+    for (meteor.input.KeyListener keyListener : keyListeners) {
+      if (!shouldProcess(keyListener)) {
+        continue;
+      }
 
-			keyListener.keyPressed(keyEvent);
-			if (keyEvent.isConsumed())
-			{
-				break;
-			}
-		}
-	}
+      keyListener.keyPressed(keyEvent);
+      if (keyEvent.isConsumed()) {
+        break;
+      }
+    }
+  }
 
-	public void processKeyReleased(KeyEvent keyEvent)
-	{
-		if (keyEvent.isConsumed())
-		{
-			return;
-		}
+  public void processKeyReleased(KeyEvent keyEvent) {
+    if (keyEvent.isConsumed()) {
+      return;
+    }
 
-		for (meteor.input.KeyListener keyListener : keyListeners)
-		{
-			if (!shouldProcess(keyListener))
-			{
-				continue;
-			}
+    for (meteor.input.KeyListener keyListener : keyListeners) {
+      if (!shouldProcess(keyListener)) {
+        continue;
+      }
 
-			keyListener.keyReleased(keyEvent);
-			if (keyEvent.isConsumed())
-			{
-				break;
-			}
-		}
-	}
+      keyListener.keyReleased(keyEvent);
+      if (keyEvent.isConsumed()) {
+        break;
+      }
+    }
+  }
 
-	public void processKeyTyped(KeyEvent keyEvent)
-	{
-		if (keyEvent.isConsumed())
-		{
-			return;
-		}
+  public void processKeyTyped(KeyEvent keyEvent) {
+    if (keyEvent.isConsumed()) {
+      return;
+    }
 
-		for (meteor.input.KeyListener keyListener : keyListeners)
-		{
-			if (!shouldProcess(keyListener))
-			{
-				continue;
-			}
+    for (meteor.input.KeyListener keyListener : keyListeners) {
+      if (!shouldProcess(keyListener)) {
+        continue;
+      }
 
-			keyListener.keyTyped(keyEvent);
-			if (keyEvent.isConsumed())
-			{
-				break;
-			}
-		}
-	}
+      keyListener.keyTyped(keyEvent);
+      if (keyEvent.isConsumed()) {
+        break;
+      }
+    }
+  }
 
-	private boolean shouldProcess(final meteor.input.KeyListener keyListener)
-	{
-		if (client == null)
-		{
-			return true;
-		}
+  private boolean shouldProcess(final meteor.input.KeyListener keyListener) {
+    if (client == null) {
+      return true;
+    }
 
-		final GameState gameState = client.getGameState();
+    final GameState gameState = client.getGameState();
 
-		if (gameState == GameState.LOGIN_SCREEN || gameState == GameState.LOGIN_SCREEN_AUTHENTICATOR)
-		{
-			return keyListener.isEnabledOnLoginScreen();
-		}
+    if (gameState == GameState.LOGIN_SCREEN || gameState == GameState.LOGIN_SCREEN_AUTHENTICATOR) {
+      return keyListener.isEnabledOnLoginScreen();
+    }
 
-		return true;
-	}
+    return true;
+  }
 }

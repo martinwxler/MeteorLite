@@ -15,10 +15,9 @@
  */
 package org.jetbrains.java.decompiler.code;
 
-import org.jetbrains.java.decompiler.main.DecompilerContext;
-
 import java.io.DataOutputStream;
 import java.io.IOException;
+import org.jetbrains.java.decompiler.main.DecompilerContext;
 
 public class ExceptionHandler {
 
@@ -55,7 +54,8 @@ public class ExceptionHandler {
     String new_line_separator = DecompilerContext.getNewLineSeparator();
 
     return "from: " + from + " to: " + to + " handler: " + handler + new_line_separator +
-           "from_instr: " + from_instr + " to_instr: " + to_instr + " handler_instr: " + handler_instr + new_line_separator +
-           "exceptionClass: " + exceptionClass + new_line_separator;
+        "from_instr: " + from_instr + " to_instr: " + to_instr + " handler_instr: " + handler_instr
+        + new_line_separator +
+        "exceptionClass: " + exceptionClass + new_line_separator;
   }
 }

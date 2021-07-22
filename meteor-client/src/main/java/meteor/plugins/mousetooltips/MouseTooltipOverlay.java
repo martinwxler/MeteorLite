@@ -26,6 +26,10 @@ package meteor.plugins.mousetooltips;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.util.Set;
+import javax.inject.Inject;
 import meteor.ui.overlay.Overlay;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayPosition;
@@ -38,140 +42,123 @@ import net.runelite.api.VarClientInt;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 
-import javax.inject.Inject;
-import java.awt.*;
-import java.util.Set;
+class MouseTooltipOverlay extends Overlay {
 
-class MouseTooltipOverlay extends Overlay
-{
-	/**
-	 * Menu types which are on widgets.
-	 */
-	private static final Set<MenuAction> WIDGET_MENU_ACTIONS = ImmutableSet.of(
-		MenuAction.WIDGET_TYPE_1,
-		MenuAction.WIDGET_TYPE_2,
-		MenuAction.WIDGET_TYPE_3,
-		MenuAction.WIDGET_TYPE_4,
-		MenuAction.WIDGET_TYPE_5,
-		MenuAction.WIDGET_TYPE_6,
-		MenuAction.ITEM_USE_ON_WIDGET_ITEM,
-		MenuAction.ITEM_USE_ON_WIDGET,
-		MenuAction.ITEM_FIRST_OPTION,
-		MenuAction.ITEM_SECOND_OPTION,
-		MenuAction.ITEM_THIRD_OPTION,
-		MenuAction.ITEM_FOURTH_OPTION,
-		MenuAction.ITEM_FIFTH_OPTION,
-		MenuAction.ITEM_USE,
-		MenuAction.WIDGET_FIRST_OPTION,
-		MenuAction.WIDGET_SECOND_OPTION,
-		MenuAction.WIDGET_THIRD_OPTION,
-		MenuAction.WIDGET_FOURTH_OPTION,
-		MenuAction.WIDGET_FIFTH_OPTION,
-		MenuAction.EXAMINE_ITEM,
-		MenuAction.SPELL_CAST_ON_WIDGET,
-		MenuAction.CC_OP_LOW_PRIORITY,
-		MenuAction.CC_OP
-	);
+  /**
+   * Menu types which are on widgets.
+   */
+  private static final Set<MenuAction> WIDGET_MENU_ACTIONS = ImmutableSet.of(
+      MenuAction.WIDGET_TYPE_1,
+      MenuAction.WIDGET_TYPE_2,
+      MenuAction.WIDGET_TYPE_3,
+      MenuAction.WIDGET_TYPE_4,
+      MenuAction.WIDGET_TYPE_5,
+      MenuAction.WIDGET_TYPE_6,
+      MenuAction.ITEM_USE_ON_WIDGET_ITEM,
+      MenuAction.ITEM_USE_ON_WIDGET,
+      MenuAction.ITEM_FIRST_OPTION,
+      MenuAction.ITEM_SECOND_OPTION,
+      MenuAction.ITEM_THIRD_OPTION,
+      MenuAction.ITEM_FOURTH_OPTION,
+      MenuAction.ITEM_FIFTH_OPTION,
+      MenuAction.ITEM_USE,
+      MenuAction.WIDGET_FIRST_OPTION,
+      MenuAction.WIDGET_SECOND_OPTION,
+      MenuAction.WIDGET_THIRD_OPTION,
+      MenuAction.WIDGET_FOURTH_OPTION,
+      MenuAction.WIDGET_FIFTH_OPTION,
+      MenuAction.EXAMINE_ITEM,
+      MenuAction.SPELL_CAST_ON_WIDGET,
+      MenuAction.CC_OP_LOW_PRIORITY,
+      MenuAction.CC_OP
+  );
 
-	private final TooltipManager tooltipManager;
-	private final Client client;
-	private final MouseTooltipConfig config;
+  private final TooltipManager tooltipManager;
+  private final Client client;
+  private final MouseTooltipConfig config;
 
-	@Inject
-	MouseTooltipOverlay(Client client, TooltipManager tooltipManager, MouseTooltipConfig config)
-	{
-		setPosition(OverlayPosition.DYNAMIC);
-		setLayer(OverlayLayer.ABOVE_WIDGETS);
-		// additionally allow tooltips above the full screen world map and welcome screen
-		drawAfterInterface(WidgetID.FULLSCREEN_CONTAINER_TLI);
-		this.client = client;
-		this.tooltipManager = tooltipManager;
-		this.config = config;
-	}
+  @Inject
+  MouseTooltipOverlay(Client client, TooltipManager tooltipManager, MouseTooltipConfig config) {
+    setPosition(OverlayPosition.DYNAMIC);
+    setLayer(OverlayLayer.ABOVE_WIDGETS);
+    // additionally allow tooltips above the full screen world map and welcome screen
+    drawAfterInterface(WidgetID.FULLSCREEN_CONTAINER_TLI);
+    this.client = client;
+    this.tooltipManager = tooltipManager;
+    this.config = config;
+  }
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		if (client.isMenuOpen())
-		{
-			return null;
-		}
+  @Override
+  public Dimension render(Graphics2D graphics) {
+    if (client.isMenuOpen()) {
+      return null;
+    }
 
-		MenuEntry[] menuEntries = client.getMenuEntries();
-		int last = menuEntries.length - 1;
+    MenuEntry[] menuEntries = client.getMenuEntries();
+    int last = menuEntries.length - 1;
 
-		if (last < 0)
-		{
-			return null;
-		}
+    if (last < 0) {
+      return null;
+    }
 
-		MenuEntry menuEntry = menuEntries[last];
-		String target = menuEntry.getTarget();
-		String option = menuEntry.getOption();
-		MenuAction type = MenuAction.of(menuEntry.getType());
+    MenuEntry menuEntry = menuEntries[last];
+    String target = menuEntry.getTarget();
+    String option = menuEntry.getOption();
+    MenuAction type = MenuAction.of(menuEntry.getType());
 
-		if (type == MenuAction.RUNELITE_OVERLAY || type == MenuAction.CC_OP_LOW_PRIORITY)
-		{
-			// These are always right click only
-			return null;
-		}
+    if (type == MenuAction.RUNELITE_OVERLAY || type == MenuAction.CC_OP_LOW_PRIORITY) {
+      // These are always right click only
+      return null;
+    }
 
-		if (Strings.isNullOrEmpty(option))
-		{
-			return null;
-		}
+    if (Strings.isNullOrEmpty(option)) {
+      return null;
+    }
 
-		// Trivial options that don't need to be highlighted, add more as they appear.
-		switch (option)
-		{
-			case "Walk here":
-			case "Cancel":
-			case "Continue":
-				return null;
-			case "Move":
-				// Hide overlay on sliding puzzle boxes
-				if (target.contains("Sliding piece"))
-				{
-					return null;
-				}
-		}
+    // Trivial options that don't need to be highlighted, add more as they appear.
+    switch (option) {
+      case "Walk here":
+      case "Cancel":
+      case "Continue":
+        return null;
+      case "Move":
+        // Hide overlay on sliding puzzle boxes
+        if (target.contains("Sliding piece")) {
+          return null;
+        }
+    }
 
-		if (WIDGET_MENU_ACTIONS.contains(type))
-		{
-			final int widgetId = menuEntry.getParam1();
-			final int groupId = WidgetInfo.TO_GROUP(widgetId);
+    if (WIDGET_MENU_ACTIONS.contains(type)) {
+      final int widgetId = menuEntry.getParam1();
+      final int groupId = WidgetInfo.TO_GROUP(widgetId);
 
-			if (!config.uiTooltip())
-			{
-				return null;
-			}
+      if (!config.uiTooltip()) {
+        return null;
+      }
 
-			if (!config.chatboxTooltip() && groupId == WidgetInfo.CHATBOX.getGroupId())
-			{
-				return null;
-			}
+      if (!config.chatboxTooltip() && groupId == WidgetInfo.CHATBOX.getGroupId()) {
+        return null;
+      }
 
-			if (config.disableSpellbooktooltip() && groupId == WidgetID.SPELLBOOK_GROUP_ID)
-			{
-				return null;
-			}
-		}
+      if (config.disableSpellbooktooltip() && groupId == WidgetID.SPELLBOOK_GROUP_ID) {
+        return null;
+      }
+    }
 
-		// If this varc is set, a tooltip will be displayed soon
-		int tooltipTimeout = client.getVar(VarClientInt.TOOLTIP_TIMEOUT);
-		if (tooltipTimeout > client.getGameCycle())
-		{
-			return null;
-		}
+    // If this varc is set, a tooltip will be displayed soon
+    int tooltipTimeout = client.getVar(VarClientInt.TOOLTIP_TIMEOUT);
+    if (tooltipTimeout > client.getGameCycle()) {
+      return null;
+    }
 
-		// If this varc is set, a tooltip is already being displayed
-		int tooltipDisplayed = client.getVar(VarClientInt.TOOLTIP_VISIBLE);
-		if (tooltipDisplayed == 1)
-		{
-			return null;
-		}
+    // If this varc is set, a tooltip is already being displayed
+    int tooltipDisplayed = client.getVar(VarClientInt.TOOLTIP_VISIBLE);
+    if (tooltipDisplayed == 1) {
+      return null;
+    }
 
-		tooltipManager.addFront(new Tooltip(option + (Strings.isNullOrEmpty(target) ? "" : " " + target)));
-		return null;
-	}
+    tooltipManager
+        .addFront(new Tooltip(option + (Strings.isNullOrEmpty(target) ? "" : " " + target)));
+    return null;
+  }
 }

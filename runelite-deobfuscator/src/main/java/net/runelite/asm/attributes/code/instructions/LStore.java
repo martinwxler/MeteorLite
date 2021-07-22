@@ -39,66 +39,58 @@ import net.runelite.asm.execution.VariableContext;
 import net.runelite.asm.execution.Variables;
 import org.objectweb.asm.MethodVisitor;
 
-public class LStore extends Instruction implements LVTInstruction
-{
-	private int index;
+public class LStore extends Instruction implements LVTInstruction {
 
-	public LStore(Instructions instructions, int index)
-	{
-		super(instructions, InstructionType.LSTORE);
+  private int index;
 
-		this.index = index;
-	}
-	
-	public LStore(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
+  public LStore(Instructions instructions, int index) {
+    super(instructions, InstructionType.LSTORE);
 
-	@Override
-	public void accept(MethodVisitor visitor)
-	{
-		visitor.visitVarInsn(this.getType().getCode(), this.getVariableIndex());
-	}
+    this.index = index;
+  }
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ins = new InstructionContext(this, frame);
-		Stack stack = frame.getStack();
-		Variables variables = frame.getVariables();
-		
-		StackContext value = stack.pop();
-		assert value.getType().equals(Type.LONG);
-		ins.pop(value);
-		
-		variables.set(index, new VariableContext(ins, value));
-		
-		return ins;
-	}
-	
-	@Override
-	public int getVariableIndex()
-	{
-		return index;
-	}
+  public LStore(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
 
-	@Override
-	public boolean store()
-	{
-		return true;
-	}
+  @Override
+  public void accept(MethodVisitor visitor) {
+    visitor.visitVarInsn(this.getType().getCode(), this.getVariableIndex());
+  }
 
-	@Override
-	public Instruction setVariableIndex(int idx)
-	{
-		index = idx;
-		return this;
-	}
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ins = new InstructionContext(this, frame);
+    Stack stack = frame.getStack();
+    Variables variables = frame.getVariables();
 
-	@Override
-	public LVTInstructionType type()
-	{
-		return LVTInstructionType.LONG;
-	}
+    StackContext value = stack.pop();
+    assert value.getType().equals(Type.LONG);
+    ins.pop(value);
+
+    variables.set(index, new VariableContext(ins, value));
+
+    return ins;
+  }
+
+  @Override
+  public int getVariableIndex() {
+    return index;
+  }
+
+  @Override
+  public boolean store() {
+    return true;
+  }
+
+  @Override
+  public Instruction setVariableIndex(int idx) {
+    index = idx;
+    return this;
+  }
+
+  @Override
+  public LVTInstructionType type() {
+    return LVTInstructionType.LONG;
+  }
 }

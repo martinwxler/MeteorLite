@@ -15,10 +15,9 @@
  */
 package org.jetbrains.java.decompiler.code.optinstructions;
 
-import org.jetbrains.java.decompiler.code.JumpInstruction;
-
 import java.io.DataOutputStream;
 import java.io.IOException;
+import org.jetbrains.java.decompiler.code.JumpInstruction;
 
 public class JSR extends JumpInstruction {
 
@@ -27,8 +26,7 @@ public class JSR extends JumpInstruction {
     if (operand < -32768 || operand > 32767) {
       out.writeByte(opc_jsr_w);
       out.writeInt(operand);
-    }
-    else {
+    } else {
       out.writeByte(opc_jsr);
       out.writeShort(operand);
     }
@@ -38,8 +36,7 @@ public class JSR extends JumpInstruction {
     int operand = getOperand(0);
     if (operand < -32768 || operand > 32767) {
       return 5;
-    }
-    else {
+    } else {
       return 3;
     }
   }

@@ -55,325 +55,286 @@ import net.runelite.api.widgets.WidgetItem;
  * Manages state of all game overlays
  */
 @Singleton
-public class OverlayManager
-{
-	public static final String OPTION_CONFIGURE = "Configure";
+public class OverlayManager {
 
-	private static final String OVERLAY_CONFIG_PREFERRED_LOCATION = "_preferredLocation";
-	private static final String OVERLAY_CONFIG_PREFERRED_POSITION = "_preferredPosition";
-	private static final String OVERLAY_CONFIG_PREFERRED_SIZE = "_preferredSize";
-	private static final String RUNELITE_CONFIG_GROUP_NAME = RuneLiteConfig.class.getAnnotation(ConfigGroup.class).value();
+  public static final String OPTION_CONFIGURE = "Configure";
+  @VisibleForTesting
+  static final Comparator<Overlay> OVERLAY_COMPARATOR = (a, b) ->
+  {
+    final OverlayPosition aPos = MoreObjects
+        .firstNonNull(a.getPreferredPosition(), a.getPosition());
+    final OverlayPosition bPos = MoreObjects
+        .firstNonNull(b.getPreferredPosition(), b.getPosition());
 
-	@VisibleForTesting
-	static final Comparator<Overlay> OVERLAY_COMPARATOR = (a, b) ->
-	{
-		final OverlayPosition aPos = MoreObjects.firstNonNull(a.getPreferredPosition(), a.getPosition());
-		final OverlayPosition bPos = MoreObjects.firstNonNull(b.getPreferredPosition(), b.getPosition());
+    if (aPos != bPos) {
+      // This is so non-dynamic overlays render after dynamic
+      // overlays, which are generally in the scene
+      return aPos.compareTo(bPos);
+    }
 
-		if (aPos != bPos)
-		{
-			// This is so non-dynamic overlays render after dynamic
-			// overlays, which are generally in the scene
-			return aPos.compareTo(bPos);
-		}
+    // For dynamic overlays, higher priority means to
+    // draw *later* so it is on top.
+    // For non-dynamic overlays, higher priority means
+    // draw *earlier* so that they are closer to their
+    // defined position.
+    return aPos == OverlayPosition.DYNAMIC
+        ? a.getPriority().compareTo(b.getPriority())
+        : b.getPriority().compareTo(a.getPriority());
+  };
+  private static final String OVERLAY_CONFIG_PREFERRED_LOCATION = "_preferredLocation";
+  private static final String OVERLAY_CONFIG_PREFERRED_POSITION = "_preferredPosition";
+  private static final String OVERLAY_CONFIG_PREFERRED_SIZE = "_preferredSize";
+  private static final String RUNELITE_CONFIG_GROUP_NAME = RuneLiteConfig.class
+      .getAnnotation(ConfigGroup.class).value();
+  /**
+   * Insertion-order sorted set of overlays All access to this must be guarded by a lock on this
+   * OverlayManager
+   */
+  @Getter(AccessLevel.PACKAGE)
+  private final List<Overlay> overlays = new ArrayList<>();
+  private final EventBus eventBus;
+  @Getter
+  @Setter
+  private Collection<WidgetItem> widgetItems = Collections.emptyList();
+  /**
+   * Valid keys are: OverlayLayer ABOVE_SCENE, UNDER_WIDGETS, and ALWAYS_ON_TOP A component id that
+   * is a layer An interface id << 16 | 0xffff
+   */
+  private ArrayListMultimap<Object, Overlay> overlayMap = ArrayListMultimap.create();
 
-		// For dynamic overlays, higher priority means to
-		// draw *later* so it is on top.
-		// For non-dynamic overlays, higher priority means
-		// draw *earlier* so that they are closer to their
-		// defined position.
-		return aPos == OverlayPosition.DYNAMIC
-			? a.getPriority().compareTo(b.getPriority())
-			: b.getPriority().compareTo(a.getPriority());
-	};
+  @Inject
+  private OverlayManager(final EventBus eventBus) {
+    this.eventBus = eventBus;
+  }
 
-	/**
-	 * Insertion-order sorted set of overlays
-	 * All access to this must be guarded by a lock on this OverlayManager
-	 */
-	@Getter(AccessLevel.PACKAGE)
-	private final List<Overlay> overlays = new ArrayList<>();
-	@Getter
-	@Setter
-	private Collection<WidgetItem> widgetItems = Collections.emptyList();
+  @Subscribe
+  public void onPluginChanged(final PluginChanged event) {
+    overlays.forEach(this::loadOverlay);
+    rebuildOverlayLayers();
+  }
 
-	/**
-	 * Valid keys are:
-	 * OverlayLayer ABOVE_SCENE, UNDER_WIDGETS, and ALWAYS_ON_TOP
-	 * A component id that is a layer
-	 * An interface id << 16 | 0xffff
-	 */
-	private ArrayListMultimap<Object, Overlay> overlayMap = ArrayListMultimap.create();
+  @Subscribe
+  public void onMenuOptionClicked(MenuOptionClicked event) {
+    MenuAction menuAction = event.getMenuAction();
+    if (menuAction != MenuAction.RUNELITE_OVERLAY
+        && menuAction != MenuAction.RUNELITE_OVERLAY_CONFIG) {
+      return;
+    }
 
-	private final EventBus eventBus;
+    event.consume();
 
-	@Inject
-	private OverlayManager(final EventBus eventBus)
-	{
-		this.eventBus = eventBus;
-	}
+    Overlay overlay = overlays.get(event.getId());
+    if (overlay != null) {
+      List<OverlayMenuEntry> menuEntries = overlay.getMenuEntries();
+      OverlayMenuEntry overlayMenuEntry = menuEntries.stream()
+          .filter(me -> me.getOption().equals(event.getMenuOption()))
+          .findAny()
+          .orElse(null);
+      if (overlayMenuEntry != null) {
+        eventBus.post(new OverlayMenuClicked(overlayMenuEntry, overlay));
+      }
+    }
+  }
 
-	@Subscribe
-	public void onPluginChanged(final PluginChanged event)
-	{
-		overlays.forEach(this::loadOverlay);
-		rebuildOverlayLayers();
-	}
+  /**
+   * Gets all of the overlays on a layer sorted by priority and position
+   *
+   * @param layer the layer
+   * @return An immutable list of all of the overlays on that layer
+   */
+  Collection<Overlay> getLayer(OverlayLayer layer) {
+    return Collections.unmodifiableCollection(overlayMap.get(layer));
+  }
 
-	@Subscribe
-	public void onMenuOptionClicked(MenuOptionClicked event)
-	{
-		MenuAction menuAction = event.getMenuAction();
-		if (menuAction != MenuAction.RUNELITE_OVERLAY && menuAction != MenuAction.RUNELITE_OVERLAY_CONFIG)
-		{
-			return;
-		}
+  Collection<Overlay> getForInterface(int interfaceId) {
+    return Collections.unmodifiableCollection(overlayMap.get(interfaceId << 16 | 0xffff));
+  }
 
-		event.consume();
+  Collection<Overlay> getForLayer(int layerId) {
+    return Collections.unmodifiableCollection(overlayMap.get(layerId));
+  }
 
-		Overlay overlay = overlays.get(event.getId());
-		if (overlay != null)
-		{
-			List<OverlayMenuEntry> menuEntries = overlay.getMenuEntries();
-			OverlayMenuEntry overlayMenuEntry = menuEntries.stream()
-				.filter(me -> me.getOption().equals(event.getMenuOption()))
-				.findAny()
-				.orElse(null);
-			if (overlayMenuEntry != null)
-			{
-				eventBus.post(new OverlayMenuClicked(overlayMenuEntry, overlay));
-			}
-		}
-	}
+  /**
+   * Add overlay.
+   *
+   * @param overlay the overlay
+   * @return true if overlay was added
+   */
+  public synchronized boolean add(final Overlay overlay) {
+    if (overlays.contains(overlay)) {
+      return false;
+    }
 
-	/**
-	 * Gets all of the overlays on a layer sorted by priority and position
-	 *
-	 * @param layer the layer
-	 * @return An immutable list of all of the overlays on that layer
-	 */
-	Collection<Overlay> getLayer(OverlayLayer layer)
-	{
-		return Collections.unmodifiableCollection(overlayMap.get(layer));
-	}
+    // Add is always true
+    overlays.add(overlay);
+    loadOverlay(overlay);
+    updateOverlayConfig(overlay);
 
-	Collection<Overlay> getForInterface(int interfaceId)
-	{
-		return Collections.unmodifiableCollection(overlayMap.get(interfaceId << 16 | 0xffff));
-	}
+    // WidgetItemOverlays have a reference to the overlay manager in order to get the WidgetItems
+    // for each frame.
+    if (overlay instanceof WidgetItemOverlay) {
+      ((WidgetItemOverlay) overlay).setOverlayManager(this);
+    }
 
-	Collection<Overlay> getForLayer(int layerId)
-	{
-		return Collections.unmodifiableCollection(overlayMap.get(layerId));
-	}
+    rebuildOverlayLayers();
+    return true;
+  }
 
-	/**
-	 * Add overlay.
-	 *
-	 * @param overlay the overlay
-	 * @return true if overlay was added
-	 */
-	public synchronized boolean add(final Overlay overlay)
-	{
-		if (overlays.contains(overlay))
-		{
-			return false;
-		}
+  /**
+   * Remove overlay.
+   *
+   * @param overlay the overlay
+   * @return true if overlay was removed
+   */
+  public synchronized boolean remove(final Overlay overlay) {
+    final boolean remove = overlays.remove(overlay);
 
-		// Add is always true
-		overlays.add(overlay);
-		loadOverlay(overlay);
-		updateOverlayConfig(overlay);
+    if (remove) {
+      rebuildOverlayLayers();
+    }
 
-		// WidgetItemOverlays have a reference to the overlay manager in order to get the WidgetItems
-		// for each frame.
-		if (overlay instanceof WidgetItemOverlay)
-		{
-			((WidgetItemOverlay) overlay).setOverlayManager(this);
-		}
+    return remove;
+  }
 
-		rebuildOverlayLayers();
-		return true;
-	}
+  /**
+   * Remove if overlay matches filter
+   *
+   * @param filter the filter
+   * @return true if any overlay was removed
+   */
+  public synchronized boolean removeIf(Predicate<Overlay> filter) {
+    final boolean removeIf = overlays.removeIf(filter);
 
-	/**
-	 * Remove overlay.
-	 *
-	 * @param overlay the overlay
-	 * @return true if overlay was removed
-	 */
-	public synchronized boolean remove(final Overlay overlay)
-	{
-		final boolean remove = overlays.remove(overlay);
+    if (removeIf) {
+      rebuildOverlayLayers();
+    }
 
-		if (remove)
-		{
-			rebuildOverlayLayers();
-		}
+    return removeIf;
+  }
 
-		return remove;
-	}
+  /**
+   * Returns whether an overlay exists which matches the given predicate.
+   *
+   * @param filter Filter predicate function
+   * @return {@code true} if any overlays match the given filter, {@code false} otherwise
+   */
+  public synchronized boolean anyMatch(Predicate<Overlay> filter) {
+    return overlays.stream().anyMatch(filter);
+  }
 
-	/**
-	 * Remove if overlay matches filter
-	 *
-	 * @param filter the filter
-	 * @return true if any overlay was removed
-	 */
-	public synchronized boolean removeIf(Predicate<Overlay> filter)
-	{
-		final boolean removeIf = overlays.removeIf(filter);
+  /**
+   * Clear all overlays
+   */
+  public synchronized void clear() {
+    overlays.clear();
+    rebuildOverlayLayers();
+  }
 
-		if (removeIf)
-		{
-			rebuildOverlayLayers();
-		}
+  /**
+   * Force save overlay data
+   *
+   * @param overlay overlay to save
+   */
+  public synchronized void saveOverlay(final Overlay overlay) {
+    saveOverlayPosition(overlay);
+    saveOverlaySize(overlay);
+    saveOverlayLocation(overlay);
+    rebuildOverlayLayers();
+  }
 
-		return removeIf;
-	}
+  /**
+   * Resets stored overlay position data
+   *
+   * @param overlay overlay to reset
+   */
+  public synchronized void resetOverlay(final Overlay overlay) {
+    overlay.setPreferredPosition(null);
+    overlay.setPreferredSize(null);
+    overlay.setPreferredLocation(null);
+    saveOverlay(overlay);
+  }
 
-	/**
-	 * Returns whether an overlay exists which matches the given predicate.
-	 *
-	 * @param filter Filter predicate function
-	 * @return {@code true} if any overlays match the given filter, {@code false} otherwise
-	 */
-	public synchronized boolean anyMatch(Predicate<Overlay> filter)
-	{
-		return overlays.stream().anyMatch(filter);
-	}
+  synchronized void rebuildOverlayLayers() {
+    ArrayListMultimap<Object, Overlay> overlayMap = ArrayListMultimap.create();
+    for (final Overlay overlay : overlays) {
+      OverlayLayer layer = overlay.getLayer();
 
-	/**
-	 * Clear all overlays
-	 */
-	public synchronized void clear()
-	{
-		overlays.clear();
-		rebuildOverlayLayers();
-	}
+      if (overlay.getPreferredLocation() != null && overlay.getPreferredPosition() == null) {
+        // When UNDER_WIDGET overlays are in preferred locations, move to
+        // ABOVE_WIDGETS so that it can draw over interfaces
+        if (layer == OverlayLayer.UNDER_WIDGETS && !(overlay instanceof WidgetOverlay)) {
+          layer = OverlayLayer.ABOVE_WIDGETS;
+        }
+      }
 
-	/**
-	 * Force save overlay data
-	 *
-	 * @param overlay overlay to save
-	 */
-	public synchronized void saveOverlay(final Overlay overlay)
-	{
-		saveOverlayPosition(overlay);
-		saveOverlaySize(overlay);
-		saveOverlayLocation(overlay);
-		rebuildOverlayLayers();
-	}
+      switch (layer) {
+        case ABOVE_SCENE:
+        case UNDER_WIDGETS:
+        case ALWAYS_ON_TOP:
+          overlayMap.put(layer, overlay);
+          break;
+        case ABOVE_WIDGETS:
+          // draw after each of the top level interfaces
+          overlayMap.put(WidgetID.FIXED_VIEWPORT_GROUP_ID << 16 | 0xffff, overlay);
+          overlayMap
+              .put(WidgetID.RESIZABLE_VIEWPORT_OLD_SCHOOL_BOX_GROUP_ID << 16 | 0xffff, overlay);
+          overlayMap.put(WidgetID.RESIZABLE_VIEWPORT_BOTTOM_LINE_GROUP_ID << 16 | 0xffff, overlay);
+          break;
+      }
 
-	/**
-	 * Resets stored overlay position data
-	 *
-	 * @param overlay overlay to reset
-	 */
-	public synchronized void resetOverlay(final Overlay overlay)
-	{
-		overlay.setPreferredPosition(null);
-		overlay.setPreferredSize(null);
-		overlay.setPreferredLocation(null);
-		saveOverlay(overlay);
-	}
+      for (int drawHook : overlay.getDrawHooks()) {
+        overlayMap.put(drawHook, overlay);
+      }
+    }
 
-	synchronized void rebuildOverlayLayers()
-	{
-		ArrayListMultimap<Object, Overlay> overlayMap = ArrayListMultimap.create();
-		for (final Overlay overlay : overlays)
-		{
-			OverlayLayer layer = overlay.getLayer();
+    for (Object key : overlayMap.keys()) {
+      overlayMap.get(key).sort(OVERLAY_COMPARATOR);
+    }
 
-			if (overlay.getPreferredLocation() != null && overlay.getPreferredPosition() == null)
-			{
-				// When UNDER_WIDGET overlays are in preferred locations, move to
-				// ABOVE_WIDGETS so that it can draw over interfaces
-				if (layer == OverlayLayer.UNDER_WIDGETS && !(overlay instanceof WidgetOverlay))
-				{
-					layer = OverlayLayer.ABOVE_WIDGETS;
-				}
-			}
+    this.overlayMap = overlayMap;
+  }
 
-			switch (layer)
-			{
-				case ABOVE_SCENE:
-				case UNDER_WIDGETS:
-				case ALWAYS_ON_TOP:
-					overlayMap.put(layer, overlay);
-					break;
-				case ABOVE_WIDGETS:
-					// draw after each of the top level interfaces
-					overlayMap.put(WidgetID.FIXED_VIEWPORT_GROUP_ID << 16 | 0xffff, overlay);
-					overlayMap.put(WidgetID.RESIZABLE_VIEWPORT_OLD_SCHOOL_BOX_GROUP_ID << 16 | 0xffff, overlay);
-					overlayMap.put(WidgetID.RESIZABLE_VIEWPORT_BOTTOM_LINE_GROUP_ID << 16 | 0xffff, overlay);
-					break;
-			}
+  private void loadOverlay(final Overlay overlay) {
+    final Point location = loadOverlayLocation(overlay);
+    overlay.setPreferredLocation(location);
+    final Dimension size = loadOverlaySize(overlay);
+    overlay.setPreferredSize(size);
+    final OverlayPosition position = loadOverlayPosition(overlay);
+    overlay.setPreferredPosition(position);
+  }
 
-			for (int drawHook : overlay.getDrawHooks())
-			{
-				overlayMap.put(drawHook, overlay);
-			}
-		}
+  private void updateOverlayConfig(final Overlay overlay) {
+    if (overlay instanceof OverlayPanel) {
+      // Update preferred color for overlay panels based on configuration
+      ((OverlayPanel) overlay).setPreferredColor(((OverlayPanel) overlay).getPreferredColor());
+    }
+  }
 
-		for (Object key : overlayMap.keys())
-		{
-			overlayMap.get(key).sort(OVERLAY_COMPARATOR);
-		}
+  //TODO: Fix Config loading/saving
+  private void saveOverlayLocation(final Overlay overlay) {
+    final String key = overlay.getName() + OVERLAY_CONFIG_PREFERRED_LOCATION;
+  }
 
-		this.overlayMap = overlayMap;
-	}
+  private void saveOverlaySize(final Overlay overlay) {
+    final String key = overlay.getName() + OVERLAY_CONFIG_PREFERRED_SIZE;
+  }
 
-	private void loadOverlay(final Overlay overlay)
-	{
-		final Point location = loadOverlayLocation(overlay);
-		overlay.setPreferredLocation(location);
-		final Dimension size = loadOverlaySize(overlay);
-		overlay.setPreferredSize(size);
-		final OverlayPosition position = loadOverlayPosition(overlay);
-		overlay.setPreferredPosition(position);
-	}
+  private void saveOverlayPosition(final Overlay overlay) {
+    final String key = overlay.getName() + OVERLAY_CONFIG_PREFERRED_POSITION;
+  }
 
-	private void updateOverlayConfig(final Overlay overlay)
-	{
-		if (overlay instanceof OverlayPanel)
-		{
-			// Update preferred color for overlay panels based on configuration
-			((OverlayPanel) overlay).setPreferredColor(((OverlayPanel) overlay).getPreferredColor());
-		}
-	}
+  private Point loadOverlayLocation(final Overlay overlay) {
+    final String key = overlay.getName() + OVERLAY_CONFIG_PREFERRED_LOCATION;
+    return overlay.getPreferredLocation();
+  }
 
-	//TODO: Fix Config loading/saving
-	private void saveOverlayLocation(final Overlay overlay)
-	{
-		final String key = overlay.getName() + OVERLAY_CONFIG_PREFERRED_LOCATION;
-	}
+  private Dimension loadOverlaySize(final Overlay overlay) {
+    final String key = overlay.getName() + OVERLAY_CONFIG_PREFERRED_SIZE;
+    return overlay.getPreferredSize();
+  }
 
-	private void saveOverlaySize(final Overlay overlay)
-	{
-		final String key = overlay.getName() + OVERLAY_CONFIG_PREFERRED_SIZE;
-	}
-
-	private void saveOverlayPosition(final Overlay overlay)
-	{
-		final String key = overlay.getName() + OVERLAY_CONFIG_PREFERRED_POSITION;
-	}
-
-	private Point loadOverlayLocation(final Overlay overlay)
-	{
-		final String key = overlay.getName() + OVERLAY_CONFIG_PREFERRED_LOCATION;
-		return overlay.getPreferredLocation();
-	}
-
-	private Dimension loadOverlaySize(final Overlay overlay)
-	{
-		final String key = overlay.getName() + OVERLAY_CONFIG_PREFERRED_SIZE;
-		return overlay.getPreferredSize();
-	}
-
-	private OverlayPosition loadOverlayPosition(final Overlay overlay)
-	{
-		final String locationKey = overlay.getName() + OVERLAY_CONFIG_PREFERRED_POSITION;
-		return overlay.getPreferredPosition();
-	}
+  private OverlayPosition loadOverlayPosition(final Overlay overlay) {
+    final String locationKey = overlay.getName() + OVERLAY_CONFIG_PREFERRED_POSITION;
+    return overlay.getPreferredPosition();
+  }
 }

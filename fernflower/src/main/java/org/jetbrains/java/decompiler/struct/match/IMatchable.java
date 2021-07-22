@@ -18,6 +18,10 @@ package org.jetbrains.java.decompiler.struct.match;
 
 public interface IMatchable {
 
+  IMatchable findObject(MatchNode matchNode, int index);
+
+  boolean match(MatchNode matchNode, MatchEngine engine);
+
   enum MatchProperties {
     STATEMENT_TYPE,
     STATEMENT_RET,
@@ -25,7 +29,7 @@ public interface IMatchable {
     STATEMENT_EXPRSIZE,
     STATEMENT_POSITION,
     STATEMENT_IFTYPE,
-    
+
     EXPRENT_TYPE,
     EXPRENT_RET,
     EXPRENT_POSITION,
@@ -39,9 +43,5 @@ public interface IMatchable {
     EXPRENT_VAR_INDEX,
     EXPRENT_FIELD_NAME,
   }
-  
-  IMatchable findObject(MatchNode matchNode, int index);
 
-  boolean match(MatchNode matchNode, MatchEngine engine);
-  
 }

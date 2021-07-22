@@ -15,13 +15,12 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler;
 
-import org.jetbrains.java.decompiler.modules.decompiler.stats.Statement;
-import org.jetbrains.java.decompiler.util.ListStack;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.Statement;
+import org.jetbrains.java.decompiler.util.ListStack;
 
 //  --------------------------------------------------------------------
 //    Algorithm
@@ -90,29 +89,6 @@ public class StrongConnectivityHelper {
   // public methods
   // *****************************************************************************
 
-  public List<List<Statement>> findComponents(Statement stat) {
-
-    components = new ArrayList<>();
-    setProcessed = new HashSet<>();
-
-    visitTree(stat.getFirst());
-
-    for (Statement st : stat.getStats()) {
-      if (!setProcessed.contains(st) && st.getPredecessorEdges(Statement.STATEDGE_DIRECT_ALL).isEmpty()) {
-        visitTree(st);
-      }
-    }
-
-    // should not find any more nodes! FIXME: ??
-    for (Statement st : stat.getStats()) {
-      if (!setProcessed.contains(st)) {
-        visitTree(st);
-      }
-    }
-
-    return components;
-  }
-
   public static boolean isExitComponent(List<Statement> lst) {
 
     HashSet<Statement> set = new HashSet<>();
@@ -135,6 +111,30 @@ public class StrongConnectivityHelper {
     }
 
     return res;
+  }
+
+  public List<List<Statement>> findComponents(Statement stat) {
+
+    components = new ArrayList<>();
+    setProcessed = new HashSet<>();
+
+    visitTree(stat.getFirst());
+
+    for (Statement st : stat.getStats()) {
+      if (!setProcessed.contains(st) && st.getPredecessorEdges(Statement.STATEDGE_DIRECT_ALL)
+          .isEmpty()) {
+        visitTree(st);
+      }
+    }
+
+    // should not find any more nodes! FIXME: ??
+    for (Statement st : stat.getStats()) {
+      if (!setProcessed.contains(st)) {
+        visitTree(st);
+      }
+    }
+
+    return components;
   }
 
   // *****************************************************************************
@@ -161,7 +161,8 @@ public class StrongConnectivityHelper {
     lowmap.put(stat, ncounter);
     ncounter++;
 
-    List<Statement> lstSuccs = stat.getNeighbours(StatEdge.TYPE_REGULAR, Statement.DIRECTION_FORWARD); // TODO: set?
+    List<Statement> lstSuccs = stat
+        .getNeighbours(StatEdge.TYPE_REGULAR, Statement.DIRECTION_FORWARD); // TODO: set?
     lstSuccs.removeAll(setProcessed);
 
     for (int i = 0; i < lstSuccs.size(); i++) {
@@ -170,15 +171,13 @@ public class StrongConnectivityHelper {
 
       if (tset.contains(succ)) {
         secvalue = dfsnummap.get(succ);
-      }
-      else {
+      } else {
         tset.add(succ);
         visit(succ);
         secvalue = lowmap.get(succ);
       }
       lowmap.put(stat, Math.min(lowmap.get(stat), secvalue));
     }
-
 
     if (lowmap.get(stat).intValue() == dfsnummap.get(stat).intValue()) {
       List<Statement> lst = new ArrayList<>();
@@ -191,7 +190,6 @@ public class StrongConnectivityHelper {
       components.add(lst);
     }
   }
-
 
   // *****************************************************************************
   // getter and setter methods

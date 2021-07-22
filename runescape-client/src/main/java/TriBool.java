@@ -6,31 +6,32 @@ import net.runelite.mapping.ObfuscatedSignature;
 @ObfuscatedName("lu")
 @Implements("TriBool")
 public class TriBool {
-	@ObfuscatedName("f")
-	@ObfuscatedSignature(
-		descriptor = "Llu;"
-	)
-	@Export("TriBool_unknown")
-	public static final TriBool TriBool_unknown;
-	@ObfuscatedName("e")
-	@ObfuscatedSignature(
-		descriptor = "Llu;"
-	)
-	@Export("TriBool_true")
-	public static final TriBool TriBool_true;
-	@ObfuscatedName("v")
-	@ObfuscatedSignature(
-		descriptor = "Llu;"
-	)
-	@Export("TriBool_false")
-	public static final TriBool TriBool_false;
 
-	static {
-		TriBool_unknown = new TriBool(); // L: 4
-		TriBool_true = new TriBool(); // L: 5
-		TriBool_false = new TriBool(); // L: 6
-	}
+  @ObfuscatedName("f")
+  @ObfuscatedSignature(
+      descriptor = "Llu;"
+  )
+  @Export("TriBool_unknown")
+  public static final TriBool TriBool_unknown;
+  @ObfuscatedName("e")
+  @ObfuscatedSignature(
+      descriptor = "Llu;"
+  )
+  @Export("TriBool_true")
+  public static final TriBool TriBool_true;
+  @ObfuscatedName("v")
+  @ObfuscatedSignature(
+      descriptor = "Llu;"
+  )
+  @Export("TriBool_false")
+  public static final TriBool TriBool_false;
 
-	TriBool() {
-	} // L: 8
+  static {
+    TriBool_unknown = new TriBool(); // L: 4
+    TriBool_true = new TriBool(); // L: 5
+    TriBool_false = new TriBool(); // L: 6
+  }
+
+  TriBool() {
+  } // L: 8
 }

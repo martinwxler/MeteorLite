@@ -24,8 +24,7 @@
  */
 package meteor.ui.overlay.components;
 
-public enum ComponentOrientation
-{
-	HORIZONTAL,
-	VERTICAL
+public enum ComponentOrientation {
+  HORIZONTAL,
+  VERTICAL
 }

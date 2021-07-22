@@ -15,16 +15,14 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler;
 
-import org.jetbrains.java.decompiler.modules.decompiler.stats.DoStatement;
-import org.jetbrains.java.decompiler.modules.decompiler.stats.Statement;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.DoStatement;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.Statement;
 
 
 public class EliminateLoopsHelper {
-
 
   //	public static boolean eliminateLoops(Statement root) {
   //
@@ -52,7 +50,7 @@ public class EliminateLoopsHelper {
       }
     }
 
-    if (stat.type == Statement.TYPE_DO && isLoopRedundant((DoStatement)stat)) {
+    if (stat.type == Statement.TYPE_DO && isLoopRedundant((DoStatement) stat)) {
       return true;
     }
 
@@ -78,11 +76,11 @@ public class EliminateLoopsHelper {
     // collect relevant break edges
     List<StatEdge> lstBreakEdges = new ArrayList<>();
     for (StatEdge edge : loop.getLabelEdges()) {
-      if (edge.getType() == StatEdge.TYPE_BREAK) { // all break edges are explicit because of LOOP_DO type
+      if (edge.getType()
+          == StatEdge.TYPE_BREAK) { // all break edges are explicit because of LOOP_DO type
         lstBreakEdges.add(edge);
       }
     }
-
 
     Statement loopcontent = loop.getFirst();
 
@@ -94,7 +92,6 @@ public class EliminateLoopsHelper {
         lstBreakEdges.remove(edge);
       }
     }
-
 
     if (!lstBreakEdges.isEmpty()) {
       if (firstok) {
@@ -118,11 +115,14 @@ public class EliminateLoopsHelper {
 
         for (int i = 0; i < lstBreakEdges.size(); i++) {
           Statement st = lstEdgeClosures.get(i);
-          statLabeled.put(st.id, LowBreakHelper.isBreakEdgeLabeled(lstBreakEdges.get(i).getSource(), st) | statLabeled.get(st.id));
+          statLabeled.put(st.id,
+              LowBreakHelper.isBreakEdgeLabeled(lstBreakEdges.get(i).getSource(), st) | statLabeled
+                  .get(st.id));
         }
 
         for (int i = 0; i < lstBreakEdges.size(); i++) {
-          lstEdgeClosures.set(i, getMaxBreakLift(lstEdgeClosures.get(i), lstBreakEdges.get(i), statLabeled, loop));
+          lstEdgeClosures.set(i,
+              getMaxBreakLift(lstEdgeClosures.get(i), lstBreakEdges.get(i), statLabeled, loop));
         }
 
         statLabeled.clear();
@@ -132,21 +132,21 @@ public class EliminateLoopsHelper {
 
         for (int i = 0; i < lstBreakEdges.size(); i++) {
           Statement st = lstEdgeClosures.get(i);
-          statLabeled.put(st.id, LowBreakHelper.isBreakEdgeLabeled(lstBreakEdges.get(i).getSource(), st) | statLabeled.get(st.id));
+          statLabeled.put(st.id,
+              LowBreakHelper.isBreakEdgeLabeled(lstBreakEdges.get(i).getSource(), st) | statLabeled
+                  .get(st.id));
         }
 
         long postcount = statLabeled.values().stream().filter(Boolean::booleanValue).count();
 
         if (precount <= postcount) {
           return false;
-        }
-        else {
+        } else {
           for (int i = 0; i < lstBreakEdges.size(); i++) {
             lstEdgeClosures.get(i).addLabeledEdge(lstBreakEdges.get(i));
           }
         }
-      }
-      else {
+      } else {
         return false;
       }
     }
@@ -156,7 +156,8 @@ public class EliminateLoopsHelper {
     return true;
   }
 
-  private static Statement getMaxBreakLift(Statement stat, StatEdge edge, HashMap<Integer, Boolean> statLabeled, Statement max) {
+  private static Statement getMaxBreakLift(Statement stat, StatEdge edge,
+      HashMap<Integer, Boolean> statLabeled, Statement max) {
 
     Statement closure = stat;
     Statement newclosure = stat;
@@ -168,14 +169,17 @@ public class EliminateLoopsHelper {
     return closure;
   }
 
-  private static Statement getNextBreakLift(Statement stat, StatEdge edge, HashMap<Integer, Boolean> statLabeled, Statement max) {
+  private static Statement getNextBreakLift(Statement stat, StatEdge edge,
+      HashMap<Integer, Boolean> statLabeled, Statement max) {
 
     Statement closure = stat.getParent();
 
-    while (closure != null && closure != max && !closure.containsStatementStrict(edge.getDestination())) {
+    while (closure != null && closure != max && !closure
+        .containsStatementStrict(edge.getDestination())) {
 
       boolean edge_labeled = LowBreakHelper.isBreakEdgeLabeled(edge.getSource(), closure);
-      boolean stat_labeled = statLabeled.containsKey(closure.id) ? statLabeled.get(closure.id) : closure.isLabeled();
+      boolean stat_labeled =
+          statLabeled.containsKey(closure.id) ? statLabeled.get(closure.id) : closure.isLabeled();
 
       if (stat_labeled || !edge_labeled) {
         return closure;

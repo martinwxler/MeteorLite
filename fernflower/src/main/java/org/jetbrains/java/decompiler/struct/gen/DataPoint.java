@@ -15,45 +15,17 @@
  */
 package org.jetbrains.java.decompiler.struct.gen;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.jetbrains.java.decompiler.code.CodeConstants;
 import org.jetbrains.java.decompiler.struct.StructMethod;
 import org.jetbrains.java.decompiler.util.ListStack;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class DataPoint {
 
   private List<VarType> localVariables = new ArrayList<>();
 
   private ListStack<VarType> stack = new ListStack<>();
-
-
-  public void setVariable(int index, VarType value) {
-    if (index >= localVariables.size()) {
-      for (int i = localVariables.size(); i <= index; i++) {
-        localVariables.add(new VarType(CodeConstants.TYPE_NOTINITIALIZED));
-      }
-    }
-
-    localVariables.set(index, value);
-  }
-
-  public VarType getVariable(int index) {
-    if (index < localVariables.size()) {
-      return localVariables.get(index);
-    }
-    else {
-      return new VarType(CodeConstants.TYPE_NOTINITIALIZED);
-    }
-  }
-
-  public DataPoint copy() {
-    DataPoint point = new DataPoint();
-    point.setLocalVariables(new ArrayList<>(localVariables));
-    point.setStack(stack.clone());
-    return point;
-  }
 
   public static DataPoint getInitialDataPoint(StructMethod mt) {
 
@@ -78,6 +50,30 @@ public class DataPoint {
     return point;
   }
 
+  public void setVariable(int index, VarType value) {
+    if (index >= localVariables.size()) {
+      for (int i = localVariables.size(); i <= index; i++) {
+        localVariables.add(new VarType(CodeConstants.TYPE_NOTINITIALIZED));
+      }
+    }
+
+    localVariables.set(index, value);
+  }
+
+  public VarType getVariable(int index) {
+    if (index < localVariables.size()) {
+      return localVariables.get(index);
+    } else {
+      return new VarType(CodeConstants.TYPE_NOTINITIALIZED);
+    }
+  }
+
+  public DataPoint copy() {
+    DataPoint point = new DataPoint();
+    point.setLocalVariables(new ArrayList<>(localVariables));
+    point.setStack(stack.clone());
+    return point;
+  }
 
   public List<VarType> getLocalVariables() {
     return localVariables;

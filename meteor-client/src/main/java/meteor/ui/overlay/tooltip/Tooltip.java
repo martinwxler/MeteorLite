@@ -26,19 +26,18 @@ package meteor.ui.overlay.tooltip;
 
 import lombok.Data;
 import meteor.ui.overlay.components.LayoutableRenderableEntity;
+
 @Data
-public class Tooltip
-{
-	private String text;
-	private LayoutableRenderableEntity component;
+public class Tooltip {
 
-	public Tooltip(final String text)
-	{
-		this.text = text;
-	}
+  private String text;
+  private LayoutableRenderableEntity component;
 
-	public Tooltip(final LayoutableRenderableEntity component)
-	{
-		this.component = component;
-	}
+  public Tooltip(final String text) {
+    this.text = text;
+  }
+
+  public Tooltip(final LayoutableRenderableEntity component) {
+    this.component = component;
+  }
 }

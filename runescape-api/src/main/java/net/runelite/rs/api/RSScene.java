@@ -5,54 +5,57 @@ import net.runelite.api.Scene;
 import net.runelite.api.Tile;
 import net.runelite.mapping.Import;
 
-public interface RSScene extends Scene
-{
-	@Import("tempGameObjects")
-	RSGameObject[] getObjects();
+public interface RSScene extends Scene {
 
-	@Import("tiles")
-	@Override
-	RSTile[][][] getTiles();
+  @Import("tempGameObjects")
+  RSGameObject[] getObjects();
 
-	@Import("tileShape2D")
-	int[][] getTileShape2D();
+  @Import("tiles")
+  @Override
+  RSTile[][][] getTiles();
 
-	@Import("tileRotation2D")
-	int[][] getTileRotation2D();
+  @Import("tileShape2D")
+  int[][] getTileShape2D();
 
-	@Import("drawTile")
-	void draw(Tile tile, boolean var2);
+  @Import("tileRotation2D")
+  int[][] getTileRotation2D();
 
-	@Import("tileHeights")
-	int[][][] getTileHeights();
+  @Import("drawTile")
+  void draw(Tile tile, boolean var2);
 
-	@Import("drawTileMinimap")
-	void drawTile(int[] pixels, int pixelOffset, int width, int z, int x, int y);
+  @Import("tileHeights")
+  int[][][] getTileHeights();
 
-	@Import("occlude")
-	void updateOccluders();
+  @Import("drawTileMinimap")
+  void drawTile(int[] pixels, int pixelOffset, int width, int z, int x, int y);
 
-	@Import("xSize")
-	int getMaxX();
+  @Import("occlude")
+  void updateOccluders();
 
-	@Import("planes")
-	int getMaxY();
+  @Import("xSize")
+  int getMaxX();
 
-	@Import("ySize")
-	int getMaxZ();
+  @Import("planes")
+  int getMaxY();
 
-	@Import("minPlane")
-	int getMinLevel();
+  @Import("ySize")
+  int getMaxZ();
 
-	@Import("minPlane")
-	void setMinLevel(int lvl);
+  @Import("minPlane")
+  int getMinLevel();
 
-	@Import("newGroundItemPile")
-	void newGroundItemPile(int plane, int x, int y, int hash, RSRenderable var5, long var6, RSRenderable var7, RSRenderable var8);
+  @Import("minPlane")
+  void setMinLevel(int lvl);
 
-	@Import("newGameObject")
-	boolean newGameObject(int plane, int startX, int startY, int var4, int var5, int centerX, int centerY, int height, RSRenderable entity, int orientation, boolean tmp, long tag, int flags);
+  @Import("newGroundItemPile")
+  void newGroundItemPile(int plane, int x, int y, int hash, RSRenderable var5, long var6,
+      RSRenderable var7, RSRenderable var8);
 
-	@Import("removeGameObject")
-	void removeGameObject(GameObject gameObject);
+  @Import("newGameObject")
+  boolean newGameObject(int plane, int startX, int startY, int var4, int var5, int centerX,
+      int centerY, int height, RSRenderable entity, int orientation, boolean tmp, long tag,
+      int flags);
+
+  @Import("removeGameObject")
+  void removeGameObject(GameObject gameObject);
 }

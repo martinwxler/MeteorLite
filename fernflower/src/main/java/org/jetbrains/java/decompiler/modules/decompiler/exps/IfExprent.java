@@ -15,13 +15,14 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.exps;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import org.jetbrains.java.decompiler.main.TextBuffer;
 import org.jetbrains.java.decompiler.main.collectors.BytecodeMappingTracer;
 import org.jetbrains.java.decompiler.struct.gen.VarType;
 import org.jetbrains.java.decompiler.util.InterpreterUtil;
 import org.jetbrains.java.decompiler.util.ListStack;
-
-import java.util.*;
 
 public class IfExprent extends Exprent {
 
@@ -51,26 +52,26 @@ public class IfExprent extends Exprent {
   public static final int IF_VALUE = 19;
 
   private static final int[] FUNC_TYPES = {
-    FunctionExprent.FUNCTION_EQ,
-    FunctionExprent.FUNCTION_NE,
-    FunctionExprent.FUNCTION_LT,
-    FunctionExprent.FUNCTION_GE,
-    FunctionExprent.FUNCTION_GT,
-    FunctionExprent.FUNCTION_LE,
-    FunctionExprent.FUNCTION_EQ,
-    FunctionExprent.FUNCTION_NE,
-    FunctionExprent.FUNCTION_EQ,
-    FunctionExprent.FUNCTION_NE,
-    FunctionExprent.FUNCTION_LT,
-    FunctionExprent.FUNCTION_GE,
-    FunctionExprent.FUNCTION_GT,
-    FunctionExprent.FUNCTION_LE,
-    FunctionExprent.FUNCTION_EQ,
-    FunctionExprent.FUNCTION_NE,
-    FunctionExprent.FUNCTION_CADD,
-    FunctionExprent.FUNCTION_COR,
-    FunctionExprent.FUNCTION_BOOL_NOT,
-    -1
+      FunctionExprent.FUNCTION_EQ,
+      FunctionExprent.FUNCTION_NE,
+      FunctionExprent.FUNCTION_LT,
+      FunctionExprent.FUNCTION_GE,
+      FunctionExprent.FUNCTION_GT,
+      FunctionExprent.FUNCTION_LE,
+      FunctionExprent.FUNCTION_EQ,
+      FunctionExprent.FUNCTION_NE,
+      FunctionExprent.FUNCTION_EQ,
+      FunctionExprent.FUNCTION_NE,
+      FunctionExprent.FUNCTION_LT,
+      FunctionExprent.FUNCTION_GE,
+      FunctionExprent.FUNCTION_GT,
+      FunctionExprent.FUNCTION_LE,
+      FunctionExprent.FUNCTION_EQ,
+      FunctionExprent.FUNCTION_NE,
+      FunctionExprent.FUNCTION_CADD,
+      FunctionExprent.FUNCTION_COR,
+      FunctionExprent.FUNCTION_BOOL_NOT,
+      -1
   };
 
   private Exprent condition;
@@ -80,15 +81,13 @@ public class IfExprent extends Exprent {
 
     if (ifType <= IF_LE) {
       stack.push(new ConstExprent(0, true, null));
-    }
-    else if (ifType <= IF_NONNULL) {
+    } else if (ifType <= IF_NONNULL) {
       stack.push(new ConstExprent(VarType.VARTYPE_NULL, null, null));
     }
 
     if (ifType == IF_VALUE) {
       condition = stack.pop();
-    }
-    else {
+    } else {
       condition = new FunctionExprent(FUNC_TYPES[ifType], stack, bytecodeOffsets);
     }
   }
@@ -127,15 +126,20 @@ public class IfExprent extends Exprent {
 
   @Override
   public boolean equals(Object o) {
-    if (o == this) return true;
-    if (o == null || !(o instanceof IfExprent)) return false;
+    if (o == this) {
+      return true;
+    }
+    if (o == null || !(o instanceof IfExprent)) {
+      return false;
+    }
 
-    IfExprent ie = (IfExprent)o;
+    IfExprent ie = (IfExprent) o;
     return InterpreterUtil.equalObjects(condition, ie.getCondition());
   }
 
   public IfExprent negateIf() {
-    condition = new FunctionExprent(FunctionExprent.FUNCTION_BOOL_NOT, condition, condition.bytecode);
+    condition = new FunctionExprent(FunctionExprent.FUNCTION_BOOL_NOT, condition,
+        condition.bytecode);
     return this;
   }
 

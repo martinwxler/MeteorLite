@@ -15,10 +15,9 @@
  */
 package org.jetbrains.java.decompiler.code.optinstructions;
 
-import org.jetbrains.java.decompiler.code.Instruction;
-
 import java.io.DataOutputStream;
 import java.io.IOException;
+import org.jetbrains.java.decompiler.code.Instruction;
 
 public class RET extends Instruction {
 
@@ -29,8 +28,7 @@ public class RET extends Instruction {
     out.writeByte(opc_ret);
     if (wide) {
       out.writeShort(getOperand(0));
-    }
-    else {
+    } else {
       out.writeByte(getOperand(0));
     }
   }

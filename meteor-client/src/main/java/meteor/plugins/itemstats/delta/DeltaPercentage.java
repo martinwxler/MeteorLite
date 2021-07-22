@@ -27,14 +27,13 @@ package meteor.plugins.itemstats.delta;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class DeltaPercentage implements DeltaCalculator
-{
-	private final double perc;
-	private final int delta;
+public class DeltaPercentage implements DeltaCalculator {
 
-	@Override
-	public int calculateDelta(int max)
-	{
-		return (((int) (max * perc)) * (delta >= 0 ? 1 : -1)) + delta;
-	}
+  private final double perc;
+  private final int delta;
+
+  @Override
+  public int calculateDelta(int max) {
+    return (((int) (max * perc)) * (delta >= 0 ? 1 : -1)) + delta;
+  }
 }

@@ -6,8 +6,7 @@ import net.runelite.api.Actor;
 /**
  * An event where the graphic of an {@link Actor} has changed.
  * <p>
- * The graphic the player has changed to can be obtained using
- * {@link Actor#getGraphic()}.
+ * The graphic the player has changed to can be obtained using {@link Actor#getGraphic()}.
  * <p>
  * Examples of when this event may trigger include:
  * <ul>
@@ -19,10 +18,10 @@ import net.runelite.api.Actor;
  * @see net.runelite.api.GraphicID
  */
 @Data
-public class GraphicChanged
-{
-	/**
-	 * The actor that has had their graphic changed.
-	 */
-	private Actor actor;
+public class GraphicChanged {
+
+  /**
+   * The actor that has had their graphic changed.
+   */
+  private Actor actor;
 }

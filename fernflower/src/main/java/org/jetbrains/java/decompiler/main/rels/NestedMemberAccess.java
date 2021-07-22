@@ -15,13 +15,24 @@
  */
 package org.jetbrains.java.decompiler.main.rels;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import org.jetbrains.java.decompiler.code.CodeConstants;
 import org.jetbrains.java.decompiler.main.ClassesProcessor.ClassNode;
 import org.jetbrains.java.decompiler.main.DecompilerContext;
 import org.jetbrains.java.decompiler.main.collectors.CounterContainer;
 import org.jetbrains.java.decompiler.main.collectors.VarNamesCollector;
 import org.jetbrains.java.decompiler.main.extern.IFernflowerPreferences;
-import org.jetbrains.java.decompiler.modules.decompiler.exps.*;
+import org.jetbrains.java.decompiler.modules.decompiler.exps.AssignmentExprent;
+import org.jetbrains.java.decompiler.modules.decompiler.exps.ExitExprent;
+import org.jetbrains.java.decompiler.modules.decompiler.exps.Exprent;
+import org.jetbrains.java.decompiler.modules.decompiler.exps.FieldExprent;
+import org.jetbrains.java.decompiler.modules.decompiler.exps.FunctionExprent;
+import org.jetbrains.java.decompiler.modules.decompiler.exps.InvocationExprent;
+import org.jetbrains.java.decompiler.modules.decompiler.exps.VarExprent;
 import org.jetbrains.java.decompiler.modules.decompiler.sforms.DirectGraph;
 import org.jetbrains.java.decompiler.modules.decompiler.sforms.DirectNode;
 import org.jetbrains.java.decompiler.modules.decompiler.vars.VarVersionPair;
@@ -29,15 +40,48 @@ import org.jetbrains.java.decompiler.struct.StructMethod;
 import org.jetbrains.java.decompiler.struct.gen.MethodDescriptor;
 import org.jetbrains.java.decompiler.util.InterpreterUtil;
 
-import java.util.*;
-
 public class NestedMemberAccess {
 
-  private enum MethodAccess {NORMAL, FIELD_GET, FIELD_SET, METHOD, FUNCTION}
-
-  private boolean noSynthFlag;
   private final Map<MethodWrapper, MethodAccess> mapMethodType = new HashMap<>();
+  private boolean noSynthFlag;
 
+  private static boolean sameTree(ClassNode caller, ClassNode callee) {
+
+    if (caller.classStruct.qualifiedName.equals(callee.classStruct.qualifiedName)) {
+      return false;
+    }
+
+    while (caller.parent != null) {
+      caller = caller.parent;
+    }
+
+    while (callee.parent != null) {
+      callee = callee.parent;
+    }
+
+    return caller == callee;
+  }
+
+  private static Exprent replaceFunction(final InvocationExprent invexpr, final Exprent source) {
+    FunctionExprent functionExprent = (FunctionExprent) ((ExitExprent) source).getValue().copy();
+
+    List<Exprent> lstParameters = invexpr.getLstParameters();
+
+    FieldExprent fieldExprent = (FieldExprent) functionExprent.getLstOperands().get(0);
+    if (fieldExprent.isStatic()) {
+      if (!lstParameters.isEmpty()) {
+        return null;
+      }
+      return functionExprent;
+    }
+
+    if (lstParameters.size() != 1) {
+      return null;
+    }
+
+    fieldExprent.replaceExprent(fieldExprent.getInstance(), lstParameters.get(0));
+    return functionExprent;
+  }
 
   public void propagateMemberAccess(ClassNode root) {
     if (root.nested.isEmpty()) {
@@ -50,7 +94,6 @@ public class NestedMemberAccess {
 
     eliminateStaticAccess(root);
   }
-
 
   private void computeMethodTypes(ClassNode node) {
     if (node.type == ClassNode.CLASS_LAMBDA) {
@@ -84,7 +127,7 @@ public class NestedMemberAccess {
             Exprent exprCore = exprent;
 
             if (exprent.type == Exprent.EXPRENT_EXIT) {
-              ExitExprent exexpr = (ExitExprent)exprent;
+              ExitExprent exexpr = (ExitExprent) exprent;
               if (exexpr.getExitType() == ExitExprent.EXIT_RETURN && exexpr.getValue() != null) {
                 exprCore = exexpr.getValue();
               }
@@ -92,12 +135,14 @@ public class NestedMemberAccess {
 
             switch (exprCore.type) {
               case Exprent.EXPRENT_FIELD:
-                FieldExprent fexpr = (FieldExprent)exprCore;
+                FieldExprent fexpr = (FieldExprent) exprCore;
                 if ((parcount == 1 && !fexpr.isStatic()) ||
                     (parcount == 0 && fexpr.isStatic())) {
-                  if (fexpr.getClassname().equals(node.classStruct.qualifiedName)) {  // FIXME: check for private flag of the field
+                  if (fexpr.getClassname().equals(
+                      node.classStruct.qualifiedName)) {  // FIXME: check for private flag of the field
                     if (fexpr.isStatic() ||
-                        (fexpr.getInstance().type == Exprent.EXPRENT_VAR && ((VarExprent)fexpr.getInstance()).getIndex() == 0)) {
+                        (fexpr.getInstance().type == Exprent.EXPRENT_VAR
+                            && ((VarExprent) fexpr.getInstance()).getIndex() == 0)) {
                       type = MethodAccess.FIELD_GET;
                     }
                   }
@@ -106,7 +151,7 @@ public class NestedMemberAccess {
               case Exprent.EXPRENT_VAR:  // qualified this
                 if (parcount == 1) {
                   // this or final variable
-                  if (((VarExprent)exprCore).getIndex() != 0) {
+                  if (((VarExprent) exprCore).getIndex() != 0) {
                     type = MethodAccess.FIELD_GET;
                   }
                 }
@@ -114,7 +159,7 @@ public class NestedMemberAccess {
                 break;
               case Exprent.EXPRENT_FUNCTION:
                 // for now detect only increment/decrement
-                FunctionExprent functionExprent = (FunctionExprent)exprCore;
+                FunctionExprent functionExprent = (FunctionExprent) exprCore;
                 if (functionExprent.getFuncType() >= FunctionExprent.FUNCTION_IMM &&
                     functionExprent.getFuncType() <= FunctionExprent.FUNCTION_PPI) {
                   if (functionExprent.getLstOperands().get(0).type == Exprent.EXPRENT_FIELD) {
@@ -126,15 +171,18 @@ public class NestedMemberAccess {
                 type = MethodAccess.METHOD;
                 break;
               case Exprent.EXPRENT_ASSIGNMENT:
-                AssignmentExprent asexpr = (AssignmentExprent)exprCore;
-                if (asexpr.getLeft().type == Exprent.EXPRENT_FIELD && asexpr.getRight().type == Exprent.EXPRENT_VAR) {
-                  FieldExprent fexpras = (FieldExprent)asexpr.getLeft();
+                AssignmentExprent asexpr = (AssignmentExprent) exprCore;
+                if (asexpr.getLeft().type == Exprent.EXPRENT_FIELD
+                    && asexpr.getRight().type == Exprent.EXPRENT_VAR) {
+                  FieldExprent fexpras = (FieldExprent) asexpr.getLeft();
                   if ((parcount == 2 && !fexpras.isStatic()) ||
                       (parcount == 1 && fexpras.isStatic())) {
-                    if (fexpras.getClassname().equals(node.classStruct.qualifiedName)) { // FIXME: check for private flag of the field
+                    if (fexpras.getClassname().equals(
+                        node.classStruct.qualifiedName)) { // FIXME: check for private flag of the field
                       if (fexpras.isStatic() ||
-                          (fexpras.getInstance().type == Exprent.EXPRENT_VAR && ((VarExprent)fexpras.getInstance()).getIndex() == 0)) {
-                        if (((VarExprent)asexpr.getRight()).getIndex() == parcount - 1) {
+                          (fexpras.getInstance().type == Exprent.EXPRENT_VAR
+                              && ((VarExprent) fexpras.getInstance()).getIndex() == 0)) {
+                        if (((VarExprent) asexpr.getRight()).getIndex() == parcount - 1) {
                           type = MethodAccess.FIELD_SET;
                         }
                       }
@@ -147,19 +195,21 @@ public class NestedMemberAccess {
 
               type = MethodAccess.NORMAL;
 
-              InvocationExprent invexpr = (InvocationExprent)exprCore;
+              InvocationExprent invexpr = (InvocationExprent) exprCore;
 
               boolean isStatic = invexpr.isStatic();
               if ((isStatic && invexpr.getLstParameters().size() == parcount) ||
                   (!isStatic && invexpr.getInstance().type == Exprent.EXPRENT_VAR
-                   && ((VarExprent)invexpr.getInstance()).getIndex() == 0 && invexpr.getLstParameters().size() == parcount - 1)) {
+                      && ((VarExprent) invexpr.getInstance()).getIndex() == 0
+                      && invexpr.getLstParameters().size() == parcount - 1)) {
 
                 boolean equalpars = true;
 
                 int index = isStatic ? 0 : 1;
                 for (int i = 0; i < invexpr.getLstParameters().size(); i++) {
                   Exprent parexpr = invexpr.getLstParameters().get(i);
-                  if (parexpr.type != Exprent.EXPRENT_VAR || ((VarExprent)parexpr).getIndex() != index) {
+                  if (parexpr.type != Exprent.EXPRENT_VAR
+                      || ((VarExprent) parexpr).getIndex() != index) {
                     equalpars = false;
                     break;
                   }
@@ -171,8 +221,7 @@ public class NestedMemberAccess {
                 }
               }
             }
-          }
-          else if (graph.first.exprents.size() == 2) {
+          } else if (graph.first.exprents.size() == 2) {
             Exprent exprentFirst = graph.first.exprents.get(0);
             Exprent exprentSecond = graph.first.exprents.get(1);
 
@@ -182,20 +231,24 @@ public class NestedMemberAccess {
               MethodDescriptor mtdesc = MethodDescriptor.parseDescriptor(mt.getDescriptor());
               int parcount = mtdesc.params.length;
 
-              AssignmentExprent asexpr = (AssignmentExprent)exprentFirst;
-              if (asexpr.getLeft().type == Exprent.EXPRENT_FIELD && asexpr.getRight().type == Exprent.EXPRENT_VAR) {
-                FieldExprent fexpras = (FieldExprent)asexpr.getLeft();
+              AssignmentExprent asexpr = (AssignmentExprent) exprentFirst;
+              if (asexpr.getLeft().type == Exprent.EXPRENT_FIELD
+                  && asexpr.getRight().type == Exprent.EXPRENT_VAR) {
+                FieldExprent fexpras = (FieldExprent) asexpr.getLeft();
                 if ((parcount == 2 && !fexpras.isStatic()) ||
                     (parcount == 1 && fexpras.isStatic())) {
-                  if (fexpras.getClassname().equals(node.classStruct.qualifiedName)) { // FIXME: check for private flag of the field
+                  if (fexpras.getClassname().equals(
+                      node.classStruct.qualifiedName)) { // FIXME: check for private flag of the field
                     if (fexpras.isStatic() ||
-                        (fexpras.getInstance().type == Exprent.EXPRENT_VAR && ((VarExprent)fexpras.getInstance()).getIndex() == 0)) {
-                      if (((VarExprent)asexpr.getRight()).getIndex() == parcount - 1) {
+                        (fexpras.getInstance().type == Exprent.EXPRENT_VAR
+                            && ((VarExprent) fexpras.getInstance()).getIndex() == 0)) {
+                      if (((VarExprent) asexpr.getRight()).getIndex() == parcount - 1) {
 
-                        ExitExprent exexpr = (ExitExprent)exprentSecond;
-                        if (exexpr.getExitType() == ExitExprent.EXIT_RETURN && exexpr.getValue() != null) {
+                        ExitExprent exexpr = (ExitExprent) exprentSecond;
+                        if (exexpr.getExitType() == ExitExprent.EXIT_RETURN
+                            && exexpr.getValue() != null) {
                           if (exexpr.getValue().type == Exprent.EXPRENT_VAR &&
-                              ((VarExprent)asexpr.getRight()).getIndex() == parcount - 1) {
+                              ((VarExprent) asexpr.getRight()).getIndex() == parcount - 1) {
                             type = MethodAccess.FIELD_SET;
                           }
                         }
@@ -212,12 +265,10 @@ public class NestedMemberAccess {
 
     if (type != MethodAccess.NORMAL) {
       mapMethodType.put(method, type);
-    }
-    else {
+    } else {
       mapMethodType.remove(method);
     }
   }
-
 
   private void eliminateStaticAccess(ClassNode node) {
 
@@ -252,7 +303,7 @@ public class NestedMemberAccess {
             replaced |= replaceInvocations(node, meth, exprent);
 
             if (exprent.type == Exprent.EXPRENT_INVOCATION) {
-              Exprent ret = replaceAccessExprent(node, meth, (InvocationExprent)exprent);
+              Exprent ret = replaceAccessExprent(node, meth, (InvocationExprent) exprent);
 
               if (ret != null) {
                 nd.exprents.set(i, ret);
@@ -277,7 +328,6 @@ public class NestedMemberAccess {
     }
   }
 
-
   private boolean replaceInvocations(ClassNode caller, MethodWrapper meth, Exprent exprent) {
 
     boolean res = false;
@@ -292,7 +342,7 @@ public class NestedMemberAccess {
 
       for (Exprent expr : exprent.getAllExprents()) {
         if (expr.type == Exprent.EXPRENT_INVOCATION) {
-          Exprent newexpr = replaceAccessExprent(caller, meth, (InvocationExprent)expr);
+          Exprent newexpr = replaceAccessExprent(caller, meth, (InvocationExprent) expr);
           if (newexpr != null) {
             exprent.replaceExprent(expr, newexpr);
             found = true;
@@ -310,29 +360,15 @@ public class NestedMemberAccess {
     return res;
   }
 
-  private static boolean sameTree(ClassNode caller, ClassNode callee) {
-
-    if (caller.classStruct.qualifiedName.equals(callee.classStruct.qualifiedName)) {
-      return false;
-    }
-
-    while (caller.parent != null) {
-      caller = caller.parent;
-    }
-
-    while (callee.parent != null) {
-      callee = callee.parent;
-    }
-
-    return caller == callee;
-  }
-
-  private Exprent replaceAccessExprent(ClassNode caller, MethodWrapper methdest, InvocationExprent invexpr) {
-    ClassNode node = DecompilerContext.getClassProcessor().getMapRootClasses().get(invexpr.getClassname());
+  private Exprent replaceAccessExprent(ClassNode caller, MethodWrapper methdest,
+      InvocationExprent invexpr) {
+    ClassNode node = DecompilerContext.getClassProcessor().getMapRootClasses()
+        .get(invexpr.getClassname());
 
     MethodWrapper methsource = null;
     if (node != null && node.getWrapper() != null) {
-      methsource = node.getWrapper().getMethodWrapper(invexpr.getName(), invexpr.getStringDescriptor());
+      methsource = node.getWrapper()
+          .getMethodWrapper(invexpr.getName(), invexpr.getStringDescriptor());
     }
 
     if (methsource == null || !mapMethodType.containsKey(methsource)) {
@@ -365,9 +401,9 @@ public class NestedMemberAccess {
 
     switch (type) {
       case FIELD_GET:
-        ExitExprent exsource = (ExitExprent)source;
+        ExitExprent exsource = (ExitExprent) source;
         if (exsource.getValue().type == Exprent.EXPRENT_VAR) { // qualified this
-          VarExprent var = (VarExprent)exsource.getValue();
+          VarExprent var = (VarExprent) exsource.getValue();
           String varname = methsource.varproc.getVarName(new VarVersionPair(var));
 
           if (!methdest.setOuterVarNames.contains(varname)) {
@@ -383,9 +419,8 @@ public class NestedMemberAccess {
           methdest.varproc.setVarName(new VarVersionPair(index, 0), varname);
 
           retexprent = ret;
-        }
-        else { // field
-          FieldExprent ret = (FieldExprent)exsource.getValue().copy();
+        } else { // field
+          FieldExprent ret = (FieldExprent) exsource.getValue().copy();
           if (!ret.isStatic()) {
             ret.replaceExprent(ret.getInstance(), invexpr.getLstParameters().get(0));
           }
@@ -395,18 +430,16 @@ public class NestedMemberAccess {
       case FIELD_SET:
         AssignmentExprent ret;
         if (source.type == Exprent.EXPRENT_EXIT) {
-          ExitExprent extex = (ExitExprent)source;
-          ret = (AssignmentExprent)extex.getValue().copy();
+          ExitExprent extex = (ExitExprent) source;
+          ret = (AssignmentExprent) extex.getValue().copy();
+        } else {
+          ret = (AssignmentExprent) source.copy();
         }
-        else {
-          ret = (AssignmentExprent)source.copy();
-        }
-        FieldExprent fexpr = (FieldExprent)ret.getLeft();
+        FieldExprent fexpr = (FieldExprent) ret.getLeft();
 
         if (fexpr.isStatic()) {
           ret.replaceExprent(ret.getRight(), invexpr.getLstParameters().get(0));
-        }
-        else {
+        } else {
           ret.replaceExprent(ret.getRight(), invexpr.getLstParameters().get(1));
           fexpr.replaceExprent(fexpr.getInstance(), invexpr.getLstParameters().get(0));
         }
@@ -417,10 +450,10 @@ public class NestedMemberAccess {
         break;
       case METHOD:
         if (source.type == Exprent.EXPRENT_EXIT) {
-          source = ((ExitExprent)source).getValue();
+          source = ((ExitExprent) source).getValue();
         }
 
-        InvocationExprent invret = (InvocationExprent)source.copy();
+        InvocationExprent invret = (InvocationExprent) source.copy();
 
         int index = 0;
         if (!invret.isStatic()) {
@@ -429,12 +462,12 @@ public class NestedMemberAccess {
         }
 
         for (int i = 0; i < invret.getLstParameters().size(); i++) {
-          invret.replaceExprent(invret.getLstParameters().get(i), invexpr.getLstParameters().get(i + index));
+          invret.replaceExprent(invret.getLstParameters().get(i),
+              invexpr.getLstParameters().get(i + index));
         }
 
         retexprent = invret;
     }
-
 
     if (retexprent != null) {
       // hide synthetic access method
@@ -447,31 +480,13 @@ public class NestedMemberAccess {
         }
       }
       if (hide) {
-        node.getWrapper().getHiddenMembers().add(InterpreterUtil.makeUniqueKey(invexpr.getName(), invexpr.getStringDescriptor()));
+        node.getWrapper().getHiddenMembers()
+            .add(InterpreterUtil.makeUniqueKey(invexpr.getName(), invexpr.getStringDescriptor()));
       }
     }
 
     return retexprent;
   }
 
-  private static Exprent replaceFunction(final InvocationExprent invexpr, final Exprent source) {
-    FunctionExprent functionExprent = (FunctionExprent)((ExitExprent)source).getValue().copy();
-
-    List<Exprent> lstParameters = invexpr.getLstParameters();
-
-    FieldExprent fieldExprent = (FieldExprent)functionExprent.getLstOperands().get(0);
-    if (fieldExprent.isStatic()) {
-      if (!lstParameters.isEmpty()) {
-        return null;
-      }
-      return functionExprent;
-    }
-
-    if (lstParameters.size() != 1) {
-      return null;
-    }
-
-    fieldExprent.replaceExprent(fieldExprent.getInstance(), lstParameters.get(0));
-    return functionExprent;
-  }
+  private enum MethodAccess {NORMAL, FIELD_GET, FIELD_SET, METHOD, FUNCTION}
 }

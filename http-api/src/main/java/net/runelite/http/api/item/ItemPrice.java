@@ -27,10 +27,10 @@ package net.runelite.http.api.item;
 import lombok.Data;
 
 @Data
-public class ItemPrice
-{
-	private int id;
-	private String name;
-	private int price;
-	private int wikiPrice;
+public class ItemPrice {
+
+  private int id;
+  private String name;
+  private int price;
+  private int wikiPrice;
 }

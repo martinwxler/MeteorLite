@@ -24,86 +24,96 @@
  */
 package net.runelite.api;
 
+import java.util.List;
 import net.runelite.api.model.Triangle;
 import net.runelite.api.model.Vertex;
-import java.util.List;
 
 /**
  * Represents the model of an object.
  */
-public interface Model extends Renderable
-{
-	/**
-	 * Gets a list of all vertices of the model.
-	 *
-	 * @return the vertices
-	 */
-	List<Vertex> getVertices();
+public interface Model extends Renderable {
 
-	/**
-	 * Gets a list of all triangles of the model.
-	 *
-	 * @return the triangle
-	 */
-	List<Triangle> getTriangles();
+  /**
+   * Gets a list of all vertices of the model.
+   *
+   * @return the vertices
+   */
+  List<Vertex> getVertices();
 
-	int getVerticesCount();
+  /**
+   * Gets a list of all triangles of the model.
+   *
+   * @return the triangle
+   */
+  List<Triangle> getTriangles();
 
-	int[] getVerticesX();
+  int getVerticesCount();
 
-	int[] getVerticesY();
+  int[] getVerticesX();
 
-	int[] getVerticesZ();
+  int[] getVerticesY();
 
-	int getTrianglesCount();
+  int[] getVerticesZ();
 
-	int[] getTrianglesX();
+  int getTrianglesCount();
 
-	int[] getTrianglesY();
+  int[] getTrianglesX();
 
-	int[] getTrianglesZ();
+  int[] getTrianglesY();
 
-	int[] getFaceColors1();
+  int[] getTrianglesZ();
 
-	int[] getFaceColors2();
+  int[] getFaceColors1();
 
-	int[] getFaceColors3();
+  int[] getFaceColors2();
 
-	byte[] getTriangleTransparencies();
+  int[] getFaceColors3();
 
-	int getSceneId();
-	void setSceneId(int sceneId);
+  byte[] getTriangleTransparencies();
 
-	int getBufferOffset();
-	void setBufferOffset(int bufferOffset);
+  int getSceneId();
 
-	int getUvBufferOffset();
-	void setUvBufferOffset(int bufferOffset);
+  void setSceneId(int sceneId);
 
-	int getModelHeight();
+  int getBufferOffset();
 
-	void calculateBoundsCylinder$api();
+  void setBufferOffset(int bufferOffset);
 
-	byte[] getFaceRenderPriorities();
+  int getUvBufferOffset();
 
-	int getRadius();
+  void setUvBufferOffset(int bufferOffset);
 
-	short[] getFaceTextures();
+  int getModelHeight();
 
-	float[][] getFaceTextureUCoordinates();
-	float[][] getFaceTextureVCoordinates();
+  void calculateBoundsCylinder$api();
 
-	void calculateExtreme(int orientation);
+  byte[] getFaceRenderPriorities();
 
-	int getCenterX();
-	int getCenterY();
-	int getCenterZ();
-	int getExtremeX();
-	int getExtremeY();
-	int getExtremeZ();
+  int getRadius();
 
-	int getXYZMag();
-	boolean isClickable();
-	
-	void drawFace$api(int face);
+  short[] getFaceTextures();
+
+  float[][] getFaceTextureUCoordinates();
+
+  float[][] getFaceTextureVCoordinates();
+
+  void calculateExtreme(int orientation);
+
+  int getCenterX();
+
+  int getCenterY();
+
+  int getCenterZ();
+
+  int getExtremeX();
+
+  int getExtremeY();
+
+  int getExtremeZ();
+
+  int getXYZMag();
+
+  boolean isClickable();
+
+  void drawFace$api(int face);
 }

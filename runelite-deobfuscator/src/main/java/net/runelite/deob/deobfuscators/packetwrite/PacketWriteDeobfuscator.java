@@ -24,6 +24,8 @@
  */
 package net.runelite.deob.deobfuscators.packetwrite;
 
+import static net.runelite.asm.attributes.code.InstructionType.INVOKEVIRTUAL;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -54,284 +56,244 @@ import net.runelite.deob.Deobfuscator;
 import net.runelite.deob.c2s.RWOpcodeFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static net.runelite.asm.attributes.code.InstructionType.INVOKEVIRTUAL;
 
-public class PacketWriteDeobfuscator implements Deobfuscator
-{
-	private static final Logger logger = LoggerFactory.getLogger(PacketWriteDeobfuscator.class);
+public class PacketWriteDeobfuscator implements Deobfuscator {
 
-	private static final String RUNELITE_PACKET = "RUNELITE_PACKET";
+  private static final Logger logger = LoggerFactory.getLogger(PacketWriteDeobfuscator.class);
 
-	private final OpcodeReplacer opcodeReplacer = new OpcodeReplacer();
+  private static final String RUNELITE_PACKET = "RUNELITE_PACKET";
 
-	private RWOpcodeFinder rw;
-	private PacketWrite cur;
-	private final Map<Instruction, PacketWrite> writes = new HashMap<>();
+  private final OpcodeReplacer opcodeReplacer = new OpcodeReplacer();
+  private final Map<Instruction, PacketWrite> writes = new HashMap<>();
+  private RWOpcodeFinder rw;
+  private PacketWrite cur;
 
-	public void visit(InstructionContext ctx)
-	{
-		if (isEnd(ctx))
-		{
-			end();
-			return;
-		}
+  public void visit(InstructionContext ctx) {
+    if (isEnd(ctx)) {
+      end();
+      return;
+    }
 
-		if (ctx.getInstruction().getType() != INVOKEVIRTUAL)
-		{
-			return;
-		}
+    if (ctx.getInstruction().getType() != INVOKEVIRTUAL) {
+      return;
+    }
 
-		InvokeInstruction ii = (InvokeInstruction) ctx.getInstruction();
+    InvokeInstruction ii = (InvokeInstruction) ctx.getInstruction();
 
-		if (ii.getMethods().contains(rw.getWriteOpcode()))
-		{
-			end();
-			PacketWrite write = start();
-			write.putOpcode = ctx;
-			return;
-		}
+    if (ii.getMethods().contains(rw.getWriteOpcode())) {
+      end();
+      PacketWrite write = start();
+      write.putOpcode = ctx;
+      return;
+    }
 
-		PacketWrite write = cur;
-		if (write == null)
-		{
-			return;
-		}
+    PacketWrite write = cur;
+    if (write == null) {
+      return;
+    }
 
-		if (!ii.getMethod().getClazz().getName().equals(rw.getWriteOpcode().getClassFile().getSuperName()))
-		{
-			return;
-		}
+    if (!ii.getMethod().getClazz().getName()
+        .equals(rw.getWriteOpcode().getClassFile().getSuperName())) {
+      return;
+    }
 
-		write.writes.add(ctx);
-	}
+    write.writes.add(ctx);
+  }
 
-	private PacketWrite start()
-	{
-		end();
-		cur = new PacketWrite();
-		return cur;
-	}
+  private PacketWrite start() {
+    end();
+    cur = new PacketWrite();
+    return cur;
+  }
 
-	private void end()
-	{
-		if (cur != null)
-		{
-			if (!writes.containsKey(cur.putOpcode.getInstruction()))
-			{
-				writes.put(cur.putOpcode.getInstruction(), cur);
-			}
-			cur = null;
-		}
-	}
+  private void end() {
+    if (cur != null) {
+      if (!writes.containsKey(cur.putOpcode.getInstruction())) {
+        writes.put(cur.putOpcode.getInstruction(), cur);
+      }
+      cur = null;
+    }
+  }
 
-	private boolean isEnd(InstructionContext ctx)
-	{
-		// conditions where packet write ends:
-		// any invoke that isn't to the packet buffer
-		// any variable assignment
-		// any field assignment
-		// any conditional jump
-		// any return
+  private boolean isEnd(InstructionContext ctx) {
+    // conditions where packet write ends:
+    // any invoke that isn't to the packet buffer
+    // any variable assignment
+    // any field assignment
+    // any conditional jump
+    // any return
 
-		Instruction i = ctx.getInstruction();
+    Instruction i = ctx.getInstruction();
 
-		if (i instanceof InvokeInstruction)
-		{
-			InvokeInstruction ii = (InvokeInstruction) i;
-			Method method = ii.getMethod();
+    if (i instanceof InvokeInstruction) {
+      InvokeInstruction ii = (InvokeInstruction) i;
+      Method method = ii.getMethod();
 
-			if (!method.getClazz().equals(rw.getSecretBuffer().getPoolClass())
-				&& !method.getClazz().equals(rw.getBuffer().getPoolClass()))
-			{
-				return true;
-			}
-		}
+      if (!method.getClazz().equals(rw.getSecretBuffer().getPoolClass())
+          && !method.getClazz().equals(rw.getBuffer().getPoolClass())) {
+        return true;
+      }
+    }
 
-		if (i instanceof LVTInstruction)
-		{
-			LVTInstruction lvt = (LVTInstruction) i;
-			if (lvt.store())
-			{
-				return true;
-			}
-		}
+    if (i instanceof LVTInstruction) {
+      LVTInstruction lvt = (LVTInstruction) i;
+      if (lvt.store()) {
+        return true;
+      }
+    }
 
-		if (i instanceof SetFieldInstruction)
-		{
-			return true;
-		}
+    if (i instanceof SetFieldInstruction) {
+      return true;
+    }
 
-		if (i instanceof If || i instanceof If0)
-		{
-			return true;
-		}
+    if (i instanceof If || i instanceof If0) {
+      return true;
+    }
 
-		if (i instanceof ReturnInstruction)
-		{
-			return true;
-		}
+    if (i instanceof ReturnInstruction) {
+      return true;
+    }
 
-		return false;
-	}
+    return false;
+  }
 
-	@Override
-	public void run(ClassGroup group)
-	{
-		rw = new RWOpcodeFinder(group);
-		rw.find();
+  @Override
+  public void run(ClassGroup group) {
+    rw = new RWOpcodeFinder(group);
+    rw.find();
 
-		Execution e = new Execution(group);
-		e.addExecutionVisitor(this::visit);
-		e.populateInitialMethods();
-		e.run();
+    Execution e = new Execution(group);
+    e.addExecutionVisitor(this::visit);
+    e.populateInitialMethods();
+    e.run();
 
-		end();
+    end();
 
-		opcodeReplacer.run(group, writes.values());
+    opcodeReplacer.run(group, writes.values());
 
-		int count = 0;
-		int writesCount = 0;
+    int count = 0;
+    int writesCount = 0;
 
-		for (PacketWrite write : writes.values())
-		{
-			if (write.writes.isEmpty())
-			{
-				continue;
-			}
+    for (PacketWrite write : writes.values()) {
+      if (write.writes.isEmpty()) {
+        continue;
+      }
 
-			insert(group, write);
-			++count;
-			writesCount += write.writes.size();
-		}
+      insert(group, write);
+      ++count;
+      writesCount += write.writes.size();
+    }
 
-		logger.info("Converted buffer write methods for {} opcodes ({} writes)", count, writesCount);
-	}
+    logger.info("Converted buffer write methods for {} opcodes ({} writes)", count, writesCount);
+  }
 
-	private void insert(ClassGroup group, PacketWrite write)
-	{
-		Instructions instructions = write.putOpcode.getInstruction().getInstructions();
-		List<Instruction> ins = instructions.getInstructions();
+  private void insert(ClassGroup group, PacketWrite write) {
+    Instructions instructions = write.putOpcode.getInstruction().getInstructions();
+    List<Instruction> ins = instructions.getInstructions();
 
-		InstructionContext firstWrite = write.writes.get(0);
-		InstructionContext lastWrite = write.writes.get(write.writes.size() - 1);
+    InstructionContext firstWrite = write.writes.get(0);
+    InstructionContext lastWrite = write.writes.get(write.writes.size() - 1);
 
-		int idx = ins.indexOf(lastWrite.getInstruction());
-		assert idx != -1;
-		++idx; // past write
+    int idx = ins.indexOf(lastWrite.getInstruction());
+    assert idx != -1;
+    ++idx; // past write
 
-		Label afterWrites = instructions.createLabelFor(ins.get(idx));
+    Label afterWrites = instructions.createLabelFor(ins.get(idx));
 
-		// pops arg, getfield
-		InstructionContext beforeFirstWrite = firstWrite.getPops().get(1).getPushed();
-		Label putOpcode = instructions.createLabelFor(beforeFirstWrite.getInstruction(), true);
+    // pops arg, getfield
+    InstructionContext beforeFirstWrite = firstWrite.getPops().get(1).getPushed();
+    Label putOpcode = instructions.createLabelFor(beforeFirstWrite.getInstruction(), true);
 
-		idx = ins.indexOf(beforeFirstWrite.getInstruction());
-		assert idx != -1;
-		--idx;
+    idx = ins.indexOf(beforeFirstWrite.getInstruction());
+    assert idx != -1;
+    --idx;
 
-		net.runelite.asm.pool.Field field = new net.runelite.asm.pool.Field(
-			new net.runelite.asm.pool.Class(findClient(group).getName()),
-			RUNELITE_PACKET,
-			Type.BOOLEAN
-		);
+    net.runelite.asm.pool.Field field = new net.runelite.asm.pool.Field(
+        new net.runelite.asm.pool.Class(findClient(group).getName()),
+        RUNELITE_PACKET,
+        Type.BOOLEAN
+    );
 
-		instructions.addInstruction(idx++, new GetStatic(instructions, field));
-		instructions.addInstruction(idx++, new IfEq(instructions, putOpcode));
-		Instruction before = ins.get(idx);
-		for (InstructionContext ctx : write.writes)
-		{
-			insert(instructions, ctx, before);
-		}
-		idx = ins.indexOf(before);
-		instructions.addInstruction(idx++, new Goto(instructions, afterWrites));
-	}
+    instructions.addInstruction(idx++, new GetStatic(instructions, field));
+    instructions.addInstruction(idx++, new IfEq(instructions, putOpcode));
+    Instruction before = ins.get(idx);
+    for (InstructionContext ctx : write.writes) {
+      insert(instructions, ctx, before);
+    }
+    idx = ins.indexOf(before);
+    instructions.addInstruction(idx++, new Goto(instructions, afterWrites));
+  }
 
-	private void insert(Instructions ins, InstructionContext ic, Instruction before)
-	{
-		List<StackContext> pops = new ArrayList<>(ic.getPops());
-		Collections.reverse(pops);
-		for (StackContext sc : pops)
-		{
-			insert(ins, sc.getPushed(), before);
-		}
+  private void insert(Instructions ins, InstructionContext ic, Instruction before) {
+    List<StackContext> pops = new ArrayList<>(ic.getPops());
+    Collections.reverse(pops);
+    for (StackContext sc : pops) {
+      insert(ins, sc.getPushed(), before);
+    }
 
-		Instruction i = ic.getInstruction().clone();
-		i = translate(i);
-		assert i.getInstructions() == ins;
+    Instruction i = ic.getInstruction().clone();
+    i = translate(i);
+    assert i.getInstructions() == ins;
 
-		int idx = ins.getInstructions().indexOf(before);
-		assert idx != -1;
+    int idx = ins.getInstructions().indexOf(before);
+    assert idx != -1;
 
-		ins.addInstruction(idx, i);
-	}
+    ins.addInstruction(idx, i);
+  }
 
-	private Instruction translate(Instruction i)
-	{
-		if (!(i instanceof InvokeVirtual))
-		{
-			return i;
-		}
+  private Instruction translate(Instruction i) {
+    if (!(i instanceof InvokeVirtual)) {
+      return i;
+    }
 
-		InvokeVirtual ii = (InvokeVirtual) i;
-		Method invoked = ii.getMethod();
+    InvokeVirtual ii = (InvokeVirtual) i;
+    Method invoked = ii.getMethod();
 
-		assert invoked.getType().size() == 1;
+    assert invoked.getType().size() == 1;
 
-		Type argumentType = invoked.getType().getTypeOfArg(0);
+    Type argumentType = invoked.getType().getTypeOfArg(0);
 
-		Method invokeMethod;
-		if (argumentType.equals(Type.BYTE))
-		{
-			invokeMethod = new Method(
-				ii.getMethod().getClazz(),
-				"runeliteWriteByte",
-				new Signature("(B)V")
-			);
-		}
-		else if (argumentType.equals(Type.SHORT))
-		{
-			invokeMethod = new Method(
-				ii.getMethod().getClazz(),
-				"runeliteWriteShort",
-				new Signature("(S)V")
-			);
-		}
-		else if (argumentType.equals(Type.INT))
-		{
-			invokeMethod = new Method(
-				ii.getMethod().getClazz(),
-				"runeliteWriteInt",
-				new Signature("(I)V")
-			);
-		}
-		else if (argumentType.equals(Type.LONG))
-		{
-			invokeMethod = new Method(
-				ii.getMethod().getClazz(),
-				"runeliteWriteLong",
-				new Signature("(J)V")
-			);
-		}
-		else if (argumentType.equals(Type.STRING))
-		{
-			invokeMethod = new Method(
-				ii.getMethod().getClazz(),
-				"runeliteWriteString",
-				new Signature("(Ljava/lang/String;)V")
-			);
-		}
-		else
-		{
-			throw new IllegalStateException("Unknown type " + argumentType);
-		}
+    Method invokeMethod;
+    if (argumentType.equals(Type.BYTE)) {
+      invokeMethod = new Method(
+          ii.getMethod().getClazz(),
+          "runeliteWriteByte",
+          new Signature("(B)V")
+      );
+    } else if (argumentType.equals(Type.SHORT)) {
+      invokeMethod = new Method(
+          ii.getMethod().getClazz(),
+          "runeliteWriteShort",
+          new Signature("(S)V")
+      );
+    } else if (argumentType.equals(Type.INT)) {
+      invokeMethod = new Method(
+          ii.getMethod().getClazz(),
+          "runeliteWriteInt",
+          new Signature("(I)V")
+      );
+    } else if (argumentType.equals(Type.LONG)) {
+      invokeMethod = new Method(
+          ii.getMethod().getClazz(),
+          "runeliteWriteLong",
+          new Signature("(J)V")
+      );
+    } else if (argumentType.equals(Type.STRING)) {
+      invokeMethod = new Method(
+          ii.getMethod().getClazz(),
+          "runeliteWriteString",
+          new Signature("(Ljava/lang/String;)V")
+      );
+    } else {
+      throw new IllegalStateException("Unknown type " + argumentType);
+    }
 
-		return new InvokeVirtual(i.getInstructions(), invokeMethod);
-	}
+    return new InvokeVirtual(i.getInstructions(), invokeMethod);
+  }
 
-	private ClassFile findClient(ClassGroup group)
-	{
-		// "client" in vainlla but "Client" in deob..
-		ClassFile cf = group.findClass("client");
-		return cf != null ? cf : group.findClass("Client");
-	}
+  private ClassFile findClient(ClassGroup group) {
+    // "client" in vainlla but "Client" in deob..
+    ClassFile cf = group.findClass("client");
+    return cf != null ? cf : group.findClass("Client");
+  }
 }

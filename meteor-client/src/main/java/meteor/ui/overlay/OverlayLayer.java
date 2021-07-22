@@ -24,31 +24,30 @@
  */
 package meteor.ui.overlay;
 
-public enum OverlayLayer
-{
-	/**
-	 * Overlay is not rendered. Requires using drawAfterInterface() or drawAfterLayer()
-	 * to specify when to draw.
-	 */
-	MANUAL,
+public enum OverlayLayer {
+  /**
+   * Overlay is not rendered. Requires using drawAfterInterface() or drawAfterLayer() to specify
+   * when to draw.
+   */
+  MANUAL,
 
-	/**
-	 * Render right above the scene (that contains actors and the surface)
-	 */
-	ABOVE_SCENE,
+  /**
+   * Render right above the scene (that contains actors and the surface)
+   */
+  ABOVE_SCENE,
 
-	/**
-	 * Render under all interfaces, but above overheads
-	 */
-	UNDER_WIDGETS,
+  /**
+   * Render under all interfaces, but above overheads
+   */
+  UNDER_WIDGETS,
 
-	/**
-	 * Render under the right-click menu
-	 */
-	ABOVE_WIDGETS,
+  /**
+   * Render under the right-click menu
+   */
+  ABOVE_WIDGETS,
 
-	/**
-	 * Render overlay above all game elements
-	 */
-	ALWAYS_ON_TOP,
+  /**
+   * Render overlay above all game elements
+   */
+  ALWAYS_ON_TOP,
 }

@@ -28,53 +28,45 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-class GpuFloatBuffer
-{
-	private FloatBuffer buffer = allocateDirect(65536);
+class GpuFloatBuffer {
 
-	void put(float texture, float u, float v, float pad)
-	{
-		buffer.put(texture).put(u).put(v).put(pad);
-	}
+  private FloatBuffer buffer = allocateDirect(65536);
 
-	void flip()
-	{
-		buffer.flip();
-	}
+  static FloatBuffer allocateDirect(int size) {
+    return ByteBuffer.allocateDirect(size * Float.BYTES)
+        .order(ByteOrder.nativeOrder())
+        .asFloatBuffer();
+  }
 
-	void clear()
-	{
-		buffer.clear();
-	}
+  void put(float texture, float u, float v, float pad) {
+    buffer.put(texture).put(u).put(v).put(pad);
+  }
 
-	void ensureCapacity(int size)
-	{
-		int capacity = buffer.capacity();
-		final int position = buffer.position();
-		if ((capacity - position) < size)
-		{
-			do
-			{
-				capacity *= 2;
-			}
-			while ((capacity - position) < size);
+  void flip() {
+    buffer.flip();
+  }
 
-			FloatBuffer newB = allocateDirect(capacity);
-			buffer.flip();
-			newB.put(buffer);
-			buffer = newB;
-		}
-	}
+  void clear() {
+    buffer.clear();
+  }
 
-	FloatBuffer getBuffer()
-	{
-		return buffer;
-	}
+  void ensureCapacity(int size) {
+    int capacity = buffer.capacity();
+    final int position = buffer.position();
+    if ((capacity - position) < size) {
+      do {
+        capacity *= 2;
+      }
+      while ((capacity - position) < size);
 
-	static FloatBuffer allocateDirect(int size)
-	{
-		return ByteBuffer.allocateDirect(size * Float.BYTES)
-			.order(ByteOrder.nativeOrder())
-			.asFloatBuffer();
-	}
+      FloatBuffer newB = allocateDirect(capacity);
+      buffer.flip();
+      newB.put(buffer);
+      buffer = newB;
+    }
+  }
+
+  FloatBuffer getBuffer() {
+    return buffer;
+  }
 }

@@ -32,156 +32,136 @@ import net.runelite.api.geometry.SimplePolygon;
  * Provides utility methods for computing the convex hull of a list of
  * <em>n</em> points.
  * <p>
- * The implementation uses the Jarvis march algorithm and runs in O(nh)
- * time in the worst case, where n is the number of points and h the
- * number of points on the convex hull.
+ * The implementation uses the Jarvis march algorithm and runs in O(nh) time in the worst case,
+ * where n is the number of points and h the number of points on the convex hull.
  */
-public class Jarvis
-{
-	/**
-	 * Computes and returns the convex hull of the passed points.
-	 * <p>
-	 * The size of the list must be at least 3, otherwise this method will
-	 * return null.
-	 *
-	 * @param points list of points
-	 * @return list containing the points part of the convex hull
-	 */
-	@Deprecated
-	public static List<Point> convexHull(List<Point> points)
-	{
-		int[] xs = new int[points.size()];
-		int[] ys = new int[xs.length];
-		for (int i = 0; i < xs.length; i++)
-		{
-			Point p = points.get(i);
-			xs[i] = p.getX();
-			ys[i] = p.getY();
-		}
+public class Jarvis {
 
-		SimplePolygon poly = convexHull(xs, ys);
-		if (poly == null)
-		{
-			return null;
-		}
+  /**
+   * Computes and returns the convex hull of the passed points.
+   * <p>
+   * The size of the list must be at least 3, otherwise this method will return null.
+   *
+   * @param points list of points
+   * @return list containing the points part of the convex hull
+   */
+  @Deprecated
+  public static List<Point> convexHull(List<Point> points) {
+    int[] xs = new int[points.size()];
+    int[] ys = new int[xs.length];
+    for (int i = 0; i < xs.length; i++) {
+      Point p = points.get(i);
+      xs[i] = p.getX();
+      ys[i] = p.getY();
+    }
 
-		return poly.toRuneLitePointList();
-	}
+    SimplePolygon poly = convexHull(xs, ys);
+    if (poly == null) {
+      return null;
+    }
 
-	/**
-	 * Computes and returns the convex hull of the passed points.
-	 * <p>
-	 * The size of the list must be at least 3, otherwise this method will
-	 * return null.
-	 *
-	 * @return a shape the points part of the convex hull
-	 */
-	public static SimplePolygon convexHull(int[] xs, int[] ys)
-	{
-		int length = xs.length;
+    return poly.toRuneLitePointList();
+  }
 
-		// remove any invalid entries
-		{
-			int i = 0, offset = 0;
-			for (; i < length; i++)
-			{
-				if (xs[i] == Integer.MIN_VALUE)
-				{
-					offset++;
-					i++;
-					break;
-				}
-			}
-			for (; i < length; i++)
-			{
-				if (xs[i] == Integer.MIN_VALUE)
-				{
-					offset++;
-					continue;
-				}
-				xs[i - offset] = xs[i];
-				ys[i - offset] = ys[i];
-			}
-			length -= offset;
-		}
+  /**
+   * Computes and returns the convex hull of the passed points.
+   * <p>
+   * The size of the list must be at least 3, otherwise this method will return null.
+   *
+   * @return a shape the points part of the convex hull
+   */
+  public static SimplePolygon convexHull(int[] xs, int[] ys) {
+    int length = xs.length;
 
-		if (length < 3)
-		{
-			return null;
-		}
+    // remove any invalid entries
+    {
+      int i = 0, offset = 0;
+      for (; i < length; i++) {
+        if (xs[i] == Integer.MIN_VALUE) {
+          offset++;
+          i++;
+          break;
+        }
+      }
+      for (; i < length; i++) {
+        if (xs[i] == Integer.MIN_VALUE) {
+          offset++;
+          continue;
+        }
+        xs[i - offset] = xs[i];
+        ys[i - offset] = ys[i];
+      }
+      length -= offset;
+    }
 
-		// find the left most point
-		int left = findLeftMost(xs, ys, length);
+    if (length < 3) {
+      return null;
+    }
 
-		// current point we are on
-		int current = left;
+    // find the left most point
+    int left = findLeftMost(xs, ys, length);
 
-		SimplePolygon out = new SimplePolygon(new int[16], new int[16], 0);
+    // current point we are on
+    int current = left;
 
-		do
-		{
-			int cx = xs[current];
-			int cy = ys[current];
-			out.pushRight(cx, cy);
+    SimplePolygon out = new SimplePolygon(new int[16], new int[16], 0);
 
-			if (out.size() > length)
-			{
-				return null;
-			}
+    do {
+      int cx = xs[current];
+      int cy = ys[current];
+      out.pushRight(cx, cy);
 
-			// the next point - all points are to the right of the
-			// line between current and next
-			int next = 0;
-			int nx = xs[next];
-			int ny = ys[next];
+      if (out.size() > length) {
+        return null;
+      }
 
-			for (int i = 1; i < length; i++)
-			{
-				long cp = crossProduct(cx, cy, xs[i], ys[i], nx, ny);
-				if (cp > 0 || (cp == 0 && square(cx - xs[i]) + square(cy - ys[i]) > square(cx - nx) + square(cy - ny)))
-				{
-					next = i;
-					nx = xs[next];
-					ny = ys[next];
-				}
-			}
+      // the next point - all points are to the right of the
+      // line between current and next
+      int next = 0;
+      int nx = xs[next];
+      int ny = ys[next];
 
-			current = next;
-		}
-		while (current != left);
+      for (int i = 1; i < length; i++) {
+        long cp = crossProduct(cx, cy, xs[i], ys[i], nx, ny);
+        if (cp > 0 || (cp == 0
+            && square(cx - xs[i]) + square(cy - ys[i]) > square(cx - nx) + square(cy - ny))) {
+          next = i;
+          nx = xs[next];
+          ny = ys[next];
+        }
+      }
 
-		return out;
-	}
+      current = next;
+    }
+    while (current != left);
 
-	private static int square(int x)
-	{
-		return x * x;
-	}
+    return out;
+  }
 
-	private static int findLeftMost(int[] xs, int[] ys, int length)
-	{
-		int idx = 0;
-		int x = xs[idx];
-		int y = ys[idx];
+  private static int square(int x) {
+    return x * x;
+  }
 
-		for (int i = 1; i < length; i++)
-		{
-			int ix = xs[i];
-			if (ix < x || ix == x && ys[i] < y)
-			{
-				idx = i;
-				x = xs[idx];
-				y = ys[idx];
-			}
-		}
+  private static int findLeftMost(int[] xs, int[] ys, int length) {
+    int idx = 0;
+    int x = xs[idx];
+    int y = ys[idx];
 
-		return idx;
-	}
+    for (int i = 1; i < length; i++) {
+      int ix = xs[i];
+      if (ix < x || ix == x && ys[i] < y) {
+        idx = i;
+        x = xs[idx];
+        y = ys[idx];
+      }
+    }
 
-	private static long crossProduct(int px, int py, int qx, int qy, int rx, int ry)
-	{
-		long val = (long) (qy - py) * (rx - qx)
-			- (long) (qx - px) * (ry - qy);
-		return val;
-	}
+    return idx;
+  }
+
+  private static long crossProduct(int px, int py, int qx, int qy, int rx, int ry) {
+    long val = (long) (qy - py) * (rx - qx)
+        - (long) (qx - px) * (ry - qy);
+    return val;
+  }
 }

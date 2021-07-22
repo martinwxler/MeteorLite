@@ -37,341 +37,341 @@ import net.runelite.api.coords.WorldPoint;
 /**
  * Represents a RuneScape actor/entity.
  */
-public interface Actor extends Renderable, Locatable
-{
-	/**
-	 * Gets the combat level of the actor.
-	 *
-	 * @return the combat level
-	 */
-	int getCombatLevel();
+public interface Actor extends Renderable, Locatable {
 
-	/**
-	 * Gets the name of the actor.
-	 *
-	 * @return the name
-	 */
-	@Nullable
-	String getName();
+  /**
+   * Gets the combat level of the actor.
+   *
+   * @return the combat level
+   */
+  int getCombatLevel();
 
-	/**
-	 * Gets the actor being interacted with.
-	 * <p>
-	 * Examples of interaction include:
-	 * <ul>
-	 *     <li>A monster focusing an Actor to attack</li>
-	 *     <li>Targetting a player to trade</li>
-	 *     <li>Following a player</li>
-	 * </ul>
-	 *
-	 * @return the actor, null if no interaction is occurring
-	 *
-	 * (getRSInteracting returns the npc/player index, useful for menus)
-	 */
-	Actor getInteracting();
-	int getRSInteracting();
+  /**
+   * Gets the name of the actor.
+   *
+   * @return the name
+   */
+  @Nullable
+  String getName();
 
-	/**
-	 * Gets the health of the actor in {@link #getHealthScale()} units.
-	 *
-	 * The server does not transmit actors' real health, only this value
-	 * between zero and {@link #getHealthScale()}. Some actors may be
-	 * missing this info, in which case -1 is returned.
-	 */
-	int getHealthRatio();
+  /**
+   * Gets the actor being interacted with.
+   * <p>
+   * Examples of interaction include:
+   * <ul>
+   *     <li>A monster focusing an Actor to attack</li>
+   *     <li>Targetting a player to trade</li>
+   *     <li>Following a player</li>
+   * </ul>
+   *
+   * @return the actor, null if no interaction is occurring
+   * <p>
+   * (getRSInteracting returns the npc/player index, useful for menus)
+   */
+  Actor getInteracting();
 
-	/**
-	 * Gets the maximum value {@link #getHealthRatio()} can return
-	 *
-	 * For actors with the default size health bar this is 30, but
-	 * for bosses with a larger health bar this can be a larger number.
-	 * Some actors may be missing this info, in which case -1 is returned.
-	 */
-	int getHealthScale();
+  int getRSInteracting();
 
-	/**
-	 * Gets the server-side location of the actor.
-	 * <p>
-	 * This value is typically ahead of where the client renders and is not
-	 * affected by things such as animations.
-	 *
-	 * @return the server location
-	 */
-	WorldPoint getWorldLocation();
+  /**
+   * Gets the health of the actor in {@link #getHealthScale()} units.
+   * <p>
+   * The server does not transmit actors' real health, only this value between zero and {@link
+   * #getHealthScale()}. Some actors may be missing this info, in which case -1 is returned.
+   */
+  int getHealthRatio();
 
-	/**
-	 * Gets the client-side location of the actor.
-	 *
-	 * @return the client location
-	 */
-	LocalPoint getLocalLocation();
+  /**
+   * Gets the maximum value {@link #getHealthRatio()} can return
+   * <p>
+   * For actors with the default size health bar this is 30, but for bosses with a larger health bar
+   * this can be a larger number. Some actors may be missing this info, in which case -1 is
+   * returned.
+   */
+  int getHealthScale();
 
-	/**
-	 * Get the index of the PoseFrame (the index as it appears in the sequenceDefinition "frames" array).
-	 */
-	int getPoseFrame();
+  /**
+   * Gets the server-side location of the actor.
+   * <p>
+   * This value is typically ahead of where the client renders and is not affected by things such as
+   * animations.
+   *
+   * @return the server location
+   */
+  WorldPoint getWorldLocation();
 
-	/**
-	 * Get the number of cycles the pose frame has been displayed for.
-	 */
-	int getPoseFrameCycle();
+  /**
+   * Gets the client-side location of the actor.
+   *
+   * @return the client location
+   */
+  LocalPoint getLocalLocation();
 
-	/**
-	 * Gets the orientation of the actor.
-	 *
-	 * @return the orientation
-	 * @see net.runelite.api.coords.Angle
-	 */
-	int getOrientation();
+  /**
+   * Get the index of the PoseFrame (the index as it appears in the sequenceDefinition "frames"
+   * array).
+   */
+  int getPoseFrame();
 
-	int getCurrentOrientation();
+  /**
+   * Get the number of cycles the pose frame has been displayed for.
+   */
+  int getPoseFrameCycle();
 
-	/**
-	 * Gets the current animation the actor is performing.
-	 *
-	 * @return the animation ID
-	 * @see AnimationID
-	 */
-	int getAnimation();
+  /**
+   * Gets the orientation of the actor.
+   *
+   * @return the orientation
+   * @see net.runelite.api.coords.Angle
+   */
+  int getOrientation();
 
-	/**
-	 * Gets the secondary animation the actor is performing. Usually an idle animation, or one of the walking ones.
-	 *
-	 * @return the animation ID
-	 * @see AnimationID
-	 */
-	int getPoseAnimation();
+  int getCurrentOrientation();
 
-	@VisibleForDevtools
-	void setPoseAnimation(int animation);
+  /**
+   * Gets the current animation the actor is performing.
+   *
+   * @return the animation ID
+   * @see AnimationID
+   */
+  int getAnimation();
 
-	/**
-	 * The idle pose animation. If the actor is not walking or otherwise animating, this will be used
-	 * for their pose animation.
-	 *
-	 * @return the animation ID
-	 * @see AnimationID
-	 */
-	int getIdlePoseAnimation();
+  /**
+   * Sets an animation for the actor to perform.
+   *
+   * @param animation the animation ID
+   * @see AnimationID
+   */
+  void setAnimation(int animation);
 
-	@VisibleForDevtools
-	void setIdlePoseAnimation(int animation);
+  /**
+   * Gets the secondary animation the actor is performing. Usually an idle animation, or one of the
+   * walking ones.
+   *
+   * @return the animation ID
+   * @see AnimationID
+   */
+  int getPoseAnimation();
 
-	/**
-	 * Animation used for rotating left if the actor is also not walking
-	 *
-	 * @return the animation ID
-	 * @see AnimationID
-	 */
-	int getIdleRotateLeft();
+  @VisibleForDevtools
+  void setPoseAnimation(int animation);
 
-	/**
-	 * Animation used for rotating right if the actor is also not walking
-	 *
-	 * @return the animation ID
-	 * @see AnimationID
-	 */
-	int getIdleRotateRight();
+  /**
+   * The idle pose animation. If the actor is not walking or otherwise animating, this will be used
+   * for their pose animation.
+   *
+   * @return the animation ID
+   * @see AnimationID
+   */
+  int getIdlePoseAnimation();
 
-	/**
-	 * Animation used for walking
-	 *
-	 * @return the animation ID
-	 * @see AnimationID
-	 */
-	int getWalkAnimation();
+  @VisibleForDevtools
+  void setIdlePoseAnimation(int animation);
 
-	/**
-	 * Animation used for rotating left while walking
-	 *
-	 * @return the animation ID
-	 * @see AnimationID
-	 */
-	int getWalkRotateLeft();
+  /**
+   * Animation used for rotating left if the actor is also not walking
+   *
+   * @return the animation ID
+   * @see AnimationID
+   */
+  int getIdleRotateLeft();
 
-	/**
-	 * Animation used for rotating right while walking
-	 *
-	 * @return the animation ID
-	 * @see AnimationID
-	 */
-	int getWalkRotateRight();
+  /**
+   * Animation used for rotating right if the actor is also not walking
+   *
+   * @return the animation ID
+   * @see AnimationID
+   */
+  int getIdleRotateRight();
 
-	/**
-	 * Animation used for an about-face while walking
-	 *
-	 * @return the animation ID
-	 * @see AnimationID
-	 */
-	int getWalkRotate180();
+  /**
+   * Animation used for walking
+   *
+   * @return the animation ID
+   * @see AnimationID
+   */
+  int getWalkAnimation();
 
-	/**
-	 * Animation used for running
-	 *
-	 * @return the animation ID
-	 * @see AnimationID
-	 */
-	int getRunAnimation();
+  /**
+   * Animation used for rotating left while walking
+   *
+   * @return the animation ID
+   * @see AnimationID
+   */
+  int getWalkRotateLeft();
 
-	/**
-	 * Sets an animation for the actor to perform.
-	 *
-	 * @param animation the animation ID
-	 * @see AnimationID
-	 */
-	void setAnimation(int animation);
+  /**
+   * Animation used for rotating right while walking
+   *
+   * @return the animation ID
+   * @see AnimationID
+   */
+  int getWalkRotateRight();
 
-	/**
-	 * Get the frame of the animation the actor is performing
-	 *
-	 * @return the frame
-	 */
-	int getAnimationFrame();
+  /**
+   * Animation used for an about-face while walking
+   *
+   * @return the animation ID
+   * @see AnimationID
+   */
+  int getWalkRotate180();
 
-	/**
-	 * Sets the frame of the animation the actor is performing.
-	 *
-	 * @param frame the animation frame
-	 * @deprecated use setAnimationFrame
-	 */
-	void setActionFrame(int frame);
+  /**
+   * Animation used for running
+   *
+   * @return the animation ID
+   * @see AnimationID
+   */
+  int getRunAnimation();
 
-	/**
-	 * Sets the frame of the animation the actor is performing.
-	 *
-	 * @param frame the animation frame
-	 */
-	void setAnimationFrame(int frame);
+  /**
+   * Get the frame of the animation the actor is performing
+   *
+   * @return the frame
+   */
+  int getAnimationFrame();
 
-	/**
-	 * Get the graphic/spotanim that is currently on the actor.
-	 *
-	 * @return the spotanim of the actor
-	 * @see GraphicID
-	 */
-	int getGraphic();
+  /**
+   * Sets the frame of the animation the actor is performing.
+   *
+   * @param frame the animation frame
+   */
+  void setAnimationFrame(int frame);
 
-	/**
-	 * Set the graphic/spotanim that is currently on the actor.
-	 *
-	 * @param graphic The spotanim id
-	 * @see GraphicID
-	 */
-	void setGraphic(int graphic);
+  /**
+   * Get the graphic/spotanim that is currently on the actor.
+   *
+   * @return the spotanim of the actor
+   * @see GraphicID
+   */
+  int getGraphic();
 
-	/**
-	 * Get the frame of the currently playing spotanim
-	 *
-	 * @return
-	 */
-	int getSpotAnimFrame();
+  /**
+   * Set the graphic/spotanim that is currently on the actor.
+   *
+   * @param graphic The spotanim id
+   * @see GraphicID
+   */
+  void setGraphic(int graphic);
 
-	/**
-	 * Set the frame of the currently playing spotanim
-	 *
-	 * @param spotAnimFrame
-	 */
-	void setSpotAnimFrame(int spotAnimFrame);
+  /**
+   * Get the frame of the currently playing spotanim
+   *
+   * @return
+   */
+  int getSpotAnimFrame();
 
-	/**
-	 * Gets the canvas area of the current tile the actor is standing on.
-	 *
-	 * @return the current tile canvas area
-	 */
-	Polygon getCanvasTilePoly();
+  /**
+   * Set the frame of the currently playing spotanim
+   *
+   * @param spotAnimFrame
+   */
+  void setSpotAnimFrame(int spotAnimFrame);
 
-	/**
-	 * Gets the point at which text should be drawn, relative to the
-	 * current location with the given z-axis offset.
-	 *
-	 * @param graphics engine graphics
-	 * @param text the text to draw
-	 * @param zOffset the z-axis offset
-	 * @return the text drawing location
-	 */
-	@Nullable
-	Point getCanvasTextLocation(Graphics2D graphics, String text, int zOffset);
+  /**
+   * Gets the canvas area of the current tile the actor is standing on.
+   *
+   * @return the current tile canvas area
+   */
+  Polygon getCanvasTilePoly();
 
-	/**
-	 * Gets the point at which an image should be drawn, relative to the
-	 * current location with the given z-axis offset.
-	 *
-	 * @param image the image to draw
-	 * @param zOffset the z-axis offset
-	 * @return the image drawing location
-	 */
-	Point getCanvasImageLocation(BufferedImage image, int zOffset);
+  /**
+   * Gets the point at which text should be drawn, relative to the current location with the given
+   * z-axis offset.
+   *
+   * @param graphics engine graphics
+   * @param text     the text to draw
+   * @param zOffset  the z-axis offset
+   * @return the text drawing location
+   */
+  @Nullable
+  Point getCanvasTextLocation(Graphics2D graphics, String text, int zOffset);
 
+  /**
+   * Gets the point at which an image should be drawn, relative to the current location with the
+   * given z-axis offset.
+   *
+   * @param image   the image to draw
+   * @param zOffset the z-axis offset
+   * @return the image drawing location
+   */
+  Point getCanvasImageLocation(BufferedImage image, int zOffset);
 
-	/**
-	 * Gets the point at which a sprite should be drawn, relative to the
-	 * current location with the given z-axis offset.
-	 *
-	 * @param sprite the sprite to draw
-	 * @param zOffset the z-axis offset
-	 * @return the sprite drawing location
-	 */
-	Point getCanvasSpriteLocation(SpritePixels sprite, int zOffset);
+  /**
+   * Gets the point at which a sprite should be drawn, relative to the current location with the
+   * given z-axis offset.
+   *
+   * @param sprite  the sprite to draw
+   * @param zOffset the z-axis offset
+   * @return the sprite drawing location
+   */
+  Point getCanvasSpriteLocation(SpritePixels sprite, int zOffset);
 
-	/**
-	 * Gets a point on the canvas of where this actors mini-map indicator
-	 * should appear.
-	 *
-	 * @return mini-map location on canvas
-	 */
-	Point getMinimapLocation();
+  /**
+   * Gets a point on the canvas of where this actors mini-map indicator should appear.
+   *
+   * @return mini-map location on canvas
+   */
+  Point getMinimapLocation();
 
-	/**
-	 * Gets the logical height of the actors model.
-	 * <p>
-	 * This z-axis offset is roughly where the health bar of the actor
-	 * is drawn.
-	 *
-	 * @return the logical height
-	 */
-	int getLogicalHeight();
+  /**
+   * Gets the logical height of the actors model.
+   * <p>
+   * This z-axis offset is roughly where the health bar of the actor is drawn.
+   *
+   * @return the logical height
+   */
+  int getLogicalHeight();
 
-	/**
-	 * Gets the convex hull of the actors model.
-	 *
-	 * @return the convex hull
-	 * @see net.runelite.api.model.Jarvis
-	 */
-	Shape getConvexHull();
+  /**
+   * Gets the convex hull of the actors model.
+   *
+   * @return the convex hull
+   * @see net.runelite.api.model.Jarvis
+   */
+  Shape getConvexHull();
 
-	/**
-	 * Gets the world area that the actor occupies.
-	 *
-	 * @return the world area
-	 */
-	WorldArea getWorldArea();
+  /**
+   * Gets the world area that the actor occupies.
+   *
+   * @return the world area
+   */
+  WorldArea getWorldArea();
 
-	/**
-	 * Gets the overhead text that is displayed above the actor
-	 *
-	 * @return the overhead text
-	 */
-	String getOverheadText();
+  /**
+   * Gets the overhead text that is displayed above the actor
+   *
+   * @return the overhead text
+   */
+  String getOverheadText();
 
-	/**
-	 * Sets the overhead text that is displayed above the actor
-	 *
-	 * @param overheadText the overhead text
-	 */
-	void setOverheadText(String overheadText);
+  /**
+   * Sets the overhead text that is displayed above the actor
+   *
+   * @param overheadText the overhead text
+   */
+  void setOverheadText(String overheadText);
 
-	/**
-	 * Used by the "Tick Counter Plugin
-	 */
-	int getActionFrame();
-	int getActionFrameCycle();
+  /**
+   * Used by the "Tick Counter Plugin
+   */
+  int getActionFrame();
 
-	/**
-	 * Returns true if this NPC has died
-	 *
-	 * @return
-	 */
-	boolean isDead();
+  /**
+   * Sets the frame of the animation the actor is performing.
+   *
+   * @param frame the animation frame
+   * @deprecated use setAnimationFrame
+   */
+  void setActionFrame(int frame);
 
-	boolean isMoving();
+  int getActionFrameCycle();
+
+  /**
+   * Returns true if this NPC has died
+   *
+   * @return
+   */
+  boolean isDead();
+
+  boolean isMoving();
 }

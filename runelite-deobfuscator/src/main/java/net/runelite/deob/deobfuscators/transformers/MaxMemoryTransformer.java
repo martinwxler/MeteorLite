@@ -44,41 +44,34 @@ import net.runelite.deob.Transformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MaxMemoryTransformer implements Transformer
-{
-	private static final Logger logger = LoggerFactory.getLogger(MaxMemoryTransformer.class);
+public class MaxMemoryTransformer implements Transformer {
 
-	private boolean done = false;
+  private static final Logger logger = LoggerFactory.getLogger(MaxMemoryTransformer.class);
 
-	@Override
-	public void transform(ClassGroup group)
-	{
-		for (ClassFile cf : group.getClasses())
-		{
-			for (Method m : cf.getMethods())
-			{
-				transform(m);
-			}
-		}
+  private boolean done = false;
 
-		logger.info("Transformed: " + done);
-	}
+  @Override
+  public void transform(ClassGroup group) {
+    for (ClassFile cf : group.getClasses()) {
+      for (Method m : cf.getMethods()) {
+        transform(m);
+      }
+    }
 
-	private void transform(Method m)
-	{
-		Code code = m.getCode();
+    logger.info("Transformed: " + done);
+  }
 
-		if (code == null)
-		{
-			return;
-		}
+  private void transform(Method m) {
+    Code code = m.getCode();
 
-		Instructions ins = code.getInstructions();
+    if (code == null) {
+      return;
+    }
 
-		for (Instruction i : ins.getInstructions())
-		{
-			if (i instanceof InvokeVirtual)
-			{
+    Instructions ins = code.getInstructions();
+
+    for (Instruction i : ins.getInstructions()) {
+      if (i instanceof InvokeVirtual) {
 				/*
 					invokestatic          java/lang/Runtime/getRuntime()Ljava/lang/Runtime;
 					invokevirtual         java/lang/Runtime/maxMemory()J
@@ -86,30 +79,32 @@ public class MaxMemoryTransformer implements Transformer
 					ldiv
 					l2i
 				 */
-				if (((InvokeVirtual) i).getMethod().getName().equals("maxMemory"))
-				{
-					insert(ins, ins.getInstructions().indexOf(i));
-					done = true;
-					break;
-				}
-			}
-		}
-	}
+        if (((InvokeVirtual) i).getMethod().getName().equals("maxMemory")) {
+          insert(ins, ins.getInstructions().indexOf(i));
+          done = true;
+          break;
+        }
+      }
+    }
+  }
 
-	private void insert(Instructions ins, int idx)
-	{
-		Class randomClass = new Class("java/util/Random");
-		
-		ins.getInstructions().remove(idx);
-		ins.getInstructions().add(idx++, new Pop(ins)); // pop runtime
-		ins.getInstructions().add(idx++, new New(ins, randomClass));
-		ins.getInstructions().add(idx++, new Dup(ins));
-		ins.getInstructions().add(idx++, new InvokeSpecial(ins, new net.runelite.asm.pool.Method(randomClass, "<init>", new Signature("()V")))); // new Random
-		ins.getInstructions().add(idx++, new LDC(ins, 31457280));
-		ins.getInstructions().add(idx++, new InvokeVirtual(ins, new net.runelite.asm.pool.Method(randomClass, "nextInt", new Signature("(I)I")))); // nextInt(31457280)
-		ins.getInstructions().add(idx++, new LDC(ins, 230686720));
-		ins.getInstructions().add(idx++, new IAdd(ins)); // 230686720 + nextInt(31457280)
-		ins.getInstructions().add(idx++, new I2L(ins));
-	}
+  private void insert(Instructions ins, int idx) {
+    Class randomClass = new Class("java/util/Random");
+
+    ins.getInstructions().remove(idx);
+    ins.getInstructions().add(idx++, new Pop(ins)); // pop runtime
+    ins.getInstructions().add(idx++, new New(ins, randomClass));
+    ins.getInstructions().add(idx++, new Dup(ins));
+    ins.getInstructions().add(idx++, new InvokeSpecial(ins,
+        new net.runelite.asm.pool.Method(randomClass, "<init>",
+            new Signature("()V")))); // new Random
+    ins.getInstructions().add(idx++, new LDC(ins, 31457280));
+    ins.getInstructions().add(idx++, new InvokeVirtual(ins,
+        new net.runelite.asm.pool.Method(randomClass, "nextInt",
+            new Signature("(I)I")))); // nextInt(31457280)
+    ins.getInstructions().add(idx++, new LDC(ins, 230686720));
+    ins.getInstructions().add(idx++, new IAdd(ins)); // 230686720 + nextInt(31457280)
+    ins.getInstructions().add(idx++, new I2L(ins));
+  }
 
 }

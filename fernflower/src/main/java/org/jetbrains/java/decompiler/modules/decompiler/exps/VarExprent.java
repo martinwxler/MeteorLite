@@ -15,6 +15,8 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.exps;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.jetbrains.java.decompiler.code.CodeConstants;
 import org.jetbrains.java.decompiler.main.ClassWriter;
 import org.jetbrains.java.decompiler.main.ClassesProcessor.ClassNode;
@@ -40,19 +42,15 @@ import org.jetbrains.java.decompiler.struct.match.MatchNode.RuleValue;
 import org.jetbrains.java.decompiler.util.InterpreterUtil;
 import org.jetbrains.java.decompiler.util.TextUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class VarExprent extends Exprent {
 
   public static final int STACK_BASE = 10000;
   public static final String VAR_NAMELESS_ENCLOSURE = "<VAR_NAMELESS_ENCLOSURE>";
-
+  private final int visibleOffset;
   private int index;
   private VarType varType;
   private boolean definition = false;
   private VarProcessor processor;
-  private final int visibleOffset;
   private int version = 0;
   private boolean classDef = false;
   private boolean stack = false;
@@ -101,11 +99,11 @@ public class VarExprent extends Exprent {
     tracer.addMapping(bytecode);
 
     if (classDef) {
-      ClassNode child = DecompilerContext.getClassProcessor().getMapRootClasses().get(varType.value);
+      ClassNode child = DecompilerContext.getClassProcessor().getMapRootClasses()
+          .get(varType.value);
       new ClassWriter().classToJava(child, buffer, indent, tracer);
       tracer.incrementCurrentSourceLine(buffer.countLines());
-    }
-    else {
+    } else {
       VarVersionPair varVersion = getVarVersionPair();
       String name = null;
       if (processor != null) {
@@ -113,14 +111,16 @@ public class VarExprent extends Exprent {
       }
 
       if (definition) {
-        if (processor != null && processor.getVarFinal(varVersion) == VarTypeProcessor.VAR_EXPLICIT_FINAL) {
+        if (processor != null
+            && processor.getVarFinal(varVersion) == VarTypeProcessor.VAR_EXPLICIT_FINAL) {
           buffer.append("final ");
         }
         appendDefinitionType(buffer);
         buffer.append(" ");
       }
 
-      buffer.append(name == null ? ("var" + index + (this.version == 0 ? "" : "_" + this.version)) : name);
+      buffer.append(
+          name == null ? ("var" + index + (this.version == 0 ? "" : "_" + this.version)) : name);
     }
 
     return buffer;
@@ -136,7 +136,8 @@ public class VarExprent extends Exprent {
       Integer origIndex = processor.getVarOriginalIndex(index);
       if (origIndex != null) {
         String name = attr.getName(origIndex, visibleOffset);
-        if (name != null && TextUtil.isValidIdentifier(name, method.getClassStruct().getBytecodeVersion())) {
+        if (name != null && TextUtil
+            .isValidIdentifier(name, method.getClassStruct().getBytecodeVersion())) {
           return name;
         }
       }
@@ -146,7 +147,8 @@ public class VarExprent extends Exprent {
 
   private void appendDefinitionType(TextBuffer buffer) {
     if (DecompilerContext.getOption(IFernflowerPreferences.USE_DEBUG_VAR_NAMES)) {
-      MethodWrapper method = (MethodWrapper)DecompilerContext.getProperty(DecompilerContext.CURRENT_METHOD_WRAPPER);
+      MethodWrapper method = (MethodWrapper) DecompilerContext
+          .getProperty(DecompilerContext.CURRENT_METHOD_WRAPPER);
       if (method != null) {
         Integer originalIndex = null;
         if (processor != null) {
@@ -155,8 +157,8 @@ public class VarExprent extends Exprent {
         if (originalIndex != null) {
           // first try from signature
           if (DecompilerContext.getOption(IFernflowerPreferences.DECOMPILE_GENERIC_SIGNATURES)) {
-            StructLocalVariableTypeTableAttribute attr = (StructLocalVariableTypeTableAttribute)method.methodStruct
-              .getAttribute(StructGeneralAttribute.ATTRIBUTE_LOCAL_VARIABLE_TYPE_TABLE);
+            StructLocalVariableTypeTableAttribute attr = (StructLocalVariableTypeTableAttribute) method.methodStruct
+                .getAttribute(StructGeneralAttribute.ATTRIBUTE_LOCAL_VARIABLE_TYPE_TABLE);
             if (attr != null) {
               String signature = attr.getSignature(originalIndex, visibleOffset);
               if (signature != null) {
@@ -187,13 +189,18 @@ public class VarExprent extends Exprent {
 
   @Override
   public boolean equals(Object o) {
-    if (o == this) return true;
-    if (o == null || !(o instanceof VarExprent)) return false;
+    if (o == this) {
+      return true;
+    }
+    if (o == null || !(o instanceof VarExprent)) {
+      return false;
+    }
 
-    VarExprent ve = (VarExprent)o;
+    VarExprent ve = (VarExprent) o;
     return index == ve.getIndex() &&
-           version == ve.getVersion() &&
-           InterpreterUtil.equalObjects(getVarType(), ve.getVarType()); // FIXME: varType comparison redundant?
+        version == ve.getVersion() &&
+        InterpreterUtil
+            .equalObjects(getVarType(), ve.getVarType()); // FIXME: varType comparison redundant?
   }
 
   public int getIndex() {
@@ -260,31 +267,31 @@ public class VarExprent extends Exprent {
   public void setStack(boolean stack) {
     this.stack = stack;
   }
-  
+
   // *****************************************************************************
   // IMatchable implementation
   // *****************************************************************************
-  
+
   public boolean match(MatchNode matchNode, MatchEngine engine) {
 
-    if(!super.match(matchNode, engine)) {
+    if (!super.match(matchNode, engine)) {
       return false;
     }
-    
+
     RuleValue rule = matchNode.getRules().get(MatchProperties.EXPRENT_VAR_INDEX);
-    if(rule != null) {
-      if(rule.isVariable()) {
-        if(!engine.checkAndSetVariableValue((String)rule.value, this.index)) {
+    if (rule != null) {
+      if (rule.isVariable()) {
+        if (!engine.checkAndSetVariableValue((String) rule.value, this.index)) {
           return false;
         }
-      } else { 
-        if(this.index != Integer.valueOf((String)rule.value).intValue()) {
+      } else {
+        if (this.index != Integer.valueOf((String) rule.value).intValue()) {
           return false;
         }
       }
     }
-    
+
     return true;
   }
-  
+
 }

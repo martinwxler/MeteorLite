@@ -29,85 +29,71 @@ import net.runelite.asm.Type;
 import net.runelite.asm.attributes.code.Instruction;
 import net.runelite.asm.execution.InstructionContext;
 
-public class PacketRead
-{
-	private final Type type; // type of read, from return of function
-	private final Instruction getBuffer; // getstatic
-	private final InstructionContext invokeCtx;
-	private final Instruction invoke; // invoke instruction to read data
-	private Instruction store; // lvt store for reorderable reads
+public class PacketRead {
 
-	public PacketRead(Type type, Instruction getBuffer, InstructionContext invokeCtx)
-	{
-		this.type = type;
-		this.getBuffer = getBuffer;
-		this.invokeCtx = invokeCtx;
-		this.invoke = invokeCtx.getInstruction();
-	}
+  private final Type type; // type of read, from return of function
+  private final Instruction getBuffer; // getstatic
+  private final InstructionContext invokeCtx;
+  private final Instruction invoke; // invoke instruction to read data
+  private Instruction store; // lvt store for reorderable reads
 
-	public Type getType()
-	{
-		return type;
-	}
+  public PacketRead(Type type, Instruction getBuffer, InstructionContext invokeCtx) {
+    this.type = type;
+    this.getBuffer = getBuffer;
+    this.invokeCtx = invokeCtx;
+    this.invoke = invokeCtx.getInstruction();
+  }
 
-	public Instruction getGetBuffer()
-	{
-		return getBuffer;
-	}
+  public Type getType() {
+    return type;
+  }
 
-	public InstructionContext getInvokeCtx()
-	{
-		return invokeCtx;
-	}
+  public Instruction getGetBuffer() {
+    return getBuffer;
+  }
 
-	public Instruction getInvoke()
-	{
-		return invoke;
-	}
+  public InstructionContext getInvokeCtx() {
+    return invokeCtx;
+  }
 
-	public Instruction getStore()
-	{
-		return store;
-	}
+  public Instruction getInvoke() {
+    return invoke;
+  }
 
-	public void setStore(Instruction store)
-	{
-		this.store = store;
-	}
+  public Instruction getStore() {
+    return store;
+  }
 
-	@Override
-	public int hashCode()
-	{
-		int hash = 5;
-		hash = 37 * hash + Objects.hashCode(this.type);
-		hash = 37 * hash + Objects.hashCode(this.invoke);
-		return hash;
-	}
+  public void setStore(Instruction store) {
+    this.store = store;
+  }
 
-	@Override
-	public boolean equals(Object obj)
-	{
-		if (this == obj)
-		{
-			return true;
-		}
-		if (obj == null)
-		{
-			return false;
-		}
-		if (getClass() != obj.getClass())
-		{
-			return false;
-		}
-		final PacketRead other = (PacketRead) obj;
-		if (!Objects.equals(this.type, other.type))
-		{
-			return false;
-		}
-		if (!Objects.equals(this.invoke, other.invoke))
-		{
-			return false;
-		}
-		return true;
-	}
+  @Override
+  public int hashCode() {
+    int hash = 5;
+    hash = 37 * hash + Objects.hashCode(this.type);
+    hash = 37 * hash + Objects.hashCode(this.invoke);
+    return hash;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final PacketRead other = (PacketRead) obj;
+    if (!Objects.equals(this.type, other.type)) {
+      return false;
+    }
+    if (!Objects.equals(this.invoke, other.invoke)) {
+      return false;
+    }
+    return true;
+  }
 }

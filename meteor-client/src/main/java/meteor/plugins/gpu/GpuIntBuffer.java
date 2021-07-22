@@ -28,58 +28,49 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
-class GpuIntBuffer
-{
-	private IntBuffer buffer = allocateDirect(65536);
+class GpuIntBuffer {
 
-	void put(int x, int y, int z)
-	{
-		buffer.put(x).put(y).put(z);
-	}
+  private IntBuffer buffer = allocateDirect(65536);
 
-	void put(int x, int y, int z, int c)
-	{
-		buffer.put(x).put(y).put(z).put(c);
-	}
+  static IntBuffer allocateDirect(int size) {
+    return ByteBuffer.allocateDirect(size * Integer.BYTES)
+        .order(ByteOrder.nativeOrder())
+        .asIntBuffer();
+  }
 
-	void flip()
-	{
-		buffer.flip();
-	}
+  void put(int x, int y, int z) {
+    buffer.put(x).put(y).put(z);
+  }
 
-	void clear()
-	{
-		buffer.clear();
-	}
+  void put(int x, int y, int z, int c) {
+    buffer.put(x).put(y).put(z).put(c);
+  }
 
-	void ensureCapacity(int size)
-	{
-		int capacity = buffer.capacity();
-		final int position = buffer.position();
-		if ((capacity - position) < size)
-		{
-			do
-			{
-				capacity *= 2;
-			}
-			while ((capacity - position) < size);
+  void flip() {
+    buffer.flip();
+  }
 
-			IntBuffer newB = allocateDirect(capacity);
-			buffer.flip();
-			newB.put(buffer);
-			buffer = newB;
-		}
-	}
+  void clear() {
+    buffer.clear();
+  }
 
-	IntBuffer getBuffer()
-	{
-		return buffer;
-	}
+  void ensureCapacity(int size) {
+    int capacity = buffer.capacity();
+    final int position = buffer.position();
+    if ((capacity - position) < size) {
+      do {
+        capacity *= 2;
+      }
+      while ((capacity - position) < size);
 
-	static IntBuffer allocateDirect(int size)
-	{
-		return ByteBuffer.allocateDirect(size * Integer.BYTES)
-			.order(ByteOrder.nativeOrder())
-			.asIntBuffer();
-	}
+      IntBuffer newB = allocateDirect(capacity);
+      buffer.flip();
+      newB.put(buffer);
+      buffer = newB;
+    }
+  }
+
+  IntBuffer getBuffer() {
+    return buffer;
+  }
 }

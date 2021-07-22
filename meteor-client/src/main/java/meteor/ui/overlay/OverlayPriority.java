@@ -24,11 +24,10 @@
  */
 package meteor.ui.overlay;
 
-public enum OverlayPriority
-{
-	LOW,
-	NONE,
-	MED,
-	HIGH,
-	HIGHEST
+public enum OverlayPriority {
+  LOW,
+  NONE,
+  MED,
+  HIGH,
+  HIGHEST
 }

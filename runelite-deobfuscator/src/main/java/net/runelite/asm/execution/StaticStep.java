@@ -34,176 +34,154 @@ import net.runelite.asm.attributes.code.instructions.Return;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StaticStep
-{
-	private static final Logger logger = LoggerFactory.getLogger(StaticStep.class);
+public class StaticStep {
 
-	private static boolean isLoop(Frame f)
-	{
-		Set<Method> set = new HashSet<>();
-		while (f != null)
-		{
-			if (set.contains(f.getMethod()))
-			{
-				return true;
-			}
+  private static final Logger logger = LoggerFactory.getLogger(StaticStep.class);
 
-			set.add(f.getMethod());
-			f = f.returnTo;
-		}
+  private static boolean isLoop(Frame f) {
+    Set<Method> set = new HashSet<>();
+    while (f != null) {
+      if (set.contains(f.getMethod())) {
+        return true;
+      }
 
-		return false;
-	}
+      set.add(f.getMethod());
+      f = f.returnTo;
+    }
 
-	public static Frame stepInto(Frame f, InstructionContext i)
-	{
-		Execution e = f.getExecution();
+    return false;
+  }
 
-		assert i.getInstruction() instanceof InvokeStatic;
+  public static Frame stepInto(Frame f, InstructionContext i) {
+    Execution e = f.getExecution();
 
-		InvokeStatic is = (InvokeStatic) i.getInstruction();
-		List<Method> methods = is.getMethods();
+    assert i.getInstruction() instanceof InvokeStatic;
 
-		assert methods.size() == 1;
+    InvokeStatic is = (InvokeStatic) i.getInstruction();
+    List<Method> methods = is.getMethods();
 
-		Method to = methods.get(0);
+    assert methods.size() == 1;
 
-		if (isLoop(f))
-		{
-			return null;
-		}
+    Method to = methods.get(0);
 
-		if (e.hasInvoked(i, to))
-		{
-			return null;
-		}
+    if (isLoop(f)) {
+      return null;
+    }
 
-		if (to.isNative())
-		{
-			return null;
-		}
+    if (e.hasInvoked(i, to)) {
+      return null;
+    }
 
-		Frame f2 = new Frame(e, to);
-		f2.initialize(i);
-		f2.setOrder(f.getOrder());
+    if (to.isNative()) {
+      return null;
+    }
 
-		if (e.frames.contains(f))
-		{
-			int idx = e.frames.indexOf(f);
-			e.frames.remove(f); // old frame goes away
-			e.frames.add(idx, f2);
-		}
-		else
-		{
-			e.frames.add(f);
-		}
+    Frame f2 = new Frame(e, to);
+    f2.initialize(i);
+    f2.setOrder(f.getOrder());
 
-		// only mapping executor has other
-		if (f.other != null)
-		{
-			assert f.other.other == f;
+    if (e.frames.contains(f)) {
+      int idx = e.frames.indexOf(f);
+      e.frames.remove(f); // old frame goes away
+      e.frames.add(idx, f2);
+    } else {
+      e.frames.add(f);
+    }
 
-			f2.other = f.other; // even though theyre in different methods
-			f.other.other = f2;
+    // only mapping executor has other
+    if (f.other != null) {
+      assert f.other.other == f;
 
-			f.other = null;
-		}
+      f2.other = f.other; // even though theyre in different methods
+      f.other.other = f2;
 
-		f2.returnTo = new Frame(f); // where to go when we're done
-		//assert f.getInstructions().isEmpty() == false; // this is wrong?
-		f2.returnTo.getInstructions().addAll(f.getInstructions()); // also wrong?
+      f.other = null;
+    }
 
-		logger.trace("Stepping into {} from {}", f2, f);
+    f2.returnTo = new Frame(f); // where to go when we're done
+    //assert f.getInstructions().isEmpty() == false; // this is wrong?
+    f2.returnTo.getInstructions().addAll(f.getInstructions()); // also wrong?
 
-		return f2;
-	}
+    logger.trace("Stepping into {} from {}", f2, f);
 
-	public static Frame popStack(Frame f)
-	{
-		if (f.isExecuting() || f.returnTo == null || f.getInstructions().isEmpty())
-		{
-			return f;
-		}
+    return f2;
+  }
 
-		InstructionContext i = f.getInstructions().get(f.getInstructions().size() - 1);
-		if (!(i.getInstruction() instanceof ReturnInstruction))
-		{
-			return f;
-		}
+  public static Frame popStack(Frame f) {
+    if (f.isExecuting() || f.returnTo == null || f.getInstructions().isEmpty()) {
+      return f;
+    }
 
-		StackContext returnValue = null; // the value returned by by the frame
-		if (i.getInstruction() instanceof Return)
-		{
-			assert i.getPops().size() == 1;
+    InstructionContext i = f.getInstructions().get(f.getInstructions().size() - 1);
+    if (!(i.getInstruction() instanceof ReturnInstruction)) {
+      return f;
+    }
 
-			returnValue = i.getPops().get(0);
-		}
-		else
-		{
-			assert i.getPops().isEmpty();
-		}
+    StackContext returnValue = null; // the value returned by by the frame
+    if (i.getInstruction() instanceof Return) {
+      assert i.getPops().size() == 1;
 
-		Frame r = popStackForce(f); // we return to this frame
+      returnValue = i.getPops().get(0);
+    } else {
+      assert i.getPops().isEmpty();
+    }
 
-		f.returnTo = null;
+    Frame r = popStackForce(f); // we return to this frame
 
-		// last ins must be an invokestatic
-		InstructionContext i2 = r.getInstructions().get(r.getInstructions().size() - 1); // this was the ins which invoked frame f
-		assert i2.getInstruction() instanceof InvokeStatic;
-		if (returnValue != null)
-		{
-			// if the function returned something, we must have pushed
-			assert i2.getPushes().size() == 1;
+    f.returnTo = null;
 
-			StackContext invokePushed = i2.getPushes().get(0);
+    // last ins must be an invokestatic
+    InstructionContext i2 = r.getInstructions()
+        .get(r.getInstructions().size() - 1); // this was the ins which invoked frame f
+    assert i2.getInstruction() instanceof InvokeStatic;
+    if (returnValue != null) {
+      // if the function returned something, we must have pushed
+      assert i2.getPushes().size() == 1;
 
-			// set the return value of the invokestatic ins
-			invokePushed.returnSource = returnValue;
-		}
+      StackContext invokePushed = i2.getPushes().get(0);
 
-		logger.trace("Stepping out of {} into {}", f, r);
+      // set the return value of the invokestatic ins
+      invokePushed.returnSource = returnValue;
+    }
 
-		return r;
-	}
+    logger.trace("Stepping out of {} into {}", f, r);
 
-	private static Frame popStackForce(Frame f)
-	{
-		Execution e = f.getExecution();
+    return r;
+  }
 
-		assert f.returnTo != null;
+  private static Frame popStackForce(Frame f) {
+    Execution e = f.getExecution();
 
-		assert !e.frames.contains(f.returnTo);
+    assert f.returnTo != null;
 
-		if (e.frames.contains(f))
-		{
-			// replace frame with returnTo
-			int idx = e.frames.indexOf(f);
-			e.frames.remove(f);
-			assert !e.frames.contains(f.returnTo);
-			e.frames.add(idx, f.returnTo);
-		}
-		else
-		{
-			e.frames.add(f.returnTo);
-		}
+    assert !e.frames.contains(f.returnTo);
 
-		Frame newFrame = f.returnTo;
+    if (e.frames.contains(f)) {
+      // replace frame with returnTo
+      int idx = e.frames.indexOf(f);
+      e.frames.remove(f);
+      assert !e.frames.contains(f.returnTo);
+      e.frames.add(idx, f.returnTo);
+    } else {
+      e.frames.add(f.returnTo);
+    }
 
-		if (f.other != null)
-		{
-			assert f.other.other == f;
-			assert f.returnTo.other == null;
+    Frame newFrame = f.returnTo;
 
-			newFrame.other = f.other;
-			newFrame.other.other = newFrame;
+    if (f.other != null) {
+      assert f.other.other == f;
+      assert f.returnTo.other == null;
 
-			f.other = null;
-		}
+      newFrame.other = f.other;
+      newFrame.other.other = newFrame;
 
-		// Update order
-		assert f.getOrder() >= newFrame.getOrder();
-		newFrame.setOrder(f.getOrder());
+      f.other = null;
+    }
 
-		return newFrame;
-	}
+    // Update order
+    assert f.getOrder() >= newFrame.getOrder();
+    newFrame.setOrder(f.getOrder());
+
+    return newFrame;
+  }
 }

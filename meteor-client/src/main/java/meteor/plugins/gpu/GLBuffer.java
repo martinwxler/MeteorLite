@@ -27,14 +27,13 @@ package meteor.plugins.gpu;
 import org.jocl.Pointer;
 import org.jocl.cl_mem;
 
-class GLBuffer
-{
-	int glBufferId = -1;
-	int size = -1;
-	cl_mem cl_mem;
+class GLBuffer {
 
-	Pointer ptr()
-	{
-		return cl_mem != null ? Pointer.to(cl_mem) : null;
-	}
+  int glBufferId = -1;
+  int size = -1;
+  cl_mem cl_mem;
+
+  Pointer ptr() {
+    return cl_mem != null ? Pointer.to(cl_mem) : null;
+  }
 }

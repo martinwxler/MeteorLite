@@ -28,31 +28,30 @@ import net.runelite.api.Client;
 import net.runelite.api.Skill;
 
 /**
- * Abstract stat of a player.
- * This includes {@link Skill}s and other player variables, such as <code>RUN_ENERGY</code>.
+ * Abstract stat of a player. This includes {@link Skill}s and other player variables, such as
+ * <code>RUN_ENERGY</code>.
+ *
  * @see Stats
  */
-public abstract class Stat
-{
-	private final String name;
+public abstract class Stat {
 
-	Stat(String name)
-	{
-		this.name = name;
-	}
+  private final String name;
 
-	public String getName()
-	{
-		return name;
-	}
+  Stat(String name) {
+    this.name = name;
+  }
 
-	/**
-	 * Get the current stat value including any boosts or damage.
-	 */
-	public abstract int getValue(Client client);
+  public String getName() {
+    return name;
+  }
 
-	/**
-	 * Get the base stat maximum. (ie. the bottom half of the stat fraction)
-	 */
-	public abstract int getMaximum(Client client);
+  /**
+   * Get the current stat value including any boosts or damage.
+   */
+  public abstract int getValue(Client client);
+
+  /**
+   * Get the base stat maximum. (ie. the bottom half of the stat fraction)
+   */
+  public abstract int getMaximum(Client client);
 }

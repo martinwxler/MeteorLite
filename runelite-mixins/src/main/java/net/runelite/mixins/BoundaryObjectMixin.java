@@ -1,5 +1,6 @@
 package net.runelite.mixins;
 
+import java.awt.Shape;
 import net.runelite.api.Model;
 import net.runelite.api.Perspective;
 import net.runelite.api.coords.LocalPoint;
@@ -7,125 +8,108 @@ import net.runelite.api.geometry.Shapes;
 import net.runelite.api.mixins.Inject;
 import net.runelite.api.mixins.Mixin;
 import net.runelite.api.mixins.Shadow;
-import net.runelite.rs.api.*;
-
-import java.awt.*;
+import net.runelite.rs.api.RSBoundaryObject;
+import net.runelite.rs.api.RSClient;
+import net.runelite.rs.api.RSModel;
+import net.runelite.rs.api.RSRenderable;
 
 @Mixin(RSBoundaryObject.class)
-public abstract class BoundaryObjectMixin implements RSBoundaryObject{
+public abstract class BoundaryObjectMixin implements RSBoundaryObject {
 
-    @Shadow("client")
-    private static RSClient client;
+  @Shadow("client")
+  private static RSClient client;
 
-    @Inject
-    private int wallPlane;
+  @Inject
+  private int wallPlane;
 
-    @Inject
-    @Override
-    public int getPlane()
-    {
-        return wallPlane;
+  @Inject
+  @Override
+  public int getPlane() {
+    return wallPlane;
+  }
+
+  @Inject
+  @Override
+  public void setPlane(int plane) {
+    this.wallPlane = plane;
+  }
+
+  @Inject
+  public RSModel getModelA() {
+    RSRenderable entity = getRenderable1();
+    if (entity == null) {
+      return null;
     }
 
-    @Inject
-    @Override
-    public void setPlane(int plane)
-    {
-        this.wallPlane = plane;
+    if (entity instanceof net.runelite.api.Model) {
+      return (RSModel) entity;
+    } else {
+      return entity.getModel$api();
+    }
+  }
+
+  @Inject
+  public RSModel getModelB() {
+    RSRenderable entity = getRenderable2();
+    if (entity == null) {
+      return null;
     }
 
-    @Inject
-    public RSModel getModelA()
-    {
-        RSRenderable entity = getRenderable1();
-        if (entity == null)
-        {
-            return null;
-        }
+    if (entity instanceof Model) {
+      return (RSModel) entity;
+    } else {
+      return entity.getModel$api();
+    }
+  }
 
-        if (entity instanceof net.runelite.api.Model)
-        {
-            return (RSModel) entity;
-        }
-        else
-        {
-            return entity.getModel$api();
-        }
+  @Inject
+  @Override
+  public Shape getClickbox() {
+    Shape clickboxA = Perspective.getClickbox(client, getModelA(), 0, getLocalLocation());
+    Shape clickboxB = Perspective.getClickbox(client, getModelB(), 0, getLocalLocation());
+
+    if (clickboxA == null && clickboxB == null) {
+      return null;
     }
 
-    @Inject
-    public RSModel getModelB()
-    {
-        RSRenderable entity = getRenderable2();
-        if (entity == null)
-        {
-            return null;
-        }
-
-        if (entity instanceof Model)
-        {
-            return (RSModel) entity;
-        }
-        else
-        {
-            return entity.getModel$api();
-        }
+    if (clickboxA != null && clickboxB != null) {
+      return new Shapes(new Shape[]{clickboxA, clickboxB});
     }
 
-    @Inject
-    @Override
-    public Shape getClickbox()
-    {
-        Shape clickboxA = Perspective.getClickbox(client, getModelA(), 0, getLocalLocation());
-        Shape clickboxB = Perspective.getClickbox(client, getModelB(), 0, getLocalLocation());
-
-        if (clickboxA == null && clickboxB == null)
-        {
-            return null;
-        }
-
-        if (clickboxA != null && clickboxB != null)
-        {
-            return new Shapes(new Shape[]{clickboxA, clickboxB});
-        }
-
-        if (clickboxA != null)
-        {
-            return clickboxA;
-        }
-
-        return clickboxB;
+    if (clickboxA != null) {
+      return clickboxA;
     }
 
-    @Inject
-    @Override
-    public Shape getConvexHull()
-    {
-        RSModel model = getModelA();
+    return clickboxB;
+  }
 
-        if (model == null)
-        {
-            return null;
-        }
+  @Inject
+  @Override
+  public Shape getConvexHull() {
+    RSModel model = getModelA();
 
-        int tileHeight = Perspective.getTileHeight(client, new LocalPoint(getX(), getY()), client.getPlane());
-
-        return model.getConvexHull(getX(), getY(), 0, tileHeight);
+    if (model == null) {
+      return null;
     }
 
-    @Inject
-    @Override
-    public Shape getConvexHull2()
-    {
-        RSModel model = getModelB();
+    int tileHeight = Perspective
+        .getTileHeight(client, new LocalPoint(getX(), getY()), client.getPlane());
 
-        if (model == null)
-        {
-            return null;
-        }
+    return model.getConvexHull(getX(), getY(), 0, tileHeight);
+  }
 
-        int tileHeight = Perspective.getTileHeight(client, new LocalPoint(getX(), getY()), client.getPlane());
+  @Inject
+  @Override
+  public Shape getConvexHull2() {
+    RSModel model = getModelB();
 
-        return model.getConvexHull(getX(), getY(), 0, tileHeight);
+    if (model == null) {
+      return null;
     }
+
+    int tileHeight = Perspective
+        .getTileHeight(client, new LocalPoint(getX(), getY()), client.getPlane());
+
+    return model.getConvexHull(getX(), getY(), 0, tileHeight);
+  }
 }

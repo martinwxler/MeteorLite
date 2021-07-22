@@ -15,13 +15,13 @@
  */
 package org.jetbrains.java.decompiler.code;
 
+import java.util.Collections;
+import java.util.List;
 import org.jetbrains.java.decompiler.code.interpreter.Util;
 import org.jetbrains.java.decompiler.struct.StructContext;
 
-import java.util.Collections;
-import java.util.List;
-
 public class ExceptionTable {
+
   public static final ExceptionTable EMPTY = new ExceptionTable(null) {
     @Override
     public List<ExceptionHandler> getHandlers() {
@@ -36,7 +36,8 @@ public class ExceptionTable {
   }
 
 
-  public ExceptionHandler getHandlerByClass(StructContext context, int line, String valclass, boolean withany) {
+  public ExceptionHandler getHandlerByClass(StructContext context, int line, String valclass,
+      boolean withany) {
 
     ExceptionHandler res = null; // no handler found
 

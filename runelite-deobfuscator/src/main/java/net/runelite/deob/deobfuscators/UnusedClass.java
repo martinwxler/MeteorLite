@@ -31,47 +31,39 @@ import net.runelite.deob.Deobfuscator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UnusedClass implements Deobfuscator
-{
-	private static final Logger logger = LoggerFactory.getLogger(UnusedClass.class);
+public class UnusedClass implements Deobfuscator {
 
-	@Override
-	public void run(ClassGroup group)
-	{
-		int count = 0;
-		for (ClassFile cf : new ArrayList<>(group.getClasses()))
-		{
-			if (!cf.getFields().isEmpty())
-			{
-				continue;
-			}
+  private static final Logger logger = LoggerFactory.getLogger(UnusedClass.class);
 
-			if (!cf.getMethods().isEmpty())
-			{
-				continue;
-			}
+  @Override
+  public void run(ClassGroup group) {
+    int count = 0;
+    for (ClassFile cf : new ArrayList<>(group.getClasses())) {
+      if (!cf.getFields().isEmpty()) {
+        continue;
+      }
 
-			if (isImplemented(group, cf))
-			{
-				continue;
-			}
+      if (!cf.getMethods().isEmpty()) {
+        continue;
+      }
 
-			group.removeClass(cf);
-			++count;
-		}
-		
-		logger.info("Removed {} classes", count);
-	}
+      if (isImplemented(group, cf)) {
+        continue;
+      }
 
-	private boolean isImplemented(ClassGroup group, ClassFile iface)
-	{
-		for (ClassFile cf : group.getClasses())
-		{
-			if (cf.getInterfaces().getMyInterfaces().contains(iface))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+      group.removeClass(cf);
+      ++count;
+    }
+
+    logger.info("Removed {} classes", count);
+  }
+
+  private boolean isImplemented(ClassGroup group, ClassFile iface) {
+    for (ClassFile cf : group.getClasses()) {
+      if (cf.getInterfaces().getMyInterfaces().contains(iface)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

@@ -29,27 +29,22 @@ import lombok.RequiredArgsConstructor;
 import org.sponge.util.Logger;
 
 @RequiredArgsConstructor
-public class CallableExceptionLogger<V> implements Callable<V>
-{
-	public Logger log = new Logger("Callable");
-	private final Callable<V> callable;
+public class CallableExceptionLogger<V> implements Callable<V> {
 
-	@Override
-	public V call() throws Exception
-	{
-		try
-		{
-			return callable.call();
-		}
-		catch (Throwable ex)
-		{
-			log.warn("Uncaught exception in callable {}", callable, ex);
-			throw ex;
-		}
-	}
+  private final Callable<V> callable;
+  public Logger log = new Logger("Callable");
 
-	public static <V> CallableExceptionLogger<V> wrap(Callable<V> callable)
-	{
-		return new CallableExceptionLogger<>(callable);
-	}
+  public static <V> CallableExceptionLogger<V> wrap(Callable<V> callable) {
+    return new CallableExceptionLogger<>(callable);
+  }
+
+  @Override
+  public V call() throws Exception {
+    try {
+      return callable.call();
+    } catch (Throwable ex) {
+      log.warn("Uncaught exception in callable {}", callable, ex);
+      throw ex;
+    }
+  }
 }

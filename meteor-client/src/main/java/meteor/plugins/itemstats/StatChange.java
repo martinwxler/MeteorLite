@@ -31,57 +31,54 @@ import meteor.plugins.itemstats.stats.Stat;
  * A single stat change
  */
 @Data
-public class StatChange
-{
-	/**
-	 * The stat which will be boosted (or damaged).
-	 */
-	private Stat stat;
+public class StatChange {
 
-	/**
-	 * Relative change that will occur if the stat boost is applied now.
-	 */
-	private int relative;
+  /**
+   * The stat which will be boosted (or damaged).
+   */
+  private Stat stat;
 
-	/**
-	 * Theoretical change that can occur before boost cap is enforced.
-	 */
-	private int theoretical;
+  /**
+   * Relative change that will occur if the stat boost is applied now.
+   */
+  private int relative;
 
-	/**
-	 * Absolute total of the stat after applying the boost.
-	 */
-	private int absolute;
+  /**
+   * Theoretical change that can occur before boost cap is enforced.
+   */
+  private int theoretical;
 
-	/**
-	 * How beneficial this stat boost will be to the player.
-	 */
-	private Positivity positivity;
+  /**
+   * Absolute total of the stat after applying the boost.
+   */
+  private int absolute;
 
-	/**
-	 * Returns a human-readable formatted relative boost.
-	 * Should be the boost amount prefixed by "+" or "-".
-	 *
-	 * @return The formatted relative boost amount
-	 */
-	public String getFormattedRelative()
-	{
-		return formatBoost(relative);
-	}
+  /**
+   * How beneficial this stat boost will be to the player.
+   */
+  private Positivity positivity;
 
-	/**
-	 * Returns a human-readable formatted theoretical boost.
-	 * Should be the boost amount prefixed by "+" or "-".
-	 *
-	 * @return The formatted theoretical boost amount
-	 */
-	public String getFormattedTheoretical()
-	{
-		return formatBoost(theoretical);
-	}
+  static String formatBoost(int boost) {
+    return String.format("%+d", boost);
+  }
 
-	static String formatBoost(int boost)
-	{
-		return String.format("%+d", boost);
-	}
+  /**
+   * Returns a human-readable formatted relative boost. Should be the boost amount prefixed by "+"
+   * or "-".
+   *
+   * @return The formatted relative boost amount
+   */
+  public String getFormattedRelative() {
+    return formatBoost(relative);
+  }
+
+  /**
+   * Returns a human-readable formatted theoretical boost. Should be the boost amount prefixed by
+   * "+" or "-".
+   *
+   * @return The formatted theoretical boost amount
+   */
+  public String getFormattedTheoretical() {
+    return formatBoost(theoretical);
+  }
 }

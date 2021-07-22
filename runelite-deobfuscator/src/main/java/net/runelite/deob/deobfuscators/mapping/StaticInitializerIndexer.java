@@ -42,51 +42,44 @@ import org.slf4j.LoggerFactory;
  *
  * @author Adam
  */
-public class StaticInitializerIndexer
-{
-	private static final Logger logger = LoggerFactory.getLogger(StaticInitializerIndexer.class);
+public class StaticInitializerIndexer {
 
-	private final ClassGroup group;
-	private final Set<Field> fields = new HashSet<>();
+  private static final Logger logger = LoggerFactory.getLogger(StaticInitializerIndexer.class);
 
-	public StaticInitializerIndexer(ClassGroup group)
-	{
-		this.group = group;
-	}
+  private final ClassGroup group;
+  private final Set<Field> fields = new HashSet<>();
 
-	public void index()
-	{
-		for (ClassFile cf : group.getClasses())
-		{
-			Method method = cf.findMethod("<clinit>");
-			if (method == null)
-			{
-				continue;
-			}
+  public StaticInitializerIndexer(ClassGroup group) {
+    this.group = group;
+  }
 
-			Instructions instructions = method.getCode().getInstructions();
-			for (Instruction i : instructions.getInstructions())
-			{
-				if (i.getType() != InstructionType.PUTSTATIC)
-				{
-					continue;
-				}
+  public void index() {
+    for (ClassFile cf : group.getClasses()) {
+      Method method = cf.findMethod("<clinit>");
+      if (method == null) {
+        continue;
+      }
 
-				PutStatic putstatic = (PutStatic) i;
-				if (!putstatic.getField().getClazz().equals(cf.getPoolClass()) || putstatic.getMyField() == null)
-				{
-					continue;
-				}
+      Instructions instructions = method.getCode().getInstructions();
+      for (Instruction i : instructions.getInstructions()) {
+        if (i.getType() != InstructionType.PUTSTATIC) {
+          continue;
+        }
 
-				fields.add(putstatic.getMyField());
-			}
-		}
+        PutStatic putstatic = (PutStatic) i;
+        if (!putstatic.getField().getClazz().equals(cf.getPoolClass())
+            || putstatic.getMyField() == null) {
+          continue;
+        }
 
-		logger.debug("Indexed {} statically initialized fields", fields.size());
-	}
+        fields.add(putstatic.getMyField());
+      }
+    }
 
-	public boolean isStatic(Field field)
-	{
-		return fields.contains(field);
-	}
+    logger.debug("Indexed {} statically initialized fields", fields.size());
+  }
+
+  public boolean isStatic(Field field) {
+    return fields.contains(field);
+  }
 }

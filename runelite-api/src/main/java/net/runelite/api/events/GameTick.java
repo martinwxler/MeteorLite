@@ -31,22 +31,20 @@ package net.runelite.api.events;
 /**
  * An event called once every game tick, after all packets have processed.
  * <p>
- * A game tick is a unit of time used by the RuneScape server that refers to
- * the time-frame of all actions performed. Each game tick is approximately
- * 0.6 seconds. All actions are a multiple of this time-frame and include
- * instances such as when messages appear in the chat interface, experience
- * being gained, monster spawns and more. All actions registered by the client
- * within a single tick will begin to occur by the beginning of the next tick.
+ * A game tick is a unit of time used by the RuneScape server that refers to the time-frame of all
+ * actions performed. Each game tick is approximately 0.6 seconds. All actions are a multiple of
+ * this time-frame and include instances such as when messages appear in the chat interface,
+ * experience being gained, monster spawns and more. All actions registered by the client within a
+ * single tick will begin to occur by the beginning of the next tick.
  * <p>
- * Note that occurrences that take place purely on the client, such as right
- * click menus, are independent of the game tick.
+ * Note that occurrences that take place purely on the client, such as right click menus, are
+ * independent of the game tick.
  */
-public class GameTick
-{
-	public static final GameTick INSTANCE = new GameTick();
+public class GameTick {
 
-	public GameTick()
-	{
-		// noop
-	}
+  public static final GameTick INSTANCE = new GameTick();
+
+  public GameTick() {
+    // noop
+  }
 }

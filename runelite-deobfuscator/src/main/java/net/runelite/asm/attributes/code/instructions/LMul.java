@@ -35,44 +35,40 @@ import net.runelite.asm.execution.Stack;
 import net.runelite.asm.execution.StackContext;
 import net.runelite.asm.execution.Value;
 
-public class LMul extends Instruction
-{
-	public LMul(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
-	
-	public LMul(Instructions instructions)
-	{
-		super(instructions, InstructionType.LMUL);
-	}
+public class LMul extends Instruction {
+
+  public LMul(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
+
+  public LMul(Instructions instructions) {
+    super(instructions, InstructionType.LMUL);
+  }
 
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ins = new InstructionContext(this, frame);
-		Stack stack = frame.getStack();
-		
-		StackContext two = stack.pop();
-		StackContext one = stack.pop();
-		
-		ins.pop(two, one);
-		
-		Value result = Value.UNKNOWN;
-		if (!two.getValue().isUnknownOrNull() && !one.getValue().isUnknownOrNull())
-		{
-			long l2 = (long) two.getValue().getValue(),
-				l1 = (long) one.getValue().getValue();
-			
-			result = new Value(l1 * l2);
-		}
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ins = new InstructionContext(this, frame);
+    Stack stack = frame.getStack();
 
-		StackContext ctx = new StackContext(ins, Type.LONG, result);
-		stack.push(ctx);
-		
-		ins.push(ctx);
-		
-		return ins;
-	}
+    StackContext two = stack.pop();
+    StackContext one = stack.pop();
+
+    ins.pop(two, one);
+
+    Value result = Value.UNKNOWN;
+    if (!two.getValue().isUnknownOrNull() && !one.getValue().isUnknownOrNull()) {
+      long l2 = (long) two.getValue().getValue(),
+          l1 = (long) one.getValue().getValue();
+
+      result = new Value(l1 * l2);
+    }
+
+    StackContext ctx = new StackContext(ins, Type.LONG, result);
+    stack.push(ctx);
+
+    ins.push(ctx);
+
+    return ins;
+  }
 }

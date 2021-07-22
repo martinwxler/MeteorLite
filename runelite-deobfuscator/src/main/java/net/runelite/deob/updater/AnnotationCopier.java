@@ -28,74 +28,69 @@ package net.runelite.deob.updater;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import net.runelite.asm.Annotation;
 import net.runelite.asm.ClassFile;
 import net.runelite.asm.ClassGroup;
 import net.runelite.asm.Field;
 import net.runelite.asm.Method;
 import net.runelite.asm.Type;
-import net.runelite.asm.Annotation;
 import net.runelite.asm.attributes.Annotated;
 
-public class AnnotationCopier
-{
-	private final ClassGroup group1, group2;
-	private final Set<Type> types;
+public class AnnotationCopier {
 
-	public AnnotationCopier(ClassGroup group1, ClassGroup group2, Type... types)
-	{
-		this.group1 = group1;
-		this.group2 = group2;
-		this.types = new HashSet<>(Arrays.asList(types));
-	}
+  private final ClassGroup group1, group2;
+  private final Set<Type> types;
 
-	public void copy()
-	{
-		for (ClassFile cf1 : group1.getClasses())
-		{
-			ClassFile cf2 = group2.findClass(cf1.getName());
+  public AnnotationCopier(ClassGroup group1, ClassGroup group2, Type... types) {
+    this.group1 = group1;
+    this.group2 = group2;
+    this.types = new HashSet<>(Arrays.asList(types));
+  }
 
-			assert cf2 != null;
+  public void copy() {
+    for (ClassFile cf1 : group1.getClasses()) {
+      ClassFile cf2 = group2.findClass(cf1.getName());
 
-			copy(cf1, cf2);
+      assert cf2 != null;
 
-			for (Field f : cf1.getFields())
-			{
-				Field f2 = cf2.findField(f.getName(), f.getType());
+      copy(cf1, cf2);
 
-				assert f2 != null || f.getAnnotations().isEmpty();
+      for (Field f : cf1.getFields()) {
+        Field f2 = cf2.findField(f.getName(), f.getType());
 
-				if (f2 == null)
-					continue;
+        assert f2 != null || f.getAnnotations().isEmpty();
 
-				copy(f, f2);
-			}
+        if (f2 == null) {
+          continue;
+        }
 
-			for (Method m : cf1.getMethods())
-			{
-				Method m2 = cf2.findMethod(m.getName(), m.getDescriptor());
+        copy(f, f2);
+      }
 
-				assert m2 != null || m == null;
+      for (Method m : cf1.getMethods()) {
+        Method m2 = cf2.findMethod(m.getName(), m.getDescriptor());
 
-				if (m2 == null)
-					continue;
+        assert m2 != null || m == null;
 
-				copy(m, m2);
-			}
-		}
-	}
+        if (m2 == null) {
+          continue;
+        }
 
-	private void copy(Annotated an, Annotated an2)
-	{
-		for (Annotation a : an.getAnnotations().values())
-		{
-			final Type t = a.getType();
-			if (isType(t))
-				an2.getAnnotations().replace(t, a);
-		}
-	}
+        copy(m, m2);
+      }
+    }
+  }
 
-	private boolean isType(Type type)
-	{
-		return types.contains(type);
-	}
+  private void copy(Annotated an, Annotated an2) {
+    for (Annotation a : an.getAnnotations().values()) {
+      final Type t = a.getType();
+      if (isType(t)) {
+        an2.getAnnotations().replace(t, a);
+      }
+    }
+  }
+
+  private boolean isType(Type type) {
+    return types.contains(type);
+  }
 }

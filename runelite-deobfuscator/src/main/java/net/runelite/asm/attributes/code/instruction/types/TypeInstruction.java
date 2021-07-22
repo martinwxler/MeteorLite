@@ -26,9 +26,9 @@ package net.runelite.asm.attributes.code.instruction.types;
 
 import net.runelite.asm.Type;
 
-public interface TypeInstruction
-{
-	Type getType_();
+public interface TypeInstruction {
 
-	void setType(Type type);
+  Type getType_();
+
+  void setType(Type type);
 }

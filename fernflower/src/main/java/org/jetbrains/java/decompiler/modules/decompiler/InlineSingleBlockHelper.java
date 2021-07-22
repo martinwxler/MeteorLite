@@ -15,10 +15,13 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler;
 
-import org.jetbrains.java.decompiler.modules.decompiler.stats.*;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.IfStatement;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.RootStatement;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.SequenceStatement;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.Statement;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.SwitchStatement;
 
 
 public class InlineSingleBlockHelper {
@@ -45,7 +48,7 @@ public class InlineSingleBlockHelper {
 
     if (stat.type == Statement.TYPE_SEQUENCE) {
 
-      SequenceStatement seq = (SequenceStatement)stat;
+      SequenceStatement seq = (SequenceStatement) stat;
       for (int i = 1; i < seq.getStats().size(); i++) {
         if (isInlineable(seq, i)) {
           inlineBlock(seq, i);
@@ -73,9 +76,10 @@ public class InlineSingleBlockHelper {
       lst.add(0, seq.getStats().remove(i));
     }
 
-    if (parent.type == Statement.TYPE_IF && ((IfStatement)parent).iftype == IfStatement.IFTYPE_IF &&
+    if (parent.type == Statement.TYPE_IF && ((IfStatement) parent).iftype == IfStatement.IFTYPE_IF
+        &&
         source == parent.getFirst()) {
-      IfStatement ifparent = (IfStatement)parent;
+      IfStatement ifparent = (IfStatement) parent;
       SequenceStatement block = new SequenceStatement(lst);
       block.setAllParent();
 
@@ -86,8 +90,7 @@ public class InlineSingleBlockHelper {
 
       ifparent.getStats().addWithKey(block, block.id);
       block.setParent(ifparent);
-    }
-    else {
+    } else {
       lst.add(0, source);
 
       SequenceStatement block = new SequenceStatement(lst);
@@ -107,9 +110,8 @@ public class InlineSingleBlockHelper {
         source.addLabeledEdge(prededge);
       }
 
-
       if (parent.type == Statement.TYPE_SWITCH) {
-        ((SwitchStatement)parent).sortEdgesAndNodes();
+        ((SwitchStatement) parent).sortEdgesAndNodes();
       }
 
       source.addSuccessor(new StatEdge(StatEdge.TYPE_REGULAR, source, first));
@@ -125,7 +127,6 @@ public class InlineSingleBlockHelper {
       return false;
     }
 
-
     List<StatEdge> lst = first.getPredecessorEdges(StatEdge.TYPE_BREAK);
 
     if (lst.size() == 1) {
@@ -134,8 +135,7 @@ public class InlineSingleBlockHelper {
       if (sameCatchRanges(edge)) {
         if (edge.explicit) {
           return true;
-        }
-        else {
+        } else {
           for (int i = index; i < seq.getStats().size(); i++) {
             if (!noExitLabels(seq.getStats().get(i), seq)) {
               return false;
@@ -167,8 +167,7 @@ public class InlineSingleBlockHelper {
         if (parent.getFirst() == from) {
           return false;
         }
-      }
-      else if (parent.type == Statement.TYPE_SYNCRONIZED) {
+      } else if (parent.type == Statement.TYPE_SYNCRONIZED) {
         if (parent.getStats().get(1) == from) {
           return false;
         }
@@ -183,7 +182,8 @@ public class InlineSingleBlockHelper {
   private static boolean noExitLabels(Statement block, Statement sequence) {
 
     for (StatEdge edge : block.getAllSuccessorEdges()) {
-      if (edge.getType() != StatEdge.TYPE_REGULAR && edge.getDestination().type != Statement.TYPE_DUMMYEXIT) {
+      if (edge.getType() != StatEdge.TYPE_REGULAR
+          && edge.getDestination().type != Statement.TYPE_DUMMYEXIT) {
         if (!sequence.containsStatementStrict(edge.getDestination())) {
           return false;
         }
@@ -207,13 +207,11 @@ public class InlineSingleBlockHelper {
 
       if (parent == closure) {
         return false;
-      }
-      else {
+      } else {
         return parent.type == Statement.TYPE_DO || parent.type == Statement.TYPE_SWITCH ||
-               isBreakEdgeLabeled(parent, closure);
+            isBreakEdgeLabeled(parent, closure);
       }
-    }
-    else {
+    } else {
       return true;
     }
   }

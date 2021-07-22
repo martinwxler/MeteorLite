@@ -25,247 +25,219 @@
 package meteor.plugins.gpu;
 
 import com.jogamp.opengl.GL4;
+import java.nio.ByteBuffer;
+import javax.inject.Singleton;
 import net.runelite.api.Texture;
 import net.runelite.api.TextureProvider;
 import org.sponge.util.Logger;
 
-import javax.inject.Singleton;
-import java.nio.ByteBuffer;
-
 @Singleton
-class TextureManager
-{
-	public Logger log = new Logger("TextureManager");
-	private static final float PERC_64 = 1f / 64f;
-	private static final float PERC_128 = 1f / 128f;
+class TextureManager {
 
-	private static final int TEXTURE_SIZE = 128;
+  private static final float PERC_64 = 1f / 64f;
+  private static final float PERC_128 = 1f / 128f;
+  private static final int TEXTURE_SIZE = 128;
+  public Logger log = new Logger("TextureManager");
 
-	int initTextureArray(TextureProvider textureProvider, GL4 gl)
-	{
-		if (!allTexturesLoaded(textureProvider))
-		{
-			return -1;
-		}
+  private static byte[] convertPixels(int[] srcPixels, int width, int height, int textureWidth,
+      int textureHeight) {
+    byte[] pixels = new byte[textureWidth * textureHeight * 4];
 
-		Texture[] textures = textureProvider.getTextures();
+    int pixelIdx = 0;
+    int srcPixelIdx = 0;
 
-		int textureArrayId = GLUtil.glGenTexture(gl);
-		gl.glBindTexture(gl.GL_TEXTURE_2D_ARRAY, textureArrayId);
-		gl.glTexStorage3D(gl.GL_TEXTURE_2D_ARRAY, 8, gl.GL_RGBA8, TEXTURE_SIZE, TEXTURE_SIZE, textures.length);
+    int offset = (textureWidth - width) * 4;
 
-		gl.glTexParameteri(gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST);
-		gl.glTexParameteri(gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST);
+    for (int y = 0; y < height; y++) {
+      for (int x = 0; x < width; x++) {
+        int rgb = srcPixels[srcPixelIdx++];
+        if (rgb != 0) {
+          pixels[pixelIdx++] = (byte) (rgb >> 16);
+          pixels[pixelIdx++] = (byte) (rgb >> 8);
+          pixels[pixelIdx++] = (byte) rgb;
+          pixels[pixelIdx++] = (byte) -1;
+        } else {
+          pixelIdx += 4;
+        }
+      }
+      pixelIdx += offset;
+    }
+    return pixels;
+  }
 
-		gl.glTexParameteri(gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_WRAP_S, gl.GL_CLAMP_TO_EDGE);
+  int initTextureArray(TextureProvider textureProvider, GL4 gl) {
+    if (!allTexturesLoaded(textureProvider)) {
+      return -1;
+    }
 
-		// Set brightness to 1.0d to upload unmodified textures to GPU
-		double save = textureProvider.getBrightness();
-		textureProvider.setBrightness$api(1.0d);
+    Texture[] textures = textureProvider.getTextures();
 
-		updateTextures(textureProvider, gl, textureArrayId);
+    int textureArrayId = GLUtil.glGenTexture(gl);
+    gl.glBindTexture(gl.GL_TEXTURE_2D_ARRAY, textureArrayId);
+    gl.glTexStorage3D(gl.GL_TEXTURE_2D_ARRAY, 8, gl.GL_RGBA8, TEXTURE_SIZE, TEXTURE_SIZE,
+        textures.length);
 
-		textureProvider.setBrightness$api(save);
+    gl.glTexParameteri(gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST);
+    gl.glTexParameteri(gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST);
 
-		gl.glActiveTexture(gl.GL_TEXTURE1);
-		gl.glBindTexture(gl.GL_TEXTURE_2D_ARRAY, textureArrayId);
-		gl.glGenerateMipmap(gl.GL_TEXTURE_2D_ARRAY);
-		gl.glActiveTexture(gl.GL_TEXTURE0);
+    gl.glTexParameteri(gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_WRAP_S, gl.GL_CLAMP_TO_EDGE);
 
-		return textureArrayId;
-	}
+    // Set brightness to 1.0d to upload unmodified textures to GPU
+    double save = textureProvider.getBrightness();
+    textureProvider.setBrightness$api(1.0d);
 
-	void setAnisotropicFilteringLevel(int textureArrayId, int level, GL4 gl)
-	{
-		gl.glBindTexture(gl.GL_TEXTURE_2D_ARRAY, textureArrayId);
+    updateTextures(textureProvider, gl, textureArrayId);
 
-		//level = 0 means no mipmaps and no anisotropic filtering
-		if (level == 0)
-		{
-			gl.glTexParameteri(gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST);
-		}
-		//level = 1 means with mipmaps but without anisotropic filtering GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT defaults to 1.0 which is off
-		//level > 1 enables anisotropic filtering. It's up to the vendor what the values mean
-		//Even if anisotropic filtering isn't supported, mipmaps will be enabled with any level >= 1
-		else
-		{
-			// Set on GL_NEAREST_MIPMAP_LINEAR (bilinear filtering with mipmaps) since the pixel nature of the game means that nearest filtering
-			// looks best for objects up close but allows linear filtering to resolve possible aliasing and noise with mipmaps from far away objects.
-			gl.glTexParameteri(gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST_MIPMAP_LINEAR);
-		}
+    textureProvider.setBrightness$api(save);
 
-		if (gl.isExtensionAvailable("GL_EXT_texture_filter_anisotropic"))
-		{
-			final float maxSamples = GLUtil.glGetFloat(gl, gl.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT);
-			//Clamp from 1 to max GL says it supports.
-			final float anisoLevel = Math.max(1, Math.min(maxSamples, level));
-			gl.glTexParameterf(gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_MAX_ANISOTROPY_EXT, anisoLevel);
-		}
-	}
+    gl.glActiveTexture(gl.GL_TEXTURE1);
+    gl.glBindTexture(gl.GL_TEXTURE_2D_ARRAY, textureArrayId);
+    gl.glGenerateMipmap(gl.GL_TEXTURE_2D_ARRAY);
+    gl.glActiveTexture(gl.GL_TEXTURE0);
 
-	void freeTextureArray(GL4 gl, int textureArrayId)
-	{
-		GLUtil.glDeleteTexture(gl, textureArrayId);
-	}
+    return textureArrayId;
+  }
 
-	/**
-	 * Check if all textures have been loaded and cached yet.
-	 *
-	 * @param textureProvider
-	 * @return
-	 */
-	private boolean allTexturesLoaded(TextureProvider textureProvider)
-	{
-		Texture[] textures = textureProvider.getTextures();
-		if (textures == null || textures.length == 0)
-		{
-			return false;
-		}
+  void setAnisotropicFilteringLevel(int textureArrayId, int level, GL4 gl) {
+    gl.glBindTexture(gl.GL_TEXTURE_2D_ARRAY, textureArrayId);
 
-		for (int textureId = 0; textureId < textures.length; textureId++)
-		{
-			Texture texture = textures[textureId];
-			if (texture != null)
-			{
-				int[] pixels = textureProvider.load(textureId);
-				if (pixels == null)
-				{
-					return false;
-				}
-			}
-		}
+    //level = 0 means no mipmaps and no anisotropic filtering
+    if (level == 0) {
+      gl.glTexParameteri(gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST);
+    }
+    //level = 1 means with mipmaps but without anisotropic filtering GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT defaults to 1.0 which is off
+    //level > 1 enables anisotropic filtering. It's up to the vendor what the values mean
+    //Even if anisotropic filtering isn't supported, mipmaps will be enabled with any level >= 1
+    else {
+      // Set on GL_NEAREST_MIPMAP_LINEAR (bilinear filtering with mipmaps) since the pixel nature of the game means that nearest filtering
+      // looks best for objects up close but allows linear filtering to resolve possible aliasing and noise with mipmaps from far away objects.
+      gl.glTexParameteri(gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_MIN_FILTER,
+          gl.GL_NEAREST_MIPMAP_LINEAR);
+    }
 
-		return true;
-	}
+    if (gl.isExtensionAvailable("GL_EXT_texture_filter_anisotropic")) {
+      final float maxSamples = GLUtil.glGetFloat(gl, gl.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+      //Clamp from 1 to max GL says it supports.
+      final float anisoLevel = Math.max(1, Math.min(maxSamples, level));
+      gl.glTexParameterf(gl.GL_TEXTURE_2D_ARRAY, gl.GL_TEXTURE_MAX_ANISOTROPY_EXT, anisoLevel);
+    }
+  }
 
-	private void updateTextures(TextureProvider textureProvider, GL4 gl, int textureArrayId)
-	{
-		Texture[] textures = textureProvider.getTextures();
+  void freeTextureArray(GL4 gl, int textureArrayId) {
+    GLUtil.glDeleteTexture(gl, textureArrayId);
+  }
 
-		gl.glBindTexture(gl.GL_TEXTURE_2D_ARRAY, textureArrayId);
+  /**
+   * Check if all textures have been loaded and cached yet.
+   *
+   * @param textureProvider
+   * @return
+   */
+  private boolean allTexturesLoaded(TextureProvider textureProvider) {
+    Texture[] textures = textureProvider.getTextures();
+    if (textures == null || textures.length == 0) {
+      return false;
+    }
 
-		int cnt = 0;
-		for (int textureId = 0; textureId < textures.length; textureId++)
-		{
-			Texture texture = textures[textureId];
-			if (texture != null)
-			{
-				int[] srcPixels = textureProvider.load(textureId);
-				if (srcPixels == null)
-				{
-					log.warn("No pixels for texture " + textureId);
-					continue; // this can't happen
-				}
+    for (int textureId = 0; textureId < textures.length; textureId++) {
+      Texture texture = textures[textureId];
+      if (texture != null) {
+        int[] pixels = textureProvider.load(textureId);
+        if (pixels == null) {
+          return false;
+        }
+      }
+    }
 
-				++cnt;
+    return true;
+  }
 
-				if (srcPixels.length != TEXTURE_SIZE * TEXTURE_SIZE)
-				{
-					// The texture storage is 128x128 bytes, and will only work correctly with the
-					// 128x128 textures from high detail mode
-					//log.warn("Texture size for {} is {}!", textureId, srcPixels.length);
-					continue;
-				}
+  private void updateTextures(TextureProvider textureProvider, GL4 gl, int textureArrayId) {
+    Texture[] textures = textureProvider.getTextures();
 
-				byte[] pixels = convertPixels(srcPixels, TEXTURE_SIZE, TEXTURE_SIZE, TEXTURE_SIZE, TEXTURE_SIZE);
-				ByteBuffer pixelBuffer = ByteBuffer.wrap(pixels);
-				gl.glTexSubImage3D(gl.GL_TEXTURE_2D_ARRAY, 0, 0, 0, textureId, TEXTURE_SIZE, TEXTURE_SIZE,
-					1, gl.GL_RGBA, gl.GL_UNSIGNED_BYTE, pixelBuffer);
-			}
-		}
+    gl.glBindTexture(gl.GL_TEXTURE_2D_ARRAY, textureArrayId);
 
-		log.debug("Uploaded textures " + cnt);
-	}
+    int cnt = 0;
+    for (int textureId = 0; textureId < textures.length; textureId++) {
+      Texture texture = textures[textureId];
+      if (texture != null) {
+        int[] srcPixels = textureProvider.load(textureId);
+        if (srcPixels == null) {
+          log.warn("No pixels for texture " + textureId);
+          continue; // this can't happen
+        }
 
-	private static byte[] convertPixels(int[] srcPixels, int width, int height, int textureWidth, int textureHeight)
-	{
-		byte[] pixels = new byte[textureWidth * textureHeight * 4];
+        ++cnt;
 
-		int pixelIdx = 0;
-		int srcPixelIdx = 0;
+        if (srcPixels.length != TEXTURE_SIZE * TEXTURE_SIZE) {
+          // The texture storage is 128x128 bytes, and will only work correctly with the
+          // 128x128 textures from high detail mode
+          //log.warn("Texture size for {} is {}!", textureId, srcPixels.length);
+          continue;
+        }
 
-		int offset = (textureWidth - width) * 4;
+        byte[] pixels = convertPixels(srcPixels, TEXTURE_SIZE, TEXTURE_SIZE, TEXTURE_SIZE,
+            TEXTURE_SIZE);
+        ByteBuffer pixelBuffer = ByteBuffer.wrap(pixels);
+        gl.glTexSubImage3D(gl.GL_TEXTURE_2D_ARRAY, 0, 0, 0, textureId, TEXTURE_SIZE, TEXTURE_SIZE,
+            1, gl.GL_RGBA, gl.GL_UNSIGNED_BYTE, pixelBuffer);
+      }
+    }
 
-		for (int y = 0; y < height; y++)
-		{
-			for (int x = 0; x < width; x++)
-			{
-				int rgb = srcPixels[srcPixelIdx++];
-				if (rgb != 0)
-				{
-					pixels[pixelIdx++] = (byte) (rgb >> 16);
-					pixels[pixelIdx++] = (byte) (rgb >> 8);
-					pixels[pixelIdx++] = (byte) rgb;
-					pixels[pixelIdx++] = (byte) -1;
-				}
-				else
-				{
-					pixelIdx += 4;
-				}
-			}
-			pixelIdx += offset;
-		}
-		return pixels;
-	}
+    log.debug("Uploaded textures " + cnt);
+  }
 
-	/**
-	 * Animate the given texture
-	 *
-	 * @param texture
-	 * @param diff    Number of elapsed client ticks since last animation
-	 */
-	void animate(Texture texture, int diff)
-	{
-		final int[] pixels = texture.getPixels();
-		if (pixels == null)
-		{
-			return;
-		}
+  /**
+   * Animate the given texture
+   *
+   * @param texture
+   * @param diff    Number of elapsed client ticks since last animation
+   */
+  void animate(Texture texture, int diff) {
+    final int[] pixels = texture.getPixels();
+    if (pixels == null) {
+      return;
+    }
 
-		final int animationSpeed = texture.getAnimationSpeed();
-		final float uvdiff = pixels.length == 4096 ? PERC_64 : PERC_128;
+    final int animationSpeed = texture.getAnimationSpeed();
+    final float uvdiff = pixels.length == 4096 ? PERC_64 : PERC_128;
 
-		float u = texture.getU();
-		float v = texture.getV();
+    float u = texture.getU();
+    float v = texture.getV();
 
-		int offset = animationSpeed * diff;
-		float d = (float) offset * uvdiff;
+    int offset = animationSpeed * diff;
+    float d = (float) offset * uvdiff;
 
-		switch (texture.getAnimationDirection())
-		{
-			case 1:
-				v -= d;
-				if (v < 0f)
-				{
-					v += 1f;
-				}
-				break;
-			case 3:
-				v += d;
-				if (v > 1f)
-				{
-					v -= 1f;
-				}
-				break;
-			case 2:
-				u -= d;
-				if (u < 0f)
-				{
-					u += 1f;
-				}
-				break;
-			case 4:
-				u += d;
-				if (u > 1f)
-				{
-					u -= 1f;
-				}
-				break;
-			default:
-				return;
-		}
+    switch (texture.getAnimationDirection()) {
+      case 1:
+        v -= d;
+        if (v < 0f) {
+          v += 1f;
+        }
+        break;
+      case 3:
+        v += d;
+        if (v > 1f) {
+          v -= 1f;
+        }
+        break;
+      case 2:
+        u -= d;
+        if (u < 0f) {
+          u += 1f;
+        }
+        break;
+      case 4:
+        u += d;
+        if (u > 1f) {
+          u -= 1f;
+        }
+        break;
+      default:
+        return;
+    }
 
-		texture.setU(u);
-		texture.setV(v);
-	}
+    texture.setU(u);
+    texture.setV(v);
+  }
 }

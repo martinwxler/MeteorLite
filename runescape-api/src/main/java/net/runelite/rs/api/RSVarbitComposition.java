@@ -3,17 +3,17 @@ package net.runelite.rs.api;
 import net.runelite.api.VarbitComposition;
 import net.runelite.mapping.Import;
 
-public interface RSVarbitComposition extends VarbitComposition, RSDualNode
-{
-	@Import("baseVar")
-	int getIndex();
+public interface RSVarbitComposition extends VarbitComposition, RSDualNode {
 
-	@Import("startBit")
-	int getLeastSignificantBit();
+  @Import("baseVar")
+  int getIndex();
 
-	@Import("endBit")
-	int getMostSignificantBit();
+  @Import("startBit")
+  int getLeastSignificantBit();
 
-	@Import("decode")
-	void decode(RSBuffer buffer);
+  @Import("endBit")
+  int getMostSignificantBit();
+
+  @Import("decode")
+  void decode(RSBuffer buffer);
 }

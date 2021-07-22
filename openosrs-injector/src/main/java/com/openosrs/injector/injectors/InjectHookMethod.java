@@ -48,142 +48,128 @@ import net.runelite.asm.attributes.code.instructions.ALoad;
 import net.runelite.asm.attributes.code.instructions.InvokeSpecial;
 import net.runelite.asm.signature.Signature;
 
-public class InjectHookMethod extends AbstractInjector
-{
-	private static final Type METHODHOOK = new Type("Lnet/runelite/api/mixins/MethodHook;");
-	private final Map<Provider<ClassFile>, List<ClassFile>> mixinTargets;
+public class InjectHookMethod extends AbstractInjector {
 
-	private int injected = 0;
+  private static final Type METHODHOOK = new Type("Lnet/runelite/api/mixins/MethodHook;");
+  private final Map<Provider<ClassFile>, List<ClassFile>> mixinTargets;
 
-	InjectHookMethod(final InjectData inject, final Map<Provider<ClassFile>, List<ClassFile>> mixinTargets)
-	{
-		super(inject);
-		this.mixinTargets = mixinTargets;
-	}
+  private int injected = 0;
 
-	@Override
-	public void inject()
-	{
-		for (Map.Entry<Provider<ClassFile>, List<ClassFile>> entry : mixinTargets.entrySet())
-		{
-			injectMethods(entry.getKey(), entry.getValue());
-		}
+  InjectHookMethod(final InjectData inject,
+      final Map<Provider<ClassFile>, List<ClassFile>> mixinTargets) {
+    super(inject);
+    this.mixinTargets = mixinTargets;
+  }
 
-		//log.info("[INFO] Injected {} method hooks", injected);
-	}
+  private static boolean isEnd(Annotation annotation) {
+    Object val = annotation.get("end");
+    return val instanceof Boolean && (Boolean) val;
+  }
 
-	private void injectMethods(Provider<ClassFile> mixinProvider, List<ClassFile> targetClasses)
-	{
-		final ClassFile mixinClass = mixinProvider.get();
+  @Override
+  public void inject() {
+    for (Map.Entry<Provider<ClassFile>, List<ClassFile>> entry : mixinTargets.entrySet()) {
+      injectMethods(entry.getKey(), entry.getValue());
+    }
 
-		for (ClassFile targetClass : targetClasses)
-		{
-			for (Method mixinMethod : mixinClass.getMethods())
-			{
-				final Annotation methodHook = mixinMethod.findAnnotation(METHODHOOK);
-				if (methodHook == null)
-				{
-					continue;
-				}
+    //log.info("[INFO] Injected {} method hooks", injected);
+  }
 
-				if (!mixinMethod.getDescriptor().isVoid())
-				{
-					throw new InjectException("Method hook " + mixinMethod.getPoolMethod() + " doesn't have void return type");
-				}
+  private void injectMethods(Provider<ClassFile> mixinProvider, List<ClassFile> targetClasses) {
+    final ClassFile mixinClass = mixinProvider.get();
 
-				final String hookName = methodHook.getValueString();
-				final boolean end = isEnd(methodHook);
+    for (ClassFile targetClass : targetClasses) {
+      for (Method mixinMethod : mixinClass.getMethods()) {
+        final Annotation methodHook = mixinMethod.findAnnotation(METHODHOOK);
+        if (methodHook == null) {
+          continue;
+        }
 
-				final ClassFile deobTarget = inject.deobfuscated.findClass(targetClass.getName());
-				final Signature deobSig = InjectUtil.apiToDeob(inject, mixinMethod.getDescriptor());
-				final boolean notStatic = !mixinMethod.isStatic();
-				final Method targetMethod = InjectUtil.findMethod(inject, hookName, deobTarget.getName(), sig -> InjectUtil.argsMatch(sig, deobSig), notStatic, false);
+        if (!mixinMethod.getDescriptor().isVoid()) {
+          throw new InjectException(
+              "Method hook " + mixinMethod.getPoolMethod() + " doesn't have void return type");
+        }
 
-				final net.runelite.asm.pool.Method hookMethod = new net.runelite.asm.pool.Method(
-					targetClass.getPoolClass(),
-					mixinMethod.getName(),
-					mixinMethod.getDescriptor()
-				);
+        final String hookName = methodHook.getValueString();
+        final boolean end = isEnd(methodHook);
 
-				inject(targetMethod, hookMethod, end);
+        final ClassFile deobTarget = inject.deobfuscated.findClass(targetClass.getName());
+        final Signature deobSig = InjectUtil.apiToDeob(inject, mixinMethod.getDescriptor());
+        final boolean notStatic = !mixinMethod.isStatic();
+        final Method targetMethod = InjectUtil.findMethod(inject, hookName, deobTarget.getName(),
+            sig -> InjectUtil.argsMatch(sig, deobSig), notStatic, false);
 
-		//		log.debug("[DEBUG] Injected method hook {} in {}", hookMethod, targetMethod);
-				++injected;
-			}
-		}
-	}
+        final net.runelite.asm.pool.Method hookMethod = new net.runelite.asm.pool.Method(
+            targetClass.getPoolClass(),
+            mixinMethod.getName(),
+            mixinMethod.getDescriptor()
+        );
 
-	private void inject(final Method method, final net.runelite.asm.pool.Method hookMethod, boolean end)
-	{
-		final Instructions ins = method.getCode().getInstructions();
-		final ListIterator<Instruction> it;
+        inject(targetMethod, hookMethod, end);
 
-		if (end)
-		{
-			it = ins.listIterator(ins.size());
-			while (it.hasPrevious())
-			{
-				if (it.previous() instanceof ReturnInstruction)
-				{
-					insertVoke(method, hookMethod, it);
-				}
-			}
+        //		log.debug("[DEBUG] Injected method hook {} in {}", hookMethod, targetMethod);
+        ++injected;
+      }
+    }
+  }
 
-			return;
-		}
+  private void inject(final Method method, final net.runelite.asm.pool.Method hookMethod,
+      boolean end) {
+    final Instructions ins = method.getCode().getInstructions();
+    final ListIterator<Instruction> it;
 
-		it = ins.listIterator();
-		if (method.getName().equals("<init>"))
-		{
-			while (it.hasNext())
-			{
-				if (it.next() instanceof InvokeSpecial)
-				{
-					break;
-				}
-			}
+    if (end) {
+      it = ins.listIterator(ins.size());
+      while (it.hasPrevious()) {
+        if (it.previous() instanceof ReturnInstruction) {
+          insertVoke(method, hookMethod, it);
+        }
+      }
 
-			assert it.hasNext() : "Constructor without invokespecial";
-		}
+      return;
+    }
 
-		insertVoke(method, hookMethod, it);
-	}
+    it = ins.listIterator();
+    if (method.getName().equals("<init>")) {
+      while (it.hasNext()) {
+        if (it.next() instanceof InvokeSpecial) {
+          break;
+        }
+      }
 
-	private void insertVoke(final Method method, final net.runelite.asm.pool.Method hookMethod, ListIterator<Instruction> iterator)
-	{
-		final Instructions instructions = method.getCode().getInstructions();
-		int varIdx = 0;
+      assert it.hasNext() : "Constructor without invokespecial";
+    }
 
-		if (!method.isStatic())
-		{
-			iterator.add(new ALoad(instructions, varIdx++));
-		}
+    insertVoke(method, hookMethod, it);
+  }
 
-		for (Type type : hookMethod.getType().getArguments())
-		{
-			iterator.add(
-				InjectUtil.createLoadForTypeIndex(
-					instructions,
-					type,
-					varIdx
-				)
-			);
+  private void insertVoke(final Method method, final net.runelite.asm.pool.Method hookMethod,
+      ListIterator<Instruction> iterator) {
+    final Instructions instructions = method.getCode().getInstructions();
+    int varIdx = 0;
 
-			varIdx += type.getSize();
-		}
+    if (!method.isStatic()) {
+      iterator.add(new ALoad(instructions, varIdx++));
+    }
 
-		iterator.add(
-			InjectUtil.createInvokeFor(
-				instructions,
-				hookMethod,
-				method.isStatic()
-			)
-		);
-	}
+    for (Type type : hookMethod.getType().getArguments()) {
+      iterator.add(
+          InjectUtil.createLoadForTypeIndex(
+              instructions,
+              type,
+              varIdx
+          )
+      );
 
-	private static boolean isEnd(Annotation annotation)
-	{
-		Object val = annotation.get("end");
-		return val instanceof Boolean && (Boolean) val;
-	}
+      varIdx += type.getSize();
+    }
+
+    iterator.add(
+        InjectUtil.createInvokeFor(
+            instructions,
+            hookMethod,
+            method.isStatic()
+        )
+    );
+  }
 }

@@ -26,8 +26,12 @@ package net.runelite.http.api.item;
 
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import net.runelite.http.api.RuneLiteAPI;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -35,87 +39,70 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.sponge.util.Logger;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
+public class ItemClient {
 
-public class ItemClient
-{
-	private final OkHttpClient client;
-	Logger log = new Logger("ItemClient");
+  private final OkHttpClient client;
+  Logger log = new Logger("ItemClient");
 
-	public ItemClient(OkHttpClient client)
-	{
-		this.client = client;
-	}
+  public ItemClient(OkHttpClient client) {
+    this.client = client;
+  }
 
-	public ItemPrice[] getPrices()
-	{
-		HttpUrl.Builder urlBuilder = RuneLiteAPI.getApiBase().newBuilder()
-			.addPathSegment("item")
-			.addPathSegment("prices.js");
+  public ItemPrice[] getPrices() {
+    HttpUrl.Builder urlBuilder = RuneLiteAPI.getApiBase().newBuilder()
+        .addPathSegment("item")
+        .addPathSegment("prices.js");
 
-		HttpUrl url = urlBuilder.build();
+    HttpUrl url = urlBuilder.build();
 
-		log.debug("Built URI: " + url);
+    log.debug("Built URI: " + url);
 
-		Request request = new Request.Builder()
-			.url(url)
-			.build();
+    Request request = new Request.Builder()
+        .url(url)
+        .build();
 
-		try (Response response = client.newCall(request).execute())
-		{
-			if (!response.isSuccessful())
-			{
-				log.warn("Error looking up prices: " + response);
-				return null;
-			}
+    try (Response response = client.newCall(request).execute()) {
+      if (!response.isSuccessful()) {
+        log.warn("Error looking up prices: " + response);
+        return null;
+      }
 
-			InputStream in = response.body().byteStream();
-			return RuneLiteAPI.GSON.fromJson(new InputStreamReader(in, StandardCharsets.UTF_8), ItemPrice[].class);
-		}
-		catch (JsonParseException | IOException ex)
-		{
-			ex.printStackTrace();
-		}
-		return null;
-	}
+      InputStream in = response.body().byteStream();
+      return RuneLiteAPI.GSON
+          .fromJson(new InputStreamReader(in, StandardCharsets.UTF_8), ItemPrice[].class);
+    } catch (JsonParseException | IOException ex) {
+      ex.printStackTrace();
+    }
+    return null;
+  }
 
-	public Map<Integer, ItemStats> getStats() throws IOException
-	{
-		HttpUrl.Builder urlBuilder = RuneLiteAPI.getStaticBase().newBuilder()
-			.addPathSegment("item")
-			// TODO: Change this to stats.min.json later after release is undeployed
-			.addPathSegment("stats.ids.min.json");
+  public Map<Integer, ItemStats> getStats() throws IOException {
+    HttpUrl.Builder urlBuilder = RuneLiteAPI.getStaticBase().newBuilder()
+        .addPathSegment("item")
+        // TODO: Change this to stats.min.json later after release is undeployed
+        .addPathSegment("stats.ids.min.json");
 
-		HttpUrl url = urlBuilder.build();
+    HttpUrl url = urlBuilder.build();
 
-		log.debug("Built URI: " + url);
+    log.debug("Built URI: " + url);
 
-		Request request = new Request.Builder()
-			.url(url)
-			.build();
+    Request request = new Request.Builder()
+        .url(url)
+        .build();
 
-		try (Response response = client.newCall(request).execute())
-		{
-			if (!response.isSuccessful())
-			{
-				log.warn("Error looking up item stats: " + response);
-				return null;
-			}
+    try (Response response = client.newCall(request).execute()) {
+      if (!response.isSuccessful()) {
+        log.warn("Error looking up item stats: " + response);
+        return null;
+      }
 
-			InputStream in = response.body().byteStream();
-			final Type typeToken = new TypeToken<Map<Integer, ItemStats>>()
-			{
-			}.getType();
-			return RuneLiteAPI.GSON.fromJson(new InputStreamReader(in, StandardCharsets.UTF_8), typeToken);
-		}
-		catch (JsonParseException ex)
-		{
-			throw new IOException(ex);
-		}
-	}
+      InputStream in = response.body().byteStream();
+      final Type typeToken = new TypeToken<Map<Integer, ItemStats>>() {
+      }.getType();
+      return RuneLiteAPI.GSON
+          .fromJson(new InputStreamReader(in, StandardCharsets.UTF_8), typeToken);
+    } catch (JsonParseException ex) {
+      throw new IOException(ex);
+    }
+  }
 }

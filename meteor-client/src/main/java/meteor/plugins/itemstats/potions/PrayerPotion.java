@@ -24,78 +24,72 @@
  */
 package meteor.plugins.itemstats.potions;
 
-import net.runelite.api.*;
-import meteor.plugins.itemstats.StatBoost;
-
 import static meteor.plugins.itemstats.stats.Stats.PRAYER;
 
-public class PrayerPotion extends StatBoost
-{
-	private static final double BASE_PERC = .25;
-	private final int delta;
-	private final double perc;
+import meteor.plugins.itemstats.StatBoost;
+import net.runelite.api.Client;
+import net.runelite.api.EquipmentInventorySlot;
+import net.runelite.api.InventoryID;
+import net.runelite.api.Item;
+import net.runelite.api.ItemContainer;
+import net.runelite.api.ItemID;
 
-	public PrayerPotion(int delta)
-	{
-		this(delta, BASE_PERC);
-	}
+public class PrayerPotion extends StatBoost {
 
-	PrayerPotion(int delta, double perc)
-	{
-		super(PRAYER, false);
-		this.delta = delta;
-		this.perc = perc;
-	}
+  private static final double BASE_PERC = .25;
+  private static final int RING_SLOT = EquipmentInventorySlot.RING.getSlotIdx();
+  private static final int CAPE_SLOT = EquipmentInventorySlot.CAPE.getSlotIdx();
+  private final int delta;
+  private final double perc;
 
-	private static final int RING_SLOT = EquipmentInventorySlot.RING.getSlotIdx();
-	private static final int CAPE_SLOT = EquipmentInventorySlot.CAPE.getSlotIdx();
+  public PrayerPotion(int delta) {
+    this(delta, BASE_PERC);
+  }
+  PrayerPotion(int delta, double perc) {
+    super(PRAYER, false);
+    this.delta = delta;
+    this.perc = perc;
+  }
 
-	@Override
-	public int heals(Client client)
-	{
-		boolean hasHolyWrench = false;
+  @Override
+  public int heals(Client client) {
+    boolean hasHolyWrench = false;
 
-		ItemContainer equipContainer = client.getItemContainer(InventoryID.EQUIPMENT);
-		if (equipContainer != null)
-		{
-			Item cape = equipContainer.getItem(CAPE_SLOT);
-			Item ring = equipContainer.getItem(RING_SLOT);
+    ItemContainer equipContainer = client.getItemContainer(InventoryID.EQUIPMENT);
+    if (equipContainer != null) {
+      Item cape = equipContainer.getItem(CAPE_SLOT);
+      Item ring = equipContainer.getItem(RING_SLOT);
 
-			hasHolyWrench = ring != null && ring.getId() == ItemID.RING_OF_THE_GODS_I;
-			if (cape != null)
-			{
-				int capeId = cape.getId();
-				hasHolyWrench |= capeId == ItemID.PRAYER_CAPE;
-				hasHolyWrench |= capeId == ItemID.PRAYER_CAPET;
-				hasHolyWrench |= capeId == ItemID.MAX_CAPE;
-				hasHolyWrench |= capeId == ItemID.MAX_CAPE_13342;
-			}
-		}
-		if (!hasHolyWrench)
-		{
-			ItemContainer invContainer = client.getItemContainer(InventoryID.INVENTORY);
-			if (invContainer != null)
-			{
-				for (Item itemStack : invContainer.getItems())
-				{
-					int item = itemStack.getId();
-					hasHolyWrench = item == ItemID.HOLY_WRENCH;
-					hasHolyWrench |= item == ItemID.PRAYER_CAPE;
-					hasHolyWrench |= item == ItemID.PRAYER_CAPET;
-					hasHolyWrench |= item == ItemID.MAX_CAPE;
-					hasHolyWrench |= item == ItemID.MAX_CAPE_13342;
+      hasHolyWrench = ring != null && ring.getId() == ItemID.RING_OF_THE_GODS_I;
+      if (cape != null) {
+        int capeId = cape.getId();
+        hasHolyWrench |= capeId == ItemID.PRAYER_CAPE;
+        hasHolyWrench |= capeId == ItemID.PRAYER_CAPET;
+        hasHolyWrench |= capeId == ItemID.MAX_CAPE;
+        hasHolyWrench |= capeId == ItemID.MAX_CAPE_13342;
+      }
+    }
+    if (!hasHolyWrench) {
+      ItemContainer invContainer = client.getItemContainer(InventoryID.INVENTORY);
+      if (invContainer != null) {
+        for (Item itemStack : invContainer.getItems()) {
+          int item = itemStack.getId();
+          hasHolyWrench = item == ItemID.HOLY_WRENCH;
+          hasHolyWrench |= item == ItemID.PRAYER_CAPE;
+          hasHolyWrench |= item == ItemID.PRAYER_CAPET;
+          hasHolyWrench |= item == ItemID.MAX_CAPE;
+          hasHolyWrench |= item == ItemID.MAX_CAPE_13342;
 
-					if (hasHolyWrench)
-					{
-						break;
-					}
-				}
-			}
-		}
+          if (hasHolyWrench) {
+            break;
+          }
+        }
+      }
+    }
 
-		double percent = hasHolyWrench ? perc + .02 : perc;
-		int max = getStat().getMaximum(client);
-		return (((int) (max * percent)) * (delta >= 0 ? 1 : -1)) + delta;
-	}
+    double percent = hasHolyWrench ? perc + .02 : perc;
+    int max = getStat().getMaximum(client);
+    return (((int) (max * percent)) * (delta >= 0 ? 1 : -1)) + delta;
+  }
 
 }

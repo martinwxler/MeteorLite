@@ -27,17 +27,18 @@ package agent;
 import org.spongepowered.asm.service.IMixinServiceBootstrap;
 
 public class MixinServiceAgentBootstrap implements IMixinServiceBootstrap {
-    @Override
-    public String getName() {
-        return "Mixin Agent";
-    }
 
-    @Override
-    public String getServiceClassName() {
-        return "MixinServiceLaunchAgent";
-    }
+  @Override
+  public String getName() {
+    return "Mixin Agent";
+  }
 
-    @Override
-    public void bootstrap() {
-    }
+  @Override
+  public String getServiceClassName() {
+    return "MixinServiceLaunchAgent";
+  }
+
+  @Override
+  public void bootstrap() {
+  }
 }

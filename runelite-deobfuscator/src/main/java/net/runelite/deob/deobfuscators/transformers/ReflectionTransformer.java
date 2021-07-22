@@ -38,217 +38,198 @@ import net.runelite.deob.Transformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ReflectionTransformer implements Transformer
-{
-	private static final Logger logger = LoggerFactory.getLogger(ReflectionTransformer.class);
+public class ReflectionTransformer implements Transformer {
 
-	@Override
-	public void transform(ClassGroup group)
-	{
-		for (ClassFile cf : group.getClasses())
-		{
-			for (Method method : cf.getMethods())
-			{
-				transform(method);
-			}
-		}
-	}
+  private static final Logger logger = LoggerFactory.getLogger(ReflectionTransformer.class);
 
-	private void transform(Method method)
-	{
-		Code code = method.getCode();
+  @Override
+  public void transform(ClassGroup group) {
+    for (ClassFile cf : group.getClasses()) {
+      for (Method method : cf.getMethods()) {
+        transform(method);
+      }
+    }
+  }
 
-		if (code == null)
-		{
-			return;
-		}
+  private void transform(Method method) {
+    Code code = method.getCode();
 
-		Instructions ins = code.getInstructions();
+    if (code == null) {
+      return;
+    }
 
-		for (Instruction i : new ArrayList<>(ins.getInstructions()))
-		{
-			transformFindClass(i);
-			transformMethodName(ins, i);
-			transformGetParameterTypes(ins, i);
-			transformGetDeclaredField(ins, i);
-			transformSetInt(ins, i);
-			transformGetInt(ins, i);
-			transformInvokeVirtual(ins, i);
-		}
-	}
+    Instructions ins = code.getInstructions();
 
-	// invokestatic          java/lang/Class/forName(Ljava/lang/String;)Ljava/lang/Class;
-	// to
-	// invokestatic          net/runelite/rs/Reflection/findClass(Ljava/lang/String;)Ljava/lang/Class;
-	private void transformFindClass(Instruction i)
-	{
-		if (!(i instanceof InvokeStatic))
-		{
-			return;
-		}
+    for (Instruction i : new ArrayList<>(ins.getInstructions())) {
+      transformFindClass(i);
+      transformMethodName(ins, i);
+      transformGetParameterTypes(ins, i);
+      transformGetDeclaredField(ins, i);
+      transformSetInt(ins, i);
+      transformGetInt(ins, i);
+      transformInvokeVirtual(ins, i);
+    }
+  }
 
-		InvokeStatic is = (InvokeStatic) i;
+  // invokestatic          java/lang/Class/forName(Ljava/lang/String;)Ljava/lang/Class;
+  // to
+  // invokestatic          net/runelite/rs/Reflection/findClass(Ljava/lang/String;)Ljava/lang/Class;
+  private void transformFindClass(Instruction i) {
+    if (!(i instanceof InvokeStatic)) {
+      return;
+    }
 
-		if (is.getMethod().getClazz().getName().equals("java/lang/Class")
-			&& is.getMethod().getName().equals("forName"))
-		{
-			is.setMethod(
-				new net.runelite.asm.pool.Method(
-					new net.runelite.asm.pool.Class("net/runelite/rs/Reflection"), "findClass", new Signature("(Ljava/lang/String;)Ljava/lang/Class;")
-				)
-			);
+    InvokeStatic is = (InvokeStatic) i;
 
-			logger.info("Transformed Class.forName call");
-		}
-	}
+    if (is.getMethod().getClazz().getName().equals("java/lang/Class")
+        && is.getMethod().getName().equals("forName")) {
+      is.setMethod(
+          new net.runelite.asm.pool.Method(
+              new net.runelite.asm.pool.Class("net/runelite/rs/Reflection"), "findClass",
+              new Signature("(Ljava/lang/String;)Ljava/lang/Class;")
+          )
+      );
 
-	// invokevirtual         java/lang/reflect/Method/getName()Ljava/lang/String;
-	// to
-	// invokestatic          net/runelite/rs/Reflection/getMethodName(Ljava/lang/reflect/Method;)Ljava/lang/String;
-	private void transformMethodName(Instructions instructions, Instruction i)
-	{
-		if (!(i instanceof InvokeVirtual))
-		{
-			return;
-		}
+      logger.info("Transformed Class.forName call");
+    }
+  }
 
-		InvokeVirtual iv = (InvokeVirtual) i;
+  // invokevirtual         java/lang/reflect/Method/getName()Ljava/lang/String;
+  // to
+  // invokestatic          net/runelite/rs/Reflection/getMethodName(Ljava/lang/reflect/Method;)Ljava/lang/String;
+  private void transformMethodName(Instructions instructions, Instruction i) {
+    if (!(i instanceof InvokeVirtual)) {
+      return;
+    }
 
-		if (iv.getMethod().getClazz().getName().equals("java/lang/reflect/Method")
-			&& iv.getMethod().getName().equals("getName"))
-		{
-			InvokeStatic is = new InvokeStatic(instructions,
-				new net.runelite.asm.pool.Method(
-					new net.runelite.asm.pool.Class("net/runelite/rs/Reflection"), "getMethodName", new Signature("(Ljava/lang/reflect/Method;)Ljava/lang/String;")
-				)
-			);
-			instructions.replace(iv, is);
+    InvokeVirtual iv = (InvokeVirtual) i;
 
-			logger.info("Transformed Method.getName call");
-		}
-	}
+    if (iv.getMethod().getClazz().getName().equals("java/lang/reflect/Method")
+        && iv.getMethod().getName().equals("getName")) {
+      InvokeStatic is = new InvokeStatic(instructions,
+          new net.runelite.asm.pool.Method(
+              new net.runelite.asm.pool.Class("net/runelite/rs/Reflection"), "getMethodName",
+              new Signature("(Ljava/lang/reflect/Method;)Ljava/lang/String;")
+          )
+      );
+      instructions.replace(iv, is);
 
-	// invokevirtual         java/lang/reflect/Method/getParameterTypes()[Ljava/lang/Class;
-	// to
-	// invokestatic          net/runelite/rs/Reflection/getParameterTypes(Ljava/lang/reflect/Method;)[Ljava/lang/Class;
-	private void transformGetParameterTypes(Instructions instructions, Instruction i)
-	{
-		if (!(i instanceof InvokeVirtual))
-		{
-			return;
-		}
+      logger.info("Transformed Method.getName call");
+    }
+  }
 
-		InvokeVirtual iv = (InvokeVirtual) i;
+  // invokevirtual         java/lang/reflect/Method/getParameterTypes()[Ljava/lang/Class;
+  // to
+  // invokestatic          net/runelite/rs/Reflection/getParameterTypes(Ljava/lang/reflect/Method;)[Ljava/lang/Class;
+  private void transformGetParameterTypes(Instructions instructions, Instruction i) {
+    if (!(i instanceof InvokeVirtual)) {
+      return;
+    }
 
-		if (iv.getMethod().getClazz().getName().equals("java/lang/reflect/Method")
-			&& iv.getMethod().getName().equals("getParameterTypes"))
-		{
-			InvokeStatic is = new InvokeStatic(instructions,
-				new net.runelite.asm.pool.Method(
-					new net.runelite.asm.pool.Class("net/runelite/rs/Reflection"), "getParameterTypes", new Signature("(Ljava/lang/reflect/Method;)[Ljava/lang/Class;")
-				)
-			);
-			instructions.replace(iv, is);
+    InvokeVirtual iv = (InvokeVirtual) i;
 
-			logger.info("Transformed Method.getParameterTypes call");
-		}
-	}
+    if (iv.getMethod().getClazz().getName().equals("java/lang/reflect/Method")
+        && iv.getMethod().getName().equals("getParameterTypes")) {
+      InvokeStatic is = new InvokeStatic(instructions,
+          new net.runelite.asm.pool.Method(
+              new net.runelite.asm.pool.Class("net/runelite/rs/Reflection"), "getParameterTypes",
+              new Signature("(Ljava/lang/reflect/Method;)[Ljava/lang/Class;")
+          )
+      );
+      instructions.replace(iv, is);
 
-	// invokevirtual         java/lang/Class/getDeclaredField(Ljava/lang/String;)Ljava/lang/reflect/Field;
-	// to
-	// invokestatic          net/runelite/rs/Reflection/findField
-	private void transformGetDeclaredField(Instructions instructions, Instruction i)
-	{
-		if (!(i instanceof InvokeVirtual))
-		{
-			return;
-		}
+      logger.info("Transformed Method.getParameterTypes call");
+    }
+  }
 
-		InvokeVirtual iv = (InvokeVirtual) i;
+  // invokevirtual         java/lang/Class/getDeclaredField(Ljava/lang/String;)Ljava/lang/reflect/Field;
+  // to
+  // invokestatic          net/runelite/rs/Reflection/findField
+  private void transformGetDeclaredField(Instructions instructions, Instruction i) {
+    if (!(i instanceof InvokeVirtual)) {
+      return;
+    }
 
-		if (iv.getMethod().getClazz().getName().equals("java/lang/Class")
-			&& iv.getMethod().getName().equals("getDeclaredField"))
-		{
-			InvokeStatic is = new InvokeStatic(instructions,
-				new net.runelite.asm.pool.Method(
-					new net.runelite.asm.pool.Class("net/runelite/rs/Reflection"), "findField", new Signature("(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/reflect/Field;")
-				)
-			);
-			instructions.replace(iv, is);
+    InvokeVirtual iv = (InvokeVirtual) i;
 
-			logger.info("Transformed Class.getDeclaredField call");
-		}
-	}
+    if (iv.getMethod().getClazz().getName().equals("java/lang/Class")
+        && iv.getMethod().getName().equals("getDeclaredField")) {
+      InvokeStatic is = new InvokeStatic(instructions,
+          new net.runelite.asm.pool.Method(
+              new net.runelite.asm.pool.Class("net/runelite/rs/Reflection"), "findField",
+              new Signature("(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/reflect/Field;")
+          )
+      );
+      instructions.replace(iv, is);
 
-	// invokevirtual         java/lang/reflect/Field/setInt(Ljava/lang/Object;I)V
-	private void transformSetInt(Instructions instructions, Instruction i)
-	{
-		if (!(i instanceof InvokeVirtual))
-		{
-			return;
-		}
+      logger.info("Transformed Class.getDeclaredField call");
+    }
+  }
 
-		InvokeVirtual iv = (InvokeVirtual) i;
+  // invokevirtual         java/lang/reflect/Field/setInt(Ljava/lang/Object;I)V
+  private void transformSetInt(Instructions instructions, Instruction i) {
+    if (!(i instanceof InvokeVirtual)) {
+      return;
+    }
 
-		if (iv.getMethod().getClazz().getName().equals("java/lang/reflect/Field")
-			&& iv.getMethod().getName().equals("setInt"))
-		{
-			InvokeStatic is = new InvokeStatic(instructions,
-				new net.runelite.asm.pool.Method(
-					new net.runelite.asm.pool.Class("net/runelite/rs/Reflection"), "setInt", new Signature("(Ljava/lang/reflect/Field;Ljava/lang/Object;I)V")
-				)
-			);
-			instructions.replace(iv, is);
+    InvokeVirtual iv = (InvokeVirtual) i;
 
-			logger.info("Transformed Field.setInt call");
-		}
-	}
+    if (iv.getMethod().getClazz().getName().equals("java/lang/reflect/Field")
+        && iv.getMethod().getName().equals("setInt")) {
+      InvokeStatic is = new InvokeStatic(instructions,
+          new net.runelite.asm.pool.Method(
+              new net.runelite.asm.pool.Class("net/runelite/rs/Reflection"), "setInt",
+              new Signature("(Ljava/lang/reflect/Field;Ljava/lang/Object;I)V")
+          )
+      );
+      instructions.replace(iv, is);
 
-	// invokevirtual         java/lang/reflect/Field/getInt(Ljava/lang/Object;)I
-	private void transformGetInt(Instructions instructions, Instruction i)
-	{
-		if (!(i instanceof InvokeVirtual))
-		{
-			return;
-		}
+      logger.info("Transformed Field.setInt call");
+    }
+  }
 
-		InvokeVirtual iv = (InvokeVirtual) i;
+  // invokevirtual         java/lang/reflect/Field/getInt(Ljava/lang/Object;)I
+  private void transformGetInt(Instructions instructions, Instruction i) {
+    if (!(i instanceof InvokeVirtual)) {
+      return;
+    }
 
-		if (iv.getMethod().getClazz().getName().equals("java/lang/reflect/Field")
-			&& iv.getMethod().getName().equals("getInt"))
-		{
-			InvokeStatic is = new InvokeStatic(instructions,
-				new net.runelite.asm.pool.Method(
-					new net.runelite.asm.pool.Class("net/runelite/rs/Reflection"), "getInt", new Signature("(Ljava/lang/reflect/Field;Ljava/lang/Object;)I")
-				)
-			);
-			instructions.replace(iv, is);
+    InvokeVirtual iv = (InvokeVirtual) i;
 
-			logger.info("Transformed Field.getInt call");
-		}
-	}
+    if (iv.getMethod().getClazz().getName().equals("java/lang/reflect/Field")
+        && iv.getMethod().getName().equals("getInt")) {
+      InvokeStatic is = new InvokeStatic(instructions,
+          new net.runelite.asm.pool.Method(
+              new net.runelite.asm.pool.Class("net/runelite/rs/Reflection"), "getInt",
+              new Signature("(Ljava/lang/reflect/Field;Ljava/lang/Object;)I")
+          )
+      );
+      instructions.replace(iv, is);
 
-	// invokevirtual         java/lang/reflect/Method/invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
-	private void transformInvokeVirtual(Instructions instructions, Instruction i)
-	{
-		if (!(i instanceof InvokeVirtual))
-		{
-			return;
-		}
+      logger.info("Transformed Field.getInt call");
+    }
+  }
 
-		InvokeVirtual iv = (InvokeVirtual) i;
+  // invokevirtual         java/lang/reflect/Method/invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+  private void transformInvokeVirtual(Instructions instructions, Instruction i) {
+    if (!(i instanceof InvokeVirtual)) {
+      return;
+    }
 
-		if (iv.getMethod().getClazz().getName().equals("java/lang/reflect/Method")
-			&& iv.getMethod().getName().equals("invoke"))
-		{
-			InvokeStatic is = new InvokeStatic(instructions,
-				new net.runelite.asm.pool.Method(
-					new net.runelite.asm.pool.Class("net/runelite/rs/Reflection"), "invoke", new Signature("(Ljava/lang/reflect/Method;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;")
-				)
-			);
-			instructions.replace(iv, is);
+    InvokeVirtual iv = (InvokeVirtual) i;
 
-			logger.info("Transformed Method.invoke call");
-		}
-	}
+    if (iv.getMethod().getClazz().getName().equals("java/lang/reflect/Method")
+        && iv.getMethod().getName().equals("invoke")) {
+      InvokeStatic is = new InvokeStatic(instructions,
+          new net.runelite.asm.pool.Method(
+              new net.runelite.asm.pool.Class("net/runelite/rs/Reflection"), "invoke",
+              new Signature(
+                  "(Ljava/lang/reflect/Method;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;")
+          )
+      );
+      instructions.replace(iv, is);
+
+      logger.info("Transformed Method.invoke call");
+    }
+  }
 }

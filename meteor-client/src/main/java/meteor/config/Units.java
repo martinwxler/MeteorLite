@@ -24,7 +24,11 @@
  */
 package meteor.config;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Used with ConfigItem, defines what units are shown to the side of the box.
@@ -32,18 +36,18 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Documented
-public @interface Units
-{
-	String MILLISECONDS = "ms";
-	String MINUTES = " mins";
-	String PERCENT = "%";
-	String PIXELS = "px";
-	String POINTS = "pt";
-	String SECONDS = "s";
-	String TICKS = " ticks";
-	String LEVELS = " lvls";
-	String FPS = " fps";
-	String GP = " GP";
+public @interface Units {
 
-	String value();
+  String MILLISECONDS = "ms";
+  String MINUTES = " mins";
+  String PERCENT = "%";
+  String PIXELS = "px";
+  String POINTS = "pt";
+  String SECONDS = "s";
+  String TICKS = " ticks";
+  String LEVELS = " lvls";
+  String FPS = " fps";
+  String GP = " GP";
+
+  String value();
 }

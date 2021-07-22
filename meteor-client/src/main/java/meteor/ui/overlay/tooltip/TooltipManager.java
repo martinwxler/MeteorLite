@@ -30,23 +30,20 @@ import javax.inject.Singleton;
 import lombok.Getter;
 
 @Singleton
-public class TooltipManager
-{
-	@Getter
-	private final List<Tooltip> tooltips = new ArrayList<>();
+public class TooltipManager {
 
-	public void add(Tooltip tooltip)
-	{
-		tooltips.add(tooltip);
-	}
+  @Getter
+  private final List<Tooltip> tooltips = new ArrayList<>();
 
-	public void addFront(Tooltip tooltip)
-	{
-		tooltips.add(0, tooltip);
-	}
+  public void add(Tooltip tooltip) {
+    tooltips.add(tooltip);
+  }
 
-	public void clear()
-	{
-		tooltips.clear();
-	}
+  public void addFront(Tooltip tooltip) {
+    tooltips.add(0, tooltip);
+  }
+
+  public void clear() {
+    tooltips.clear();
+  }
 }

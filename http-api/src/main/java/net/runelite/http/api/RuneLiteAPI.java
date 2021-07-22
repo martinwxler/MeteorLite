@@ -26,128 +26,112 @@ package net.runelite.http.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.awt.Color;
+import java.io.IOException;
+import java.time.Instant;
+import java.util.concurrent.TimeUnit;
 import net.runelite.http.api.gson.ColorTypeAdapter;
 import net.runelite.http.api.gson.IllegalReflectionExclusion;
 import net.runelite.http.api.gson.InstantTypeAdapter;
-import okhttp3.*;
+import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.sponge.util.Logger;
 
-import java.awt.*;
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.Instant;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
+public class RuneLiteAPI {
 
-public class RuneLiteAPI
-{
-	private static final Logger logger = new Logger("");
+  public static final String RUNELITE_AUTH = "RUNELITE-AUTH";
+  public static final String RUNELITE_MACHINEID = "RUNELITE-MACHINEID";
+  public static final OkHttpClient CLIENT;
+  public static final Gson GSON;
+  public static final MediaType JSON = MediaType.parse("application/json");
+  private static final Logger logger = new Logger("");
+  private static final String BASE = "https://api.runelite.net";
+  private static final String WSBASE = "https://api.runelite.net/ws";
+  private static final String STATICBASE = "https://static.runelite.net";
+  private static final String METEOR_SESSION = "https://session.openosrs.dev";
+  public static String userAgent;
+  private static String version;
 
-	public static final String RUNELITE_AUTH = "RUNELITE-AUTH";
-	public static final String RUNELITE_MACHINEID = "RUNELITE-MACHINEID";
+  static {
+    version = "1.7.16";
+    userAgent = "RuneLite/" + version + "-";
 
-	public static final OkHttpClient CLIENT;
-	public static final Gson GSON;
-	public static final MediaType JSON = MediaType.parse("application/json");
-	public static String userAgent;
+    CLIENT = new OkHttpClient.Builder()
+        .pingInterval(30, TimeUnit.SECONDS)
+        .addNetworkInterceptor(new Interceptor() {
 
-	private static final String BASE = "https://api.runelite.net";
-	private static final String WSBASE = "https://api.runelite.net/ws";
-	private static final String STATICBASE = "https://static.runelite.net";
+          @Override
+          public Response intercept(Chain chain) throws IOException {
+            Request userAgentRequest = chain.request()
+                .newBuilder()
+                .header("User-Agent", userAgent)
+                .build();
+            return chain.proceed(userAgentRequest);
+          }
+        })
+        .build();
 
-	private static final String METEOR_SESSION = "https://session.openosrs.dev";
+    GsonBuilder gsonBuilder = new GsonBuilder();
 
-	private static String version;
+    gsonBuilder
+        .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
+        .registerTypeAdapter(Color.class, new ColorTypeAdapter());
 
-	static
-	{
-		version = "1.7.16";
-		userAgent = "RuneLite/" + version + "-";
+    boolean assertionsEnabled = false;
+    assert assertionsEnabled = true;
+    if (assertionsEnabled) {
+      IllegalReflectionExclusion jbe = new IllegalReflectionExclusion();
+      gsonBuilder.addSerializationExclusionStrategy(jbe);
+      gsonBuilder.addDeserializationExclusionStrategy(jbe);
+    }
 
-		CLIENT = new OkHttpClient.Builder()
-			.pingInterval(30, TimeUnit.SECONDS)
-			.addNetworkInterceptor(new Interceptor()
-			{
+    GSON = gsonBuilder.create();
+  }
 
-				@Override
-				public Response intercept(Chain chain) throws IOException
-				{
-					Request userAgentRequest = chain.request()
-						.newBuilder()
-						.header("User-Agent", userAgent)
-						.build();
-					return chain.proceed(userAgentRequest);
-				}
-			})
-			.build();
+  public static HttpUrl getSessionBase() {
+    return HttpUrl.parse(METEOR_SESSION);
+  }
 
-		GsonBuilder gsonBuilder = new GsonBuilder();
+  public static HttpUrl getApiBase() {
+    final String prop = System.getProperty("runelite.http-service.url");
 
-		gsonBuilder
-			.registerTypeAdapter(Instant.class, new InstantTypeAdapter())
-			.registerTypeAdapter(Color.class, new ColorTypeAdapter());
+    if (prop != null && !prop.isEmpty()) {
+      return HttpUrl.parse(prop);
+    }
 
-		boolean assertionsEnabled = false;
-		assert assertionsEnabled = true;
-		if (assertionsEnabled)
-		{
-			IllegalReflectionExclusion jbe = new IllegalReflectionExclusion();
-			gsonBuilder.addSerializationExclusionStrategy(jbe);
-			gsonBuilder.addDeserializationExclusionStrategy(jbe);
-		}
+    return HttpUrl.parse(BASE + "/runelite-" + getVersion());
+  }
 
-		GSON = gsonBuilder.create();
-	}
+  public static HttpUrl getStaticBase() {
+    final String prop = System.getProperty("runelite.static.url");
 
-	public static HttpUrl getSessionBase()
-	{
-		return HttpUrl.parse(METEOR_SESSION);
-	}
+    if (prop != null && !prop.isEmpty()) {
+      return HttpUrl.parse(prop);
+    }
 
-	public static HttpUrl getApiBase()
-	{
-		final String prop = System.getProperty("runelite.http-service.url");
+    return HttpUrl.parse(STATICBASE);
+  }
 
-		if (prop != null && !prop.isEmpty())
-		{
-			return HttpUrl.parse(prop);
-		}
+  public static HttpUrl getWsEndpoint() {
+    final String prop = System.getProperty("runelite.ws.url");
 
-		return HttpUrl.parse(BASE + "/runelite-" + getVersion());
-	}
+    if (prop != null && !prop.isEmpty()) {
+      return HttpUrl.parse(prop);
+    }
 
-	public static HttpUrl getStaticBase()
-	{
-		final String prop = System.getProperty("runelite.static.url");
+    return HttpUrl.parse(WSBASE);
+  }
 
-		if (prop != null && !prop.isEmpty())
-		{
-			return HttpUrl.parse(prop);
-		}
+  public static String getVersion() {
+    return version;
+  }
 
-		return HttpUrl.parse(STATICBASE);
-	}
-
-	public static HttpUrl getWsEndpoint()
-	{
-		final String prop = System.getProperty("runelite.ws.url");
-
-		if (prop != null && !prop.isEmpty())
-		{
-			return HttpUrl.parse(prop);
-		}
-
-		return HttpUrl.parse(WSBASE);
-	}
-
-	public static String getVersion()
-	{
-		return version;
-	}
-
-	public static void setVersion(String version)
-	{
-		RuneLiteAPI.version = version;
-	}
+  public static void setVersion(String version) {
+    RuneLiteAPI.version = version;
+  }
 
 }

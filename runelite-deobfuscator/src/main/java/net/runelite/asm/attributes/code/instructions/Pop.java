@@ -33,26 +33,23 @@ import net.runelite.asm.execution.InstructionContext;
 import net.runelite.asm.execution.StackContext;
 
 
-public class Pop extends Instruction
-{
-	public Pop(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
-	
-	public Pop(Instructions instructions)
-	{
-		super(instructions, InstructionType.POP);
-	}
+public class Pop extends Instruction {
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ins = new InstructionContext(this, frame);
-		
-		StackContext value = frame.getStack().pop();
-		ins.pop(value);
-		
-		return ins;
-	}
+  public Pop(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
+
+  public Pop(Instructions instructions) {
+    super(instructions, InstructionType.POP);
+  }
+
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ins = new InstructionContext(this, frame);
+
+    StackContext value = frame.getStack().pop();
+    ins.pop(value);
+
+    return ins;
+  }
 }

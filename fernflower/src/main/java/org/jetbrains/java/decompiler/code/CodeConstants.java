@@ -77,7 +77,6 @@ public interface CodeConstants {
   int VAR_WRITE = 0;
   int VAR_READ = 1;
 
-
   // ----------------------------------------------------------------------
   // ACCESS FLAGS
   // ----------------------------------------------------------------------
@@ -105,7 +104,6 @@ public interface CodeConstants {
 
   int ACC_SUPER = 0x0020;
   int ACC_INTERFACE = 0x0200;
-
 
   // ----------------------------------------------------------------------
   // DEPENDENCY CONSTANTS

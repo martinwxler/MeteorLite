@@ -29,26 +29,28 @@ import net.runelite.api.ChatPlayer;
 /**
  * A member of a clan channel
  */
-public interface ClanChannelMember extends ChatPlayer
-{
-	/**
-	 * The member name
-	 * @return
-	 */
-	String getName$api();
+public interface ClanChannelMember extends ChatPlayer {
 
-	/**
-	 * The member's rank relative to the other members. To get the member title,
-	 * see ClanSettings.
-	 * @see ClanRank
-	 * @see ClanSettings#titleForRank(ClanRank)
-	 * @return
-	 */
-	ClanRank getRank();
+  /**
+   * The member name
+   *
+   * @return
+   */
+  String getName$api();
 
-	/**
-	 * The world the member is on
-	 * @return
-	 */
-	int getWorld$api();
+  /**
+   * The member's rank relative to the other members. To get the member title, see ClanSettings.
+   *
+   * @return
+   * @see ClanRank
+   * @see ClanSettings#titleForRank(ClanRank)
+   */
+  ClanRank getRank();
+
+  /**
+   * The world the member is on
+   *
+   * @return
+   */
+  int getWorld$api();
 }

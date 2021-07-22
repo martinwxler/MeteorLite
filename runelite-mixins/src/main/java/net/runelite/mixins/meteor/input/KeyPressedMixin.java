@@ -30,15 +30,14 @@ import net.runelite.api.mixins.Shadow;
 import net.runelite.rs.api.RSClient;
 
 @Mixin(RSClient.class)
-public abstract class KeyPressedMixin implements RSClient
-{
-	@Shadow("client")
-	private static RSClient client;
+public abstract class KeyPressedMixin implements RSClient {
 
-	@Inject
-	public boolean isKeyPressed(int keycode)
-	{
-		boolean[] pressedKeys = client.getPressedKeys();
-		return pressedKeys[keycode];
-	}
+  @Shadow("client")
+  private static RSClient client;
+
+  @Inject
+  public boolean isKeyPressed(int keycode) {
+    boolean[] pressedKeys = client.getPressedKeys();
+    return pressedKeys[keycode];
+  }
 }

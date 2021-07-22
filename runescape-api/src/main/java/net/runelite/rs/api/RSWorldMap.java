@@ -4,50 +4,50 @@ import net.runelite.api.RenderOverview;
 import net.runelite.api.WorldMapData;
 import net.runelite.mapping.Import;
 
-public interface RSWorldMap extends RenderOverview
-{
-	@Import("centerTileX")
-	int getWorldMapX();
+public interface RSWorldMap extends RenderOverview {
 
-	@Import("centerTileY")
-	int getWorldMapY();
+  @Import("centerTileX")
+  int getWorldMapX();
 
-	@Import("zoom")
-	float getWorldMapZoom();
+  @Import("centerTileY")
+  int getWorldMapY();
 
-	@Import("worldMapTargetX")
-	int getWorldMapTargetX();
+  @Import("zoom")
+  float getWorldMapZoom();
 
-	@Import("worldMapTargetY")
-	int getWorldMapTargetY();
+  @Import("worldMapTargetX")
+  int getWorldMapTargetX();
 
-	@Import("worldMapDisplayWidth")
-	int getWorldMapDisplayWidth();
+  @Import("worldMapTargetY")
+  int getWorldMapTargetY();
 
-	@Import("worldMapDisplayHeight")
-	int getWorldMapDisplayHeight();
+  @Import("worldMapDisplayWidth")
+  int getWorldMapDisplayWidth();
 
-	@Import("worldMapDisplayX")
-	int getWorldMapDisplayX();
+  @Import("worldMapDisplayHeight")
+  int getWorldMapDisplayHeight();
 
-	@Import("worldMapDisplayY")
-	int getWorldMapDisplayY();
+  @Import("worldMapDisplayX")
+  int getWorldMapDisplayX();
 
-	@Import("setWorldMapPosition")
-	void setWorldMapPosition$api(int worldMapX, int worldMapY, boolean changedSurface);
+  @Import("worldMapDisplayY")
+  int getWorldMapDisplayY();
 
-	@Import("setWorldMapPositionTarget")
-	void setWorldMapPositionTarget$api(int worldPointX, int worldPointY);
+  @Import("setWorldMapPosition")
+  void setWorldMapPosition$api(int worldMapX, int worldMapY, boolean changedSurface);
 
-	@Import("worldMapManager")
-	@Override
-	RSWorldMapManager getWorldMapManager();
+  @Import("setWorldMapPositionTarget")
+  void setWorldMapPositionTarget$api(int worldPointX, int worldPointY);
 
-	@Import("initializeWorldMapManager")
-	@Override
-	void initializeWorldMap(WorldMapData var1);
+  @Import("worldMapManager")
+  @Override
+  RSWorldMapManager getWorldMapManager();
 
-	@Import("getCurrentMapArea")
-	@Override
-	RSWorldMapArea getWorldMapData();
+  @Import("initializeWorldMapManager")
+  @Override
+  void initializeWorldMap(WorldMapData var1);
+
+  @Import("getCurrentMapArea")
+  @Override
+  RSWorldMapArea getWorldMapData();
 }

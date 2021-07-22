@@ -29,47 +29,47 @@ import net.runelite.api.coords.LocalPoint;
 /**
  * Represents a graphics object/spotanim.
  */
-public interface GraphicsObject extends Renderable
-{
-	/**
-	 * The graphics object ID.
-	 *
-	 * @return the ID
-	 */
-	int getId();
+public interface GraphicsObject extends Renderable {
 
-	/**
-	 * The location of the object.
-	 *
-	 * @return the location
-	 */
-	LocalPoint getLocation();
+  /**
+   * The graphics object ID.
+   *
+   * @return the ID
+   */
+  int getId();
 
-	/**
-	 * Get the time this spotanim starts
-	 *
-	 * @return
-	 */
-	int getStartCycle();
+  /**
+   * The location of the object.
+   *
+   * @return the location
+   */
+  LocalPoint getLocation();
 
-	/**
-	 * The plane the spotanim is on.
-	 *
-	 * @return
-	 */
-	int getLevel();
+  /**
+   * Get the time this spotanim starts
+   *
+   * @return
+   */
+  int getStartCycle();
 
-	/**
-	 * Gets the height of the graphic.
-	 *
-	 * @return the height
-	 */
-	int getHeight();
+  /**
+   * The plane the spotanim is on.
+   *
+   * @return
+   */
+  int getLevel();
 
-	/**
-	 * Checks if this spotanim is done animating
-	 *
-	 * @return
-	 */
-	boolean finished();
+  /**
+   * Gets the height of the graphic.
+   *
+   * @return the height
+   */
+  int getHeight();
+
+  /**
+   * Checks if this spotanim is done animating
+   *
+   * @return
+   */
+  boolean finished();
 }

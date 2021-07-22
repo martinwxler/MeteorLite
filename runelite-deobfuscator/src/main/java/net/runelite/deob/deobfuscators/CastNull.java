@@ -40,54 +40,49 @@ import net.runelite.deob.Deobfuscator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CastNull implements Deobfuscator
-{
-	private static final Logger logger = LoggerFactory.getLogger(CastNull.class);
-	
-	private int removed;
-	
-	private final List<Instruction> interesting = new ArrayList<>();
-	private final List<Instruction> notInteresting = new ArrayList<>();
-	
-	private void visit(InstructionContext ictx)
-	{
-		if (!(ictx.getInstruction() instanceof CheckCast))
-			return;
-		
-		if (notInteresting.contains(ictx.getInstruction()) || interesting.contains(ictx.getInstruction()))
-			return;
-		
-		StackContext sctx = ictx.getPops().get(0);
-		if (sctx.getPushed().getInstruction() instanceof AConstNull)
-		{
-			interesting.add(ictx.getInstruction());
-		}
-		else
-		{
-			interesting.remove(ictx.getInstruction());
-			notInteresting.add(ictx.getInstruction());
-		}
-	}
-	
-	private void visit(MethodContext ctx)
-	{
-		Instructions ins = ctx.getMethod().getCode().getInstructions();
-		interesting.forEach(ins::remove);
-		removed += interesting.size();
-		interesting.clear();
-		notInteresting.clear();
-	}
-	
-	@Override
-	public void run(ClassGroup group)
-	{
-		Execution execution = new Execution(group);
-		execution.addExecutionVisitor(i -> visit(i));
-		execution.addMethodContextVisitor(i -> visit(i));
-		execution.populateInitialMethods();
-		execution.run();
-		
-		logger.info("Removed {} casts on null", removed);
-	}
+public class CastNull implements Deobfuscator {
+
+  private static final Logger logger = LoggerFactory.getLogger(CastNull.class);
+  private final List<Instruction> interesting = new ArrayList<>();
+  private final List<Instruction> notInteresting = new ArrayList<>();
+  private int removed;
+
+  private void visit(InstructionContext ictx) {
+    if (!(ictx.getInstruction() instanceof CheckCast)) {
+      return;
+    }
+
+    if (notInteresting.contains(ictx.getInstruction()) || interesting
+        .contains(ictx.getInstruction())) {
+      return;
+    }
+
+    StackContext sctx = ictx.getPops().get(0);
+    if (sctx.getPushed().getInstruction() instanceof AConstNull) {
+      interesting.add(ictx.getInstruction());
+    } else {
+      interesting.remove(ictx.getInstruction());
+      notInteresting.add(ictx.getInstruction());
+    }
+  }
+
+  private void visit(MethodContext ctx) {
+    Instructions ins = ctx.getMethod().getCode().getInstructions();
+    interesting.forEach(ins::remove);
+    removed += interesting.size();
+    interesting.clear();
+    notInteresting.clear();
+  }
+
+  @Override
+  public void run(ClassGroup group) {
+    Execution execution = new Execution(group);
+    execution.addExecutionVisitor(i -> visit(i));
+    execution.addMethodContextVisitor(i -> visit(i));
+    execution.populateInitialMethods();
+    execution.run();
+
+    logger.info("Removed {} casts on null", removed);
+  }
 
 }

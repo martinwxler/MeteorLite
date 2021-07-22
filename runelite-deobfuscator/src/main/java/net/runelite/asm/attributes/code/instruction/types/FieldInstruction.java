@@ -26,11 +26,11 @@ package net.runelite.asm.attributes.code.instruction.types;
 
 import net.runelite.asm.pool.Field;
 
-public interface FieldInstruction
-{
-	Field getField();
+public interface FieldInstruction {
 
-	void setField(Field field);
+  Field getField();
 
-	net.runelite.asm.Field getMyField();
+  void setField(Field field);
+
+  net.runelite.asm.Field getMyField();
 }

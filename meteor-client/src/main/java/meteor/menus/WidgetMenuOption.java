@@ -32,76 +32,76 @@ import meteor.ui.JagexColors;
 import meteor.util.ColorUtil;
 import net.runelite.api.widgets.WidgetInfo;
 
-public final class WidgetMenuOption
-{
-	/**
-	 * The left hand text to be displayed on the menu option. (ex. the menuOption of "Drop Bones" is "Drop")
-	 */
-	@Getter
-	@Setter
-	private String menuOption;
-	/**
-	 * The right hand text to be displayed on the menu option. (ex. the menuTarget of "Drop Bones" is "Bones")
-	 */
-	@Getter
-	private String menuTarget;
-	/**
-	 * The color that the menuTarget should be. Defaults to the brownish color that most menu options have.
-	 */
-	@Getter
-	@Setter
-	private Color color = JagexColors.MENU_TARGET;
+public final class WidgetMenuOption {
 
-	/**
-	 * The widgetinfo to add the option to, if available
-	 */
-	@Nullable
-	@Getter
-	private final WidgetInfo widget;
+  /**
+   * The widgetinfo to add the option to, if available
+   */
+  @Nullable
+  @Getter
+  private final WidgetInfo widget;
+  /**
+   * The widget to add the option to
+   */
+  @Getter
+  private final int widgetId;
+  /**
+   * The left hand text to be displayed on the menu option. (ex. the menuOption of "Drop Bones" is
+   * "Drop")
+   */
+  @Getter
+  @Setter
+  private String menuOption;
+  /**
+   * The right hand text to be displayed on the menu option. (ex. the menuTarget of "Drop Bones" is
+   * "Bones")
+   */
+  @Getter
+  private String menuTarget;
+  /**
+   * The color that the menuTarget should be. Defaults to the brownish color that most menu options
+   * have.
+   */
+  @Getter
+  @Setter
+  private Color color = JagexColors.MENU_TARGET;
 
-	/**
-	 * The widget to add the option to
-	 */
-	@Getter
-	private final int widgetId;
+  /**
+   * Creates a menu to be added to right click menus. The menu will only be added if match is found
+   * within the menu options
+   *
+   * @param menuOption Option text of this right click option
+   * @param menuTarget Target text of this right click option
+   * @param widget     The widget to attach this option to
+   */
+  public WidgetMenuOption(String menuOption, String menuTarget, WidgetInfo widget) {
+    this.menuOption = menuOption;
+    setMenuTarget(menuTarget);
+    this.widget = widget;
+    this.widgetId = widget.getId();
+  }
 
-	/**
-	 * Creates a menu to be added to right click menus. The menu will only be added if match is found within the menu options
-	 *
-	 * @param menuOption Option text of this right click option
-	 * @param menuTarget Target text of this right click option
-	 * @param widget     The widget to attach this option to
-	 */
-	public WidgetMenuOption(String menuOption, String menuTarget, WidgetInfo widget)
-	{
-		this.menuOption = menuOption;
-		setMenuTarget(menuTarget);
-		this.widget = widget;
-		this.widgetId = widget.getId();
-	}
+  /**
+   * Creates a menu to be added to right click menus. The menu will only be added if match is found
+   * within the menu options
+   *
+   * @param menuOption Option text of this right click option
+   * @param menuTarget Target text of this right click option
+   * @param widgetId   The widget to attach this option to
+   */
+  public WidgetMenuOption(String menuOption, String menuTarget, int widgetId) {
+    this.menuOption = menuOption;
+    setMenuTarget(menuTarget);
+    this.widget = null;
+    this.widgetId = widgetId;
+  }
 
-	/**
-	 * Creates a menu to be added to right click menus. The menu will only be added if match is found within the menu options
-	 *
-	 * @param menuOption Option text of this right click option
-	 * @param menuTarget Target text of this right click option
-	 * @param widgetId   The widget to attach this option to
-	 */
-	public WidgetMenuOption(String menuOption, String menuTarget, int widgetId)
-	{
-		this.menuOption = menuOption;
-		setMenuTarget(menuTarget);
-		this.widget = null;
-		this.widgetId = widgetId;
-	}
-
-	/**
-	 * Sets the target of the menu option. Color code will be added on to target
-	 *
-	 * @param target The target text without color code.
-	 */
-	public void setMenuTarget(String target)
-	{
-		menuTarget = ColorUtil.wrapWithColorTag(target, color);
-	}
+  /**
+   * Sets the target of the menu option. Color code will be added on to target
+   *
+   * @param target The target text without color code.
+   */
+  public void setMenuTarget(String target) {
+    menuTarget = ColorUtil.wrapWithColorTag(target, color);
+  }
 }

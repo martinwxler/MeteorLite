@@ -6,53 +6,55 @@ import net.runelite.mapping.ObfuscatedSignature;
 @ObfuscatedName("ox")
 @Implements("IntHashTable")
 public class IntHashTable {
-	@ObfuscatedName("f")
-	@Export("array")
-	int[] array;
 
-	public IntHashTable(int[] var1) {
-		int var2;
-		for (var2 = 1; var2 <= (var1.length >> 1) + var1.length; var2 <<= 1) { // L: 7 8
-		}
+  @ObfuscatedName("f")
+  @Export("array")
+  int[] array;
 
-		this.array = new int[var2 + var2]; // L: 9
+  public IntHashTable(int[] var1) {
+    int var2;
+    for (var2 = 1; var2 <= (var1.length >> 1) + var1.length; var2 <<= 1) { // L: 7 8
+    }
 
-		int var3;
-		for (var3 = 0; var3 < var2 + var2; ++var3) { // L: 10
-			this.array[var3] = -1;
-		}
+    this.array = new int[var2 + var2]; // L: 9
 
-		int var4;
-		for (var3 = 0; var3 < var1.length; this.array[var4 + var4 + 1] = var3++) { // L: 11 15
-			for (var4 = var1[var3] & var2 - 1; this.array[var4 + var4 + 1] != -1; var4 = var4 + 1 & var2 - 1) { // L: 12 13
-			}
+    int var3;
+    for (var3 = 0; var3 < var2 + var2; ++var3) { // L: 10
+      this.array[var3] = -1;
+    }
 
-			this.array[var4 + var4] = var1[var3]; // L: 14
-		}
+    int var4;
+    for (var3 = 0; var3 < var1.length; this.array[var4 + var4 + 1] = var3++) { // L: 11 15
+      for (var4 = var1[var3] & var2 - 1; this.array[var4 + var4 + 1] != -1;
+          var4 = var4 + 1 & var2 - 1) { // L: 12 13
+      }
 
-	} // L: 17
+      this.array[var4 + var4] = var1[var3]; // L: 14
+    }
 
-	@ObfuscatedName("f")
-	@ObfuscatedSignature(
-		descriptor = "(II)I",
-		garbageValue = "354978778"
-	)
-	@Export("get")
-	public int get(int var1) {
-		int var2 = (this.array.length >> 1) - 1; // L: 20
-		int var3 = var1 & var2; // L: 21
+  } // L: 17
 
-		while (true) {
-			int var4 = this.array[var3 + var3 + 1]; // L: 23
-			if (var4 == -1) { // L: 24
-				return -1;
-			}
+  @ObfuscatedName("f")
+  @ObfuscatedSignature(
+      descriptor = "(II)I",
+      garbageValue = "354978778"
+  )
+  @Export("get")
+  public int get(int var1) {
+    int var2 = (this.array.length >> 1) - 1; // L: 20
+    int var3 = var1 & var2; // L: 21
 
-			if (this.array[var3 + var3] == var1) { // L: 25
-				return var4;
-			}
+    while (true) {
+      int var4 = this.array[var3 + var3 + 1]; // L: 23
+      if (var4 == -1) { // L: 24
+        return -1;
+      }
 
-			var3 = var3 + 1 & var2; // L: 26
-		}
-	}
+      if (this.array[var3 + var3] == var1) { // L: 25
+        return var4;
+      }
+
+      var3 = var3 + 1 & var2; // L: 26
+    }
+  }
 }

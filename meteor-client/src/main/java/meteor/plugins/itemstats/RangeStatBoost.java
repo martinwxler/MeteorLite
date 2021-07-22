@@ -26,37 +26,35 @@ package meteor.plugins.itemstats;
 
 import net.runelite.api.Client;
 
-public class RangeStatBoost extends SingleEffect
-{
-	private final StatBoost a;
-	private final StatBoost b;
+public class RangeStatBoost extends SingleEffect {
 
-	RangeStatBoost(StatBoost a, StatBoost b)
-	{
-		assert a.getStat() == b.getStat();
+  private final StatBoost a;
+  private final StatBoost b;
 
-		this.a = a;
-		this.b = b;
-	}
+  RangeStatBoost(StatBoost a, StatBoost b) {
+    assert a.getStat() == b.getStat();
 
-	@Override
-	public StatChange effect(Client client)
-	{
-		final StatChange changeA = this.a.effect(client);
-		final StatChange changeB = this.b.effect(client);
+    this.a = a;
+    this.b = b;
+  }
 
-		final RangeStatChange r = new RangeStatChange();
-		r.setMinAbsolute(Math.min(changeA.getAbsolute(), changeB.getAbsolute()));
-		r.setAbsolute(Math.max(changeA.getAbsolute(), changeB.getAbsolute()));
-		r.setMinRelative(Math.min(changeA.getRelative(), changeB.getRelative()));
-		r.setRelative(Math.max(changeA.getRelative(), changeB.getRelative()));
-		r.setMinTheoretical(Math.min(changeA.getTheoretical(), changeB.getTheoretical()));
-		r.setTheoretical(Math.max(changeA.getTheoretical(), changeB.getTheoretical()));
-		r.setStat(changeA.getStat());
+  @Override
+  public StatChange effect(Client client) {
+    final StatChange changeA = this.a.effect(client);
+    final StatChange changeB = this.b.effect(client);
 
-		final int avg = (changeA.getPositivity().ordinal() + changeB.getPositivity().ordinal()) / 2;
-		r.setPositivity(Positivity.values()[avg]);
+    final RangeStatChange r = new RangeStatChange();
+    r.setMinAbsolute(Math.min(changeA.getAbsolute(), changeB.getAbsolute()));
+    r.setAbsolute(Math.max(changeA.getAbsolute(), changeB.getAbsolute()));
+    r.setMinRelative(Math.min(changeA.getRelative(), changeB.getRelative()));
+    r.setRelative(Math.max(changeA.getRelative(), changeB.getRelative()));
+    r.setMinTheoretical(Math.min(changeA.getTheoretical(), changeB.getTheoretical()));
+    r.setTheoretical(Math.max(changeA.getTheoretical(), changeB.getTheoretical()));
+    r.setStat(changeA.getStat());
 
-		return r;
-	}
+    final int avg = (changeA.getPositivity().ordinal() + changeB.getPositivity().ordinal()) / 2;
+    r.setPositivity(Positivity.values()[avg]);
+
+    return r;
+  }
 }

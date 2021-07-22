@@ -40,8 +40,7 @@ public class FastSetFactory<E> {
 
       if (index % 32 == 0) {
         mask = 1;
-      }
-      else {
+      } else {
         mask <<= 1;
       }
 
@@ -59,8 +58,7 @@ public class FastSetFactory<E> {
     if (lastMask == -1 || lastMask == 0x80000000) {
       lastMask = 1;
       lastBlock++;
-    }
-    else {
+    } else {
       lastMask <<= 1;
     }
 
@@ -287,10 +285,14 @@ public class FastSetFactory<E> {
 
 
     public boolean equals(Object o) {
-      if (o == this) return true;
-      if (o == null || !(o instanceof FastSet)) return false;
+      if (o == this) {
+        return true;
+      }
+      if (o == null || !(o instanceof FastSet)) {
+        return false;
+      }
 
-      int[] longdata = ((FastSet)o).getData();
+      int[] longdata = ((FastSet) o).getData();
       int[] shortdata = data;
 
       if (data.length > longdata.length) {
@@ -323,12 +325,10 @@ public class FastSetFactory<E> {
         if (block != 0) {
           if (found) {
             return 2;
-          }
-          else {
+          } else {
             if ((block & (block - 1)) == 0) {
               found = true;
-            }
-            else {
+            } else {
               return 2;
             }
           }
@@ -464,8 +464,7 @@ public class FastSetFactory<E> {
     public E next() {
       if (next_pointer >= 0) {
         pointer = next_pointer;
-      }
-      else {
+      } else {
         while (++pointer < size) {
           int[] index = colValuesInternal.get(pointer);
           if ((data[index[0]] & index[1]) != 0) {

@@ -27,31 +27,31 @@ package net.runelite.api;
 /**
  * Represents an index in the cache
  */
-public interface IndexDataBase
-{
-	/**
-	 * Returns true if any cache overlay in this index is outdated due to hash mismatch
-	 */
-	boolean isOverlayOutdated();
+public interface IndexDataBase {
 
-	/**
-	 * Get the child file ids for a given group
-	 */
-	int[] getFileIds(int group);
+  /**
+   * Returns true if any cache overlay in this index is outdated due to hash mismatch
+   */
+  boolean isOverlayOutdated();
 
-	/*
-	 * the methods bellow are usefull for reading byte data from the cache
-	 */
+  /**
+   * Get the child file ids for a given group
+   */
+  int[] getFileIds(int group);
 
-	int getGroupCount$api();
+  /*
+   * the methods bellow are usefull for reading byte data from the cache
+   */
 
-	byte[] getConfigData(int archiveId, int fileId);
+  int getGroupCount$api();
 
-	int[][] getFileIds();
+  byte[] getConfigData(int archiveId, int fileId);
 
-	byte[] getFile$api(int groupId, int fileId);
+  int[][] getFileIds();
 
-	int getGroupFileCount$api(int groupId);
+  byte[] getFile$api(int groupId, int fileId);
 
-	int[] getFileCounts();
+  int getGroupFileCount$api(int groupId);
+
+  int[] getFileCounts();
 }

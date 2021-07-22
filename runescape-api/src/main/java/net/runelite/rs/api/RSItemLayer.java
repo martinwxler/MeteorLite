@@ -3,32 +3,32 @@ package net.runelite.rs.api;
 import net.runelite.api.ItemLayer;
 import net.runelite.mapping.Import;
 
-public interface RSItemLayer extends ItemLayer
-{
-	@Import("x")
-	int getX();
+public interface RSItemLayer extends ItemLayer {
 
-	@Import("y")
-	int getY();
+  @Import("x")
+  int getX();
 
-	@Import("tag")
-	@Override
-	long getHash();
+  @Import("y")
+  int getY();
 
-	@Import("height")
-	int getHeight();
+  @Import("tag")
+  @Override
+  long getHash();
 
-	@Import("first")
-	@Override
-	RSRenderable getBottom();
+  @Import("height")
+  int getHeight();
 
-	@Import("second")
-	@Override
-	RSRenderable getMiddle();
+  @Import("first")
+  @Override
+  RSRenderable getBottom();
 
-	@Import("third")
-	@Override
-	RSRenderable getTop();
+  @Import("second")
+  @Override
+  RSRenderable getMiddle();
 
-	void setPlane(int plane);
+  @Import("third")
+  @Override
+  RSRenderable getTop();
+
+  void setPlane(int plane);
 }

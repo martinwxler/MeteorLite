@@ -8,28 +8,25 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 
-class URLDownloader
-{
-	private URL url;
-	private File output;
+class URLDownloader {
 
-	URLDownloader(URL url, File output)
-	{
-		this.url = url;
-		this.output = output;
-	}
+  private URL url;
+  private File output;
 
-	void download() throws IOException
-	{
-		this.downloadFromURL();
-	}
+  URLDownloader(URL url, File output) {
+    this.url = url;
+    this.output = output;
+  }
 
-	private void downloadFromURL() throws IOException
-	{
-		ReadableByteChannel rbc = Channels.newChannel(url.openStream());
-		FileOutputStream fos = new FileOutputStream(output);
+  void download() throws IOException {
+    this.downloadFromURL();
+  }
 
-		FileChannel channel = fos.getChannel();
-		channel.transferFrom(rbc, 0, Long.MAX_VALUE);
-	}
+  private void downloadFromURL() throws IOException {
+    ReadableByteChannel rbc = Channels.newChannel(url.openStream());
+    FileOutputStream fos = new FileOutputStream(output);
+
+    FileChannel channel = fos.getChannel();
+    channel.transferFrom(rbc, 0, Long.MAX_VALUE);
+  }
 }

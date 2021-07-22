@@ -25,141 +25,130 @@
 package net.runelite.deob.deobfuscators.arithmetic;
 
 import static java.lang.Math.abs;
+import static net.runelite.deob.deobfuscators.arithmetic.DMath.multiply;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import static net.runelite.deob.deobfuscators.arithmetic.DMath.multiply;
 
-class FieldInfo
-{
-	public final Set<Number> getters = new HashSet<>();
-	public final Set<Number> setters = new HashSet<>();
-	public final Set<AssociatedConstant> constants = new HashSet<>();
+class FieldInfo {
 
-	boolean guessDecreasesConstants(Pair guess)
-	{
-		if (getters.isEmpty() && setters.isEmpty())
-		{
-			return false;
-		}
+  public final Set<Number> getters = new HashSet<>();
+  public final Set<Number> setters = new HashSet<>();
+  public final Set<AssociatedConstant> constants = new HashSet<>();
 
-		if (guess.getter.longValue() == -1 && guess.setter.longValue() == -1)
-		{
-			// special case - when guess is -1/-1, checking the abs(total)
-			// is not helpful. instead look for both:
-			// associated non-constant of value -1
-			// no non-constant non-other values (indicative of field being
-			// obfuscated still since if it used elsewhere it would have
-			// an associated constant)
-			//
-			// this is really only her to fight:
-			// client.java:            field975 = field974;
-			// client.java:            field974 = field971;
-			// when field974 is only used in combination with field975
-			// and is initialized to -1. This causes causes guess()
-			// to guess a negated getter which then causes
-			// client.java:            field975 = field974 * -1;
-			// client.java:            field974 = field971 * -1;
-			// And it becomes difficult to prevent both fields being
-			// multiplied by -1 on each round. field975 has some other
-			// uses.
+  boolean guessDecreasesConstants(Pair guess) {
+    if (getters.isEmpty() && setters.isEmpty()) {
+      return false;
+    }
 
-			// only change if there is a -1 in the non constant
-			// and also there is a non constant non other too
-			List<Number> value2 = constants.stream()
-				.filter(i -> !i.constant)
-				.map(i -> i.value)
-				.collect(Collectors.toList());
+    if (guess.getter.longValue() == -1 && guess.setter.longValue() == -1) {
+      // special case - when guess is -1/-1, checking the abs(total)
+      // is not helpful. instead look for both:
+      // associated non-constant of value -1
+      // no non-constant non-other values (indicative of field being
+      // obfuscated still since if it used elsewhere it would have
+      // an associated constant)
+      //
+      // this is really only her to fight:
+      // client.java:            field975 = field974;
+      // client.java:            field974 = field971;
+      // when field974 is only used in combination with field975
+      // and is initialized to -1. This causes causes guess()
+      // to guess a negated getter which then causes
+      // client.java:            field975 = field974 * -1;
+      // client.java:            field974 = field971 * -1;
+      // And it becomes difficult to prevent both fields being
+      // multiplied by -1 on each round. field975 has some other
+      // uses.
 
-			List<Number> value = constants.stream()
-				.filter(i -> !i.other)
-				.filter(i -> !i.constant)
-				.map(i -> i.value)
-				.collect(Collectors.toList());
-			return value.isEmpty() && value2.contains(-1);
-		}
+      // only change if there is a -1 in the non constant
+      // and also there is a non constant non other too
+      List<Number> value2 = constants.stream()
+          .filter(i -> !i.constant)
+          .map(i -> i.value)
+          .collect(Collectors.toList());
 
-		// remove possibe getters that are:
-		// - a constant - they don't necessarilly decrease when deobfuscated
-		// - are multiplied into another field
-		// - are both a getter and setter
-		Collection<Number> gettersFiltered = getters.stream()
-			.filter(number -> isOkay(number))
-			.collect(Collectors.toSet());
+      List<Number> value = constants.stream()
+          .filter(i -> !i.other)
+          .filter(i -> !i.constant)
+          .map(i -> i.value)
+          .collect(Collectors.toList());
+      return value.isEmpty() && value2.contains(-1);
+    }
 
-		Collection<Number> settersFiltered = setters.stream()
-			.filter(number -> isOkay(number))
-			.collect(Collectors.toSet());
+    // remove possibe getters that are:
+    // - a constant - they don't necessarilly decrease when deobfuscated
+    // - are multiplied into another field
+    // - are both a getter and setter
+    Collection<Number> gettersFiltered = getters.stream()
+        .filter(number -> isOkay(number))
+        .collect(Collectors.toSet());
 
-		if (!gettersFiltered.isEmpty())
-		{
-			long before = gettersFiltered.stream()
-				.mapToLong(number -> abs(downsample(number).longValue()))
-				.sum();
-			long after = gettersFiltered.stream()
-				.mapToLong(number -> abs(downsample(multiply(number, guess.setter)).longValue()))
-				.sum();
+    Collection<Number> settersFiltered = setters.stream()
+        .filter(number -> isOkay(number))
+        .collect(Collectors.toSet());
 
-			assert before >= 0;
-			assert after >= 0;
+    if (!gettersFiltered.isEmpty()) {
+      long before = gettersFiltered.stream()
+          .mapToLong(number -> abs(downsample(number).longValue()))
+          .sum();
+      long after = gettersFiltered.stream()
+          .mapToLong(number -> abs(downsample(multiply(number, guess.setter)).longValue()))
+          .sum();
 
-			// If the total value of the getters is more, assume
-			// the guess is bad. Ideally the values go to 1, so
-			// 'after' will be small.
-			if (after > before)
-			{
-				return false;
-			}
-		}
+      assert before >= 0;
+      assert after >= 0;
 
-		if (!settersFiltered.isEmpty())
-		{
-			long beforeSetter = settersFiltered.stream()
-				.mapToLong(number -> abs(downsample(number).longValue()))
-				.sum();
+      // If the total value of the getters is more, assume
+      // the guess is bad. Ideally the values go to 1, so
+      // 'after' will be small.
+      if (after > before) {
+        return false;
+      }
+    }
 
-			long afterSetter = settersFiltered.stream()
-				.mapToLong(number -> abs(downsample(multiply(number, guess.getter)).longValue()))
-				.sum();
+    if (!settersFiltered.isEmpty()) {
+      long beforeSetter = settersFiltered.stream()
+          .mapToLong(number -> abs(downsample(number).longValue()))
+          .sum();
 
-			assert beforeSetter >= 0;
-			assert afterSetter >= 0;
+      long afterSetter = settersFiltered.stream()
+          .mapToLong(number -> abs(downsample(multiply(number, guess.getter)).longValue()))
+          .sum();
 
-			if (afterSetter > beforeSetter)
-			{
-				return false;
-			}
-		}
+      assert beforeSetter >= 0;
+      assert afterSetter >= 0;
 
-		return true;
-	}
+      if (afterSetter > beforeSetter) {
+        return false;
+      }
+    }
 
-	private boolean isOkay(Number number)
-	{
-		for (AssociatedConstant c : constants)
-		{
-			if (c.value.equals(number)
-				&& !c.constant
-				&& !c.other
-				&& !(c.setter && c.getter))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+    return true;
+  }
 
-	// summation of longs probably overflows,
-	// so only use the most significant 32 bits
-	private Number downsample(Number number)
-	{
-		if (number instanceof Long)
-		{
-			long l = (Long) number;
-			return l >>> 32;
-		}
-		return number;
-	}
+  private boolean isOkay(Number number) {
+    for (AssociatedConstant c : constants) {
+      if (c.value.equals(number)
+          && !c.constant
+          && !c.other
+          && !(c.setter && c.getter)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // summation of longs probably overflows,
+  // so only use the most significant 32 bits
+  private Number downsample(Number number) {
+    if (number instanceof Long) {
+      long l = (Long) number;
+      return l >>> 32;
+    }
+    return number;
+  }
 }

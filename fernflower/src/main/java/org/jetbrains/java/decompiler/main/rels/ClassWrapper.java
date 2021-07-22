@@ -15,6 +15,10 @@
  */
 package org.jetbrains.java.decompiler.main.rels;
 
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.jetbrains.java.decompiler.code.CodeConstants;
 import org.jetbrains.java.decompiler.main.DecompilerContext;
 import org.jetbrains.java.decompiler.main.collectors.CounterContainer;
@@ -33,11 +37,6 @@ import org.jetbrains.java.decompiler.struct.gen.MethodDescriptor;
 import org.jetbrains.java.decompiler.util.InterpreterUtil;
 import org.jetbrains.java.decompiler.util.VBStyleCollection;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 public class ClassWrapper {
 
   private final StructClass classStruct;
@@ -50,12 +49,18 @@ public class ClassWrapper {
     this.classStruct = classStruct;
   }
 
+  @SuppressWarnings("deprecation")
+  private static void killThread(Thread thread) {
+    thread.stop();
+  }
+
   public void init() throws IOException {
     DecompilerContext.setProperty(DecompilerContext.CURRENT_CLASS, classStruct);
     DecompilerContext.setProperty(DecompilerContext.CURRENT_CLASS_WRAPPER, this);
     DecompilerContext.getLogger().startClass(classStruct.qualifiedName);
 
-    int maxSec = Integer.parseInt(DecompilerContext.getProperty(IFernflowerPreferences.MAX_PROCESSING_METHOD).toString());
+    int maxSec = Integer.parseInt(
+        DecompilerContext.getProperty(IFernflowerPreferences.MAX_PROCESSING_METHOD).toString());
     boolean testMode = DecompilerContext.getOption(IFernflowerPreferences.UNIT_TEST_MODE);
 
     for (StructMethod mt : classStruct.getMethods()) {
@@ -79,9 +84,9 @@ public class ClassWrapper {
         if (mt.containsCode()) {
           if (maxSec == 0 || testMode) {
             root = MethodProcessorRunnable.codeToJava(mt, md, varProc);
-          }
-          else {
-            MethodProcessorRunnable mtProc = new MethodProcessorRunnable(mt, md, varProc, DecompilerContext.getCurrentContext());
+          } else {
+            MethodProcessorRunnable mtProc = new MethodProcessorRunnable(mt, md, varProc,
+                DecompilerContext.getCurrentContext());
 
             Thread mtThread = new Thread(mtProc, "Java decompiler");
             long stopAt = System.currentTimeMillis() + maxSec * 1000;
@@ -93,15 +98,16 @@ public class ClassWrapper {
                 synchronized (mtProc.lock) {
                   mtProc.lock.wait(200);
                 }
-              }
-              catch (InterruptedException e) {
+              } catch (InterruptedException e) {
                 killThread(mtThread);
                 throw e;
               }
 
               if (System.currentTimeMillis() >= stopAt) {
-                String message = "Processing time limit exceeded for method " + mt.getName() + ", execution interrupted.";
-                DecompilerContext.getLogger().writeMessage(message, IFernflowerLogger.Severity.ERROR);
+                String message = "Processing time limit exceeded for method " + mt.getName()
+                    + ", execution interrupted.";
+                DecompilerContext.getLogger()
+                    .writeMessage(message, IFernflowerLogger.Severity.ERROR);
                 killThread(mtThread);
                 isError = true;
                 break;
@@ -112,8 +118,7 @@ public class ClassWrapper {
               root = mtProc.getResult();
             }
           }
-        }
-        else {
+        } else {
           boolean thisVar = !mt.hasModifier(CodeConstants.ACC_STATIC);
 
           int paramCount = 0;
@@ -130,28 +135,27 @@ public class ClassWrapper {
             if (thisVar) {
               if (i == 0) {
                 varIndex++;
-              }
-              else {
+              } else {
                 varIndex += md.params[i - 1].stackSize;
               }
-            }
-            else {
+            } else {
               varIndex += md.params[i].stackSize;
             }
           }
         }
-      }
-      catch (Throwable ex) {
-        DecompilerContext.getLogger().writeMessage("Method " + mt.getName() + " " + mt.getDescriptor() + " couldn't be decompiled.",
-                                                   IFernflowerLogger.Severity.WARN,
-                                                   ex);
+      } catch (Throwable ex) {
+        DecompilerContext.getLogger().writeMessage(
+            "Method " + mt.getName() + " " + mt.getDescriptor() + " couldn't be decompiled.",
+            IFernflowerLogger.Severity.WARN,
+            ex);
         isError = true;
       }
 
       MethodWrapper methodWrapper = new MethodWrapper(root, varProc, mt, counter);
       methodWrapper.decompiledWithErrors = isError;
 
-      methods.addWithKey(methodWrapper, InterpreterUtil.makeUniqueKey(mt.getName(), mt.getDescriptor()));
+      methods.addWithKey(methodWrapper,
+          InterpreterUtil.makeUniqueKey(mt.getName(), mt.getDescriptor()));
 
       if (!isError) {
         // rename vars so that no one has the same name as a field
@@ -171,14 +175,14 @@ public class ClassWrapper {
               List<Exprent> lst = exprent.getAllExprents(true);
               lst.add(exprent);
               lst.stream()
-                .filter(e -> e.type == Exprent.EXPRENT_VAR)
-                .forEach(e -> {
-                  VarExprent varExprent = (VarExprent)e;
-                  String name = varExprent.getDebugName(mt);
-                  if (name != null) {
-                    varProc.setVarName(varExprent.getVarVersionPair(), name);
-                  }
-                });
+                  .filter(e -> e.type == Exprent.EXPRENT_VAR)
+                  .forEach(e -> {
+                    VarExprent varExprent = (VarExprent) e;
+                    String name = varExprent.getDebugName(mt);
+                    if (name != null) {
+                      varProc.setVarName(varExprent.getVarVersionPair(), name);
+                    }
+                  });
               return 0;
             });
           }
@@ -189,11 +193,6 @@ public class ClassWrapper {
     }
 
     DecompilerContext.getLogger().endClass();
-  }
-
-  @SuppressWarnings("deprecation")
-  private static void killThread(Thread thread) {
-    thread.stop();
   }
 
   public MethodWrapper getMethodWrapper(String name, String descriptor) {

@@ -26,10 +26,10 @@ package meteor.plugins.itemstats;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Inject;
-import net.runelite.api.*;
-import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
-import net.runelite.api.widgets.WidgetInfo;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.time.Duration;
 import meteor.game.ItemManager;
 import meteor.plugins.itemstats.potions.PotionDuration;
 import meteor.ui.JagexColors;
@@ -38,380 +38,332 @@ import meteor.ui.overlay.tooltip.Tooltip;
 import meteor.ui.overlay.tooltip.TooltipManager;
 import meteor.util.ColorUtil;
 import meteor.util.QuantityFormatter;
+import net.runelite.api.Client;
+import net.runelite.api.EquipmentInventorySlot;
+import net.runelite.api.InventoryID;
+import net.runelite.api.Item;
+import net.runelite.api.ItemContainer;
+import net.runelite.api.MenuEntry;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetID;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.http.api.item.ItemEquipmentStats;
 import net.runelite.http.api.item.ItemStats;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
-import java.awt.*;
-import java.time.Duration;
+public class ItemStatOverlay extends Overlay {
 
-public class ItemStatOverlay extends Overlay
-{
-	// Unarmed attack speed is 4
-	@VisibleForTesting
-	static final ItemStats UNARMED = new ItemStats(false, true, 0, 0,
-		ItemEquipmentStats.builder()
-			.aspeed(4)
-			.build());
+  // Unarmed attack speed is 4
+  @VisibleForTesting
+  static final ItemStats UNARMED = new ItemStats(false, true, 0, 0,
+      ItemEquipmentStats.builder()
+          .aspeed(4)
+          .build());
+  private final ItemStatPlugin plugin;
+  @Inject
+  private Client client;
+  @Inject
+  private ItemManager itemManager;
+  @Inject
+  private TooltipManager tooltipManager;
+  @Inject
+  private ItemStatChanges statChanges;
 
-	@Inject
-	private Client client;
+  @Inject
+  ItemStatOverlay(ItemStatPlugin plugin) {
+    this.plugin = plugin;
+  }
 
-	@Inject
-	private ItemManager itemManager;
+  @Override
+  public Dimension render(Graphics2D graphics) {
+    if (client.isMenuOpen() || (!plugin.config.relative() && !plugin.config.absolute()
+        && !plugin.config.theoretical())) {
+      return null;
+    }
 
-	@Inject
-	private TooltipManager tooltipManager;
+    final MenuEntry[] menu = client.getMenuEntries();
+    final int menuSize = menu.length;
 
-	@Inject
-	private ItemStatChanges statChanges;
+    if (menuSize <= 0) {
+      return null;
+    }
 
-	private final ItemStatPlugin plugin;
+    final MenuEntry entry = menu[menuSize - 1];
+    final int group = WidgetInfo.TO_GROUP(entry.getParam1());
+    final int child = WidgetInfo.TO_CHILD(entry.getParam1());
+    final Widget widget = client.getWidget(group, child);
 
-	@Inject
-	ItemStatOverlay(ItemStatPlugin plugin)
-	{
-		this.plugin = plugin;
-	}
+    if (widget == null
+        || !(group == WidgetInfo.INVENTORY.getGroupId()
+        || group == WidgetInfo.EQUIPMENT.getGroupId()
+        || group == WidgetInfo.EQUIPMENT_INVENTORY_ITEMS_CONTAINER.getGroupId()
+        || (plugin.config.showStatsInBank()
+        && ((group == WidgetInfo.BANK_ITEM_CONTAINER.getGroupId()
+        && child == WidgetInfo.BANK_ITEM_CONTAINER.getChildId())
+        || group == WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER.getGroupId())))) {
+      return null;
+    }
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		if (client.isMenuOpen() || (!plugin.config.relative() && !plugin.config.absolute() && !plugin.config.theoretical()))
-		{
-			return null;
-		}
+    int itemId = entry.getIdentifier();
 
-		final MenuEntry[] menu = client.getMenuEntries();
-		final int menuSize = menu.length;
+    if (group == WidgetInfo.EQUIPMENT.getGroupId() ||
+        // For bank worn equipment, check widget parent to differentiate from normal bank items
+        (group == WidgetID.BANK_GROUP_ID
+            && widget.getParentId() == WidgetInfo.BANK_EQUIPMENT_CONTAINER.getId())) {
+      final Widget widgetItem = widget.getChild(1);
+      if (widgetItem != null) {
+        itemId = widgetItem.getItemId();
+      }
+    } else if (group == WidgetInfo.EQUIPMENT_INVENTORY_ITEMS_CONTAINER.getGroupId()
+        || group == WidgetInfo.BANK_ITEM_CONTAINER.getGroupId()
+        || group == WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER.getGroupId()) {
+      int index = entry.getParam0();
+      if (index > -1) {
+        final Widget widgetItem = widget.getChild(index);
+        if (widgetItem != null) {
+          itemId = widgetItem.getItemId();
+        }
+      }
+    }
 
-		if (menuSize <= 0)
-		{
-			return null;
-		}
+    if (plugin.config.consumableStats()) {
+      final Effect change = statChanges.get(itemId);
+      if (change != null) {
+        final StringBuilder b = new StringBuilder();
+        final StatsChanges statsChanges = change.calculate(client);
 
-		final MenuEntry entry = menu[menuSize - 1];
-		final int group = WidgetInfo.TO_GROUP(entry.getParam1());
-		final int child = WidgetInfo.TO_CHILD(entry.getParam1());
-		final Widget widget = client.getWidget(group, child);
+        for (final StatChange c : statsChanges.getStatChanges()) {
+          b.append(buildStatChangeString(c));
+        }
 
-		if (widget == null
-			|| !(group == WidgetInfo.INVENTORY.getGroupId()
-				|| group == WidgetInfo.EQUIPMENT.getGroupId()
-				|| group == WidgetInfo.EQUIPMENT_INVENTORY_ITEMS_CONTAINER.getGroupId()
-				|| (plugin.config.showStatsInBank()
-					&& ((group == WidgetInfo.BANK_ITEM_CONTAINER.getGroupId() && child == WidgetInfo.BANK_ITEM_CONTAINER.getChildId())
-						|| group == WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER.getGroupId()))))
-		{
-			return null;
-		}
+        final String tooltip = b.toString();
 
-		int itemId = entry.getIdentifier();
+        if (!tooltip.isEmpty()) {
+          tooltipManager.add(new Tooltip(tooltip));
+        }
+      }
 
-		if (group == WidgetInfo.EQUIPMENT.getGroupId() ||
-			// For bank worn equipment, check widget parent to differentiate from normal bank items
-			(group == WidgetID.BANK_GROUP_ID && widget.getParentId() == WidgetInfo.BANK_EQUIPMENT_CONTAINER.getId()))
-		{
-			final Widget widgetItem = widget.getChild(1);
-			if (widgetItem != null)
-			{
-				itemId = widgetItem.getItemId();
-			}
-		}
-		else if (group == WidgetInfo.EQUIPMENT_INVENTORY_ITEMS_CONTAINER.getGroupId()
-			|| group == WidgetInfo.BANK_ITEM_CONTAINER.getGroupId()
-			|| group == WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER.getGroupId())
-		{
-			int index = entry.getParam0();
-			if (index > -1)
-			{
-				final Widget widgetItem = widget.getChild(index);
-				if (widgetItem != null)
-				{
-					itemId = widgetItem.getItemId();
-				}
-			}
-		}
+      PotionDuration p = PotionDuration.get(itemId);
+      if (p != null) {
+        PotionDuration.PotionDurationRange[] durationRanges = p.getDurationRanges();
+        StringBuilder sb = new StringBuilder();
+        if (durationRanges.length == 1) {
+          // Only show "Duration: <time>" if there is one tooltip
+          Duration duration = durationRanges[0].getLowestDuration();
+          sb.append("Duration: ")
+              .append(DurationFormatUtils.formatDuration(duration.toMillis(), "m:ss"));
+        } else {
+          // List the effect names and their duration (ranges)
+          for (PotionDuration.PotionDurationRange durationRange : durationRanges) {
+            if (sb.length() > 0) {
+              sb.append("</br>");
+            }
 
-		if (plugin.config.consumableStats())
-		{
-			final Effect change = statChanges.get(itemId);
-			if (change != null)
-			{
-				final StringBuilder b = new StringBuilder();
-				final StatsChanges statsChanges = change.calculate(client);
+            sb.append(durationRange.getPotionName()).append(": ");
 
-				for (final StatChange c : statsChanges.getStatChanges())
-				{
-					b.append(buildStatChangeString(c));
-				}
+            Duration lowestDuration = durationRange.getLowestDuration();
+            sb.append(DurationFormatUtils.formatDuration(lowestDuration.toMillis(), "m:ss"));
 
-				final String tooltip = b.toString();
+            Duration highestDuration = durationRange.getHighestDuration();
+            if (lowestDuration != highestDuration) {
+              sb.append("~");
+              sb.append(DurationFormatUtils.formatDuration(highestDuration.toMillis(), "m:ss"));
+            }
+          }
+        }
 
-				if (!tooltip.isEmpty())
-				{
-					tooltipManager.add(new Tooltip(tooltip));
-				}
-			}
+        tooltipManager.add(new Tooltip(sb.toString()));
+      }
+    }
 
-			PotionDuration p = PotionDuration.get(itemId);
-			if (p != null)
-			{
-				PotionDuration.PotionDurationRange[] durationRanges = p.getDurationRanges();
-				StringBuilder sb = new StringBuilder();
-				if (durationRanges.length == 1)
-				{
-					// Only show "Duration: <time>" if there is one tooltip
-					Duration duration = durationRanges[0].getLowestDuration();
-					sb.append("Duration: ").append(DurationFormatUtils.formatDuration(duration.toMillis(), "m:ss"));
-				}
-				else
-				{
-					// List the effect names and their duration (ranges)
-					for (PotionDuration.PotionDurationRange durationRange : durationRanges)
-					{
-						if (sb.length() > 0)
-						{
-							sb.append("</br>");
-						}
+    if (plugin.config.equipmentStats()) {
+      final ItemStats stats = itemManager.getItemStats(itemId, false);
 
-						sb.append(durationRange.getPotionName()).append(": ");
+      if (stats != null) {
+        final String tooltip = buildStatBonusString(stats);
 
-						Duration lowestDuration = durationRange.getLowestDuration();
-						sb.append(DurationFormatUtils.formatDuration(lowestDuration.toMillis(), "m:ss"));
+        if (!tooltip.isEmpty()) {
+          tooltipManager.add(new Tooltip(tooltip));
+        }
+      }
+    }
 
-						Duration highestDuration = durationRange.getHighestDuration();
-						if (lowestDuration != highestDuration)
-						{
-							sb.append("~");
-							sb.append(DurationFormatUtils.formatDuration(highestDuration.toMillis(), "m:ss"));
-						}
-					}
-				}
+    return null;
+  }
 
-				tooltipManager.add(new Tooltip(sb.toString()));
-			}
-		}
+  private String getChangeString(
+      final double value,
+      final boolean inverse,
+      final boolean showPercent) {
+    final Color plus = Positivity.getColor(plugin.config, Positivity.BETTER_UNCAPPED);
+    final Color minus = Positivity.getColor(plugin.config, Positivity.WORSE);
 
-		if (plugin.config.equipmentStats())
-		{
-			final ItemStats stats = itemManager.getItemStats(itemId, false);
+    if (value == 0) {
+      return "";
+    }
 
-			if (stats != null)
-			{
-				final String tooltip = buildStatBonusString(stats);
+    final Color color;
 
-				if (!tooltip.isEmpty())
-				{
-					tooltipManager.add(new Tooltip(tooltip));
-				}
-			}
-		}
+    if (inverse) {
+      color = value > 0 ? minus : plus;
+    } else {
+      color = value > 0 ? plus : minus;
+    }
 
-		return null;
-	}
+    final String prefix = value > 0 ? "+" : "";
+    final String suffix = showPercent ? "%" : "";
+    final String valueString = QuantityFormatter.formatNumber(value);
+    return ColorUtil.wrapWithColorTag(prefix + valueString + suffix, color);
+  }
 
-	private String getChangeString(
-		final double value,
-		final boolean inverse,
-		final boolean showPercent)
-	{
-		final Color plus = Positivity.getColor(plugin.config, Positivity.BETTER_UNCAPPED);
-		final Color minus = Positivity.getColor(plugin.config, Positivity.WORSE);
+  private String buildStatRow(
+      final String label,
+      final double value,
+      final double diffValue,
+      final boolean inverse,
+      final boolean showPercent) {
+    return buildStatRow(label, value, diffValue, inverse, showPercent, true);
+  }
 
-		if (value == 0)
-		{
-			return "";
-		}
+  private String buildStatRow(
+      final String label,
+      final double value,
+      final double diffValue,
+      final boolean inverse,
+      final boolean showPercent,
+      final boolean showBase) {
+    final StringBuilder b = new StringBuilder();
 
-		final Color color;
+    if (value != 0 || diffValue != 0) {
+      final String changeStr = getChangeString(diffValue, inverse, showPercent);
 
-		if (inverse)
-		{
-			color = value > 0 ? minus : plus;
-		}
-		else
-		{
-			color = value > 0 ? plus : minus;
-		}
+      if (plugin.config.alwaysShowBaseStats() && showBase) {
+        final String valueStr = QuantityFormatter.formatNumber(value);
+        b.append(label).append(": ").append(valueStr)
+            .append((!changeStr.isEmpty() ? " (" + changeStr + ") " : "")).append("</br>");
+      } else if (!changeStr.isEmpty()) {
+        b.append(label).append(": ").append(changeStr).append("</br>");
+      }
+    }
 
-		final String prefix = value > 0 ? "+" : "";
-		final String suffix = showPercent ? "%" : "";
-		final String valueString = QuantityFormatter.formatNumber(value);
-		return ColorUtil.wrapWithColorTag(prefix + valueString + suffix, color);
-	}
+    return b.toString();
+  }
 
-	private String buildStatRow(
-		final String label,
-		final double value,
-		final double diffValue,
-		final boolean inverse,
-		final boolean showPercent)
-	{
-		return buildStatRow(label, value, diffValue, inverse, showPercent, true);
-	}
+  private ItemStats getItemStatsFromContainer(ItemContainer container, int slotID) {
+    final Item item = container.getItem(slotID);
+    return item != null ? itemManager.getItemStats(item.getId(), false) : null;
+  }
 
-	private String buildStatRow(
-		final String label,
-		final double value,
-		final double diffValue,
-		final boolean inverse,
-		final boolean showPercent,
-		final boolean showBase)
-	{
-		final StringBuilder b = new StringBuilder();
+  @VisibleForTesting
+  String buildStatBonusString(ItemStats s) {
+    ItemStats other = null;
+    // Used if switching into a 2 handed weapon to store off-hand stats
+    ItemStats offHand = null;
+    final ItemEquipmentStats currentEquipment = s.getEquipment();
 
-		if (value != 0 || diffValue != 0)
-		{
-			final String changeStr = getChangeString(diffValue, inverse, showPercent);
+    ItemContainer c = client.getItemContainer(InventoryID.EQUIPMENT);
+    if (s.isEquipable() && currentEquipment != null && c != null) {
+      final int slot = currentEquipment.getSlot();
 
-			if (plugin.config.alwaysShowBaseStats() && showBase)
-			{
-				final String valueStr = QuantityFormatter.formatNumber(value);
-				b.append(label).append(": ").append(valueStr).append((!changeStr.isEmpty() ? " (" + changeStr + ") " : "")).append("</br>");
-			}
-			else if (!changeStr.isEmpty())
-			{
-				b.append(label).append(": ").append(changeStr).append("</br>");
-			}
-		}
+      other = getItemStatsFromContainer(c, slot);
+      // Check if this is a shield and there's a two-handed weapon equipped
+      if (other == null && slot == EquipmentInventorySlot.SHIELD.getSlotIdx()) {
+        other = getItemStatsFromContainer(c, EquipmentInventorySlot.WEAPON.getSlotIdx());
+        if (other != null) {
+          final ItemEquipmentStats otherEquip = other.getEquipment();
+          if (otherEquip != null) {
+            // Account for speed change when two handed weapon gets removed
+            // shield - (2h - unarmed) == shield - 2h + unarmed
+            other = otherEquip.isTwoHanded() ? other.subtract(UNARMED) : null;
+          }
+        }
+      }
 
-		return b.toString();
-	}
+      if (slot == EquipmentInventorySlot.WEAPON.getSlotIdx()) {
+        if (other == null) {
+          other = UNARMED;
+        }
 
-	private ItemStats getItemStatsFromContainer(ItemContainer container, int slotID)
-	{
-		final Item item = container.getItem(slotID);
-		return item != null ? itemManager.getItemStats(item.getId(), false) : null;
-	}
+        // Get offhand's stats to be removed from equipping a 2h weapon
+        if (currentEquipment.isTwoHanded()) {
+          offHand = getItemStatsFromContainer(c, EquipmentInventorySlot.SHIELD.getSlotIdx());
+        }
+      }
+    }
 
-	@VisibleForTesting
-	String buildStatBonusString(ItemStats s)
-	{
-		ItemStats other = null;
-		// Used if switching into a 2 handed weapon to store off-hand stats
-		ItemStats offHand = null;
-		final ItemEquipmentStats currentEquipment = s.getEquipment();
+    final ItemStats subtracted = s.subtract(other).subtract(offHand);
+    final ItemEquipmentStats e = subtracted.getEquipment();
 
-		ItemContainer c = client.getItemContainer(InventoryID.EQUIPMENT);
-		if (s.isEquipable() && currentEquipment != null && c != null)
-		{
-			final int slot = currentEquipment.getSlot();
+    final StringBuilder b = new StringBuilder();
 
-			other = getItemStatsFromContainer(c, slot);
-			// Check if this is a shield and there's a two-handed weapon equipped
-			if (other == null && slot == EquipmentInventorySlot.SHIELD.getSlotIdx())
-			{
-				other = getItemStatsFromContainer(c, EquipmentInventorySlot.WEAPON.getSlotIdx());
-				if (other != null)
-				{
-					final ItemEquipmentStats otherEquip = other.getEquipment();
-					if (otherEquip != null)
-					{
-						// Account for speed change when two handed weapon gets removed
-						// shield - (2h - unarmed) == shield - 2h + unarmed
-						other = otherEquip.isTwoHanded() ? other.subtract(UNARMED) : null;
-					}
-				}
-			}
+    if (plugin.config.showWeight()) {
+      double sw = plugin.config.alwaysShowBaseStats() ? subtracted.getWeight() : s.getWeight();
+      b.append(buildStatRow("Weight", s.getWeight(), sw, true, false, s.isEquipable()));
+    }
 
-			if (slot == EquipmentInventorySlot.WEAPON.getSlotIdx())
-			{
-				if (other == null)
-				{
-					other = UNARMED;
-				}
+    if (subtracted.isEquipable() && e != null) {
+      b.append(buildStatRow("Prayer", currentEquipment.getPrayer(), e.getPrayer(), false, false));
+      b.append(buildStatRow("Speed", currentEquipment.getAspeed(), e.getAspeed(), true, false));
+      b.append(buildStatRow("Melee Str", currentEquipment.getStr(), e.getStr(), false, false));
+      b.append(buildStatRow("Range Str", currentEquipment.getRstr(), e.getRstr(), false, false));
+      b.append(buildStatRow("Magic Dmg", currentEquipment.getMdmg(), e.getMdmg(), false, true));
 
-				// Get offhand's stats to be removed from equipping a 2h weapon
-				if (currentEquipment.isTwoHanded())
-				{
-					offHand = getItemStatsFromContainer(c, EquipmentInventorySlot.SHIELD.getSlotIdx());
-				}
-			}
-		}
+      final StringBuilder abb = new StringBuilder();
+      abb.append(buildStatRow("Stab", currentEquipment.getAstab(), e.getAstab(), false, false));
+      abb.append(buildStatRow("Slash", currentEquipment.getAslash(), e.getAslash(), false, false));
+      abb.append(buildStatRow("Crush", currentEquipment.getAcrush(), e.getAcrush(), false, false));
+      abb.append(buildStatRow("Magic", currentEquipment.getAmagic(), e.getAmagic(), false, false));
+      abb.append(buildStatRow("Range", currentEquipment.getArange(), e.getArange(), false, false));
 
-		final ItemStats subtracted = s.subtract(other).subtract(offHand);
-		final ItemEquipmentStats e = subtracted.getEquipment();
+      if (abb.length() > 0) {
+        b.append(ColorUtil.wrapWithColorTag("Attack Bonus</br>", JagexColors.MENU_TARGET))
+            .append(abb);
+      }
 
-		final StringBuilder b = new StringBuilder();
+      final StringBuilder dbb = new StringBuilder();
+      dbb.append(buildStatRow("Stab", currentEquipment.getDstab(), e.getDstab(), false, false));
+      dbb.append(buildStatRow("Slash", currentEquipment.getDslash(), e.getDslash(), false, false));
+      dbb.append(buildStatRow("Crush", currentEquipment.getDcrush(), e.getDcrush(), false, false));
+      dbb.append(buildStatRow("Magic", currentEquipment.getDmagic(), e.getDmagic(), false, false));
+      dbb.append(buildStatRow("Range", currentEquipment.getDrange(), e.getDrange(), false, false));
 
-		if (plugin.config.showWeight())
-		{
-			double sw = plugin.config.alwaysShowBaseStats() ? subtracted.getWeight() : s.getWeight();
-			b.append(buildStatRow("Weight", s.getWeight(), sw, true, false, s.isEquipable()));
-		}
+      if (dbb.length() > 0) {
+        b.append(ColorUtil.wrapWithColorTag("Defence Bonus</br>", JagexColors.MENU_TARGET))
+            .append(dbb);
+      }
+    }
 
-		if (subtracted.isEquipable() && e != null)
-		{
-			b.append(buildStatRow("Prayer", currentEquipment.getPrayer(), e.getPrayer(), false, false));
-			b.append(buildStatRow("Speed", currentEquipment.getAspeed(), e.getAspeed(), true, false));
-			b.append(buildStatRow("Melee Str", currentEquipment.getStr(), e.getStr(), false, false));
-			b.append(buildStatRow("Range Str", currentEquipment.getRstr(), e.getRstr(), false, false));
-			b.append(buildStatRow("Magic Dmg", currentEquipment.getMdmg(), e.getMdmg(), false, true));
+    return b.toString();
+  }
 
-			final StringBuilder abb = new StringBuilder();
-			abb.append(buildStatRow("Stab", currentEquipment.getAstab(), e.getAstab(), false, false));
-			abb.append(buildStatRow("Slash", currentEquipment.getAslash(), e.getAslash(), false, false));
-			abb.append(buildStatRow("Crush", currentEquipment.getAcrush(), e.getAcrush(), false, false));
-			abb.append(buildStatRow("Magic", currentEquipment.getAmagic(), e.getAmagic(), false, false));
-			abb.append(buildStatRow("Range", currentEquipment.getArange(), e.getArange(), false, false));
+  private String buildStatChangeString(StatChange c) {
+    StringBuilder b = new StringBuilder();
+    b.append(ColorUtil.colorTag(Positivity.getColor(plugin.config, c.getPositivity())));
 
-			if (abb.length() > 0)
-			{
-				b.append(ColorUtil.wrapWithColorTag("Attack Bonus</br>", JagexColors.MENU_TARGET)).append(abb);
-			}
+    if (plugin.config.relative()) {
+      b.append(c.getFormattedRelative());
+    }
 
-			final StringBuilder dbb = new StringBuilder();
-			dbb.append(buildStatRow("Stab", currentEquipment.getDstab(), e.getDstab(), false, false));
-			dbb.append(buildStatRow("Slash", currentEquipment.getDslash(), e.getDslash(), false, false));
-			dbb.append(buildStatRow("Crush", currentEquipment.getDcrush(), e.getDcrush(), false, false));
-			dbb.append(buildStatRow("Magic", currentEquipment.getDmagic(), e.getDmagic(), false, false));
-			dbb.append(buildStatRow("Range", currentEquipment.getDrange(), e.getDrange(), false, false));
+    if (plugin.config.theoretical()) {
+      if (plugin.config.relative()) {
+        b.append("/");
+      }
+      b.append(c.getFormattedTheoretical());
+    }
 
-			if (dbb.length() > 0)
-			{
-				b.append(ColorUtil.wrapWithColorTag("Defence Bonus</br>", JagexColors.MENU_TARGET)).append(dbb);
-			}
-		}
+    if (plugin.config.absolute() && (plugin.config.relative() || plugin.config.theoretical())) {
+      b.append(" (");
+    }
+    if (plugin.config.absolute()) {
+      b.append(c.getAbsolute());
+    }
 
-		return b.toString();
-	}
+    if (plugin.config.absolute() && (plugin.config.relative() || plugin.config.theoretical())) {
+      b.append(")");
+    }
+    b.append(" ").append(c.getStat().getName());
+    b.append("</br>");
 
-	private String buildStatChangeString(StatChange c)
-	{
-		StringBuilder b = new StringBuilder();
-		b.append(ColorUtil.colorTag(Positivity.getColor(plugin.config, c.getPositivity())));
-
-		if (plugin.config.relative())
-		{
-			b.append(c.getFormattedRelative());
-		}
-
-		if (plugin.config.theoretical())
-		{
-			if (plugin.config.relative())
-			{
-				b.append("/");
-			}
-			b.append(c.getFormattedTheoretical());
-		}
-
-		if (plugin.config.absolute() && (plugin.config.relative() || plugin.config.theoretical()))
-		{
-			b.append(" (");
-		}
-		if (plugin.config.absolute())
-		{
-			b.append(c.getAbsolute());
-		}
-
-		if (plugin.config.absolute() && (plugin.config.relative() || plugin.config.theoretical()))
-		{
-			b.append(")");
-		}
-		b.append(" ").append(c.getStat().getName());
-		b.append("</br>");
-
-		return b.toString();
-	}
+    return b.toString();
+  }
 }

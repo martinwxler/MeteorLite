@@ -3,38 +3,38 @@ package net.runelite.rs.api;
 import net.runelite.api.Preferences;
 import net.runelite.mapping.Import;
 
-public interface RSClientPreferences extends Preferences
-{
-	@Import("rememberedUsername")
-	@Override
-	String getRememberedUsername();
+public interface RSClientPreferences extends Preferences {
 
-	@Import("rememberedUsername")
-	@Override
-	void setRememberedUsername(String username);
+  @Import("rememberedUsername")
+  @Override
+  String getRememberedUsername();
 
-	@Import("soundEffectsVolume")
-	@Override
-	int getSoundEffectVolume();
+  @Import("rememberedUsername")
+  @Override
+  void setRememberedUsername(String username);
 
-	@Import("soundEffectsVolume")
-	@Override
-	void setSoundEffectVolume(int i);
+  @Import("soundEffectsVolume")
+  @Override
+  int getSoundEffectVolume();
 
-	@Import("areaSoundEffectsVolume")
-	@Override
-	int getAreaSoundEffectVolume();
+  @Import("soundEffectsVolume")
+  @Override
+  void setSoundEffectVolume(int i);
 
-	@Import("areaSoundEffectsVolume")
-	@Override
-	void setAreaSoundEffectVolume(int i);
+  @Import("areaSoundEffectsVolume")
+  @Override
+  int getAreaSoundEffectVolume();
 
-	@Import("musicVolume")
-	int getMusicVolume();
+  @Import("areaSoundEffectsVolume")
+  @Override
+  void setAreaSoundEffectVolume(int i);
 
-	@Import("musicVolume")
-	void setMusicVolume(int i);
+  @Import("musicVolume")
+  int getMusicVolume();
 
-	@Import("hideUsername")
-	boolean getHideUsername();
+  @Import("musicVolume")
+  void setMusicVolume(int i);
+
+  @Import("hideUsername")
+  boolean getHideUsername();
 }

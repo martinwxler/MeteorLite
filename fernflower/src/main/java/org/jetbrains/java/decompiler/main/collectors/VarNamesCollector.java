@@ -23,7 +23,8 @@ public class VarNamesCollector {
 
   private final Set<String> usedNames = new HashSet<>();
 
-  public VarNamesCollector() { }
+  public VarNamesCollector() {
+  }
 
   public VarNamesCollector(Collection<String> setNames) {
     usedNames.addAll(setNames);

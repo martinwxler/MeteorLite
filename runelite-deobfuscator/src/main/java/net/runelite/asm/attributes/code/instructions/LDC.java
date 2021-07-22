@@ -24,18 +24,6 @@
  */
 package net.runelite.asm.attributes.code.instructions;
 
-import net.runelite.asm.Type;
-import net.runelite.asm.attributes.code.Instruction;
-import net.runelite.asm.attributes.code.InstructionType;
-import net.runelite.asm.attributes.code.Instructions;
-import net.runelite.asm.attributes.code.instruction.types.PushConstantInstruction;
-import net.runelite.asm.execution.Frame;
-import net.runelite.asm.execution.InstructionContext;
-import net.runelite.asm.execution.Stack;
-import net.runelite.asm.execution.StackContext;
-import net.runelite.asm.execution.Value;
-import net.runelite.asm.pool.Class;
-import org.objectweb.asm.MethodVisitor;
 import static org.objectweb.asm.Opcodes.DCONST_0;
 import static org.objectweb.asm.Opcodes.DCONST_1;
 import static org.objectweb.asm.Opcodes.FCONST_0;
@@ -51,148 +39,118 @@ import static org.objectweb.asm.Opcodes.ICONST_M1;
 import static org.objectweb.asm.Opcodes.LCONST_0;
 import static org.objectweb.asm.Opcodes.LCONST_1;
 
-public class LDC extends Instruction implements PushConstantInstruction
-{
-	private Object value;
+import net.runelite.asm.Type;
+import net.runelite.asm.attributes.code.Instruction;
+import net.runelite.asm.attributes.code.InstructionType;
+import net.runelite.asm.attributes.code.Instructions;
+import net.runelite.asm.attributes.code.instruction.types.PushConstantInstruction;
+import net.runelite.asm.execution.Frame;
+import net.runelite.asm.execution.InstructionContext;
+import net.runelite.asm.execution.Stack;
+import net.runelite.asm.execution.StackContext;
+import net.runelite.asm.execution.Value;
+import net.runelite.asm.pool.Class;
+import org.objectweb.asm.MethodVisitor;
 
-	public LDC(Instructions instructions, Object value)
-	{
-		super(instructions, InstructionType.LDC);
+public class LDC extends Instruction implements PushConstantInstruction {
 
-		this.value = value;
-	}
+  private Object value;
 
-	@Override
-	public void accept(MethodVisitor visitor)
-	{
-		Object object = getConstant();
-		if (object instanceof Class)
-		{
-			Class cl = (Class) object;
-			org.objectweb.asm.Type type = org.objectweb.asm.Type.getType("L" + cl.getName() + ";");
-			visitor.visitLdcInsn(type);
-		}
-		else if (object.equals(0d))
-		{
-			visitor.visitInsn(DCONST_0);
-		}
-		else if (object.equals(1d))
-		{
-			visitor.visitInsn(DCONST_1);
-		}
-		else if (object.equals(0f))
-		{
-			visitor.visitInsn(FCONST_0);
-		}
-		else if (object.equals(1f))
-		{
-			visitor.visitInsn(FCONST_1);
-		}
-		else if (object.equals(2f))
-		{
-			visitor.visitInsn(FCONST_2);
-		}
-		else if (object.equals(-1))
-		{
-			visitor.visitInsn(ICONST_M1);
-		}
-		else if (object.equals(0))
-		{
-			visitor.visitInsn(ICONST_0);
-		}
-		else if (object.equals(1))
-		{
-			visitor.visitInsn(ICONST_1);
-		}
-		else if (object.equals(2))
-		{
-			visitor.visitInsn(ICONST_2);
-		}
-		else if (object.equals(3))
-		{
-			visitor.visitInsn(ICONST_3);
-		}
-		else if (object.equals(4))
-		{
-			visitor.visitInsn(ICONST_4);
-		}
-		else if (object.equals(5))
-		{
-			visitor.visitInsn(ICONST_5);
-		}
-		else if (object.equals(0L))
-		{
-			visitor.visitInsn(LCONST_0);
-		}
-		else if (object.equals(1L))
-		{
-			visitor.visitInsn(LCONST_1);
-		}
-		else
-		{
-			visitor.visitLdcInsn(object);
-		}
-	}
+  public LDC(Instructions instructions, Object value) {
+    super(instructions, InstructionType.LDC);
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ins = new InstructionContext(this, frame);
-		Stack stack = frame.getStack();
+    this.value = value;
+  }
 
-		StackContext ctx = new StackContext(ins, Type.getType(value), new Value(value));
-		stack.push(ctx);
+  @Override
+  public void accept(MethodVisitor visitor) {
+    Object object = getConstant();
+    if (object instanceof Class) {
+      Class cl = (Class) object;
+      org.objectweb.asm.Type type = org.objectweb.asm.Type.getType("L" + cl.getName() + ";");
+      visitor.visitLdcInsn(type);
+    } else if (object.equals(0d)) {
+      visitor.visitInsn(DCONST_0);
+    } else if (object.equals(1d)) {
+      visitor.visitInsn(DCONST_1);
+    } else if (object.equals(0f)) {
+      visitor.visitInsn(FCONST_0);
+    } else if (object.equals(1f)) {
+      visitor.visitInsn(FCONST_1);
+    } else if (object.equals(2f)) {
+      visitor.visitInsn(FCONST_2);
+    } else if (object.equals(-1)) {
+      visitor.visitInsn(ICONST_M1);
+    } else if (object.equals(0)) {
+      visitor.visitInsn(ICONST_0);
+    } else if (object.equals(1)) {
+      visitor.visitInsn(ICONST_1);
+    } else if (object.equals(2)) {
+      visitor.visitInsn(ICONST_2);
+    } else if (object.equals(3)) {
+      visitor.visitInsn(ICONST_3);
+    } else if (object.equals(4)) {
+      visitor.visitInsn(ICONST_4);
+    } else if (object.equals(5)) {
+      visitor.visitInsn(ICONST_5);
+    } else if (object.equals(0L)) {
+      visitor.visitInsn(LCONST_0);
+    } else if (object.equals(1L)) {
+      visitor.visitInsn(LCONST_1);
+    } else {
+      visitor.visitLdcInsn(object);
+    }
+  }
 
-		ins.push(ctx);
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ins = new InstructionContext(this, frame);
+    Stack stack = frame.getStack();
 
-		return ins;
-	}
+    StackContext ctx = new StackContext(ins, Type.getType(value), new Value(value));
+    stack.push(ctx);
 
-	@Override
-	public String toString()
-	{
-		return "ldc " + value;
-	}
+    ins.push(ctx);
 
-	@Override
-	public Object getConstant()
-	{
-		return value;
-	}
+    return ins;
+  }
 
-	@Override
-	public Instruction setConstant(Object entry)
-	{
-		value = entry;
+  @Override
+  public String toString() {
+    return "ldc " + value;
+  }
 
-		return this;
-	}
+  @Override
+  public Object getConstant() {
+    return value;
+  }
 
-	public int getConstantAsInt()
-	{
-		return (int) value;
-	}
+  @Override
+  public Instruction setConstant(Object entry) {
+    value = entry;
 
-	public long getConstantAsLong()
-	{
-		return (long) value;
-	}
+    return this;
+  }
 
-	public Number getNumber()
-	{
-		return (Number) value;
-	}
+  public int getConstantAsInt() {
+    return (int) value;
+  }
 
-	@Override
-	public void renameClass(String oldName, String newName)
-	{
-		Object object = getConstant();
-		if (object instanceof Class)
-		{
-			if (((Class) object).getName().equals(oldName))
-			{
-				value = new Class(newName);
-			}
-		}
-	}
+  public long getConstantAsLong() {
+    return (long) value;
+  }
+
+  public Number getNumber() {
+    return (Number) value;
+  }
+
+  @Override
+  public void renameClass(String oldName, String newName) {
+    Object object = getConstant();
+    if (object instanceof Class) {
+      if (((Class) object).getName().equals(oldName)) {
+        value = new Class(newName);
+      }
+    }
+  }
 }

@@ -1,31 +1,26 @@
 package net.runelite.api.events;
 
 /**
- * Gets sent before menu handling code is ran, once per client tick.
- * Can be consumed, skipping this method this tick.
+ * Gets sent before menu handling code is ran, once per client tick. Can be consumed, skipping this
+ * method this tick.
  */
-public class Menu
-{
-	public static final Menu MENU = new Menu();
+public class Menu {
 
-	private Menu()
-	{
-	}
+  public static final Menu MENU = new Menu();
+  private boolean run;
 
-	private boolean run;
+  private Menu() {
+  }
 
-	public void reset()
-	{
-		run = true;
-	}
+  public void reset() {
+    run = true;
+  }
 
-	public void dontRun()
-	{
-		run = false;
-	}
+  public void dontRun() {
+    run = false;
+  }
 
-	public boolean shouldRun()
-	{
-		return run;
-	}
+  public boolean shouldRun() {
+    return run;
+  }
 }

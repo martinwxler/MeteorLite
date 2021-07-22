@@ -35,40 +35,35 @@ import net.runelite.asm.signature.Signature;
 import net.runelite.deob.Transformer;
 import org.objectweb.asm.Opcodes;
 
-public class OpcodesTransformer implements Transformer
-{
-	public static final String RUNELITE_OPCODES = "net/runelite/rs/Opcodes";
+public class OpcodesTransformer implements Transformer {
 
-	@Override
-	public void transform(ClassGroup group)
-	{
-		ClassFile runeliteOpcodes = group.findClass(RUNELITE_OPCODES);
-		if (runeliteOpcodes == null)
-		{
-			runeliteOpcodes = new ClassFile(group);
-			runeliteOpcodes.setName(RUNELITE_OPCODES);
-			runeliteOpcodes.setSuperName(Type.OBJECT.getInternalName());
-			runeliteOpcodes.setAccess(Opcodes.ACC_PUBLIC);
-			group.addClass(runeliteOpcodes);
-		}
-		else
-		{
-			runeliteOpcodes.getFields().clear();
-		}
+  public static final String RUNELITE_OPCODES = "net/runelite/rs/Opcodes";
 
-		Method clinit = runeliteOpcodes.findMethod("<clinit>");
-		if (clinit == null)
-		{
-			clinit = new Method(runeliteOpcodes, "<clinit>", new Signature("()V"));
-			clinit.setStatic(true);
-			Code code = new Code(clinit);
-			code.setMaxStack(1);
-			clinit.setCode(code);
-			runeliteOpcodes.addMethod(clinit);
+  @Override
+  public void transform(ClassGroup group) {
+    ClassFile runeliteOpcodes = group.findClass(RUNELITE_OPCODES);
+    if (runeliteOpcodes == null) {
+      runeliteOpcodes = new ClassFile(group);
+      runeliteOpcodes.setName(RUNELITE_OPCODES);
+      runeliteOpcodes.setSuperName(Type.OBJECT.getInternalName());
+      runeliteOpcodes.setAccess(Opcodes.ACC_PUBLIC);
+      group.addClass(runeliteOpcodes);
+    } else {
+      runeliteOpcodes.getFields().clear();
+    }
 
-			Instructions instructions = code.getInstructions();
-			instructions.addInstruction(new VReturn(instructions));
-		}
-	}
+    Method clinit = runeliteOpcodes.findMethod("<clinit>");
+    if (clinit == null) {
+      clinit = new Method(runeliteOpcodes, "<clinit>", new Signature("()V"));
+      clinit.setStatic(true);
+      Code code = new Code(clinit);
+      code.setMaxStack(1);
+      clinit.setCode(code);
+      runeliteOpcodes.addMethod(clinit);
+
+      Instructions instructions = code.getInstructions();
+      instructions.addInstruction(new VReturn(instructions));
+    }
+  }
 
 }

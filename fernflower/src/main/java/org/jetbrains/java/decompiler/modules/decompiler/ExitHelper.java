@@ -15,19 +15,25 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import org.jetbrains.java.decompiler.code.cfg.BasicBlock;
 import org.jetbrains.java.decompiler.main.DecompilerContext;
 import org.jetbrains.java.decompiler.main.collectors.CounterContainer;
 import org.jetbrains.java.decompiler.modules.decompiler.exps.ExitExprent;
 import org.jetbrains.java.decompiler.modules.decompiler.exps.Exprent;
-import org.jetbrains.java.decompiler.modules.decompiler.stats.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.BasicBlockStatement;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.DoStatement;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.DummyExitStatement;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.IfStatement;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.RootStatement;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.SequenceStatement;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.Statement;
 
 public class ExitHelper {
+
   public static boolean condenseExits(RootStatement root) {
     int changed = integrateExits(root);
 
@@ -57,7 +63,8 @@ public class ExitHelper {
           if (last.getExprents() == null || !last.getExprents().isEmpty()) {
             if (!secondlast.hasBasicSuccEdge()) {
 
-              Set<Statement> set = last.getNeighboursSet(Statement.STATEDGE_DIRECT_ALL, Statement.DIRECTION_BACKWARD);
+              Set<Statement> set = last
+                  .getNeighboursSet(Statement.STATEDGE_DIRECT_ALL, Statement.DIRECTION_BACKWARD);
               set.remove(secondlast);
 
               if (set.isEmpty()) {
@@ -96,13 +103,14 @@ public class ExitHelper {
 
       switch (stat.type) {
         case Statement.TYPE_IF:
-          IfStatement ifst = (IfStatement)stat;
+          IfStatement ifst = (IfStatement) stat;
           if (ifst.getIfstat() == null) {
             StatEdge ifedge = ifst.getIfEdge();
             dest = isExitEdge(ifedge);
             if (dest != null) {
               BasicBlockStatement bstat = new BasicBlockStatement(new BasicBlock(
-                DecompilerContext.getCounterContainer().getCounterAndIncrement(CounterContainer.STATEMENT_COUNTER)));
+                  DecompilerContext.getCounterContainer()
+                      .getCounterAndIncrement(CounterContainer.STATEMENT_COUNTER)));
               bstat.setExprents(DecHelper.copyExprentList(dest.getExprents()));
 
               ifst.getFirst().removeSuccessor(ifedge);
@@ -114,7 +122,8 @@ public class ExitHelper {
               bstat.setParent(ifst);
 
               StatEdge oldexitedge = dest.getAllSuccessorEdges().get(0);
-              StatEdge newexitedge = new StatEdge(StatEdge.TYPE_BREAK, bstat, oldexitedge.getDestination());
+              StatEdge newexitedge = new StatEdge(StatEdge.TYPE_BREAK, bstat,
+                  oldexitedge.getDestination());
               bstat.addSuccessor(newexitedge);
               oldexitedge.closure.addLabeledEdge(newexitedge);
               ret = 1;
@@ -123,13 +132,12 @@ public class ExitHelper {
       }
     }
 
-
     if (stat.getAllSuccessorEdges().size() == 1 &&
         stat.getAllSuccessorEdges().get(0).getType() == StatEdge.TYPE_BREAK &&
         stat.getLabelEdges().isEmpty()) {
       Statement parent = stat.getParent();
       if (stat != parent.getFirst() || (parent.type != Statement.TYPE_IF &&
-                                        parent.type != Statement.TYPE_SWITCH)) {
+          parent.type != Statement.TYPE_SWITCH)) {
 
         StatEdge destedge = stat.getAllSuccessorEdges().get(0);
         dest = isExitEdge(destedge);
@@ -137,11 +145,13 @@ public class ExitHelper {
           stat.removeSuccessor(destedge);
 
           BasicBlockStatement bstat = new BasicBlockStatement(new BasicBlock(
-            DecompilerContext.getCounterContainer().getCounterAndIncrement(CounterContainer.STATEMENT_COUNTER)));
+              DecompilerContext.getCounterContainer()
+                  .getCounterAndIncrement(CounterContainer.STATEMENT_COUNTER)));
           bstat.setExprents(DecHelper.copyExprentList(dest.getExprents()));
 
           StatEdge oldexitedge = dest.getAllSuccessorEdges().get(0);
-          StatEdge newexitedge = new StatEdge(StatEdge.TYPE_BREAK, bstat, oldexitedge.getDestination());
+          StatEdge newexitedge = new StatEdge(StatEdge.TYPE_BREAK, bstat,
+              oldexitedge.getDestination());
           bstat.addSuccessor(newexitedge);
           oldexitedge.closure.addLabeledEdge(newexitedge);
 
@@ -186,7 +196,8 @@ public class ExitHelper {
   private static Statement isExitEdge(StatEdge edge) {
     Statement dest = edge.getDestination();
 
-    if (edge.getType() == StatEdge.TYPE_BREAK && dest.type == Statement.TYPE_BASICBLOCK && edge.explicit && (edge.labeled || isOnlyEdge(edge))) {
+    if (edge.getType() == StatEdge.TYPE_BREAK && dest.type == Statement.TYPE_BASICBLOCK
+        && edge.explicit && (edge.labeled || isOnlyEdge(edge))) {
       List<Exprent> data = dest.getExprents();
 
       if (data != null && data.size() == 1) {
@@ -208,12 +219,12 @@ public class ExitHelper {
           Statement source = ed.getSource();
 
           if (source.type == Statement.TYPE_BASICBLOCK || (source.type == Statement.TYPE_IF &&
-                                                           ((IfStatement)source).iftype == IfStatement.IFTYPE_IF) ||
-              (source.type == Statement.TYPE_DO && ((DoStatement)source).getLooptype() != DoStatement.LOOP_DO)) {
+              ((IfStatement) source).iftype == IfStatement.IFTYPE_IF) ||
+              (source.type == Statement.TYPE_DO
+                  && ((DoStatement) source).getLooptype() != DoStatement.LOOP_DO)) {
             return false;
           }
-        }
-        else {
+        } else {
           return false;
         }
       }
@@ -234,7 +245,7 @@ public class ExitHelper {
         if (lstExpr != null && !lstExpr.isEmpty()) {
           Exprent expr = lstExpr.get(lstExpr.size() - 1);
           if (expr.type == Exprent.EXPRENT_EXIT) {
-            ExitExprent ex = (ExitExprent)expr;
+            ExitExprent ex = (ExitExprent) expr;
             if (ex.getExitType() == ExitExprent.EXIT_RETURN && ex.getValue() == null) {
               // remove redundant return
               dummyExit.addBytecodeOffsets(ex.bytecode);

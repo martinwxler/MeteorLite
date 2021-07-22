@@ -25,10 +25,9 @@
 package meteor.eventbus.events;
 
 /**
- * Posted when the user switches to a different RuneScape save profile
- * This might be because they logged into a different account, or hopped
- * to/from a Beta/Tournament/DMM/Leagues world
+ * Posted when the user switches to a different RuneScape save profile This might be because they
+ * logged into a different account, or hopped to/from a Beta/Tournament/DMM/Leagues world
  */
-public class RuneScapeProfileChanged
-{
+public class RuneScapeProfileChanged {
+
 }

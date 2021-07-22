@@ -30,68 +30,66 @@ import net.runelite.api.coords.Angle;
 /**
  * Represents a game object.
  * <p>
- * Most object in the RuneScape world are considered as game objects. Things
- * such as trees, anvils, boxes, etc are all game objects.
+ * Most object in the RuneScape world are considered as game objects. Things such as trees, anvils,
+ * boxes, etc are all game objects.
  */
-public interface GameObject extends TileObject
-{
-	/**
-	 * Get the size of this object, in tiles, on the x axis
-	 *
-	 * @return
-	 */
-	int sizeX();
+public interface GameObject extends TileObject {
 
-	/**
-	 * Get the size of this object, in tiles, on the y axis
-	 *
-	 * @return
-	 */
-	int sizeY();
+  /**
+   * Get the size of this object, in tiles, on the x axis
+   *
+   * @return
+   */
+  int sizeX();
 
-	/**
-	 * Gets the minimum x and y scene coordinate pair for this game object.
-	 *
-	 * @return the minimum scene coordinate
-	 */
-	Point getSceneMinLocation();
+  /**
+   * Get the size of this object, in tiles, on the y axis
+   *
+   * @return
+   */
+  int sizeY();
 
-	/**
-	 * Gets the maximum x and y scene coordinate pair for this game object.
-	 * <p>
-	 * This value differs from {@link #getSceneMinLocation()} when the size
-	 * of the object is more than 1 tile.
-	 *
-	 * @return the maximum scene coordinate
-	 */
-	Point getSceneMaxLocation();
+  /**
+   * Gets the minimum x and y scene coordinate pair for this game object.
+   *
+   * @return the minimum scene coordinate
+   */
+  Point getSceneMinLocation();
 
-	/**
-	 * Gets the convex hull of the object's model.
-	 *
-	 * @return the convex hull
-	 * @see //net.runelite.api.model.Jarvis
-	 */
-	Shape getConvexHull();
+  /**
+   * Gets the maximum x and y scene coordinate pair for this game object.
+   * <p>
+   * This value differs from {@link #getSceneMinLocation()} when the size of the object is more than
+   * 1 tile.
+   *
+   * @return the maximum scene coordinate
+   */
+  Point getSceneMaxLocation();
 
-	/**
-	 * Gets the orientation of the object.
-	 *
-	 * @return the orientation
-	 */
-	Angle getOrientation();
+  /**
+   * Gets the convex hull of the object's model.
+   *
+   * @return the convex hull
+   * @see //net.runelite.api.model.Jarvis
+   */
+  Shape getConvexHull();
 
-	Renderable getRenderable();
+  /**
+   * Gets the orientation of the object.
+   *
+   * @return the orientation
+   */
+  Angle getOrientation();
 
-	int getRsOrientation();
+  Renderable getRenderable();
 
-	Model getModel();
+  int getRsOrientation();
 
-	/**
-	 * A bitfield containing various flags:
-	 * object type id = bits & 0x20
-	 * orientation (0-3) = bits >>> 6 & 3
-	 * the bitfield may contain other flags in addition to those mentioned above
-	 */
-	int getFlags();
+  Model getModel();
+
+  /**
+   * A bitfield containing various flags: object type id = bits & 0x20 orientation (0-3) = bits >>>
+   * 6 & 3 the bitfield may contain other flags in addition to those mentioned above
+   */
+  int getFlags();
 }

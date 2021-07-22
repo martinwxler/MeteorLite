@@ -2,44 +2,44 @@ package net.runelite.rs.api;
 
 import net.runelite.mapping.Import;
 
-public interface RSModelData extends RSRenderable
-{
-	@Import("faceCount")
-	int getTriangleFaceCount();
+public interface RSModelData extends RSRenderable {
 
-	@Import("indices1")
-	int[] getTrianglePointsX();
+  @Import("faceCount")
+  int getTriangleFaceCount();
 
-	@Import("indices2")
-	int[] getTrianglePointsY();
+  @Import("indices1")
+  int[] getTrianglePointsX();
 
-	@Import("indices3")
-	int[] getTrianglePointsZ();
+  @Import("indices2")
+  int[] getTrianglePointsY();
 
-	@Import("verticesX")
-	int[] getVertexX();
+  @Import("indices3")
+  int[] getTrianglePointsZ();
 
-	@Import("verticesY")
-	int[] getVertexY();
+  @Import("verticesX")
+  int[] getVertexX();
 
-	@Import("verticesZ")
-	int[] getVertexZ();
+  @Import("verticesY")
+  int[] getVertexY();
 
-	@Import("texTriangleX")
-	short[] getTexTriangleX();
+  @Import("verticesZ")
+  int[] getVertexZ();
 
-	@Import("texTriangleY")
-	short[] getTexTriangleY();
+  @Import("texTriangleX")
+  short[] getTexTriangleX();
 
-	@Import("texTriangleZ")
-	short[] getTexTriangleZ();
+  @Import("texTriangleY")
+  short[] getTexTriangleY();
 
-	@Import("faceTextures")
-	short[] getFaceTextures();
+  @Import("texTriangleZ")
+  short[] getTexTriangleZ();
 
-	@Import("textureCoords")
-	byte[] getTextureCoords();
+  @Import("faceTextures")
+  short[] getFaceTextures();
 
-	@Import("textureRenderTypes")
-	byte[] getTextureRenderTypes();
+  @Import("textureCoords")
+  byte[] getTextureCoords();
+
+  @Import("textureRenderTypes")
+  byte[] getTextureRenderTypes();
 }

@@ -27,25 +27,25 @@ package net.runelite.rs.api;
 import net.runelite.api.Node;
 import net.runelite.mapping.Import;
 
-public interface RSNode extends Node
-{
-	@Import("previous")
-	@Override
-	RSNode getNext();
+public interface RSNode extends Node {
 
-	@Import("key")
-	@Override
-	long getHash();
+  @Import("previous")
+  @Override
+  RSNode getNext();
 
-	@Import("next")
-	@Override
-	RSNode getPrevious();
+  @Import("key")
+  @Override
+  long getHash();
 
-	@Import("remove")
-	void unlink();
+  @Import("next")
+  @Override
+  RSNode getPrevious();
 
-	/**
-	 * Called when this node is unlinked
-	 */
-	void onUnlink();
+  @Import("remove")
+  void unlink();
+
+  /**
+   * Called when this node is unlinked
+   */
+  void onUnlink();
 }

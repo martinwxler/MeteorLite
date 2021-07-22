@@ -15,6 +15,9 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import org.jetbrains.java.decompiler.modules.decompiler.exps.AssignmentExprent;
 import org.jetbrains.java.decompiler.modules.decompiler.exps.ConstExprent;
 import org.jetbrains.java.decompiler.modules.decompiler.exps.Exprent;
@@ -24,10 +27,6 @@ import org.jetbrains.java.decompiler.modules.decompiler.sforms.DirectNode;
 import org.jetbrains.java.decompiler.modules.decompiler.sforms.FlattenStatementsHelper;
 import org.jetbrains.java.decompiler.modules.decompiler.stats.RootStatement;
 import org.jetbrains.java.decompiler.struct.gen.VarType;
-
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 
 public class PPandMMHelper {
 
@@ -102,19 +101,18 @@ public class PPandMMHelper {
     }
 
     if (exprent.type == Exprent.EXPRENT_ASSIGNMENT) {
-      AssignmentExprent as = (AssignmentExprent)exprent;
+      AssignmentExprent as = (AssignmentExprent) exprent;
 
       if (as.getRight().type == Exprent.EXPRENT_FUNCTION) {
-        FunctionExprent func = (FunctionExprent)as.getRight();
+        FunctionExprent func = (FunctionExprent) as.getRight();
 
         VarType midlayer = null;
         if (func.getFuncType() >= FunctionExprent.FUNCTION_I2L &&
             func.getFuncType() <= FunctionExprent.FUNCTION_I2S) {
           midlayer = func.getSimpleCastType();
           if (func.getLstOperands().get(0).type == Exprent.EXPRENT_FUNCTION) {
-            func = (FunctionExprent)func.getLstOperands().get(0);
-          }
-          else {
+            func = (FunctionExprent) func.getLstOperands().get(0);
+          } else {
             return null;
           }
         }
@@ -130,14 +128,15 @@ public class PPandMMHelper {
             econst = func.getLstOperands().get(0);
           }
 
-          if (econst.type == Exprent.EXPRENT_CONST && ((ConstExprent)econst).hasValueOne()) {
+          if (econst.type == Exprent.EXPRENT_CONST && ((ConstExprent) econst).hasValueOne()) {
             Exprent left = as.getLeft();
 
             VarType condtype = econd.getExprType();
             if (left.equals(econd) && (midlayer == null || midlayer.equals(condtype))) {
               FunctionExprent ret = new FunctionExprent(
-                func.getFuncType() == FunctionExprent.FUNCTION_ADD ? FunctionExprent.FUNCTION_PPI : FunctionExprent.FUNCTION_MMI,
-                econd, func.bytecode);
+                  func.getFuncType() == FunctionExprent.FUNCTION_ADD ? FunctionExprent.FUNCTION_PPI
+                      : FunctionExprent.FUNCTION_MMI,
+                  econd, func.bytecode);
               ret.setImplicitType(condtype);
 
               exprentReplaced = true;

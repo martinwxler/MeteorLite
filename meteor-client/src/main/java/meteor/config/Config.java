@@ -24,6 +24,6 @@
  */
 package meteor.config;
 
-public interface Config
-{
+public interface Config {
+
 }

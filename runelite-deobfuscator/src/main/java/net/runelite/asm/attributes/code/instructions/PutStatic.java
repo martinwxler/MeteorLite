@@ -42,159 +42,140 @@ import net.runelite.deob.deobfuscators.mapping.MappingExecutorUtil;
 import net.runelite.deob.deobfuscators.mapping.ParallelExecutorMapping;
 import org.objectweb.asm.MethodVisitor;
 
-public class PutStatic extends Instruction implements SetFieldInstruction
-{
-	private Field field;
-	private net.runelite.asm.Field myField;
+public class PutStatic extends Instruction implements SetFieldInstruction {
 
-	public PutStatic(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
+  private Field field;
+  private net.runelite.asm.Field myField;
 
-	public PutStatic(Instructions instructions, net.runelite.asm.Field field)
-	{
-		super(instructions, InstructionType.PUTSTATIC);
-		this.field = field.getPoolField();
-		this.myField = field;
-	}
+  public PutStatic(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
 
-	@Override
-	public String toString()
-	{
-		Method m = this.getInstructions().getCode().getMethod();
-		return "putstatic " + myField + " in " + m;
-	}
+  public PutStatic(Instructions instructions, net.runelite.asm.Field field) {
+    super(instructions, InstructionType.PUTSTATIC);
+    this.field = field.getPoolField();
+    this.myField = field;
+  }
 
-	@Override
-	public void accept(MethodVisitor visitor)
-	{
-		visitor.visitFieldInsn(this.getType().getCode(),
-			field.getClazz().getName(),
-			field.getName(),
-			field.getType().toString());
-	}
+  @Override
+  public String toString() {
+    Method m = this.getInstructions().getCode().getMethod();
+    return "putstatic " + myField + " in " + m;
+  }
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ins = new InstructionContext(this, frame);
-		Stack stack = frame.getStack();
+  @Override
+  public void accept(MethodVisitor visitor) {
+    visitor.visitFieldInsn(this.getType().getCode(),
+        field.getClazz().getName(),
+        field.getName(),
+        field.getType().toString());
+  }
 
-		StackContext object = stack.pop();
-		ins.pop(object);
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ins = new InstructionContext(this, frame);
+    Stack stack = frame.getStack();
 
-		if (myField != null)
-		{
-			frame.getExecution().order(frame, myField);
-		}
+    StackContext object = stack.pop();
+    ins.pop(object);
 
-		return ins;
-	}
+    if (myField != null) {
+      frame.getExecution().order(frame, myField);
+    }
 
-	@Override
-	public Field getField()
-	{
-		return field;
-	}
+    return ins;
+  }
 
-	@Override
-	public net.runelite.asm.Field getMyField()
-	{
-		Class clazz = field.getClazz();
+  @Override
+  public Field getField() {
+    return field;
+  }
 
-		ClassGroup group = this.getInstructions().getCode().getMethod().getClassFile().getGroup();
-		ClassFile cf = group.findClass(clazz.getName());
-		if (cf == null)
-		{
-			return null;
-		}
+  @Override
+  public void setField(Field field) {
+    this.field = field;
+  }
 
-		net.runelite.asm.Field f2 = cf.findFieldDeep(field.getName(), field.getType());
-		return f2;
-	}
+  @Override
+  public net.runelite.asm.Field getMyField() {
+    Class clazz = field.getClazz();
 
-	@Override
-	public void lookup()
-	{
-		myField = getMyField();
-	}
+    ClassGroup group = this.getInstructions().getCode().getMethod().getClassFile().getGroup();
+    ClassFile cf = group.findClass(clazz.getName());
+    if (cf == null) {
+      return null;
+    }
 
-	@Override
-	public void regeneratePool()
-	{
-		if (myField != null)
-		{
-			if (getMyField() != myField)
-			{
-				field = myField.getPoolField();
-			}
-		}
-	}
+    net.runelite.asm.Field f2 = cf.findFieldDeep(field.getName(), field.getType());
+    return f2;
+  }
 
-	@Override
-	public void map(ParallelExecutorMapping mapping, InstructionContext ctx, InstructionContext other)
-	{
-		net.runelite.asm.Field myField = this.getMyField();
-		net.runelite.asm.Field otherField = ((PutStatic) other.getInstruction()).getMyField();
+  @Override
+  public void lookup() {
+    myField = getMyField();
+  }
 
-		assert MappingExecutorUtil.isMaybeEqual(myField.getType(), otherField.getType());
+  @Override
+  public void regeneratePool() {
+    if (myField != null) {
+      if (getMyField() != myField) {
+        field = myField.getPoolField();
+      }
+    }
+  }
 
-		mapping.map(this, myField, otherField);
+  @Override
+  public void map(ParallelExecutorMapping mapping, InstructionContext ctx,
+      InstructionContext other) {
+    net.runelite.asm.Field myField = this.getMyField();
+    net.runelite.asm.Field otherField = ((PutStatic) other.getInstruction()).getMyField();
 
-		StackContext object1 = ctx.getPops().get(0),
-			object2 = other.getPops().get(0);
+    assert MappingExecutorUtil.isMaybeEqual(myField.getType(), otherField.getType());
 
-		InstructionContext base1 = MappingExecutorUtil.resolve(object1.getPushed(), object1);
-		InstructionContext base2 = MappingExecutorUtil.resolve(object2.getPushed(), object2);
+    mapping.map(this, myField, otherField);
 
-		if (base1.getInstruction() instanceof GetFieldInstruction && base2.getInstruction() instanceof GetFieldInstruction)
-		{
-			GetFieldInstruction gf1 = (GetFieldInstruction) base1.getInstruction(),
-				gf2 = (GetFieldInstruction) base2.getInstruction();
+    StackContext object1 = ctx.getPops().get(0),
+        object2 = other.getPops().get(0);
 
-			net.runelite.asm.Field f1 = gf1.getMyField();
-			net.runelite.asm.Field f2 = gf2.getMyField();
+    InstructionContext base1 = MappingExecutorUtil.resolve(object1.getPushed(), object1);
+    InstructionContext base2 = MappingExecutorUtil.resolve(object2.getPushed(), object2);
 
-			if (f1 != null && f2 != null)
-			{
-				mapping.map(this, f1, f2);
-			}
-		}
-	}
+    if (base1.getInstruction() instanceof GetFieldInstruction && base2
+        .getInstruction() instanceof GetFieldInstruction) {
+      GetFieldInstruction gf1 = (GetFieldInstruction) base1.getInstruction(),
+          gf2 = (GetFieldInstruction) base2.getInstruction();
 
-	@Override
-	public boolean isSame(InstructionContext thisIc, InstructionContext otherIc)
-	{
-		if (thisIc.getInstruction().getClass() != otherIc.getInstruction().getClass())
-		{
-			return false;
-		}
+      net.runelite.asm.Field f1 = gf1.getMyField();
+      net.runelite.asm.Field f2 = gf2.getMyField();
 
-		PutStatic thisPf = (PutStatic) thisIc.getInstruction(),
-			otherPf = (PutStatic) otherIc.getInstruction();
+      if (f1 != null && f2 != null) {
+        mapping.map(this, f1, f2);
+      }
+    }
+  }
 
-		net.runelite.asm.Field f1 = thisPf.getMyField();
-		net.runelite.asm.Field f2 = otherPf.getMyField();
+  @Override
+  public boolean isSame(InstructionContext thisIc, InstructionContext otherIc) {
+    if (thisIc.getInstruction().getClass() != otherIc.getInstruction().getClass()) {
+      return false;
+    }
 
-		if ((f1 != null) != (f2 != null))
-		{
-			return false;
-		}
+    PutStatic thisPf = (PutStatic) thisIc.getInstruction(),
+        otherPf = (PutStatic) otherIc.getInstruction();
 
-		/* The class names are random */
-		return MappingExecutorUtil.isMaybeEqual(f1.getType(), f2.getType());
-	}
+    net.runelite.asm.Field f1 = thisPf.getMyField();
+    net.runelite.asm.Field f2 = otherPf.getMyField();
 
-	@Override
-	public boolean canMap(InstructionContext thisIc)
-	{
-		return true;
-	}
+    if ((f1 != null) != (f2 != null)) {
+      return false;
+    }
 
-	@Override
-	public void setField(Field field)
-	{
-		this.field = field;
-	}
+    /* The class names are random */
+    return MappingExecutorUtil.isMaybeEqual(f1.getType(), f2.getType());
+  }
+
+  @Override
+  public boolean canMap(InstructionContext thisIc) {
+    return true;
+  }
 }

@@ -26,8 +26,8 @@ package net.runelite.rs.api;
 
 import net.runelite.mapping.Import;
 
-public interface RSRawPcmStream
-{
-	@Import("setNumLoops")
-	void setNumLoops$api(int numLoops);
+public interface RSRawPcmStream {
+
+  @Import("setNumLoops")
+  void setNumLoops$api(int numLoops);
 }

@@ -24,10 +24,9 @@
  */
 package meteor.plugins.gpu;
 
-class ShaderException extends Exception
-{
-	ShaderException(String message)
-	{
-		super(message);
-	}
+class ShaderException extends Exception {
+
+  ShaderException(String message) {
+    super(message);
+  }
 }

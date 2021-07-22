@@ -28,43 +28,36 @@ import java.util.List;
 import net.runelite.asm.ClassGroup;
 import net.runelite.asm.Field;
 
-public class PacketHandlers
-{
-	private final ClassGroup group;
-	private final Field packetType;
-	private final List<PacketHandler> handlers;
+public class PacketHandlers {
 
-	public PacketHandlers(ClassGroup group, Field packetType, List<PacketHandler> handlers)
-	{
-		this.group = group;
-		this.packetType = packetType;
-		this.handlers = handlers;
-	}
+  private final ClassGroup group;
+  private final Field packetType;
+  private final List<PacketHandler> handlers;
 
-	public PacketHandler find(int opcode)
-	{
-		for (PacketHandler handler : handlers)
-		{
-			if (handler.getOpcode() == opcode)
-			{
-				return handler;
-			}
-		}
-		return null;
-	}
+  public PacketHandlers(ClassGroup group, Field packetType, List<PacketHandler> handlers) {
+    this.group = group;
+    this.packetType = packetType;
+    this.handlers = handlers;
+  }
 
-	public ClassGroup getGroup()
-	{
-		return group;
-	}
+  public PacketHandler find(int opcode) {
+    for (PacketHandler handler : handlers) {
+      if (handler.getOpcode() == opcode) {
+        return handler;
+      }
+    }
+    return null;
+  }
 
-	public Field getPacketType()
-	{
-		return packetType;
-	}
+  public ClassGroup getGroup() {
+    return group;
+  }
 
-	public List<PacketHandler> getHandlers()
-	{
-		return handlers;
-	}
+  public Field getPacketType() {
+    return packetType;
+  }
+
+  public List<PacketHandler> getHandlers() {
+    return handlers;
+  }
 }

@@ -32,58 +32,53 @@ import net.runelite.asm.execution.InstructionContext;
 import net.runelite.asm.execution.Stack;
 import net.runelite.asm.execution.StackContext;
 
-public class Swap extends Instruction
-{
-	public Swap(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
+public class Swap extends Instruction {
 
-	public Swap(Instructions instructions)
-	{
-		super(instructions, InstructionType.SWAP);
-	}
+  public Swap(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ins = new InstructionContext(this, frame);
-		Stack stack = frame.getStack();
+  public Swap(Instructions instructions) {
+    super(instructions, InstructionType.SWAP);
+  }
 
-		StackContext one = stack.pop();
-		StackContext two = stack.pop();
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ins = new InstructionContext(this, frame);
+    Stack stack = frame.getStack();
 
-		ins.pop(one, two);
+    StackContext one = stack.pop();
+    StackContext two = stack.pop();
 
-		StackContext ctx = new StackContext(ins, one.getType(), one.getValue());
-		stack.push(ctx);
+    ins.pop(one, two);
 
-		ins.push(ctx);
+    StackContext ctx = new StackContext(ins, one.getType(), one.getValue());
+    stack.push(ctx);
 
-		ctx = new StackContext(ins, two.getType(), two.getValue());
-		stack.push(ctx);
+    ins.push(ctx);
 
-		ins.push(ctx);
+    ctx = new StackContext(ins, two.getType(), two.getValue());
+    stack.push(ctx);
 
-		return ins;
-	}
+    ins.push(ctx);
 
-	@Override
-	public boolean removeStack()
-	{
-		throw new UnsupportedOperationException();
-	}
+    return ins;
+  }
 
-	public StackContext getOriginal(StackContext sctx)
-	{
-		// sctx = stack pushed by this instruction, return stack popped by this instruction
-		InstructionContext ctx = sctx.getPushed();
+  @Override
+  public boolean removeStack() {
+    throw new UnsupportedOperationException();
+  }
 
-		assert ctx.getInstruction() == this;
+  public StackContext getOriginal(StackContext sctx) {
+    // sctx = stack pushed by this instruction, return stack popped by this instruction
+    InstructionContext ctx = sctx.getPushed();
 
-		int idx = ctx.getPushes().indexOf(sctx);
-		assert idx == 0 || idx == 1;
+    assert ctx.getInstruction() == this;
 
-		return ctx.getPops().get(idx);
-	}
+    int idx = ctx.getPushes().indexOf(sctx);
+    assert idx == 0 || idx == 1;
+
+    return ctx.getPops().get(idx);
+  }
 }

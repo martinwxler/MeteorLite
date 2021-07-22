@@ -34,33 +34,31 @@ import net.runelite.asm.execution.Stack;
 import net.runelite.asm.execution.StackContext;
 
 
-public class Pop2 extends Instruction
-{
-	public Pop2(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
+public class Pop2 extends Instruction {
 
-	public Pop2(Instructions instructions)
-	{
-		super(instructions, InstructionType.POP2);
-	}
+  public Pop2(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ins = new InstructionContext(this, frame);
-		Stack stack = frame.getStack();
+  public Pop2(Instructions instructions) {
+    super(instructions, InstructionType.POP2);
+  }
 
-		StackContext value = stack.pop();
-		ins.pop(value);
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ins = new InstructionContext(this, frame);
+    Stack stack = frame.getStack();
 
-		if (value.getType().getSize() == 2)
-			return ins;
-		
-		value = stack.pop();
-		ins.pop(value);
+    StackContext value = stack.pop();
+    ins.pop(value);
 
-		return ins;
-	}
+    if (value.getType().getSize() == 2) {
+      return ins;
+    }
+
+    value = stack.pop();
+    ins.pop(value);
+
+    return ins;
+  }
 }

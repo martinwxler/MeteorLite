@@ -25,6 +25,9 @@
 package meteor.plugins.gpu;
 
 
+import static meteor.plugins.gpu.GpuPlugin.MAX_DISTANCE;
+import static meteor.plugins.gpu.GpuPlugin.MAX_FOG_DEPTH;
+
 import meteor.config.Config;
 import meteor.config.ConfigGroup;
 import meteor.config.ConfigItem;
@@ -33,119 +36,107 @@ import meteor.plugins.gpu.config.AntiAliasingMode;
 import meteor.plugins.gpu.config.ColorBlindMode;
 import meteor.plugins.gpu.config.UIScalingMode;
 
-import static meteor.plugins.gpu.GpuPlugin.MAX_DISTANCE;
-import static meteor.plugins.gpu.GpuPlugin.MAX_FOG_DEPTH;
-
 @ConfigGroup("gpu")
-public interface GpuPluginConfig extends Config
-{
-	@Range(
-		max = MAX_DISTANCE
-	)
-	@ConfigItem(
-		keyName = "drawDistance",
-		name = "Draw Distance",
-		description = "Draw distance",
-		position = 1
-	)
-	default int drawDistance()
-	{
-		return MAX_DISTANCE;
-	}
+public interface GpuPluginConfig extends Config {
 
-	@ConfigItem(
-		keyName = "smoothBanding",
-		name = "Remove Color Banding",
-		description = "Smooths out the color banding that is present in the CPU renderer",
-		position = 2
-	)
-	default boolean smoothBanding()
-	{
-		return false;
-	}
+  @Range(
+      max = MAX_DISTANCE
+  )
+  @ConfigItem(
+      keyName = "drawDistance",
+      name = "Draw Distance",
+      description = "Draw distance",
+      position = 1
+  )
+  default int drawDistance() {
+    return MAX_DISTANCE;
+  }
 
-	@ConfigItem(
-		keyName = "antiAliasingMode",
-		name = "Anti Aliasing",
-		description = "Configures the anti-aliasing mode",
-		position = 3
-	)
-	default AntiAliasingMode antiAliasingMode()
-	{
-		return AntiAliasingMode.MSAA_8;
-	}
+  @ConfigItem(
+      keyName = "smoothBanding",
+      name = "Remove Color Banding",
+      description = "Smooths out the color banding that is present in the CPU renderer",
+      position = 2
+  )
+  default boolean smoothBanding() {
+    return false;
+  }
 
-	@ConfigItem(
-		keyName = "uiScalingMode",
-		name = "UI scaling mode",
-		description = "Sampling function to use for the UI in stretched mode",
-		position = 4
-	)
-	default UIScalingMode uiScalingMode()
-	{
-		return UIScalingMode.CATMULL_ROM;
-	}
+  @ConfigItem(
+      keyName = "antiAliasingMode",
+      name = "Anti Aliasing",
+      description = "Configures the anti-aliasing mode",
+      position = 3
+  )
+  default AntiAliasingMode antiAliasingMode() {
+    return AntiAliasingMode.MSAA_8;
+  }
 
-	@Range(
-		max = MAX_FOG_DEPTH
-	)
-	@ConfigItem(
-		keyName = "fogDepth",
-		name = "Fog depth",
-		description = "Distance from the scene edge the fog starts",
-		position = 5
-	)
-	default int fogDepth()
-	{
-		return 0;
-	}
+  @ConfigItem(
+      keyName = "uiScalingMode",
+      name = "UI scaling mode",
+      description = "Sampling function to use for the UI in stretched mode",
+      position = 4
+  )
+  default UIScalingMode uiScalingMode() {
+    return UIScalingMode.CATMULL_ROM;
+  }
 
-	@ConfigItem(
-		keyName = "useComputeShaders",
-		name = "Compute Shaders",
-		description = "Offloads face sorting to GPU, enabling extended draw distance. Requires plugin restart.",
-		warning = "This feature requires OpenGL 4.3 to use. Please check that your GPU supports this.\nRestart the plugin for changes to take effect.",
-		position = 6
-	)
-	default boolean useComputeShaders()
-	{
-		return true;
-	}
+  @Range(
+      max = MAX_FOG_DEPTH
+  )
+  @ConfigItem(
+      keyName = "fogDepth",
+      name = "Fog depth",
+      description = "Distance from the scene edge the fog starts",
+      position = 5
+  )
+  default int fogDepth() {
+    return 0;
+  }
 
-	@Range(
-		min = 0,
-		max = 16
-	)
-	@ConfigItem(
-		keyName = "anisotropicFilteringLevel",
-		name = "Anisotropic Filtering",
-		description = "Configures the anisotropic filtering level.",
-		position = 7
-	)
-	default int anisotropicFilteringLevel()
-	{
-		return 16;
-	}
+  @ConfigItem(
+      keyName = "useComputeShaders",
+      name = "Compute Shaders",
+      description = "Offloads face sorting to GPU, enabling extended draw distance. Requires plugin restart.",
+      warning = "This feature requires OpenGL 4.3 to use. Please check that your GPU supports this.\nRestart the plugin for changes to take effect.",
+      position = 6
+  )
+  default boolean useComputeShaders() {
+    return true;
+  }
 
-	@ConfigItem(
-		keyName = "colorBlindMode",
-		name = "Colorblindness Correction",
-		description = "Adjusts colors to account for colorblindness",
-		position = 8
-	)
-	default ColorBlindMode colorBlindMode()
-	{
-		return ColorBlindMode.NONE;
-	}
+  @Range(
+      min = 0,
+      max = 16
+  )
+  @ConfigItem(
+      keyName = "anisotropicFilteringLevel",
+      name = "Anisotropic Filtering",
+      description = "Configures the anisotropic filtering level.",
+      position = 7
+  )
+  default int anisotropicFilteringLevel() {
+    return 16;
+  }
 
-	@ConfigItem(
-		keyName = "brightTextures",
-		name = "Bright Textures",
-		description = "Use old texture lighting method which results in brighter game textures",
-		position = 9
-	)
-	default boolean brightTextures()
-	{
-		return false;
-	}
+  @ConfigItem(
+      keyName = "colorBlindMode",
+      name = "Colorblindness Correction",
+      description = "Adjusts colors to account for colorblindness",
+      position = 8
+  )
+  default ColorBlindMode colorBlindMode() {
+    return ColorBlindMode.NONE;
+  }
+
+  @ConfigItem(
+      keyName = "brightTextures",
+      name = "Bright Textures",
+      description = "Use old texture lighting method which results in brighter game textures",
+      position = 9
+  )
+  default boolean brightTextures() {
+    return false;
+  }
 }

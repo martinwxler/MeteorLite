@@ -30,6 +30,60 @@ import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Proxy;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.security.SecureRandom;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.Set;
+import java.util.Stack;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import lombok.NonNull;
 import meteor.Plugin;
 import meteor.eventbus.EventBus;
@@ -46,707 +100,120 @@ import net.runelite.api.events.UsernameChanged;
 import net.runelite.api.events.WorldChanged;
 import org.sponge.util.Logger;
 
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import java.awt.*;
-import java.io.*;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Proxy;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.AtomicMoveNotSupportedException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.security.SecureRandom;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.List;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 @Singleton
-public class ConfigManager
-{
-	public static final String RSPROFILE_GROUP = "rsprofile";
-
-	private static final String RSPROFILE_DISPLAY_NAME = "displayName";
-	private static final String RSPROFILE_TYPE = "type";
-	private static final String RSPROFILE_LOGIN_HASH = "loginHash";
-	private static final String RSPROFILE_LOGIN_SALT = "loginSalt";
-
-	private static final DateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-
-	private static final int KEY_SPLITTER_GROUP = 0;
-	private static final int KEY_SPLITTER_PROFILE = 1;
-	private static final int KEY_SPLITTER_KEY = 2;
-
-	private final File settingsFileInput;
-	private final EventBus eventBus;
-
-	private File propertiesFile;
-
-	private Logger log = new Logger("ConfigManager");
-
-	@Nullable
-	private final Client client;
-
-	private final ConfigInvocationHandler handler = new ConfigInvocationHandler(this);
-	private final Map<String, String> pendingChanges = new HashMap<>();
-	private final Map<String, Consumer<? super Plugin>> consumers = new HashMap<>();
-
-	private Properties properties = new Properties();
-
-	// null => we need to make a new profile
-	@Nullable
-	private String rsProfileKey;
-
-	@Inject
-	public ConfigManager(
-		@Named("config") File config,
-		ScheduledExecutorService scheduledExecutorService,
-		EventBus eventBus,
-		@Nullable Client client)
-	{
-		this.settingsFileInput = config;
-		this.eventBus = eventBus;
-		this.client = client;
-		this.propertiesFile = getPropertiesFile();
-
-		scheduledExecutorService.scheduleWithFixedDelay(this::sendConfig, 30, 30, TimeUnit.SECONDS);
-	}
-
-	private File getLocalPropertiesFile()
-	{
-		return settingsFileInput;
-	}
-
-	private File getPropertiesFile()
-	{
-		return getLocalPropertiesFile();
-	}
-
-	public void load()
-	{
-		loadFromFile();
-	}
-
-	private void swapProperties(Properties newProperties, boolean saveToServer)
-	{
-		Set<Object> allKeys = new HashSet<>(newProperties.keySet());
-
-		Properties oldProperties;
-		synchronized (this)
-		{
-			handler.invalidate();
-			oldProperties = properties;
-			this.properties = newProperties;
-		}
-
-		updateRSProfile();
-
-		allKeys.addAll(oldProperties.keySet());
-
-		for (Object wholeKey : allKeys)
-		{
-			String[] split = splitKey((String) wholeKey);
-			if (split == null)
-			{
-				continue;
-			}
-
-			String groupName = split[KEY_SPLITTER_GROUP];
-			String profile = split[KEY_SPLITTER_PROFILE];
-			String key = split[KEY_SPLITTER_KEY];
-			String oldValue = (String) oldProperties.get(wholeKey);
-			String newValue = (String) newProperties.get(wholeKey);
-
-			if (Objects.equals(oldValue, newValue))
-			{
-				continue;
-			}
-
-			ConfigChanged configChanged = new ConfigChanged();
-			configChanged.setGroup(groupName);
-			configChanged.setProfile(profile);
-			configChanged.setKey(key);
-			configChanged.setOldValue(oldValue);
-			configChanged.setNewValue(newValue);
-			eventBus.post(configChanged);
-
-			if (saveToServer)
-			{
-				synchronized (pendingChanges)
-				{
-					pendingChanges.put((String) wholeKey, newValue);
-				}
-			}
-		}
-
-		migrateConfig();
-	}
-
-	private void syncPropertiesFromFile(File propertiesFile)
-	{
-		final Properties properties = new Properties();
-		try (FileInputStream in = new FileInputStream(propertiesFile))
-		{
-			properties.load(new InputStreamReader(in, StandardCharsets.UTF_8));
-		}
-		catch (Exception e)
-		{
-			log.warn("Malformed properties, skipping update");
-			return;
-		}
-
-		log.debug("Loading in config from disk for upload");
-		swapProperties(properties, true);
-	}
-
-	private synchronized void loadFromFile()
-	{
-		boolean loaded = false;
-		consumers.clear();
-
-		Properties newProperties = new Properties();
-		try (FileInputStream in = new FileInputStream(propertiesFile))
-		{
-			newProperties.load(new InputStreamReader(in, StandardCharsets.UTF_8));
-			loaded = true;
-		}
-		catch (FileNotFoundException ex)
-		{
-			log.debug("Unable to load settings - no such file");
-		}
-		catch (IllegalArgumentException | IOException ex)
-		{
-			log.warn("Unable to load settings", ex);
-		}
-
-		log.debug("Loading in config from disk");
-		swapProperties(newProperties, false);
-		if (!loaded)
-		try {
-			saveToFile(propertiesFile);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void saveToFile(final File propertiesFile) throws IOException
-	{
-		File parent = propertiesFile.getParentFile();
-
-		parent.mkdirs();
-
-		File tempFile = File.createTempFile("runelite", null, parent);
-
-		try (FileOutputStream out = new FileOutputStream(tempFile))
-		{
-			out.getChannel().lock();
-			properties.store(new OutputStreamWriter(out, StandardCharsets.UTF_8), "RuneLite configuration");
-			// FileOutputStream.close() closes the associated channel, which frees the lock
-		}
-
-		try
-		{
-			Files.move(tempFile.toPath(), propertiesFile.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-		}
-		catch (AtomicMoveNotSupportedException ex)
-		{
-			log.debug("atomic move not supported");
-			ex.printStackTrace();
-			Files.move(tempFile.toPath(), propertiesFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-		}
-	}
-
-	public <T extends Config> T getConfig(Class<T> clazz)
-	{
-		if (!Modifier.isPublic(clazz.getModifiers()))
-		{
-			throw new RuntimeException("Non-public configuration classes can't have default methods invoked");
-		}
-
-		T t = (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[]
-			{
-				clazz
-			}, handler);
-
-		return t;
-	}
-
-	public List<String> getConfigurationKeys(String prefix)
-	{
-		return properties.keySet().stream().filter(v -> ((String) v).startsWith(prefix)).map(String.class::cast).collect(Collectors.toList());
-	}
-
-	public static String getWholeKey(String groupName, String profile, String key)
-	{
-		if (profile == null)
-		{
-			return groupName + "." + key;
-		}
-		else
-		{
-			return groupName + "." + profile + "." + key;
-		}
-	}
-
-	public String getConfiguration(String groupName, String key)
-	{
-		return getConfiguration(groupName, null, key);
-	}
-
-	public String getRSProfileConfiguration(String groupName, String key)
-	{
-		String rsProfileKey = this.rsProfileKey;
-		if (rsProfileKey == null)
-		{
-			return null;
-		}
-
-		return getConfiguration(groupName, rsProfileKey, key);
-	}
-
-	public String getConfiguration(String groupName, String profile, String key)
-	{
-		return properties.getProperty(getWholeKey(groupName, profile, key));
-	}
-
-	public <T> T getConfiguration(String groupName, String key, Class<T> clazz)
-	{
-		return getConfiguration(groupName, null, key, clazz);
-	}
-
-	public <T> T getRSProfileConfiguration(String groupName, String key, Class<T> clazz)
-	{
-		String rsProfileKey = this.rsProfileKey;
-		if (rsProfileKey == null)
-		{
-			return null;
-		}
-
-		return getConfiguration(groupName, rsProfileKey, key, clazz);
-	}
-
-	public <T> T getConfiguration(String groupName, String profile, String key, Class<T> clazz)
-	{
-		String value = getConfiguration(groupName, profile, key);
-		if (!Strings.isNullOrEmpty(value))
-		{
-			try
-			{
-				return (T) stringToObject(value, clazz);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				//log.warn("Unable to unmarshal {} ", getWholeKey(groupName, profile, key), e);
-			}
-		}
-		return null;
-	}
-
-	public void setConfiguration(String groupName, String key, String value)
-	{
-		setConfiguration(groupName, null, key, value);
-	}
-
-	public void setConfiguration(String groupName, String profile, String key, @NonNull String value)
-	{
-		if (Strings.isNullOrEmpty(groupName) || Strings.isNullOrEmpty(key) || key.indexOf(':') != -1)
-		{
-			throw new IllegalArgumentException();
-		}
-
-		assert !key.startsWith(RSPROFILE_GROUP + ".");
-		String wholeKey = getWholeKey(groupName, profile, key);
-		String oldValue;
-		synchronized (this)
-		{
-			oldValue = (String) properties.setProperty(wholeKey, value);
-		}
-
-		if (Objects.equals(oldValue, value))
-		{
-			return;
-		}
-
-		//log.debug("Setting configuration value for {} to {}", wholeKey, value);
-		handler.invalidate();
-
-		synchronized (pendingChanges)
-		{
-			pendingChanges.put(wholeKey, value);
-		}
-
-		ConfigChanged configChanged = new ConfigChanged();
-		configChanged.setGroup(groupName);
-		configChanged.setProfile(profile);
-		configChanged.setKey(key);
-		configChanged.setOldValue(oldValue);
-		configChanged.setNewValue(value);
-
-		eventBus.post(configChanged);
-	}
-
-	public void setConfiguration(String groupName, String profile, String key, Object value)
-	{
-		setConfiguration(groupName, profile, key, objectToString(value));
-	}
-
-	public void setConfiguration(String groupName, String key, Object value)
-	{
-		// do not save consumers for buttons, they cannot be changed anyway
-		if (value instanceof Consumer)
-		{
-			return;
-		}
-
-		setConfiguration(groupName, null, key, value);
-	}
-
-	public void setRSProfileConfiguration(String groupName, String key, Object value)
-	{
-		String rsProfileKey = this.rsProfileKey;
-		if (rsProfileKey == null)
-		{
-			if (client == null)
-			{
-				log.warn("trying to use profile without injected client");
-				return;
-			}
-
-			String displayName = null;
-			Player p = client.getLocalPlayer();
-			if (p == null)
-			{
-				log.warn("trying to create profile without display name");
-			}
-			else
-			{
-				displayName = p.getName();
-			}
-
-			String username = client.getUsername();
-			if (Strings.isNullOrEmpty(username))
-			{
-				log.warn("trying to create profile without a set username");
-				return;
-			}
-		}
-		setConfiguration(groupName, rsProfileKey, key, value);
-	}
-
-	public void unsetConfiguration(String groupName, String key)
-	{
-		unsetConfiguration(groupName, null, key);
-	}
-
-	public void unsetConfiguration(String groupName, String profile, String key)
-	{
-		assert !key.startsWith(RSPROFILE_GROUP + ".");
-		String wholeKey = getWholeKey(groupName, profile, key);
-		String oldValue;
-		synchronized (this)
-		{
-			oldValue = (String) properties.remove(wholeKey);
-		}
-
-		if (oldValue == null)
-		{
-			return;
-		}
-
-		//log.debug("Unsetting configuration value for {}", wholeKey);
-		handler.invalidate();
-
-		synchronized (pendingChanges)
-		{
-			pendingChanges.put(wholeKey, null);
-		}
-
-		ConfigChanged configChanged = new ConfigChanged();
-		configChanged.setGroup(groupName);
-		configChanged.setProfile(profile);
-		configChanged.setKey(key);
-		configChanged.setOldValue(oldValue);
-
-		eventBus.post(configChanged);
-	}
-
-	public void unsetRSProfileConfiguration(String groupName, String key)
-	{
-		String rsProfileKey = this.rsProfileKey;
-		if (rsProfileKey == null)
-		{
-			return;
-		}
-
-		unsetConfiguration(groupName, rsProfileKey, key);
-	}
-
-	public ConfigDescriptor getConfigDescriptor(Config configurationProxy)
-	{
-		Class<?> inter = configurationProxy.getClass().getInterfaces()[0];
-		ConfigGroup group = inter.getAnnotation(ConfigGroup.class);
-
-		if (group == null)
-		{
-			throw new IllegalArgumentException("Not a config group");
-		}
-
-		final List<ConfigSectionDescriptor> sections = getAllDeclaredInterfaceFields(inter).stream()
-			.filter(m -> m.isAnnotationPresent(ConfigSection.class) && m.getType() == String.class)
-			.map(m ->
-			{
-				try
-				{
-					return new ConfigSectionDescriptor(
-						String.valueOf(m.get(inter)),
-						m.getDeclaredAnnotation(ConfigSection.class)
-					);
-				}
-				catch (IllegalAccessException e)
-				{
-					//log.warn("Unable to load section {}::{}", inter.getSimpleName(), m.getName());
-					return null;
-				}
-			})
-			.filter(Objects::nonNull)
-			.sorted((a, b) -> ComparisonChain.start()
-				.compare(a.getSection().position(), b.getSection().position())
-				.compare(a.getSection().name(), b.getSection().name())
-				.result())
-			.collect(Collectors.toList());
-
-		final List<ConfigTitleDescriptor> titles = getAllDeclaredInterfaceFields(inter).stream()
-			.filter(m -> m.isAnnotationPresent(ConfigTitle.class) && m.getType() == String.class)
-			.map(m ->
-			{
-				try
-				{
-					return new ConfigTitleDescriptor(
-						String.valueOf(m.get(inter)),
-						m.getDeclaredAnnotation(ConfigTitle.class)
-					);
-				}
-				catch (IllegalAccessException e)
-				{
-					//log.warn("Unable to load title {}::{}", inter.getSimpleName(), m.getName());
-					return null;
-				}
-			})
-			.filter(Objects::nonNull)
-			.sorted((a, b) -> ComparisonChain.start()
-				.compare(a.getTitle().position(), b.getTitle().position())
-				.compare(a.getTitle().name(), b.getTitle().name())
-				.result())
-			.collect(Collectors.toList());
-
-		final List<ConfigItemDescriptor> items = Arrays.stream(inter.getMethods())
-			.filter(m -> m.getParameterCount() == 0 && m.isAnnotationPresent(ConfigItem.class))
-			.map(m -> new ConfigItemDescriptor(
-				m.getDeclaredAnnotation(ConfigItem.class),
-				m.getReturnType(),
-				m.getDeclaredAnnotation(Range.class),
-				m.getDeclaredAnnotation(Alpha.class),
-				m.getDeclaredAnnotation(Units.class)
-			))
-			.sorted((a, b) -> ComparisonChain.start()
-				.compare(a.getItem().position(), b.getItem().position())
-				.compare(a.getItem().name(), b.getItem().name())
-				.result())
-			.collect(Collectors.toList());
-
-		return new ConfigDescriptor(group, sections, titles, items);
-	}
-
-	/**
-	 * Initialize the configuration from the default settings
-	 *
-	 * @param proxy
-	 */
-	public void setDefaultConfiguration(Object proxy, boolean override)
-	{
-		Class<?> clazz = proxy.getClass().getInterfaces()[0];
-		ConfigGroup group = clazz.getAnnotation(ConfigGroup.class);
-
-		if (group == null)
-		{
-			return;
-		}
-
-		for (Method method : getAllDeclaredInterfaceMethods(clazz))
-		{
-			ConfigItem item = method.getAnnotation(ConfigItem.class);
-
-			// only apply default configuration for methods which read configuration (0 args)
-			if (item == null || method.getParameterCount() != 0)
-			{
-				continue;
-			}
-
-			if (method.getReturnType().isAssignableFrom(Consumer.class))
-			{
-				Object defaultValue;
-				try
-				{
-					defaultValue = ConfigInvocationHandler.callDefaultMethod(proxy, method, null);
-				}
-				catch (Throwable ex)
-				{
-					//log.warn(null, ex);
-					continue;
-				}
-
-				//log.debug("Registered consumer: {}.{}", group.value(), item.keyName());
-				consumers.put(group.value() + "." + item.keyName(), (Consumer) defaultValue);
-			}
-			else
-			{
-				if (!method.isDefault())
-				{
-					if (override)
-					{
-						String current = getConfiguration(group.value(), item.keyName());
-						// only unset if already set
-						if (current != null)
-						{
-							unsetConfiguration(group.value(), item.keyName());
-						}
-					}
-					continue;
-				}
-
-				if (!override)
-				{
-					// This checks if it is set and is also unmarshallable to the correct type; so
-					// we will overwrite invalid config values with the default
-					Object current = getConfiguration(group.value(), item.keyName(), method.getReturnType());
-					if (current != null)
-					{
-						continue; // something else is already set
-					}
-				}
-
-				Object defaultValue;
-				try
-				{
-					defaultValue = ConfigInvocationHandler.callDefaultMethod(proxy, method, null);
-				}
-				catch (Throwable ex)
-				{
-					//log.warn(null, ex);
-					continue;
-				}
-
-				String current = getConfiguration(group.value(), item.keyName());
-				String valueString = objectToString(defaultValue);
-				// null and the empty string are treated identically in sendConfig and treated as an unset
-				// If a config value defaults to "" and the current value is null, it will cause an extra
-				// unset to be sent, so treat them as equal
-				if (Objects.equals(current, valueString) || (Strings.isNullOrEmpty(current) && Strings.isNullOrEmpty(valueString)))
-				{
-					continue; // already set to the default value
-				}
-
-				//log.debug("Setting default configuration value for {}.{} to {}", group.value(), item.keyName(), defaultValue);
-
-				setConfiguration(group.value(), item.keyName(), valueString);
-			}
-		}
-	}
-
-	static Object stringToObject(String str, Class<?> type)
-	{
-		if (type == boolean.class || type == Boolean.class)
-		{
-			return Boolean.parseBoolean(str);
-		}
-		if (type == int.class || type == Integer.class)
-		{
-			return Integer.parseInt(str);
-		}
-		if (type == double.class || type == Double.class)
-		{
-			return Double.parseDouble(str);
-		}
-		if (type == Color.class)
-		{
-			return ColorUtil.fromString(str);
-		}
-		if (type == Dimension.class)
-		{
-			String[] splitStr = str.split("x");
-			int width = Integer.parseInt(splitStr[0]);
-			int height = Integer.parseInt(splitStr[1]);
-			return new Dimension(width, height);
-		}
-		if (type == Point.class)
-		{
-			String[] splitStr = str.split(":");
-			int width = Integer.parseInt(splitStr[0]);
-			int height = Integer.parseInt(splitStr[1]);
-			return new Point(width, height);
-		}
-		if (type == Rectangle.class)
-		{
-			String[] splitStr = str.split(":");
-			int x = Integer.parseInt(splitStr[0]);
-			int y = Integer.parseInt(splitStr[1]);
-			int width = Integer.parseInt(splitStr[2]);
-			int height = Integer.parseInt(splitStr[3]);
-			return new Rectangle(x, y, width, height);
-		}
-		if (type.isEnum())
-		{
-			return Enum.valueOf((Class<? extends Enum>) type, str);
-		}
-		if (type == Instant.class)
-		{
-			return Instant.parse(str);
-		}
-		if (type == Keybind.class || type == ModifierlessKeybind.class)
-		{
-			String[] splitStr = str.split(":");
-			int code = Integer.parseInt(splitStr[0]);
-			int mods = Integer.parseInt(splitStr[1]);
-			if (type == ModifierlessKeybind.class)
-			{
-				return new ModifierlessKeybind(code, mods);
-			}
-			return new Keybind(code, mods);
-		}
-		if (type == WorldPoint.class)
-		{
-			String[] splitStr = str.split(":");
-			int x = Integer.parseInt(splitStr[0]);
-			int y = Integer.parseInt(splitStr[1]);
-			int plane = Integer.parseInt(splitStr[2]);
-			return new WorldPoint(x, y, plane);
-		}
-		if (type == Duration.class)
-		{
-			return Duration.ofMillis(Long.parseLong(str));
-		}
-		if (type == byte[].class)
-		{
-			return Base64.getUrlDecoder().decode(str);
-		}
+public class ConfigManager {
+
+  public static final String RSPROFILE_GROUP = "rsprofile";
+
+  private static final String RSPROFILE_DISPLAY_NAME = "displayName";
+  private static final String RSPROFILE_TYPE = "type";
+  private static final String RSPROFILE_LOGIN_HASH = "loginHash";
+  private static final String RSPROFILE_LOGIN_SALT = "loginSalt";
+
+  private static final DateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+
+  private static final int KEY_SPLITTER_GROUP = 0;
+  private static final int KEY_SPLITTER_PROFILE = 1;
+  private static final int KEY_SPLITTER_KEY = 2;
+
+  private final File settingsFileInput;
+  private final EventBus eventBus;
+  @Nullable
+  private final Client client;
+  private final ConfigInvocationHandler handler = new ConfigInvocationHandler(this);
+  private final Map<String, String> pendingChanges = new HashMap<>();
+  private final Map<String, Consumer<? super Plugin>> consumers = new HashMap<>();
+  private File propertiesFile;
+  private Logger log = new Logger("ConfigManager");
+  private Properties properties = new Properties();
+
+  // null => we need to make a new profile
+  @Nullable
+  private String rsProfileKey;
+
+  @Inject
+  public ConfigManager(
+      @Named("config") File config,
+      ScheduledExecutorService scheduledExecutorService,
+      EventBus eventBus,
+      @Nullable Client client) {
+    this.settingsFileInput = config;
+    this.eventBus = eventBus;
+    this.client = client;
+    this.propertiesFile = getPropertiesFile();
+
+    scheduledExecutorService.scheduleWithFixedDelay(this::sendConfig, 30, 30, TimeUnit.SECONDS);
+  }
+
+  public static String getWholeKey(String groupName, String profile, String key) {
+    if (profile == null) {
+      return groupName + "." + key;
+    } else {
+      return groupName + "." + profile + "." + key;
+    }
+  }
+
+  static Object stringToObject(String str, Class<?> type) {
+    if (type == boolean.class || type == Boolean.class) {
+      return Boolean.parseBoolean(str);
+    }
+    if (type == int.class || type == Integer.class) {
+      return Integer.parseInt(str);
+    }
+    if (type == double.class || type == Double.class) {
+      return Double.parseDouble(str);
+    }
+    if (type == Color.class) {
+      return ColorUtil.fromString(str);
+    }
+    if (type == Dimension.class) {
+      String[] splitStr = str.split("x");
+      int width = Integer.parseInt(splitStr[0]);
+      int height = Integer.parseInt(splitStr[1]);
+      return new Dimension(width, height);
+    }
+    if (type == Point.class) {
+      String[] splitStr = str.split(":");
+      int width = Integer.parseInt(splitStr[0]);
+      int height = Integer.parseInt(splitStr[1]);
+      return new Point(width, height);
+    }
+    if (type == Rectangle.class) {
+      String[] splitStr = str.split(":");
+      int x = Integer.parseInt(splitStr[0]);
+      int y = Integer.parseInt(splitStr[1]);
+      int width = Integer.parseInt(splitStr[2]);
+      int height = Integer.parseInt(splitStr[3]);
+      return new Rectangle(x, y, width, height);
+    }
+    if (type.isEnum()) {
+      return Enum.valueOf((Class<? extends Enum>) type, str);
+    }
+    if (type == Instant.class) {
+      return Instant.parse(str);
+    }
+    if (type == Keybind.class || type == ModifierlessKeybind.class) {
+      String[] splitStr = str.split(":");
+      int code = Integer.parseInt(splitStr[0]);
+      int mods = Integer.parseInt(splitStr[1]);
+      if (type == ModifierlessKeybind.class) {
+        return new ModifierlessKeybind(code, mods);
+      }
+      return new Keybind(code, mods);
+    }
+    if (type == WorldPoint.class) {
+      String[] splitStr = str.split(":");
+      int x = Integer.parseInt(splitStr[0]);
+      int y = Integer.parseInt(splitStr[1]);
+      int plane = Integer.parseInt(splitStr[2]);
+      return new WorldPoint(x, y, plane);
+    }
+    if (type == Duration.class) {
+      return Duration.ofMillis(Long.parseLong(str));
+    }
+    if (type == byte[].class) {
+      return Base64.getUrlDecoder().decode(str);
+    }
 		/*
 				if (type == EnumSet.class)
 		{
@@ -784,458 +251,837 @@ public class ConfigManager
 		}
 		 */
 
-		return str;
-	}
+    return str;
+  }
 
-	@Nullable
-	static String objectToString(Object object)
-	{
-		if (object instanceof Color)
-		{
-			return String.valueOf(((Color) object).getRGB());
-		}
-		if (object instanceof Enum)
-		{
-			return ((Enum) object).name();
-		}
-		if (object instanceof Dimension)
-		{
-			Dimension d = (Dimension) object;
-			return d.width + "x" + d.height;
-		}
-		if (object instanceof Point)
-		{
-			Point p = (Point) object;
-			return p.x + ":" + p.y;
-		}
-		if (object instanceof Rectangle)
-		{
-			Rectangle r = (Rectangle) object;
-			return r.x + ":" + r.y + ":" + r.width + ":" + r.height;
-		}
-		if (object instanceof Instant)
-		{
-			return ((Instant) object).toString();
-		}
-		if (object instanceof Keybind)
-		{
-			Keybind k = (Keybind) object;
-			return k.getKeyCode() + ":" + k.getModifiers();
-		}
-		if (object instanceof WorldPoint)
-		{
-			WorldPoint wp = (WorldPoint) object;
-			return wp.getX() + ":" + wp.getY() + ":" + wp.getPlane();
-		}
-		if (object instanceof Duration)
-		{
-			return Long.toString(((Duration) object).toMillis());
-		}
-		if (object instanceof byte[])
-		{
-			return Base64.getUrlEncoder().encodeToString((byte[]) object);
-		}
-		if (object instanceof EnumSet)
-		{
-			if (((EnumSet) object).size() == 0)
-			{
-				return getElementType((EnumSet) object).getCanonicalName() + "{}";
-			}
+  @Nullable
+  static String objectToString(Object object) {
+    if (object instanceof Color) {
+      return String.valueOf(((Color) object).getRGB());
+    }
+    if (object instanceof Enum) {
+      return ((Enum) object).name();
+    }
+    if (object instanceof Dimension) {
+      Dimension d = (Dimension) object;
+      return d.width + "x" + d.height;
+    }
+    if (object instanceof Point) {
+      Point p = (Point) object;
+      return p.x + ":" + p.y;
+    }
+    if (object instanceof Rectangle) {
+      Rectangle r = (Rectangle) object;
+      return r.x + ":" + r.y + ":" + r.width + ":" + r.height;
+    }
+    if (object instanceof Instant) {
+      return ((Instant) object).toString();
+    }
+    if (object instanceof Keybind) {
+      Keybind k = (Keybind) object;
+      return k.getKeyCode() + ":" + k.getModifiers();
+    }
+    if (object instanceof WorldPoint) {
+      WorldPoint wp = (WorldPoint) object;
+      return wp.getX() + ":" + wp.getY() + ":" + wp.getPlane();
+    }
+    if (object instanceof Duration) {
+      return Long.toString(((Duration) object).toMillis());
+    }
+    if (object instanceof byte[]) {
+      return Base64.getUrlEncoder().encodeToString((byte[]) object);
+    }
+    if (object instanceof EnumSet) {
+      if (((EnumSet) object).size() == 0) {
+        return getElementType((EnumSet) object).getCanonicalName() + "{}";
+      }
 
-			return ((EnumSet) object).toArray()[0].getClass().getCanonicalName() + "{" + object.toString() + "}";
-		}
+      return ((EnumSet) object).toArray()[0].getClass().getCanonicalName() + "{" + object.toString()
+          + "}";
+    }
 
-		return object == null ? null : object.toString();
-	}
+    return object == null ? null : object.toString();
+  }
 
-	/**
-	 * Does DFS on a class's interfaces to find all of its implemented fields.
-	 */
-	private Collection<Field> getAllDeclaredInterfaceFields(Class<?> clazz)
-	{
-		Collection<Field> methods = new HashSet<>();
-		Stack<Class<?>> interfaces = new Stack<>();
-		interfaces.push(clazz);
+  public static <T extends Enum<T>> Class<T> getElementType(EnumSet<T> enumSet) {
+    if (enumSet.isEmpty()) {
+      enumSet = EnumSet.complementOf(enumSet);
+    }
+    return enumSet.iterator().next().getDeclaringClass();
+  }
 
-		while (!interfaces.isEmpty())
-		{
-			Class<?> interfaze = interfaces.pop();
-			Collections.addAll(methods, interfaze.getDeclaredFields());
-			Collections.addAll(interfaces, interfaze.getInterfaces());
-		}
+  public static Class<? extends Enum> findEnumClass(String clasz,
+      ArrayList<ClassLoader> classLoaders) {
+    StringBuilder transformedString = new StringBuilder();
+    for (ClassLoader cl : classLoaders) {
+      try {
+        String[] strings = clasz.substring(0, clasz.indexOf("{")).split("\\.");
+        int i = 0;
+        while (i != strings.length) {
+          if (i == 0) {
+            transformedString.append(strings[i]);
+          } else if (i == strings.length - 1) {
+            transformedString.append("$").append(strings[i]);
+          } else {
+            transformedString.append(".").append(strings[i]);
+          }
+          i++;
+        }
+        return (Class<? extends Enum>) cl.loadClass(transformedString.toString());
+      } catch (Exception e2) {
+        // Will likely fail a lot
+      }
+      try {
+        return (Class<? extends Enum>) cl.loadClass(clasz.substring(0, clasz.indexOf("{")));
+      } catch (Exception e) {
+        // Will likely fail a lot
+      }
+      transformedString = new StringBuilder();
+    }
+    throw new RuntimeException("Failed to find Enum for " + clasz.substring(0, clasz.indexOf("{")));
+  }
 
-		return methods;
-	}
+  /**
+   * Split a config key into (group, profile, key)
+   *
+   * @param key in form group.(rsprofile.profile.)?key
+   * @return an array of {group, profile, key}
+   */
+  @VisibleForTesting
+  @Nullable
+  static String[] splitKey(String key) {
+    int i = key.indexOf('.');
+    if (i == -1) {
+      // all keys must have a group and key
+      return null;
+    }
 
-	/**
-	 * Does DFS on a class's interfaces to find all of its implemented methods.
-	 */
-	private Collection<Method> getAllDeclaredInterfaceMethods(Class<?> clazz)
-	{
-		Collection<Method> methods = new HashSet<>();
-		Stack<Class<?>> interfaces = new Stack<>();
-		interfaces.push(clazz);
+    String group = key.substring(0, i);
+    String profile = null;
+    key = key.substring(i + 1);
+    if (key.startsWith(RSPROFILE_GROUP + ".")) {
+      i = key.indexOf('.', RSPROFILE_GROUP.length() + 2); // skip . after RSPROFILE_GROUP
+      profile = key.substring(0, i);
+      key = key.substring(i + 1);
+    }
+    return new String[]{group, profile, key};
+  }
 
-		while (!interfaces.isEmpty())
-		{
-			Class<?> interfaze = interfaces.pop();
-			Collections.addAll(methods, interfaze.getDeclaredMethods());
-			Collections.addAll(interfaces, interfaze.getInterfaces());
-		}
+  private File getLocalPropertiesFile() {
+    return settingsFileInput;
+  }
 
-		return methods;
-	}
+  private File getPropertiesFile() {
+    return getLocalPropertiesFile();
+  }
 
-	@Subscribe(priority = 100)
-	private void onClientShutdown(ClientShutdown e)
-	{
-		Future<Void> f = sendConfig();
-		if (f != null)
-		{
-			e.waitFor(f);
-		}
-	}
+  public void load() {
+    loadFromFile();
+  }
 
-	public static <T extends Enum<T>> Class<T> getElementType(EnumSet<T> enumSet)
-	{
-		if (enumSet.isEmpty())
-		{
-			enumSet = EnumSet.complementOf(enumSet);
-		}
-		return enumSet.iterator().next().getDeclaringClass();
-	}
+  private void swapProperties(Properties newProperties, boolean saveToServer) {
+    Set<Object> allKeys = new HashSet<>(newProperties.keySet());
 
-	public static Class<? extends Enum> findEnumClass(String clasz, ArrayList<ClassLoader> classLoaders)
-	{
-		StringBuilder transformedString = new StringBuilder();
-		for (ClassLoader cl : classLoaders)
-		{
-			try
-			{
-				String[] strings = clasz.substring(0, clasz.indexOf("{")).split("\\.");
-				int i = 0;
-				while (i != strings.length)
-				{
-					if (i == 0)
-					{
-						transformedString.append(strings[i]);
-					}
-					else if (i == strings.length - 1)
-					{
-						transformedString.append("$").append(strings[i]);
-					}
-					else
-					{
-						transformedString.append(".").append(strings[i]);
-					}
-					i++;
-				}
-				return (Class<? extends Enum>) cl.loadClass(transformedString.toString());
-			}
-			catch (Exception e2)
-			{
-				// Will likely fail a lot
-			}
-			try
-			{
-				return (Class<? extends Enum>) cl.loadClass(clasz.substring(0, clasz.indexOf("{")));
-			}
-			catch (Exception e)
-			{
-				// Will likely fail a lot
-			}
-			transformedString = new StringBuilder();
-		}
-		throw new RuntimeException("Failed to find Enum for " + clasz.substring(0, clasz.indexOf("{")));
-	}
+    Properties oldProperties;
+    synchronized (this) {
+      handler.invalidate();
+      oldProperties = properties;
+      this.properties = newProperties;
+    }
 
-	@Nullable
-	private CompletableFuture<Void> sendConfig()
-	{
-		return null;
-	}
+    updateRSProfile();
 
-	public List<RuneScapeProfile> getRSProfiles()
-	{
-		String prefix = RSPROFILE_GROUP + "." + RSPROFILE_GROUP + ".";
-		Set<String> profileKeys = new HashSet<>();
-		for (Object oKey : properties.keySet())
-		{
-			String key = (String) oKey;
-			if (!key.startsWith(prefix))
-			{
-				continue;
-			}
+    allKeys.addAll(oldProperties.keySet());
 
-			String[] split = splitKey(key);
-			if (split == null)
-			{
-				continue;
-			}
+    for (Object wholeKey : allKeys) {
+      String[] split = splitKey((String) wholeKey);
+      if (split == null) {
+        continue;
+      }
 
-			profileKeys.add(split[KEY_SPLITTER_PROFILE]);
-		}
+      String groupName = split[KEY_SPLITTER_GROUP];
+      String profile = split[KEY_SPLITTER_PROFILE];
+      String key = split[KEY_SPLITTER_KEY];
+      String oldValue = (String) oldProperties.get(wholeKey);
+      String newValue = (String) newProperties.get(wholeKey);
 
-		return profileKeys.stream()
-			.map(key ->
-			{
-				RuneScapeProfile prof = new RuneScapeProfile(
-					getConfiguration(RSPROFILE_GROUP, key, RSPROFILE_DISPLAY_NAME),
-					getConfiguration(RSPROFILE_GROUP, key, RSPROFILE_TYPE, RuneScapeProfileType.class),
-					getConfiguration(RSPROFILE_GROUP, key, RSPROFILE_LOGIN_HASH, byte[].class),
-					key
-				);
+      if (Objects.equals(oldValue, newValue)) {
+        continue;
+      }
 
-				return prof;
-			})
-			.collect(Collectors.toList());
-	}
+      ConfigChanged configChanged = new ConfigChanged();
+      configChanged.setGroup(groupName);
+      configChanged.setProfile(profile);
+      configChanged.setKey(key);
+      configChanged.setOldValue(oldValue);
+      configChanged.setNewValue(newValue);
+      eventBus.post(configChanged);
 
-	private synchronized RuneScapeProfile findRSProfile(List<RuneScapeProfile> profiles, String username, RuneScapeProfileType type, String displayName, boolean create)
-	{
-		byte[] salt = getConfiguration(RSPROFILE_GROUP, RSPROFILE_LOGIN_SALT, byte[].class);
-		if (salt == null)
-		{
-			salt = new byte[15];
-			new SecureRandom()
-				.nextBytes(salt);
-			//log.info("creating new salt as there is no existing one {}", Base64.getUrlEncoder().encodeToString(salt));
-			setConfiguration(RSPROFILE_GROUP, RSPROFILE_LOGIN_SALT, salt);
-		}
+      if (saveToServer) {
+        synchronized (pendingChanges) {
+          pendingChanges.put((String) wholeKey, newValue);
+        }
+      }
+    }
 
-		Hasher h = Hashing.sha512().newHasher();
-		h.putBytes(salt);
-		h.putString(username.toLowerCase(Locale.US), StandardCharsets.UTF_8);
-		byte[] loginHash = h.hash().asBytes();
+    migrateConfig();
+  }
 
-		Set<RuneScapeProfile> matches = profiles.stream()
-			.filter(p -> Arrays.equals(p.getLoginHash(), loginHash) && p.getType() == type)
-			.collect(Collectors.toSet());
+  private void syncPropertiesFromFile(File propertiesFile) {
+    final Properties properties = new Properties();
+    try (FileInputStream in = new FileInputStream(propertiesFile)) {
+      properties.load(new InputStreamReader(in, StandardCharsets.UTF_8));
+    } catch (Exception e) {
+      log.warn("Malformed properties, skipping update");
+      return;
+    }
 
-		if (matches.size() > 1)
-		{
-			log.warn("multiple matching profiles");
-		}
+    log.debug("Loading in config from disk for upload");
+    swapProperties(properties, true);
+  }
 
-		if (matches.size() >= 1)
-		{
-			return matches.iterator().next();
-		}
+  private synchronized void loadFromFile() {
+    boolean loaded = false;
+    consumers.clear();
 
-		if (!create)
-		{
-			return null;
-		}
+    Properties newProperties = new Properties();
+    try (FileInputStream in = new FileInputStream(propertiesFile)) {
+      newProperties.load(new InputStreamReader(in, StandardCharsets.UTF_8));
+      loaded = true;
+    } catch (FileNotFoundException ex) {
+      log.debug("Unable to load settings - no such file");
+    } catch (IllegalArgumentException | IOException ex) {
+      log.warn("Unable to load settings", ex);
+    }
 
-		// generate the new key deterministically so if you "create" the same profile on 2 different clients it doesn't duplicate
-		Set<String> keys = profiles.stream().map(RuneScapeProfile::getKey).collect(Collectors.toSet());
-		byte[] key = Arrays.copyOf(loginHash, 6);
-		key[0] += type.ordinal();
-		for (int i = 0; i < 0xFF; i++, key[1]++)
-		{
-			String keyStr = RSPROFILE_GROUP + "." + Base64.getUrlEncoder().encodeToString(key);
-			if (!keys.contains(keyStr))
-			{
-				//log.info("creating new profile {} for user {} ({}) salt {}", keyStr, username, type, Base64.getUrlEncoder().encodeToString(salt));
+    log.debug("Loading in config from disk");
+    swapProperties(newProperties, false);
+	  if (!loaded) {
+		  try {
+			  saveToFile(propertiesFile);
+		  } catch (IOException e) {
+			  e.printStackTrace();
+		  }
+	  }
+  }
 
-				setConfiguration(RSPROFILE_GROUP, keyStr, RSPROFILE_LOGIN_HASH, loginHash);
-				setConfiguration(RSPROFILE_GROUP, keyStr, RSPROFILE_TYPE, type);
-				if (displayName != null)
-				{
-					setConfiguration(RSPROFILE_GROUP, keyStr, RSPROFILE_DISPLAY_NAME, displayName);
-				}
-				return new RuneScapeProfile(displayName, type, loginHash, keyStr);
-			}
-		}
-		throw new RuntimeException("too many rs profiles");
-	}
+  private void saveToFile(final File propertiesFile) throws IOException {
+    File parent = propertiesFile.getParentFile();
 
-	private void updateRSProfile()
-	{
-		if (client == null)
-		{
-			return;
-		}
+    parent.mkdirs();
 
-		List<RuneScapeProfile> profiles = getRSProfiles();
-		RuneScapeProfile prof = findRSProfile(profiles, client.getUsername(), RuneScapeProfileType.getCurrent(client), null, false);
+    File tempFile = File.createTempFile("runelite", null, parent);
 
-		String key = prof == null ? null : prof.getKey();
-		if (Objects.equals(key, rsProfileKey))
-		{
-			return;
-		}
-		rsProfileKey = key;
+    try (FileOutputStream out = new FileOutputStream(tempFile)) {
+      out.getChannel().lock();
+      properties
+          .store(new OutputStreamWriter(out, StandardCharsets.UTF_8), "RuneLite configuration");
+      // FileOutputStream.close() closes the associated channel, which frees the lock
+    }
 
-		eventBus.post(new RuneScapeProfileChanged());
-	}
+    try {
+      Files.move(tempFile.toPath(), propertiesFile.toPath(), StandardCopyOption.REPLACE_EXISTING,
+          StandardCopyOption.ATOMIC_MOVE);
+    } catch (AtomicMoveNotSupportedException ex) {
+      log.debug("atomic move not supported");
+      ex.printStackTrace();
+      Files.move(tempFile.toPath(), propertiesFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    }
+  }
 
-	@Subscribe
-	private void onUsernameChanged(UsernameChanged ev)
-	{
-		updateRSProfile();
-	}
+  public <T extends Config> T getConfig(Class<T> clazz) {
+    if (!Modifier.isPublic(clazz.getModifiers())) {
+      throw new RuntimeException(
+          "Non-public configuration classes can't have default methods invoked");
+    }
 
-	@Subscribe
-	private void onWorldChanged(WorldChanged ev)
-	{
-		updateRSProfile();
-	}
+    T t = (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[]
+        {
+            clazz
+        }, handler);
 
-	@Subscribe
-	private void onPlayerChanged(PlayerChanged ev)
-	{
-		if (ev.getPlayer() == client.getLocalPlayer())
-		{
-			String name = ev.getPlayer().getName();
-			setRSProfileConfiguration(RSPROFILE_GROUP, RSPROFILE_DISPLAY_NAME, name);
-		}
-	}
+    return t;
+  }
 
-	/**
-	 * Split a config key into (group, profile, key)
-	 *
-	 * @param key in form group.(rsprofile.profile.)?key
-	 * @return an array of {group, profile, key}
-	 */
-	@VisibleForTesting
-	@Nullable
-	static String[] splitKey(String key)
-	{
-		int i = key.indexOf('.');
-		if (i == -1)
-		{
-			// all keys must have a group and key
-			return null;
-		}
+  public List<String> getConfigurationKeys(String prefix) {
+    return properties.keySet().stream().filter(v -> ((String) v).startsWith(prefix))
+        .map(String.class::cast).collect(Collectors.toList());
+  }
 
-		String group = key.substring(0, i);
-		String profile = null;
-		key = key.substring(i + 1);
-		if (key.startsWith(RSPROFILE_GROUP + "."))
-		{
-			i = key.indexOf('.', RSPROFILE_GROUP.length() + 2); // skip . after RSPROFILE_GROUP
-			profile = key.substring(0, i);
-			key = key.substring(i + 1);
-		}
-		return new String[]{group, profile, key};
-	}
+  public String getConfiguration(String groupName, String key) {
+    return getConfiguration(groupName, null, key);
+  }
 
-	private synchronized void migrateConfig()
-	{
-		String migrationKey = "profileMigrationDone";
-		if (getConfiguration("runelite", migrationKey) != null)
-		{
-			return;
-		}
+  public String getRSProfileConfiguration(String groupName, String key) {
+    String rsProfileKey = this.rsProfileKey;
+    if (rsProfileKey == null) {
+      return null;
+    }
 
-		Map<String, String> profiles = new HashMap<>();
+    return getConfiguration(groupName, rsProfileKey, key);
+  }
 
-		AtomicInteger changes = new AtomicInteger();
-		List<Predicate<String>> migrators = new ArrayList<>();
-		for (String[] tpl : new String[][]
-			{
-				{"(grandexchange)\\.buylimit_(%)\\.(#)", "$1.buylimit.$3"},
-				{"(timetracking)\\.(%)\\.(autoweed|contract)", "$1.$3"},
-				{"(timetracking)\\.(%)\\.(#\\.#)", "$1.$3"},
-				{"(timetracking)\\.(%)\\.(birdhouse)\\.(#)", "$1.$3.$4"},
-				{"(killcount|personalbest)\\.(%)\\.([^.]+)", "$1.$3"},
-				{"(geoffer)\\.(%)\\.(#)", "$1.$3"},
-			})
-		{
-			String replace = tpl[1];
-			String pat = ("^" + tpl[0] + "$")
-				.replace("#", "-?[0-9]+")
-				.replace("(%)", "(?<login>.*)");
-			Pattern p = Pattern.compile(pat);
+  public String getConfiguration(String groupName, String profile, String key) {
+    return properties.getProperty(getWholeKey(groupName, profile, key));
+  }
 
-			migrators.add(oldkey ->
-			{
-				Matcher m = p.matcher(oldkey);
-				if (!m.find())
-				{
-					return false;
-				}
+  public <T> T getConfiguration(String groupName, String key, Class<T> clazz) {
+    return getConfiguration(groupName, null, key, clazz);
+  }
 
-				String newKey = m.replaceFirst(replace);
-				String username = m.group("login").toLowerCase(Locale.US);
+  public <T> T getRSProfileConfiguration(String groupName, String key, Class<T> clazz) {
+    String rsProfileKey = this.rsProfileKey;
+    if (rsProfileKey == null) {
+      return null;
+    }
 
-				if (username.startsWith(RSPROFILE_GROUP + "."))
-				{
-					return false;
-				}
+    return getConfiguration(groupName, rsProfileKey, key, clazz);
+  }
 
-				String profKey = profiles.computeIfAbsent(username, u ->
-					findRSProfile(getRSProfiles(), u, RuneScapeProfileType.STANDARD, u, true).getKey());
+  public <T> T getConfiguration(String groupName, String profile, String key, Class<T> clazz) {
+    String value = getConfiguration(groupName, profile, key);
+    if (!Strings.isNullOrEmpty(value)) {
+      try {
+        return (T) stringToObject(value, clazz);
+      } catch (Exception e) {
+        e.printStackTrace();
+        //log.warn("Unable to unmarshal {} ", getWholeKey(groupName, profile, key), e);
+      }
+    }
+    return null;
+  }
 
-				String[] oldKeySplit = splitKey(oldkey);
-				if (oldKeySplit == null)
-				{
-					//log.warn("skipping migration of invalid key \"{}\"", oldkey);
-					return false;
-				}
-				if (oldKeySplit[KEY_SPLITTER_PROFILE] != null)
-				{
-					//log.debug("skipping migrated key \"{}\"", oldkey);
-					return false;
-				}
+  public void setConfiguration(String groupName, String key, String value) {
+    setConfiguration(groupName, null, key, value);
+  }
 
-				String[] newKeySplit = splitKey(newKey);
-				if (newKeySplit == null || newKeySplit[KEY_SPLITTER_PROFILE] != null)
-				{
-					//log.warn("migration produced a bad key: \"{}\" -> \"{}\"", oldkey, newKey);
-					return false;
-				}
+  public void setConfiguration(String groupName, String profile, String key,
+      @NonNull String value) {
+    if (Strings.isNullOrEmpty(groupName) || Strings.isNullOrEmpty(key) || key.indexOf(':') != -1) {
+      throw new IllegalArgumentException();
+    }
 
-				if (changes.getAndAdd(1) <= 0)
-				{
-					File file = new File(propertiesFile.getParent(), propertiesFile.getName() + "." + TIME_FORMAT.format(new Date()));
-					//log.info("backing up pre-migration config to {}", file);
-					try
-					{
-						saveToFile(file);
-					}
-					catch (IOException e)
-					{
-						//log.error("Backup failed", e);
-						throw new RuntimeException(e);
-					}
-				}
+    assert !key.startsWith(RSPROFILE_GROUP + ".");
+    String wholeKey = getWholeKey(groupName, profile, key);
+    String oldValue;
+    synchronized (this) {
+      oldValue = (String) properties.setProperty(wholeKey, value);
+    }
 
-				String oldGroup = oldKeySplit[KEY_SPLITTER_GROUP];
-				String oldKeyPart = oldKeySplit[KEY_SPLITTER_KEY];
-				String value = getConfiguration(oldGroup, oldKeyPart);
-				setConfiguration(newKeySplit[KEY_SPLITTER_GROUP], profKey, newKeySplit[KEY_SPLITTER_KEY], value);
-				unsetConfiguration(oldGroup, oldKeyPart);
-				return true;
-			});
-		}
+    if (Objects.equals(oldValue, value)) {
+      return;
+    }
 
-		Set<String> keys = (Set<String>) ImmutableSet.copyOf((Set) properties.keySet());
-		keys:
-		for (String key : keys)
-		{
-			for (Predicate<String> mig : migrators)
-			{
-				if (mig.test(key))
-				{
-					continue keys;
-				}
-			}
-		}
+    //log.debug("Setting configuration value for {} to {}", wholeKey, value);
+    handler.invalidate();
 
-		if (changes.get() > 0)
-		{
-			//log.info("migrated {} config keys", changes);
-		}
-		setConfiguration("runelite", migrationKey, 1);
-	}
+    synchronized (pendingChanges) {
+      pendingChanges.put(wholeKey, value);
+    }
 
-	/**
-	 * Retrieves a consumer from config group and key name
-	 */
-	public Consumer<? super Plugin> getConsumer(final String configGroup, final String keyName)
-	{
-		return consumers.getOrDefault(configGroup + "." + keyName, (p) -> log.error("Failed to retrieve consumer"));
-	}
+    ConfigChanged configChanged = new ConfigChanged();
+    configChanged.setGroup(groupName);
+    configChanged.setProfile(profile);
+    configChanged.setKey(key);
+    configChanged.setOldValue(oldValue);
+    configChanged.setNewValue(value);
+
+    eventBus.post(configChanged);
+  }
+
+  public void setConfiguration(String groupName, String profile, String key, Object value) {
+    setConfiguration(groupName, profile, key, objectToString(value));
+  }
+
+  public void setConfiguration(String groupName, String key, Object value) {
+    // do not save consumers for buttons, they cannot be changed anyway
+    if (value instanceof Consumer) {
+      return;
+    }
+
+    setConfiguration(groupName, null, key, value);
+  }
+
+  public void setRSProfileConfiguration(String groupName, String key, Object value) {
+    String rsProfileKey = this.rsProfileKey;
+    if (rsProfileKey == null) {
+      if (client == null) {
+        log.warn("trying to use profile without injected client");
+        return;
+      }
+
+      String displayName = null;
+      Player p = client.getLocalPlayer();
+      if (p == null) {
+        log.warn("trying to create profile without display name");
+      } else {
+        displayName = p.getName();
+      }
+
+      String username = client.getUsername();
+      if (Strings.isNullOrEmpty(username)) {
+        log.warn("trying to create profile without a set username");
+        return;
+      }
+    }
+    setConfiguration(groupName, rsProfileKey, key, value);
+  }
+
+  public void unsetConfiguration(String groupName, String key) {
+    unsetConfiguration(groupName, null, key);
+  }
+
+  public void unsetConfiguration(String groupName, String profile, String key) {
+    assert !key.startsWith(RSPROFILE_GROUP + ".");
+    String wholeKey = getWholeKey(groupName, profile, key);
+    String oldValue;
+    synchronized (this) {
+      oldValue = (String) properties.remove(wholeKey);
+    }
+
+    if (oldValue == null) {
+      return;
+    }
+
+    //log.debug("Unsetting configuration value for {}", wholeKey);
+    handler.invalidate();
+
+    synchronized (pendingChanges) {
+      pendingChanges.put(wholeKey, null);
+    }
+
+    ConfigChanged configChanged = new ConfigChanged();
+    configChanged.setGroup(groupName);
+    configChanged.setProfile(profile);
+    configChanged.setKey(key);
+    configChanged.setOldValue(oldValue);
+
+    eventBus.post(configChanged);
+  }
+
+  public void unsetRSProfileConfiguration(String groupName, String key) {
+    String rsProfileKey = this.rsProfileKey;
+    if (rsProfileKey == null) {
+      return;
+    }
+
+    unsetConfiguration(groupName, rsProfileKey, key);
+  }
+
+  public ConfigDescriptor getConfigDescriptor(Config configurationProxy) {
+    Class<?> inter = configurationProxy.getClass().getInterfaces()[0];
+    ConfigGroup group = inter.getAnnotation(ConfigGroup.class);
+
+    if (group == null) {
+      throw new IllegalArgumentException("Not a config group");
+    }
+
+    final List<ConfigSectionDescriptor> sections = getAllDeclaredInterfaceFields(inter).stream()
+        .filter(m -> m.isAnnotationPresent(ConfigSection.class) && m.getType() == String.class)
+        .map(m ->
+        {
+          try {
+            return new ConfigSectionDescriptor(
+                String.valueOf(m.get(inter)),
+                m.getDeclaredAnnotation(ConfigSection.class)
+            );
+          } catch (IllegalAccessException e) {
+            //log.warn("Unable to load section {}::{}", inter.getSimpleName(), m.getName());
+            return null;
+          }
+        })
+        .filter(Objects::nonNull)
+        .sorted((a, b) -> ComparisonChain.start()
+            .compare(a.getSection().position(), b.getSection().position())
+            .compare(a.getSection().name(), b.getSection().name())
+            .result())
+        .collect(Collectors.toList());
+
+    final List<ConfigTitleDescriptor> titles = getAllDeclaredInterfaceFields(inter).stream()
+        .filter(m -> m.isAnnotationPresent(ConfigTitle.class) && m.getType() == String.class)
+        .map(m ->
+        {
+          try {
+            return new ConfigTitleDescriptor(
+                String.valueOf(m.get(inter)),
+                m.getDeclaredAnnotation(ConfigTitle.class)
+            );
+          } catch (IllegalAccessException e) {
+            //log.warn("Unable to load title {}::{}", inter.getSimpleName(), m.getName());
+            return null;
+          }
+        })
+        .filter(Objects::nonNull)
+        .sorted((a, b) -> ComparisonChain.start()
+            .compare(a.getTitle().position(), b.getTitle().position())
+            .compare(a.getTitle().name(), b.getTitle().name())
+            .result())
+        .collect(Collectors.toList());
+
+    final List<ConfigItemDescriptor> items = Arrays.stream(inter.getMethods())
+        .filter(m -> m.getParameterCount() == 0 && m.isAnnotationPresent(ConfigItem.class))
+        .map(m -> new ConfigItemDescriptor(
+            m.getDeclaredAnnotation(ConfigItem.class),
+            m.getReturnType(),
+            m.getDeclaredAnnotation(Range.class),
+            m.getDeclaredAnnotation(Alpha.class),
+            m.getDeclaredAnnotation(Units.class)
+        ))
+        .sorted((a, b) -> ComparisonChain.start()
+            .compare(a.getItem().position(), b.getItem().position())
+            .compare(a.getItem().name(), b.getItem().name())
+            .result())
+        .collect(Collectors.toList());
+
+    return new ConfigDescriptor(group, sections, titles, items);
+  }
+
+  /**
+   * Initialize the configuration from the default settings
+   *
+   * @param proxy
+   */
+  public void setDefaultConfiguration(Object proxy, boolean override) {
+    Class<?> clazz = proxy.getClass().getInterfaces()[0];
+    ConfigGroup group = clazz.getAnnotation(ConfigGroup.class);
+
+    if (group == null) {
+      return;
+    }
+
+    for (Method method : getAllDeclaredInterfaceMethods(clazz)) {
+      ConfigItem item = method.getAnnotation(ConfigItem.class);
+
+      // only apply default configuration for methods which read configuration (0 args)
+      if (item == null || method.getParameterCount() != 0) {
+        continue;
+      }
+
+      if (method.getReturnType().isAssignableFrom(Consumer.class)) {
+        Object defaultValue;
+        try {
+          defaultValue = ConfigInvocationHandler.callDefaultMethod(proxy, method, null);
+        } catch (Throwable ex) {
+          //log.warn(null, ex);
+          continue;
+        }
+
+        //log.debug("Registered consumer: {}.{}", group.value(), item.keyName());
+        consumers.put(group.value() + "." + item.keyName(), (Consumer) defaultValue);
+      } else {
+        if (!method.isDefault()) {
+          if (override) {
+            String current = getConfiguration(group.value(), item.keyName());
+            // only unset if already set
+            if (current != null) {
+              unsetConfiguration(group.value(), item.keyName());
+            }
+          }
+          continue;
+        }
+
+        if (!override) {
+          // This checks if it is set and is also unmarshallable to the correct type; so
+          // we will overwrite invalid config values with the default
+          Object current = getConfiguration(group.value(), item.keyName(), method.getReturnType());
+          if (current != null) {
+            continue; // something else is already set
+          }
+        }
+
+        Object defaultValue;
+        try {
+          defaultValue = ConfigInvocationHandler.callDefaultMethod(proxy, method, null);
+        } catch (Throwable ex) {
+          //log.warn(null, ex);
+          continue;
+        }
+
+        String current = getConfiguration(group.value(), item.keyName());
+        String valueString = objectToString(defaultValue);
+        // null and the empty string are treated identically in sendConfig and treated as an unset
+        // If a config value defaults to "" and the current value is null, it will cause an extra
+        // unset to be sent, so treat them as equal
+        if (Objects.equals(current, valueString) || (Strings.isNullOrEmpty(current) && Strings
+            .isNullOrEmpty(valueString))) {
+          continue; // already set to the default value
+        }
+
+        //log.debug("Setting default configuration value for {}.{} to {}", group.value(), item.keyName(), defaultValue);
+
+        setConfiguration(group.value(), item.keyName(), valueString);
+      }
+    }
+  }
+
+  /**
+   * Does DFS on a class's interfaces to find all of its implemented fields.
+   */
+  private Collection<Field> getAllDeclaredInterfaceFields(Class<?> clazz) {
+    Collection<Field> methods = new HashSet<>();
+    Stack<Class<?>> interfaces = new Stack<>();
+    interfaces.push(clazz);
+
+    while (!interfaces.isEmpty()) {
+      Class<?> interfaze = interfaces.pop();
+      Collections.addAll(methods, interfaze.getDeclaredFields());
+      Collections.addAll(interfaces, interfaze.getInterfaces());
+    }
+
+    return methods;
+  }
+
+  /**
+   * Does DFS on a class's interfaces to find all of its implemented methods.
+   */
+  private Collection<Method> getAllDeclaredInterfaceMethods(Class<?> clazz) {
+    Collection<Method> methods = new HashSet<>();
+    Stack<Class<?>> interfaces = new Stack<>();
+    interfaces.push(clazz);
+
+    while (!interfaces.isEmpty()) {
+      Class<?> interfaze = interfaces.pop();
+      Collections.addAll(methods, interfaze.getDeclaredMethods());
+      Collections.addAll(interfaces, interfaze.getInterfaces());
+    }
+
+    return methods;
+  }
+
+  @Subscribe(priority = 100)
+  private void onClientShutdown(ClientShutdown e) {
+    Future<Void> f = sendConfig();
+    if (f != null) {
+      e.waitFor(f);
+    }
+  }
+
+  @Nullable
+  private CompletableFuture<Void> sendConfig() {
+    return null;
+  }
+
+  public List<RuneScapeProfile> getRSProfiles() {
+    String prefix = RSPROFILE_GROUP + "." + RSPROFILE_GROUP + ".";
+    Set<String> profileKeys = new HashSet<>();
+    for (Object oKey : properties.keySet()) {
+      String key = (String) oKey;
+      if (!key.startsWith(prefix)) {
+        continue;
+      }
+
+      String[] split = splitKey(key);
+      if (split == null) {
+        continue;
+      }
+
+      profileKeys.add(split[KEY_SPLITTER_PROFILE]);
+    }
+
+    return profileKeys.stream()
+        .map(key ->
+        {
+          RuneScapeProfile prof = new RuneScapeProfile(
+              getConfiguration(RSPROFILE_GROUP, key, RSPROFILE_DISPLAY_NAME),
+              getConfiguration(RSPROFILE_GROUP, key, RSPROFILE_TYPE, RuneScapeProfileType.class),
+              getConfiguration(RSPROFILE_GROUP, key, RSPROFILE_LOGIN_HASH, byte[].class),
+              key
+          );
+
+          return prof;
+        })
+        .collect(Collectors.toList());
+  }
+
+  private synchronized RuneScapeProfile findRSProfile(List<RuneScapeProfile> profiles,
+      String username, RuneScapeProfileType type, String displayName, boolean create) {
+    byte[] salt = getConfiguration(RSPROFILE_GROUP, RSPROFILE_LOGIN_SALT, byte[].class);
+    if (salt == null) {
+      salt = new byte[15];
+      new SecureRandom()
+          .nextBytes(salt);
+      //log.info("creating new salt as there is no existing one {}", Base64.getUrlEncoder().encodeToString(salt));
+      setConfiguration(RSPROFILE_GROUP, RSPROFILE_LOGIN_SALT, salt);
+    }
+
+    Hasher h = Hashing.sha512().newHasher();
+    h.putBytes(salt);
+    h.putString(username.toLowerCase(Locale.US), StandardCharsets.UTF_8);
+    byte[] loginHash = h.hash().asBytes();
+
+    Set<RuneScapeProfile> matches = profiles.stream()
+        .filter(p -> Arrays.equals(p.getLoginHash(), loginHash) && p.getType() == type)
+        .collect(Collectors.toSet());
+
+    if (matches.size() > 1) {
+      log.warn("multiple matching profiles");
+    }
+
+    if (matches.size() >= 1) {
+      return matches.iterator().next();
+    }
+
+    if (!create) {
+      return null;
+    }
+
+    // generate the new key deterministically so if you "create" the same profile on 2 different clients it doesn't duplicate
+    Set<String> keys = profiles.stream().map(RuneScapeProfile::getKey).collect(Collectors.toSet());
+    byte[] key = Arrays.copyOf(loginHash, 6);
+    key[0] += type.ordinal();
+    for (int i = 0; i < 0xFF; i++, key[1]++) {
+      String keyStr = RSPROFILE_GROUP + "." + Base64.getUrlEncoder().encodeToString(key);
+      if (!keys.contains(keyStr)) {
+        //log.info("creating new profile {} for user {} ({}) salt {}", keyStr, username, type, Base64.getUrlEncoder().encodeToString(salt));
+
+        setConfiguration(RSPROFILE_GROUP, keyStr, RSPROFILE_LOGIN_HASH, loginHash);
+        setConfiguration(RSPROFILE_GROUP, keyStr, RSPROFILE_TYPE, type);
+        if (displayName != null) {
+          setConfiguration(RSPROFILE_GROUP, keyStr, RSPROFILE_DISPLAY_NAME, displayName);
+        }
+        return new RuneScapeProfile(displayName, type, loginHash, keyStr);
+      }
+    }
+    throw new RuntimeException("too many rs profiles");
+  }
+
+  private void updateRSProfile() {
+    if (client == null) {
+      return;
+    }
+
+    List<RuneScapeProfile> profiles = getRSProfiles();
+    RuneScapeProfile prof = findRSProfile(profiles, client.getUsername(),
+        RuneScapeProfileType.getCurrent(client), null, false);
+
+    String key = prof == null ? null : prof.getKey();
+    if (Objects.equals(key, rsProfileKey)) {
+      return;
+    }
+    rsProfileKey = key;
+
+    eventBus.post(new RuneScapeProfileChanged());
+  }
+
+  @Subscribe
+  private void onUsernameChanged(UsernameChanged ev) {
+    updateRSProfile();
+  }
+
+  @Subscribe
+  private void onWorldChanged(WorldChanged ev) {
+    updateRSProfile();
+  }
+
+  @Subscribe
+  private void onPlayerChanged(PlayerChanged ev) {
+    if (ev.getPlayer() == client.getLocalPlayer()) {
+      String name = ev.getPlayer().getName();
+      setRSProfileConfiguration(RSPROFILE_GROUP, RSPROFILE_DISPLAY_NAME, name);
+    }
+  }
+
+  private synchronized void migrateConfig() {
+    String migrationKey = "profileMigrationDone";
+    if (getConfiguration("runelite", migrationKey) != null) {
+      return;
+    }
+
+    Map<String, String> profiles = new HashMap<>();
+
+    AtomicInteger changes = new AtomicInteger();
+    List<Predicate<String>> migrators = new ArrayList<>();
+    for (String[] tpl : new String[][]
+        {
+            {"(grandexchange)\\.buylimit_(%)\\.(#)", "$1.buylimit.$3"},
+            {"(timetracking)\\.(%)\\.(autoweed|contract)", "$1.$3"},
+            {"(timetracking)\\.(%)\\.(#\\.#)", "$1.$3"},
+            {"(timetracking)\\.(%)\\.(birdhouse)\\.(#)", "$1.$3.$4"},
+            {"(killcount|personalbest)\\.(%)\\.([^.]+)", "$1.$3"},
+            {"(geoffer)\\.(%)\\.(#)", "$1.$3"},
+        }) {
+      String replace = tpl[1];
+      String pat = ("^" + tpl[0] + "$")
+          .replace("#", "-?[0-9]+")
+          .replace("(%)", "(?<login>.*)");
+      Pattern p = Pattern.compile(pat);
+
+      migrators.add(oldkey ->
+      {
+        Matcher m = p.matcher(oldkey);
+        if (!m.find()) {
+          return false;
+        }
+
+        String newKey = m.replaceFirst(replace);
+        String username = m.group("login").toLowerCase(Locale.US);
+
+        if (username.startsWith(RSPROFILE_GROUP + ".")) {
+          return false;
+        }
+
+        String profKey = profiles.computeIfAbsent(username, u ->
+            findRSProfile(getRSProfiles(), u, RuneScapeProfileType.STANDARD, u, true).getKey());
+
+        String[] oldKeySplit = splitKey(oldkey);
+        if (oldKeySplit == null) {
+          //log.warn("skipping migration of invalid key \"{}\"", oldkey);
+          return false;
+        }
+        if (oldKeySplit[KEY_SPLITTER_PROFILE] != null) {
+          //log.debug("skipping migrated key \"{}\"", oldkey);
+          return false;
+        }
+
+        String[] newKeySplit = splitKey(newKey);
+        if (newKeySplit == null || newKeySplit[KEY_SPLITTER_PROFILE] != null) {
+          //log.warn("migration produced a bad key: \"{}\" -> \"{}\"", oldkey, newKey);
+          return false;
+        }
+
+        if (changes.getAndAdd(1) <= 0) {
+          File file = new File(propertiesFile.getParent(),
+              propertiesFile.getName() + "." + TIME_FORMAT.format(new Date()));
+          //log.info("backing up pre-migration config to {}", file);
+          try {
+            saveToFile(file);
+          } catch (IOException e) {
+            //log.error("Backup failed", e);
+            throw new RuntimeException(e);
+          }
+        }
+
+        String oldGroup = oldKeySplit[KEY_SPLITTER_GROUP];
+        String oldKeyPart = oldKeySplit[KEY_SPLITTER_KEY];
+        String value = getConfiguration(oldGroup, oldKeyPart);
+        setConfiguration(newKeySplit[KEY_SPLITTER_GROUP], profKey, newKeySplit[KEY_SPLITTER_KEY],
+            value);
+        unsetConfiguration(oldGroup, oldKeyPart);
+        return true;
+      });
+    }
+
+    Set<String> keys = (Set<String>) ImmutableSet.copyOf((Set) properties.keySet());
+    keys:
+    for (String key : keys) {
+      for (Predicate<String> mig : migrators) {
+        if (mig.test(key)) {
+          continue keys;
+        }
+      }
+    }
+
+    if (changes.get() > 0) {
+      //log.info("migrated {} config keys", changes);
+    }
+    setConfiguration("runelite", migrationKey, 1);
+  }
+
+  /**
+   * Retrieves a consumer from config group and key name
+   */
+  public Consumer<? super Plugin> getConsumer(final String configGroup, final String keyName) {
+    return consumers
+        .getOrDefault(configGroup + "." + keyName, (p) -> log.error("Failed to retrieve consumer"));
+  }
 }

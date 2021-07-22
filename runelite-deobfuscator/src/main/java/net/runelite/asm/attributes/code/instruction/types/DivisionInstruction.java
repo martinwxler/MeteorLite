@@ -32,55 +32,55 @@ import net.runelite.asm.execution.StackContext;
 import net.runelite.deob.deobfuscators.mapping.MappingExecutorUtil;
 import net.runelite.deob.deobfuscators.mapping.ParallelExecutorMapping;
 
-public interface DivisionInstruction extends MappableInstruction
-{
-	@Override
-	default void map(ParallelExecutorMapping mappings, InstructionContext ctx, InstructionContext other)
-	{
-		StackContext s1 = ctx.getPops().get(0),
-			s2 = ctx.getPops().get(1);
+public interface DivisionInstruction extends MappableInstruction {
 
-		StackContext o1 = other.getPops().get(0),
-			o2 = other.getPops().get(1);
+  @Override
+  default void map(ParallelExecutorMapping mappings, InstructionContext ctx,
+      InstructionContext other) {
+    StackContext s1 = ctx.getPops().get(0),
+        s2 = ctx.getPops().get(1);
 
-		InstructionContext i1 = MappingExecutorUtil.resolve(s1.getPushed(), s1);
-		InstructionContext i2 = MappingExecutorUtil.resolve(s2.getPushed(), s2);
+    StackContext o1 = other.getPops().get(0),
+        o2 = other.getPops().get(1);
 
-		InstructionContext io1 = MappingExecutorUtil.resolve(o1.getPushed(), o1);
-		InstructionContext io2 = MappingExecutorUtil.resolve(o2.getPushed(), o2);
+    InstructionContext i1 = MappingExecutorUtil.resolve(s1.getPushed(), s1);
+    InstructionContext i2 = MappingExecutorUtil.resolve(s2.getPushed(), s2);
 
-		if (i1.getInstruction() instanceof GetFieldInstruction && io1.getInstruction() instanceof GetFieldInstruction)
-		{
-			GetFieldInstruction f1 = (GetFieldInstruction) i1.getInstruction();
-			GetFieldInstruction f2 = (GetFieldInstruction) io1.getInstruction();
+    InstructionContext io1 = MappingExecutorUtil.resolve(o1.getPushed(), o1);
+    InstructionContext io2 = MappingExecutorUtil.resolve(o2.getPushed(), o2);
 
-			Field fi1 = f1.getMyField(), fi2 = f2.getMyField();
+    if (i1.getInstruction() instanceof GetFieldInstruction && io1
+        .getInstruction() instanceof GetFieldInstruction) {
+      GetFieldInstruction f1 = (GetFieldInstruction) i1.getInstruction();
+      GetFieldInstruction f2 = (GetFieldInstruction) io1.getInstruction();
 
-			if (fi1 != null && fi2 != null)
-				mappings.map((Instruction) this, fi1, fi2);
-		}
+      Field fi1 = f1.getMyField(), fi2 = f2.getMyField();
 
-		if (i2.getInstruction() instanceof GetFieldInstruction && io2.getInstruction() instanceof GetFieldInstruction)
-		{
-			GetFieldInstruction f1 = (GetFieldInstruction) i2.getInstruction();
-			GetFieldInstruction f2 = (GetFieldInstruction) io2.getInstruction();
+      if (fi1 != null && fi2 != null) {
+        mappings.map((Instruction) this, fi1, fi2);
+      }
+    }
 
-			Field fi1 = f1.getMyField(), fi2 = f2.getMyField();
+    if (i2.getInstruction() instanceof GetFieldInstruction && io2
+        .getInstruction() instanceof GetFieldInstruction) {
+      GetFieldInstruction f1 = (GetFieldInstruction) i2.getInstruction();
+      GetFieldInstruction f2 = (GetFieldInstruction) io2.getInstruction();
 
-			if (fi1 != null && fi2 != null)
-				mappings.map((Instruction) this, fi1, fi2);
-		}
-	}
+      Field fi1 = f1.getMyField(), fi2 = f2.getMyField();
 
-	@Override
-	default boolean isSame(InstructionContext thisIc, InstructionContext otherIc)
-	{
-		return this.getClass() == otherIc.getInstruction().getClass();
-	}
+      if (fi1 != null && fi2 != null) {
+        mappings.map((Instruction) this, fi1, fi2);
+      }
+    }
+  }
 
-	@Override
-	default boolean canMap(InstructionContext thisIc)
-	{
-		return true;
-	}
+  @Override
+  default boolean isSame(InstructionContext thisIc, InstructionContext otherIc) {
+    return this.getClass() == otherIc.getInstruction().getClass();
+  }
+
+  @Override
+  default boolean canMap(InstructionContext thisIc) {
+    return true;
+  }
 }

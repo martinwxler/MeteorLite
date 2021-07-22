@@ -15,6 +15,15 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.deobfuscator;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import org.jetbrains.java.decompiler.code.CodeConstants;
 import org.jetbrains.java.decompiler.code.Instruction;
 import org.jetbrains.java.decompiler.code.InstructionSequence;
@@ -27,24 +36,7 @@ import org.jetbrains.java.decompiler.modules.decompiler.decompose.IGraph;
 import org.jetbrains.java.decompiler.modules.decompiler.decompose.IGraphNode;
 import org.jetbrains.java.decompiler.util.InterpreterUtil;
 
-import java.util.*;
-import java.util.Map.Entry;
-
 public class ExceptionDeobfuscator {
-
-  private static class Range {
-    private final BasicBlock handler;
-    private final String uniqueStr;
-    private final Set<BasicBlock> protectedRange;
-    private final ExceptionRangeCFG rangeCFG;
-
-    private Range(BasicBlock handler, String uniqueStr, Set<BasicBlock> protectedRange, ExceptionRangeCFG rangeCFG) {
-      this.handler = handler;
-      this.uniqueStr = uniqueStr;
-      this.protectedRange = protectedRange;
-      this.rangeCFG = rangeCFG;
-    }
-  }
 
   public static void restorePopRanges(ControlFlowGraph graph) {
 
@@ -54,7 +46,8 @@ public class ExceptionDeobfuscator {
     for (ExceptionRangeCFG range : graph.getExceptions()) {
       boolean found = false;
       for (Range arr : lstRanges) {
-        if (arr.handler == range.getHandler() && InterpreterUtil.equalObjects(range.getUniqueExceptionsString(), arr.uniqueStr)) {
+        if (arr.handler == range.getHandler() && InterpreterUtil
+            .equalObjects(range.getUniqueExceptionsString(), arr.uniqueStr)) {
           arr.protectedRange.addAll(range.getProtectedRange());
           found = true;
           break;
@@ -63,7 +56,8 @@ public class ExceptionDeobfuscator {
 
       if (!found) {
         // doesn't matter, which range chosen
-        lstRanges.add(new Range(range.getHandler(), range.getUniqueExceptionsString(), new HashSet<>(range.getProtectedRange()), range));
+        lstRanges.add(new Range(range.getHandler(), range.getUniqueExceptionsString(),
+            new HashSet<>(range.getProtectedRange()), range));
       }
     }
 
@@ -94,8 +88,7 @@ public class ExceptionDeobfuscator {
 
                   if (range_super.uniqueStr == null) {
                     setrange_super.retainAll(setrange);
-                  }
-                  else {
+                  } else {
                     setrange_super.removeAll(setrange);
                   }
 
@@ -112,7 +105,6 @@ public class ExceptionDeobfuscator {
                       newblock.setSeq(newseq);
                       graph.getBlocks().addWithKey(newblock, newblock.id);
 
-
                       List<BasicBlock> lstTemp = new ArrayList<>();
                       lstTemp.addAll(handler.getPreds());
                       lstTemp.addAll(handler.getPredExceptions());
@@ -126,8 +118,7 @@ public class ExceptionDeobfuscator {
                       for (ExceptionRangeCFG range_ext : graph.getExceptions()) {
                         if (range_ext.getHandler() == handler) {
                           range_ext.setHandler(newblock);
-                        }
-                        else if (range_ext.getProtectedRange().contains(handler)) {
+                        } else if (range_ext.getProtectedRange().contains(handler)) {
                           newblock.addSuccessorException(range_ext.getHandler());
                           range_ext.getProtectedRange().add(newblock);
                         }
@@ -184,8 +175,7 @@ public class ExceptionDeobfuscator {
       for (ExceptionRangeCFG range_ext : graph.getExceptions()) {
         if (range_ext.getHandler() == handler) {
           range_ext.setHandler(emptyblock);
-        }
-        else if (range_ext.getProtectedRange().contains(handler)) {
+        } else if (range_ext.getProtectedRange().contains(handler)) {
           emptyblock.addSuccessorException(range_ext.getHandler());
           range_ext.getProtectedRange().add(emptyblock);
         }
@@ -261,7 +251,8 @@ public class ExceptionDeobfuscator {
     }
   }
 
-  private static List<BasicBlock> getReachableBlocksRestricted(ExceptionRangeCFG range, GenericDominatorEngine engine) {
+  private static List<BasicBlock> getReachableBlocksRestricted(ExceptionRangeCFG range,
+      GenericDominatorEngine engine) {
 
     List<BasicBlock> lstRes = new ArrayList<>();
 
@@ -292,7 +283,6 @@ public class ExceptionDeobfuscator {
 
     return lstRes;
   }
-
 
   public static boolean hasObfuscatedExceptions(ControlFlowGraph graph) {
 
@@ -325,5 +315,21 @@ public class ExceptionDeobfuscator {
     }
 
     return false;
+  }
+
+  private static class Range {
+
+    private final BasicBlock handler;
+    private final String uniqueStr;
+    private final Set<BasicBlock> protectedRange;
+    private final ExceptionRangeCFG rangeCFG;
+
+    private Range(BasicBlock handler, String uniqueStr, Set<BasicBlock> protectedRange,
+        ExceptionRangeCFG rangeCFG) {
+      this.handler = handler;
+      this.uniqueStr = uniqueStr;
+      this.protectedRange = protectedRange;
+      this.rangeCFG = rangeCFG;
+    }
   }
 }

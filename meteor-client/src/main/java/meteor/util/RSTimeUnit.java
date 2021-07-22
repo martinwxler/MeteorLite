@@ -31,60 +31,51 @@ import lombok.Getter;
 import net.runelite.api.Constants;
 
 @Getter
-public enum RSTimeUnit implements TemporalUnit
-{
-	CLIENT_TICKS("Client tick", Duration.ofMillis(Constants.CLIENT_TICK_LENGTH)),
-	GAME_TICKS("Game tick", Duration.ofMillis(Constants.GAME_TICK_LENGTH)),
-	;
+public enum RSTimeUnit implements TemporalUnit {
+  CLIENT_TICKS("Client tick", Duration.ofMillis(Constants.CLIENT_TICK_LENGTH)),
+  GAME_TICKS("Game tick", Duration.ofMillis(Constants.GAME_TICK_LENGTH)),
+  ;
 
-	private final String name;
-	private final Duration duration;
+  private final String name;
+  private final Duration duration;
 
-	RSTimeUnit(String name, Duration estimatedDuration)
-	{
-		this.name = name;
-		duration = estimatedDuration;
-	}
+  RSTimeUnit(String name, Duration estimatedDuration) {
+    this.name = name;
+    duration = estimatedDuration;
+  }
 
-	@Override
-	public boolean isDurationEstimated()
-	{
-		return false;
-	}
+  @Override
+  public boolean isDurationEstimated() {
+    return false;
+  }
 
-	@Override
-	public boolean isDateBased()
-	{
-		return false;
-	}
+  @Override
+  public boolean isDateBased() {
+    return false;
+  }
 
-	@Override
-	public boolean isTimeBased()
-	{
-		return true;
-	}
+  @Override
+  public boolean isTimeBased() {
+    return true;
+  }
 
-	@Override
-	public boolean isSupportedBy(Temporal temporal)
-	{
-		return temporal.isSupported(this);
-	}
+  @Override
+  public boolean isSupportedBy(Temporal temporal) {
+    return temporal.isSupported(this);
+  }
 
-	@Override
-	public <R extends Temporal> R addTo(R temporal, long amount)
-	{
-		return (R) temporal.plus(amount, this);
-	}
+  @Override
+  public <R extends Temporal> R addTo(R temporal, long amount) {
+    return (R) temporal.plus(amount, this);
+  }
 
-	@Override
-	public long between(Temporal temporal1Inclusive, Temporal temporal2Exclusive)
-	{
-		return temporal1Inclusive.until(temporal2Exclusive, this);
-	}
+  @Override
+  public long between(Temporal temporal1Inclusive, Temporal temporal2Exclusive) {
+    return temporal1Inclusive.until(temporal2Exclusive, this);
+  }
 
-	@Override
-	public String toString()
-	{
-		return name + " (" + duration.toMillis() + "ms)";
-	}
+  @Override
+  public String toString() {
+    return name + " (" + duration.toMillis() + "ms)";
+  }
 }

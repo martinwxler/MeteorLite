@@ -32,15 +32,15 @@ import net.runelite.api.clan.ClanChannel;
  * An event fired when the local player joins or leaves a clan channel.
  */
 @Value
-public class ClanChannelChanged
-{
-	/**
-	 * The clan channel
-	 */
-	@Nullable
-	private final ClanChannel clanChannel;
-	/**
-	 * Whether or not this was the guest clan channel
-	 */
-	private boolean guest;
+public class ClanChannelChanged {
+
+  /**
+   * The clan channel
+   */
+  @Nullable
+  private final ClanChannel clanChannel;
+  /**
+   * Whether or not this was the guest clan channel
+   */
+  private boolean guest;
 }

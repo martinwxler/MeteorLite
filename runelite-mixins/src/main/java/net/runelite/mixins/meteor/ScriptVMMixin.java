@@ -25,9 +25,12 @@
  */
 package net.runelite.mixins.meteor;
 
+import static net.runelite.api.Opcodes.INVOKE;
+import static net.runelite.api.Opcodes.RETURN;
+import static net.runelite.api.Opcodes.RUNELITE_EXECUTE;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import static net.runelite.api.Opcodes.*;
 import net.runelite.api.events.ScriptCallbackEvent;
 import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.ScriptPreFired;
@@ -42,172 +45,148 @@ import net.runelite.rs.api.RSScript;
 import net.runelite.rs.api.RSScriptEvent;
 
 @Mixin(RSClient.class)
-public abstract class ScriptVMMixin implements RSClient
-{
-	@Shadow("client")
-	private static RSClient client;
+public abstract class ScriptVMMixin implements RSClient {
 
-	@Inject
-	private static RSScript currentScript;
+  @Shadow("client")
+  private static RSClient client;
 
-	@Inject
-	private static RSScriptEvent rootScriptEvent;
+  @Inject
+  private static RSScript currentScript;
 
-	// This field is set by the ScriptVM raw injector
-	@Inject
-	private static int currentScriptPC;
+  @Inject
+  private static RSScriptEvent rootScriptEvent;
 
-	// Call is injected by the raw injector
-	@Inject
-	static void setCurrentScript(RSScript script)
-	{
-		if (rootScriptEvent != null)
-		{
-			if (script != null)
-			{
-				ScriptPreFired event = new ScriptPreFired((int) script.getHash(), rootScriptEvent);
-				client.getCallbacks().post(event);
-			}
+  // This field is set by the ScriptVM raw injector
+  @Inject
+  private static int currentScriptPC;
 
-			rootScriptEvent = null;
-		}
+  // Call is injected by the raw injector
+  @Inject
+  static void setCurrentScript(RSScript script) {
+    if (rootScriptEvent != null) {
+      if (script != null) {
+        ScriptPreFired event = new ScriptPreFired((int) script.getHash(), rootScriptEvent);
+        client.getCallbacks().post(event);
+      }
 
-		currentScript = script;
-	}
+      rootScriptEvent = null;
+    }
 
-	// Call is injected into runScript by the ScriptVM raw injector
-	@Inject
-	static boolean vmExecuteOpcode(int opcode)
-	{
-		switch (opcode)
-		{
-			case RUNELITE_EXECUTE:
-				assert currentScript.getInstructions()[currentScriptPC] == RUNELITE_EXECUTE;
+    currentScript = script;
+  }
 
-				int stringStackSize = client.getStringStackSize();
-				String stringOp = client.getStringStack()[--stringStackSize];
-				client.setStringStackSize(stringStackSize);
+  // Call is injected into runScript by the ScriptVM raw injector
+  @Inject
+  static boolean vmExecuteOpcode(int opcode) {
+    switch (opcode) {
+      case RUNELITE_EXECUTE:
+        assert currentScript.getInstructions()[currentScriptPC] == RUNELITE_EXECUTE;
 
-				if ("debug".equals(stringOp))
-				{
-					int intStackSize = client.getIntStackSize();
+        int stringStackSize = client.getStringStackSize();
+        String stringOp = client.getStringStack()[--stringStackSize];
+        client.setStringStackSize(stringStackSize);
 
-					String fmt = client.getStringStack()[--stringStackSize];
-					StringBuffer out = new StringBuffer();
-					Matcher m = Pattern.compile("%(.)").matcher(fmt);
-					while (m.find())
-					{
-						m.appendReplacement(out, "");
-						switch (m.group(1).charAt(0))
-						{
-							case 'i':
-							case 'd':
-								out.append(client.getIntStack()[--intStackSize]);
-								break;
-							case 's':
-								out.append(client.getStringStack()[--stringStackSize]);
-								break;
-							default:
-								out.append(m.group(0)).append("=unknown");
-						}
-					}
-					m.appendTail(out);
+        if ("debug".equals(stringOp)) {
+          int intStackSize = client.getIntStackSize();
 
-					client.getLogger().debug(out.toString());
+          String fmt = client.getStringStack()[--stringStackSize];
+          StringBuffer out = new StringBuffer();
+          Matcher m = Pattern.compile("%(.)").matcher(fmt);
+          while (m.find()) {
+            m.appendReplacement(out, "");
+            switch (m.group(1).charAt(0)) {
+              case 'i':
+              case 'd':
+                out.append(client.getIntStack()[--intStackSize]);
+                break;
+              case 's':
+                out.append(client.getStringStack()[--stringStackSize]);
+                break;
+              default:
+                out.append(m.group(0)).append("=unknown");
+            }
+          }
+          m.appendTail(out);
 
-					client.setStringStackSize(stringStackSize);
-					client.setIntStackSize(intStackSize);
-					return true;
-				}
+          client.getLogger().debug(out.toString());
 
-				ScriptCallbackEvent event = new ScriptCallbackEvent();
-				event.setScript(currentScript);
-				event.setEventName(stringOp);
-				client.getCallbacks().post(event);
-				return true;
-			case INVOKE:
-				int scriptId = currentScript.getIntOperands()[currentScriptPC];
-				client.getCallbacks().post(new ScriptPreFired(scriptId, null));
-				return false;
-			case RETURN:
-				client.getCallbacks().post(new ScriptPostFired((int) currentScript.getHash()));
-				return false;
-		}
-		return false;
-	}
+          client.setStringStackSize(stringStackSize);
+          client.setIntStackSize(intStackSize);
+          return true;
+        }
 
-	@Copy("runScript")
-	@Replace("runScript")
-	static void copy$runScript(RSScriptEvent event, int maxExecutionTime, int var2)
-	{
-		Object[] arguments = event.getArguments();
-		assert arguments != null && arguments.length > 0;
-		if (arguments[0] instanceof JavaScriptCallback)
-		{
-			try
-			{
-				((JavaScriptCallback) arguments[0]).run(event);
-			}
-			catch (Exception e)
-			{
-			}
-		}
-		else
-		{
-			try
-			{
-				rootScriptEvent = event;
-				copy$runScript(event, maxExecutionTime, var2);
-			}
-			finally
-			{
-				currentScript = null;
-			}
-		}
-	}
+        ScriptCallbackEvent event = new ScriptCallbackEvent();
+        event.setScript(currentScript);
+        event.setEventName(stringOp);
+        client.getCallbacks().post(event);
+        return true;
+      case INVOKE:
+        int scriptId = currentScript.getIntOperands()[currentScriptPC];
+        client.getCallbacks().post(new ScriptPreFired(scriptId, null));
+        return false;
+      case RETURN:
+        client.getCallbacks().post(new ScriptPostFired((int) currentScript.getHash()));
+        return false;
+    }
+    return false;
+  }
 
-	@Inject
-	@Override
-	public void runScript(Object... args)
-	{
-		runScriptEvent(createRSScriptEvent(args));
-	}
+  @Copy("runScript")
+  @Replace("runScript")
+  static void copy$runScript(RSScriptEvent event, int maxExecutionTime, int var2) {
+    Object[] arguments = event.getArguments();
+    assert arguments != null && arguments.length > 0;
+    if (arguments[0] instanceof JavaScriptCallback) {
+      try {
+        ((JavaScriptCallback) arguments[0]).run(event);
+      } catch (Exception e) {
+      }
+    } else {
+      try {
+        rootScriptEvent = event;
+        copy$runScript(event, maxExecutionTime, var2);
+      } finally {
+        currentScript = null;
+      }
+    }
+  }
 
-	@Inject
-	@Override
-	public void runScriptEvent(RSScriptEvent event)
-	{
-		assert isClientThread() : "runScriptEvent must be called on client thread";
-		assert currentScript == null : "scripts are not reentrant";
-		runScript(event, 5000000, 0);
-		boolean assertionsEnabled = false;
-		assert assertionsEnabled = true;
+  @Inject
+  @Override
+  public void runScript(Object... args) {
+    runScriptEvent(createRSScriptEvent(args));
+  }
 
-		Object[] args = event.getArguments();
-		if (assertionsEnabled && args[0] instanceof Integer)
-		{
-			int scriptId = (int) args[0];
-			RSScript script = (RSScript) client.getScriptCache().get$api(scriptId);
+  @Inject
+  @Override
+  public void runScriptEvent(RSScriptEvent event) {
+    assert isClientThread() : "runScriptEvent must be called on client thread";
+    assert currentScript == null : "scripts are not reentrant";
+    runScript(event, 5000000, 0);
+    boolean assertionsEnabled = false;
+    assert assertionsEnabled = true;
 
-			if (script != null)
-			{
-				int intCount = 0, stringCount = 0;
-				for (int i = 1; i < args.length; i++)
-				{
-					if (args[i] instanceof Integer)
-					{
-						intCount++;
-					}
-					else
-					{
-						stringCount++;
-					}
-				}
+    Object[] args = event.getArguments();
+    if (assertionsEnabled && args[0] instanceof Integer) {
+      int scriptId = (int) args[0];
+      RSScript script = (RSScript) client.getScriptCache().get$api(scriptId);
 
-				assert script.getIntArgumentCount() == intCount && script.getStringArgumentCount() == stringCount :
-						"Script " + scriptId + " was called with the incorrect number of arguments; takes "
-								+ script.getIntArgumentCount() + "+" + script.getStringArgumentCount() + ", got " + intCount + "+" + stringCount;
-			}
-		}
-	}
+      if (script != null) {
+        int intCount = 0, stringCount = 0;
+        for (int i = 1; i < args.length; i++) {
+          if (args[i] instanceof Integer) {
+            intCount++;
+          } else {
+            stringCount++;
+          }
+        }
+
+        assert script.getIntArgumentCount() == intCount
+            && script.getStringArgumentCount() == stringCount :
+            "Script " + scriptId + " was called with the incorrect number of arguments; takes "
+                + script.getIntArgumentCount() + "+" + script.getStringArgumentCount() + ", got "
+                + intCount + "+" + stringCount;
+      }
+    }
+  }
 }

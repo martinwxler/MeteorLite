@@ -15,29 +15,29 @@
  */
 package org.jetbrains.java.decompiler.struct.attr;
 
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.jetbrains.java.decompiler.code.CodeConstants;
-import org.jetbrains.java.decompiler.modules.decompiler.exps.*;
+import org.jetbrains.java.decompiler.modules.decompiler.exps.AnnotationExprent;
+import org.jetbrains.java.decompiler.modules.decompiler.exps.ConstExprent;
+import org.jetbrains.java.decompiler.modules.decompiler.exps.Exprent;
+import org.jetbrains.java.decompiler.modules.decompiler.exps.FieldExprent;
+import org.jetbrains.java.decompiler.modules.decompiler.exps.NewExprent;
 import org.jetbrains.java.decompiler.struct.consts.ConstantPool;
 import org.jetbrains.java.decompiler.struct.consts.PrimitiveConstant;
 import org.jetbrains.java.decompiler.struct.gen.FieldDescriptor;
 import org.jetbrains.java.decompiler.struct.gen.VarType;
 import org.jetbrains.java.decompiler.util.DataInputFullStream;
 
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 public class StructAnnotationAttribute extends StructGeneralAttribute {
+
   private List<AnnotationExprent> annotations;
 
-  @Override
-  public void initContent(DataInputFullStream data, ConstantPool pool) throws IOException {
-    annotations = parseAnnotations(pool, data);
-  }
-
-  public static List<AnnotationExprent> parseAnnotations(ConstantPool pool, DataInputStream data) throws IOException {
+  public static List<AnnotationExprent> parseAnnotations(ConstantPool pool, DataInputStream data)
+      throws IOException {
     int len = data.readUnsignedShort();
     if (len > 0) {
       List<AnnotationExprent> annotations = new ArrayList<>(len);
@@ -45,13 +45,13 @@ public class StructAnnotationAttribute extends StructGeneralAttribute {
         annotations.add(parseAnnotation(data, pool));
       }
       return annotations;
-    }
-    else {
+    } else {
       return Collections.emptyList();
     }
   }
 
-  public static AnnotationExprent parseAnnotation(DataInputStream data, ConstantPool pool) throws IOException {
+  public static AnnotationExprent parseAnnotation(DataInputStream data, ConstantPool pool)
+      throws IOException {
     String className = pool.getPrimitiveConstant(data.readUnsignedShort()).getString();
 
     List<String> names;
@@ -64,8 +64,7 @@ public class StructAnnotationAttribute extends StructGeneralAttribute {
         names.add(pool.getPrimitiveConstant(data.readUnsignedShort()).getString());
         values.add(parseAnnotationElement(data, pool));
       }
-    }
-    else {
+    } else {
       names = Collections.emptyList();
       values = Collections.emptyList();
     }
@@ -73,7 +72,8 @@ public class StructAnnotationAttribute extends StructGeneralAttribute {
     return new AnnotationExprent(new VarType(className).value, names, values);
   }
 
-  public static Exprent parseAnnotationElement(DataInputStream data, ConstantPool pool) throws IOException {
+  public static Exprent parseAnnotationElement(DataInputStream data, ConstantPool pool)
+      throws IOException {
     int tag = data.readUnsignedByte();
 
     switch (tag) {
@@ -137,8 +137,7 @@ public class StructAnnotationAttribute extends StructGeneralAttribute {
         VarType newType;
         if (elements.isEmpty()) {
           newType = new VarType(CodeConstants.TYPE_OBJECT, 1, "java/lang/Object");
-        }
-        else {
+        } else {
           VarType elementType = elements.get(0).getExprType();
           newType = new VarType(elementType.type, 1, elementType.value);
         }
@@ -176,6 +175,11 @@ public class StructAnnotationAttribute extends StructGeneralAttribute {
             throw new RuntimeException("invalid element type!");
         }
     }
+  }
+
+  @Override
+  public void initContent(DataInputFullStream data, ConstantPool pool) throws IOException {
+    annotations = parseAnnotations(pool, data);
   }
 
   public List<AnnotationExprent> getAnnotations() {

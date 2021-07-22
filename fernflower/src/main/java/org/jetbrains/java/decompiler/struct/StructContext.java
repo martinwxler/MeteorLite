@@ -15,12 +15,6 @@
  */
 package org.jetbrains.java.decompiler.struct;
 
-import org.jetbrains.java.decompiler.main.DecompilerContext;
-import org.jetbrains.java.decompiler.main.extern.IResultSaver;
-import org.jetbrains.java.decompiler.struct.lazy.LazyLoader;
-import org.jetbrains.java.decompiler.util.DataInputFullStream;
-import org.jetbrains.java.decompiler.util.InterpreterUtil;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -29,6 +23,11 @@ import java.util.Map;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import org.jetbrains.java.decompiler.main.DecompilerContext;
+import org.jetbrains.java.decompiler.main.extern.IResultSaver;
+import org.jetbrains.java.decompiler.struct.lazy.LazyLoader;
+import org.jetbrains.java.decompiler.util.DataInputFullStream;
+import org.jetbrains.java.decompiler.util.InterpreterUtil;
 
 public class StructContext {
 
@@ -43,7 +42,8 @@ public class StructContext {
     this.decompiledData = decompiledData;
     this.loader = loader;
 
-    ContextUnit defaultUnit = new ContextUnit(ContextUnit.TYPE_FOLDER, null, "", true, saver, decompiledData);
+    ContextUnit defaultUnit = new ContextUnit(ContextUnit.TYPE_FOLDER, null, "", true, saver,
+        decompiledData);
     units.put("", defaultUnit);
   }
 
@@ -80,8 +80,11 @@ public class StructContext {
 
   private void addSpace(String path, File file, boolean isOwn, int level) {
     if (file.isDirectory()) {
-      if (level == 1) path += file.getName();
-      else if (level > 1) path += "/" + file.getName();
+      if (level == 1) {
+        path += file.getName();
+      } else if (level > 1) {
+        path += "/" + file.getName();
+      }
 
       File[] files = file.listFiles();
       if (files != null) {
@@ -89,8 +92,7 @@ public class StructContext {
           addSpace(path, files[i], isOwn, level + 1);
         }
       }
-    }
-    else {
+    } else {
       String filename = file.getName();
 
       boolean isArchive = false;
@@ -98,13 +100,11 @@ public class StructContext {
         if (filename.endsWith(".jar")) {
           isArchive = true;
           addArchive(path, file, ContextUnit.TYPE_JAR, isOwn);
-        }
-        else if (filename.endsWith(".zip")) {
+        } else if (filename.endsWith(".zip")) {
           isArchive = true;
           addArchive(path, file, ContextUnit.TYPE_ZIP, isOwn);
         }
-      }
-      catch (IOException ex) {
+      } catch (IOException ex) {
         String message = "Corrupted archive file: " + file;
         DecompilerContext.getLogger().writeMessage(message, ex);
       }
@@ -123,14 +123,13 @@ public class StructContext {
           StructClass cl = new StructClass(in, isOwn, loader);
           classes.put(cl.qualifiedName, cl);
           unit.addClass(cl, filename);
-          loader.addClassLink(cl.qualifiedName, new LazyLoader.Link(LazyLoader.Link.CLASS, file.getAbsolutePath(), null));
-        }
-        catch (IOException ex) {
+          loader.addClassLink(cl.qualifiedName,
+              new LazyLoader.Link(LazyLoader.Link.CLASS, file.getAbsolutePath(), null));
+        } catch (IOException ex) {
           String message = "Corrupted class file: " + file;
           DecompilerContext.getLogger().writeMessage(message, ex);
         }
-      }
-      else {
+      } else {
         unit.addOtherEntry(file.getAbsolutePath(), filename);
       }
     }
@@ -147,7 +146,7 @@ public class StructContext {
         if (unit == null) {
           unit = new ContextUnit(type, path, file.getName(), isOwn, saver, decompiledData);
           if (type == ContextUnit.TYPE_JAR) {
-            unit.setManifest(((JarFile)archive).getManifest());
+            unit.setManifest(((JarFile) archive).getManifest());
           }
           units.put(path + "/" + file.getName(), unit);
         }
@@ -159,13 +158,12 @@ public class StructContext {
             StructClass cl = new StructClass(bytes, isOwn, loader);
             classes.put(cl.qualifiedName, cl);
             unit.addClass(cl, name);
-            loader.addClassLink(cl.qualifiedName, new LazyLoader.Link(LazyLoader.Link.ENTRY, file.getAbsolutePath(), name));
-          }
-          else {
+            loader.addClassLink(cl.qualifiedName,
+                new LazyLoader.Link(LazyLoader.Link.ENTRY, file.getAbsolutePath(), name));
+          } else {
             unit.addOtherEntry(file.getAbsolutePath(), name);
           }
-        }
-        else {
+        } else {
           unit.addDirEntry(name);
         }
       }

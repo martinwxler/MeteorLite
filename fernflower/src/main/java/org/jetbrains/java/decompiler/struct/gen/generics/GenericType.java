@@ -15,11 +15,10 @@
  */
 package org.jetbrains.java.decompiler.struct.gen.generics;
 
-import org.jetbrains.java.decompiler.code.CodeConstants;
-import org.jetbrains.java.decompiler.struct.gen.VarType;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.jetbrains.java.decompiler.code.CodeConstants;
+import org.jetbrains.java.decompiler.struct.gen.VarType;
 
 public class GenericType {
 
@@ -81,8 +80,7 @@ public class GenericType {
               GenericType type11 = new GenericType(CodeConstants.TYPE_OBJECT, 0, name);
               parseArgumentsList(args, type11);
               enclosingClasses.add(type11);
-            }
-            else {
+            } else {
               value = name;
               parseArgumentsList(args, this);
               break;

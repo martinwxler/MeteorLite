@@ -4,13 +4,13 @@ import net.runelite.api.IterableHashTable;
 import net.runelite.api.Node;
 import net.runelite.mapping.Import;
 
-public interface RSIterableNodeHashTable extends IterableHashTable
-{
-	@Import("get")
-	@Override
-	RSNode get$api(long hash);
+public interface RSIterableNodeHashTable extends IterableHashTable {
 
-	@Import("put")
-	@Override
-	void put(Node node, long hash);
+  @Import("get")
+  @Override
+  RSNode get$api(long hash);
+
+  @Import("put")
+  @Override
+  void put(Node node, long hash);
 }

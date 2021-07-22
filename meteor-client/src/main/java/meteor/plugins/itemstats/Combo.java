@@ -26,41 +26,35 @@ package meteor.plugins.itemstats;
 
 import net.runelite.api.Client;
 
-public class Combo implements Effect
-{
-	private final SingleEffect[] calcs;
-	private final int numPrimaries;
+public class Combo implements Effect {
 
-	public Combo(SingleEffect[] calcs)
-	{
-		this(1, calcs);
-	}
+  private final SingleEffect[] calcs;
+  private final int numPrimaries;
 
-	public Combo(int numPrimaries, SingleEffect[] calcs)
-	{
-		this.numPrimaries = numPrimaries;
-		this.calcs = calcs;
-	}
+  public Combo(SingleEffect[] calcs) {
+    this(1, calcs);
+  }
 
-	@Override
-	public StatsChanges calculate(Client client)
-	{
-		StatsChanges out = new StatsChanges(calcs.length);
-		StatChange[] statChanges = out.getStatChanges();
-		for (int i = 0; i < calcs.length; i++)
-		{
-			statChanges[i] = calcs[i].effect(client);
-		}
-		Positivity positivity = Positivity.NO_CHANGE;
-		for (int i = 0; i < numPrimaries; i++)
-		{
-			if (positivity.ordinal() < statChanges[i].getPositivity().ordinal())
-			{
-				positivity = statChanges[i].getPositivity();
-			}
-		}
-		out.setPositivity(positivity);
-		return out;
-	}
+  public Combo(int numPrimaries, SingleEffect[] calcs) {
+    this.numPrimaries = numPrimaries;
+    this.calcs = calcs;
+  }
+
+  @Override
+  public StatsChanges calculate(Client client) {
+    StatsChanges out = new StatsChanges(calcs.length);
+    StatChange[] statChanges = out.getStatChanges();
+    for (int i = 0; i < calcs.length; i++) {
+      statChanges[i] = calcs[i].effect(client);
+    }
+    Positivity positivity = Positivity.NO_CHANGE;
+    for (int i = 0; i < numPrimaries; i++) {
+      if (positivity.ordinal() < statChanges[i].getPositivity().ordinal()) {
+        positivity = statChanges[i].getPositivity();
+      }
+    }
+    out.setPositivity(positivity);
+    return out;
+  }
 
 }

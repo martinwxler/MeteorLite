@@ -26,10 +26,9 @@ package meteor.plugins.itemstats;
 
 import meteor.plugins.itemstats.stats.Stats;
 
-public abstract class FoodBase extends StatBoost
-{
-	public FoodBase()
-	{
-		super(Stats.HITPOINTS, false);
-	}
+public abstract class FoodBase extends StatBoost {
+
+  public FoodBase() {
+    super(Stats.HITPOINTS, false);
+  }
 }

@@ -26,20 +26,20 @@ package net.runelite.rs.api;
 
 import net.runelite.mapping.Import;
 
-public interface RSNodeDeque
-{
-	@Import("current")
-	RSNode getCurrent();
+public interface RSNodeDeque {
 
-	@Import("sentinel")
-	RSNode getSentinel();
+  @Import("current")
+  RSNode getCurrent();
 
-	@Import("last")
-	RSNode last$api();
+  @Import("sentinel")
+  RSNode getSentinel();
 
-	@Import("previous")
-	RSNode previous$api();
+  @Import("last")
+  RSNode last$api();
 
-	@Import("addFirst")
-	void addFirst(RSNode val);
+  @Import("previous")
+  RSNode previous$api();
+
+  @Import("addFirst")
+  void addFirst(RSNode val);
 }

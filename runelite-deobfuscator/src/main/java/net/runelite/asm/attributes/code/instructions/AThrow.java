@@ -33,31 +33,28 @@ import net.runelite.asm.execution.InstructionContext;
 import net.runelite.asm.execution.Stack;
 import net.runelite.asm.execution.StackContext;
 
-public class AThrow extends Instruction
-{
-	public AThrow(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
+public class AThrow extends Instruction {
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ins = new InstructionContext(this, frame);
-		Stack stack = frame.getStack();
-		
-		// get exception
-		StackContext exception = stack.pop();
-		ins.pop(exception);
-		
-		frame.stop();
+  public AThrow(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
 
-		return ins;
-	}
-	
-	@Override
-	public boolean isTerminal()
-	{
-		return true;
-	}
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ins = new InstructionContext(this, frame);
+    Stack stack = frame.getStack();
+
+    // get exception
+    StackContext exception = stack.pop();
+    ins.pop(exception);
+
+    frame.stop();
+
+    return ins;
+  }
+
+  @Override
+  public boolean isTerminal() {
+    return true;
+  }
 }

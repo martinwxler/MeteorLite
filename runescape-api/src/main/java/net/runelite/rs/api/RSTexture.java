@@ -3,21 +3,21 @@ package net.runelite.rs.api;
 import net.runelite.api.Texture;
 import net.runelite.mapping.Import;
 
-public interface RSTexture extends Texture, RSNode
-{
-	@Import("pixels")
-	@Override
-	int[] getPixels();
+public interface RSTexture extends Texture, RSNode {
 
-	@Import("animationDirection")
-	@Override
-	int getAnimationDirection();
+  @Import("pixels")
+  @Override
+  int[] getPixels();
 
-	@Import("animationSpeed")
-	@Override
-	int getAnimationSpeed();
+  @Import("animationDirection")
+  @Override
+  int getAnimationDirection();
 
-	@Import("isLoaded")
-	@Override
-	boolean isLoaded();
+  @Import("animationSpeed")
+  @Override
+  int getAnimationSpeed();
+
+  @Import("isLoaded")
+  @Override
+  boolean isLoaded();
 }

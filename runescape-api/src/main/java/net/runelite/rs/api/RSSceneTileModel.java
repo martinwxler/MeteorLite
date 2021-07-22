@@ -3,64 +3,64 @@ package net.runelite.rs.api;
 import net.runelite.api.SceneTileModel;
 import net.runelite.mapping.Import;
 
-public interface RSSceneTileModel extends SceneTileModel
-{
-	@Import("underlayRgb")
-	@Override
-	int getModelUnderlay();
+public interface RSSceneTileModel extends SceneTileModel {
 
-	@Import("overlayRgb")
-	@Override
-	int getModelOverlay();
+  @Import("underlayRgb")
+  @Override
+  int getModelUnderlay();
 
-	@Import("shape")
-	@Override
-	int getShape();
+  @Import("overlayRgb")
+  @Override
+  int getModelOverlay();
 
-	@Import("rotation")
-	@Override
-	int getRotation();
+  @Import("shape")
+  @Override
+  int getShape();
 
-	@Import("faceX")
-	@Override
-	int[] getFaceX();
+  @Import("rotation")
+  @Override
+  int getRotation();
 
-	@Import("faceY")
-	@Override
-	int[] getFaceY();
+  @Import("faceX")
+  @Override
+  int[] getFaceX();
 
-	@Import("faceZ")
-	@Override
-	int[] getFaceZ();
+  @Import("faceY")
+  @Override
+  int[] getFaceY();
 
-	@Import("vertexX")
-	@Override
-	int[] getVertexX();
+  @Import("faceZ")
+  @Override
+  int[] getFaceZ();
 
-	@Import("vertexY")
-	@Override
-	int[] getVertexY();
+  @Import("vertexX")
+  @Override
+  int[] getVertexX();
 
-	@Import("vertexZ")
-	@Override
-	int[] getVertexZ();
+  @Import("vertexY")
+  @Override
+  int[] getVertexY();
 
-	@Import("triangleColorA")
-	@Override
-	int[] getTriangleColorA();
+  @Import("vertexZ")
+  @Override
+  int[] getVertexZ();
 
-	@Import("triangleColorB")
-	@Override
-	int[] getTriangleColorB();
+  @Import("triangleColorA")
+  @Override
+  int[] getTriangleColorA();
 
-	@Import("triangleColorC")
-	@Override
-	int[] getTriangleColorC();
+  @Import("triangleColorB")
+  @Override
+  int[] getTriangleColorB();
 
-	@Import("triangleTextureId")
-	@Override
-	int[] getTriangleTextureId();
+  @Import("triangleColorC")
+  @Override
+  int[] getTriangleColorC();
 
-	@Import("isFlat")
-	boolean getIsFlat();
+  @Import("triangleTextureId")
+  @Override
+  int[] getTriangleTextureId();
+
+  @Import("isFlat")
+  boolean getIsFlat();
 }

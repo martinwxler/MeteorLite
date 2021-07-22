@@ -4,47 +4,47 @@ import net.runelite.api.GameObject;
 import net.runelite.api.WallObject;
 import net.runelite.mapping.Import;
 
-public interface RSGameObject extends WallObject, GameObject
-{
-	@Import("renderable")
-	RSRenderable getRenderable();
+public interface RSGameObject extends WallObject, GameObject {
 
-	@Import("startX")
-	int getStartX();
+  @Import("renderable")
+  RSRenderable getRenderable();
 
-	@Import("startY")
-	int getStartY();
+  @Import("startX")
+  int getStartX();
 
-	@Import("endX")
-	int getEndX();
+  @Import("startY")
+  int getStartY();
 
-	@Import("endY")
-	int getEndY();
+  @Import("endX")
+  int getEndX();
 
-	@Import("centerX")
-	@Override
-	int getX();
+  @Import("endY")
+  int getEndY();
 
-	@Import("centerY")
-	@Override
-	int getY();
+  @Import("centerX")
+  @Override
+  int getX();
 
-	@Import("height")
-	int getHeight();
+  @Import("centerY")
+  @Override
+  int getY();
 
-	@Import("orientation")
-	@Override
-	int getRsOrientation();
+  @Import("height")
+  int getHeight();
 
-	@Import("tag")
-	@Override
-	long getHash();
+  @Import("orientation")
+  @Override
+  int getRsOrientation();
 
-	@Import("flags")
-	@Override
-	int getFlags();
+  @Import("tag")
+  @Override
+  long getHash();
 
-	int getPlane();
+  @Import("flags")
+  @Override
+  int getFlags();
 
-	void setPlane(int plane);
+  int getPlane();
+
+  void setPlane(int plane);
 }

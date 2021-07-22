@@ -34,7 +34,7 @@ public class JumpInstruction extends Instruction {
   }
 
   public JumpInstruction clone() {
-    JumpInstruction newinstr = (JumpInstruction)super.clone();
+    JumpInstruction newinstr = (JumpInstruction) super.clone();
 
     newinstr.destination = destination;
     return newinstr;

@@ -16,6 +16,7 @@
 package org.jetbrains.java.decompiler.modules.decompiler.exps;
 
 public class TypeAnnotation {
+
   public static final int CLASS_TYPE_PARAMETER = 0x00;
   public static final int METHOD_TYPE_PARAMETER = 0x01;
   public static final int SUPER_TYPE_REFERENCE = 0x10;

@@ -1,108 +1,109 @@
 package net.runelite.api;
+
 import java.util.EnumSet;
 
 /**
  * Holds data of a RuneScape world.
  */
-public interface World
-{
-	/**
-	 * Gets all applicable world types for this world.
-	 *
-	 * @return the world types
-	 */
-	EnumSet<WorldType> getTypes();
+public interface World {
 
-	/**
-	 * Sets world types.
-	 *
-	 * @param types the types
-	 */
-	void setTypes(EnumSet<WorldType> types);
+  /**
+   * Gets all applicable world types for this world.
+   *
+   * @return the world types
+   */
+  EnumSet<WorldType> getTypes();
 
-	/**
-	 * Gets the current number of players logged in the world.
-	 *
-	 * @return the player count
-	 */
-	int getPlayerCount();
+  /**
+   * Sets world types.
+   *
+   * @param types the types
+   */
+  void setTypes(EnumSet<WorldType> types);
 
-	/**
-	 * Sets the player count of the world.
-	 *
-	 * @param playerCount the new player count
-	 */
-	void setPlayerCount(int playerCount);
+  /**
+   * Gets the current number of players logged in the world.
+   *
+   * @return the player count
+   */
+  int getPlayerCount();
 
-	/**
-	 * Gets the world location value.
-	 *
-	 * @return the world location
-	 */
-	int getLocation();
+  /**
+   * Sets the player count of the world.
+   *
+   * @param playerCount the new player count
+   */
+  void setPlayerCount(int playerCount);
 
-	/**
-	 * Sets the world location value.
-	 *
-	 * @param location the location
-	 */
-	void setLocation(int location);
+  /**
+   * Gets the world location value.
+   *
+   * @return the world location
+   */
+  int getLocation();
 
-	/**
-	 * Gets the worlds index.
-	 *
-	 * @return the index
-	 */
-	int getIndex();
+  /**
+   * Sets the world location value.
+   *
+   * @param location the location
+   */
+  void setLocation(int location);
 
-	/**
-	 *  Sets the worlds index.
-	 *
-	 * @param index the index
-	 */
-	void setIndex(int index);
+  /**
+   * Gets the worlds index.
+   *
+   * @return the index
+   */
+  int getIndex();
 
-	/**
-	 * Gets the world number.
-	 *
-	 * @return the world number
-	 */
-	int getId();
+  /**
+   * Sets the worlds index.
+   *
+   * @param index the index
+   */
+  void setIndex(int index);
 
-	/**
-	 * Sets the world number.
-	 *
-	 * @param id the world number
-	 */
-	void setId(int id);
+  /**
+   * Gets the world number.
+   *
+   * @return the world number
+   */
+  int getId();
 
-	/**
-	 * Gets the world activity description.
-	 * <p>
-	 * For example, world 2 would return "Trade - Members".
-	 *
-	 * @return the world activity
-	 */
-	String getActivity();
+  /**
+   * Sets the world number.
+   *
+   * @param id the world number
+   */
+  void setId(int id);
 
-	/**
-	 * Sets the world activity description.
-	 *
-	 * @param activity the activity
-	 */
-	void setActivity(String activity);
+  /**
+   * Gets the world activity description.
+   * <p>
+   * For example, world 2 would return "Trade - Members".
+   *
+   * @return the world activity
+   */
+  String getActivity();
 
-	/**
-	 * Gets the address of the world.
-	 *
-	 * @return the world address
-	 */
-	String getAddress();
+  /**
+   * Sets the world activity description.
+   *
+   * @param activity the activity
+   */
+  void setActivity(String activity);
 
-	/**
-	 * Sets the address of the world.
-	 *
-	 * @param address the address
-	 */
-	void setAddress(String address);
+  /**
+   * Gets the address of the world.
+   *
+   * @return the world address
+   */
+  String getAddress();
+
+  /**
+   * Sets the address of the world.
+   *
+   * @param address the address
+   */
+  void setAddress(String address);
 }

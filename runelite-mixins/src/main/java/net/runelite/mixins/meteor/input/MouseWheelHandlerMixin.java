@@ -24,6 +24,7 @@
  */
 package net.runelite.mixins.meteor.input;
 
+import java.awt.event.MouseWheelEvent;
 import net.runelite.api.mixins.Copy;
 import net.runelite.api.mixins.Mixin;
 import net.runelite.api.mixins.Replace;
@@ -31,23 +32,19 @@ import net.runelite.api.mixins.Shadow;
 import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSMouseWheelHandler;
 
-import java.awt.event.MouseWheelEvent;
-
 @Mixin(RSMouseWheelHandler.class)
-public abstract class MouseWheelHandlerMixin implements RSMouseWheelHandler
-{
-	@Shadow("client")
-	private static RSClient client;
+public abstract class MouseWheelHandlerMixin implements RSMouseWheelHandler {
 
-	@Override
-	@Copy("mouseWheelMoved")
-	@Replace("mouseWheelMoved")
-	public void mouseWheelMoved(MouseWheelEvent event)
-	{
-		event = client.getCallbacks().mouseWheelMoved(event);
-		if (!event.isConsumed())
-		{
-			mouseWheelMoved(event);
-		}
-	}
+  @Shadow("client")
+  private static RSClient client;
+
+  @Override
+  @Copy("mouseWheelMoved")
+  @Replace("mouseWheelMoved")
+  public void mouseWheelMoved(MouseWheelEvent event) {
+    event = client.getCallbacks().mouseWheelMoved(event);
+    if (!event.isConsumed()) {
+      mouseWheelMoved(event);
+    }
+  }
 }

@@ -31,23 +31,20 @@ import net.runelite.asm.attributes.code.Instructions;
 import net.runelite.asm.attributes.code.instruction.types.PushConstantInstruction;
 import net.runelite.asm.execution.InstructionContext;
 
-class PacketWrite
-{
-	InstructionContext putOpcode;
-	List<InstructionContext> writes = new ArrayList<>();
+class PacketWrite {
 
-	Instruction getOpcodeIns()
-	{
-		return putOpcode.getPops().get(0).getPushed().getInstruction();
-	}
+  InstructionContext putOpcode;
+  List<InstructionContext> writes = new ArrayList<>();
 
-	public int getOpcode()
-	{
-		return ((Number) ((PushConstantInstruction) getOpcodeIns()).getConstant()).intValue();
-	}
+  Instruction getOpcodeIns() {
+    return putOpcode.getPops().get(0).getPushed().getInstruction();
+  }
 
-	Instructions getInstructions()
-	{
-		return putOpcode.getInstruction().getInstructions();
-	}
+  public int getOpcode() {
+    return ((Number) ((PushConstantInstruction) getOpcodeIns()).getConstant()).intValue();
+  }
+
+  Instructions getInstructions() {
+    return putOpcode.getInstruction().getInstructions();
+  }
 }

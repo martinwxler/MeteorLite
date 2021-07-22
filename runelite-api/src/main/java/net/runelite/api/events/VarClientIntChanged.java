@@ -29,10 +29,11 @@ import lombok.Value;
 
 /**
  * An event where a client int var has changed.
+ *
  * @see net.runelite.api.VarClientInt
  */
 @Value
-public class VarClientIntChanged
-{
-	int index;
+public class VarClientIntChanged {
+
+  int index;
 }

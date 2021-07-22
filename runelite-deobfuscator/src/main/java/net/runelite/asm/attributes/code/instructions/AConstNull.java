@@ -35,29 +35,26 @@ import net.runelite.asm.execution.Stack;
 import net.runelite.asm.execution.StackContext;
 import net.runelite.asm.execution.Value;
 
-public class AConstNull extends Instruction
-{
-	public AConstNull(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
+public class AConstNull extends Instruction {
 
-	public AConstNull(Instructions instructions)
-	{
-		super(instructions, InstructionType.ACONST_NULL);
-	}
+  public AConstNull(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ins = new InstructionContext(this, frame);
-		Stack stack = frame.getStack();
-		
-		StackContext ctx = new StackContext(ins, Type.OBJECT, Value.NULL);
-		stack.push(ctx);
-		
-		ins.push(ctx);
-		
-		return ins;
-	}
+  public AConstNull(Instructions instructions) {
+    super(instructions, InstructionType.ACONST_NULL);
+  }
+
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ins = new InstructionContext(this, frame);
+    Stack stack = frame.getStack();
+
+    StackContext ctx = new StackContext(ins, Type.OBJECT, Value.NULL);
+    stack.push(ctx);
+
+    ins.push(ctx);
+
+    return ins;
+  }
 }

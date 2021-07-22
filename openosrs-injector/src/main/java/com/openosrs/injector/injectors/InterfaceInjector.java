@@ -7,54 +7,50 @@
  */
 package com.openosrs.injector.injectors;
 
+import static com.openosrs.injector.rsapi.RSApi.API_BASE;
+
 import com.openosrs.injector.injection.InjectData;
 import net.runelite.asm.ClassFile;
 import net.runelite.asm.Interfaces;
 import net.runelite.asm.pool.Class;
 import net.runelite.deob.DeobAnnotations;
-import static com.openosrs.injector.rsapi.RSApi.API_BASE;
 
-public class InterfaceInjector extends AbstractInjector
-{
-	private int implemented = 0;
+public class InterfaceInjector extends AbstractInjector {
 
-	public InterfaceInjector(InjectData inject)
-	{
-		super(inject);
-	}
+  private int implemented = 0;
 
-	public void inject()
-	{
-		// forEachPair performs actions on a deob-vanilla pair, which is what's needed here
-		inject.forEachPair(this::injectInterface);
+  public InterfaceInjector(InjectData inject) {
+    super(inject);
+  }
 
-		//log.info("[INFO] Injected {} interfaces", implemented);
-	}
+  public void inject() {
+    // forEachPair performs actions on a deob-vanilla pair, which is what's needed here
+    inject.forEachPair(this::injectInterface);
 
-	private void injectInterface(final ClassFile deobCf, final ClassFile vanillaCf)
-	{
-		final String impls = DeobAnnotations.getImplements(deobCf);
+    //log.info("[INFO] Injected {} interfaces", implemented);
+  }
 
-		if (impls == null)
-		{
-			return;
-		}
+  private void injectInterface(final ClassFile deobCf, final ClassFile vanillaCf) {
+    final String impls = DeobAnnotations.getImplements(deobCf);
 
-		final String fullName = API_BASE + impls;
-		if (!inject.getRsApi().hasClass(fullName))
-		{
-		//	log.trace("[DEBUG] Class {} implements nonexistent interface {}, skipping interface injection",
-				//deobCf.getName(),
-			//	fullName
-		//	);
+    if (impls == null) {
+      return;
+    }
 
-			return;
-		}
+    final String fullName = API_BASE + impls;
+    if (!inject.getRsApi().hasClass(fullName)) {
+      //	log.trace("[DEBUG] Class {} implements nonexistent interface {}, skipping interface injection",
+      //deobCf.getName(),
+      //	fullName
+      //	);
 
-		final Interfaces interfaces = vanillaCf.getInterfaces();
-		interfaces.addInterface(new Class(fullName));
-		implemented++;
+      return;
+    }
 
-		inject.addToDeob(fullName, deobCf);
-	}
+    final Interfaces interfaces = vanillaCf.getInterfaces();
+    interfaces.addInterface(new Class(fullName));
+    implemented++;
+
+    inject.addToDeob(fullName, deobCf);
+  }
 }

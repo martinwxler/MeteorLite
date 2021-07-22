@@ -28,57 +28,49 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-
 import java.io.IOException;
 import java.time.Instant;
 
 // Just add water!
-public class InstantTypeAdapter extends TypeAdapter<Instant>
-{
-	@Override
-	public void write(JsonWriter out, Instant value) throws IOException
-	{
-		if (value == null)
-		{
-			out.nullValue();
-			return;
-		}
+public class InstantTypeAdapter extends TypeAdapter<Instant> {
 
-		out.value(value.toEpochMilli());
-	}
+  @Override
+  public void write(JsonWriter out, Instant value) throws IOException {
+    if (value == null) {
+      out.nullValue();
+      return;
+    }
 
-	@Override
-	public Instant read(JsonReader in) throws IOException
-	{
-		if (in.peek() == JsonToken.NULL)
-		{
-			in.nextNull();
-			return null;
-		}
+    out.value(value.toEpochMilli());
+  }
 
-		if (in.peek() == JsonToken.NUMBER)
-		{
-			long jsTime = in.nextLong();
-			return Instant.ofEpochMilli(jsTime);
-		}
+  @Override
+  public Instant read(JsonReader in) throws IOException {
+    if (in.peek() == JsonToken.NULL) {
+      in.nextNull();
+      return null;
+    }
 
-		long seconds = 0;
-		int nanos = 0;
-		in.beginObject();
-		while (in.peek() != JsonToken.END_OBJECT)
-		{
-			switch (in.nextName())
-			{
-				case "nanos":
-					nanos = in.nextInt();
-					break;
-				case "seconds":
-					seconds = in.nextLong();
-					break;
-			}
-		}
-		in.endObject();
+    if (in.peek() == JsonToken.NUMBER) {
+      long jsTime = in.nextLong();
+      return Instant.ofEpochMilli(jsTime);
+    }
 
-		return Instant.ofEpochSecond(seconds, nanos);
-	}
+    long seconds = 0;
+    int nanos = 0;
+    in.beginObject();
+    while (in.peek() != JsonToken.END_OBJECT) {
+      switch (in.nextName()) {
+        case "nanos":
+          nanos = in.nextInt();
+          break;
+        case "seconds":
+          seconds = in.nextLong();
+          break;
+      }
+    }
+    in.endObject();
+
+    return Instant.ofEpochSecond(seconds, nanos);
+  }
 }

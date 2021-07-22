@@ -26,96 +26,93 @@
 package meteor.plugins.groundmarkers;
 
 import com.google.common.base.Strings;
-import meteor.ui.overlay.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Polygon;
+import java.awt.Stroke;
+import java.util.Collection;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import meteor.ui.overlay.Overlay;
+import meteor.ui.overlay.OverlayLayer;
+import meteor.ui.overlay.OverlayPosition;
+import meteor.ui.overlay.OverlayPriority;
+import meteor.ui.overlay.OverlayUtil;
 import net.runelite.api.Client;
 import net.runelite.api.Perspective;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import java.awt.*;
-import java.util.Collection;
+public class GroundMarkerOverlay extends Overlay {
 
-public class GroundMarkerOverlay extends Overlay
-{
-	private static final int MAX_DRAW_DISTANCE = 32;
+  private static final int MAX_DRAW_DISTANCE = 32;
 
-	private final Client client;
-	private final GroundMarkerConfig config;
-	private final GroundMarkerPlugin plugin;
+  private final Client client;
+  private final GroundMarkerConfig config;
+  private final GroundMarkerPlugin plugin;
 
-	@Inject
-	private GroundMarkerOverlay(Client client, GroundMarkerConfig config, GroundMarkerPlugin plugin)
-	{
-		this.client = client;
-		this.config = config;
-		this.plugin = plugin;
-		setPosition(OverlayPosition.DYNAMIC);
-		setPriority(OverlayPriority.LOW);
-		setLayer(OverlayLayer.ABOVE_SCENE);
-	}
+  @Inject
+  private GroundMarkerOverlay(Client client, GroundMarkerConfig config, GroundMarkerPlugin plugin) {
+    this.client = client;
+    this.config = config;
+    this.plugin = plugin;
+    setPosition(OverlayPosition.DYNAMIC);
+    setPriority(OverlayPriority.LOW);
+    setLayer(OverlayLayer.ABOVE_SCENE);
+  }
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		final Collection<ColorTileMarker> points = plugin.getPoints();
-		if (points.isEmpty())
-		{
-			return null;
-		}
+  @Override
+  public Dimension render(Graphics2D graphics) {
+    final Collection<ColorTileMarker> points = plugin.getPoints();
+    if (points.isEmpty()) {
+      return null;
+    }
 
-		Stroke stroke = new BasicStroke((float) config.borderWidth());
-		for (final ColorTileMarker point : points)
-		{
-			WorldPoint worldPoint = point.getWorldPoint();
-			if (worldPoint.getPlane() != client.getPlane())
-			{
-				continue;
-			}
+    Stroke stroke = new BasicStroke((float) config.borderWidth());
+    for (final ColorTileMarker point : points) {
+      WorldPoint worldPoint = point.getWorldPoint();
+      if (worldPoint.getPlane() != client.getPlane()) {
+        continue;
+      }
 
-			Color tileColor = point.getColor();
-			if (tileColor == null || !config.rememberTileColors())
-			{
-				// If this is an old tile which has no color, or rememberTileColors is off, use marker color
-				tileColor = config.markerColor();
-			}
+      Color tileColor = point.getColor();
+      if (tileColor == null || !config.rememberTileColors()) {
+        // If this is an old tile which has no color, or rememberTileColors is off, use marker color
+        tileColor = config.markerColor();
+      }
 
-			drawTile(graphics, worldPoint, tileColor, point.getLabel(), stroke);
-		}
+      drawTile(graphics, worldPoint, tileColor, point.getLabel(), stroke);
+    }
 
-		return null;
-	}
+    return null;
+  }
 
-	private void drawTile(Graphics2D graphics, WorldPoint point, Color color, @Nullable String label, Stroke borderStroke)
-	{
-		WorldPoint playerLocation = client.getLocalPlayer().getWorldLocation();
+  private void drawTile(Graphics2D graphics, WorldPoint point, Color color, @Nullable String label,
+      Stroke borderStroke) {
+    WorldPoint playerLocation = client.getLocalPlayer().getWorldLocation();
 
-		if (point.distanceTo(playerLocation) >= MAX_DRAW_DISTANCE)
-		{
-			return;
-		}
+    if (point.distanceTo(playerLocation) >= MAX_DRAW_DISTANCE) {
+      return;
+    }
 
-		LocalPoint lp = LocalPoint.fromWorld(client, point);
-		if (lp == null)
-		{
-			return;
-		}
+    LocalPoint lp = LocalPoint.fromWorld(client, point);
+    if (lp == null) {
+      return;
+    }
 
-		Polygon poly = Perspective.getCanvasTilePoly(client, lp);
-		if (poly != null)
-		{
-			OverlayUtil.renderPolygon(graphics, poly, color, borderStroke);
-		}
+    Polygon poly = Perspective.getCanvasTilePoly(client, lp);
+    if (poly != null) {
+      OverlayUtil.renderPolygon(graphics, poly, color, borderStroke);
+    }
 
-		if (!Strings.isNullOrEmpty(label))
-		{
-			Point canvasTextLocation = Perspective.getCanvasTextLocation(client, graphics, lp, label, 0);
-			if (canvasTextLocation != null)
-			{
-				OverlayUtil.renderTextLocation(graphics, canvasTextLocation, label, color);
-			}
-		}
-	}
+    if (!Strings.isNullOrEmpty(label)) {
+      Point canvasTextLocation = Perspective.getCanvasTextLocation(client, graphics, lp, label, 0);
+      if (canvasTextLocation != null) {
+        OverlayUtil.renderTextLocation(graphics, canvasTextLocation, label, color);
+      }
+    }
+  }
 }

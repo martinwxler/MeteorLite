@@ -27,99 +27,86 @@ package meteor.plugins.gpu;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.jogamp.opengl.GL4;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import meteor.plugins.gpu.template.Template;
 
-import java.util.ArrayList;
-import java.util.List;
+public class Shader {
 
-public class Shader
-{
-	@VisibleForTesting
-	final List<Unit> units = new ArrayList<>();
+  @VisibleForTesting
+  final List<Unit> units = new ArrayList<>();
 
-	@RequiredArgsConstructor
-	@VisibleForTesting
-	static class Unit
-	{
-		@Getter
-		private final int type;
+  public Shader add(int type, String name) {
+    units.add(new Unit(type, name));
+    return this;
+  }
 
-		@Getter
-		private final String filename;
-	}
+  public int compile(GL4 gl, Template template) throws ShaderException {
+    int program = gl.glCreateProgram();
+    int[] shaders = new int[units.size()];
+    int i = 0;
+    boolean ok = false;
+    try {
+      while (i < shaders.length) {
+        Unit unit = units.get(i);
+        int shader = gl.glCreateShader(unit.type);
+        if (shader == 0) {
+          throw new ShaderException("Unable to create shader of type " + unit.type);
+        }
 
-	public Shader add(int type, String name)
-	{
-		units.add(new Unit(type, name));
-		return this;
-	}
+        String source = template.load(unit.filename);
+        gl.glShaderSource(shader, 1, new String[]{source}, null);
+        gl.glCompileShader(shader);
 
-	public int compile(GL4 gl, Template template) throws ShaderException
-	{
-		int program = gl.glCreateProgram();
-		int[] shaders = new int[units.size()];
-		int i = 0;
-		boolean ok = false;
-		try
-		{
-			while (i < shaders.length)
-			{
-				Unit unit = units.get(i);
-				int shader = gl.glCreateShader(unit.type);
-				if (shader == 0)
-				{
-					throw new ShaderException("Unable to create shader of type " + unit.type);
-				}
+        if (GLUtil.glGetShader(gl, shader, gl.GL_COMPILE_STATUS) != gl.GL_TRUE) {
+          String err = GLUtil.glGetShaderInfoLog(gl, shader);
+          gl.glDeleteShader(shader);
+          throw new ShaderException(err);
+        }
+        gl.glAttachShader(program, shader);
+        shaders[i++] = shader;
+      }
 
-				String source = template.load(unit.filename);
-				gl.glShaderSource(shader, 1, new String[]{source}, null);
-				gl.glCompileShader(shader);
+      gl.glLinkProgram(program);
 
-				if (GLUtil.glGetShader(gl, shader, gl.GL_COMPILE_STATUS) != gl.GL_TRUE)
-				{
-					String err = GLUtil.glGetShaderInfoLog(gl, shader);
-					gl.glDeleteShader(shader);
-					throw new ShaderException(err);
-				}
-				gl.glAttachShader(program, shader);
-				shaders[i++] = shader;
-			}
+      if (GLUtil.glGetProgram(gl, program, gl.GL_LINK_STATUS) == gl.GL_FALSE) {
+        String err = GLUtil.glGetProgramInfoLog(gl, program);
+        throw new ShaderException(err);
+      }
 
-			gl.glLinkProgram(program);
+      gl.glValidateProgram(program);
 
-			if (GLUtil.glGetProgram(gl, program, gl.GL_LINK_STATUS) == gl.GL_FALSE)
-			{
-				String err = GLUtil.glGetProgramInfoLog(gl, program);
-				throw new ShaderException(err);
-			}
+      if (GLUtil.glGetProgram(gl, program, gl.GL_VALIDATE_STATUS) == gl.GL_FALSE) {
+        String err = GLUtil.glGetProgramInfoLog(gl, program);
+        throw new ShaderException(err);
+      }
 
-			gl.glValidateProgram(program);
+      ok = true;
+    } finally {
+      while (i > 0) {
+        int shader = shaders[--i];
+        gl.glDetachShader(program, shader);
+        gl.glDeleteShader(shader);
+      }
 
-			if (GLUtil.glGetProgram(gl, program, gl.GL_VALIDATE_STATUS) == gl.GL_FALSE)
-			{
-				String err = GLUtil.glGetProgramInfoLog(gl, program);
-				throw new ShaderException(err);
-			}
+      if (!ok) {
+        gl.glDeleteProgram(program);
+      }
+    }
 
-			ok = true;
-		}
-		finally
-		{
-			while (i > 0)
-			{
-				int shader = shaders[--i];
-				gl.glDetachShader(program, shader);
-				gl.glDeleteShader(shader);
-			}
+    return program;
+  }
 
-			if (!ok)
-			{
-				gl.glDeleteProgram(program);
-			}
-		}
+  @RequiredArgsConstructor
+  @VisibleForTesting
+  static class Unit {
 
-		return program;
-	}
+    @Getter
+    private final int type;
+
+    @Getter
+    private final String filename;
+  }
 }

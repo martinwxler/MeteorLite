@@ -15,27 +15,27 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler;
 
-import org.jetbrains.java.decompiler.struct.gen.MethodDescriptor;
-import org.jetbrains.java.decompiler.struct.gen.VarType;
-
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import org.jetbrains.java.decompiler.struct.gen.MethodDescriptor;
+import org.jetbrains.java.decompiler.struct.gen.VarType;
 
 public class ClasspathHelper {
 
-  private static final Map<String, Method> METHOD_CACHE = Collections.synchronizedMap(new HashMap<>());
+  private static final Map<String, Method> METHOD_CACHE = Collections
+      .synchronizedMap(new HashMap<>());
 
-  public static Method findMethod(String classname, String methodName, MethodDescriptor descriptor) {
+  public static Method findMethod(String classname, String methodName,
+      MethodDescriptor descriptor) {
     String targetClass = classname.replace('/', '.');
     String methodSignature = buildMethodSignature(targetClass + '.' + methodName, descriptor);
 
     Method method;
     if (METHOD_CACHE.containsKey(methodSignature)) {
       method = METHOD_CACHE.get(methodSignature);
-    }
-    else {
+    } else {
       method = findMethodOnClasspath(targetClass, methodSignature);
       METHOD_CACHE.put(methodSignature, method);
     }
@@ -46,15 +46,15 @@ public class ClasspathHelper {
   private static Method findMethodOnClasspath(String targetClass, String methodSignature) {
     try {
       // use bootstrap classloader to only provide access to JRE classes
-      Class cls = new ClassLoader(null) {}.loadClass(targetClass);
+      Class cls = new ClassLoader(null) {
+      }.loadClass(targetClass);
       for (Method mtd : cls.getMethods()) {
         // use contains() to ignore access modifiers and thrown exceptions
         if (mtd.toString().contains(methodSignature)) {
           return mtd;
         }
       }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       // ignore
     }
     return null;

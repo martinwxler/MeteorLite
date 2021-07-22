@@ -29,30 +29,28 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-public class VersionClassVisitor extends ClassVisitor
-{
-	private VersionMethodVisitor vmv = new VersionMethodVisitor();
+public class VersionClassVisitor extends ClassVisitor {
 
-	public VersionClassVisitor()
-	{
-		super(Opcodes.ASM5);
-	}
+  private VersionMethodVisitor vmv = new VersionMethodVisitor();
 
-	@Override
-	public MethodVisitor visitMethod(int access,
-		String name,
-		String desc,
-		String signature,
-		String[] exceptions)
-	{
-		if (!name.equals("init"))
-			return null;
+  public VersionClassVisitor() {
+    super(Opcodes.ASM5);
+  }
 
-		return vmv;
-	}
+  @Override
+  public MethodVisitor visitMethod(int access,
+      String name,
+      String desc,
+      String signature,
+      String[] exceptions) {
+    if (!name.equals("init")) {
+      return null;
+    }
 
-	public int getVersion()
-	{
-		return vmv.getVersion();
-	}
+    return vmv;
+  }
+
+  public int getVersion() {
+    return vmv.getVersion();
+  }
 }

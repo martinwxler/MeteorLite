@@ -38,82 +38,68 @@ import net.runelite.deob.Deobfuscator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UnusedMethods implements Deobfuscator
-{
-	private static final Logger logger = LoggerFactory.getLogger(UnusedMethods.class);
+public class UnusedMethods implements Deobfuscator {
 
-	private final Set<Method> methods = new HashSet<>();
+  private static final Logger logger = LoggerFactory.getLogger(UnusedMethods.class);
 
-	@Override
-	public void run(ClassGroup group)
-	{
-		for (ClassFile cf : group.getClasses())
-		{
-			for (Method method : cf.getMethods())
-			{
-				run(method);
-			}
-		}
+  private final Set<Method> methods = new HashSet<>();
 
-		int count = 0;
-		for (ClassFile cf : group.getClasses())
-		{
-			boolean extendsApplet = extendsApplet(cf);
+  private static boolean extendsApplet(ClassFile cf) {
+    if (cf.getParent() != null) {
+      return extendsApplet(cf.getParent());
+    }
+    return cf.getSuperName().equals("java/applet/Applet");
+  }
 
-			for (Method method : new ArrayList<>(cf.getMethods()))
-			{
-				// constructors can't be renamed, but are obfuscated
-				if (!Deob.isObfuscated(method.getName()) && !method.getName().equals("<init>"))
-				{
-					continue;
-				}
+  @Override
+  public void run(ClassGroup group) {
+    for (ClassFile cf : group.getClasses()) {
+      for (Method method : cf.getMethods()) {
+        run(method);
+      }
+    }
 
-				if (extendsApplet && method.getName().equals("<init>"))
-				{
-					continue;
-				}
+    int count = 0;
+    for (ClassFile cf : group.getClasses()) {
+      boolean extendsApplet = extendsApplet(cf);
 
-				if (!methods.contains(method))
-				{
-					logger.debug("Removing unused method {}", method);
+      for (Method method : new ArrayList<>(cf.getMethods())) {
+        // constructors can't be renamed, but are obfuscated
+        if (!Deob.isObfuscated(method.getName()) && !method.getName().equals("<init>")) {
+          continue;
+        }
 
-					cf.removeMethod(method);
-					++count;
-				}
-			}
-		}
+        if (extendsApplet && method.getName().equals("<init>")) {
+          continue;
+        }
 
-		logger.info("Removed {} methods", count);
-	}
+        if (!methods.contains(method)) {
+          logger.debug("Removing unused method {}", method);
 
-	private void run(Method method)
-	{
-		Code code = method.getCode();
+          cf.removeMethod(method);
+          ++count;
+        }
+      }
+    }
 
-		if (code == null)
-		{
-			return;
-		}
+    logger.info("Removed {} methods", count);
+  }
 
-		for (Instruction i : code.getInstructions().getInstructions())
-		{
-			if (!(i instanceof InvokeInstruction))
-			{
-				continue;
-			}
+  private void run(Method method) {
+    Code code = method.getCode();
 
-			InvokeInstruction ii = (InvokeInstruction) i;
+    if (code == null) {
+      return;
+    }
 
-			methods.addAll(ii.getMethods());
-		}
-	}
+    for (Instruction i : code.getInstructions().getInstructions()) {
+      if (!(i instanceof InvokeInstruction)) {
+        continue;
+      }
 
-	private static boolean extendsApplet(ClassFile cf)
-	{
-		if (cf.getParent() != null)
-		{
-			return extendsApplet(cf.getParent());
-		}
-		return cf.getSuperName().equals("java/applet/Applet");
-	}
+      InvokeInstruction ii = (InvokeInstruction) i;
+
+      methods.addAll(ii.getMethods());
+    }
+  }
 }

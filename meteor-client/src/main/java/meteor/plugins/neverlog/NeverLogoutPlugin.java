@@ -25,42 +25,37 @@
 
 package meteor.plugins.neverlog;
 
+import java.util.Random;
 import javax.inject.Inject;
-
 import meteor.Plugin;
 import meteor.eventbus.Subscribe;
 import net.runelite.api.Client;
 import net.runelite.api.events.GameTick;
 
-import java.util.Random;
+public class NeverLogoutPlugin extends Plugin {
 
-public class NeverLogoutPlugin extends Plugin
-{
-	@Inject
-	private Client client;
+  @Inject
+  private Client client;
 
-	private int randomTick;
+  private int randomTick;
 
-	private Random random = new Random();
+  private Random random = new Random();
 
-	@Subscribe
-	private void onGametick(GameTick gameTick)
-	{
-		if (randomTick == -1)
-		if (client.getKeyboardIdleTicks() > randomTick)
-		{
-			generateRandomTick();
-			client.setKeyboardIdleTicks(0);
-		}
-		if (client.getMouseIdleTicks() > randomTick)
-		{
-			generateRandomTick();
-			client.setMouseIdleTicks(0);
-		}
-	}
+  @Subscribe
+  private void onGametick(GameTick gameTick) {
+    if (randomTick == -1) {
+      if (client.getKeyboardIdleTicks() > randomTick) {
+        generateRandomTick();
+        client.setKeyboardIdleTicks(0);
+      }
+    }
+    if (client.getMouseIdleTicks() > randomTick) {
+      generateRandomTick();
+      client.setMouseIdleTicks(0);
+    }
+  }
 
-	private void generateRandomTick()
-	{
-		randomTick = 11900 + random.nextInt(3000);
-	}
+  private void generateRandomTick() {
+    randomTick = 11900 + random.nextInt(3000);
+  }
 }

@@ -15,17 +15,15 @@
  */
 package org.jetbrains.java.decompiler.code;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import org.jetbrains.java.decompiler.code.interpreter.Util;
 import org.jetbrains.java.decompiler.main.DecompilerContext;
 import org.jetbrains.java.decompiler.struct.StructContext;
 import org.jetbrains.java.decompiler.util.TextUtil;
 import org.jetbrains.java.decompiler.util.VBStyleCollection;
-
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 
 public abstract class InstructionSequence {
@@ -92,18 +90,18 @@ public abstract class InstructionSequence {
   }
 
   public Instruction getInstr(int index) {
-  return collinstr.get(index);
+    return collinstr.get(index);
   }
 
   public Instruction getLastInstr() {
-  return collinstr.getLast();
+    return collinstr.getLast();
   }
 
   public int getCurrentOffset() {
     return collinstr.getKey(pointer).intValue();
   }
 
-public int getOffset(int index) {
+  public int getOffset(int index) {
     return collinstr.getKey(index).intValue();
   }
 
@@ -111,8 +109,7 @@ public int getOffset(int index) {
     Integer absoffset = new Integer(offset);
     if (collinstr.containsKey(absoffset)) {
       return collinstr.getIndexByKey(absoffset);
-    }
-    else {
+    } else {
       return -1;
     }
   }
@@ -121,8 +118,7 @@ public int getOffset(int index) {
     Integer absoffset = new Integer(collinstr.getKey(pointer).intValue() + offset);
     if (collinstr.containsKey(absoffset)) {
       return collinstr.getIndexByKey(absoffset);
-    }
-    else {
+    } else {
       return -1;
     }
   }
@@ -157,7 +153,7 @@ public int getOffset(int index) {
     StringBuilder buf = new StringBuilder();
 
     for (int i = 0; i < collinstr.size(); i++) {
-    buf.append(TextUtil.getIndentString(indent));
+      buf.append(TextUtil.getIndentString(indent));
       buf.append(collinstr.getKey(i).intValue());
       buf.append(": ");
       buf.append(collinstr.get(i).toString());
@@ -191,30 +187,24 @@ public int getOffset(int index) {
       if (handler0.to == handler1.to) {
         if (handler0.exceptionClass == null) {
           return 1;
-        }
-        else {
+        } else {
           if (handler1.exceptionClass == null) {
             return -1;
-          }
-          else if (handler0.exceptionClass.equals(handler1.exceptionClass)) {
+          } else if (handler0.exceptionClass.equals(handler1.exceptionClass)) {
             return (handler0.from > handler1.from) ? -1 : 1; // invalid code
-          }
-          else {
+          } else {
             if (Util.instanceOf(context, handler0.exceptionClass, handler1.exceptionClass)) {
               return -1;
-            }
-            else {
+            } else {
               return 1;
             }
           }
         }
-      }
-      else {
+      } else {
         return (handler0.to > handler1.to) ? 1 : -1;
       }
     });
   }
-
 
   // *****************************************************************************
   // getter and setter methods

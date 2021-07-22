@@ -15,6 +15,9 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.exps;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import org.jetbrains.java.decompiler.code.CodeConstants;
 import org.jetbrains.java.decompiler.main.ClassesProcessor.ClassNode;
 import org.jetbrains.java.decompiler.main.DecompilerContext;
@@ -29,18 +32,14 @@ import org.jetbrains.java.decompiler.struct.match.MatchEngine;
 import org.jetbrains.java.decompiler.struct.match.MatchNode;
 import org.jetbrains.java.decompiler.util.InterpreterUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 public class ExitExprent extends Exprent {
 
   public static final int EXIT_RETURN = 0;
   public static final int EXIT_THROW = 1;
 
   private final int exitType;
-  private Exprent value;
   private final VarType retType;
+  private Exprent value;
 
   public ExitExprent(int exitType, Exprent value, VarType retType, Set<Integer> bytecodeOffsets) {
     super(EXPRENT_EXIT);
@@ -90,13 +89,15 @@ public class ExitExprent extends Exprent {
       }
 
       return buffer;
-    }
-    else {
-      MethodWrapper method = (MethodWrapper)DecompilerContext.getProperty(DecompilerContext.CURRENT_METHOD_WRAPPER);
-      ClassNode node = ((ClassNode)DecompilerContext.getProperty(DecompilerContext.CURRENT_CLASS_NODE));
+    } else {
+      MethodWrapper method = (MethodWrapper) DecompilerContext
+          .getProperty(DecompilerContext.CURRENT_METHOD_WRAPPER);
+      ClassNode node = ((ClassNode) DecompilerContext
+          .getProperty(DecompilerContext.CURRENT_CLASS_NODE));
 
       if (method != null && node != null) {
-        StructExceptionsAttribute attr = (StructExceptionsAttribute)method.methodStruct.getAttribute("Exceptions");
+        StructExceptionsAttribute attr = (StructExceptionsAttribute) method.methodStruct
+            .getAttribute("Exceptions");
 
         if (attr != null) {
           String classname = null;
@@ -106,8 +107,7 @@ public class ExitExprent extends Exprent {
             if ("java/lang/Throwable".equals(exClassName)) {
               classname = exClassName;
               break;
-            }
-            else if ("java/lang/Exception".equals(exClassName)) {
+            } else if ("java/lang/Exception".equals(exClassName)) {
               classname = exClassName;
             }
           }
@@ -134,12 +134,16 @@ public class ExitExprent extends Exprent {
 
   @Override
   public boolean equals(Object o) {
-    if (o == this) return true;
-    if (o == null || !(o instanceof ExitExprent)) return false;
+    if (o == this) {
+      return true;
+    }
+    if (o == null || !(o instanceof ExitExprent)) {
+      return false;
+    }
 
-    ExitExprent et = (ExitExprent)o;
+    ExitExprent et = (ExitExprent) o;
     return exitType == et.getExitType() &&
-           InterpreterUtil.equalObjects(value, et.getValue());
+        InterpreterUtil.equalObjects(value, et.getValue());
   }
 
   public int getExitType() {
@@ -153,25 +157,25 @@ public class ExitExprent extends Exprent {
   public VarType getRetType() {
     return retType;
   }
-  
+
   // *****************************************************************************
   // IMatchable implementation
   // *****************************************************************************
-  
+
   public boolean match(MatchNode matchNode, MatchEngine engine) {
 
-    if(!super.match(matchNode, engine)) {
+    if (!super.match(matchNode, engine)) {
       return false;
     }
-    
-    Integer type = (Integer)matchNode.getRuleValue(MatchProperties.EXPRENT_EXITTYPE);
-    if(type != null) {
-      if(this.exitType != type.intValue()) {
+
+    Integer type = (Integer) matchNode.getRuleValue(MatchProperties.EXPRENT_EXITTYPE);
+    if (type != null) {
+      if (this.exitType != type.intValue()) {
         return false;
       }
     }
-    
+
     return true;
   }
-  
+
 }

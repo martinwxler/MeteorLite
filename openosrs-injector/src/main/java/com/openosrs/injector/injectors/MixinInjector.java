@@ -30,6 +30,8 @@
  */
 package com.openosrs.injector.injectors;
 
+import static org.sponge.util.Logger.ANSI_GREEN;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 import com.openosrs.injector.InjectException;
@@ -78,378 +80,344 @@ import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
 import org.sponge.util.Message;
 
-import static org.sponge.util.Logger.ANSI_GREEN;
-import static org.sponge.util.Logger.ANSI_RESET;
+public class MixinInjector extends AbstractInjector {
 
-public class MixinInjector extends AbstractInjector
-{
-	private static final Type COPY = new Type("Lnet/runelite/api/mixins/Copy;");
-	private static final Type INJECT = new Type("Lnet/runelite/api/mixins/Inject;");
-	private static final Type MIXIN = new Type("Lnet/runelite/api/mixins/Mixin;");
-	private static final Type MIXINS = new Type("Lnet/runelite/api/mixins/Mixins;");
-	private static final Type REPLACE = new Type("Lnet/runelite/api/mixins/Replace;");
-	private static final Type SHADOW = new Type("Lnet/runelite/api/mixins/Shadow;");
-	private static final String ASSERTION_FIELD = "$assertionsDisabled";
-	private static final String MIXIN_BASE = "net/runelite/mixins/";
+  private static final Type COPY = new Type("Lnet/runelite/api/mixins/Copy;");
+  private static final Type INJECT = new Type("Lnet/runelite/api/mixins/Inject;");
+  private static final Type MIXIN = new Type("Lnet/runelite/api/mixins/Mixin;");
+  private static final Type MIXINS = new Type("Lnet/runelite/api/mixins/Mixins;");
+  private static final Type REPLACE = new Type("Lnet/runelite/api/mixins/Replace;");
+  private static final Type SHADOW = new Type("Lnet/runelite/api/mixins/Shadow;");
+  private static final String ASSERTION_FIELD = "$assertionsDisabled";
+  private static final String MIXIN_BASE = "net/runelite/mixins/";
+  private final Map<String, Field> injectedFields = new HashMap<>();
+  private final Map<net.runelite.asm.pool.Field, ShadowField> shadowFields = new HashMap<>();
+  private int injectedInterfaces = 0;
+  private int copied = 0, replaced = 0, injected = 0;
 
-	private int injectedInterfaces = 0;
-	private final Map<String, Field> injectedFields = new HashMap<>();
-	private final Map<net.runelite.asm.pool.Field, ShadowField> shadowFields = new HashMap<>();
-	private int copied = 0, replaced = 0, injected = 0;
+  public MixinInjector(InjectData inject) {
+    super(inject);
+  }
 
-	public MixinInjector(InjectData inject)
-	{
-		super(inject);
-	}
+  private static Provider<ClassFile> mixinProvider(ClassFile mixin) {
+    return new Provider<ClassFile>() {
+      byte[] bytes = null;
 
-	@Override
-	public void inject()
-	{
-		final Map<Provider<ClassFile>, List<ClassFile>> mixinTargets = initTargets();
-		inject(mixinTargets);
-	}
+      @Override
+      public ClassFile get() {
+        if (bytes != null) {
+          return JarUtil.loadClass(bytes);
+        }
 
-	@VisibleForTesting
-	void inject(Map<Provider<ClassFile>, List<ClassFile>> mixinTargets)
-	{
-		for (Map.Entry<Provider<ClassFile>, List<ClassFile>> entry : mixinTargets.entrySet())
-		{
-			injectInterfaces(entry.getKey(), entry.getValue());
-		}
+        bytes = JarUtil.writeClass(mixin.getGroup(), mixin);
+        return mixin;
+      }
+    };
+  }
 
-		log.info(Message.buildMessage()
-				.addText(ANSI_GREEN + "Injected " + injectedInterfaces + " interfaces")
-				.build());
+  @Override
+  public void inject() {
+    final Map<Provider<ClassFile>, List<ClassFile>> mixinTargets = initTargets();
+    inject(mixinTargets);
+  }
 
-		for (Map.Entry<Provider<ClassFile>, List<ClassFile>> entry : mixinTargets.entrySet())
-		{
-			injectFields(entry.getKey(), entry.getValue());
-		}
+  @VisibleForTesting
+  void inject(Map<Provider<ClassFile>, List<ClassFile>> mixinTargets) {
+    for (Map.Entry<Provider<ClassFile>, List<ClassFile>> entry : mixinTargets.entrySet()) {
+      injectInterfaces(entry.getKey(), entry.getValue());
+    }
 
-		log.info(Message.buildMessage()
-				.addText(ANSI_GREEN + "Injected " + injectedFields.size() + " fields")
-				.build());
+    log.info(Message.buildMessage()
+        .addText(ANSI_GREEN + "Injected " + injectedInterfaces + " interfaces")
+        .build());
 
-		for (Map.Entry<Provider<ClassFile>, List<ClassFile>> entry : mixinTargets.entrySet())
-		{
-			findShadowFields(entry.getKey());
-		}
+    for (Map.Entry<Provider<ClassFile>, List<ClassFile>> entry : mixinTargets.entrySet()) {
+      injectFields(entry.getKey(), entry.getValue());
+    }
 
-		log.info(Message.buildMessage()
-				.addText(ANSI_GREEN + "Shadowed " + shadowFields.size() + " fields")
-				.build());
+    log.info(Message.buildMessage()
+        .addText(ANSI_GREEN + "Injected " + injectedFields.size() + " fields")
+        .build());
 
-		for (Map.Entry<Provider<ClassFile>, List<ClassFile>> entry : mixinTargets.entrySet())
-		{
-			injectMethods(entry.getKey(), entry.getValue());
-		}
+    for (Map.Entry<Provider<ClassFile>, List<ClassFile>> entry : mixinTargets.entrySet()) {
+      findShadowFields(entry.getKey());
+    }
 
-		log.info(Message.buildMessage()
-				.addText(ANSI_GREEN + "Injected " + injected + ", copied " + copied + ", replaced " + replaced + " methods")
-				.build());
+    log.info(Message.buildMessage()
+        .addText(ANSI_GREEN + "Shadowed " + shadowFields.size() + " fields")
+        .build());
 
-		inject.runChildInjector(new InjectHook(inject, mixinTargets));
+    for (Map.Entry<Provider<ClassFile>, List<ClassFile>> entry : mixinTargets.entrySet()) {
+      injectMethods(entry.getKey(), entry.getValue());
+    }
 
-		inject.runChildInjector(new InjectHookMethod(inject, mixinTargets));
-	}
+    log.info(Message.buildMessage()
+        .addText(
+            ANSI_GREEN + "Injected " + injected + ", copied " + copied + ", replaced " + replaced
+                + " methods")
+        .build());
 
-	private Map<Provider<ClassFile>, List<ClassFile>> initTargets()
-	{
-		ImmutableMap.Builder<Provider<ClassFile>, List<ClassFile>> builder = ImmutableMap.builder();
+    inject.runChildInjector(new InjectHook(inject, mixinTargets));
 
-		try
-		{
-			for (ClassFile mixinClass : inject.getMixins())
-			{
-				final List<ClassFile> ret = getMixins(mixinClass);
-				builder.put(
-					(ret.size() > 1 ? mixinProvider(mixinClass) : () -> mixinClass),
-					ret
-				);
-			}
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+    inject.runChildInjector(new InjectHookMethod(inject, mixinTargets));
+  }
 
-		return builder.build();
-	}
+  private Map<Provider<ClassFile>, List<ClassFile>> initTargets() {
+    ImmutableMap.Builder<Provider<ClassFile>, List<ClassFile>> builder = ImmutableMap.builder();
 
-	private void injectInterfaces(Provider<ClassFile> mixinProvider, List<ClassFile> targetClasses)
-	{
-		try
-		{
-			final ClassFile mixinClass = mixinProvider.get();
+    try {
+      for (ClassFile mixinClass : inject.getMixins()) {
+        final List<ClassFile> ret = getMixins(mixinClass);
+        builder.put(
+            (ret.size() > 1 ? mixinProvider(mixinClass) : () -> mixinClass),
+            ret
+        );
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 
-			for (final ClassFile targetClass : targetClasses)
-			{
-				mixinClass.getInterfaces().getInterfaces().forEach((itf) ->
-				{
-					if (targetClass.getInterfaces().addInterface(itf))
-					{
-						injectedInterfaces++;
-					}
-				});
-			}
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
+    return builder.build();
+  }
 
-	private void injectFields(Provider<ClassFile> mixinProvider, List<ClassFile> targetClasses)
-	{
-		try
-		{
-			final ClassFile mixinClass = mixinProvider.get();
+  private void injectInterfaces(Provider<ClassFile> mixinProvider, List<ClassFile> targetClasses) {
+    try {
+      final ClassFile mixinClass = mixinProvider.get();
 
-			for (final ClassFile targetClass : targetClasses)
-			{
-				for (Field field : mixinClass.getFields())
-				{
-					if (field.findAnnotation(INJECT) == null &&
-						(!ASSERTION_FIELD.equals(field.getName()) || targetClass.findField(ASSERTION_FIELD, Type.BOOLEAN) != null))
-					{
-						continue;
-					}
+      for (final ClassFile targetClass : targetClasses) {
+        mixinClass.getInterfaces().getInterfaces().forEach((itf) ->
+        {
+          if (targetClass.getInterfaces().addInterface(itf)) {
+            injectedInterfaces++;
+          }
+        });
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 
-					Field copy = new Field(targetClass, field.getName(), field.getType());
-					copy.setAccessFlags(field.getAccessFlags());
-					copy.setPublic();
-					copy.setValue(field.getValue());
+  private void injectFields(Provider<ClassFile> mixinProvider, List<ClassFile> targetClasses) {
+    try {
+      final ClassFile mixinClass = mixinProvider.get();
 
-					for (Map.Entry<Type, Annotation> e : field.getAnnotations().entrySet())
-					{
-						if (!e.getKey().toString().startsWith("Lnet/runelite/api/mixins"))
-						{
-							copy.addAnnotation(e.getValue());
-						}
-					}
+      for (final ClassFile targetClass : targetClasses) {
+        for (Field field : mixinClass.getFields()) {
+          if (field.findAnnotation(INJECT) == null &&
+              (!ASSERTION_FIELD.equals(field.getName())
+                  || targetClass.findField(ASSERTION_FIELD, Type.BOOLEAN) != null)) {
+            continue;
+          }
 
-					targetClass.addField(copy);
+          Field copy = new Field(targetClass, field.getName(), field.getType());
+          copy.setAccessFlags(field.getAccessFlags());
+          copy.setPublic();
+          copy.setValue(field.getValue());
 
-					if (injectedFields.containsKey(field.getName()) && !ASSERTION_FIELD.equals(field.getName()))
-					{
-						throw new InjectException("Duplicate field: " + field.getName());
-					}
+          for (Map.Entry<Type, Annotation> e : field.getAnnotations().entrySet()) {
+            if (!e.getKey().toString().startsWith("Lnet/runelite/api/mixins")) {
+              copy.addAnnotation(e.getValue());
+            }
+          }
 
-					injectedFields.put(field.getName(), copy);
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+          targetClass.addField(copy);
 
-	}
+          if (injectedFields.containsKey(field.getName()) && !ASSERTION_FIELD
+              .equals(field.getName())) {
+            throw new InjectException("Duplicate field: " + field.getName());
+          }
 
-	private void findShadowFields(Provider<ClassFile> mixinProvider)
-	{
-		final ClassFile mixinClass = mixinProvider.get();
+          injectedFields.put(field.getName(), copy);
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 
-		for (final Field field : mixinClass.getFields())
-		{
-			Annotation shadow = field.findAnnotation(SHADOW);
+  }
 
-			if (shadow == null)
-			{
-				continue;
-			}
+  private void findShadowFields(Provider<ClassFile> mixinProvider) {
+    final ClassFile mixinClass = mixinProvider.get();
 
-			if (!field.isStatic())
-			{
-				throw new InjectException("Shadowed fields must be static");
-			}
+    for (final Field field : mixinClass.getFields()) {
+      Annotation shadow = field.findAnnotation(SHADOW);
 
-			String shadowed = shadow.getValueString();
+      if (shadow == null) {
+        continue;
+      }
 
-			Field targetField = injectedFields.get(shadowed);
-			Number getter = null;
+      if (!field.isStatic()) {
+        throw new InjectException("Shadowed fields must be static");
+      }
 
-			if (targetField == null)
-			{
-				final Field deobTargetField = InjectUtil.findStaticField(inject, shadowed, null, InjectUtil.apiToDeob(inject, field.getType()));
-				targetField = inject.toVanilla(deobTargetField);
+      String shadowed = shadow.getValueString();
 
-				getter = DeobAnnotations.getObfuscatedGetter(deobTargetField);
-			}
+      Field targetField = injectedFields.get(shadowed);
+      Number getter = null;
 
-			if ((targetField.getAccessFlags() & Opcodes.ACC_PRIVATE) != 0)
-			{
-				throw new InjectException("Shadowed fields can't be private");
-			}
+      if (targetField == null) {
+        final Field deobTargetField = InjectUtil
+            .findStaticField(inject, shadowed, null, InjectUtil.apiToDeob(inject, field.getType()));
+        targetField = inject.toVanilla(deobTargetField);
 
-			shadowFields.put(
-				field.getPoolField(),
-				new ShadowField(targetField, getter)
-			);
-		}
-	}
+        getter = DeobAnnotations.getObfuscatedGetter(deobTargetField);
+      }
 
-	private void injectMethods(Provider<ClassFile> mixinProvider, List<ClassFile> targetClasses)
-	{
-		for (ClassFile targetClass : targetClasses)
-		{
-			final ClassFile mixinClass = mixinProvider.get();
+      if ((targetField.getAccessFlags() & Opcodes.ACC_PRIVATE) != 0) {
+        throw new InjectException("Shadowed fields can't be private");
+      }
 
-			// Keeps mappings between methods annotated with @Copy -> the copied method within the vanilla pack
-			Map<net.runelite.asm.pool.Method, CopiedMethod> copiedMethods = new HashMap<>();
+      shadowFields.put(
+          field.getPoolField(),
+          new ShadowField(targetField, getter)
+      );
+    }
+  }
 
-			// Handle the copy mixins first, so all other mixins know of the copies
-			for (Method mixinMethod : mixinClass.getMethods())
-			{
-				Annotation copyA = mixinMethod.findAnnotation(COPY);
-				if (copyA == null)
-				{
-					continue;
-				}
-				String copiedName = copyA.getValueString();
+  private void injectMethods(Provider<ClassFile> mixinProvider, List<ClassFile> targetClasses) {
+    for (ClassFile targetClass : targetClasses) {
+      final ClassFile mixinClass = mixinProvider.get();
 
-				Signature deobSig = InjectUtil.apiToDeob(inject, mixinMethod.getDescriptor());
-				boolean notStat = !mixinMethod.isStatic();
+      // Keeps mappings between methods annotated with @Copy -> the copied method within the vanilla pack
+      Map<net.runelite.asm.pool.Method, CopiedMethod> copiedMethods = new HashMap<>();
 
-				String s = inject.deobfuscated.findClass(targetClass.getName()).getName();
-				Method deobSourceMethod = InjectUtil.findMethod(inject, copiedName, s, deobSig::equals, notStat, true);
+      // Handle the copy mixins first, so all other mixins know of the copies
+      for (Method mixinMethod : mixinClass.getMethods()) {
+        Annotation copyA = mixinMethod.findAnnotation(COPY);
+        if (copyA == null) {
+          continue;
+        }
+        String copiedName = copyA.getValueString();
 
-				if (mixinMethod.isStatic() != deobSourceMethod.isStatic())
-				{
-					throw new InjectException("Mixin method " + mixinMethod + " should be " + (deobSourceMethod.isStatic() ? "static" : "non-static"));
-				}
+        Signature deobSig = InjectUtil.apiToDeob(inject, mixinMethod.getDescriptor());
+        boolean notStat = !mixinMethod.isStatic();
 
-				// The actual method we're copying, including code etc
-				Method sourceMethod = inject.toVanilla(deobSourceMethod);
+        String s = inject.deobfuscated.findClass(targetClass.getName()).getName();
+        Method deobSourceMethod = InjectUtil
+            .findMethod(inject, copiedName, s, deobSig::equals, notStat, true);
 
-				if (mixinMethod.getDescriptor().size() > sourceMethod.getDescriptor().size())
-				{
-					throw new InjectException("Mixin methods cannot have more parameters than their corresponding ob method");
-				}
+        if (mixinMethod.isStatic() != deobSourceMethod.isStatic()) {
+          throw new InjectException(
+              "Mixin method " + mixinMethod + " should be " + (deobSourceMethod.isStatic()
+                  ? "static" : "non-static"));
+        }
 
-				Method copy = new Method(targetClass, "copy$" + copiedName, sourceMethod.getDescriptor());
-				moveCode(copy, sourceMethod.getCode());
-				copy.setAccessFlags(sourceMethod.getAccessFlags());
-				copy.setPublic();
-				copy.getExceptions().getExceptions().addAll(sourceMethod.getExceptions().getExceptions());
-				for (Annotation a : sourceMethod.getAnnotations().values())
-				{
-					copy.addAnnotation(a);
-				}
-				targetClass.addMethod(copy);
-				++copied;
+        // The actual method we're copying, including code etc
+        Method sourceMethod = inject.toVanilla(deobSourceMethod);
 
-				/*
-				 * If the desc for the mixin method and the desc for the ob method
-				 * are the same in length, assume that the mixin method is taking
-				 * care of the garbage parameter itself.
-				 */
-				boolean hasGarbageValue = mixinMethod.getDescriptor().size() != sourceMethod.getDescriptor().size()
-					&& deobSourceMethod.getDescriptor().size() < copy.getDescriptor().size();
+        if (mixinMethod.getDescriptor().size() > sourceMethod.getDescriptor().size()) {
+          throw new InjectException(
+              "Mixin methods cannot have more parameters than their corresponding ob method");
+        }
 
-				copiedMethods.put(mixinMethod.getPoolMethod(), new CopiedMethod(copy, !hasGarbageValue ? null : Integer.valueOf(DeobAnnotations.getDecoder(deobSourceMethod))));
-			}
+        Method copy = new Method(targetClass, "copy$" + copiedName, sourceMethod.getDescriptor());
+        moveCode(copy, sourceMethod.getCode());
+        copy.setAccessFlags(sourceMethod.getAccessFlags());
+        copy.setPublic();
+        copy.getExceptions().getExceptions().addAll(sourceMethod.getExceptions().getExceptions());
+        for (Annotation a : sourceMethod.getAnnotations().values()) {
+          copy.addAnnotation(a);
+        }
+        targetClass.addMethod(copy);
+        ++copied;
 
-			// Handle the rest of the mixin types
-			for (Method mixinMethod : mixinClass.getMethods())
-			{
-				boolean isClinit = "<clinit>".equals(mixinMethod.getName());
-				boolean isInit = "<init>".equals(mixinMethod.getName());
-				boolean hasInject = mixinMethod.findAnnotation(INJECT) != null;
+        /*
+         * If the desc for the mixin method and the desc for the ob method
+         * are the same in length, assume that the mixin method is taking
+         * care of the garbage parameter itself.
+         */
+        boolean hasGarbageValue =
+            mixinMethod.getDescriptor().size() != sourceMethod.getDescriptor().size()
+                && deobSourceMethod.getDescriptor().size() < copy.getDescriptor().size();
 
-				// You can't annotate clinit, so its always injected
-				if ((hasInject && isInit) || isClinit)
-				{
-					if (!"()V".equals(mixinMethod.getDescriptor().toString()))
-					{
-						throw new InjectException("Injected constructors cannot have arguments");
-					}
+        copiedMethods.put(mixinMethod.getPoolMethod(), new CopiedMethod(copy,
+            !hasGarbageValue ? null
+                : Integer.valueOf(DeobAnnotations.getDecoder(deobSourceMethod))));
+      }
 
-					Method[] originalMethods = targetClass.getMethods().stream()
-						.filter(m -> m.getName().equals(mixinMethod.getName()))
-						.toArray(Method[]::new);
+      // Handle the rest of the mixin types
+      for (Method mixinMethod : mixinClass.getMethods()) {
+        boolean isClinit = "<clinit>".equals(mixinMethod.getName());
+        boolean isInit = "<init>".equals(mixinMethod.getName());
+        boolean hasInject = mixinMethod.findAnnotation(INJECT) != null;
 
-					String name = mixinMethod.getName();
+        // You can't annotate clinit, so its always injected
+        if ((hasInject && isInit) || isClinit) {
+          if (!"()V".equals(mixinMethod.getDescriptor().toString())) {
+            throw new InjectException("Injected constructors cannot have arguments");
+          }
 
-					// If there isn't a <clinit> already just inject ours, otherwise rename it
-					// This is always true for <init>
-					if (originalMethods.length > 0)
-					{
-						name = "rl$$" + (isInit ? "init" : "clinit");
-					}
+          Method[] originalMethods = targetClass.getMethods().stream()
+              .filter(m -> m.getName().equals(mixinMethod.getName()))
+              .toArray(Method[]::new);
 
-					String numberlessName = name;
-					for (int i = 1; targetClass.findMethod(name, mixinMethod.getDescriptor()) != null; i++)
-					{
-						name = numberlessName + i;
-					}
+          String name = mixinMethod.getName();
 
-					Method copy = new Method(targetClass, name, mixinMethod.getDescriptor());
-					moveCode(copy, mixinMethod.getCode());
-					copy.setAccessFlags(mixinMethod.getAccessFlags());
-					copy.setPrivate();
-					assert mixinMethod.getExceptions().getExceptions().isEmpty();
+          // If there isn't a <clinit> already just inject ours, otherwise rename it
+          // This is always true for <init>
+          if (originalMethods.length > 0) {
+            name = "rl$$" + (isInit ? "init" : "clinit");
+          }
 
-					// Remove the call to the superclass's ctor
-					if (isInit)
-					{
-						Instructions instructions = copy.getCode().getInstructions();
-						ListIterator<Instruction> listIter = instructions.listIterator();
-						while (listIter.hasNext())
-						{
-							Instruction instr = listIter.next();
-							if (instr instanceof InvokeSpecial)
-							{
-								InvokeSpecial invoke = (InvokeSpecial) instr;
-								assert invoke.getMethod().getName().equals("<init>");
-								listIter.remove();
-								int pops = invoke.getMethod().getType().getArguments().size() + 1;
+          String numberlessName = name;
+          for (int i = 1; targetClass.findMethod(name, mixinMethod.getDescriptor()) != null; i++) {
+            name = numberlessName + i;
+          }
 
-								for (int i = 0; i < pops; i++)
-								{
-									listIter.add(new Pop(instructions));
-								}
+          Method copy = new Method(targetClass, name, mixinMethod.getDescriptor());
+          moveCode(copy, mixinMethod.getCode());
+          copy.setAccessFlags(mixinMethod.getAccessFlags());
+          copy.setPrivate();
+          assert mixinMethod.getExceptions().getExceptions().isEmpty();
 
-								break;
-							}
-						}
-					}
+          // Remove the call to the superclass's ctor
+          if (isInit) {
+            Instructions instructions = copy.getCode().getInstructions();
+            ListIterator<Instruction> listIter = instructions.listIterator();
+            while (listIter.hasNext()) {
+              Instruction instr = listIter.next();
+              if (instr instanceof InvokeSpecial) {
+                InvokeSpecial invoke = (InvokeSpecial) instr;
+                assert invoke.getMethod().getName().equals("<init>");
+                listIter.remove();
+                int pops = invoke.getMethod().getType().getArguments().size() + 1;
 
-					setOwnersToTargetClass(mixinClass, targetClass, copy, copiedMethods);
-					targetClass.addMethod(copy);
+                for (int i = 0; i < pops; i++) {
+                  listIter.add(new Pop(instructions));
+                }
 
-					// Call our method at the return point of the matching method(s)
-					for (Method om : originalMethods)
-					{
-						Instructions instructions = om.getCode().getInstructions();
-						ListIterator<Instruction> listIter = instructions.listIterator();
+                break;
+              }
+            }
+          }
 
-						while (listIter.hasNext())
-						{
-							Instruction instr = listIter.next();
-							if (instr instanceof ReturnInstruction)
-							{
-								listIter.previous();
-								if (isInit)
-								{
-									listIter.add(new ALoad(instructions, 0));
-									listIter.add(new InvokeSpecial(instructions, copy.getPoolMethod()));
-								}
-								else if (isClinit)
-								{
-									listIter.add(new InvokeStatic(instructions, copy.getPoolMethod()));
-								}
-								listIter.next();
-							}
-						}
-					}
+          setOwnersToTargetClass(mixinClass, targetClass, copy, copiedMethods);
+          targetClass.addMethod(copy);
 
-		//			log.debug("[DEBUG] Injected mixin method {} to {}", copy, targetClass);
-					++injected;
-				}
-				else if (hasInject)
-				{
-					// Make sure the method doesn't invoke copied methods
+          // Call our method at the return point of the matching method(s)
+          for (Method om : originalMethods) {
+            Instructions instructions = om.getCode().getInstructions();
+            ListIterator<Instruction> listIter = instructions.listIterator();
+
+            while (listIter.hasNext()) {
+              Instruction instr = listIter.next();
+              if (instr instanceof ReturnInstruction) {
+                listIter.previous();
+                if (isInit) {
+                  listIter.add(new ALoad(instructions, 0));
+                  listIter.add(new InvokeSpecial(instructions, copy.getPoolMethod()));
+                } else if (isClinit) {
+                  listIter.add(new InvokeStatic(instructions, copy.getPoolMethod()));
+                }
+                listIter.next();
+              }
+            }
+          }
+
+          //			log.debug("[DEBUG] Injected mixin method {} to {}", copy, targetClass);
+          ++injected;
+        } else if (hasInject) {
+          // Make sure the method doesn't invoke copied methods
 					/*for (Instruction i : mixinMethod.getCode().getInstructions())
 					{
 						if (i instanceof InvokeInstruction)
@@ -463,89 +431,84 @@ public class MixinInjector extends AbstractInjector
 						}
 					}*/
 
-					Method copy = new Method(targetClass, mixinMethod.getName(), mixinMethod.getDescriptor());
-					moveCode(copy, mixinMethod.getCode());
-					copy.setAccessFlags(mixinMethod.getAccessFlags());
-					copy.setPublic();
-					assert mixinMethod.getExceptions().getExceptions().isEmpty();
+          Method copy = new Method(targetClass, mixinMethod.getName(), mixinMethod.getDescriptor());
+          moveCode(copy, mixinMethod.getCode());
+          copy.setAccessFlags(mixinMethod.getAccessFlags());
+          copy.setPublic();
+          assert mixinMethod.getExceptions().getExceptions().isEmpty();
 
-					setOwnersToTargetClass(mixinClass, targetClass, copy, copiedMethods);
+          setOwnersToTargetClass(mixinClass, targetClass, copy, copiedMethods);
 
-					targetClass.addMethod(copy);
+          targetClass.addMethod(copy);
 
-		//			log.debug("[DEBUG] Injected mixin method {} to {}", copy, targetClass);
-					++injected;
-				}
-				else if (mixinMethod.findAnnotation(REPLACE) != null)
-				{
-					Annotation replaceAnnotation = mixinMethod.findAnnotation(REPLACE);
-					String replacedName = replaceAnnotation.getValueString();
+          //			log.debug("[DEBUG] Injected mixin method {} to {}", copy, targetClass);
+          ++injected;
+        } else if (mixinMethod.findAnnotation(REPLACE) != null) {
+          Annotation replaceAnnotation = mixinMethod.findAnnotation(REPLACE);
+          String replacedName = replaceAnnotation.getValueString();
 
-					ClassFile deobClass = inject.deobfuscated.findClass(targetClass.getName());
-					Method deobMethod = findDeobMatching(deobClass, mixinMethod, replacedName);
+          ClassFile deobClass = inject.deobfuscated.findClass(targetClass.getName());
+          Method deobMethod = findDeobMatching(deobClass, mixinMethod, replacedName);
 
-					if (deobMethod == null)
-					{
-						throw new InjectException("Failed to find the deob method " + replacedName + " for mixin " + mixinClass);
-					}
+          if (deobMethod == null) {
+            throw new InjectException(
+                "Failed to find the deob method " + replacedName + " for mixin " + mixinClass);
+          }
 
-					if (mixinMethod.isStatic() != deobMethod.isStatic())
-					{
-						throw new InjectException("Mixin method " + mixinMethod + " should be "
-							+ (deobMethod.isStatic() ? "static" : "non-static"));
-					}
+          if (mixinMethod.isStatic() != deobMethod.isStatic()) {
+            throw new InjectException("Mixin method " + mixinMethod + " should be "
+                + (deobMethod.isStatic() ? "static" : "non-static"));
+          }
 
-					String obReplacedName = deobMethod.getName();
-					Signature obMethodSignature = deobMethod.getDescriptor();
+          String obReplacedName = deobMethod.getName();
+          Signature obMethodSignature = deobMethod.getDescriptor();
 
-					// Find the vanilla class where the method to copy is in
-					ClassFile obCf = inject.toVanilla(deobMethod.getClassFile());
+          // Find the vanilla class where the method to copy is in
+          ClassFile obCf = inject.toVanilla(deobMethod.getClassFile());
 
-					Method obMethod = obCf.findMethod(obReplacedName, obMethodSignature);
-					assert obMethod != null : "obfuscated method " + obReplacedName + obMethodSignature + " does not exist";
+          Method obMethod = obCf.findMethod(obReplacedName, obMethodSignature);
+          assert
+              obMethod != null :
+              "obfuscated method " + obReplacedName + obMethodSignature + " does not exist";
 
-					if (mixinMethod.getDescriptor().size() > obMethod.getDescriptor().size())
-					{
-						throw new InjectException("Mixin methods cannot have more parameters than their corresponding ob method");
-					}
+          if (mixinMethod.getDescriptor().size() > obMethod.getDescriptor().size()) {
+            throw new InjectException(
+                "Mixin methods cannot have more parameters than their corresponding ob method");
+          }
 
-					Type returnType = mixinMethod.getDescriptor().getReturnValue();
-					Type deobReturnType = InjectUtil.apiToDeob(inject, returnType);
-					if (!returnType.equals(deobReturnType))
-					{
-						ClassFile deobReturnTypeClassFile = inject.getDeobfuscated()
-							.findClass(deobReturnType.getInternalName());
-						if (deobReturnTypeClassFile != null)
-						{
-							ClassFile obReturnTypeClass = inject.toVanilla(deobReturnTypeClassFile);
+          Type returnType = mixinMethod.getDescriptor().getReturnValue();
+          Type deobReturnType = InjectUtil.apiToDeob(inject, returnType);
+          if (!returnType.equals(deobReturnType)) {
+            ClassFile deobReturnTypeClassFile = inject.getDeobfuscated()
+                .findClass(deobReturnType.getInternalName());
+            if (deobReturnTypeClassFile != null) {
+              ClassFile obReturnTypeClass = inject.toVanilla(deobReturnTypeClassFile);
 
-							Instructions instructions = mixinMethod.getCode().getInstructions();
-							ListIterator<Instruction> listIter = instructions.listIterator();
-							while (listIter.hasNext())
-							{
-								Instruction instr = listIter.next();
-								if (instr instanceof ReturnInstruction)
-								{
-									listIter.previous();
-									CheckCast checkCast = new CheckCast(instructions);
-									checkCast.setType(new Type(obReturnTypeClass.getName()));
-									listIter.add(checkCast);
-									listIter.next();
-								}
-							}
-						}
-					}
+              Instructions instructions = mixinMethod.getCode().getInstructions();
+              ListIterator<Instruction> listIter = instructions.listIterator();
+              while (listIter.hasNext()) {
+                Instruction instr = listIter.next();
+                if (instr instanceof ReturnInstruction) {
+                  listIter.previous();
+                  CheckCast checkCast = new CheckCast(instructions);
+                  checkCast.setType(new Type(obReturnTypeClass.getName()));
+                  listIter.add(checkCast);
+                  listIter.next();
+                }
+              }
+            }
+          }
 
-					moveCode(obMethod, mixinMethod.getCode());
+          moveCode(obMethod, mixinMethod.getCode());
 
-					boolean hasGarbageValue = mixinMethod.getDescriptor().size() != obMethod.getDescriptor().size()
-						&& deobMethod.getDescriptor().size() < obMethodSignature.size();
+          boolean hasGarbageValue =
+              mixinMethod.getDescriptor().size() != obMethod.getDescriptor().size()
+                  && deobMethod.getDescriptor().size() < obMethodSignature.size();
 
-					if (hasGarbageValue)
-					{
-						int garbageIndex = obMethod.isStatic()
-							? obMethod.getDescriptor().size() - 1
-							: obMethod.getDescriptor().size();
+          if (hasGarbageValue) {
+            int garbageIndex = obMethod.isStatic()
+                ? obMethod.getDescriptor().size() - 1
+                : obMethod.getDescriptor().size();
 
 					/*
 						If the mixin method doesn't have the garbage parameter,
@@ -554,270 +517,208 @@ public class MixinInjector extends AbstractInjector
 						so we'll have to add 1 to all loads/stores to indices
 						that are >= garbageIndex.
 					 */
-						shiftLocalIndices(obMethod.getCode().getInstructions(), garbageIndex);
-					}
+            shiftLocalIndices(obMethod.getCode().getInstructions(), garbageIndex);
+          }
 
-					setOwnersToTargetClass(mixinClass, targetClass, obMethod, copiedMethods);
+          setOwnersToTargetClass(mixinClass, targetClass, obMethod, copiedMethods);
 
-		//			log.debug("[DEBUG] Replaced method {} with mixin method {}", obMethod, mixinMethod);
-					replaced++;
-				}
-			}
-		}
-	}
+          //			log.debug("[DEBUG] Replaced method {} with mixin method {}", obMethod, mixinMethod);
+          replaced++;
+        }
+      }
+    }
+  }
 
-	private void moveCode(Method targetMethod, Code sourceCode)
-	{
-		Code newCode = new Code(targetMethod);
-		newCode.setMaxStack(sourceCode.getMaxStack());
-		newCode.getInstructions().getInstructions().addAll(sourceCode.getInstructions().getInstructions());
+  private void moveCode(Method targetMethod, Code sourceCode) {
+    Code newCode = new Code(targetMethod);
+    newCode.setMaxStack(sourceCode.getMaxStack());
+    newCode.getInstructions().getInstructions()
+        .addAll(sourceCode.getInstructions().getInstructions());
 
-		// Update instructions for each instruction
-		for (Instruction i : newCode.getInstructions())
-		{
-			i.setInstructions(newCode.getInstructions());
-		}
+    // Update instructions for each instruction
+    for (Instruction i : newCode.getInstructions()) {
+      i.setInstructions(newCode.getInstructions());
+    }
 
-		newCode.getExceptions().getExceptions().addAll(sourceCode.getExceptions().getExceptions());
-		for (net.runelite.asm.attributes.code.Exception e : newCode.getExceptions().getExceptions())
-		{
-			e.setExceptions(newCode.getExceptions());
-		}
+    newCode.getExceptions().getExceptions().addAll(sourceCode.getExceptions().getExceptions());
+    for (net.runelite.asm.attributes.code.Exception e : newCode.getExceptions().getExceptions()) {
+      e.setExceptions(newCode.getExceptions());
+    }
 
-		targetMethod.setCode(newCode);
-	}
+    targetMethod.setCode(newCode);
+  }
 
-	private void setOwnersToTargetClass(ClassFile mixinCf, ClassFile cf, Method method, Map<net.runelite.asm.pool.Method, CopiedMethod> copiedMethods)
-	{
-		ListIterator<Instruction> iterator = method.getCode().getInstructions().listIterator();
+  private void setOwnersToTargetClass(ClassFile mixinCf, ClassFile cf, Method method,
+      Map<net.runelite.asm.pool.Method, CopiedMethod> copiedMethods) {
+    ListIterator<Instruction> iterator = method.getCode().getInstructions().listIterator();
 
-		while (iterator.hasNext())
-		{
-			Instruction i = iterator.next();
+    while (iterator.hasNext()) {
+      Instruction i = iterator.next();
 
-			if (i instanceof ANewArray)
-			{
-				Type type = ((ANewArray) i).getType_();
-				ClassFile deobTypeClass = inject.toDeob(type.getInternalName());
+      if (i instanceof ANewArray) {
+        Type type = ((ANewArray) i).getType_();
+        ClassFile deobTypeClass = inject.toDeob(type.getInternalName());
 
-				if (deobTypeClass != null)
-				{
-					Type newType = new Type("L" + inject.toVanilla(deobTypeClass).getName() + ";");
+        if (deobTypeClass != null) {
+          Type newType = new Type("L" + inject.toVanilla(deobTypeClass).getName() + ";");
 
-					((ANewArray) i).setType(newType);
-		//			log.debug("[DEBUG] Replaced {} type {} with type {}", i, type, newType);
-				}
-			}
-			else if (i instanceof InvokeInstruction)
-			{
-				InvokeInstruction ii = (InvokeInstruction) i;
+          ((ANewArray) i).setType(newType);
+          //			log.debug("[DEBUG] Replaced {} type {} with type {}", i, type, newType);
+        }
+      } else if (i instanceof InvokeInstruction) {
+        InvokeInstruction ii = (InvokeInstruction) i;
 
-				CopiedMethod copiedMethod = copiedMethods.get(ii.getMethod());
-				if (copiedMethod != null)
-				{
-					ii.setMethod(copiedMethod.copy.getPoolMethod());
+        CopiedMethod copiedMethod = copiedMethods.get(ii.getMethod());
+        if (copiedMethod != null) {
+          ii.setMethod(copiedMethod.copy.getPoolMethod());
 
-					// Pass through garbage value if the method has one
-					if (copiedMethod.garbage != null)
-					{
-						iterator.previous();
-						iterator.add(new LDC(method.getCode().getInstructions(), copiedMethod.garbage));
-						iterator.next();
-					}
-				}
-				else if (ii.getMethod().getClazz().getName().equals(mixinCf.getName()))
-				{
-					ii.setMethod(new net.runelite.asm.pool.Method(
-						new net.runelite.asm.pool.Class(cf.getName()),
-						ii.getMethod().getName(),
-						ii.getMethod().getType()
-					));
-				}
-			}
-			else if (i instanceof FieldInstruction)
-			{
-				FieldInstruction fi = (FieldInstruction) i;
+          // Pass through garbage value if the method has one
+          if (copiedMethod.garbage != null) {
+            iterator.previous();
+            iterator.add(new LDC(method.getCode().getInstructions(), copiedMethod.garbage));
+            iterator.next();
+          }
+        } else if (ii.getMethod().getClazz().getName().equals(mixinCf.getName())) {
+          ii.setMethod(new net.runelite.asm.pool.Method(
+              new net.runelite.asm.pool.Class(cf.getName()),
+              ii.getMethod().getName(),
+              ii.getMethod().getType()
+          ));
+        }
+      } else if (i instanceof FieldInstruction) {
+        FieldInstruction fi = (FieldInstruction) i;
 
-				ShadowField shadowField = shadowFields.get(fi.getField());
+        ShadowField shadowField = shadowFields.get(fi.getField());
 
-				if (shadowField != null)
-				{
-					Field shadowed = shadowField.targetField;
-					if (shadowField.obfuscatedGetter != null)
-					{
-						if (i instanceof SetFieldInstruction)
-						{
-							iterator.previous();
-							InjectUtil.injectObfuscatedSetter(shadowField.obfuscatedGetter, i.getInstructions(), iterator::add);
-							iterator.next();
-						}
-						else if (i instanceof GetFieldInstruction)
-						{
-							InjectUtil.injectObfuscatedGetter(shadowField.obfuscatedGetter, i.getInstructions(), iterator::add);
-						}
-					}
+        if (shadowField != null) {
+          Field shadowed = shadowField.targetField;
+          if (shadowField.obfuscatedGetter != null) {
+            if (i instanceof SetFieldInstruction) {
+              iterator.previous();
+              InjectUtil.injectObfuscatedSetter(shadowField.obfuscatedGetter, i.getInstructions(),
+                  iterator::add);
+              iterator.next();
+            } else if (i instanceof GetFieldInstruction) {
+              InjectUtil.injectObfuscatedGetter(shadowField.obfuscatedGetter, i.getInstructions(),
+                  iterator::add);
+            }
+          }
 
-					fi.setField(shadowed.getPoolField());
-				}
-				else if (fi.getField().getClazz().getName().equals(mixinCf.getName()))
-				{
-					fi.setField(new net.runelite.asm.pool.Field(
-						new net.runelite.asm.pool.Class(cf.getName()),
-						fi.getField().getName(),
-						fi.getField().getType()
-					));
-				}
-			}
-			else if (i instanceof PushConstantInstruction)
-			{
-				PushConstantInstruction pi = (PushConstantInstruction) i;
+          fi.setField(shadowed.getPoolField());
+        } else if (fi.getField().getClazz().getName().equals(mixinCf.getName())) {
+          fi.setField(new net.runelite.asm.pool.Field(
+              new net.runelite.asm.pool.Class(cf.getName()),
+              fi.getField().getName(),
+              fi.getField().getType()
+          ));
+        }
+      } else if (i instanceof PushConstantInstruction) {
+        PushConstantInstruction pi = (PushConstantInstruction) i;
 
-				if (mixinCf.getPoolClass().equals(pi.getConstant()))
-				{
-					pi.setConstant(cf.getPoolClass());
-				}
-			}
+        if (mixinCf.getPoolClass().equals(pi.getConstant())) {
+          pi.setConstant(cf.getPoolClass());
+        }
+      }
 
-			verify(mixinCf, i);
-		}
-	}
+      verify(mixinCf, i);
+    }
+  }
 
-	private void verify(ClassFile mixinCf, Instruction i)
-	{
-		if (i instanceof FieldInstruction)
-		{
-			FieldInstruction fi = (FieldInstruction) i;
+  private void verify(ClassFile mixinCf, Instruction i) {
+    if (i instanceof FieldInstruction) {
+      FieldInstruction fi = (FieldInstruction) i;
 
-			if (fi.getField().getClazz().getName().equals(mixinCf.getName()))
-			{
-				if (i instanceof PutField || i instanceof GetField)
-				{
-					throw new InjectException("Access to non static member field of mixin");
-				}
+      if (fi.getField().getClazz().getName().equals(mixinCf.getName())) {
+        if (i instanceof PutField || i instanceof GetField) {
+          throw new InjectException("Access to non static member field of mixin");
+        }
 
-				Field field = fi.getMyField();
-				if (field != null && !field.isPublic())
-				{
-					throw new InjectException("Static access to non public field " + field);
-				}
-			}
-		}
-		else if (i instanceof InvokeStatic)
-		{
-			InvokeStatic is = (InvokeStatic) i;
+        Field field = fi.getMyField();
+        if (field != null && !field.isPublic()) {
+          throw new InjectException("Static access to non public field " + field);
+        }
+      }
+    } else if (i instanceof InvokeStatic) {
+      InvokeStatic is = (InvokeStatic) i;
 
-			if (is.getMethod().getClazz() != mixinCf.getPoolClass()
-				&& is.getMethod().getClazz().getName().startsWith(MIXIN_BASE))
-			{
-				throw new InjectException("Invoking static methods of other mixins is not supported");
-			}
-		}
-		else if (i instanceof InvokeDynamic)
-		// RS classes don't verify under java 7+ due to the
-		// super() invokespecial being inside of a try{}
-		{
-			throw new InjectException("Injected bytecode must be Java 6 compatible");
-		}
-	}
+      if (is.getMethod().getClazz() != mixinCf.getPoolClass()
+          && is.getMethod().getClazz().getName().startsWith(MIXIN_BASE)) {
+        throw new InjectException("Invoking static methods of other mixins is not supported");
+      }
+    } else if (i instanceof InvokeDynamic)
+    // RS classes don't verify under java 7+ due to the
+    // super() invokespecial being inside of a try{}
+    {
+      throw new InjectException("Injected bytecode must be Java 6 compatible");
+    }
+  }
 
-	private Method findDeobMatching(ClassFile deobClass, Method mixinMethod, String deobName)
-	{
-		List<Method> matching = new ArrayList<>();
+  private Method findDeobMatching(ClassFile deobClass, Method mixinMethod, String deobName) {
+    List<Method> matching = new ArrayList<>();
 
-		for (Method method : deobClass.getMethods())
-		{
-			if (!deobName.equals(method.getName()))
-			{
-				continue;
-			}
+    for (Method method : deobClass.getMethods()) {
+      if (!deobName.equals(method.getName())) {
+        continue;
+      }
 
-			if (InjectUtil.apiToDeobSigEquals(inject, method.getDescriptor(), mixinMethod.getDescriptor()))
-			{
-				matching.add(method);
-			}
-		}
+      if (InjectUtil
+          .apiToDeobSigEquals(inject, method.getDescriptor(), mixinMethod.getDescriptor())) {
+        matching.add(method);
+      }
+    }
 
-		if (matching.size() > 1)
-		// this happens when it has found several deob methods for some mixin method,
-		// to get rid of the error, refine your search by making your mixin method have more parameters
-		{
-			throw new InjectException("There are several matching methods when there should only be one");
-		}
-		else if (matching.size() == 1)
-		{
-			return matching.get(0);
-		}
+    if (matching.size() > 1)
+    // this happens when it has found several deob methods for some mixin method,
+    // to get rid of the error, refine your search by making your mixin method have more parameters
+    {
+      throw new InjectException("There are several matching methods when there should only be one");
+    } else if (matching.size() == 1) {
+      return matching.get(0);
+    }
 
-		return inject.getDeobfuscated().findStaticMethod(deobName);
-	}
+    return inject.getDeobfuscated().findStaticMethod(deobName);
+  }
 
-	private void shiftLocalIndices(Instructions instructions, int startIdx)
-	{
-		for (Instruction i : instructions)
-		{
-			if (i instanceof LVTInstruction)
-			{
-				LVTInstruction lvti = (LVTInstruction) i;
+  private void shiftLocalIndices(Instructions instructions, int startIdx) {
+    for (Instruction i : instructions) {
+      if (i instanceof LVTInstruction) {
+        LVTInstruction lvti = (LVTInstruction) i;
 
-				if (lvti.getVariableIndex() >= startIdx)
-				{
-					lvti.setVariableIndex(lvti.getVariableIndex() + 1);
-				}
-			}
-		}
-	}
+        if (lvti.getVariableIndex() >= startIdx) {
+          lvti.setVariableIndex(lvti.getVariableIndex() + 1);
+        }
+      }
+    }
+  }
 
-	@SuppressWarnings("unchecked")
-	private List<ClassFile> getMixins(Annotated from)
-	{
-		final Annotation mixin = from.findAnnotation(MIXIN);
-		if (mixin != null)
-		{
-			return Arrays.asList(InjectUtil.getVanillaClassFromAnnotationString(inject, mixin));
-		}
-		final Annotation mixins = from.findAnnotation(MIXINS);
-		if (mixins != null)
-		{
-			return ((List<Annotation>) mixins.getValue()).stream()
-				.map(mix -> InjectUtil.getVanillaClassFromAnnotationString(inject, mix))
-				.collect(Collectors.toList());
-		}
-		throw new IllegalArgumentException("No MIXIN or MIXINS found on " + from.toString());
-	}
+  @SuppressWarnings("unchecked")
+  private List<ClassFile> getMixins(Annotated from) {
+    final Annotation mixin = from.findAnnotation(MIXIN);
+    if (mixin != null) {
+      return Arrays.asList(InjectUtil.getVanillaClassFromAnnotationString(inject, mixin));
+    }
+    final Annotation mixins = from.findAnnotation(MIXINS);
+    if (mixins != null) {
+      return ((List<Annotation>) mixins.getValue()).stream()
+          .map(mix -> InjectUtil.getVanillaClassFromAnnotationString(inject, mix))
+          .collect(Collectors.toList());
+    }
+    throw new IllegalArgumentException("No MIXIN or MIXINS found on " + from.toString());
+  }
 
-	@Value
-	private static class CopiedMethod
-	{
-		@Nonnull
-		Method copy;
-		@Nullable Integer garbage;
-	}
+  @Value
+  private static class CopiedMethod {
 
-	@Value
-	private static class ShadowField
-	{
-		@Nonnull
-		Field targetField;
-		@Nullable Number obfuscatedGetter;
-	}
+    @Nonnull
+    Method copy;
+    @Nullable Integer garbage;
+  }
 
-	private static Provider<ClassFile> mixinProvider(ClassFile mixin)
-	{
-		return new Provider<ClassFile>()
-		{
-			byte[] bytes = null;
+  @Value
+  private static class ShadowField {
 
-			@Override
-			public ClassFile get()
-			{
-				if (bytes != null)
-				{
-					return JarUtil.loadClass(bytes);
-				}
-
-				bytes = JarUtil.writeClass(mixin.getGroup(), mixin);
-				return mixin;
-			}
-		};
-	}
+    @Nonnull
+    Field targetField;
+    @Nullable Number obfuscatedGetter;
+  }
 }

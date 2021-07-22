@@ -24,22 +24,22 @@
  */
 package net.runelite.api.events;
 
+import lombok.Data;
 import net.runelite.api.GameObject;
 import net.runelite.api.Tile;
-import lombok.Data;
 
 /**
  * An event where a {@link GameObject} on a {@link Tile} is removed.
  */
 @Data
-public class GameObjectDespawned
-{
-	/**
-	 * The affected tile.
-	 */
-	private Tile tile;
-	/**
-	 * The removed game object.
-	 */
-	private GameObject gameObject;
+public class GameObjectDespawned {
+
+  /**
+   * The affected tile.
+   */
+  private Tile tile;
+  /**
+   * The removed game object.
+   */
+  private GameObject gameObject;
 }

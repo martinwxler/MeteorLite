@@ -39,47 +39,45 @@ import net.runelite.deob.Deobfuscator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UnusedFields implements Deobfuscator
-{
-	private static final Logger logger = LoggerFactory.getLogger(UnusedFields.class);
+public class UnusedFields implements Deobfuscator {
 
-	private final Set<Field> used = new HashSet<>();
+  private static final Logger logger = LoggerFactory.getLogger(UnusedFields.class);
 
-	private void checkForFieldUsage(ClassGroup group)
-	{
-		for (ClassFile cf : group.getClasses())
-			for (Method m : cf.getMethods())
-			{
-				Code code = m.getCode();
-				if (code == null)
-					continue;
+  private final Set<Field> used = new HashSet<>();
 
-				for (Instruction ins : code.getInstructions().getInstructions())
-				{
-					if (ins instanceof FieldInstruction)
-					{
-						FieldInstruction fi = (FieldInstruction) ins;
+  private void checkForFieldUsage(ClassGroup group) {
+    for (ClassFile cf : group.getClasses()) {
+      for (Method m : cf.getMethods()) {
+        Code code = m.getCode();
+        if (code == null) {
+          continue;
+        }
 
-						used.add(fi.getMyField());
-					}
-				}
-			}
-	}
-	
-	@Override
-	public void run(ClassGroup group)
-	{
-		checkForFieldUsage(group);
-		
-		int count = 0;
-		for (ClassFile cf : group.getClasses())
-			for (Field f : new ArrayList<>(cf.getFields()))
-				if (!used.contains(f))
-				{
-					cf.removeField(f);
-					++count;
-				}
+        for (Instruction ins : code.getInstructions().getInstructions()) {
+          if (ins instanceof FieldInstruction) {
+            FieldInstruction fi = (FieldInstruction) ins;
 
-		logger.info("Removed " + count + " unused fields");
-	}
+            used.add(fi.getMyField());
+          }
+        }
+      }
+    }
+  }
+
+  @Override
+  public void run(ClassGroup group) {
+    checkForFieldUsage(group);
+
+    int count = 0;
+    for (ClassFile cf : group.getClasses()) {
+      for (Field f : new ArrayList<>(cf.getFields())) {
+        if (!used.contains(f)) {
+          cf.removeField(f);
+          ++count;
+        }
+      }
+    }
+
+    logger.info("Removed " + count + " unused fields");
+  }
 }

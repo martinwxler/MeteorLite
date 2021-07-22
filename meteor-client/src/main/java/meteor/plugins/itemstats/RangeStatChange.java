@@ -32,86 +32,72 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class RangeStatChange extends StatChange
-{
-	/**
-	 * Minimum relative change that will occur if the stat boost is applied now.
-	 * In this class, {@code relative} is representative of the maximum relative change that will
-	 * occur.
-	 */
-	private int minRelative;
+public class RangeStatChange extends StatChange {
 
-	/**
-	 * Minimum theoretical change that can occur before boost cap is enforced.
-	 * In this class, {@code theoretical} is representative of the maximum theoretical change that
-	 * will occur.
-	 */
-	private int minTheoretical;
+  /**
+   * Minimum relative change that will occur if the stat boost is applied now. In this class, {@code
+   * relative} is representative of the maximum relative change that will occur.
+   */
+  private int minRelative;
 
-	/**
-	 * Minimum absolute total of the stat after applying the boost.
-	 * In this class, {@code absolute} is representative of the maximum absolute change that will
-	 * occur.
-	 */
-	private int minAbsolute;
+  /**
+   * Minimum theoretical change that can occur before boost cap is enforced. In this class, {@code
+   * theoretical} is representative of the maximum theoretical change that will occur.
+   */
+  private int minTheoretical;
 
-	/**
-	 * Returns a human-readable formatted relative boost.
-	 * Should be the boost range in the format "±N" (for minimum -N and maximum +N values),
-	 * "+MIN~MAX" (for minimum and maximum values of the same sign),
-	 * "-MIN~+MAX" (for negative minimum and positive maximum values), or
-	 * "+MAX" (for equal minimum and maximum values).
-	 *
-	 * @return The formatted relative boost amount
-	 */
-	@Override
-	public String getFormattedRelative()
-	{
-		return concat(minRelative, getRelative());
-	}
+  /**
+   * Minimum absolute total of the stat after applying the boost. In this class, {@code absolute} is
+   * representative of the maximum absolute change that will occur.
+   */
+  private int minAbsolute;
 
-	/**
-	 * Returns a human-readable formatted theoretical boost.
-	 * Should be the boost range in the format "±N" (for minimum -N and maximum +N values),
-	 * "+MIN~MAX" (for minimum and maximum values of the same sign),
-	 * "-MIN~+MAX" (for negative minimum and positive maximum values), or
-	 * "+MAX" (for equal minimum and maximum values).
-	 *
-	 * @return The formatted theoretical boost amount
-	 */
-	@Override
-	public String getFormattedTheoretical()
-	{
-		return concat(minTheoretical, getTheoretical());
-	}
+  private static String concat(int changeA, int changeB) {
+    if (changeA == changeB) {
+      return formatBoost(changeA);
+    } else if (changeA * -1 == changeB) {
+      return "±" + Math.abs(changeA);
+    }
 
-	private static String concat(int changeA, int changeB)
-	{
-		if (changeA == changeB)
-		{
-			return formatBoost(changeA);
-		}
-		else if (changeA * -1 == changeB)
-		{
-			return "±" + Math.abs(changeA);
-		}
+    final StringBuilder sb = new StringBuilder();
 
-		final StringBuilder sb = new StringBuilder();
+    sb.append(String.format("%+d", changeA));
+    sb.append('~');
 
-		sb.append(String.format("%+d", changeA));
-		sb.append('~');
+    // If they share a operator, strip b's duplicate
+    if (changeA < 0 && changeB < 0
+        || changeA >= 0 && changeB >= 0) {
+      sb.append(Math.abs(changeB));
+    } else {
+      sb.append(String.format("%+d", changeB));
+    }
 
-		// If they share a operator, strip b's duplicate
-		if (changeA < 0 && changeB < 0
-			|| changeA >= 0 && changeB >= 0)
-		{
-			sb.append(Math.abs(changeB));
-		}
-		else
-		{
-			sb.append(String.format("%+d", changeB));
-		}
+    return sb.toString();
+  }
 
-		return sb.toString();
-	}
+  /**
+   * Returns a human-readable formatted relative boost. Should be the boost range in the format "±N"
+   * (for minimum -N and maximum +N values), "+MIN~MAX" (for minimum and maximum values of the same
+   * sign), "-MIN~+MAX" (for negative minimum and positive maximum values), or "+MAX" (for equal
+   * minimum and maximum values).
+   *
+   * @return The formatted relative boost amount
+   */
+  @Override
+  public String getFormattedRelative() {
+    return concat(minRelative, getRelative());
+  }
+
+  /**
+   * Returns a human-readable formatted theoretical boost. Should be the boost range in the format
+   * "±N" (for minimum -N and maximum +N values), "+MIN~MAX" (for minimum and maximum values of the
+   * same sign), "-MIN~+MAX" (for negative minimum and positive maximum values), or "+MAX" (for
+   * equal minimum and maximum values).
+   *
+   * @return The formatted theoretical boost amount
+   */
+  @Override
+  public String getFormattedTheoretical() {
+    return concat(minTheoretical, getTheoretical());
+  }
 }

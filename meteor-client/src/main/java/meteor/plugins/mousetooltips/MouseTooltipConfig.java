@@ -29,38 +29,35 @@ import meteor.config.ConfigGroup;
 import meteor.config.ConfigItem;
 
 @ConfigGroup("mousehighlight")
-public interface MouseTooltipConfig extends Config
-{
-	@ConfigItem(
-		position = 0,
-		keyName = "uiTooltip",
-		name = "Interface Tooltips",
-		description = "Whether or not tooltips are shown on interfaces"
-	)
-	default boolean uiTooltip()
-	{
-		return true;
-	}
+public interface MouseTooltipConfig extends Config {
 
-	@ConfigItem(
-		position = 1,
-		keyName = "chatboxTooltip",
-		name = "Chatbox Tooltips",
-		description = "Whether or not tooltips are shown over the chatbox"
-	)
-	default boolean chatboxTooltip()
-	{
-		return true;
-	}
+  @ConfigItem(
+      position = 0,
+      keyName = "uiTooltip",
+      name = "Interface Tooltips",
+      description = "Whether or not tooltips are shown on interfaces"
+  )
+  default boolean uiTooltip() {
+    return true;
+  }
 
-	@ConfigItem(
-		position = 2,
-		keyName = "disableSpellbooktooltip",
-		name = "Disable Spellbook Tooltips",
-		description = "Disable Spellbook Tooltips so they don't cover descriptions"
-	)
-	default boolean disableSpellbooktooltip()
-	{
-		return false;
-	}
+  @ConfigItem(
+      position = 1,
+      keyName = "chatboxTooltip",
+      name = "Chatbox Tooltips",
+      description = "Whether or not tooltips are shown over the chatbox"
+  )
+  default boolean chatboxTooltip() {
+    return true;
+  }
+
+  @ConfigItem(
+      position = 2,
+      keyName = "disableSpellbooktooltip",
+      name = "Disable Spellbook Tooltips",
+      description = "Disable Spellbook Tooltips so they don't cover descriptions"
+  )
+  default boolean disableSpellbooktooltip() {
+    return false;
+  }
 }

@@ -15,21 +15,18 @@
  */
 package org.jetbrains.java.decompiler.main.decompiler;
 
+import static org.sponge.util.Logger.ANSI_CYAN;
+
+import java.io.PrintStream;
 import org.jetbrains.java.decompiler.main.extern.IFernflowerLogger;
 import org.jetbrains.java.decompiler.util.TextUtil;
 import org.sponge.util.Logger;
 import org.sponge.util.Message;
 
-import java.io.PrintStream;
-
-import static org.sponge.util.Logger.ANSI_CYAN;
-import static org.sponge.util.Logger.ANSI_RESET;
-
 public class PrintStreamLogger extends IFernflowerLogger {
 
-  Logger logger = new Logger("Decompiler");
-
   private final PrintStream stream;
+  Logger logger = new Logger("Decompiler");
   private int indent;
 
   public PrintStreamLogger(PrintStream printStream) {
@@ -56,10 +53,10 @@ public class PrintStreamLogger extends IFernflowerLogger {
   public void startReadingClass(String className) {
     if (accepts(Severity.INFO)) {
       logger.info(Message.buildMessage()
-              .addText("Decompiling class ")
-              .changeColor(ANSI_CYAN)
-              .addText(className)
-              .build());
+          .addText("Decompiling class ")
+          .changeColor(ANSI_CYAN)
+          .addText(className)
+          .build());
       ++indent;
     }
   }

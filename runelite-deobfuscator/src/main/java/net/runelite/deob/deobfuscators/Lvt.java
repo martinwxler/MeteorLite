@@ -36,64 +36,55 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This deobfuscator is only required for fernflower which has a difficult time
- * when the same lvt index is used for variables of differing types (like object
- * and int), see IDEABKL-7230.
- * 
+ * This deobfuscator is only required for fernflower which has a difficult time when the same lvt
+ * index is used for variables of differing types (like object and int), see IDEABKL-7230.
+ *
  * @author Adam
  */
-public class Lvt implements Deobfuscator
-{
-	private static final Logger logger = LoggerFactory.getLogger(Lvt.class);
+public class Lvt implements Deobfuscator {
 
-	private int count = 0;
+  private static final Logger logger = LoggerFactory.getLogger(Lvt.class);
 
-	private void process(Method method)
-	{
-		Code code = method.getCode();
-		if (code == null)
-		{
-			return;
-		}
+  private int count = 0;
 
-		Mappings mappings = new Mappings(code.getMaxLocals());
+  private void process(Method method) {
+    Code code = method.getCode();
+    if (code == null) {
+      return;
+    }
 
-		for (Instruction ins : code.getInstructions().getInstructions())
-		{
-			if (!(ins instanceof LVTInstruction))
-			{
-				continue;
-			}
+    Mappings mappings = new Mappings(code.getMaxLocals());
 
-			LVTInstruction lv = (LVTInstruction) ins;
-			Integer newIdx = mappings.remap(lv.getVariableIndex(), lv.type());
+    for (Instruction ins : code.getInstructions().getInstructions()) {
+      if (!(ins instanceof LVTInstruction)) {
+        continue;
+      }
 
-			if (newIdx == null)
-			{
-				continue;
-			}
+      LVTInstruction lv = (LVTInstruction) ins;
+      Integer newIdx = mappings.remap(lv.getVariableIndex(), lv.type());
 
-			assert newIdx != lv.getVariableIndex();
+      if (newIdx == null) {
+        continue;
+      }
 
-			Instruction newIns = lv.setVariableIndex(newIdx);
-			assert ins == newIns;
+      assert newIdx != lv.getVariableIndex();
 
-			++count;
-		}
-	}
+      Instruction newIns = lv.setVariableIndex(newIdx);
+      assert ins == newIns;
 
-	@Override
-	public void run(ClassGroup group)
-	{
-		for (ClassFile cf : group.getClasses())
-		{
-			for (Method m : cf.getMethods())
-			{
-				process(m);
-			}
-		}
+      ++count;
+    }
+  }
 
-		logger.info("Remapped {} lvt indexes", count);
-	}
+  @Override
+  public void run(ClassGroup group) {
+    for (ClassFile cf : group.getClasses()) {
+      for (Method m : cf.getMethods()) {
+        process(m);
+      }
+    }
+
+    logger.info("Remapped {} lvt indexes", count);
+  }
 
 }

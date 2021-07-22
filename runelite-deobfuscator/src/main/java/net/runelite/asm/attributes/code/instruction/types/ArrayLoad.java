@@ -30,55 +30,52 @@ import net.runelite.asm.execution.StackContext;
 import net.runelite.deob.deobfuscators.mapping.MappingExecutorUtil;
 import net.runelite.deob.deobfuscators.mapping.ParallelExecutorMapping;
 
-public interface ArrayLoad extends MappableInstruction
-{
-	@Override
-	default void map(ParallelExecutorMapping mappings, InstructionContext ctx, InstructionContext other)
-	{
-		StackContext index1 = ctx.getPops().get(0),
-			index2 = other.getPops().get(0);
+public interface ArrayLoad extends MappableInstruction {
 
-		InstructionContext ctx1 = MappingExecutorUtil.resolve(index1.getPushed(), index1),
-			ctx2 = MappingExecutorUtil.resolve(index2.getPushed(), index2);
+  @Override
+  default void map(ParallelExecutorMapping mappings, InstructionContext ctx,
+      InstructionContext other) {
+    StackContext index1 = ctx.getPops().get(0),
+        index2 = other.getPops().get(0);
 
-		assert ctx1.getInstruction() instanceof GetFieldInstruction;
-		assert ctx2.getInstruction() instanceof GetFieldInstruction;
+    InstructionContext ctx1 = MappingExecutorUtil.resolve(index1.getPushed(), index1),
+        ctx2 = MappingExecutorUtil.resolve(index2.getPushed(), index2);
 
-		GetFieldInstruction gf1 = (GetFieldInstruction) ctx1.getInstruction();
-		GetFieldInstruction gf2 = (GetFieldInstruction) ctx2.getInstruction();
-		mappings.map((Instruction) this, gf1.getMyField(), gf2.getMyField());
-	}
+    assert ctx1.getInstruction() instanceof GetFieldInstruction;
+    assert ctx2.getInstruction() instanceof GetFieldInstruction;
 
-	@Override
-	default boolean isSame(InstructionContext thisIc, InstructionContext otherIc)
-	{
-		if (thisIc.getInstruction().getType() != otherIc.getInstruction().getType())
-		{
-			return false;
-		}
+    GetFieldInstruction gf1 = (GetFieldInstruction) ctx1.getInstruction();
+    GetFieldInstruction gf2 = (GetFieldInstruction) ctx2.getInstruction();
+    mappings.map((Instruction) this, gf1.getMyField(), gf2.getMyField());
+  }
 
-		StackContext index1 = thisIc.getPops().get(0),
-			index2 = otherIc.getPops().get(0);
+  @Override
+  default boolean isSame(InstructionContext thisIc, InstructionContext otherIc) {
+    if (thisIc.getInstruction().getType() != otherIc.getInstruction().getType()) {
+      return false;
+    }
 
-		InstructionContext ctx1 = MappingExecutorUtil.resolve(index1.getPushed(), index1),
-			ctx2 = MappingExecutorUtil.resolve(index2.getPushed(), index2);
+    StackContext index1 = thisIc.getPops().get(0),
+        index2 = otherIc.getPops().get(0);
 
-		assert ctx1.getInstruction() instanceof GetFieldInstruction;
-		assert ctx2.getInstruction() instanceof GetFieldInstruction;
+    InstructionContext ctx1 = MappingExecutorUtil.resolve(index1.getPushed(), index1),
+        ctx2 = MappingExecutorUtil.resolve(index2.getPushed(), index2);
 
-		GetFieldInstruction gf1 = (GetFieldInstruction) ctx1.getInstruction();
-		GetFieldInstruction gf2 = (GetFieldInstruction) ctx2.getInstruction();
+    assert ctx1.getInstruction() instanceof GetFieldInstruction;
+    assert ctx2.getInstruction() instanceof GetFieldInstruction;
 
-		return MappingExecutorUtil.isMaybeEqual(gf1.getMyField(), gf2.getMyField());
-	}
+    GetFieldInstruction gf1 = (GetFieldInstruction) ctx1.getInstruction();
+    GetFieldInstruction gf2 = (GetFieldInstruction) ctx2.getInstruction();
 
-	@Override
-	default boolean canMap(InstructionContext thisIc)
-	{
-		// assume that obfuscation can't remove a load with a variable
-		// index. map field access.
-		StackContext index = thisIc.getPops().get(0);
-		InstructionContext ctx = MappingExecutorUtil.resolve(index.getPushed(), index);
-		return ctx.getInstruction() instanceof GetFieldInstruction;
-	}
+    return MappingExecutorUtil.isMaybeEqual(gf1.getMyField(), gf2.getMyField());
+  }
+
+  @Override
+  default boolean canMap(InstructionContext thisIc) {
+    // assume that obfuscation can't remove a load with a variable
+    // index. map field access.
+    StackContext index = thisIc.getPops().get(0);
+    InstructionContext ctx = MappingExecutorUtil.resolve(index.getPushed(), index);
+    return ctx.getInstruction() instanceof GetFieldInstruction;
+  }
 }

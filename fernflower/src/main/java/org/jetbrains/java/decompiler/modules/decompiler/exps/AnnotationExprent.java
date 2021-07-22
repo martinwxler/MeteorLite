@@ -15,15 +15,15 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.exps;
 
+import java.util.List;
 import org.jetbrains.java.decompiler.main.DecompilerContext;
 import org.jetbrains.java.decompiler.main.TextBuffer;
 import org.jetbrains.java.decompiler.main.collectors.BytecodeMappingTracer;
 import org.jetbrains.java.decompiler.modules.decompiler.ExprProcessor;
 import org.jetbrains.java.decompiler.util.InterpreterUtil;
 
-import java.util.List;
-
 public class AnnotationExprent extends Exprent {
+
   public static final int ANNOTATION_NORMAL = 1;
   public static final int ANNOTATION_MARKER = 2;
   public static final int ANNOTATION_SINGLE_ELEMENT = 3;
@@ -45,7 +45,8 @@ public class AnnotationExprent extends Exprent {
 
     buffer.appendIndent(indent);
     buffer.append('@');
-    buffer.append(DecompilerContext.getImportCollector().getShortName(ExprProcessor.buildJavaClassName(className)));
+    buffer.append(DecompilerContext.getImportCollector()
+        .getShortName(ExprProcessor.buildJavaClassName(className)));
 
     int type = getAnnotationType();
 
@@ -88,23 +89,25 @@ public class AnnotationExprent extends Exprent {
   public int getAnnotationType() {
     if (parNames.isEmpty()) {
       return ANNOTATION_MARKER;
-    }
-    else if (parNames.size() == 1 && "value".equals(parNames.get(0))) {
+    } else if (parNames.size() == 1 && "value".equals(parNames.get(0))) {
       return ANNOTATION_SINGLE_ELEMENT;
-    }
-    else {
+    } else {
       return ANNOTATION_NORMAL;
     }
   }
 
   @Override
   public boolean equals(Object o) {
-    if (o == this) return true;
-    if (o == null || !(o instanceof AnnotationExprent)) return false;
+    if (o == this) {
+      return true;
+    }
+    if (o == null || !(o instanceof AnnotationExprent)) {
+      return false;
+    }
 
-    AnnotationExprent ann = (AnnotationExprent)o;
+    AnnotationExprent ann = (AnnotationExprent) o;
     return className.equals(ann.className) &&
-           InterpreterUtil.equalLists(parNames, ann.parNames) &&
-           InterpreterUtil.equalLists(parValues, ann.parValues);
+        InterpreterUtil.equalLists(parNames, ann.parNames) &&
+        InterpreterUtil.equalLists(parValues, ann.parValues);
   }
 }

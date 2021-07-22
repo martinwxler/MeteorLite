@@ -27,26 +27,26 @@ package net.runelite.rs.api;
 import net.runelite.api.Animation;
 import net.runelite.mapping.Import;
 
-public interface RSAnimation extends Animation
-{
-	@Import("skeleton")
-	RSSkeleton getSkeleton();
+public interface RSAnimation extends Animation {
 
-	@Import("transformCount")
-	int getTransformCount();
+  @Import("skeleton")
+  RSSkeleton getSkeleton();
 
-	@Import("transformSkeletonLabels")
-	int[] getTransformTypes();
+  @Import("transformCount")
+  int getTransformCount();
 
-	@Import("transformXs")
-	int[] getTranslatorX();
+  @Import("transformSkeletonLabels")
+  int[] getTransformTypes();
 
-	@Import("transformYs")
-	int[] getTranslatorY();
+  @Import("transformXs")
+  int[] getTranslatorX();
 
-	@Import("transformZs")
-	int[] getTranslatorZ();
+  @Import("transformYs")
+  int[] getTranslatorY();
 
-	@Import("hasAlphaTransform")
-	boolean isShowing();
+  @Import("transformZs")
+  int[] getTranslatorZ();
+
+  @Import("hasAlphaTransform")
+  boolean isShowing();
 }

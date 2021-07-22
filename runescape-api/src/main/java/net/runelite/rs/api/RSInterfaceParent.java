@@ -3,13 +3,13 @@ package net.runelite.rs.api;
 import net.runelite.api.WidgetNode;
 import net.runelite.mapping.Import;
 
-public interface RSInterfaceParent extends RSNode, WidgetNode
-{
-	@Import("group")
-	@Override
-	int getId();
+public interface RSInterfaceParent extends RSNode, WidgetNode {
 
-	@Import("type")
-	@Override
-	int getModalMode();
+  @Import("group")
+  @Override
+  int getId();
+
+  @Import("type")
+  @Override
+  int getModalMode();
 }

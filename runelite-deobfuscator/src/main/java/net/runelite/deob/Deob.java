@@ -58,148 +58,138 @@ import net.runelite.deob.util.JarUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Deob
-{
-	private static final Logger logger = LoggerFactory.getLogger(Deob.class);
+public class Deob {
 
-	public static final int OBFUSCATED_NAME_MAX_LEN = 3;
-	private static final boolean CHECK_EXEC = false;
+  public static final int OBFUSCATED_NAME_MAX_LEN = 3;
+  private static final Logger logger = LoggerFactory.getLogger(Deob.class);
+  private static final boolean CHECK_EXEC = false;
 
-	public static void main(String[] args) throws IOException
-	{
-		if (args == null || args.length < 2)
-		{
-			System.err.println("Syntax: input_jar output_jar");
-			System.exit(-1);
-		}
+  public static void main(String[] args) throws IOException {
+    if (args == null || args.length < 2) {
+      System.err.println("Syntax: input_jar output_jar");
+      System.exit(-1);
+    }
 
-		logger.info("Deobfuscator revision {}", DeobProperties.getRevision());
+    logger.info("Deobfuscator revision {}", DeobProperties.getRevision());
 
-		Stopwatch stopwatch = Stopwatch.createStarted();
+    Stopwatch stopwatch = Stopwatch.createStarted();
 
-		ClassGroup group = JarUtil.load(new File(args[0]));
+    ClassGroup group = JarUtil.load(new File(args[0]));
 
-		// remove except RuntimeException
-		run(group, new RuntimeExceptions());
+    // remove except RuntimeException
+    run(group, new RuntimeExceptions());
 
-		run(group, new ControlFlowDeobfuscator());
+    run(group, new ControlFlowDeobfuscator());
 
-		run(group, new RenameUnique());
+    run(group, new RenameUnique());
 
-		// remove unused methods - this leaves Code with no instructions,
-		// which is not valid, so unused methods is run after
-		run(group, new UnreachedCode());
-		run(group, new UnusedMethods());
+    // remove unused methods - this leaves Code with no instructions,
+    // which is not valid, so unused methods is run after
+    run(group, new UnreachedCode());
+    run(group, new UnusedMethods());
 
-		// remove illegal state exceptions, frees up some parameters
-		run(group, new IllegalStateExceptions());
+    // remove illegal state exceptions, frees up some parameters
+    run(group, new IllegalStateExceptions());
 
-		// remove constant logically dead parameters
-		run(group, new ConstantParameter());
+    // remove constant logically dead parameters
+    run(group, new ConstantParameter());
 
-		// remove unhit blocks
-		run(group, new UnreachedCode());
-		run(group, new UnusedMethods());
+    // remove unhit blocks
+    run(group, new UnreachedCode());
+    run(group, new UnusedMethods());
 
-		// remove unused parameters
-		run(group, new UnusedParameters());
+    // remove unused parameters
+    run(group, new UnusedParameters());
 
-		// remove unused fields
-		run(group, new UnusedFields());
+    // remove unused fields
+    run(group, new UnusedFields());
 
-		run(group, new FieldInliner());
+    run(group, new FieldInliner());
 
-		// order uses class name order for sorting fields/methods,
-		// so run it before removing classes below
-		run(group, new Order());
+    // order uses class name order for sorting fields/methods,
+    // so run it before removing classes below
+    run(group, new Order());
 
-		run(group, new UnusedClass());
+    run(group, new UnusedClass());
 
-		runMath(group);
+    runMath(group);
 
-		run(group, new ExprArgOrder());
+    run(group, new ExprArgOrder());
 
-		run(group, new Lvt());
+    run(group, new Lvt());
 
-		run(group, new CastNull());
+    run(group, new CastNull());
 
-		run(group, new EnumDeobfuscator());
+    run(group, new EnumDeobfuscator());
 
-		new OpcodesTransformer().transform(group);
-		//run(group, new PacketHandlerOrder());
-		//run(group, new PacketWriteDeobfuscator());
+    new OpcodesTransformer().transform(group);
+    //run(group, new PacketHandlerOrder());
+    //run(group, new PacketWriteDeobfuscator());
 
-		run(group, new MenuActionDeobfuscator());
+    run(group, new MenuActionDeobfuscator());
 
-		new GetPathTransformer().transform(group);
-		new ClientErrorTransformer().transform(group);
-		new ReflectionTransformer().transform(group);
-		//new MaxMemoryTransformer().transform(group);
-		//new RuneliteBufferTransformer().transform(group);
+    new GetPathTransformer().transform(group);
+    new ClientErrorTransformer().transform(group);
+    new ReflectionTransformer().transform(group);
+    //new MaxMemoryTransformer().transform(group);
+    //new RuneliteBufferTransformer().transform(group);
 
-		JarUtil.save(group, new File(args[1]));
+    JarUtil.save(group, new File(args[1]));
 
-		stopwatch.stop();
-		logger.info("Done in {}", stopwatch);
-	}
+    stopwatch.stop();
+    logger.info("Done in {}", stopwatch);
+  }
 
-	public static boolean isObfuscated(String name)
-	{
-		if (name.length() <= OBFUSCATED_NAME_MAX_LEN)
-		{
-			return !name.equals("run") && !name.equals("add");
-		}
-		return name.startsWith("method")
-				|| name.startsWith("vmethod")
-				|| name.startsWith("field")
-				|| name.startsWith("class")
-				|| name.startsWith("__");
-	}
+  public static boolean isObfuscated(String name) {
+    if (name.length() <= OBFUSCATED_NAME_MAX_LEN) {
+      return !name.equals("run") && !name.equals("add");
+    }
+    return name.startsWith("method")
+        || name.startsWith("vmethod")
+        || name.startsWith("field")
+        || name.startsWith("class")
+        || name.startsWith("__");
+  }
 
-	private static void runMath(ClassGroup group)
-	{
-		ModArith mod = new ModArith();
-		mod.run(group);
+  private static void runMath(ClassGroup group) {
+    ModArith mod = new ModArith();
+    mod.run(group);
 
-		int last = -1, cur;
-		while ((cur = mod.runOnce()) > 0)
-		{
-			new MultiplicationDeobfuscator().run(group);
+    int last = -1, cur;
+    while ((cur = mod.runOnce()) > 0) {
+      new MultiplicationDeobfuscator().run(group);
 
-			// do not remove 1 * field so that ModArith can detect
-			// the change in guessDecreasesConstants()
-			new MultiplyOneDeobfuscator(true).run(group);
+      // do not remove 1 * field so that ModArith can detect
+      // the change in guessDecreasesConstants()
+      new MultiplyOneDeobfuscator(true).run(group);
 
-			new MultiplyZeroDeobfuscator().run(group);
+      new MultiplyZeroDeobfuscator().run(group);
 
-			if (last == cur)
-			{
-				break;
-			}
+      if (last == cur) {
+        break;
+      }
 
-			last = cur;
-		}
+      last = cur;
+    }
 
-		// now that modarith is done, remove field * 1
-		new MultiplyOneDeobfuscator(false).run(group);
+    // now that modarith is done, remove field * 1
+    new MultiplyOneDeobfuscator(false).run(group);
 
-		mod.annotateEncryption();
-	}
+    mod.annotateEncryption();
+  }
 
-	private static void run(ClassGroup group, Deobfuscator deob)
-	{
-		Stopwatch stopwatch = Stopwatch.createStarted();
-		deob.run(group);
-		stopwatch.stop();
+  private static void run(ClassGroup group, Deobfuscator deob) {
+    Stopwatch stopwatch = Stopwatch.createStarted();
+    deob.run(group);
+    stopwatch.stop();
 
-		logger.info("{} took {}", deob.getClass().getSimpleName(), stopwatch);
+    logger.info("{} took {}", deob.getClass().getSimpleName(), stopwatch);
 
-		// check code is still correct
-		if (CHECK_EXEC)
-		{
-			Execution execution = new Execution(group);
-			execution.populateInitialMethods();
-			execution.run();
-		}
-	}
+    // check code is still correct
+    if (CHECK_EXEC) {
+      Execution execution = new Execution(group);
+      execution.populateInitialMethods();
+      execution.run();
+    }
+  }
 }

@@ -7,7 +7,7 @@ import net.runelite.api.Player;
  * This will fire whenever the {@link net.runelite.api.PlayerComposition} hash changes.
  */
 @Value
-public class PlayerCompositionChanged
-{
-	Player player;
+public class PlayerCompositionChanged {
+
+  Player player;
 }

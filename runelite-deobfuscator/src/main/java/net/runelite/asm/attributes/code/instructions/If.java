@@ -45,297 +45,256 @@ import net.runelite.deob.deobfuscators.mapping.MappingExecutorUtil;
 import net.runelite.deob.deobfuscators.mapping.ParallelExecutorMapping;
 import org.objectweb.asm.MethodVisitor;
 
-public abstract class If extends Instruction implements JumpingInstruction, ComparisonInstruction, MappableInstruction
-{
-	private org.objectweb.asm.Label asmlabel;
-	private Label to;
+public abstract class If extends Instruction implements JumpingInstruction, ComparisonInstruction,
+    MappableInstruction {
 
-	public If(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
+  private org.objectweb.asm.Label asmlabel;
+  private Label to;
 
-	public If(Instructions instructions, InstructionType type, Label to)
-	{
-		super(instructions, type);
+  public If(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
 
-		this.to = to;
-	}
+  public If(Instructions instructions, InstructionType type, Label to) {
+    super(instructions, type);
 
-	@Override
-	public void accept(MethodVisitor visitor)
-	{
-		assert getJumps().size() == 1;
+    this.to = to;
+  }
 
-		visitor.visitJumpInsn(this.getType().getCode(), getJumps().get(0).getLabel());
-	}
+  @Override
+  public void accept(MethodVisitor visitor) {
+    assert getJumps().size() == 1;
 
-	@Override
-	public void resolve()
-	{
-		Instructions ins = this.getInstructions();
+    visitor.visitJumpInsn(this.getType().getCode(), getJumps().get(0).getLabel());
+  }
 
-		to = ins.findLabel(asmlabel);
-		assert to != null;
-	}
+  @Override
+  public void resolve() {
+    Instructions ins = this.getInstructions();
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ins = new InstructionContext(this, frame);
-		Stack stack = frame.getStack();
+    to = ins.findLabel(asmlabel);
+    assert to != null;
+  }
 
-		StackContext one = stack.pop();
-		StackContext two = stack.pop();
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ins = new InstructionContext(this, frame);
+    Stack stack = frame.getStack();
 
-		ins.pop(one, two);
+    StackContext one = stack.pop();
+    StackContext two = stack.pop();
 
-		Frame other = frame.dup();
-		other.jump(ins, to);
+    ins.pop(one, two);
 
-		ins.branch(other);
+    Frame other = frame.dup();
+    other.jump(ins, to);
 
-		return ins;
-	}
+    ins.branch(other);
 
-	@Override
-	public List<Label> getJumps()
-	{
-		return Collections.singletonList(to);
-	}
+    return ins;
+  }
 
-	@Override
-	public void setJumps(List<Label> labels)
-	{
-		assert labels.size() == 1;
-		to = labels.get(0);
-	}
+  @Override
+  public List<Label> getJumps() {
+    return Collections.singletonList(to);
+  }
 
-	@Override
-	public void map(ParallelExecutorMapping mapping, InstructionContext ctx, InstructionContext other)
-	{
-		assert ctx.getBranches().size() == other.getBranches().size();
+  @Override
+  public void setJumps(List<Label> labels) {
+    assert labels.size() == 1;
+    to = labels.get(0);
+  }
 
-		// can be empty for packet handlers
-		if (!ctx.getBranches().isEmpty())
-		{
-			Frame branch1 = ctx.getBranches().get(0),
-				branch2 = other.getBranches().get(0);
+  @Override
+  public void map(ParallelExecutorMapping mapping, InstructionContext ctx,
+      InstructionContext other) {
+    assert ctx.getBranches().size() == other.getBranches().size();
 
-			assert branch1.other == null;
-			assert branch2.other == null;
+    // can be empty for packet handlers
+    if (!ctx.getBranches().isEmpty()) {
+      Frame branch1 = ctx.getBranches().get(0),
+          branch2 = other.getBranches().get(0);
 
-			branch1.other = branch2;
-			branch2.other = branch1;
-		}
+      assert branch1.other == null;
+      assert branch2.other == null;
 
-		this.mapArguments(mapping, ctx, other, false);
-	}
+      branch1.other = branch2;
+      branch2.other = branch1;
+    }
 
-	protected void mapOtherBranch(ParallelExecutorMapping mapping, InstructionContext ctx, InstructionContext other)
-	{
-		Frame f1 = ctx.getFrame(),
-			f2 = other.getFrame(),
-			branch1 = ctx.getBranches().get(0),
-			branch2 = other.getBranches().get(0);
+    this.mapArguments(mapping, ctx, other, false);
+  }
 
-		assert branch1.other == null;
-		assert branch2.other == null;
+  protected void mapOtherBranch(ParallelExecutorMapping mapping, InstructionContext ctx,
+      InstructionContext other) {
+    Frame f1 = ctx.getFrame(),
+        f2 = other.getFrame(),
+        branch1 = ctx.getBranches().get(0),
+        branch2 = other.getBranches().get(0);
 
-		// currently f1 <-> f2
-		assert f1.other == f2;
-		assert f2.other == f1;
+    assert branch1.other == null;
+    assert branch2.other == null;
 
-		// change to f1 <-> branch2, f2 <-> branch1
-		f1.other = branch2;
-		branch2.other = f1;
+    // currently f1 <-> f2
+    assert f1.other == f2;
+    assert f2.other == f1;
 
-		f2.other = branch1;
-		branch1.other = f2;
+    // change to f1 <-> branch2, f2 <-> branch1
+    f1.other = branch2;
+    branch2.other = f1;
 
-		this.mapArguments(mapping, ctx, other, true);
-	}
+    f2.other = branch1;
+    branch1.other = f2;
 
-	private void mapArguments(ParallelExecutorMapping mapping, InstructionContext ctx, InstructionContext other, boolean inverse)
-	{
-		List<Field> f1s = getComparedFields(ctx), f2s = getComparedFields(other);
+    this.mapArguments(mapping, ctx, other, true);
+  }
 
-		if (f1s == null || f2s == null || f1s.size() != f2s.size())
-		{
-			return;
-		}
+  private void mapArguments(ParallelExecutorMapping mapping, InstructionContext ctx,
+      InstructionContext other, boolean inverse) {
+    List<Field> f1s = getComparedFields(ctx), f2s = getComparedFields(other);
 
-		if (f1s.size() == 1)
-		{
-			Field f1 = f1s.get(0), f2 = f2s.get(0);
+    if (f1s == null || f2s == null || f1s.size() != f2s.size()) {
+      return;
+    }
 
-			assert MappingExecutorUtil.isMaybeEqual(f1.getType(), f2.getType());
+    if (f1s.size() == 1) {
+      Field f1 = f1s.get(0), f2 = f2s.get(0);
 
-			mapping.map(this, f1, f2);
-		}
-		else if (f1s.size() == 2)
-		{
-			Field f1 = f1s.get(0), f2 = f2s.get(0);
-			Field j1 = f1s.get(1), j2 = f2s.get(1);
+      assert MappingExecutorUtil.isMaybeEqual(f1.getType(), f2.getType());
+
+      mapping.map(this, f1, f2);
+    } else if (f1s.size() == 2) {
+      Field f1 = f1s.get(0), f2 = f2s.get(0);
+      Field j1 = f1s.get(1), j2 = f2s.get(1);
 
 //			if (couldBeSame(f1, f2) && couldBeSame(j1, j2) && couldBeSame(f1, j2) && couldBeSame(j1, f2))
 //			{
 //				mapping.map()
 //				return; // ambiguous
 //			}
-			if (couldBeSame(f1, f2) && couldBeSame(j1, j2))
-			{
-				mapping.map(this, f1, f2);
-				mapping.map(this, j1, j2);
-			}
+      if (couldBeSame(f1, f2) && couldBeSame(j1, j2)) {
+        mapping.map(this, f1, f2);
+        mapping.map(this, j1, j2);
+      }
 
-			if (couldBeSame(f1, j2) && couldBeSame(j1, f2))
-			{
-				mapping.map(this, f1, j2);
-				mapping.map(this, j1, f2);
-			}
-		}
-		else
-		{
-			assert false;
-		}
-	}
+      if (couldBeSame(f1, j2) && couldBeSame(j1, f2)) {
+        mapping.map(this, f1, j2);
+        mapping.map(this, j1, f2);
+      }
+    } else {
+      assert false;
+    }
+  }
 
-	private List<Field> getComparedFields(InstructionContext ctx)
-	{
-		List<Field> fields = new ArrayList<>();
+  private List<Field> getComparedFields(InstructionContext ctx) {
+    List<Field> fields = new ArrayList<>();
 
-		for (StackContext sctx : ctx.getPops())
-		{
-			InstructionContext base = MappingExecutorUtil.resolve(sctx.getPushed(), sctx);
+    for (StackContext sctx : ctx.getPops()) {
+      InstructionContext base = MappingExecutorUtil.resolve(sctx.getPushed(), sctx);
 
-			if (base.getInstruction() instanceof GetFieldInstruction)
-			{
-				GetFieldInstruction gfi = (GetFieldInstruction) base.getInstruction();
+      if (base.getInstruction() instanceof GetFieldInstruction) {
+        GetFieldInstruction gfi = (GetFieldInstruction) base.getInstruction();
 
-				if (gfi.getMyField() != null)
-				{
-					fields.add(gfi.getMyField());
-				}
-			}
-		}
+        if (gfi.getMyField() != null) {
+          fields.add(gfi.getMyField());
+        }
+      }
+    }
 
-		return fields.isEmpty() ? null : fields;
-	}
+    return fields.isEmpty() ? null : fields;
+  }
 
-	protected Integer getConstantInstruction(InstructionContext ctx)
-	{
-		PushConstantInstruction gfi = null;
+  protected Integer getConstantInstruction(InstructionContext ctx) {
+    PushConstantInstruction gfi = null;
 
-		for (StackContext sctx : ctx.getPops())
-		{
-			InstructionContext base = MappingExecutorUtil.resolve(sctx.getPushed(), sctx);
+    for (StackContext sctx : ctx.getPops()) {
+      InstructionContext base = MappingExecutorUtil.resolve(sctx.getPushed(), sctx);
 
-			if (base.getInstruction() instanceof PushConstantInstruction)
-			{
-				if (gfi != null)
-				{
-					return null;
-				}
+      if (base.getInstruction() instanceof PushConstantInstruction) {
+        if (gfi != null) {
+          return null;
+        }
 
-				gfi = (PushConstantInstruction) base.getInstruction();
-			}
-		}
+        gfi = (PushConstantInstruction) base.getInstruction();
+      }
+    }
 
-		if (gfi == null)
-		{
-			return null;
-		}
+    if (gfi == null) {
+      return null;
+    }
 
-		return ((Number) gfi.getConstant()).intValue();
-	}
+    return ((Number) gfi.getConstant()).intValue();
+  }
 
-	private boolean couldBeSame(Field f1, Field f2)
-	{
-		if (f1.isStatic() != f2.isStatic())
-		{
-			return false;
-		}
+  private boolean couldBeSame(Field f1, Field f2) {
+    if (f1.isStatic() != f2.isStatic()) {
+      return false;
+    }
 
-		if (!f1.isStatic())
-		{
-			if (!MappingExecutorUtil.isMaybeEqual(f1.getClassFile(), f2.getClassFile()))
-			{
-				return false;
-			}
-		}
+    if (!f1.isStatic()) {
+      if (!MappingExecutorUtil.isMaybeEqual(f1.getClassFile(), f2.getClassFile())) {
+        return false;
+      }
+    }
 
-		return MappingExecutorUtil.isMaybeEqual(f1.getType(), f2.getType());
-	}
+    return MappingExecutorUtil.isMaybeEqual(f1.getType(), f2.getType());
+  }
 
-	protected boolean isSameField(InstructionContext thisIc, InstructionContext otherIc)
-	{
-		List<Field> f1s = getComparedFields(thisIc), f2s = getComparedFields(otherIc);
+  protected boolean isSameField(InstructionContext thisIc, InstructionContext otherIc) {
+    List<Field> f1s = getComparedFields(thisIc), f2s = getComparedFields(otherIc);
 
-		if ((f1s != null) != (f2s != null))
-		{
-			return false;
-		}
+    if ((f1s != null) != (f2s != null)) {
+      return false;
+    }
 
-		if (f1s == null || f2s == null)
-		{
-			return true;
-		}
+    if (f1s == null || f2s == null) {
+      return true;
+    }
 
-		if (f1s.size() != f2s.size())
-		{
-			return false;
-		}
+    if (f1s.size() != f2s.size()) {
+      return false;
+    }
 
-		assert f1s.size() == 1 || f1s.size() == 2;
+    assert f1s.size() == 1 || f1s.size() == 2;
 
-		if (f1s.size() == 2)
-		{
-			Field f1 = f1s.get(0), f2 = f2s.get(0);
-			Field j1 = f1s.get(1), j2 = f2s.get(1);
+    if (f1s.size() == 2) {
+      Field f1 = f1s.get(0), f2 = f2s.get(0);
+      Field j1 = f1s.get(1), j2 = f2s.get(1);
 
-			if (!f1.isStatic() && !j1.isStatic() && !f2.isStatic() && !j2.isStatic())
-			{
-				if ((f1.getClassFile() == j1.getClassFile()) != (f2.getClassFile() == j2.getClassFile()))
-				{
-					return false;
-				}
-			}
+      if (!f1.isStatic() && !j1.isStatic() && !f2.isStatic() && !j2.isStatic()) {
+        if ((f1.getClassFile() == j1.getClassFile()) != (f2.getClassFile() == j2.getClassFile())) {
+          return false;
+        }
+      }
 
-			if (couldBeSame(f1, f2) && couldBeSame(j1, j2) && couldBeSame(f1, j2) && couldBeSame(j1, f2))
-			{
-				return true;
-			}
+      if (couldBeSame(f1, f2) && couldBeSame(j1, j2) && couldBeSame(f1, j2) && couldBeSame(j1,
+          f2)) {
+        return true;
+      }
 
-			if (couldBeSame(f1, f2) && couldBeSame(j1, j2))
-			{
-				return true;
-			}
+      if (couldBeSame(f1, f2) && couldBeSame(j1, j2)) {
+        return true;
+      }
 
-			if (couldBeSame(f1, j2) && couldBeSame(j1, f2))
-			{
-				return true;
-			}
+      if (couldBeSame(f1, j2) && couldBeSame(j1, f2)) {
+        return true;
+      }
 
-			return false;
-		}
-		else
-		{
-			Field f1 = f1s.get(0), f2 = f2s.get(0);
+      return false;
+    } else {
+      Field f1 = f1s.get(0), f2 = f2s.get(0);
 
-			return couldBeSame(f1, f2);
-		}
-	}
+      return couldBeSame(f1, f2);
+    }
+  }
 
-	@Override
-	public boolean canMap(InstructionContext thisIc)
-	{
-		return true;
-	}
+  @Override
+  public boolean canMap(InstructionContext thisIc) {
+    return true;
+  }
 
-	@Override
-	public void setLabel(org.objectweb.asm.Label label)
-	{
-		asmlabel = label;
-	}
+  @Override
+  public void setLabel(org.objectweb.asm.Label label) {
+    asmlabel = label;
+  }
 }

@@ -19,95 +19,84 @@ import net.runelite.asm.pool.Field;
 import net.runelite.deob.DeobAnnotations;
 import net.runelite.deob.updater.MappingDumper;
 
-public class MappedMethod
-{
-	@SerializedName("method")
-	public String exportedName;
-	public String owner;
-	@SerializedName("name")
-	public String obfuscatedName;
-	public int access;
-	public List<String> parameters;
-	public String descriptor;
-	public String garbageValue;
-	public List<Integer> lineNumbers;
-	public Map<Field, Integer> fieldGets = new HashMap<>();
-	public Map<Field, Integer> fieldPuts = new HashMap<>();
-	public Map<net.runelite.asm.pool.Method, Integer> dependencies = new HashMap<>();
+public class MappedMethod {
 
-	public MappedMethod visitMethod(final Method m, final MappingDump dump)
-	{
-		MappingDumper.putMap(m.getPoolMethod(), this);
-		exportedName = DeobAnnotations.getExportedName(m);
+  @SerializedName("method")
+  public String exportedName;
+  public String owner;
+  @SerializedName("name")
+  public String obfuscatedName;
+  public int access;
+  public List<String> parameters;
+  public String descriptor;
+  public String garbageValue;
+  public List<Integer> lineNumbers;
+  public Map<Field, Integer> fieldGets = new HashMap<>();
+  public Map<Field, Integer> fieldPuts = new HashMap<>();
+  public Map<net.runelite.asm.pool.Method, Integer> dependencies = new HashMap<>();
 
-		owner = MappingDumper.getMap(m.getClassFile()).obfuscatedName;
+  public MappedMethod visitMethod(final Method m, final MappingDump dump) {
+    MappingDumper.putMap(m.getPoolMethod(), this);
+    exportedName = DeobAnnotations.getExportedName(m);
 
-		obfuscatedName = DeobAnnotations.getObfuscatedName(m);
-		if (obfuscatedName == null)
-		{
-			obfuscatedName = m.getName();
-		}
+    owner = MappingDumper.getMap(m.getClassFile()).obfuscatedName;
 
-		access = m.getAccessFlags();
+    obfuscatedName = DeobAnnotations.getObfuscatedName(m);
+    if (obfuscatedName == null) {
+      obfuscatedName = m.getName();
+    }
 
-		parameters = m.getParameters()
-			.stream()
-			.map(Parameter::getName)
-			.collect(Collectors.toList());
+    access = m.getAccessFlags();
 
-		descriptor = m.getObfuscatedSignature().toString();
+    parameters = m.getParameters()
+        .stream()
+        .map(Parameter::getName)
+        .collect(Collectors.toList());
 
-		garbageValue = DeobAnnotations.getDecoder(m);
+    descriptor = m.getObfuscatedSignature().toString();
 
-		Code c = m.getCode();
-		if (c != null)
-		{
-			visitCode(c);
-		}
+    garbageValue = DeobAnnotations.getDecoder(m);
 
-		return this;
-	}
+    Code c = m.getCode();
+    if (c != null) {
+      visitCode(c);
+    }
 
-	private void visitCode(Code c)
-	{
-		lineNumbers = c.getLineNumbers();
+    return this;
+  }
 
-		Instructions ins = c.getInstructions();
-		for (Instruction i : ins.getInstructions())
-		{
-			if (i instanceof GetFieldInstruction)
-			{
-				Field k = ((GetFieldInstruction) i).getField();
-				int v = fieldGets.getOrDefault(k, 0) + 1;
-				fieldGets.put(k, v);
-			}
-			else if (i instanceof SetFieldInstruction)
-			{
-				Field k = ((SetFieldInstruction) i).getField();
-				int v = fieldPuts.getOrDefault(k, 0) + 1;
-				fieldPuts.put(k, v);
-			}
-			else if (i instanceof InvokeInstruction)
-			{
-				List<Method> met = ((InvokeInstruction) i).getMethods();
-				net.runelite.asm.pool.Method k;
-				if (met.size() > 0)
-				{
-					Method mme = met.get(0);
-					k = new net.runelite.asm.pool.Method(
-						new Class(Objects.requireNonNull(DeobAnnotations.getObfuscatedName(mme.getClassFile()))),
-						DeobAnnotations.getObfuscatedName(mme),
-						mme.getObfuscatedSignature() != null ? mme.getObfuscatedSignature() : mme.getDescriptor()
-					);
-				}
-				else
-				{
-					k = ((InvokeInstruction) i).getMethod();
-				}
+  private void visitCode(Code c) {
+    lineNumbers = c.getLineNumbers();
 
-				int v = dependencies.getOrDefault(k, 0) + 1;
-				dependencies.put(k, v);
-			}
-		}
-	}
+    Instructions ins = c.getInstructions();
+    for (Instruction i : ins.getInstructions()) {
+      if (i instanceof GetFieldInstruction) {
+        Field k = ((GetFieldInstruction) i).getField();
+        int v = fieldGets.getOrDefault(k, 0) + 1;
+        fieldGets.put(k, v);
+      } else if (i instanceof SetFieldInstruction) {
+        Field k = ((SetFieldInstruction) i).getField();
+        int v = fieldPuts.getOrDefault(k, 0) + 1;
+        fieldPuts.put(k, v);
+      } else if (i instanceof InvokeInstruction) {
+        List<Method> met = ((InvokeInstruction) i).getMethods();
+        net.runelite.asm.pool.Method k;
+        if (met.size() > 0) {
+          Method mme = met.get(0);
+          k = new net.runelite.asm.pool.Method(
+              new Class(
+                  Objects.requireNonNull(DeobAnnotations.getObfuscatedName(mme.getClassFile()))),
+              DeobAnnotations.getObfuscatedName(mme),
+              mme.getObfuscatedSignature() != null ? mme.getObfuscatedSignature()
+                  : mme.getDescriptor()
+          );
+        } else {
+          k = ((InvokeInstruction) i).getMethod();
+        }
+
+        int v = dependencies.getOrDefault(k, 0) + 1;
+        dependencies.put(k, v);
+      }
+    }
+  }
 }

@@ -27,37 +27,44 @@ package net.runelite.api;
 /**
  * Represents an paletted sprite.
  */
-public interface IndexedSprite
-{
-	/**
-	 * The bitmap of this sprite. Each value is an index into {@link #getPalette()}.
-	 * 0 is transparent
-	 */
-	byte[] getPixels();
-	void setPixels(byte[] pixels);
+public interface IndexedSprite {
 
-	/**
-	 * The color palette in RGB. The zero index is unused.
-	 */
-	int[] getPalette();
-	void setPalette(int[] palette);
+  /**
+   * The bitmap of this sprite. Each value is an index into {@link #getPalette()}. 0 is transparent
+   */
+  byte[] getPixels();
 
-	int getOffsetX();
-	void setOffsetX(int offsetX);
+  void setPixels(byte[] pixels);
 
-	int getOffsetY();
-	void setOffsetY(int offsetY);
+  /**
+   * The color palette in RGB. The zero index is unused.
+   */
+  int[] getPalette();
 
-	int getWidth();
-	void setWidth(int width);
+  void setPalette(int[] palette);
+
+  int getOffsetX();
+
+  void setOffsetX(int offsetX);
+
+  int getOffsetY();
+
+  void setOffsetY(int offsetY);
+
+  int getWidth();
+
+  void setWidth(int width);
 
 
-	int getHeight();
-	void setHeight(int height);
-	
-	int getOriginalWidth();
-	void setOriginalWidth(int originalWidth);
+  int getHeight();
 
-	int getOriginalHeight();
-	void setOriginalHeight(int originalHeight);
+  void setHeight(int height);
+
+  int getOriginalWidth();
+
+  void setOriginalWidth(int originalWidth);
+
+  int getOriginalHeight();
+
+  void setOriginalHeight(int originalHeight);
 }

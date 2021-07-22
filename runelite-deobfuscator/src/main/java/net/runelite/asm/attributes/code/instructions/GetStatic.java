@@ -39,101 +39,88 @@ import net.runelite.asm.pool.Class;
 import net.runelite.asm.pool.Field;
 import org.objectweb.asm.MethodVisitor;
 
-public class GetStatic extends Instruction implements GetFieldInstruction
-{
-	private Field field;
-	private net.runelite.asm.Field myField;
+public class GetStatic extends Instruction implements GetFieldInstruction {
 
-	public GetStatic(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
+  private Field field;
+  private net.runelite.asm.Field myField;
 
-	public GetStatic(Instructions instructions, Field field)
-	{
-		super(instructions, InstructionType.GETSTATIC);
+  public GetStatic(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
 
-		this.field = field;
-	}
+  public GetStatic(Instructions instructions, Field field) {
+    super(instructions, InstructionType.GETSTATIC);
 
-	@Override
-	public String toString()
-	{
-		Method m = this.getInstructions().getCode().getMethod();
-		return "getstatic " + myField + " in " + m;
-	}
+    this.field = field;
+  }
 
-	@Override
-	public void accept(MethodVisitor visitor)
-	{
-		visitor.visitFieldInsn(this.getType().getCode(),
-			field.getClazz().getName(),
-			field.getName(),
-			field.getType().toString()
-		);
-	}
+  @Override
+  public String toString() {
+    Method m = this.getInstructions().getCode().getMethod();
+    return "getstatic " + myField + " in " + m;
+  }
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ins = new InstructionContext(this, frame);
-		Stack stack = frame.getStack();
+  @Override
+  public void accept(MethodVisitor visitor) {
+    visitor.visitFieldInsn(this.getType().getCode(),
+        field.getClazz().getName(),
+        field.getName(),
+        field.getType().toString()
+    );
+  }
 
-		StackContext ctx = new StackContext(ins, field.getType(), Value.UNKNOWN);
-		stack.push(ctx);
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ins = new InstructionContext(this, frame);
+    Stack stack = frame.getStack();
 
-		ins.push(ctx);
+    StackContext ctx = new StackContext(ins, field.getType(), Value.UNKNOWN);
+    stack.push(ctx);
 
-		if (myField != null)
-		{
-			frame.getExecution().order(frame, myField);
-		}
+    ins.push(ctx);
 
-		return ins;
-	}
+    if (myField != null) {
+      frame.getExecution().order(frame, myField);
+    }
 
-	@Override
-	public Field getField()
-	{
-		return field;
-	}
+    return ins;
+  }
 
-	@Override
-	public net.runelite.asm.Field getMyField()
-	{
-		Class clazz = field.getClazz();
+  @Override
+  public Field getField() {
+    return field;
+  }
 
-		ClassFile cf = this.getInstructions().getCode().getMethod().getClassFile().getGroup().findClass(clazz.getName());
-		if (cf == null)
-		{
-			return null;
-		}
+  @Override
+  public void setField(Field field) {
+    this.field = field;
+  }
 
-		net.runelite.asm.Field f2 = cf.findFieldDeep(field.getName(), field.getType());
-		return f2;
-	}
+  @Override
+  public net.runelite.asm.Field getMyField() {
+    Class clazz = field.getClazz();
 
-	@Override
-	public void lookup()
-	{
-		myField = this.getMyField();
-	}
+    ClassFile cf = this.getInstructions().getCode().getMethod().getClassFile().getGroup()
+        .findClass(clazz.getName());
+    if (cf == null) {
+      return null;
+    }
 
-	@Override
-	public void regeneratePool()
-	{
-		if (myField != null)
-		{
-			if (getMyField() != myField)
-			{
-				field = myField.getPoolField();
-			}
-		}
-	}
+    net.runelite.asm.Field f2 = cf.findFieldDeep(field.getName(), field.getType());
+    return f2;
+  }
 
-	@Override
-	public void setField(Field field)
-	{
-		this.field = field;
-	}
+  @Override
+  public void lookup() {
+    myField = this.getMyField();
+  }
+
+  @Override
+  public void regeneratePool() {
+    if (myField != null) {
+      if (getMyField() != myField) {
+        field = myField.getPoolField();
+      }
+    }
+  }
 }

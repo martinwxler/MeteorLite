@@ -15,9 +15,6 @@
  */
 package org.jetbrains.java.decompiler.struct.attr;
 
-import org.jetbrains.java.decompiler.struct.consts.ConstantPool;
-import org.jetbrains.java.decompiler.util.DataInputFullStream;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.jetbrains.java.decompiler.struct.consts.ConstantPool;
+import org.jetbrains.java.decompiler.util.DataInputFullStream;
 
 /*
   u2 local_variable_table_length;
@@ -37,6 +36,7 @@ import java.util.stream.Stream;
   }
 */
 public class StructLocalVariableTableAttribute extends StructGeneralAttribute {
+
   private List<LocalVariable> localVariables = Collections.emptyList();
 
   @Override
@@ -52,13 +52,12 @@ public class StructLocalVariableTableAttribute extends StructGeneralAttribute {
         int descriptorIndex = data.readUnsignedShort();
         int varIndex = data.readUnsignedShort();
         localVariables.add(new LocalVariable(start_pc,
-                                             length,
-                                             pool.getPrimitiveConstant(nameIndex).getString(),
-                                             pool.getPrimitiveConstant(descriptorIndex).getString(),
-                                             varIndex));
+            length,
+            pool.getPrimitiveConstant(nameIndex).getString(),
+            pool.getPrimitiveConstant(descriptorIndex).getString(),
+            varIndex));
       }
-    }
-    else {
+    } else {
       localVariables = Collections.emptyList();
     }
   }
@@ -77,7 +76,8 @@ public class StructLocalVariableTableAttribute extends StructGeneralAttribute {
 
   private Stream<LocalVariable> matchingVars(int index, int visibleOffset) {
     return localVariables.stream()
-      .filter(v -> v.index == index && (visibleOffset >= v.start_pc && visibleOffset < v.start_pc + v.length));
+        .filter(v -> v.index == index && (visibleOffset >= v.start_pc
+            && visibleOffset < v.start_pc + v.length));
   }
 
   public boolean containsName(String name) {
@@ -85,10 +85,12 @@ public class StructLocalVariableTableAttribute extends StructGeneralAttribute {
   }
 
   public Map<Integer, String> getMapParamNames() {
-    return localVariables.stream().filter(v -> v.start_pc == 0).collect(Collectors.toMap(v -> v.index, v -> v.name, (n1, n2) -> n2));
+    return localVariables.stream().filter(v -> v.start_pc == 0)
+        .collect(Collectors.toMap(v -> v.index, v -> v.name, (n1, n2) -> n2));
   }
 
   private static class LocalVariable {
+
     final int start_pc;
     final int length;
     final String name;

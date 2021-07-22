@@ -31,576 +31,576 @@ package net.runelite.rs.api;
 import net.runelite.api.widgets.Widget;
 import net.runelite.mapping.Import;
 
-public interface RSWidget extends Widget
-{
-	@Import("children")
-	@Override
-	RSWidget[] getChildren();
+public interface RSWidget extends Widget {
 
-	@Import("children")
-	@Override
-	void setChildren(Widget[] children);
+  @Import("children")
+  @Override
+  RSWidget[] getChildren();
 
-	@Import("id")
-	@Override
-	int getId();
+  @Import("children")
+  @Override
+  void setChildren(Widget[] children);
 
-	void setRenderParentId(int parentId);
+  @Import("id")
+  @Override
+  int getId();
 
-	void setRenderX(int x);
+  @Import("id")
+  void setId(int id);
 
-	void setRenderY(int y);
+  void setRenderParentId(int parentId);
 
-	@Import("id")
-	void setId(int id);
+  void setRenderX(int x);
 
-	@Import("parentId")
-	int getRSParentId();
+  void setRenderY(int y);
 
-	@Import("parentId")
-	void setParentId(int id);
+  @Import("parentId")
+  int getRSParentId();
 
-	@Import("flags")
-	int getClickMask();
+  @Import("parentId")
+  void setParentId(int id);
 
-	@Import("flags")
-	void setClickMask(int mask);
+  @Import("flags")
+  int getClickMask();
 
-	//@Import("boundsIndex") -- unused for now
-	//int getBoundsIndex();
+  @Import("flags")
+  void setClickMask(int mask);
 
-	@Import("modelId")
-	@Override
-	int getModelId();
+  //@Import("boundsIndex") -- unused for now
+  //int getBoundsIndex();
 
-	@Import("modelId")
-	@Override
-	void setModelId(int modelId);
+  @Import("modelId")
+  @Override
+  int getModelId();
 
-	@Import("itemIds")
-	int[] getItemIds();
+  @Import("modelId")
+  @Override
+  void setModelId(int modelId);
 
-	@Import("itemQuantities")
-	int[] getItemQuantities();
+  @Import("itemIds")
+  int[] getItemIds();
 
-	@Import("modelType")
-	int getModelType();
+  @Import("itemQuantities")
+  int[] getItemQuantities();
 
-	@Import("modelType")
-	void setModelType(int modelType);
+  @Import("modelType")
+  int getModelType();
 
-	@Import("sequenceId")
-	int getAnimationId();
+  @Import("modelType")
+  void setModelType(int modelType);
 
-	@Import("sequenceId")
-	void setAnimationId(int animationId);
+  @Import("sequenceId")
+  int getAnimationId();
 
-	@Import("actions")
-	@Override
-	String[] getActions();
+  @Import("sequenceId")
+  void setAnimationId(int animationId);
 
-	@Import("itemActions")
-	@Override
-	String[] getItemActions();
+  @Import("actions")
+  @Override
+  String[] getActions();
 
-	@Import("spellName")
-	String getSpellName();
+  @Import("itemActions")
+  @Override
+  String[] getItemActions();
 
-	@Import("buttonText")
-	String getRSButtonText();
+  @Import("spellName")
+  String getSpellName();
 
-	@Import("text")
-	String getRSText();
+  @Import("buttonText")
+  String getRSButtonText();
 
-	@Import("dataText")
-	String getRSName();
+  @Import("text")
+  String getRSText();
 
-	@Import("dataText")
-	void setRSName(String name);
+  @Import("dataText")
+  String getRSName();
 
-	@Import("text")
-	@Override
-	void setText(String text);
+  @Import("dataText")
+  void setRSName(String name);
 
-	@Import("color")
-	@Override
-	int getTextColor();
+  @Import("text")
+  @Override
+  void setText(String text);
 
-	@Import("color")
-	@Override
-	void setTextColor(int textColor);
+  @Import("color")
+  @Override
+  int getTextColor();
 
-	@Import("transparencyTop")
-	@Override
-	int getOpacity();
+  @Import("color")
+  @Override
+  void setTextColor(int textColor);
 
-	@Import("transparencyTop")
-	@Override
-	void setOpacity(int opacity);
+  @Import("transparencyTop")
+  @Override
+  int getOpacity();
 
-	@Import("x")
-	@Override
-	int getRelativeX();
+  @Import("transparencyTop")
+  @Override
+  void setOpacity(int opacity);
 
-	@Import("x")
-	@Override
-	void setRelativeX(int x);
+  @Import("x")
+  @Override
+  int getRelativeX();
 
-	@Import("y")
-	@Override
-	int getRelativeY();
+  @Import("x")
+  @Override
+  void setRelativeX(int x);
 
-	@Import("y")
-	@Override
-	void setRelativeY(int y);
+  @Import("y")
+  @Override
+  int getRelativeY();
 
-	@Import("width")
-	@Override
-	int getWidth();
+  @Import("y")
+  @Override
+  void setRelativeY(int y);
 
-	@Import("width")
-	@Override
-	void setWidth(int width);
+  @Import("width")
+  @Override
+  int getWidth();
 
-	@Import("height")
-	@Override
-	int getHeight();
+  @Import("width")
+  @Override
+  void setWidth(int width);
 
-	@Import("height")
-	@Override
-	void setHeight(int height);
+  @Import("height")
+  @Override
+  int getHeight();
 
-	@Import("isHidden")
-	@Override
-	boolean isSelfHidden();
+  @Import("height")
+  @Override
+  void setHeight(int height);
 
-	@Import("isHidden")
-	void setHidden(boolean hidden);
+  @Import("isHidden")
+  @Override
+  boolean isSelfHidden();
 
-	@Import("childIndex")
-	int getIndex();
+  @Import("isHidden")
+  void setHidden(boolean hidden);
 
-	@Import("childIndex")
-	void setIndex(int index);
+  @Import("childIndex")
+  int getIndex();
 
-	@Import("modelAngleX")
-	@Override
-	int getRotationX();
+  @Import("childIndex")
+  void setIndex(int index);
 
-	@Import("modelAngleX")
-	@Override
-	void setRotationX(int rotationX);
+  @Import("modelAngleX")
+  @Override
+  int getRotationX();
 
-	@Import("modelAngleY")
-	@Override
-	int getRotationY();
+  @Import("modelAngleX")
+  @Override
+  void setRotationX(int rotationX);
 
-	@Import("modelAngleY")
-	@Override
-	void setRotationY(int rotationY);
+  @Import("modelAngleY")
+  @Override
+  int getRotationY();
 
-	@Import("modelAngleZ")
-	@Override
-	int getRotationZ();
+  @Import("modelAngleY")
+  @Override
+  void setRotationY(int rotationY);
 
-	@Import("modelAngleZ")
-	@Override
-	void setRotationZ(int rotationZ);
+  @Import("modelAngleZ")
+  @Override
+  int getRotationZ();
 
-	@Import("modelZoom")
-	@Override
-	int getModelZoom();
+  @Import("modelAngleZ")
+  @Override
+  void setRotationZ(int rotationZ);
 
-	@Import("modelZoom")
-	@Override
-	void setModelZoom(int modelZoom);
+  @Import("modelZoom")
+  @Override
+  int getModelZoom();
 
-	@Import("contentType")
-	@Override
-	int getContentType();
+  @Import("modelZoom")
+  @Override
+  void setModelZoom(int modelZoom);
 
-	@Import("contentType")
-	@Override
-	void setContentType(int contentType);
+  @Import("contentType")
+  @Override
+  int getContentType();
 
-	@Import("type")
-	@Override
-	int getType();
+  @Import("contentType")
+  @Override
+  void setContentType(int contentType);
 
-	@Import("type")
-	@Override
-	void setType(int type);
+  @Import("type")
+  @Override
+  int getType();
 
-	@Import("buttonType")
-	@Override
-	int getButtonType();
+  @Import("type")
+  @Override
+  void setType(int type);
 
-	@Import("scrollX")
-	@Override
-	int getScrollX();
+  @Import("buttonType")
+  @Override
+  int getButtonType();
 
-	@Import("scrollX")
-	@Override
-	void setScrollX(int scrollX);
+  @Import("scrollX")
+  @Override
+  int getScrollX();
 
-	@Import("scrollY")
-	@Override
-	int getScrollY();
+  @Import("scrollX")
+  @Override
+  void setScrollX(int scrollX);
 
-	@Import("scrollY")
-	@Override
-	void setScrollY(int scrollY);
+  @Import("scrollY")
+  @Override
+  int getScrollY();
 
-	@Import("scrollWidth")
-	@Override
-	int getScrollWidth();
+  @Import("scrollY")
+  @Override
+  void setScrollY(int scrollY);
 
-	@Import("scrollWidth")
-	@Override
-	void setScrollWidth(int width);
+  @Import("scrollWidth")
+  @Override
+  int getScrollWidth();
 
-	@Import("scrollHeight")
-	@Override
-	int getScrollHeight();
+  @Import("scrollWidth")
+  @Override
+  void setScrollWidth(int width);
 
-	@Import("scrollHeight")
-	@Override
-	void setScrollHeight(int height);
+  @Import("scrollHeight")
+  @Override
+  int getScrollHeight();
 
-	@Import("spriteId2")
-	@Override
-	int getSpriteId();
+  @Import("scrollHeight")
+  @Override
+  void setScrollHeight(int height);
 
-	@Import("spriteId2")
-	@Override
-	void setSpriteId(int spriteId);
+  @Import("spriteId2")
+  @Override
+  int getSpriteId();
 
-	@Import("spriteTiling")
-	@Override
-	boolean getSpriteTiling();
+  @Import("spriteId2")
+  @Override
+  void setSpriteId(int spriteId);
 
-	@Import("spriteTiling")
-	@Override
-	void setSpriteTiling(boolean tiling);
+  @Import("spriteTiling")
+  @Override
+  boolean getSpriteTiling();
 
-	@Import("outline")
-	@Override
-	int getBorderType();
+  @Import("spriteTiling")
+  @Override
+  void setSpriteTiling(boolean tiling);
 
-	@Import("outline")
-	@Override
-	void setBorderType(int type);
+  @Import("outline")
+  @Override
+  int getBorderType();
 
-	@Import("itemId")
-	@Override
-	int getItemId();
+  @Import("outline")
+  @Override
+  void setBorderType(int type);
 
-	@Import("itemId")
-	@Override
-	void setItemId(int itemId);
+  @Import("itemId")
+  @Override
+  int getItemId();
 
-	@Import("itemQuantity")
-	@Override
-	int getItemQuantity();
+  @Import("itemId")
+  @Override
+  void setItemId(int itemId);
 
-	@Import("itemQuantity")
-	@Override
-	void setItemQuantity(int quantity);
+  @Import("itemQuantity")
+  @Override
+  int getItemQuantity();
 
-	@Import("rawX")
-	@Override
-	int getOriginalX();
+  @Import("itemQuantity")
+  @Override
+  void setItemQuantity(int quantity);
 
-	@Import("rawX")
-	@Override
-	void setOriginalX(int originalX);
+  @Import("rawX")
+  @Override
+  int getOriginalX();
 
-	@Import("rawY")
-	@Override
-	int getOriginalY();
+  @Import("rawX")
+  @Override
+  void setOriginalX(int originalX);
 
-	@Import("rawY")
-	@Override
-	void setOriginalY(int originalY);
+  @Import("rawY")
+  @Override
+  int getOriginalY();
 
-	@Import("rawHeight")
-	@Override
-	int getOriginalHeight();
+  @Import("rawY")
+  @Override
+  void setOriginalY(int originalY);
 
-	@Import("rawHeight")
-	@Override
-	void setOriginalHeight(int originalHeight);
+  @Import("rawHeight")
+  @Override
+  int getOriginalHeight();
 
-	@Import("rawWidth")
-	@Override
-	int getOriginalWidth();
+  @Import("rawHeight")
+  @Override
+  void setOriginalHeight(int originalHeight);
 
-	@Import("rawWidth")
-	@Override
-	void setOriginalWidth(int originalWidth);
+  @Import("rawWidth")
+  @Override
+  int getOriginalWidth();
 
-	@Import("paddingX")
-	int getXPitch();
+  @Import("rawWidth")
+  @Override
+  void setOriginalWidth(int originalWidth);
 
-	@Import("paddingY")
-	int getYPitch();
+  @Import("paddingX")
+  int getXPitch();
 
-	@Import("onOp")
-	@Override
-	void setOnOpListener(Object... args);
+  @Import("paddingY")
+  int getYPitch();
 
-	@Import("setAction")
-	@Override
-	void setAction$api(int idx, String action);
+  @Import("setAction")
+  @Override
+  void setAction$api(int idx, String action);
 
-	@Import("isIf3")
-	@Override
-	boolean isIf3();
+  @Import("isIf3")
+  @Override
+  boolean isIf3();
 
-	@Import("isIf3")
-	void setIsIf3(boolean isIf3);
+  @Import("isIf3")
+  void setIsIf3(boolean isIf3);
 
-	@Import("hasListener")
-	@Override
-	boolean hasListener();
+  @Import("hasListener")
+  @Override
+  boolean hasListener();
 
-	@Import("hasListener")
-	@Override
-	void setHasListener(boolean hasListener);
+  @Import("hasListener")
+  @Override
+  void setHasListener(boolean hasListener);
 
-	@Import("onKey")
-	@Override
-	Object[] getOnKeyListener();
+  @Import("onKey")
+  @Override
+  Object[] getOnKeyListener();
 
-	@Import("onLoad")
-	@Override
-	Object[] getOnLoadListener();
+  @Import("onKey")
+  @Override
+  void setOnKeyListener(Object... args);
 
-	@Import("onOp")
-	@Override
-	Object[] getOnOpListener();
+  @Import("onLoad")
+  @Override
+  Object[] getOnLoadListener();
 
-	@Import("onDialogAbort")
-	@Override
-	void setOnDialogAbortListener(Object... args);
+  @Import("onOp")
+  @Override
+  Object[] getOnOpListener();
 
-	@Import("onKey")
-	@Override
-	void setOnKeyListener(Object... args);
+  @Import("onOp")
+  @Override
+  void setOnOpListener(Object... args);
 
-	@Import("onMouseOver")
-	@Override
-	void setOnMouseOverListener(Object... args);
+  @Import("onDialogAbort")
+  @Override
+  void setOnDialogAbortListener(Object... args);
 
-	@Import("onMouseRepeat")
-	@Override
-	void setOnMouseRepeatListener(Object... args);
+  @Import("onMouseOver")
+  @Override
+  void setOnMouseOverListener(Object... args);
 
-	@Import("onMouseLeave")
-	@Override
-	void setOnMouseLeaveListener(Object... args);
+  @Import("onMouseRepeat")
+  @Override
+  void setOnMouseRepeatListener(Object... args);
 
-	@Import("onTimer")
-	@Override
-	void setOnTimerListener(Object... args);
+  @Import("onMouseLeave")
+  @Override
+  void setOnMouseLeaveListener(Object... args);
 
-	@Import("onTargetEnter")
-	@Override
-	void setOnTargetEnterListener(Object... args);
+  @Import("onTimer")
+  @Override
+  void setOnTimerListener(Object... args);
 
-	@Import("onTargetLeave")
-	@Override
-	void setOnTargetLeaveListener(Object... args);
+  @Import("onTargetEnter")
+  @Override
+  void setOnTargetEnterListener(Object... args);
 
-	@Import("fontId")
-	@Override
-	int getFontId();
+  @Import("onTargetLeave")
+  @Override
+  void setOnTargetLeaveListener(Object... args);
 
-	@Import("fontId")
-	@Override
-	void setFontId(int id);
+  @Import("fontId")
+  @Override
+  int getFontId();
 
-	@Import("textShadowed")
-	@Override
-	boolean getTextShadowed();
+  @Import("fontId")
+  @Override
+  void setFontId(int id);
 
-	@Import("textShadowed")
-	@Override
-	void setTextShadowed(boolean shadowed);
+  @Import("textShadowed")
+  @Override
+  boolean getTextShadowed();
 
-	@Import("dragZoneSize")
-	@Override
-	int getDragDeadZone();
+  @Import("textShadowed")
+  @Override
+  void setTextShadowed(boolean shadowed);
 
-	@Import("dragZoneSize")
-	@Override
-	void setDragDeadZone(int deadZone);
+  @Import("dragZoneSize")
+  @Override
+  int getDragDeadZone();
 
-	@Import("dragThreshold")
-	@Override
-	int getDragDeadTime();
+  @Import("dragZoneSize")
+  @Override
+  void setDragDeadZone(int deadZone);
 
-	@Import("dragThreshold")
-	@Override
-	void setDragDeadTime(int deadTime);
+  @Import("dragThreshold")
+  @Override
+  int getDragDeadTime();
 
-	@Import("itemQuantityMode")
-	@Override
-	int getItemQuantityMode();
+  @Import("dragThreshold")
+  @Override
+  void setDragDeadTime(int deadTime);
 
-	@Import("itemQuantityMode")
-	@Override
-	void setItemQuantityMode(int itemQuantityMode);
+  @Import("itemQuantityMode")
+  @Override
+  int getItemQuantityMode();
 
-	@Import("xAlignment")
-	@Override
-	int getXPositionMode();
+  @Import("itemQuantityMode")
+  @Override
+  void setItemQuantityMode(int itemQuantityMode);
 
-	@Import("xAlignment")
-	@Override
-	void setXPositionMode(int xpm);
+  @Import("xAlignment")
+  @Override
+  int getXPositionMode();
 
-	@Import("yAlignment")
-	@Override
-	int getYPositionMode();
+  @Import("xAlignment")
+  @Override
+  void setXPositionMode(int xpm);
 
-	@Import("yAlignment")
-	@Override
-	void setYPositionMode(int ypm);
+  @Import("yAlignment")
+  @Override
+  int getYPositionMode();
 
-	@Import("textXAlignment")
-	@Override
-	int getXTextAlignment();
+  @Import("yAlignment")
+  @Override
+  void setYPositionMode(int ypm);
 
-	@Import("textXAlignment")
-	@Override
-	void setXTextAlignment(int xta);
+  @Import("textXAlignment")
+  @Override
+  int getXTextAlignment();
 
-	@Import("textYAlignment")
-	@Override
-	int getYTextAlignment();
+  @Import("textXAlignment")
+  @Override
+  void setXTextAlignment(int xta);
 
-	@Import("textYAlignment")
-	@Override
-	void setYTextAlignment(int yta);
+  @Import("textYAlignment")
+  @Override
+  int getYTextAlignment();
 
-	@Import("widthAlignment")
-	@Override
-	int getWidthMode();
+  @Import("textYAlignment")
+  @Override
+  void setYTextAlignment(int yta);
 
-	@Import("widthAlignment")
-	@Override
-	void setWidthMode(int widthMode);
+  @Import("widthAlignment")
+  @Override
+  int getWidthMode();
 
-	@Import("heightAlignment")
-	@Override
-	int getHeightMode();
+  @Import("widthAlignment")
+  @Override
+  void setWidthMode(int widthMode);
 
-	@Import("heightAlignment")
-	@Override
-	void setHeightMode(int heightMode);
+  @Import("heightAlignment")
+  @Override
+  int getHeightMode();
 
-	@Import("getFont")
-	@Override
-	RSFont getFont$api();
+  @Import("heightAlignment")
+  @Override
+  void setHeightMode(int heightMode);
 
-	@Import("fill")
-	@Override
-	boolean isFilled();
+  @Import("getFont")
+  @Override
+  RSFont getFont$api();
 
-	@Import("fill")
-	@Override
-	void setFilled(boolean filled);
+  @Import("fill")
+  @Override
+  boolean isFilled();
 
-	@Import("spellActionName")
-	@Override
-	String getTargetVerb();
+  @Import("fill")
+  @Override
+  void setFilled(boolean filled);
 
-	@Import("spellActionName")
-	@Override
-	void setTargetVerb(String targetVerb);
+  @Import("spellActionName")
+  @Override
+  String getTargetVerb();
 
-	@Import("noClickThrough")
-	@Override
-	boolean getNoClickThrough();
+  @Import("spellActionName")
+  @Override
+  void setTargetVerb(String targetVerb);
 
-	@Import("noClickThrough")
-	@Override
-	void setNoClickThrough(boolean noClickThrough);
+  @Import("noClickThrough")
+  @Override
+  boolean getNoClickThrough();
 
-	@Import("noScrollThrough")
-	@Override
-	boolean getNoScrollThrough();
+  @Import("noClickThrough")
+  @Override
+  void setNoClickThrough(boolean noClickThrough);
 
-	@Import("noScrollThrough")
-	@Override
-	void setNoScrollThrough(boolean noScrollThrough);
+  @Import("noScrollThrough")
+  @Override
+  boolean getNoScrollThrough();
 
-	@Import("modelFrame")
-	int getModelFrame();
+  @Import("noScrollThrough")
+  @Override
+  void setNoScrollThrough(boolean noScrollThrough);
 
-	@Import("modelFrameCycle")
-	int getModelFrameCycle();
+  @Import("modelFrame")
+  int getModelFrame();
 
-	@Import("onInvTransmit")
-	@Override
-	Object[] getOnInvTransmitListener();
+  @Import("modelFrameCycle")
+  int getModelFrameCycle();
 
-	@Import("containsMouse")
-	@Override
-	boolean containsMouse();
+  @Import("onInvTransmit")
+  @Override
+  Object[] getOnInvTransmitListener();
 
-	@Import("getSprite")
-	RSSpritePixels getSprite$api(boolean b);
+  @Import("containsMouse")
+  @Override
+  boolean containsMouse();
 
-	@Import("onRelease")
-	@Override
-	void setOnReleaseListener(Object[] o);
+  @Import("getSprite")
+  RSSpritePixels getSprite$api(boolean b);
 
-	@Import("varTransmitTriggers")
-	@Override
-	void setVarTransmitTrigger(int[] i);
+  @Import("onRelease")
+  @Override
+  void setOnReleaseListener(Object[] o);
 
-	@Import("onHold")
-	@Override
-	void setOnHoldListener(Object[] o);
+  @Import("varTransmitTriggers")
+  @Override
+  void setVarTransmitTrigger(int[] i);
 
-	@Import("onClick")
-	@Override
-	void setOnClickListener(Object[] o);
+  @Import("onHold")
+  @Override
+  void setOnHoldListener(Object[] o);
 
-	@Import("onDragComplete")
-	@Override
-	void setOnDragCompleteListener(Object[] o);
+  @Import("onClick")
+  @Override
+  void setOnClickListener(Object[] o);
 
-	@Import("onDrag")
-	@Override
-	void setOnDragListener(Object[] o);
+  @Import("onDragComplete")
+  @Override
+  void setOnDragCompleteListener(Object[] o);
 
-	@Import("parent")
-	@Override
-	RSWidget getDragParent();
+  @Import("onDrag")
+  @Override
+  void setOnDragListener(Object[] o);
 
-	@Import("parent")
-	@Override
-	void setDragParent(Widget dragParent);
+  @Import("parent")
+  @Override
+  RSWidget getDragParent();
 
-	@Import("onVarTransmit")
-	@Override
-	Object[] getOnVarTransmitListener();
+  @Import("parent")
+  @Override
+  void setDragParent(Widget dragParent);
 
-	@Import("onVarTransmit")
-	@Override
-	void setOnVarTransmitListener(Object[] o);
+  @Import("onVarTransmit")
+  @Override
+  Object[] getOnVarTransmitListener();
 
-	@Import("fillMode")
-	RSFillMode getFillMode();
+  @Import("onVarTransmit")
+  @Override
+  void setOnVarTransmitListener(Object[] o);
 
-	@Import("textLineHeight")
-	int getLineHeight();
+  @Import("fillMode")
+  RSFillMode getFillMode();
 
-	@Import("textLineHeight")
-	void setLineHeight(int height);
+  @Import("textLineHeight")
+  int getLineHeight();
 
-	void broadcastHidden(boolean hidden);
+  @Import("textLineHeight")
+  void setLineHeight(int height);
+
+  void broadcastHidden(boolean hidden);
 }

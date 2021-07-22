@@ -38,66 +38,58 @@ import net.runelite.asm.execution.StackContext;
 import net.runelite.asm.execution.Value;
 import org.objectweb.asm.MethodVisitor;
 
-public class ANewArray extends Instruction implements TypeInstruction
-{
-	private Type type;
-	private ClassFile myClass;
+public class ANewArray extends Instruction implements TypeInstruction {
 
-	public ANewArray(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
+  private Type type;
+  private ClassFile myClass;
 
-	@Override
-	public void accept(MethodVisitor visitor)
-	{
-		visitor.visitTypeInsn(this.getType().getCode(), type.toAsmString());
-	}
+  public ANewArray(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ins = new InstructionContext(this, frame);
-		Stack stack = frame.getStack();
+  @Override
+  public void accept(MethodVisitor visitor) {
+    visitor.visitTypeInsn(this.getType().getCode(), type.toAsmString());
+  }
 
-		StackContext count = stack.pop();
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ins = new InstructionContext(this, frame);
+    Stack stack = frame.getStack();
 
-		ins.pop(count);
+    StackContext count = stack.pop();
 
-		StackContext ctx = new StackContext(ins, type, Value.newArray(count.getValue()));
-		stack.push(ctx);
+    ins.pop(count);
 
-		ins.push(ctx);
+    StackContext ctx = new StackContext(ins, type, Value.newArray(count.getValue()));
+    stack.push(ctx);
 
-		return ins;
-	}
+    ins.push(ctx);
 
-	@Override
-	public void lookup()
-	{
-		ClassGroup group = this.getInstructions().getCode().getMethod().getClassFile().getGroup();
-		myClass = group.findClass(type.getInternalName());
-	}
+    return ins;
+  }
 
-	@Override
-	public void regeneratePool()
-	{
-		if (myClass != null)
-		{
-			int dimms = type.getDimensions();
-			type = Type.getType("L" + myClass.getName() + ";", dimms);
-		}
-	}
+  @Override
+  public void lookup() {
+    ClassGroup group = this.getInstructions().getCode().getMethod().getClassFile().getGroup();
+    myClass = group.findClass(type.getInternalName());
+  }
 
-	@Override
-	public Type getType_()
-	{
-		return type;
-	}
+  @Override
+  public void regeneratePool() {
+    if (myClass != null) {
+      int dimms = type.getDimensions();
+      type = Type.getType("L" + myClass.getName() + ";", dimms);
+    }
+  }
 
-	@Override
-	public void setType(Type type)
-	{
-		this.type = type;
-	}
+  @Override
+  public Type getType_() {
+    return type;
+  }
+
+  @Override
+  public void setType(Type type) {
+    this.type = type;
+  }
 }

@@ -15,6 +15,9 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.exps;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import org.jetbrains.java.decompiler.code.CodeConstants;
 import org.jetbrains.java.decompiler.main.ClassesProcessor.ClassNode;
 import org.jetbrains.java.decompiler.main.DecompilerContext;
@@ -33,22 +36,21 @@ import org.jetbrains.java.decompiler.struct.match.MatchNode.RuleValue;
 import org.jetbrains.java.decompiler.util.InterpreterUtil;
 import org.jetbrains.java.decompiler.util.TextUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 public class FieldExprent extends Exprent {
+
   private final String name;
   private final String classname;
   private final boolean isStatic;
-  private Exprent instance;
   private final FieldDescriptor descriptor;
+  private Exprent instance;
 
   public FieldExprent(LinkConstant cn, Exprent instance, Set<Integer> bytecodeOffsets) {
-    this(cn.elementname, cn.classname, instance == null, instance, FieldDescriptor.parseDescriptor(cn.descriptor), bytecodeOffsets);
+    this(cn.elementname, cn.classname, instance == null, instance,
+        FieldDescriptor.parseDescriptor(cn.descriptor), bytecodeOffsets);
   }
 
-  public FieldExprent(String name, String classname, boolean isStatic, Exprent instance, FieldDescriptor descriptor, Set<Integer> bytecodeOffsets) {
+  public FieldExprent(String name, String classname, boolean isStatic, Exprent instance,
+      FieldDescriptor descriptor, Set<Integer> bytecodeOffsets) {
     super(EXPRENT_FIELD);
     this.name = name;
     this.classname = classname;
@@ -66,7 +68,8 @@ public class FieldExprent extends Exprent {
 
   @Override
   public int getExprentUse() {
-    return instance == null ? Exprent.MULTIPLE_USES : instance.getExprentUse() & Exprent.MULTIPLE_USES;
+    return instance == null ? Exprent.MULTIPLE_USES
+        : instance.getExprentUse() & Exprent.MULTIPLE_USES;
   }
 
   @Override
@@ -80,11 +83,13 @@ public class FieldExprent extends Exprent {
 
   @Override
   public Exprent copy() {
-    return new FieldExprent(name, classname, isStatic, instance == null ? null : instance.copy(), descriptor, bytecode);
+    return new FieldExprent(name, classname, isStatic, instance == null ? null : instance.copy(),
+        descriptor, bytecode);
   }
 
   private boolean isAmbiguous() {
-    MethodWrapper method = (MethodWrapper)DecompilerContext.getProperty(DecompilerContext.CURRENT_METHOD_WRAPPER);
+    MethodWrapper method = (MethodWrapper) DecompilerContext
+        .getProperty(DecompilerContext.CURRENT_METHOD_WRAPPER);
     if (method != null) {
       StructLocalVariableTableAttribute attr = method.methodStruct.getLocalVariableAttr();
       if (attr != null) {
@@ -100,20 +105,22 @@ public class FieldExprent extends Exprent {
     TextBuffer buf = new TextBuffer();
 
     if (isStatic) {
-      ClassNode node = (ClassNode)DecompilerContext.getProperty(DecompilerContext.CURRENT_CLASS_NODE);
+      ClassNode node = (ClassNode) DecompilerContext
+          .getProperty(DecompilerContext.CURRENT_CLASS_NODE);
       if (node == null || !classname.equals(node.classStruct.qualifiedName) || isAmbiguous()) {
-        buf.append(DecompilerContext.getImportCollector().getShortNameInClassContext(ExprProcessor.buildJavaClassName(classname)));
+        buf.append(DecompilerContext.getImportCollector()
+            .getShortNameInClassContext(ExprProcessor.buildJavaClassName(classname)));
         buf.append(".");
       }
-    }
-    else {
+    } else {
       String super_qualifier = null;
 
       if (instance != null && instance.type == Exprent.EXPRENT_VAR) {
-        VarExprent instVar = (VarExprent)instance;
+        VarExprent instVar = (VarExprent) instance;
         VarVersionPair pair = new VarVersionPair(instVar);
 
-        MethodWrapper currentMethod = (MethodWrapper)DecompilerContext.getProperty(DecompilerContext.CURRENT_METHOD_WRAPPER);
+        MethodWrapper currentMethod = (MethodWrapper) DecompilerContext
+            .getProperty(DecompilerContext.CURRENT_METHOD_WRAPPER);
 
         if (currentMethod != null) { // FIXME: remove
           String this_classname = currentMethod.varproc.getThisVars().get(pair);
@@ -128,10 +135,11 @@ public class FieldExprent extends Exprent {
 
       if (super_qualifier != null) {
         TextUtil.writeQualifiedSuper(buf, super_qualifier);
-      }
-      else {
+      } else {
         TextBuffer buff = new TextBuffer();
-        boolean casted = ExprProcessor.getCastedExprent(instance, new VarType(CodeConstants.TYPE_OBJECT, 0, classname), buff, indent, true, tracer);
+        boolean casted = ExprProcessor
+            .getCastedExprent(instance, new VarType(CodeConstants.TYPE_OBJECT, 0, classname), buff,
+                indent, true, tracer);
         String res = buff.toString();
 
         if (casted || instance.getPrecedence() > getPrecedence()) {
@@ -142,10 +150,9 @@ public class FieldExprent extends Exprent {
       }
 
       if (buf.toString().equals(
-        VarExprent.VAR_NAMELESS_ENCLOSURE)) { // FIXME: workaround for field access of an anonymous enclosing class. Find a better way.
+          VarExprent.VAR_NAMELESS_ENCLOSURE)) { // FIXME: workaround for field access of an anonymous enclosing class. Find a better way.
         buf.setLength(0);
-      }
-      else {
+      } else {
         buf.append(".");
       }
     }
@@ -166,15 +173,19 @@ public class FieldExprent extends Exprent {
 
   @Override
   public boolean equals(Object o) {
-    if (o == this) return true;
-    if (o == null || !(o instanceof FieldExprent)) return false;
+    if (o == this) {
+      return true;
+    }
+    if (o == null || !(o instanceof FieldExprent)) {
+      return false;
+    }
 
-    FieldExprent ft = (FieldExprent)o;
+    FieldExprent ft = (FieldExprent) o;
     return InterpreterUtil.equalObjects(name, ft.getName()) &&
-           InterpreterUtil.equalObjects(classname, ft.getClassname()) &&
-           isStatic == ft.isStatic() &&
-           InterpreterUtil.equalObjects(instance, ft.getInstance()) &&
-           InterpreterUtil.equalObjects(descriptor, ft.getDescriptor());
+        InterpreterUtil.equalObjects(classname, ft.getClassname()) &&
+        isStatic == ft.isStatic() &&
+        InterpreterUtil.equalObjects(instance, ft.getInstance()) &&
+        InterpreterUtil.equalObjects(descriptor, ft.getDescriptor());
   }
 
   public String getClassname() {
@@ -196,30 +207,30 @@ public class FieldExprent extends Exprent {
   public String getName() {
     return name;
   }
-  
+
   // *****************************************************************************
   // IMatchable implementation
   // *****************************************************************************
-  
+
   public boolean match(MatchNode matchNode, MatchEngine engine) {
 
-    if(!super.match(matchNode, engine)) {
+    if (!super.match(matchNode, engine)) {
       return false;
     }
-    
+
     RuleValue rule = matchNode.getRules().get(MatchProperties.EXPRENT_FIELD_NAME);
-    if(rule != null) {
-      if(rule.isVariable()) {
-        if(!engine.checkAndSetVariableValue((String)rule.value, this.name)) {
+    if (rule != null) {
+      if (rule.isVariable()) {
+        if (!engine.checkAndSetVariableValue((String) rule.value, this.name)) {
           return false;
         }
-      } else { 
-        if(!rule.value.equals(this.name)) {
+      } else {
+        if (!rule.value.equals(this.name)) {
           return false;
         }
       }
     }
-    
+
     return true;
   }
 }

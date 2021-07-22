@@ -38,69 +38,62 @@ import net.runelite.asm.execution.StackContext;
 import net.runelite.asm.execution.Value;
 import org.objectweb.asm.MethodVisitor;
 
-public class BiPush extends Instruction implements PushConstantInstruction, IntInstruction
-{
-	private byte b;
+public class BiPush extends Instruction implements PushConstantInstruction, IntInstruction {
 
-	public BiPush(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
+  private byte b;
 
-	public BiPush(Instructions instructions, byte b)
-	{
-		super(instructions, InstructionType.BIPUSH);
+  public BiPush(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
 
-		this.b = b;
-	}
+  public BiPush(Instructions instructions, byte b) {
+    super(instructions, InstructionType.BIPUSH);
 
-	@Override
-	public String toString()
-	{
-		return "bipush " + b;
-	}
+    this.b = b;
+  }
 
-	@Override
-	public void accept(MethodVisitor visitor)
-	{
-		visitor.visitIntInsn(this.getType().getCode(), b);
-	}
+  @Override
+  public String toString() {
+    return "bipush " + b;
+  }
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ins = new InstructionContext(this, frame);
-		Stack stack = frame.getStack();
-		
-		StackContext ctx = new StackContext(ins, Type.INT, new Value((int) b)); // bipush sign extends the value to an int
-		stack.push(ctx);
-		
-		ins.push(ctx);
-		
-		return ins;
-	}
+  @Override
+  public void accept(MethodVisitor visitor) {
+    visitor.visitIntInsn(this.getType().getCode(), b);
+  }
 
-	@Override
-	public Object getConstant()
-	{
-		return b;
-	}
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ins = new InstructionContext(this, frame);
+    Stack stack = frame.getStack();
 
-	@Override
-	public Instruction setConstant(Object entry)
-	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
+    StackContext ctx = new StackContext(ins, Type.INT,
+        new Value((int) b)); // bipush sign extends the value to an int
+    stack.push(ctx);
 
-	@Override
-	public int getOperand()
-	{
-		return b & 0xFF;
-	}
+    ins.push(ctx);
 
-	@Override
-	public void setOperand(int operand)
-	{
-		b = (byte) operand;
-	}
+    return ins;
+  }
+
+  @Override
+  public Object getConstant() {
+    return b;
+  }
+
+  @Override
+  public Instruction setConstant(Object entry) {
+    throw new UnsupportedOperationException(
+        "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  public int getOperand() {
+    return b & 0xFF;
+  }
+
+  @Override
+  public void setOperand(int operand) {
+    b = (byte) operand;
+  }
 }

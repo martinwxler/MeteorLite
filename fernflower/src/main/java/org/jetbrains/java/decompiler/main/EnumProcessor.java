@@ -28,6 +28,7 @@ import org.jetbrains.java.decompiler.struct.StructMethod;
 import org.jetbrains.java.decompiler.util.InterpreterUtil;
 
 public class EnumProcessor {
+
   public static void clearEnum(ClassWrapper wrapper) {
     StructClass cl = wrapper.getClassStruct();
 
@@ -41,18 +42,16 @@ public class EnumProcessor {
         if (descriptor.equals("()[L" + cl.qualifiedName + ";")) {
           wrapper.getHiddenMembers().add(InterpreterUtil.makeUniqueKey(name, descriptor));
         }
-      }
-      else if ("valueOf".equals(name)) {
+      } else if ("valueOf".equals(name)) {
         if (descriptor.equals("(Ljava/lang/String;)L" + cl.qualifiedName + ";")) {
           wrapper.getHiddenMembers().add(InterpreterUtil.makeUniqueKey(name, descriptor));
         }
-      }
-      else if (CodeConstants.INIT_NAME.equals(name)) {
+      } else if (CodeConstants.INIT_NAME.equals(name)) {
         Statement firstData = Statements.findFirstData(method.root);
         if (firstData != null && !firstData.getExprents().isEmpty()) {
           Exprent exprent = firstData.getExprents().get(0);
           if (exprent.type == Exprent.EXPRENT_INVOCATION) {
-            InvocationExprent invExpr = (InvocationExprent)exprent;
+            InvocationExprent invExpr = (InvocationExprent) exprent;
             if (Statements.isInvocationInitConstructor(invExpr, method, wrapper, false)) {
               firstData.getExprents().remove(0);
             }

@@ -15,12 +15,11 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.sforms;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.jetbrains.java.decompiler.modules.decompiler.exps.Exprent;
 import org.jetbrains.java.decompiler.modules.decompiler.stats.BasicBlockStatement;
 import org.jetbrains.java.decompiler.modules.decompiler.stats.Statement;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class DirectNode {
@@ -35,16 +34,11 @@ public class DirectNode {
   public final int type;
 
   public final String id;
-
-  public BasicBlockStatement block;
-
   public final Statement statement;
-
-  public List<Exprent> exprents = new ArrayList<>();
-
   public final List<DirectNode> succs = new ArrayList<>();
-
   public final List<DirectNode> preds = new ArrayList<>();
+  public BasicBlockStatement block;
+  public List<Exprent> exprents = new ArrayList<>();
 
   public DirectNode(int type, Statement statement, String id) {
     this.type = type;

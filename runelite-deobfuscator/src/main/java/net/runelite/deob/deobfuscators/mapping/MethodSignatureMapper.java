@@ -35,38 +35,36 @@ import net.runelite.asm.ClassGroup;
 import net.runelite.asm.Method;
 import net.runelite.asm.signature.Signature;
 
-public class MethodSignatureMapper
-{
-	private Multimap<Method, Method> map = LinkedHashMultimap.create();
+public class MethodSignatureMapper {
 
-	private List<Method> getMethods(ClassGroup group)
-	{
-		List<Method> methods = new ArrayList<>();
-		for (ClassFile cf : group.getClasses())
-			for (Method m : cf.getMethods())
-				if (!m.isStatic() && !m.getName().equals("<init>") && m.getCode() != null)
-					methods.add(m);
-		return methods;
-	}
+  private Multimap<Method, Method> map = LinkedHashMultimap.create();
 
-	private List<Method> getMethodsOfSignature(ClassGroup group, ClassFile cf, Signature sig)
-	{
-		return getMethods(group).stream()
-			.filter(m -> MappingExecutorUtil.isMaybeEqual(cf, m.getClassFile()))
-			.filter(m -> MappingExecutorUtil.isMaybeEqual(m.getDescriptor(), sig))
-			.collect(Collectors.toList());
-	}
+  private List<Method> getMethods(ClassGroup group) {
+    List<Method> methods = new ArrayList<>();
+    for (ClassFile cf : group.getClasses()) {
+      for (Method m : cf.getMethods()) {
+        if (!m.isStatic() && !m.getName().equals("<init>") && m.getCode() != null) {
+          methods.add(m);
+        }
+      }
+    }
+    return methods;
+  }
 
-	public void map(ClassGroup group1, ClassGroup group2)
-	{
-		for (Method m : getMethods(group1))
-		{
-			map.putAll(m, getMethodsOfSignature(group2, m.getClassFile(), m.getDescriptor()));
-		}
-	}
+  private List<Method> getMethodsOfSignature(ClassGroup group, ClassFile cf, Signature sig) {
+    return getMethods(group).stream()
+        .filter(m -> MappingExecutorUtil.isMaybeEqual(cf, m.getClassFile()))
+        .filter(m -> MappingExecutorUtil.isMaybeEqual(m.getDescriptor(), sig))
+        .collect(Collectors.toList());
+  }
 
-	public Multimap<Method, Method> getMap()
-	{
-		return map;
-	}
+  public void map(ClassGroup group1, ClassGroup group2) {
+    for (Method m : getMethods(group1)) {
+      map.putAll(m, getMethodsOfSignature(group2, m.getClassFile(), m.getDescriptor()));
+    }
+  }
+
+  public Multimap<Method, Method> getMap() {
+    return map;
+  }
 }

@@ -34,172 +34,148 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
-public class PanelComponent implements LayoutableRenderableEntity
-{
-	@Getter
-	private final Rectangle bounds = new Rectangle();
+public class PanelComponent implements LayoutableRenderableEntity {
 
-	@Setter
-	private Point preferredLocation = new Point();
+  @Getter
+  private final Rectangle bounds = new Rectangle();
+  @Getter
+  private final List<LayoutableRenderableEntity> children = new ArrayList<>();
+  private final Dimension childDimensions = new Dimension();
+  @Setter
+  private Point preferredLocation = new Point();
+  @Setter
+  @Getter
+  private Dimension preferredSize = new Dimension(ComponentConstants.STANDARD_WIDTH, 0);
+  @Setter
+  @Getter
+  private Color backgroundColor = ComponentConstants.STANDARD_BACKGROUND_COLOR;
+  @Setter
+  private ComponentOrientation orientation = ComponentOrientation.VERTICAL;
+  @Setter
+  private boolean wrap = false;
+  @Setter
+  private Rectangle border = new Rectangle(
+      ComponentConstants.STANDARD_BORDER,
+      ComponentConstants.STANDARD_BORDER,
+      ComponentConstants.STANDARD_BORDER,
+      ComponentConstants.STANDARD_BORDER);
+  @Setter
+  private Point gap = new Point(0, 0);
 
-	@Setter
-	@Getter
-	private Dimension preferredSize = new Dimension(ComponentConstants.STANDARD_WIDTH, 0);
+  @Override
+  public Dimension render(Graphics2D graphics) {
+    if (children.isEmpty()) {
+      return null;
+    }
 
-	@Setter
-	@Getter
-	private Color backgroundColor = ComponentConstants.STANDARD_BACKGROUND_COLOR;
+    // Calculate panel dimension
+    final Dimension dimension = new Dimension(
+        border.x + childDimensions.width + border.width,
+        border.y + childDimensions.height + border.height);
 
-	@Getter
-	private final List<LayoutableRenderableEntity> children = new ArrayList<>();
+    // Render background
+    if (backgroundColor != null) {
+      final BackgroundComponent backgroundComponent = new BackgroundComponent();
+      backgroundComponent.setRectangle(new Rectangle(preferredLocation, dimension));
+      backgroundComponent.setBackgroundColor(backgroundColor);
+      backgroundComponent.render(graphics);
+    }
 
-	@Setter
-	private ComponentOrientation orientation = ComponentOrientation.VERTICAL;
+    // Offset children
+    final int baseX = preferredLocation.x + border.x;
+    final int baseY = preferredLocation.y + border.y;
+    int width = 0;
+    int height = 0;
+    int x = baseX;
+    int y = baseY;
 
-	@Setter
-	private boolean wrap = false;
+    // Create child preferred size
+    final Dimension childPreferredSize = new Dimension(
+        preferredSize.width - border.x - border.width,
+        preferredSize.height - border.y - border.height);
 
-	@Setter
-	private Rectangle border = new Rectangle(
-		ComponentConstants.STANDARD_BORDER,
-		ComponentConstants.STANDARD_BORDER,
-		ComponentConstants.STANDARD_BORDER,
-		ComponentConstants.STANDARD_BORDER);
+    // Calculate max width/height for infoboxes
+    int totalHeight = 0;
+    int totalWidth = 0;
 
-	@Setter
-	private Point gap = new Point(0, 0);
+    // Render all children
+    for (final LayoutableRenderableEntity child : children) {
+      // Correctly propagate child dimensions based on orientation and wrapping
+      if (!wrap) {
+        switch (orientation) {
+          case VERTICAL:
+            child.setPreferredSize(new Dimension(childPreferredSize.width, 0));
+            break;
+          case HORIZONTAL:
+            child.setPreferredSize(new Dimension(0, childPreferredSize.height));
+            break;
+        }
+      }
 
-	private final Dimension childDimensions = new Dimension();
+      child.setPreferredLocation(new Point(x, y));
+      final Dimension childDimension = child.render(graphics);
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		if (children.isEmpty())
-		{
-			return null;
-		}
+      switch (orientation) {
+        case VERTICAL:
+          height += childDimension.height + gap.y;
+          y = baseY + height;
+          width = Math.max(width, childDimension.width);
+          break;
+        case HORIZONTAL:
+          width += childDimension.width + gap.x;
+          x = baseX + width;
+          height = Math.max(height, childDimension.height);
+          break;
+      }
 
-		// Calculate panel dimension
-		final Dimension dimension = new Dimension(
-			border.x + childDimensions.width + border.width,
-			border.y + childDimensions.height + border.height);
+      // Calculate total size
+      totalWidth = Math.max(totalWidth, width);
+      totalHeight = Math.max(totalHeight, height);
 
-		// Render background
-		if (backgroundColor != null)
-		{
-			final BackgroundComponent backgroundComponent = new BackgroundComponent();
-			backgroundComponent.setRectangle(new Rectangle(preferredLocation, dimension));
-			backgroundComponent.setBackgroundColor(backgroundColor);
-			backgroundComponent.render(graphics);
-		}
+      if (!wrap) {
+        continue;
+      }
 
-		// Offset children
-		final int baseX = preferredLocation.x + border.x;
-		final int baseY = preferredLocation.y + border.y;
-		int width = 0;
-		int height = 0;
-		int x = baseX;
-		int y = baseY;
+      switch (orientation) {
+        case VERTICAL: {
+          if (childPreferredSize.height > 0 && height >= childPreferredSize.height) {
+            height = 0;
+            y = baseY;
+            int diff = childDimension.width + gap.x;
+            x += diff;
+            width += diff;
+          }
 
-		// Create child preferred size
-		final Dimension childPreferredSize = new Dimension(
-			preferredSize.width - border.x - border.width,
-			preferredSize.height - border.y - border.height);
+          break;
+        }
+        case HORIZONTAL: {
+          if (childPreferredSize.width > 0 && width >= childPreferredSize.width) {
+            width = 0;
+            x = baseX;
+            int diff = childDimension.height + gap.y;
+            y += diff;
+            height += diff;
+          }
 
-		// Calculate max width/height for infoboxes
-		int totalHeight = 0;
-		int totalWidth = 0;
+          break;
+        }
+      }
+    }
 
-		// Render all children
-		for (final LayoutableRenderableEntity child : children)
-		{
-			// Correctly propagate child dimensions based on orientation and wrapping
-			if (!wrap)
-			{
-				switch (orientation)
-				{
-					case VERTICAL:
-						child.setPreferredSize(new Dimension(childPreferredSize.width, 0));
-						break;
-					case HORIZONTAL:
-						child.setPreferredSize(new Dimension(0, childPreferredSize.height));
-						break;
-				}
-			}
+    // Remove last child gap
+    if (orientation == ComponentOrientation.HORIZONTAL) {
+      totalWidth -= gap.x;
+    } else // VERTICAL
+    {
+      totalHeight -= gap.y;
+    }
 
-			child.setPreferredLocation(new Point(x, y));
-			final Dimension childDimension = child.render(graphics);
+    // Cache children bounds
+    childDimensions.setSize(totalWidth, totalHeight);
 
-			switch (orientation)
-			{
-				case VERTICAL:
-					height += childDimension.height + gap.y;
-					y = baseY + height;
-					width = Math.max(width, childDimension.width);
-					break;
-				case HORIZONTAL:
-					width += childDimension.width + gap.x;
-					x = baseX + width;
-					height = Math.max(height, childDimension.height);
-					break;
-			}
-
-			// Calculate total size
-			totalWidth = Math.max(totalWidth, width);
-			totalHeight = Math.max(totalHeight, height);
-
-			if (!wrap)
-			{
-				continue;
-			}
-
-			switch (orientation)
-			{
-				case VERTICAL:
-				{
-					if (childPreferredSize.height > 0 && height >= childPreferredSize.height)
-					{
-						height = 0;
-						y = baseY;
-						int diff = childDimension.width + gap.x;
-						x += diff;
-						width += diff;
-					}
-
-					break;
-				}
-				case HORIZONTAL:
-				{
-					if (childPreferredSize.width > 0 && width >= childPreferredSize.width)
-					{
-						width = 0;
-						x = baseX;
-						int diff = childDimension.height + gap.y;
-						y += diff;
-						height += diff;
-					}
-
-					break;
-				}
-			}
-		}
-
-		// Remove last child gap
-		if (orientation == ComponentOrientation.HORIZONTAL)
-		{
-			totalWidth -= gap.x;
-		}
-		else // VERTICAL
-		{
-			totalHeight -= gap.y;
-		}
-
-		// Cache children bounds
-		childDimensions.setSize(totalWidth, totalHeight);
-
-		// Cache bounds
-		bounds.setLocation(preferredLocation);
-		bounds.setSize(dimension);
-		return dimension;
-	}
+    // Cache bounds
+    bounds.setLocation(preferredLocation);
+    bounds.setSize(dimension);
+    return dimension;
+  }
 }

@@ -28,72 +28,60 @@ import java.util.ArrayList;
 import java.util.List;
 import net.runelite.asm.attributes.code.Instruction;
 
-public class Mapping
-{
-	private Object from;
-	private Object object;
-	private int count;
-	private List<Instruction> ins = new ArrayList<>();
-	public boolean wasExecuted;
-	public int weight; // weight of mapping, based on same instruction count
+public class Mapping {
 
-	public Mapping(Object from, Object object)
-	{
-		this.from = from;
-		this.object = object;
-	}
+  public boolean wasExecuted;
+  public int weight; // weight of mapping, based on same instruction count
+  private Object from;
+  private Object object;
+  private int count;
+  private List<Instruction> ins = new ArrayList<>();
 
-	@Override
-	public String toString()
-	{
-		return "Mapping{" + "from=" + from + ", object=" + object + ", count=" + count + '}';
-	}
+  public Mapping(Object from, Object object) {
+    this.from = from;
+    this.object = object;
+  }
 
-	public Object getFrom()
-	{
-		return from;
-	}
+  @Override
+  public String toString() {
+    return "Mapping{" + "from=" + from + ", object=" + object + ", count=" + count + '}';
+  }
 
-	public Object getObject()
-	{
-		return object;
-	}
+  public Object getFrom() {
+    return from;
+  }
 
-	public int getCount()
-	{
-		return count;
-	}
+  public Object getObject() {
+    return object;
+  }
 
-	public void inc()
-	{
-		++count;
-	}
+  public int getCount() {
+    return count;
+  }
 
-	public void merge(Mapping other)
-	{
-		assert object == other.object;
-		count += other.count;
-		for (Instruction i : other.ins)
-		{
-			addInstruction(i);
-		}
-		wasExecuted |= other.wasExecuted;
-		weight = Math.max(weight, other.weight);
-	}
+  public void inc() {
+    ++count;
+  }
 
-	public void addInstruction(Instruction i)
-	{
-		if (!ins.contains(i))
-		{
-			ins.add(i);
-		}
-	}
+  public void merge(Mapping other) {
+    assert object == other.object;
+    count += other.count;
+    for (Instruction i : other.ins) {
+      addInstruction(i);
+    }
+    wasExecuted |= other.wasExecuted;
+    weight = Math.max(weight, other.weight);
+  }
 
-	public void setWeight(int w)
-	{
-		if (w > weight)
-		{
-			weight = w;
-		}
-	}
+  public void addInstruction(Instruction i) {
+    if (!ins.contains(i)) {
+      ins.add(i);
+    }
+  }
+
+  public void setWeight(int w) {
+    if (w > weight) {
+      weight = w;
+    }
+  }
 }

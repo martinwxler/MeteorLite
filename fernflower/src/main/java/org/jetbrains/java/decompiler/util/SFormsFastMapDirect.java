@@ -15,21 +15,19 @@
  */
 package org.jetbrains.java.decompiler.util;
 
-import org.jetbrains.java.decompiler.modules.decompiler.exps.VarExprent;
-import org.jetbrains.java.decompiler.util.FastSparseSetFactory.FastSparseSet;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import org.jetbrains.java.decompiler.modules.decompiler.exps.VarExprent;
+import org.jetbrains.java.decompiler.util.FastSparseSetFactory.FastSparseSet;
 
 public class SFormsFastMapDirect {
 
-  private int size;
-
-  @SuppressWarnings("unchecked") private final FastSparseSet<Integer>[][] elements = new FastSparseSet[3][];
-
+  @SuppressWarnings("unchecked")
+  private final FastSparseSet<Integer>[][] elements = new FastSparseSet[3][];
   private final int[][] next = new int[3][];
+  private int size;
 
   public SFormsFastMapDirect() {
     this(true);
@@ -61,6 +59,16 @@ public class SFormsFastMapDirect {
       next[i] = arrnextnew;
 
       size = map.size;
+    }
+  }
+
+  private static void changeNext(int[] arrnext, int key, int oldnext, int newnext) {
+    for (int i = key - 1; i >= 0; i--) {
+      if (arrnext[i] == oldnext) {
+        arrnext[i] = newnext;
+      } else {
+        break;
+      }
     }
   }
 
@@ -97,8 +105,7 @@ public class SFormsFastMapDirect {
           pointer = arrnext[pointer];
         }
         while (pointer != 0);
-      }
-      else {
+      } else {
         mapelements[i] = FastSparseSet.EMPTY_ARRAY;
         mapnext[i] = InterpreterUtil.EMPTY_INT_ARRAY;
       }
@@ -144,8 +151,7 @@ public class SFormsFastMapDirect {
     if (ikey < 0) {
       index = 2;
       ikey = -ikey;
-    }
-    else if (ikey >= VarExprent.STACK_BASE) {
+    } else if (ikey >= VarExprent.STACK_BASE) {
       index = 1;
       ikey -= VarExprent.STACK_BASE;
     }
@@ -154,8 +160,7 @@ public class SFormsFastMapDirect {
     if (ikey >= arr.length) {
       if (remove) {
         return;
-      }
-      else {
+      } else {
         arr = ensureCapacity(index, ikey + 1, false);
       }
     }
@@ -168,21 +173,9 @@ public class SFormsFastMapDirect {
     if (oldval == null && value != null) {
       size++;
       changeNext(arrnext, ikey, arrnext[ikey], ikey);
-    }
-    else if (oldval != null && value == null) {
+    } else if (oldval != null && value == null) {
       size--;
       changeNext(arrnext, ikey, ikey, arrnext[ikey]);
-    }
-  }
-
-  private static void changeNext(int[] arrnext, int key, int oldnext, int newnext) {
-    for (int i = key - 1; i >= 0; i--) {
-      if (arrnext[i] == oldnext) {
-        arrnext[i] = newnext;
-      }
-      else {
-        break;
-      }
     }
   }
 
@@ -196,8 +189,7 @@ public class SFormsFastMapDirect {
     if (key < 0) {
       index = 2;
       key = -key;
-    }
-    else if (key >= VarExprent.STACK_BASE) {
+    } else if (key >= VarExprent.STACK_BASE) {
       index = 1;
       key -= VarExprent.STACK_BASE;
     }
@@ -316,8 +308,7 @@ public class SFormsFastMapDirect {
             lstOwn[pointer] = second.getCopy();
             size++;
             changeNext(arrnext, pointer, arrnext[pointer], pointer);
-          }
-          else {
+          } else {
             first.union(second);
           }
         }
@@ -338,8 +329,7 @@ public class SFormsFastMapDirect {
       for (Entry<Integer, FastSparseSet<Integer>> entry : lst) {
         if (!first) {
           buffer.append(", ");
-        }
-        else {
+        } else {
           first = false;
         }
 

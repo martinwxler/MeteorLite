@@ -31,25 +31,22 @@ import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSRunException;
 
 @Mixin(RSClient.class)
-public abstract class ErrorUploaderMixin implements RSClient
-{
-	@Shadow("client")
-	private static RSClient client;
+public abstract class ErrorUploaderMixin implements RSClient {
 
-	@Replace("RunException_sendStackTrace")
-	static void processClientError(String string, Throwable throwable)
-	{
-		if (throwable != null)
-		{
-			Throwable throwableToScan = throwable;
+  @Shadow("client")
+  private static RSClient client;
 
-			if (throwable instanceof RSRunException)
-			{
-				throwableToScan = ((RSRunException) throwable).getParent();
-			}
+  @Replace("RunException_sendStackTrace")
+  static void processClientError(String string, Throwable throwable) {
+    if (throwable != null) {
+      Throwable throwableToScan = throwable;
 
-			client.getLogger().error("Game crash:");
-			throwableToScan.printStackTrace();
-		}
-	}
+      if (throwable instanceof RSRunException) {
+        throwableToScan = ((RSRunException) throwable).getParent();
+      }
+
+      client.getLogger().error("Game crash:");
+      throwableToScan.printStackTrace();
+    }
+  }
 }

@@ -25,75 +25,68 @@
 
 package meteor.util;
 
-import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 
-public class AsyncBufferedImage extends BufferedImage
-{
-	private final List<Runnable> listeners = new ArrayList<>();
-	private boolean loaded;
+public class AsyncBufferedImage extends BufferedImage {
 
-	public AsyncBufferedImage(int width, int height, int imageType)
-	{
-		super(width, height, imageType);
-	}
+  private final List<Runnable> listeners = new ArrayList<>();
+  private boolean loaded;
 
-	/**
-	 * Call when the image has been loaded
-	 */
-	public synchronized void loaded()
-	{
-		loaded = true;
-		for (Runnable r : listeners)
-		{
-			r.run();
-		}
-		listeners.clear();
-	}
+  public AsyncBufferedImage(int width, int height, int imageType) {
+    super(width, height, imageType);
+  }
 
-	/**
-	 * Register a function to be ran when the image has been loaded.
-	 * If the image is already loaded, the function will not be ran.
-	 */
-	public synchronized void onLoaded(Runnable r)
-	{
-		if (loaded)
-		{
-			// If the image has already been loaded, further listeners will not fire. Do not
-			// queue them to avoid leaking listeners.
-			return;
-		}
+  /**
+   * Call when the image has been loaded
+   */
+  public synchronized void loaded() {
+    loaded = true;
+    for (Runnable r : listeners) {
+      r.run();
+    }
+    listeners.clear();
+  }
 
-		listeners.add(r);
-	}
+  /**
+   * Register a function to be ran when the image has been loaded. If the image is already loaded,
+   * the function will not be ran.
+   */
+  public synchronized void onLoaded(Runnable r) {
+    if (loaded) {
+      // If the image has already been loaded, further listeners will not fire. Do not
+      // queue them to avoid leaking listeners.
+      return;
+    }
 
-	/**
-	 * Calls setIcon on c, ensuring it is repainted when this changes
-	 */
-	public void addTo(JButton c)
-	{
-		c.setIcon(makeIcon(c));
-	}
+    listeners.add(r);
+  }
 
-	/**
-	 * Calls setIcon on c, ensuring it is repainted when this changes
-	 */
-	public void addTo(JLabel c)
-	{
-		c.setIcon(makeIcon(c));
-	}
+  /**
+   * Calls setIcon on c, ensuring it is repainted when this changes
+   */
+  public void addTo(JButton c) {
+    c.setIcon(makeIcon(c));
+  }
 
-	private ImageIcon makeIcon(JComponent c)
-	{
-		synchronized (this)
-		{
-			if (!loaded)
-			{
-				listeners.add(c::repaint);
-			}
-		}
-		return new ImageIcon(this);
-	}
+  /**
+   * Calls setIcon on c, ensuring it is repainted when this changes
+   */
+  public void addTo(JLabel c) {
+    c.setIcon(makeIcon(c));
+  }
+
+  private ImageIcon makeIcon(JComponent c) {
+    synchronized (this) {
+      if (!loaded) {
+        listeners.add(c::repaint);
+      }
+    }
+    return new ImageIcon(this);
+  }
 }

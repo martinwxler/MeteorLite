@@ -33,48 +33,41 @@ import net.runelite.asm.pool.Class;
 import net.runelite.asm.pool.Field;
 import net.runelite.asm.pool.Method;
 
-public class NameMappings
-{
-	private final Map<Object, String> map = new HashMap<>();
+public class NameMappings {
 
-	private final Map<Object, String[]> paramMap = new HashMap<>();
+  private final Map<Object, String> map = new HashMap<>();
 
-	@Getter
-	@Setter
-	private int fields, methods, classes;
+  private final Map<Object, String[]> paramMap = new HashMap<>();
 
-	public void map(Class cf, String name)
-	{
-		map.put(cf, name);
-	}
-	
-	public void map(Field field, String name)
-	{
-		map.put(field, name);
-	}
-	
-	public void map(Method method, String name)
-	{
-		map.put(method, name);
-	}
+  @Getter
+  @Setter
+  private int fields, methods, classes;
 
-	public void map(Method method, String[] params)
-	{
-		paramMap.put(method, params);
-	}
-	
-	public String get(Object object)
-	{
-		return map.get(object);
-	}
+  public void map(Class cf, String name) {
+    map.put(cf, name);
+  }
 
-	public String[] getP(Method method)
-	{
-		return paramMap.get(method);
-	}
+  public void map(Field field, String name) {
+    map.put(field, name);
+  }
 
-	public Map<Object, String> getMap()
-	{
-		return map;
-	}
+  public void map(Method method, String name) {
+    map.put(method, name);
+  }
+
+  public void map(Method method, String[] params) {
+    paramMap.put(method, params);
+  }
+
+  public String get(Object object) {
+    return map.get(object);
+  }
+
+  public String[] getP(Method method) {
+    return paramMap.get(method);
+  }
+
+  public Map<Object, String> getMap() {
+    return map;
+  }
 }

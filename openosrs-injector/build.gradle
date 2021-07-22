@@ -7,8 +7,8 @@ version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
-    maven {url = "https://repo.runelite.net"}
-    maven {url = "https://raw.githubusercontent.com/open-osrs/hosting/master"}
+    maven { url = "https://repo.runelite.net" }
+    maven { url = "https://raw.githubusercontent.com/open-osrs/hosting/master" }
 }
 
 dependencies {
@@ -23,11 +23,11 @@ dependencies {
     implementation(project(":runelite-mixins"))
     implementation(project(":meteor-logger"))
 
-    implementation(group : "org.ow2.asm", name : "asm", version : "8.0.1")
-    implementation(group : "org.ow2.asm", name : "asm-util", version : "8.0.1")
-    implementation(group : "org.jetbrains", name : "annotations", version : "19.0.0")
-    implementation(group : "com.google.guava", name : "guava", version : "23.2-jre")
-    implementation(group : "net.sf.jopt-simple", name : "jopt-simple", version : "5.0.1")
+    implementation(group: "org.ow2.asm", name: "asm", version: "8.0.1")
+    implementation(group: "org.ow2.asm", name: "asm-util", version: "8.0.1")
+    implementation(group: "org.jetbrains", name: "annotations", version: "19.0.0")
+    implementation(group: "com.google.guava", name: "guava", version: "23.2-jre")
+    implementation(group: "net.sf.jopt-simple", name: "jopt-simple", version: "5.0.1")
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }

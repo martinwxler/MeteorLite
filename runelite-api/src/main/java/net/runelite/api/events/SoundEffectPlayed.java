@@ -29,19 +29,18 @@ import lombok.Data;
 import net.runelite.api.Actor;
 
 @Data
-public class SoundEffectPlayed
-{
-	@Nullable
-	private final Actor source;
+public class SoundEffectPlayed {
 
-	private int soundId;
-	private int delay;
-	private int npcid;
+  @Nullable
+  private final Actor source;
 
-	private boolean consumed;
+  private int soundId;
+  private int delay;
+  private int npcid;
 
-	public void consume()
-	{
-		consumed = true;
-	}
+  private boolean consumed;
+
+  public void consume() {
+    consumed = true;
+  }
 }

@@ -16,5 +16,6 @@
 package org.jetbrains.java.decompiler.struct.gen;
 
 public interface NewClassNameBuilder {
+
   String buildNewClassname(String className);
 }

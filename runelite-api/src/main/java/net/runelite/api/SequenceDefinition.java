@@ -25,28 +25,28 @@
 package net.runelite.api;
 
 /**
- * Represents a Sequence of animation frame Ids.
- * It stores animation frames Ids and the length of time between each frame.
+ * Represents a Sequence of animation frame Ids. It stores animation frames Ids and the length of
+ * time between each frame.
  */
-public interface SequenceDefinition extends DualNode
-{
-	/**
-	 * Get the number of frames in the animation sequence
-	 */
-	int getFrameCount();
+public interface SequenceDefinition extends DualNode {
 
-	/**
-	 * Get id of all frames in the animation sequence
-	 */
-	int[] getFrameIDs();
+  /**
+   * Get the number of frames in the animation sequence
+   */
+  int getFrameCount();
 
-	/**
-	 * Get the length in game ticks, that each animation frame is displayed for.
-	 */
-	int[] getFrameLengths();
+  /**
+   * Get id of all frames in the animation sequence
+   */
+  int[] getFrameIDs();
 
-	/**
-	 * Get id of all frames in the animation sequence for the chat head's model animation.
-	 */
-	int[] getChatFrameIds();
+  /**
+   * Get the length in game ticks, that each animation frame is displayed for.
+   */
+  int[] getFrameLengths();
+
+  /**
+   * Get id of all frames in the animation sequence for the chat head's model animation.
+   */
+  int[] getChatFrameIds();
 }

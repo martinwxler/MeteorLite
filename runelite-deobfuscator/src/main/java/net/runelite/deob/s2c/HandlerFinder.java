@@ -49,261 +49,225 @@ import net.runelite.asm.execution.InstructionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class HandlerFinder
-{
-	private static final Logger logger = LoggerFactory.getLogger(HandlerFinder.class);
+public class HandlerFinder {
 
-	private final ClassGroup group;
-	private final Field packetType;
-	private final Execution execution;
+  private static final Logger logger = LoggerFactory.getLogger(HandlerFinder.class);
 
-	public HandlerFinder(ClassGroup group, Field packetType)
-	{
-		this.group = group;
-		this.packetType = packetType;
-		this.execution = new Execution(group);
-	}
+  private final ClassGroup group;
+  private final Field packetType;
+  private final Execution execution;
 
-	public ClassGroup getGroup()
-	{
-		return group;
-	}
+  public HandlerFinder(ClassGroup group, Field packetType) {
+    this.group = group;
+    this.packetType = packetType;
+    this.execution = new Execution(group);
+  }
 
-	public Execution getExecution()
-	{
-		return execution;
-	}
+  public ClassGroup getGroup() {
+    return group;
+  }
 
-	public PacketHandlers findHandlers()
-	{
-		// Some of the packet handlers are if (type == 1 || type == 2) func()
-		// and func() checks the type... so search all functions for packet handlers
+  public Execution getExecution() {
+    return execution;
+  }
 
-		List<PacketHandler> handlers = new ArrayList<>();
+  public PacketHandlers findHandlers() {
+    // Some of the packet handlers are if (type == 1 || type == 2) func()
+    // and func() checks the type... so search all functions for packet handlers
 
-		for (ClassFile cf : group.getClasses())
-		{
-			for (Method method : cf.getMethods())
-			{
-				if (method.getCode() == null)
-				{
-					continue;
-				}
+    List<PacketHandler> handlers = new ArrayList<>();
 
-				List<PacketHandler> h = findHandlers(method, packetType);
-				handlers.addAll(h);
-			}
-		}
+    for (ClassFile cf : group.getClasses()) {
+      for (Method method : cf.getMethods()) {
+        if (method.getCode() == null) {
+          continue;
+        }
 
-		PacketHandlers packetHandlers = new PacketHandlers(group, packetType, handlers);
-		removeDuplicates(packetHandlers);
-		prepareFrame(execution, packetHandlers);
-		return packetHandlers;
-	}
+        List<PacketHandler> h = findHandlers(method, packetType);
+        handlers.addAll(h);
+      }
+    }
 
-	private List<PacketHandler> findHandlers(Method process, Field packetOpcode)
-	{
-		List<PacketHandler> handlers = new ArrayList<>();
+    PacketHandlers packetHandlers = new PacketHandlers(group, packetType, handlers);
+    removeDuplicates(packetHandlers);
+    prepareFrame(execution, packetHandlers);
+    return packetHandlers;
+  }
 
-		Instructions ins = process.getCode().getInstructions();
+  private List<PacketHandler> findHandlers(Method process, Field packetOpcode) {
+    List<PacketHandler> handlers = new ArrayList<>();
 
-		for (int j = 0; j < ins.getInstructions().size(); ++j)
-		{
-			Instruction i = ins.getInstructions().get(j);
+    Instructions ins = process.getCode().getInstructions();
 
-			if (i.getType() != InstructionType.GETSTATIC)
-			{
-				continue;
-			}
+    for (int j = 0; j < ins.getInstructions().size(); ++j) {
+      Instruction i = ins.getInstructions().get(j);
 
-			GetStatic gs = (GetStatic) i;
-			if (gs.getMyField() != packetOpcode)
-			{
-				continue;
-			}
+      if (i.getType() != InstructionType.GETSTATIC) {
+        continue;
+      }
 
-			Instruction push = ins.getInstructions().get(j + 1);
-			if (!(push instanceof PushConstantInstruction))
-			{
-				continue;
-			}
+      GetStatic gs = (GetStatic) i;
+      if (gs.getMyField() != packetOpcode) {
+        continue;
+      }
 
-			PushConstantInstruction pci = (PushConstantInstruction) push;
-			if (!(pci.getConstant() instanceof Number))
-			{
-				continue;
-			}
+      Instruction push = ins.getInstructions().get(j + 1);
+      if (!(push instanceof PushConstantInstruction)) {
+        continue;
+      }
 
-			int opcode = ((Number) pci.getConstant()).intValue();
+      PushConstantInstruction pci = (PushConstantInstruction) push;
+      if (!(pci.getConstant() instanceof Number)) {
+        continue;
+      }
 
-			if (opcode == -1)
-			{
-				continue;
-			}
+      int opcode = ((Number) pci.getConstant()).intValue();
 
-			Instruction jump = ins.getInstructions().get(j + 2);
-			if (jump.getType() != InstructionType.IF_ICMPEQ && jump.getType() != InstructionType.IF_ICMPNE)
-			{
-				continue;
-			}
+      if (opcode == -1) {
+        continue;
+      }
 
-			Instruction start, end;
-			if (jump.getType() == InstructionType.IF_ICMPEQ)
-			{
-				// this seems to not ever happen
-				start = ((If) jump).getJumps().get(0);
-				//end = ins.getInstructions().get(j + 3);
-				end = null;
-			}
-			else
-			{
-				start = ins.getInstructions().get(j + 3);
-				end = ((If) jump).getJumps().get(0);
-			}
+      Instruction jump = ins.getInstructions().get(j + 2);
+      if (jump.getType() != InstructionType.IF_ICMPEQ
+          && jump.getType() != InstructionType.IF_ICMPNE) {
+        continue;
+      }
 
-			PacketHandler handler = new PacketHandler(process, jump, start, push, opcode);
-			handlers.add(handler);
+      Instruction start, end;
+      if (jump.getType() == InstructionType.IF_ICMPEQ) {
+        // this seems to not ever happen
+        start = ((If) jump).getJumps().get(0);
+        //end = ins.getInstructions().get(j + 3);
+        end = null;
+      } else {
+        start = ins.getInstructions().get(j + 3);
+        end = ((If) jump).getJumps().get(0);
+      }
 
-			if (end != null)
-			{
-				// Anything else which jumps to here instead needs to return.
-				insertReturn(ins, jump, end);
-			}
+      PacketHandler handler = new PacketHandler(process, jump, start, push, opcode);
+      handlers.add(handler);
 
-			logger.info("Found packet handler {} opcode {}", handler, handler.getOpcode());
-		}
+      if (end != null) {
+        // Anything else which jumps to here instead needs to return.
+        insertReturn(ins, jump, end);
+      }
 
-		return handlers;
-	}
+      logger.info("Found packet handler {} opcode {}", handler, handler.getOpcode());
+    }
 
-	private void removeDuplicates(PacketHandlers handlers)
-	{
-		// remove handlers which have multiple opcodes
-		Multimap<Instruction, PacketHandler> i2h = HashMultimap.create();
+    return handlers;
+  }
 
-		for (PacketHandler handler : handlers.getHandlers())
-		{
-			i2h.put(handler.getStart(), handler);
-		}
+  private void removeDuplicates(PacketHandlers handlers) {
+    // remove handlers which have multiple opcodes
+    Multimap<Instruction, PacketHandler> i2h = HashMultimap.create();
 
-		for (Instruction i : i2h.keySet())
-		{
-			int sz = i2h.get(i).size();
+    for (PacketHandler handler : handlers.getHandlers()) {
+      i2h.put(handler.getStart(), handler);
+    }
 
-			if (sz == 1)
-			{
-				continue;
-			}
+    for (Instruction i : i2h.keySet()) {
+      int sz = i2h.get(i).size();
 
-			// this is part of if (opcode == 1 || opcode == 2 || ...) func();
-			for (PacketHandler ph : i2h.get(i))
-			{
-				handlers.getHandlers().remove(ph);
-				logger.debug("Removed duplicate handler {}", ph);
-			}
-		}
-	}
+      if (sz == 1) {
+        continue;
+      }
 
-	private void prepareFrame(Execution e, PacketHandlers handlers)
-	{
-		List<Method> methods = handlers.getHandlers().stream()
-			.map(handler -> handler.getMethod())
-			.distinct()
-			.collect(Collectors.toList());
+      // this is part of if (opcode == 1 || opcode == 2 || ...) func();
+      for (PacketHandler ph : i2h.get(i)) {
+        handlers.getHandlers().remove(ph);
+        logger.debug("Removed duplicate handler {}", ph);
+      }
+    }
+  }
 
-		for (Method method : methods)
-		{
-			List<PacketHandler> phandlers = handlers.getHandlers().stream()
-				.filter(handler -> handler.getMethod() == method)
-				.collect(Collectors.toList());
+  private void prepareFrame(Execution e, PacketHandlers handlers) {
+    List<Method> methods = handlers.getHandlers().stream()
+        .map(handler -> handler.getMethod())
+        .distinct()
+        .collect(Collectors.toList());
 
-			prepareFrame(e, method, phandlers);
-		}
-	}
+    for (Method method : methods) {
+      List<PacketHandler> phandlers = handlers.getHandlers().stream()
+          .filter(handler -> handler.getMethod() == method)
+          .collect(Collectors.toList());
 
-	private void prepareFrame(Execution e, Method method, List<PacketHandler> handlers)
-	{
-		e.step = true;
+      prepareFrame(e, method, phandlers);
+    }
+  }
 
-		Frame f = new Frame(e, method);
-		f.initialize();
+  private void prepareFrame(Execution e, Method method, List<PacketHandler> handlers) {
+    e.step = true;
 
-		e.addFrame(f);
+    Frame f = new Frame(e, method);
+    f.initialize();
 
-		while (e.frames.isEmpty() == false)
-		{
-			f = e.frames.get(0);
+    e.addFrame(f);
 
-			if (!f.isExecuting())
-			{
-				e.frames.remove(0);
-				continue;
-			}
+    while (e.frames.isEmpty() == false) {
+      f = e.frames.get(0);
 
-			assert f.isExecuting();
-			f.execute();
+      if (!f.isExecuting()) {
+        e.frames.remove(0);
+        continue;
+      }
 
-			e.paused = false;
+      assert f.isExecuting();
+      f.execute();
 
-			InstructionContext ctx = f.getInstructions().get(f.getInstructions().size() - 1);
+      e.paused = false;
 
-			for (PacketHandler handler : handlers)
-			{
-				if (handler.getAfterRead() == ctx.getInstruction())
-				{
-					// frame is stopped at jump prior to handler
-					handler.frame = f.dup();
-					e.frames.remove(handler.frame);
-					logger.info("Found frame for {}: {}", handler, handler.frame);
-				}
-				if (handler.getJump() == ctx.getInstruction())
-				{
-					handler.jumpFrame = f.dup();
-					e.frames.remove(handler.jumpFrame);
-					assert handler.jumpFrame.isExecuting();
-					logger.info("Found jump frame for {}: {}", handler, handler.jumpFrame);
-				}
-			}
-		}
-	}
+      InstructionContext ctx = f.getInstructions().get(f.getInstructions().size() - 1);
 
-	private void insertReturn(Instructions ins, Instruction start, Instruction end)
-	{
-		assert end instanceof Label;
-		int idx = ins.getInstructions().indexOf(end);
-		assert idx != -1;
+      for (PacketHandler handler : handlers) {
+        if (handler.getAfterRead() == ctx.getInstruction()) {
+          // frame is stopped at jump prior to handler
+          handler.frame = f.dup();
+          e.frames.remove(handler.frame);
+          logger.info("Found frame for {}: {}", handler, handler.frame);
+        }
+        if (handler.getJump() == ctx.getInstruction()) {
+          handler.jumpFrame = f.dup();
+          e.frames.remove(handler.jumpFrame);
+          assert handler.jumpFrame.isExecuting();
+          logger.info("Found jump frame for {}: {}", handler, handler.jumpFrame);
+        }
+      }
+    }
+  }
 
-		Instruction before = ins.getInstructions().get(idx - 1);
-		if (before.getType() == InstructionType.RETURN) //XXX check isTerminal?
-		{
-			return;
-		}
+  private void insertReturn(Instructions ins, Instruction start, Instruction end) {
+    assert end instanceof Label;
+    int idx = ins.getInstructions().indexOf(end);
+    assert idx != -1;
 
-		// insert return before end
-		logger.info("Inserting return before {}", end);
+    Instruction before = ins.getInstructions().get(idx - 1);
+    if (before.getType() == InstructionType.RETURN) //XXX check isTerminal?
+    {
+      return;
+    }
 
-		Instruction ret = new VReturn(ins);
-		ins.addInstruction(idx, ret);
+    // insert return before end
+    logger.info("Inserting return before {}", end);
 
-		Label label = ins.createLabelFor(ret);
+    Instruction ret = new VReturn(ins);
+    ins.addInstruction(idx, ret);
 
-		// Change jumps which go to the next handler to instead go to return
-		for (Instruction i : ins.getInstructions())
-		{
-			if (i instanceof JumpingInstruction)
-			{
-				JumpingInstruction j = (JumpingInstruction) i;
+    Label label = ins.createLabelFor(ret);
 
-				if (i == start)
-				{
-					continue;
-				}
+    // Change jumps which go to the next handler to instead go to return
+    for (Instruction i : ins.getInstructions()) {
+      if (i instanceof JumpingInstruction) {
+        JumpingInstruction j = (JumpingInstruction) i;
 
-				if (j.getJumps().size() == 1 && j.getJumps().get(0) == end)
-				{
-					j.setJumps(Collections.singletonList(label));
-				}
-			}
-		}
-	}
+        if (i == start) {
+          continue;
+        }
+
+        if (j.getJumps().size() == 1 && j.getJumps().get(0) == end) {
+          j.setJumps(Collections.singletonList(label));
+        }
+      }
+    }
+  }
 }

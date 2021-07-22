@@ -24,6 +24,8 @@
  */
 package net.runelite.asm.execution;
 
+import static net.runelite.asm.execution.StaticStep.popStack;
+
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import java.util.ArrayList;
@@ -39,319 +41,270 @@ import net.runelite.asm.ClassGroup;
 import net.runelite.asm.Field;
 import net.runelite.asm.Method;
 import net.runelite.asm.attributes.code.Instruction;
-import static net.runelite.asm.execution.StaticStep.popStack;
 import net.runelite.deob.Deob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Execution
-{
-	private static final Logger logger = LoggerFactory.getLogger(Execution.class);
+public class Execution {
 
-	private final ClassGroup group;
-	public List<Frame> frames = new ArrayList<>(), framesOther = new ArrayList<>();
-	public Set<Instruction> executed = new HashSet<>(); // executed instructions
-	private Multimap<WeakInstructionContext, Method> stepInvokes = HashMultimap.create();
-	private Set<Method> invokes = new HashSet<>();
-	public boolean paused;
-	public boolean step = false;
-	public boolean noInvoke = false;
-	private List<ExecutionVisitor> visitors = new ArrayList<>();
-	private List<FrameVisitor> frameVisitors = new ArrayList<>();
-	private List<MethodContextVisitor> methodContextVisitors = new ArrayList<>();
-	private final Map<Object, Integer> order = new HashMap<>(); // field,method -> order encountered
-	private final Map<Object, Integer> accesses = new HashMap<>();
-	public boolean staticStep; // whether to step through static methods
-	public boolean noExceptions;
+  private static final Logger logger = LoggerFactory.getLogger(Execution.class);
 
-	public Execution(ClassGroup group)
-	{
-		this.group = group;
-	}
+  private final ClassGroup group;
+  private final Map<Object, Integer> order = new HashMap<>(); // field,method -> order encountered
+  private final Map<Object, Integer> accesses = new HashMap<>();
+  public List<Frame> frames = new ArrayList<>(), framesOther = new ArrayList<>();
+  public Set<Instruction> executed = new HashSet<>(); // executed instructions
+  public boolean paused;
+  public boolean step = false;
+  public boolean noInvoke = false;
+  public boolean staticStep; // whether to step through static methods
+  public boolean noExceptions;
+  private Multimap<WeakInstructionContext, Method> stepInvokes = HashMultimap.create();
+  private Set<Method> invokes = new HashSet<>();
+  private List<ExecutionVisitor> visitors = new ArrayList<>();
+  private List<FrameVisitor> frameVisitors = new ArrayList<>();
+  private List<MethodContextVisitor> methodContextVisitors = new ArrayList<>();
 
-	public List<Method> getInitialMethods()
-	{
-		List<Method> methods = new ArrayList<>();
+  public Execution(ClassGroup group) {
+    this.group = group;
+  }
 
-		group.buildClassGraph(); // required when looking up methods
-		group.lookup(); // lookup methods
+  private static boolean extendsApplet(ClassFile cf) {
+    if (cf.getParent() != null) {
+      return extendsApplet(cf.getParent());
+    }
 
-		for (ClassFile cf : group.getClasses())
-		{
-			boolean extendsApplet = extendsApplet(cf);
+    return cf.getSuperName().equals("java/applet/Applet");
+  }
 
-			for (Method m : cf.getMethods())
-			{
-				if (!Deob.isObfuscated(m.getName()) && !m.getName().equals("<init>"))
-				{
-					if (m.getCode() == null)
-					{
-						methods.add(m);
-						continue;
-					}
+  public List<Method> getInitialMethods() {
+    List<Method> methods = new ArrayList<>();
 
-					methods.add(m); // I guess this method name is overriding a jre interface (init, run, ?).
-					logger.debug("Adding initial method {}", m);
-				}
+    group.buildClassGraph(); // required when looking up methods
+    group.lookup(); // lookup methods
 
-				if (m.getName().equals("<init>") && extendsApplet)
-				{
-					methods.add(m);
-				}
-			}
-		}
+    for (ClassFile cf : group.getClasses()) {
+      boolean extendsApplet = extendsApplet(cf);
 
-		return methods;
-	}
+      for (Method m : cf.getMethods()) {
+        if (!Deob.isObfuscated(m.getName()) && !m.getName().equals("<init>")) {
+          if (m.getCode() == null) {
+            methods.add(m);
+            continue;
+          }
 
-	private static boolean extendsApplet(ClassFile cf)
-	{
-		if (cf.getParent() != null)
-		{
-			return extendsApplet(cf.getParent());
-		}
+          methods.add(m); // I guess this method name is overriding a jre interface (init, run, ?).
+          logger.debug("Adding initial method {}", m);
+        }
 
-		return cf.getSuperName().equals("java/applet/Applet");
-	}
+        if (m.getName().equals("<init>") && extendsApplet) {
+          methods.add(m);
+        }
+      }
+    }
 
-	public void populateInitialMethods()
-	{
-		for (Method m : this.getInitialMethods())
-		{
-			if (m.getCode() == null)
-			{
-				continue;
-			}
+    return methods;
+  }
 
-			addMethod(m); // I guess this method name is overriding a jre interface (init, run, ?).
-		}
-	}
+  public void populateInitialMethods() {
+    for (Method m : this.getInitialMethods()) {
+      if (m.getCode() == null) {
+        continue;
+      }
 
-	public boolean hasInvoked(InstructionContext from, Method to)
-	{
-		if (!step && !staticStep)
-		{
-			if (invokes.contains(to))
-			{
-				return true;
-			}
+      addMethod(m); // I guess this method name is overriding a jre interface (init, run, ?).
+    }
+  }
 
-			invokes.add(to);
-			return false;
-		}
+  public boolean hasInvoked(InstructionContext from, Method to) {
+    if (!step && !staticStep) {
+      if (invokes.contains(to)) {
+        return true;
+      }
 
-		// The step executor needs to be able to step into static methods,
-		// and use MappingExecutorUtil.resolve to trace back through
-		// the lvt to the caller which invoked the method.
-		//
-		// So, check that the stack is unique too. invoke() doesn't get this
-		// far in the step executor, but does for staticStep
-		Collection<Method> methods = stepInvokes.get(from.toWeak());
-		if (methods != null && methods.contains(to))
-		{
-			return true;
-		}
+      invokes.add(to);
+      return false;
+    }
 
-		stepInvokes.put(from.toWeak(), to);
-		return false;
-	}
+    // The step executor needs to be able to step into static methods,
+    // and use MappingExecutorUtil.resolve to trace back through
+    // the lvt to the caller which invoked the method.
+    //
+    // So, check that the stack is unique too. invoke() doesn't get this
+    // far in the step executor, but does for staticStep
+    Collection<Method> methods = stepInvokes.get(from.toWeak());
+    if (methods != null && methods.contains(to)) {
+      return true;
+    }
 
-	public void addFrame(Frame frame)
-	{
-		// this is to keep frames with same methodcontext together to reduce memory
-		if (frames.isEmpty() || frames.get(0).getMethod() == frame.getMethod())
-		{
-			frames.add(frame);
-		}
-		else
-		{
-			framesOther.add(frame);
-		}
-	}
+    stepInvokes.put(from.toWeak(), to);
+    return false;
+  }
 
-	public Frame invoke(InstructionContext from, Method to)
-	{
-		if (step) // step executor
-		{
-			return null;
-		}
+  public void addFrame(Frame frame) {
+    // this is to keep frames with same methodcontext together to reduce memory
+    if (frames.isEmpty() || frames.get(0).getMethod() == frame.getMethod()) {
+      frames.add(frame);
+    } else {
+      framesOther.add(frame);
+    }
+  }
 
-		if (noInvoke)
-		{
-			return null;
-		}
+  public Frame invoke(InstructionContext from, Method to) {
+    if (step) // step executor
+    {
+      return null;
+    }
 
-		if (hasInvoked(from, to))
-		{
-			return null;
-		}
+    if (noInvoke) {
+      return null;
+    }
 
-		if (to.isNative())
-		{
-			return null;
-		}
+    if (hasInvoked(from, to)) {
+      return null;
+    }
 
-		Frame f = new Frame(this, to);
-		f.initialize(from);
-		this.addFrame(f);
-		return f;
-	}
+    if (to.isNative()) {
+      return null;
+    }
 
-	public void addMethod(Method to)
-	{
-		Frame f = new Frame(this, to);
-		f.initialize();
-		this.addFrame(f);
-	}
+    Frame f = new Frame(this, to);
+    f.initialize(from);
+    this.addFrame(f);
+    return f;
+  }
 
-	public void addMethods(Iterable<Method> methods)
-	{
-		for (Method m : methods)
-		{
-			if (m.getCode() == null)
-				continue;
-			Frame f = new Frame(this, m);
-			f.initialize();
-			this.addFrame(f);
-		}
-	}
+  public void addMethod(Method to) {
+    Frame f = new Frame(this, to);
+    f.initialize();
+    this.addFrame(f);
+  }
 
-	public void run()
-	{
-		assert !paused;
+  public void addMethods(Iterable<Method> methods) {
+    for (Method m : methods) {
+      if (m.getCode() == null) {
+        continue;
+      }
+      Frame f = new Frame(this, m);
+      f.initialize();
+      this.addFrame(f);
+    }
+  }
 
-		int fcount = 0;
-		while (!frames.isEmpty())
-		{
-			Frame frame = frames.get(0);
+  public void run() {
+    assert !paused;
 
-			++fcount;
-			frame.execute();
+    int fcount = 0;
+    while (!frames.isEmpty()) {
+      Frame frame = frames.get(0);
 
-			if (!staticStep)
-			{
-				// static step inserts stepped static function frames
-				assert frames.get(0) == frame;
-			}
-			assert !frame.isExecuting();
+      ++fcount;
+      frame.execute();
 
-			accept(frame);
+      if (!staticStep) {
+        // static step inserts stepped static function frames
+        assert frames.get(0) == frame;
+      }
+      assert !frame.isExecuting();
 
-			frames.remove(frame);
+      accept(frame);
 
-			// Return to caller
-			popStack(frame);
+      frames.remove(frame);
 
-			if (frames.isEmpty())
-			{
-				assert frame.getMethod() == frame.getMethodCtx().getMethod();
+      // Return to caller
+      popStack(frame);
 
-				accept(frame.getMethodCtx());
+      if (frames.isEmpty()) {
+        assert frame.getMethod() == frame.getMethodCtx().getMethod();
 
-				if (framesOther.isEmpty())
-				{
-					break;
-				}
+        accept(frame.getMethodCtx());
 
-				Frame begin = framesOther.remove(0);
-				frames.add(begin);
+        if (framesOther.isEmpty()) {
+          break;
+        }
 
-				List<Frame> toMove = framesOther.stream().filter(f -> f.getMethod() == begin.getMethod()).collect(Collectors.toList());
-				frames.addAll(toMove);
-				framesOther.removeAll(toMove);
-			}
-		}
+        Frame begin = framesOther.remove(0);
+        frames.add(begin);
 
-		logger.debug("Processed {} frames", fcount);
-	}
+        List<Frame> toMove = framesOther.stream().filter(f -> f.getMethod() == begin.getMethod())
+            .collect(Collectors.toList());
+        frames.addAll(toMove);
+        framesOther.removeAll(toMove);
+      }
+    }
 
-	public void addExecutionVisitor(ExecutionVisitor ev)
-	{
-		this.visitors.add(ev);
-	}
+    logger.debug("Processed {} frames", fcount);
+  }
 
-	public void clearExecutionVisitor()
-	{
-		this.visitors.clear();
-	}
+  public void addExecutionVisitor(ExecutionVisitor ev) {
+    this.visitors.add(ev);
+  }
 
-	public void accept(InstructionContext ic)
-	{
-		visitors.forEach(v -> v.visit(ic));
-	}
+  public void clearExecutionVisitor() {
+    this.visitors.clear();
+  }
 
-	public void addFrameVisitor(FrameVisitor pv)
-	{
-		this.frameVisitors.add(pv);
-	}
+  public void accept(InstructionContext ic) {
+    visitors.forEach(v -> v.visit(ic));
+  }
 
-	public void accept(Frame f)
-	{
-		frameVisitors.forEach(v -> v.visit(f));
-	}
+  public void addFrameVisitor(FrameVisitor pv) {
+    this.frameVisitors.add(pv);
+  }
 
-	public void addMethodContextVisitor(MethodContextVisitor mcv)
-	{
-		methodContextVisitors.add(mcv);
-	}
+  public void accept(Frame f) {
+    frameVisitors.forEach(v -> v.visit(f));
+  }
 
-	public void accept(MethodContext m)
-	{
-		methodContextVisitors.forEach(mc -> mc.visit(m));
-	}
+  public void addMethodContextVisitor(MethodContextVisitor mcv) {
+    methodContextVisitors.add(mcv);
+  }
 
-	public void reset()
-	{
-		frames.clear();
-		framesOther.clear();
-		invokes.clear();
-		stepInvokes.clear();
-		executed.clear();
-	}
+  public void accept(MethodContext m) {
+    methodContextVisitors.forEach(mc -> mc.visit(m));
+  }
 
-	public void order(Frame frame, Method method)
-	{
-		order(frame, (Object) method);
-	}
+  public void reset() {
+    frames.clear();
+    framesOther.clear();
+    invokes.clear();
+    stepInvokes.clear();
+    executed.clear();
+  }
 
-	public void order(Frame frame, Field field)
-	{
-		order(frame, (Object) field);
-	}
+  public void order(Frame frame, Method method) {
+    order(frame, (Object) method);
+  }
 
-	private void order(Frame frame, Object m)
-	{
-		if (!staticStep)
-		{
-			return; // no sense keeping track of this
-		}
+  public void order(Frame frame, Field field) {
+    order(frame, (Object) field);
+  }
 
-		Integer i;
-		i = order.get(m);
-		int next = frame.getNextOrder();
-		if (i == null || next < i)
-		{
-			order.put(m, next);
-		}
+  private void order(Frame frame, Object m) {
+    if (!staticStep) {
+      return; // no sense keeping track of this
+    }
 
-		i = accesses.get(m);
-		if (i == null)
-		{
-			accesses.put(m, 1);
-		}
-		else
-		{
-			accesses.put(m, i + 1);
-		}
-	}
+    Integer i;
+    i = order.get(m);
+    int next = frame.getNextOrder();
+    if (i == null || next < i) {
+      order.put(m, next);
+    }
 
-	public Integer getOrder(Object m)
-	{
-		return order.get(m);
-	}
+    i = accesses.get(m);
+    if (i == null) {
+      accesses.put(m, 1);
+    } else {
+      accesses.put(m, i + 1);
+    }
+  }
 
-	public Integer getAccesses(Object m)
-	{
-		return accesses.get(m);
-	}
+  public Integer getOrder(Object m) {
+    return order.get(m);
+  }
+
+  public Integer getAccesses(Object m) {
+    return accesses.get(m);
+  }
 }

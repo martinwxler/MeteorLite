@@ -34,37 +34,32 @@ import net.runelite.api.LocatableQueryResults;
 import net.runelite.api.Scene;
 import net.runelite.api.Tile;
 
-public class TileQuery extends LocatableQuery<Tile, TileQuery>
-{
-	private List<Tile> getTiles(Client client)
-	{
-		List<Tile> tilesList = new ArrayList<>();
-		Scene scene = client.getScene();
-		Tile[][][] tiles = scene.getTiles();
-		int z = client.getPlane();
-		for (int x = 0; x < Constants.SCENE_SIZE; ++x)
-		{
-			for (int y = 0; y < Constants.SCENE_SIZE; ++y)
-			{
-				Tile tile = tiles[z][x][y];
-				if (tile == null)
-				{
-					continue;
-				}
-				tilesList.add(tile);
-			}
-		}
-		return tilesList;
-	}
+public class TileQuery extends LocatableQuery<Tile, TileQuery> {
 
-	@Override
-	public LocatableQueryResults<Tile> result(Client client)
-	{
-		return new LocatableQueryResults<>(getTiles(client).stream()
-			.filter(Objects::nonNull)
-			.filter(predicate)
-			.distinct()
-			.collect(Collectors.toList()));
-	}
+  private List<Tile> getTiles(Client client) {
+    List<Tile> tilesList = new ArrayList<>();
+    Scene scene = client.getScene();
+    Tile[][][] tiles = scene.getTiles();
+    int z = client.getPlane();
+    for (int x = 0; x < Constants.SCENE_SIZE; ++x) {
+      for (int y = 0; y < Constants.SCENE_SIZE; ++y) {
+        Tile tile = tiles[z][x][y];
+        if (tile == null) {
+          continue;
+        }
+        tilesList.add(tile);
+      }
+    }
+    return tilesList;
+  }
+
+  @Override
+  public LocatableQueryResults<Tile> result(Client client) {
+    return new LocatableQueryResults<>(getTiles(client).stream()
+        .filter(Objects::nonNull)
+        .filter(predicate)
+        .distinct()
+        .collect(Collectors.toList()));
+  }
 
 }

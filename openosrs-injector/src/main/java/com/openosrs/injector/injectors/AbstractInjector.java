@@ -13,19 +13,17 @@ import lombok.RequiredArgsConstructor;
 import org.sponge.util.Logger;
 
 @RequiredArgsConstructor
-public abstract class AbstractInjector implements Injector
-{
-	protected final InjectData inject;
-	protected final Logger log = new Logger("Injector");
-	private Stopwatch stopwatch;
+public abstract class AbstractInjector implements Injector {
 
-	public void start()
-	{
-		stopwatch = Stopwatch.createStarted();
-	}
+  protected final InjectData inject;
+  protected final Logger log = new Logger("Injector");
+  private Stopwatch stopwatch;
 
-	public final String getCompletionMsg()
-	{
-		return "finished in " + stopwatch.toString();
-	}
+  public void start() {
+    stopwatch = Stopwatch.createStarted();
+  }
+
+  public final String getCompletionMsg() {
+    return "finished in " + stopwatch.toString();
+  }
 }

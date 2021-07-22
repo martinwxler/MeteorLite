@@ -15,13 +15,12 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.deobfuscator;
 
-import org.jetbrains.java.decompiler.modules.decompiler.StatEdge;
-import org.jetbrains.java.decompiler.modules.decompiler.stats.BasicBlockStatement;
-import org.jetbrains.java.decompiler.modules.decompiler.stats.Statement;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import org.jetbrains.java.decompiler.modules.decompiler.StatEdge;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.BasicBlockStatement;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.Statement;
 
 
 public class IrreducibleCFGDeobfuscator {
@@ -30,9 +29,10 @@ public class IrreducibleCFGDeobfuscator {
   public static boolean isStatementIrreducible(Statement statement) {
 
     class Node {
-      public Integer id;
+
       public final Set<Node> preds = new HashSet<>();
       public final Set<Node> succs = new HashSet<>();
+      public Integer id;
 
       public Node(Integer id) {
         this.id = id;
@@ -54,7 +54,8 @@ public class IrreducibleCFGDeobfuscator {
     for (Statement stat : statement.getStats()) {
       Node node = mapNodes.get(stat.id);
 
-      for (Statement succ : stat.getNeighbours(StatEdge.TYPE_REGULAR, Statement.DIRECTION_FORWARD)) {
+      for (Statement succ : stat
+          .getNeighbours(StatEdge.TYPE_REGULAR, Statement.DIRECTION_FORWARD)) {
         Node nodeSucc = mapNodes.get(succ.id);
 
         node.succs.add(nodeSucc);
@@ -70,8 +71,7 @@ public class IrreducibleCFGDeobfuscator {
       for (Node nd : mapNodes.values()) {
         if (nd.succs.contains(nd)) { // T1
           ttype = 1;
-        }
-        else if (nd.preds.size() == 1) { // T2
+        } else if (nd.preds.size() == 1) { // T2
           ttype = 2;
         }
 
@@ -85,8 +85,7 @@ public class IrreducibleCFGDeobfuscator {
         if (ttype == 1) {
           node.succs.remove(node);
           node.preds.remove(node);
-        }
-        else {
+        } else {
           Node pred = node.preds.iterator().next();
 
           pred.succs.addAll(node.succs);
@@ -99,8 +98,7 @@ public class IrreducibleCFGDeobfuscator {
 
           mapNodes.remove(node.id);
         }
-      }
-      else { // no transformation applicable
+      } else { // no transformation applicable
         return mapNodes.size() > 1; // reducible iff one node remains
       }
     }
@@ -115,10 +113,12 @@ public class IrreducibleCFGDeobfuscator {
 
     for (Statement stat : statement.getStats()) {
 
-      Set<Statement> setPreds = stat.getNeighboursSet(StatEdge.TYPE_REGULAR, Statement.DIRECTION_BACKWARD);
+      Set<Statement> setPreds = stat
+          .getNeighboursSet(StatEdge.TYPE_REGULAR, Statement.DIRECTION_BACKWARD);
 
       if (setPreds.size() > 1) {
-        int succCount = stat.getNeighboursSet(StatEdge.TYPE_REGULAR, Statement.DIRECTION_FORWARD).size();
+        int succCount = stat.getNeighboursSet(StatEdge.TYPE_REGULAR, Statement.DIRECTION_FORWARD)
+            .size();
         if (succCount <= succsCandidateForSplitting) {
           int size = getStatementSize(stat) * (setPreds.size() - 1);
 
@@ -164,7 +164,8 @@ public class IrreducibleCFGDeobfuscator {
 
     // connect successors
     for (StatEdge succ : splitnode.getSuccessorEdges(Statement.STATEDGE_DIRECT_ALL)) {
-      splitcopy.addSuccessor(new StatEdge(succ.getType(), splitcopy, succ.getDestination(), succ.closure));
+      splitcopy.addSuccessor(
+          new StatEdge(succ.getType(), splitcopy, succ.getDestination(), succ.closure));
     }
 
     return true;
@@ -175,16 +176,17 @@ public class IrreducibleCFGDeobfuscator {
     int res;
 
     if (statement.type == Statement.TYPE_BASICBLOCK) {
-      res = ((BasicBlockStatement)statement).getBlock().getSeq().length();
-    }
-    else {
-      res = statement.getStats().stream().mapToInt(IrreducibleCFGDeobfuscator::getStatementSize).sum();
+      res = ((BasicBlockStatement) statement).getBlock().getSeq().length();
+    } else {
+      res = statement.getStats().stream().mapToInt(IrreducibleCFGDeobfuscator::getStatementSize)
+          .sum();
     }
 
     return res;
   }
 
-  private static Statement copyStatement(Statement from, Statement to, HashMap<Statement, Statement> mapAltToCopies) {
+  private static Statement copyStatement(Statement from, Statement to,
+      HashMap<Statement, Statement> mapAltToCopies) {
 
     if (to == null) {
       // first outer invocation
@@ -208,12 +210,12 @@ public class IrreducibleCFGDeobfuscator {
       for (StatEdge edgeold : stold.getSuccessorEdges(Statement.STATEDGE_DIRECT_ALL)) {
         // type cannot be TYPE_EXCEPTION (checked in isIrreducibleTriangle)
         StatEdge edgenew = new StatEdge(edgeold.getType(), stnew,
-                                        mapAltToCopies.containsKey(edgeold.getDestination())
-                                        ? mapAltToCopies.get(edgeold.getDestination())
-                                        : edgeold.getDestination(),
-                                        mapAltToCopies.containsKey(edgeold.closure)
-                                        ? mapAltToCopies.get(edgeold.closure)
-                                        : edgeold.closure);
+            mapAltToCopies.containsKey(edgeold.getDestination())
+                ? mapAltToCopies.get(edgeold.getDestination())
+                : edgeold.getDestination(),
+            mapAltToCopies.containsKey(edgeold.closure)
+                ? mapAltToCopies.get(edgeold.closure)
+                : edgeold.closure);
 
         stnew.addSuccessor(edgenew);
       }

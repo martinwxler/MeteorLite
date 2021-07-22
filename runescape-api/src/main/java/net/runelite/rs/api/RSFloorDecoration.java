@@ -1,22 +1,21 @@
 package net.runelite.rs.api;
 
-import net.runelite.api.GameObject;
 import net.runelite.api.GroundObject;
 import net.runelite.mapping.Import;
 
-public interface RSFloorDecoration extends GroundObject
-{
-	@Import("tag")
-	@Override
-	long getHash();
+public interface RSFloorDecoration extends GroundObject {
 
-	@Import("x")
-	int getX();
+  @Import("tag")
+  @Override
+  long getHash();
 
-	@Import("y")
-	int getY();
+  @Import("x")
+  int getX();
 
-	@Import("renderable")
-	@Override
-	RSRenderable getRenderable();
+  @Import("y")
+  int getY();
+
+  @Import("renderable")
+  @Override
+  RSRenderable getRenderable();
 }

@@ -24,12 +24,16 @@
  */
 package net.runelite.script;
 
+import static java.lang.Integer.parseInt;
+
 import com.google.common.io.Files;
 import com.google.common.io.MoreFiles;
 import com.google.common.io.RecursiveDeleteOption;
-
-import java.io.*;
-
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import net.runelite.cache.IndexType;
 import net.runelite.cache.definitions.ScriptDefinition;
 import net.runelite.cache.definitions.savers.ScriptSaver;
@@ -42,123 +46,101 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.sponge.util.Logger;
 
-import static java.lang.Integer.parseInt;
-
 @Mojo(
-	name = "assemble",
-	defaultPhase = LifecyclePhase.GENERATE_RESOURCES
+    name = "assemble",
+    defaultPhase = LifecyclePhase.GENERATE_RESOURCES
 )
-public class AssembleMojo extends AbstractMojo
-{
-	@Parameter(required = true)
-	private File scriptDirectory;
+public class AssembleMojo extends AbstractMojo {
 
-	@Parameter(required = true)
-	private File outputDirectory;
+  private final Logger log = new Logger("Script-Assembler");
+  @Parameter(required = true)
+  private File scriptDirectory;
+  @Parameter(required = true)
+  private File outputDirectory;
 
-	private AssembleMojo(File scriptDirectory, File outputDirectory)
-	{
-		this.scriptDirectory = scriptDirectory;
-		this.outputDirectory = outputDirectory;
-	}
+  private AssembleMojo(File scriptDirectory, File outputDirectory) {
+    this.scriptDirectory = scriptDirectory;
+    this.outputDirectory = outputDirectory;
+  }
 
-	private final Logger log = new Logger("Script-Assembler");
+  public static void main(String[] args) throws Exception {
+    File scriptDirectory = new File("../meteor-client/src/main/scripts");
+    File outputDirectory = new File("../meteor-client/build/scripts/runelite");
+    File indexFile = new File("../meteor-client/build/scripts/runelite/index");
 
-	public static void main(String[] args) throws Exception
-	{
-		File scriptDirectory = new File("../meteor-client/src/main/scripts");
-		File outputDirectory = new File("../meteor-client/build/scripts/runelite");
-		File indexFile = new File("../meteor-client/build/scripts/runelite/index");
+    new AssembleMojo(scriptDirectory, outputDirectory).execute();
 
-		new AssembleMojo(scriptDirectory, outputDirectory).execute();
+    try (DataOutputStream fout = new DataOutputStream(new FileOutputStream(indexFile))) {
+      for (File indexFolder : outputDirectory.listFiles()) {
+        if (indexFolder.isDirectory()) {
+          int indexId = parseInt(indexFolder.getName());
+          for (File archiveFile : indexFolder.listFiles()) {
+            int archiveId;
+            try {
+              archiveId = parseInt(archiveFile.getName());
+            } catch (NumberFormatException ex) {
+              continue;
+            }
 
-		try (DataOutputStream fout = new DataOutputStream(new FileOutputStream(indexFile)))
-		{
-			for (File indexFolder : outputDirectory.listFiles())
-			{
-				if (indexFolder.isDirectory())
-				{
-					int indexId = parseInt(indexFolder.getName());
-					for (File archiveFile : indexFolder.listFiles())
-					{
-						int archiveId;
-						try
-						{
-							archiveId = parseInt(archiveFile.getName());
-						}
-						catch (NumberFormatException ex)
-						{
-							continue;
-						}
+            fout.writeInt(indexId << 16 | archiveId);
+          }
+        }
+      }
 
-						fout.writeInt(indexId << 16 | archiveId);
-					}
-				}
-			}
+      fout.writeInt(-1);
+    } catch (IOException ex) {
+      throw new MojoExecutionException("error build index file", ex);
+    }
+  }
 
-			fout.writeInt(-1);
-		}
-		catch (IOException ex)
-		{
-			throw new MojoExecutionException("error build index file", ex);
-		}
-	}
+  @Override
+  public void execute() throws MojoExecutionException, MojoFailureException {
+    RuneLiteInstructions instructions = new RuneLiteInstructions();
+    instructions.init();
 
-	@Override
-	public void execute() throws MojoExecutionException, MojoFailureException
-	{
-		RuneLiteInstructions instructions = new RuneLiteInstructions();
-		instructions.init();
+    Assembler assembler = new Assembler(instructions);
+    ScriptSaver saver = new ScriptSaver();
 
-		Assembler assembler = new Assembler(instructions);
-		ScriptSaver saver = new ScriptSaver();
+    int count = 0;
+    File scriptOut = new File(outputDirectory,
+        Integer.toString(IndexType.CLIENTSCRIPT.getNumber()));
+    scriptOut.mkdirs();
 
-		int count = 0;
-		File scriptOut = new File(outputDirectory, Integer.toString(IndexType.CLIENTSCRIPT.getNumber()));
-		scriptOut.mkdirs();
+    // Clear the target directory to remove stale entries
+    try {
+      MoreFiles.deleteDirectoryContents(scriptOut.toPath(), RecursiveDeleteOption.ALLOW_INSECURE);
+    } catch (IOException e) {
+      throw new MojoExecutionException("Could not clear scriptOut: " + scriptOut, e);
+    }
 
-		// Clear the target directory to remove stale entries
-		try
-		{
-			MoreFiles.deleteDirectoryContents(scriptOut.toPath(), RecursiveDeleteOption.ALLOW_INSECURE);
-		}
-		catch (IOException e)
-		{
-			throw new MojoExecutionException("Could not clear scriptOut: " + scriptOut, e);
-		}
+    for (File scriptFile : scriptDirectory.listFiles((dir, name) -> name.endsWith(".rs2asm"))) {
+      log.debug("Assembling " + scriptFile);
 
-		for (File scriptFile : scriptDirectory.listFiles((dir, name) -> name.endsWith(".rs2asm")))
-		{
-			log.debug("Assembling " + scriptFile);
+      try (FileInputStream fin = new FileInputStream(scriptFile)) {
+        ScriptDefinition script = assembler.assemble(fin);
+        byte[] packedScript = saver.save(script);
 
-			try (FileInputStream fin = new FileInputStream(scriptFile))
-			{
-				ScriptDefinition script = assembler.assemble(fin);
-				byte[] packedScript = saver.save(script);
+        File targetFile = new File(scriptOut, Integer.toString(script.getId()));
+        Files.write(packedScript, targetFile);
 
-				File targetFile = new File(scriptOut, Integer.toString(script.getId()));
-				Files.write(packedScript, targetFile);
+        // Copy hash file
 
-				// Copy hash file
+        File hashFile = new File(scriptDirectory,
+            Files.getNameWithoutExtension(scriptFile.getName()) + ".hash");
+        if (hashFile.exists()) {
+          Files.copy(hashFile, new File(scriptOut, Integer.toString(script.getId()) + ".hash"));
+        } else if (script.getId()
+            < 10000) // Scripts >=10000 are RuneLite scripts, so they shouldn't have a .hash
+        {
+          throw new MojoExecutionException("Unable to find hash file for " + scriptFile);
+        }
 
-				File hashFile = new File(scriptDirectory, Files.getNameWithoutExtension(scriptFile.getName()) + ".hash");
-				if (hashFile.exists())
-				{
-					Files.copy(hashFile, new File(scriptOut, Integer.toString(script.getId()) + ".hash"));
-				}
-				else if (script.getId() < 10000) // Scripts >=10000 are RuneLite scripts, so they shouldn't have a .hash
-				{
-					throw new MojoExecutionException("Unable to find hash file for " + scriptFile);
-				}
+        ++count;
+      } catch (IOException ex) {
+        throw new MojoFailureException("unable to open file", ex);
+      }
+    }
 
-				++count;
-			}
-			catch (IOException ex)
-			{
-				throw new MojoFailureException("unable to open file", ex);
-			}
-		}
-
-		log.info("Assembled " + count + " scripts");
-	}
+    log.info("Assembled " + count + " scripts");
+  }
 }

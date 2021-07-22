@@ -24,54 +24,51 @@
  */
 package meteor.plugins.itemstats;
 
-import java.awt.*;
+import java.awt.Color;
 
 /**
- * Positivity represents how positive or negative a stat change is. This is
- * turned into the color shown to the user in the toolip.
+ * Positivity represents how positive or negative a stat change is. This is turned into the color
+ * shown to the user in the toolip.
  */
-public enum Positivity
-{
-	/**
-	 * The stat is lower than it was before.
-	 */
-	WORSE,
-	/**
-	 * There is no change, ie: The stat is already capped.
-	 */
-	NO_CHANGE,
-	/**
-	 * The stat change goes over the cap, but does not net 0
-	 */
-	BETTER_CAPPED,
-	/**
-	 * Some stat changes were fully consumed, some were not. This should NOT
-	 * be returned by a single stat change. This should only be used by a
-	 * <code>StatChangeCalculator</code>
-	 */
-	BETTER_SOMECAPPED,
-	/**
-	 * The stat change is fully consumed. NB: a boost that hits the cap, but
-	 * does not go over it is still considered <code>BETTER_UNCAPPED</code>
-	 */
-	BETTER_UNCAPPED;
+public enum Positivity {
+  /**
+   * The stat is lower than it was before.
+   */
+  WORSE,
+  /**
+   * There is no change, ie: The stat is already capped.
+   */
+  NO_CHANGE,
+  /**
+   * The stat change goes over the cap, but does not net 0
+   */
+  BETTER_CAPPED,
+  /**
+   * Some stat changes were fully consumed, some were not. This should NOT be returned by a single
+   * stat change. This should only be used by a
+   * <code>StatChangeCalculator</code>
+   */
+  BETTER_SOMECAPPED,
+  /**
+   * The stat change is fully consumed. NB: a boost that hits the cap, but does not go over it is
+   * still considered <code>BETTER_UNCAPPED</code>
+   */
+  BETTER_UNCAPPED;
 
-	public static Color getColor(ItemStatConfig config, Positivity positivity)
-	{
-		switch (positivity)
-		{
-			case BETTER_UNCAPPED:
-				return config.colorBetterUncapped();
-			case BETTER_SOMECAPPED:
-				return config.colorBetterSomeCapped();
-			case BETTER_CAPPED:
-				return config.colorBetterCapped();
-			case NO_CHANGE:
-				return config.colorNoChange();
-			case WORSE:
-				return config.colorWorse();
-			default:
-				return Color.WHITE;
-		}
-	}
+  public static Color getColor(ItemStatConfig config, Positivity positivity) {
+    switch (positivity) {
+      case BETTER_UNCAPPED:
+        return config.colorBetterUncapped();
+      case BETTER_SOMECAPPED:
+        return config.colorBetterSomeCapped();
+      case BETTER_CAPPED:
+        return config.colorBetterCapped();
+      case NO_CHANGE:
+        return config.colorNoChange();
+      case WORSE:
+        return config.colorWorse();
+      default:
+        return Color.WHITE;
+    }
+  }
 }

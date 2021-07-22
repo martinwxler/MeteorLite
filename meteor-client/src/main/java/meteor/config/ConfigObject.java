@@ -24,9 +24,11 @@
  */
 package meteor.config;
 
-public interface ConfigObject
-{
-	String key();
-	String name();
-	int position();
+public interface ConfigObject {
+
+  String key();
+
+  String name();
+
+  int position();
 }

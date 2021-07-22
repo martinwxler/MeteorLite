@@ -30,42 +30,36 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class DeferredEventBus extends EventBus
-{
-	private final EventBus eventBus;
-	private final Queue<Object> pendingEvents = new ConcurrentLinkedQueue<>();
+public class DeferredEventBus extends EventBus {
 
-	@Inject
-	private DeferredEventBus(EventBus eventBus)
-	{
-		this.eventBus = eventBus;
-	}
+  private final EventBus eventBus;
+  private final Queue<Object> pendingEvents = new ConcurrentLinkedQueue<>();
 
-	@Override
-	public void register(Object object)
-	{
-		eventBus.register(object);
-	}
+  @Inject
+  private DeferredEventBus(EventBus eventBus) {
+    this.eventBus = eventBus;
+  }
 
-	@Override
-	public void unregister(Object object)
-	{
-		eventBus.unregister(object);
-	}
+  @Override
+  public void register(Object object) {
+    eventBus.register(object);
+  }
 
-	@Override
-	public void post(Object object)
-	{
-		pendingEvents.add(object);
-	}
+  @Override
+  public void unregister(Object object) {
+    eventBus.unregister(object);
+  }
 
-	public void replay()
-	{
-		int size = pendingEvents.size();
-		while (size-- > 0)
-		{
-			Object object = pendingEvents.poll();
-			eventBus.post(object);
-		}
-	}
+  @Override
+  public void post(Object object) {
+    pendingEvents.add(object);
+  }
+
+  public void replay() {
+    int size = pendingEvents.size();
+    while (size-- > 0) {
+      Object object = pendingEvents.poll();
+      eventBus.post(object);
+    }
+  }
 }

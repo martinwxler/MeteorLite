@@ -33,12 +33,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Repeatable(Mixins.class)
-public @interface Mixin
-{
-	/**
-	 * Class to inject this mixin into
-	 *
-	 * @return
-	 */
-	Class<?> value();
+public @interface Mixin {
+
+  /**
+   * Class to inject this mixin into
+   *
+   * @return
+   */
+  Class<?> value();
 }

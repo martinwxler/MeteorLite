@@ -32,8 +32,8 @@ import net.runelite.api.clan.ClanChannelMember;
  * An event when a clan member leaves a channel.
  */
 @Value
-public class ClanMemberLeft
-{
-	private final ClanChannel clanChannel;
-	private final ClanChannelMember clanMember;
+public class ClanMemberLeft {
+
+  private final ClanChannel clanChannel;
+  private final ClanChannelMember clanMember;
 }

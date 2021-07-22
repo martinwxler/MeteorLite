@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,98 +42,87 @@ import net.runelite.api.widgets.WidgetInfo;
 
 @Getter
 @Setter
-public abstract class Overlay implements LayoutableRenderableEntity
-{
-	@Inject
-	public Client client;
+public abstract class Overlay implements LayoutableRenderableEntity {
 
-	@Nullable
-	private final Plugin plugin;
-	private Point preferredLocation;
-	private Dimension preferredSize;
-	private OverlayPosition preferredPosition;
-	private Rectangle bounds = new Rectangle();
-	private OverlayPosition position = OverlayPosition.TOP_LEFT;
-	private OverlayPriority priority = OverlayPriority.NONE;
-	private OverlayLayer layer = OverlayLayer.UNDER_WIDGETS;
-	private final List<Integer> drawHooks = new ArrayList<>();
-	private final List<OverlayMenuEntry> menuEntries = new ArrayList<>();
-	private boolean resizable;
-	private int minimumSize = 32;
-	private boolean resettable = true;
+  @Nullable
+  private final Plugin plugin;
+  private final List<Integer> drawHooks = new ArrayList<>();
+  private final List<OverlayMenuEntry> menuEntries = new ArrayList<>();
+  @Inject
+  public Client client;
+  private Point preferredLocation;
+  private Dimension preferredSize;
+  private OverlayPosition preferredPosition;
+  private Rectangle bounds = new Rectangle();
+  private OverlayPosition position = OverlayPosition.TOP_LEFT;
+  private OverlayPriority priority = OverlayPriority.NONE;
+  private OverlayLayer layer = OverlayLayer.UNDER_WIDGETS;
+  private boolean resizable;
+  private int minimumSize = 32;
+  private boolean resettable = true;
 
-	/**
-	 * Whether this overlay can be dragged onto other overlays &amp; have
-	 * other overlays dragged onto it.
-	 */
-	@Setter(AccessLevel.PROTECTED)
-	private boolean dragTargetable;
+  /**
+   * Whether this overlay can be dragged onto other overlays &amp; have other overlays dragged onto
+   * it.
+   */
+  @Setter(AccessLevel.PROTECTED)
+  private boolean dragTargetable;
 
-	protected Overlay()
-	{
-		plugin = null;
-		MeteorLite.injector.injectMembers(this);
-	}
+  protected Overlay() {
+    plugin = null;
+    MeteorLite.injector.injectMembers(this);
+  }
 
-	protected Overlay(Plugin plugin)
-	{
-		this.plugin = plugin;
-		MeteorLite.injector.injectMembers(this);
-	}
+  protected Overlay(Plugin plugin) {
+    this.plugin = plugin;
+    MeteorLite.injector.injectMembers(this);
+  }
 
-	/**
-	 * Overlay name, used for saving the overlay, needs to be unique
-	 *
-	 * @return overlay name
-	 */
-	public String getName()
-	{
-		return this.getClass().getSimpleName();
-	}
+  /**
+   * Overlay name, used for saving the overlay, needs to be unique
+   *
+   * @return overlay name
+   */
+  public String getName() {
+    return this.getClass().getSimpleName();
+  }
 
-	protected void drawAfterInterface(int interfaceId)
-	{
-		drawHooks.add(interfaceId << 16 | 0xffff);
-	}
+  protected void drawAfterInterface(int interfaceId) {
+    drawHooks.add(interfaceId << 16 | 0xffff);
+  }
 
-	protected void drawAfterLayer(WidgetInfo layer)
-	{
-		drawHooks.add(layer.getId());
-	}
+  protected void drawAfterLayer(WidgetInfo layer) {
+    drawHooks.add(layer.getId());
+  }
 
-	public void onMouseOver()
-	{
-	}
+  public void onMouseOver() {
+  }
 
-	public void onMouseEnter()
-	{
-	}
+  public void onMouseEnter() {
+  }
 
-	public void onMouseExit()
-	{
-	}
+  public void onMouseExit() {
+  }
 
-	/**
-	 * Called when an overlay is dragged onto this, if dragTargetable is true.
-	 * Return true to consume the mouse event and prevent the other
-	 * overlay from being moved
-	 *
-	 * @param other the overlay being dragged
-	 * @return
-	 */
-	public boolean onDrag(Overlay other)
-	{
-		return false;
-	}
+  /**
+   * Called when an overlay is dragged onto this, if dragTargetable is true. Return true to consume
+   * the mouse event and prevent the other overlay from being moved
+   *
+   * @param other the overlay being dragged
+   * @return
+   */
+  public boolean onDrag(Overlay other) {
+    return false;
+  }
 
-	/**
-	 * Get the parent bounds for overlay dragging. The overlay will
-	 * not be allowed to be moved outside of the parent bounds.
-	 * @return
-	 */
-	@Nullable
-	public Rectangle getParentBounds()
-	{
-		return null;
-	}
+  /**
+   * Get the parent bounds for overlay dragging. The overlay will not be allowed to be moved outside
+   * of the parent bounds.
+   *
+   * @return
+   */
+  @Nullable
+  public Rectangle getParentBounds() {
+    return null;
+  }
 }

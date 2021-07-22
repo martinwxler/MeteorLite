@@ -33,26 +33,25 @@ import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSTextureProvider;
 
 @Mixin(RSTextureProvider.class)
-public abstract class TextureProviderMixin implements RSTextureProvider
-{
-	@Shadow("client")
-	private static RSClient client;
+public abstract class TextureProviderMixin implements RSTextureProvider {
 
-	@MethodHook(value = "<init>", end = true)
-	@Inject
-	public void rl$init(IndexDataBase indexTextures, IndexDataBase indexSprites, int maxSize, double brightness, int width)
-	{
-		// the client's max size is 20, however there are many scenes with >20 textures,
-		// which causes continuous alloc/free of textures with the gl. There are
-		// only ~90 textures in total.
-		setMaxSize(128);
-		setSize(128);
-	}
+  @Shadow("client")
+  private static RSClient client;
 
-	@MethodHook(value = "animate", end = true)
-	@Inject
-	public void checkTextures(int diff)
-	{
-		client.getCallbacks().drawAboveOverheads();
-	}
+  @MethodHook(value = "<init>", end = true)
+  @Inject
+  public void rl$init(IndexDataBase indexTextures, IndexDataBase indexSprites, int maxSize,
+      double brightness, int width) {
+    // the client's max size is 20, however there are many scenes with >20 textures,
+    // which causes continuous alloc/free of textures with the gl. There are
+    // only ~90 textures in total.
+    setMaxSize(128);
+    setSize(128);
+  }
+
+  @MethodHook(value = "animate", end = true)
+  @Inject
+  public void checkTextures(int diff) {
+    client.getCallbacks().drawAboveOverheads();
+  }
 }

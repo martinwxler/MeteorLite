@@ -28,14 +28,13 @@ import lombok.Data;
 import net.runelite.api.StructComposition;
 
 /**
- * An event called after a new {@link StructComposition} is created and
- * its data is initialized.
+ * An event called after a new {@link StructComposition} is created and its data is initialized.
  */
 @Data
-public class PostStructComposition
-{
-	/**
-	 * The newly created struct.
-	 */
-	private StructComposition structComposition;
+public class PostStructComposition {
+
+  /**
+   * The newly created struct.
+   */
+  private StructComposition structComposition;
 }

@@ -24,90 +24,85 @@
  */
 package meteor.plugins.groundmarkers;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.util.Collection;
+import javax.inject.Inject;
+import meteor.ui.overlay.Overlay;
+import meteor.ui.overlay.OverlayLayer;
+import meteor.ui.overlay.OverlayPosition;
+import meteor.ui.overlay.OverlayPriority;
 import meteor.ui.overlay.OverlayUtil;
 import net.runelite.api.Client;
 import net.runelite.api.Perspective;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import meteor.ui.overlay.*;
 
-import javax.inject.Inject;
-import java.awt.*;
-import java.util.Collection;
+class GroundMarkerMinimapOverlay extends Overlay {
 
-class GroundMarkerMinimapOverlay extends Overlay
-{
-	private static final int MAX_DRAW_DISTANCE = 16;
-	private static final int TILE_WIDTH = 4;
-	private static final int TILE_HEIGHT = 4;
+  private static final int MAX_DRAW_DISTANCE = 16;
+  private static final int TILE_WIDTH = 4;
+  private static final int TILE_HEIGHT = 4;
 
-	private final Client client;
-	private final GroundMarkerConfig config;
-	private final GroundMarkerPlugin plugin;
+  private final Client client;
+  private final GroundMarkerConfig config;
+  private final GroundMarkerPlugin plugin;
 
-	@Inject
-	private GroundMarkerMinimapOverlay(Client client, GroundMarkerConfig config, GroundMarkerPlugin plugin)
-	{
-		this.client = client;
-		this.config = config;
-		this.plugin = plugin;
-		setPosition(OverlayPosition.DYNAMIC);
-		setPriority(OverlayPriority.LOW);
-		setLayer(OverlayLayer.ABOVE_WIDGETS);
-	}
+  @Inject
+  private GroundMarkerMinimapOverlay(Client client, GroundMarkerConfig config,
+      GroundMarkerPlugin plugin) {
+    this.client = client;
+    this.config = config;
+    this.plugin = plugin;
+    setPosition(OverlayPosition.DYNAMIC);
+    setPriority(OverlayPriority.LOW);
+    setLayer(OverlayLayer.ABOVE_WIDGETS);
+  }
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		if (!config.drawTileOnMinimmap())
-		{
-			return null;
-		}
+  @Override
+  public Dimension render(Graphics2D graphics) {
+    if (!config.drawTileOnMinimmap()) {
+      return null;
+    }
 
-		final Collection<ColorTileMarker> points = plugin.getPoints();
-		for (final ColorTileMarker point : points)
-		{
-			WorldPoint worldPoint = point.getWorldPoint();
-			if (worldPoint.getPlane() != client.getPlane())
-			{
-				continue;
-			}
+    final Collection<ColorTileMarker> points = plugin.getPoints();
+    for (final ColorTileMarker point : points) {
+      WorldPoint worldPoint = point.getWorldPoint();
+      if (worldPoint.getPlane() != client.getPlane()) {
+        continue;
+      }
 
-			Color tileColor = point.getColor();
-			if (tileColor == null || !config.rememberTileColors())
-			{
-				// If this is an old tile which has no color, or rememberTileColors is off, use marker color
-				tileColor = config.markerColor();
-			}
+      Color tileColor = point.getColor();
+      if (tileColor == null || !config.rememberTileColors()) {
+        // If this is an old tile which has no color, or rememberTileColors is off, use marker color
+        tileColor = config.markerColor();
+      }
 
-			drawOnMinimap(graphics, worldPoint, tileColor);
-		}
+      drawOnMinimap(graphics, worldPoint, tileColor);
+    }
 
-		return null;
-	}
+    return null;
+  }
 
-	private void drawOnMinimap(Graphics2D graphics, WorldPoint point, Color color)
-	{
-		WorldPoint playerLocation = client.getLocalPlayer().getWorldLocation();
+  private void drawOnMinimap(Graphics2D graphics, WorldPoint point, Color color) {
+    WorldPoint playerLocation = client.getLocalPlayer().getWorldLocation();
 
-		if (point.distanceTo(playerLocation) >= MAX_DRAW_DISTANCE)
-		{
-			return;
-		}
+    if (point.distanceTo(playerLocation) >= MAX_DRAW_DISTANCE) {
+      return;
+    }
 
-		LocalPoint lp = LocalPoint.fromWorld(client, point);
-		if (lp == null)
-		{
-			return;
-		}
+    LocalPoint lp = LocalPoint.fromWorld(client, point);
+    if (lp == null) {
+      return;
+    }
 
-		Point posOnMinimap = Perspective.localToMinimap(client, lp);
-		if (posOnMinimap == null)
-		{
-			return;
-		}
+    Point posOnMinimap = Perspective.localToMinimap(client, lp);
+    if (posOnMinimap == null) {
+      return;
+    }
 
-		OverlayUtil.renderMinimapRect(client, graphics, posOnMinimap, TILE_WIDTH, TILE_HEIGHT, color);
-	}
+    OverlayUtil.renderMinimapRect(client, graphics, posOnMinimap, TILE_WIDTH, TILE_HEIGHT, color);
+  }
 }

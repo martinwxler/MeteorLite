@@ -29,116 +29,94 @@ import net.runelite.asm.execution.Frame;
 import net.runelite.asm.execution.InstructionContext;
 import org.objectweb.asm.MethodVisitor;
 
-public abstract class Instruction implements Cloneable
-{
-	private Instructions instructions;
-	private InstructionType type;
+public abstract class Instruction implements Cloneable {
 
-	public Instruction(Instructions instructions, InstructionType type)
-	{
-		this.instructions = instructions;
-		this.type = type;
-	}
+  private Instructions instructions;
+  private InstructionType type;
 
-	@Override
-	public String toString()
-	{
-		if (this.getInstructions() != null)
-		{
-			Method m = this.getInstructions().getCode().getMethod();
-			return super.toString() + " in " + m;// + " at pc 0x" + Integer.toHexString(this.getPc());
-		}
-		else
-		{
-			return super.toString() + " <unattached>";
-		}
-	}
+  public Instruction(Instructions instructions, InstructionType type) {
+    this.instructions = instructions;
+    this.type = type;
+  }
 
-	@Override
-	public Instruction clone()
-	{
-		Instruction i;
-		try
-		{
-			i = (Instruction) super.clone();
-		}
-		catch (CloneNotSupportedException ex)
-		{
-			throw new RuntimeException(ex);
-		}
+  @Override
+  public String toString() {
+    if (this.getInstructions() != null) {
+      Method m = this.getInstructions().getCode().getMethod();
+      return super.toString() + " in " + m;// + " at pc 0x" + Integer.toHexString(this.getPc());
+    } else {
+      return super.toString() + " <unattached>";
+    }
+  }
 
-		return i;
-	}
+  @Override
+  public Instruction clone() {
+    Instruction i;
+    try {
+      i = (Instruction) super.clone();
+    } catch (CloneNotSupportedException ex) {
+      throw new RuntimeException(ex);
+    }
 
-	protected void remove()
-	{
-		Exceptions exceptions = instructions.getCode().getExceptions();
-		for (Exception e : exceptions.getExceptions())
-		{
-			assert this != e.getStart();
-			assert this != e.getEnd();
-			assert this != e.getHandler();
-		}
-	}
+    return i;
+  }
 
-	public boolean removeStack()
-	{
-		assert instructions != null;
+  protected void remove() {
+    Exceptions exceptions = instructions.getCode().getExceptions();
+    for (Exception e : exceptions.getExceptions()) {
+      assert this != e.getStart();
+      assert this != e.getEnd();
+      assert this != e.getHandler();
+    }
+  }
 
-		this.getInstructions().remove(this); // calls remove()
+  public boolean removeStack() {
+    assert instructions != null;
 
-		return true;
-	}
+    this.getInstructions().remove(this); // calls remove()
 
-	// resolve jumps
-	public void resolve()
-	{
-	}
+    return true;
+  }
 
-	public void accept(MethodVisitor visitor)
-	{
-		visitor.visitInsn(this.getType().getCode());
-	}
+  // resolve jumps
+  public void resolve() {
+  }
 
-	public Instructions getInstructions()
-	{
-		return instructions;
-	}
+  public void accept(MethodVisitor visitor) {
+    visitor.visitInsn(this.getType().getCode());
+  }
 
-	public void setInstructions(Instructions instructions)
-	{
-		this.instructions = instructions;
-	}
+  public Instructions getInstructions() {
+    return instructions;
+  }
 
-	public InstructionType getType()
-	{
-		return type;
-	}
+  public void setInstructions(Instructions instructions) {
+    this.instructions = instructions;
+  }
 
-	protected void setType(InstructionType type)
-	{
-		this.type = type;
-	}
+  public InstructionType getType() {
+    return type;
+  }
 
-	public abstract InstructionContext execute(Frame e);
+  protected void setType(InstructionType type) {
+    this.type = type;
+  }
 
-	/* does this terminate a block? */
-	public boolean isTerminal()
-	{
-		return false;
-	}
+  public abstract InstructionContext execute(Frame e);
 
-	// look up symbols from pool
-	public void lookup()
-	{
-	}
+  /* does this terminate a block? */
+  public boolean isTerminal() {
+    return false;
+  }
 
-	// instructions keep resolved method/field/class names, this updates the pool value (if the underlying resolved object changes)
-	public void regeneratePool()
-	{
-	}
+  // look up symbols from pool
+  public void lookup() {
+  }
 
-	public void renameClass(String oldName, String newName)
-	{
-	}
+  // instructions keep resolved method/field/class names, this updates the pool value (if the underlying resolved object changes)
+  public void regeneratePool() {
+  }
+
+  public void renameClass(String oldName, String newName) {
+  }
 }

@@ -29,16 +29,16 @@ import net.runelite.api.clan.ClanChannel;
 import net.runelite.api.clan.ClanChannelMember;
 import net.runelite.mapping.Import;
 
-public interface RSClanChannel extends ClanChannel
-{
-	@Import("name")
-	@Override
-	String getName();
+public interface RSClanChannel extends ClanChannel {
 
-	@Import("members")
-	@Override
-	List<ClanChannelMember> getMembers();
+  @Import("name")
+  @Override
+  String getName();
 
-	@Import("getSortedMembers")
-	int[] getSortedMembers$api();
+  @Import("members")
+  @Override
+  List<ClanChannelMember> getMembers();
+
+  @Import("getSortedMembers")
+  int[] getSortedMembers$api();
 }

@@ -30,28 +30,28 @@ import lombok.Value;
 
 @Value
 @Builder
-public class ItemEquipmentStats
-{
-	private int slot;
+public class ItemEquipmentStats {
 
-	@SerializedName("is2h")
-	private boolean isTwoHanded;
+  private int slot;
 
-	private int astab;
-	private int aslash;
-	private int acrush;
-	private int amagic;
-	private int arange;
+  @SerializedName("is2h")
+  private boolean isTwoHanded;
 
-	private int dstab;
-	private int dslash;
-	private int dcrush;
-	private int dmagic;
-	private int drange;
+  private int astab;
+  private int aslash;
+  private int acrush;
+  private int amagic;
+  private int arange;
 
-	private int str;
-	private int rstr;
-	private int mdmg;
-	private int prayer;
-	private int aspeed;
+  private int dstab;
+  private int dslash;
+  private int dcrush;
+  private int dmagic;
+  private int drange;
+
+  private int str;
+  private int rstr;
+  private int mdmg;
+  private int prayer;
+  private int aspeed;
 }

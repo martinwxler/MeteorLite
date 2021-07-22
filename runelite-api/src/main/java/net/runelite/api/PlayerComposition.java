@@ -29,54 +29,53 @@ import net.runelite.api.kit.KitType;
 /**
  * Represents the template of a player.
  */
-public interface PlayerComposition
-{
-	/**
-	 * Checks if the player is female.
-	 *
-	 * @return true if the player is female
-	 */
-	boolean isFemale();
+public interface PlayerComposition {
 
-	/**
-	 * Get the body part colors for this player composition.
-	 *
-	 * @return an array of the colors, always size 5
-	 */
-	int[] getColors();
+  /**
+   * Checks if the player is female.
+   *
+   * @return true if the player is female
+   */
+  boolean isFemale();
 
-	/**
-	 * Gets an array of IDs related to equipment slots.
-	 * <p>
-	 * If the ID for a specific slot is between 256 and 512, subtracting
-	 * 256 will result in the kit ID. Values above 512 indicate an item
-	 * and can be converted to the item ID by subtracting 512.
-	 *
-	 * @return the equipment IDs
-	 */
-	int[] getEquipmentIds();
+  /**
+   * Get the body part colors for this player composition.
+   *
+   * @return an array of the colors, always size 5
+   */
+  int[] getColors();
 
-	/**
-	 * Gets the equipment ID of a particular slot.
-	 *
-	 * @param type equipment slot
-	 * @return the equipment ID
-	 */
-	int getEquipmentId(KitType type);
+  /**
+   * Gets an array of IDs related to equipment slots.
+   * <p>
+   * If the ID for a specific slot is between 256 and 512, subtracting 256 will result in the kit
+   * ID. Values above 512 indicate an item and can be converted to the item ID by subtracting 512.
+   *
+   * @return the equipment IDs
+   */
+  int[] getEquipmentIds();
 
-	/**
-	 * Gets the kit ID of a particular slot.
-	 *
-	 * @param type equipment slot
-	 * @return the kit ID
-	 */
-	int getKitId(KitType type);
+  /**
+   * Gets the equipment ID of a particular slot.
+   *
+   * @param type equipment slot
+   * @return the equipment ID
+   */
+  int getEquipmentId(KitType type);
 
-	/**
-	 * Update the cached hash value for player equipment
-	 * Used to cache the player models based on equipment.
-	 */
-	void setHash$api();
+  /**
+   * Gets the kit ID of a particular slot.
+   *
+   * @param type equipment slot
+   * @return the kit ID
+   */
+  int getKitId(KitType type);
 
-	void setTransformedNpcId(int id);
+  /**
+   * Update the cached hash value for player equipment Used to cache the player models based on
+   * equipment.
+   */
+  void setHash$api();
+
+  void setTransformedNpcId(int id);
 }

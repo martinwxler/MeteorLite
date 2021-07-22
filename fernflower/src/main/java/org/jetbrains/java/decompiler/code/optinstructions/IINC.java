@@ -15,10 +15,9 @@
  */
 package org.jetbrains.java.decompiler.code.optinstructions;
 
-import org.jetbrains.java.decompiler.code.Instruction;
-
 import java.io.DataOutputStream;
 import java.io.IOException;
+import org.jetbrains.java.decompiler.code.Instruction;
 
 public class IINC extends Instruction {
 
@@ -30,8 +29,7 @@ public class IINC extends Instruction {
     if (wide) {
       out.writeShort(getOperand(0));
       out.writeShort(getOperand(1));
-    }
-    else {
+    } else {
       out.writeByte(getOperand(0));
       out.writeByte(getOperand(1));
     }

@@ -24,36 +24,35 @@
  */
 package meteor.plugins.itemstats.potions;
 
+import static meteor.plugins.itemstats.Builders.heal;
+
 import lombok.RequiredArgsConstructor;
-import net.runelite.api.Client;
-import net.runelite.api.Skill;
 import meteor.plugins.itemstats.Effect;
 import meteor.plugins.itemstats.StatChange;
 import meteor.plugins.itemstats.StatsChanges;
 import meteor.plugins.itemstats.stats.Stats;
-
-import static meteor.plugins.itemstats.Builders.heal;
+import net.runelite.api.Client;
+import net.runelite.api.Skill;
 
 /**
  * Acts like a prayer potion and stamina dose combined but restores 40 energy instead of 20
  */
 @RequiredArgsConstructor
-public class GauntletPotion implements Effect
-{
-	private static final int PRAYER_RESTORE_DELTA = 7;
-	private static final double PRAYER_RESTORE_PERCENT = .25;
+public class GauntletPotion implements Effect {
 
-	@Override
-	public StatsChanges calculate(Client client)
-	{
-		// Restores prayer similar to PrayerPotion but there aren't any possible boost so simplify the calculation
-		final int restorePerc = (int) (client.getRealSkillLevel(Skill.PRAYER) * PRAYER_RESTORE_PERCENT);
-		final StatChange prayer =  heal(Stats.PRAYER, restorePerc + PRAYER_RESTORE_DELTA).effect(client);
+  private static final int PRAYER_RESTORE_DELTA = 7;
+  private static final double PRAYER_RESTORE_PERCENT = .25;
 
-		final StatChange runEnergy = heal(Stats.RUN_ENERGY, 40).effect(client);
+  @Override
+  public StatsChanges calculate(Client client) {
+    // Restores prayer similar to PrayerPotion but there aren't any possible boost so simplify the calculation
+    final int restorePerc = (int) (client.getRealSkillLevel(Skill.PRAYER) * PRAYER_RESTORE_PERCENT);
+    final StatChange prayer = heal(Stats.PRAYER, restorePerc + PRAYER_RESTORE_DELTA).effect(client);
 
-		final StatsChanges changes = new StatsChanges(2);
-		changes.setStatChanges(new StatChange[]{runEnergy, prayer});
-		return changes;
-	}
+    final StatChange runEnergy = heal(Stats.RUN_ENERGY, 40).effect(client);
+
+    final StatsChanges changes = new StatsChanges(2);
+    changes.setStatChanges(new StatChange[]{runEnergy, prayer});
+    return changes;
+  }
 }

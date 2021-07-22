@@ -24,85 +24,80 @@
  */
 package meteor.ui.overlay;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
 import lombok.Getter;
 import lombok.Setter;
 import meteor.Plugin;
 import meteor.ui.FontManager;
 import meteor.ui.overlay.components.ComponentConstants;
 import meteor.ui.overlay.components.PanelComponent;
-import java.awt.*;
 
 @Getter
 @Setter
-public abstract class OverlayPanel extends Overlay
-{
-	protected final PanelComponent panelComponent = new PanelComponent();
+public abstract class OverlayPanel extends Overlay {
 
-	/**
-	 * Enables/disables automatic clearing of {@link OverlayPanel#getPanelComponent()} children after rendering (enabled by default)
-	 */
-	private boolean clearChildren = true;
+  protected final PanelComponent panelComponent = new PanelComponent();
 
-	/**
-	 * Enables/disables automatic font size changes based on panel component size relative to default panel component size.
-	 */
-	private boolean dynamicFont = false;
+  /**
+   * Enables/disables automatic clearing of {@link OverlayPanel#getPanelComponent()} children after
+   * rendering (enabled by default)
+   */
+  private boolean clearChildren = true;
 
-	/**
-	 * Preferred color used for panel component background
-	 */
-	private Color preferredColor = null;
+  /**
+   * Enables/disables automatic font size changes based on panel component size relative to default
+   * panel component size.
+   */
+  private boolean dynamicFont = false;
 
-	protected OverlayPanel()
-	{
-		super();
-		setResizable(true);
-	}
+  /**
+   * Preferred color used for panel component background
+   */
+  private Color preferredColor = null;
 
-	protected OverlayPanel(Plugin plugin)
-	{
-		super(plugin);
-		setResizable(true);
-	}
+  protected OverlayPanel() {
+    super();
+    setResizable(true);
+  }
 
-	@Override
-	public Dimension render(final Graphics2D graphics)
-	{
-		final Dimension oldSize = panelComponent.getPreferredSize();
+  protected OverlayPanel(Plugin plugin) {
+    super(plugin);
+    setResizable(true);
+  }
 
-		if (getPreferredSize() != null)
-		{
-			panelComponent.setPreferredSize(getPreferredSize());
+  @Override
+  public Dimension render(final Graphics2D graphics) {
+    final Dimension oldSize = panelComponent.getPreferredSize();
 
-			if (dynamicFont)
-			{
-				if (getPreferredSize().width >= ComponentConstants.STANDARD_WIDTH * 1.3)
-				{
-					graphics.setFont(FontManager.getRunescapeBoldFont());
-				}
-				else if (getPreferredSize().width <= ComponentConstants.STANDARD_WIDTH * 0.8)
-				{
-					graphics.setFont(FontManager.getRunescapeSmallFont());
-				}
-			}
-		}
+    if (getPreferredSize() != null) {
+      panelComponent.setPreferredSize(getPreferredSize());
 
-		final Color oldBackgroundColor = panelComponent.getBackgroundColor();
+      if (dynamicFont) {
+        if (getPreferredSize().width >= ComponentConstants.STANDARD_WIDTH * 1.3) {
+          graphics.setFont(FontManager.getRunescapeBoldFont());
+        } else if (getPreferredSize().width <= ComponentConstants.STANDARD_WIDTH * 0.8) {
+          graphics.setFont(FontManager.getRunescapeSmallFont());
+        }
+      }
+    }
 
-		if (getPreferredColor() != null && ComponentConstants.STANDARD_BACKGROUND_COLOR.equals(oldBackgroundColor))
-		{
-			panelComponent.setBackgroundColor(getPreferredColor());
-		}
+    final Color oldBackgroundColor = panelComponent.getBackgroundColor();
 
-		final Dimension dimension = panelComponent.render(graphics);
+    if (getPreferredColor() != null && ComponentConstants.STANDARD_BACKGROUND_COLOR
+        .equals(oldBackgroundColor)) {
+      panelComponent.setBackgroundColor(getPreferredColor());
+    }
 
-		if (clearChildren)
-		{
-			panelComponent.getChildren().clear();
-		}
+    final Dimension dimension = panelComponent.render(graphics);
 
-		panelComponent.setPreferredSize(oldSize);
-		panelComponent.setBackgroundColor(oldBackgroundColor);
-		return dimension;
-	}
+    if (clearChildren) {
+      panelComponent.getChildren().clear();
+    }
+
+    panelComponent.setPreferredSize(oldSize);
+    panelComponent.setBackgroundColor(oldBackgroundColor);
+    return dimension;
+  }
 }

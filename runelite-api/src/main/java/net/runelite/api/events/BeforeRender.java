@@ -27,12 +27,11 @@ package net.runelite.api.events;
 /**
  * Posted at the start of every frame
  */
-public class BeforeRender
-{
-	public static final BeforeRender INSTANCE = new BeforeRender();
+public class BeforeRender {
 
-	public BeforeRender()
-	{
-		// noop
-	}
+  public static final BeforeRender INSTANCE = new BeforeRender();
+
+  public BeforeRender() {
+    // noop
+  }
 }

@@ -24,40 +24,40 @@
  */
 package net.runelite.rs.api;
 
-import net.runelite.api.GameEngine;
 import java.awt.Canvas;
+import net.runelite.api.GameEngine;
 import net.runelite.mapping.Import;
 
-public interface RSGameEngine extends GameEngine
-{
-	@Import("canvas")
-	Canvas getCanvas();
+public interface RSGameEngine extends GameEngine {
 
-	@Import("post")
-	void post$api(Object canvas);
+  @Import("canvas")
+  Canvas getCanvas();
 
-	@Import("resizeCanvas")
-	@Override
-	void resizeCanvas$api();
+  @Import("post")
+  void post$api(Object canvas);
 
-	@Import("resizeCanvasNextFrame")
-	boolean isResizeCanvasNextFrame();
+  @Import("resizeCanvas")
+  @Override
+  void resizeCanvas$api();
 
-	@Import("resizeCanvasNextFrame")
-	void setResizeCanvasNextFrame(boolean resize);
+  @Import("resizeCanvasNextFrame")
+  boolean isResizeCanvasNextFrame();
 
-	@Import("isCanvasInvalid")
-	boolean isReplaceCanvasNextFrame();
+  @Import("resizeCanvasNextFrame")
+  void setResizeCanvasNextFrame(boolean resize);
 
-	@Import("isCanvasInvalid")
-	void setReplaceCanvasNextFrame(boolean replace);
+  @Import("isCanvasInvalid")
+  boolean isReplaceCanvasNextFrame();
 
-	@Import("maxCanvasWidth")
-	void setMaxCanvasWidth(int width);
+  @Import("isCanvasInvalid")
+  void setReplaceCanvasNextFrame(boolean replace);
 
-	@Import("maxCanvasHeight")
-	void setMaxCanvasHeight(int height);
+  @Import("maxCanvasWidth")
+  void setMaxCanvasWidth(int width);
 
-	@Import("fullRedraw")
-	void setFullRedraw(boolean fullRedraw);
+  @Import("maxCanvasHeight")
+  void setMaxCanvasHeight(int height);
+
+  @Import("fullRedraw")
+  void setFullRedraw(boolean fullRedraw);
 }

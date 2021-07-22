@@ -25,120 +25,109 @@
 
 package net.runelite.deob.deobfuscators.mapping;
 
+import net.runelite.asm.Annotation;
 import net.runelite.asm.ClassFile;
 import net.runelite.asm.ClassGroup;
 import net.runelite.asm.Field;
 import net.runelite.asm.Method;
-import net.runelite.asm.Annotation;
 import net.runelite.asm.attributes.Annotated;
 import net.runelite.deob.DeobAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AnnotationMapper
-{
-	private static final Logger logger = LoggerFactory.getLogger(AnnotationMapper.class);
+public class AnnotationMapper {
 
-	private final ClassGroup source, target;
-	private final ParallelExecutorMapping mapping;
+  private static final Logger logger = LoggerFactory.getLogger(AnnotationMapper.class);
 
-	public AnnotationMapper(ClassGroup source, ClassGroup target, ParallelExecutorMapping mapping)
-	{
-		this.source = source;
-		this.target = target;
-		this.mapping = mapping;
-	}
+  private final ClassGroup source, target;
+  private final ParallelExecutorMapping mapping;
 
-	public void run()
-	{
-		int count = 0;
+  public AnnotationMapper(ClassGroup source, ClassGroup target, ParallelExecutorMapping mapping) {
+    this.source = source;
+    this.target = target;
+    this.mapping = mapping;
+  }
 
-		for (ClassFile c : source.getClasses())
-		{
-			ClassFile other = (ClassFile) mapping.get(c);
+  public void run() {
+    int count = 0;
 
-			count += run(c, other);
-		}
+    for (ClassFile c : source.getClasses()) {
+      ClassFile other = (ClassFile) mapping.get(c);
 
-		logger.info("Copied {} annotations", count);
-	}
+      count += run(c, other);
+    }
 
-	private int run(ClassFile from, ClassFile to)
-	{
-		int count = 0;
+    logger.info("Copied {} annotations", count);
+  }
 
-		if (hasCopyableAnnotation(from))
-		{
-			if (to != null)
-			{
-				count += copyAnnotations(from, to);
-			}
-			else
-			{
-				logger.warn("Class {} has copyable annotations but there is no mapped class", from);
-			}
-		}
+  private int run(ClassFile from, ClassFile to) {
+    int count = 0;
 
-		for (Field f : from.getFields())
-		{
-			if (!hasCopyableAnnotation(f))
-				continue;
+    if (hasCopyableAnnotation(from)) {
+      if (to != null) {
+        count += copyAnnotations(from, to);
+      } else {
+        logger.warn("Class {} has copyable annotations but there is no mapped class", from);
+      }
+    }
 
-			Field other = (Field) mapping.get(f);
-			if (other == null)
-			{
-				logger.warn("Unable to map annotated field {} named {}", f, DeobAnnotations.getExportedName(f));
-				continue;
-			}
+    for (Field f : from.getFields()) {
+      if (!hasCopyableAnnotation(f)) {
+        continue;
+      }
 
-			count += copyAnnotations(f, other);
-		}
+      Field other = (Field) mapping.get(f);
+      if (other == null) {
+        logger.warn("Unable to map annotated field {} named {}", f,
+            DeobAnnotations.getExportedName(f));
+        continue;
+      }
 
-		for (Method m : from.getMethods())
-		{
-			if (!hasCopyableAnnotation(m))
-				continue;
+      count += copyAnnotations(f, other);
+    }
 
-			Method other = (Method) mapping.get(m);
-			if (other == null)
-			{
-				logger.warn("Unable to map annotated method {} named {}", m, DeobAnnotations.getExportedName(m));
-				continue;
-			}
+    for (Method m : from.getMethods()) {
+      if (!hasCopyableAnnotation(m)) {
+        continue;
+      }
 
-			count += copyAnnotations(m, other);
-		}
+      Method other = (Method) mapping.get(m);
+      if (other == null) {
+        logger.warn("Unable to map annotated method {} named {}", m,
+            DeobAnnotations.getExportedName(m));
+        continue;
+      }
 
-		return count;
-	}
+      count += copyAnnotations(m, other);
+    }
 
-	private int copyAnnotations(Annotated from, Annotated to)
-	{
-		int count = 0;
+    return count;
+  }
 
-		if (from.getAnnotations() == null)
-			return count;
+  private int copyAnnotations(Annotated from, Annotated to) {
+    int count = 0;
 
-		for (Annotation a : from.getAnnotations().values())
-		{
-			if (isCopyable(a))
-			{
-				to.addAnnotation(a);
-				++count;
-			}
-		}
+    if (from.getAnnotations() == null) {
+      return count;
+    }
 
-		return count;
-	}
+    for (Annotation a : from.getAnnotations().values()) {
+      if (isCopyable(a)) {
+        to.addAnnotation(a);
+        ++count;
+      }
+    }
 
-	private boolean hasCopyableAnnotation(Annotated a)
-	{
-		return a.findAnnotation(DeobAnnotations.EXPORT) != null || a.findAnnotation(DeobAnnotations.IMPLEMENTS) != null;
-	}
+    return count;
+  }
 
-	private boolean isCopyable(Annotation a)
-	{
-		return a.getType().equals(DeobAnnotations.EXPORT)
-			|| a.getType().equals(DeobAnnotations.IMPLEMENTS);
-	}
+  private boolean hasCopyableAnnotation(Annotated a) {
+    return a.findAnnotation(DeobAnnotations.EXPORT) != null
+        || a.findAnnotation(DeobAnnotations.IMPLEMENTS) != null;
+  }
+
+  private boolean isCopyable(Annotation a) {
+    return a.getType().equals(DeobAnnotations.EXPORT)
+        || a.getType().equals(DeobAnnotations.IMPLEMENTS);
+  }
 }

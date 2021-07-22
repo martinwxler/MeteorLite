@@ -32,100 +32,87 @@ import net.runelite.asm.signature.Signature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ConstructorMapper
-{
-	private static final Logger logger = LoggerFactory.getLogger(ConstructorMapper.class);
+public class ConstructorMapper {
 
-	private final ClassGroup source, target;
-	private final ParallelExecutorMapping mapping;
+  private static final Logger logger = LoggerFactory.getLogger(ConstructorMapper.class);
 
-	public ConstructorMapper(ClassGroup source, ClassGroup target, ParallelExecutorMapping mapping)
-	{
-		this.source = source;
-		this.target = target;
-		this.mapping = mapping;
-	}
+  private final ClassGroup source, target;
+  private final ParallelExecutorMapping mapping;
 
-	private Type toOtherType(Type type)
-	{
-		if (type.isPrimitive())
-		{
-			return type;
-		}
+  public ConstructorMapper(ClassGroup source, ClassGroup target, ParallelExecutorMapping mapping) {
+    this.source = source;
+    this.target = target;
+    this.mapping = mapping;
+  }
 
-		ClassFile cf = source.findClass(type.getInternalName());
-		if (cf == null)
-		{
-			return type;
-		}
+  private Type toOtherType(Type type) {
+    if (type.isPrimitive()) {
+      return type;
+    }
 
-		ClassFile other = (ClassFile) mapping.get(cf);
-		if (other == null)
-		{
-			logger.debug("Unable to map other type due to no class mapping for {}", cf);
-			return null;
-		}
+    ClassFile cf = source.findClass(type.getInternalName());
+    if (cf == null) {
+      return type;
+    }
 
-		return new Type("L" + other.getName() + ";");
-	}
+    ClassFile other = (ClassFile) mapping.get(cf);
+    if (other == null) {
+      logger.debug("Unable to map other type due to no class mapping for {}", cf);
+      return null;
+    }
 
-	private Signature toOtherSignature(Signature s)
-	{
-		Signature.Builder builder = new Signature.Builder()
-			.setReturnType(toOtherType(s.getReturnValue()));
-		for (Type t : s.getArguments())
-		{
-			Type other = toOtherType(t);
-			if (other == null)
-			{
-				return null;
-			}
-			builder.addArgument(other);
-		}
-		return builder.build();
-	}
+    return new Type("L" + other.getName() + ";");
+  }
 
-	/**
-	 * Map constructors based on the class mappings of the given mapping
-	 */
-	public void mapConstructors()
-	{
-		for (ClassFile cf : source.getClasses())
-		{
-			ClassFile other = (ClassFile) mapping.get(cf);
+  private Signature toOtherSignature(Signature s) {
+    Signature.Builder builder = new Signature.Builder()
+        .setReturnType(toOtherType(s.getReturnValue()));
+    for (Type t : s.getArguments()) {
+      Type other = toOtherType(t);
+      if (other == null) {
+        return null;
+      }
+      builder.addArgument(other);
+    }
+    return builder.build();
+  }
 
-			if (other == null)
-			{
-				continue;
-			}
+  /**
+   * Map constructors based on the class mappings of the given mapping
+   */
+  public void mapConstructors() {
+    for (ClassFile cf : source.getClasses()) {
+      ClassFile other = (ClassFile) mapping.get(cf);
 
-			for (Method m : cf.getMethods())
-			{
-				if (!m.getName().equals("<init>"))
-				{
-					continue;
-				}
+      if (other == null) {
+        continue;
+      }
 
-				Signature otherSig = toOtherSignature(m.getDescriptor());
-				if (otherSig == null)
-				{
-					continue;
-				}
+      for (Method m : cf.getMethods()) {
+        if (!m.getName().equals("<init>")) {
+          continue;
+        }
 
-				logger.debug("Converted signature {} -> {}", m.getDescriptor(), otherSig);
+        Signature otherSig = toOtherSignature(m.getDescriptor());
+        if (otherSig == null) {
+          continue;
+        }
 
-				Method m2 = other.findMethod(m.getName(), otherSig);
-				if (m2 == null)
-				{
-					logger.warn("Unable to find other constructor for {}, looking for signature {} on class {}", m, otherSig, other);
-					continue;
-				}
+        logger.debug("Converted signature {} -> {}", m.getDescriptor(), otherSig);
 
-				ParallelExecutorMapping p = MappingExecutorUtil.map(m, m2);
-				p.map(null, m, m2);
+        Method m2 = other.findMethod(m.getName(), otherSig);
+        if (m2 == null) {
+          logger
+              .warn("Unable to find other constructor for {}, looking for signature {} on class {}",
+                  m, otherSig, other);
+          continue;
+        }
 
-				mapping.merge(p);
-			}
-		}
-	}
+        ParallelExecutorMapping p = MappingExecutorUtil.map(m, m2);
+        p.map(null, m, m2);
+
+        mapping.merge(p);
+      }
+    }
+  }
 }

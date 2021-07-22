@@ -27,48 +27,52 @@ package net.runelite.api;
 /**
  * Stores the clients persisting preferences.
  */
-public interface Preferences
-{
-	/**
-	 * Gets the remembered login username.
-	 *
-	 * @return the remembered username
-	 */
-	String getRememberedUsername();
+public interface Preferences {
 
-	/**
-	 * Sets the remembered login username.
-	 *
-	 * @param username the new remembered username
-	 */
-	void setRememberedUsername(String username);
+  /**
+   * Gets the remembered login username.
+   *
+   * @return the remembered username
+   */
+  String getRememberedUsername();
 
-	/**
-	 * Gets the sound effect volume
-	 * @return volume 0-127 inclusive
-	 */
-	int getSoundEffectVolume();
+  /**
+   * Sets the remembered login username.
+   *
+   * @param username the new remembered username
+   */
+  void setRememberedUsername(String username);
 
-	/**
-	 * Sets the sound effect volume
-	 * @param volume 0-127 inclusive
-	 */
-	void setSoundEffectVolume(int volume);
+  /**
+   * Gets the sound effect volume
+   *
+   * @return volume 0-127 inclusive
+   */
+  int getSoundEffectVolume();
 
-	/**
-	 * Gets the area sound effect volume
-	 * @return volume 0-127 inclusive
-	 */
-	int getAreaSoundEffectVolume();
+  /**
+   * Sets the sound effect volume
+   *
+   * @param volume 0-127 inclusive
+   */
+  void setSoundEffectVolume(int volume);
 
-	/**
-	 * Sets the area sound effect volume
-	 * @param volume 0-127 inclusive
-	 */
-	void setAreaSoundEffectVolume(int volume);
+  /**
+   * Gets the area sound effect volume
+   *
+   * @return volume 0-127 inclusive
+   */
+  int getAreaSoundEffectVolume();
 
-	/**
-	 * Gets if the login name should be replaced with asterisks
-	 */
-	boolean getHideUsername();
+  /**
+   * Sets the area sound effect volume
+   *
+   * @param volume 0-127 inclusive
+   */
+  void setAreaSoundEffectVolume(int volume);
+
+  /**
+   * Gets if the login name should be replaced with asterisks
+   */
+  boolean getHideUsername();
 }

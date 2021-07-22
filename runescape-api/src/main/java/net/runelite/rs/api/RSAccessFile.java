@@ -3,14 +3,14 @@ package net.runelite.rs.api;
 import java.io.RandomAccessFile;
 import net.runelite.mapping.Import;
 
-public interface RSAccessFile
-{
-	@Import("file")
-	RandomAccessFile getFile();
+public interface RSAccessFile {
 
-	@Import("offset")
-	long getPosition();
+  @Import("file")
+  RandomAccessFile getFile();
 
-	@Import("maxSize")
-	long getLength();
+  @Import("offset")
+  long getPosition();
+
+  @Import("maxSize")
+  long getLength();
 }

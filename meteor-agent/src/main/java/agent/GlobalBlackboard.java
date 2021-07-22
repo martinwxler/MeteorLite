@@ -24,34 +24,34 @@
  */
 package agent;
 
-import org.spongepowered.asm.service.IGlobalPropertyService;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.spongepowered.asm.service.IGlobalPropertyService;
 
 public class GlobalBlackboard implements IGlobalPropertyService {
-    private final Map<String, Object> properties = new HashMap<>();
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public final <T> T getProperty(String key) {
-        return (T) this.properties.get(key);
-    }
+  private final Map<String, Object> properties = new HashMap<>();
 
-    @Override
-    public final void setProperty(String key, Object value) {
-        this.properties.put(key, value);
-    }
+  @Override
+  @SuppressWarnings("unchecked")
+  public final <T> T getProperty(String key) {
+    return (T) this.properties.get(key);
+  }
 
-    @Override
-    public final <T> T getProperty(String key, T defaultValue) {
-        T value = this.getProperty(key);
-        return value != null ? value : defaultValue;
-    }
+  @Override
+  public final void setProperty(String key, Object value) {
+    this.properties.put(key, value);
+  }
 
-    @Override
-    public final String getPropertyString(String key, String defaultValue) {
-        Object value = this.properties.get(key);
-        return value != null ? value.toString() : defaultValue;
-    }
+  @Override
+  public final <T> T getProperty(String key, T defaultValue) {
+    T value = this.getProperty(key);
+    return value != null ? value : defaultValue;
+  }
+
+  @Override
+  public final String getPropertyString(String key, String defaultValue) {
+    Object value = this.properties.get(key);
+    return value != null ? value.toString() : defaultValue;
+  }
 }

@@ -30,44 +30,38 @@ import java.util.List;
 import net.runelite.asm.ClassFile;
 import net.runelite.asm.attributes.Code;
 
-public class Exceptions
-{
-	private Code code;
-	private List<Exception> exceptions = new ArrayList<Exception>();
+public class Exceptions {
 
-	public Exceptions(Code code)
-	{
-		this.code = code;
-	}
+  private Code code;
+  private List<Exception> exceptions = new ArrayList<Exception>();
 
-	public void add(Exception e)
-	{
-		exceptions.add(e);
-	}
-	
-	public void remove(Exception e)
-	{
-		exceptions.remove(e);
-	}
+  public Exceptions(Code code) {
+    this.code = code;
+  }
 
-	public void clear()
-	{
-		exceptions.clear();
-	}
-	
-	public Code getCode()
-	{
-		return code;
-	}
-	
-	public List<Exception> getExceptions()
-	{
-		return exceptions;
-	}
-	
-	public void renameClass(ClassFile cf, String name)
-	{
-		for (Exception e : exceptions)
-			e.renameClass(cf, name);
-	}
+  public void add(Exception e) {
+    exceptions.add(e);
+  }
+
+  public void remove(Exception e) {
+    exceptions.remove(e);
+  }
+
+  public void clear() {
+    exceptions.clear();
+  }
+
+  public Code getCode() {
+    return code;
+  }
+
+  public List<Exception> getExceptions() {
+    return exceptions;
+  }
+
+  public void renameClass(ClassFile cf, String name) {
+    for (Exception e : exceptions) {
+      e.renameClass(cf, name);
+    }
+  }
 }

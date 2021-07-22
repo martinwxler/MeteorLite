@@ -24,11 +24,6 @@
  */
 package meteor.ui.overlay;
 
-import java.awt.Rectangle;
-import java.util.Arrays;
-import java.util.Collection;
-import lombok.AllArgsConstructor;
-import lombok.Value;
 import static meteor.ui.overlay.OverlayPosition.ABOVE_CHATBOX_RIGHT;
 import static meteor.ui.overlay.OverlayPosition.BOTTOM_LEFT;
 import static meteor.ui.overlay.OverlayPosition.BOTTOM_RIGHT;
@@ -37,96 +32,82 @@ import static meteor.ui.overlay.OverlayPosition.TOP_CENTER;
 import static meteor.ui.overlay.OverlayPosition.TOP_LEFT;
 import static meteor.ui.overlay.OverlayPosition.TOP_RIGHT;
 
+import java.awt.Rectangle;
+import java.util.Arrays;
+import java.util.Collection;
+import lombok.AllArgsConstructor;
+import lombok.Value;
+
 @AllArgsConstructor
 @Value
-class OverlayBounds
-{
-	private final Rectangle topLeft, topCenter, topRight, bottomLeft, bottomRight, aboveChatboxRight, canvasTopRight;
+class OverlayBounds {
 
-	OverlayBounds(OverlayBounds other)
-	{
-		topLeft = new Rectangle(other.topLeft);
-		topCenter = new Rectangle(other.topCenter);
-		topRight = new Rectangle(other.topRight);
-		bottomLeft = new Rectangle(other.bottomLeft);
-		bottomRight = new Rectangle(other.bottomRight);
-		aboveChatboxRight = new Rectangle(other.aboveChatboxRight);
-		canvasTopRight = new Rectangle(other.canvasTopRight);
-	}
+  private final Rectangle topLeft, topCenter, topRight, bottomLeft, bottomRight, aboveChatboxRight, canvasTopRight;
 
-	OverlayBounds translated(final int x, final int y)
-	{
-		final OverlayBounds translated = new OverlayBounds(this);
-		translated.getTopRight().translate(x, 0);
-		translated.getTopCenter().translate(x / 2, 0);
-		translated.getBottomLeft().translate(0, y);
-		translated.getBottomRight().translate(x, y);
-		translated.getAboveChatboxRight().translate(x, y);
-		translated.getCanvasTopRight().translate(x, 0);
-		return translated;
-	}
+  OverlayBounds(OverlayBounds other) {
+    topLeft = new Rectangle(other.topLeft);
+    topCenter = new Rectangle(other.topCenter);
+    topRight = new Rectangle(other.topRight);
+    bottomLeft = new Rectangle(other.bottomLeft);
+    bottomRight = new Rectangle(other.bottomRight);
+    aboveChatboxRight = new Rectangle(other.aboveChatboxRight);
+    canvasTopRight = new Rectangle(other.canvasTopRight);
+  }
 
-	Rectangle forPosition(OverlayPosition overlayPosition)
-	{
-		switch (overlayPosition)
-		{
-			case TOP_LEFT:
-				return topLeft;
-			case TOP_CENTER:
-				return topCenter;
-			case TOP_RIGHT:
-				return topRight;
-			case BOTTOM_LEFT:
-				return bottomLeft;
-			case BOTTOM_RIGHT:
-				return bottomRight;
-			case ABOVE_CHATBOX_RIGHT:
-				return aboveChatboxRight;
-			case CANVAS_TOP_RIGHT:
-				return canvasTopRight;
-			default:
-				throw new IllegalArgumentException();
-		}
-	}
+  OverlayBounds translated(final int x, final int y) {
+    final OverlayBounds translated = new OverlayBounds(this);
+    translated.getTopRight().translate(x, 0);
+    translated.getTopCenter().translate(x / 2, 0);
+    translated.getBottomLeft().translate(0, y);
+    translated.getBottomRight().translate(x, y);
+    translated.getAboveChatboxRight().translate(x, y);
+    translated.getCanvasTopRight().translate(x, 0);
+    return translated;
+  }
 
-	OverlayPosition fromBounds(Rectangle bounds)
-	{
-		if (bounds == topLeft)
-		{
-			return TOP_LEFT;
-		}
-		else if (bounds == topCenter)
-		{
-			return TOP_CENTER;
-		}
-		else if (bounds == topRight)
-		{
-			return TOP_RIGHT;
-		}
-		else if (bounds == bottomLeft)
-		{
-			return BOTTOM_LEFT;
-		}
-		else if (bounds == bottomRight)
-		{
-			return BOTTOM_RIGHT;
-		}
-		else if (bounds == aboveChatboxRight)
-		{
-			return ABOVE_CHATBOX_RIGHT;
-		}
-		else if (bounds == canvasTopRight)
-		{
-			return CANVAS_TOP_RIGHT;
-		}
-		else
-		{
-			throw new IllegalArgumentException();
-		}
-	}
+  Rectangle forPosition(OverlayPosition overlayPosition) {
+    switch (overlayPosition) {
+      case TOP_LEFT:
+        return topLeft;
+      case TOP_CENTER:
+        return topCenter;
+      case TOP_RIGHT:
+        return topRight;
+      case BOTTOM_LEFT:
+        return bottomLeft;
+      case BOTTOM_RIGHT:
+        return bottomRight;
+      case ABOVE_CHATBOX_RIGHT:
+        return aboveChatboxRight;
+      case CANVAS_TOP_RIGHT:
+        return canvasTopRight;
+      default:
+        throw new IllegalArgumentException();
+    }
+  }
 
-	Collection<Rectangle> getBounds()
-	{
-		return Arrays.asList(topLeft, topCenter, topRight, bottomLeft, bottomRight, aboveChatboxRight, canvasTopRight);
-	}
+  OverlayPosition fromBounds(Rectangle bounds) {
+    if (bounds == topLeft) {
+      return TOP_LEFT;
+    } else if (bounds == topCenter) {
+      return TOP_CENTER;
+    } else if (bounds == topRight) {
+      return TOP_RIGHT;
+    } else if (bounds == bottomLeft) {
+      return BOTTOM_LEFT;
+    } else if (bounds == bottomRight) {
+      return BOTTOM_RIGHT;
+    } else if (bounds == aboveChatboxRight) {
+      return ABOVE_CHATBOX_RIGHT;
+    } else if (bounds == canvasTopRight) {
+      return CANVAS_TOP_RIGHT;
+    } else {
+      throw new IllegalArgumentException();
+    }
+  }
+
+  Collection<Rectangle> getBounds() {
+    return Arrays.asList(topLeft, topCenter, topRight, bottomLeft, bottomRight, aboveChatboxRight,
+        canvasTopRight);
+  }
 }

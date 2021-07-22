@@ -15,34 +15,14 @@
  */
 package org.jetbrains.java.decompiler.struct.attr;
 
-import org.jetbrains.java.decompiler.struct.consts.ConstantPool;
-import org.jetbrains.java.decompiler.util.DataInputFullStream;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.jetbrains.java.decompiler.struct.consts.ConstantPool;
+import org.jetbrains.java.decompiler.util.DataInputFullStream;
 
 public class StructInnerClassesAttribute extends StructGeneralAttribute {
-  public static class Entry {
-    public final int innerNameIdx;
-    public final int outerNameIdx;
-    public final int simpleNameIdx;
-    public final int accessFlags;
-    public final String innerName;
-    public final String enclosingName;
-    public final String simpleName;
-
-    private Entry(int innerNameIdx, int outerNameIdx, int simpleNameIdx, int accessFlags, String innerName, String enclosingName, String simpleName) {
-      this.innerNameIdx = innerNameIdx;
-      this.outerNameIdx = outerNameIdx;
-      this.simpleNameIdx = simpleNameIdx;
-      this.accessFlags = accessFlags;
-      this.innerName = innerName;
-      this.enclosingName = enclosingName;
-      this.simpleName = simpleName;
-    }
-  }
 
   private List<Entry> entries;
 
@@ -59,18 +39,43 @@ public class StructInnerClassesAttribute extends StructGeneralAttribute {
         int accessFlags = data.readUnsignedShort();
 
         String innerName = pool.getPrimitiveConstant(innerNameIdx).getString();
-        String outerName = outerNameIdx != 0 ? pool.getPrimitiveConstant(outerNameIdx).getString() : null;
-        String simpleName = simpleNameIdx != 0 ? pool.getPrimitiveConstant(simpleNameIdx).getString() : null;
+        String outerName =
+            outerNameIdx != 0 ? pool.getPrimitiveConstant(outerNameIdx).getString() : null;
+        String simpleName =
+            simpleNameIdx != 0 ? pool.getPrimitiveConstant(simpleNameIdx).getString() : null;
 
-        entries.add(new Entry(innerNameIdx, outerNameIdx, simpleNameIdx, accessFlags, innerName, outerName, simpleName));
+        entries.add(
+            new Entry(innerNameIdx, outerNameIdx, simpleNameIdx, accessFlags, innerName, outerName,
+                simpleName));
       }
-    }
-    else {
+    } else {
       entries = Collections.emptyList();
     }
   }
 
   public List<Entry> getEntries() {
     return entries;
+  }
+
+  public static class Entry {
+
+    public final int innerNameIdx;
+    public final int outerNameIdx;
+    public final int simpleNameIdx;
+    public final int accessFlags;
+    public final String innerName;
+    public final String enclosingName;
+    public final String simpleName;
+
+    private Entry(int innerNameIdx, int outerNameIdx, int simpleNameIdx, int accessFlags,
+        String innerName, String enclosingName, String simpleName) {
+      this.innerNameIdx = innerNameIdx;
+      this.outerNameIdx = outerNameIdx;
+      this.simpleNameIdx = simpleNameIdx;
+      this.accessFlags = accessFlags;
+      this.innerName = innerName;
+      this.enclosingName = enclosingName;
+      this.simpleName = simpleName;
+    }
   }
 }

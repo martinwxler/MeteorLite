@@ -25,38 +25,37 @@
  */
 package meteor.ui;
 
-import net.runelite.api.Client;
-import meteor.input.MouseWheelListener;
-
-import javax.inject.Inject;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.MouseWheelEvent;
+import javax.inject.Inject;
+import meteor.input.MouseWheelListener;
+import net.runelite.api.Client;
 
-public class TranslateMouseWheelListener implements MouseWheelListener
-{
-	private final Client client;
+public class TranslateMouseWheelListener implements MouseWheelListener {
 
-	@Inject
-	public TranslateMouseWheelListener(Client client)
-	{
-		this.client = client;
-	}
+  private final Client client;
 
-	@Override
-	public MouseWheelEvent mouseWheelMoved(MouseWheelEvent event)
-	{
-		return translateEvent(event);
-	}
+  @Inject
+  public TranslateMouseWheelListener(Client client) {
+    this.client = client;
+  }
 
-	private MouseWheelEvent translateEvent(MouseWheelEvent e)
-	{
-		Dimension stretchedDimensions = client.getStretchedDimensions();
-		Dimension realDimensions = client.getRealDimensions();
+  @Override
+  public MouseWheelEvent mouseWheelMoved(MouseWheelEvent event) {
+    return translateEvent(event);
+  }
 
-		int newX = (int) (e.getX() / (stretchedDimensions.width / realDimensions.getWidth()));
-		int newY = (int) (e.getY() / (stretchedDimensions.height / realDimensions.getHeight()));
+  private MouseWheelEvent translateEvent(MouseWheelEvent e) {
+    Dimension stretchedDimensions = client.getStretchedDimensions();
+    Dimension realDimensions = client.getRealDimensions();
 
-		return new MouseWheelEvent((Component) e.getSource(), e.getID(), e.getWhen(), e.getModifiers(), newX, newY,
-				e.getClickCount(), e.isPopupTrigger(), e.getScrollType(), e.getScrollAmount(), e.getWheelRotation());
-	}
+    int newX = (int) (e.getX() / (stretchedDimensions.width / realDimensions.getWidth()));
+    int newY = (int) (e.getY() / (stretchedDimensions.height / realDimensions.getHeight()));
+
+    return new MouseWheelEvent((Component) e.getSource(), e.getID(), e.getWhen(), e.getModifiers(),
+        newX, newY,
+        e.getClickCount(), e.isPopupTrigger(), e.getScrollType(), e.getScrollAmount(),
+        e.getWheelRotation());
+  }
 }

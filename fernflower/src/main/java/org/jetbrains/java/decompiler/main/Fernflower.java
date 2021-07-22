@@ -15,26 +15,26 @@
  */
 package org.jetbrains.java.decompiler.main;
 
+import java.util.Map;
 import org.jetbrains.java.decompiler.main.ClassesProcessor.ClassNode;
 import org.jetbrains.java.decompiler.main.collectors.CounterContainer;
 import org.jetbrains.java.decompiler.main.extern.IBytecodeProvider;
 import org.jetbrains.java.decompiler.main.extern.IFernflowerLogger;
-import org.jetbrains.java.decompiler.main.extern.IResultSaver;
 import org.jetbrains.java.decompiler.main.extern.IFernflowerPreferences;
+import org.jetbrains.java.decompiler.main.extern.IResultSaver;
 import org.jetbrains.java.decompiler.modules.renamer.IdentifierConverter;
 import org.jetbrains.java.decompiler.struct.IDecompiledData;
 import org.jetbrains.java.decompiler.struct.StructClass;
 import org.jetbrains.java.decompiler.struct.StructContext;
 import org.jetbrains.java.decompiler.struct.lazy.LazyLoader;
 
-import java.util.Map;
-
 public class Fernflower implements IDecompiledData {
 
   private final StructContext structContext;
   private ClassesProcessor classesProcessor;
 
-  public Fernflower(IBytecodeProvider provider, IResultSaver saver, Map<String, Object> options, IFernflowerLogger logger) {
+  public Fernflower(IBytecodeProvider provider, IResultSaver saver, Map<String, Object> options,
+      IFernflowerLogger logger) {
     structContext = new StructContext(saver, this, new LazyLoader(provider));
     DecompilerContext.initContext(options);
     DecompilerContext.setCounterContainer(new CounterContainer());
@@ -67,13 +67,11 @@ public class Fernflower implements IDecompiledData {
     ClassNode node = classesProcessor.getMapRootClasses().get(cl.qualifiedName);
     if (node.type != ClassNode.CLASS_ROOT) {
       return null;
-    }
-    else {
+    } else {
       if (DecompilerContext.getOption(IFernflowerPreferences.RENAME_ENTITIES)) {
         String simple_classname = cl.qualifiedName.substring(cl.qualifiedName.lastIndexOf('/') + 1);
         return entryName.substring(0, entryName.lastIndexOf('/') + 1) + simple_classname + ".java";
-      }
-      else {
+      } else {
         return entryName.substring(0, entryName.lastIndexOf(".class")) + ".java";
       }
     }
@@ -86,9 +84,9 @@ public class Fernflower implements IDecompiledData {
       buffer.append(DecompilerContext.getProperty(IFernflowerPreferences.BANNER).toString());
       classesProcessor.writeClass(cl, buffer);
       return buffer.toString();
-    }
-    catch (Throwable ex) {
-      DecompilerContext.getLogger().writeMessage("Class " + cl.qualifiedName + " couldn't be fully decompiled.", ex);
+    } catch (Throwable ex) {
+      DecompilerContext.getLogger()
+          .writeMessage("Class " + cl.qualifiedName + " couldn't be fully decompiled.", ex);
       return null;
     }
   }

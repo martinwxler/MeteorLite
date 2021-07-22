@@ -15,19 +15,24 @@
  */
 package org.jetbrains.java.decompiler.main.collectors;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import org.jetbrains.java.decompiler.struct.attr.StructLineNumberTableAttribute;
 
-import java.util.*;
-import java.util.Map.Entry;
-
 public class BytecodeMappingTracer {
-  public static final BytecodeMappingTracer DUMMY = new BytecodeMappingTracer();
 
+  public static final BytecodeMappingTracer DUMMY = new BytecodeMappingTracer();
+  private final Map<Integer, Integer> mapping = new HashMap<>();  // bytecode offset, source line
+  private final Set<Integer> unmappedLines = new HashSet<>();
   private int currentSourceLine;
   private StructLineNumberTableAttribute lineNumberTable = null;
-  private final Map<Integer, Integer> mapping = new HashMap<>();  // bytecode offset, source line
 
-  public BytecodeMappingTracer() { }
+  public BytecodeMappingTracer() {
+  }
 
   public BytecodeMappingTracer(int initial_source_line) {
     currentSourceLine = initial_source_line;
@@ -81,8 +86,6 @@ public class BytecodeMappingTracer {
     this.lineNumberTable = lineNumberTable;
   }
 
-  private final Set<Integer> unmappedLines = new HashSet<>();
-
   public Set<Integer> getUnmappedLines() {
     return unmappedLines;
   }
@@ -102,8 +105,7 @@ public class BytecodeMappingTracer {
       Integer newLine = mapping.get(originalOffset);
       if (newLine != null) {
         res.put(originalLine, newLine);
-      }
-      else {
+      } else {
         unmappedLines.add(originalLine);
       }
     }

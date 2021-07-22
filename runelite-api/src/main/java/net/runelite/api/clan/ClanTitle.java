@@ -30,14 +30,14 @@ import lombok.Value;
  * A clan title, such as Owner, Administrator, Anchor, etc.
  */
 @Value
-public class ClanTitle
-{
-	/**
-	 * The id of the title
-	 */
-	int id;
-	/**
-	 * The name of the title
-	 */
-	String name;
+public class ClanTitle {
+
+  /**
+   * The id of the title
+   */
+  int id;
+  /**
+   * The name of the title
+   */
+  String name;
 }

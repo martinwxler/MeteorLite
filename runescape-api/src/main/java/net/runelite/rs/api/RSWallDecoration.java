@@ -1,37 +1,36 @@
 package net.runelite.rs.api;
 
 import net.runelite.api.DecorativeObject;
-import net.runelite.api.GameObject;
 import net.runelite.mapping.Import;
 
-public interface RSWallDecoration extends DecorativeObject
-{
-	@Import("tag")
-	@Override
-	long getHash();
+public interface RSWallDecoration extends DecorativeObject {
 
-	@Import("x")
-	int getX();
+  @Import("tag")
+  @Override
+  long getHash();
 
-	@Import("y")
-	int getY();
+  @Import("x")
+  int getX();
 
-	@Import("xOffset")
-	int getXOffset();
+  @Import("y")
+  int getY();
 
-	@Import("yOffset")
-	int getYOffset();
+  @Import("xOffset")
+  int getXOffset();
 
-	@Import("orientation2")
-	int getOrientation2();
+  @Import("yOffset")
+  int getYOffset();
 
-	@Import("renderable1")
-	@Override
-	RSRenderable getRenderable();
+  @Import("orientation2")
+  int getOrientation2();
 
-	@Import("renderable2")
-	@Override
-	RSRenderable getRenderable2();
+  @Import("renderable1")
+  @Override
+  RSRenderable getRenderable();
 
-	void setPlane(int plane);
+  @Import("renderable2")
+  @Override
+  RSRenderable getRenderable2();
+
+  void setPlane(int plane);
 }

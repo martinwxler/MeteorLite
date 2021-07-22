@@ -30,7 +30,6 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -42,61 +41,57 @@ import java.util.Map;
 /**
  * Converts variation items to it's base item counterparts
  */
-public class ItemVariationMapping
-{
-	private static final Map<Integer, Integer> MAPPINGS;
-	private static final Multimap<Integer, Integer> INVERTED_MAPPINGS;
+public class ItemVariationMapping {
 
-	static
-	{
-		final Gson gson = new Gson();
-		final TypeToken<Map<String, Collection<Integer>>> typeToken = new TypeToken<Map<String, Collection<Integer>>>()
-		{
-		};
+  private static final Map<Integer, Integer> MAPPINGS;
+  private static final Multimap<Integer, Integer> INVERTED_MAPPINGS;
 
-		final InputStream geLimitData = ItemVariationMapping.class.getResourceAsStream("/item_variations.json");
-		final Map<String, Collection<Integer>> itemVariations = gson.fromJson(new InputStreamReader(geLimitData, StandardCharsets.UTF_8), typeToken.getType());
+  static {
+    final Gson gson = new Gson();
+    final TypeToken<Map<String, Collection<Integer>>> typeToken = new TypeToken<Map<String, Collection<Integer>>>() {
+    };
 
-		ImmutableMap.Builder<Integer, Integer> builder = new ImmutableMap.Builder<>();
-		ImmutableMultimap.Builder<Integer, Integer> invertedBuilder = new ImmutableMultimap.Builder<>();
-		for (Collection<Integer> value : itemVariations.values())
-		{
-			final Iterator<Integer> iterator = value.iterator();
-			final int base = iterator.next();
+    final InputStream geLimitData = ItemVariationMapping.class
+        .getResourceAsStream("/item_variations.json");
+    final Map<String, Collection<Integer>> itemVariations = gson
+        .fromJson(new InputStreamReader(geLimitData, StandardCharsets.UTF_8), typeToken.getType());
 
-			while (iterator.hasNext())
-			{
-				final int id = iterator.next();
-				builder.put(id, base);
-				invertedBuilder.put(base, id);
-			}
+    ImmutableMap.Builder<Integer, Integer> builder = new ImmutableMap.Builder<>();
+    ImmutableMultimap.Builder<Integer, Integer> invertedBuilder = new ImmutableMultimap.Builder<>();
+    for (Collection<Integer> value : itemVariations.values()) {
+      final Iterator<Integer> iterator = value.iterator();
+      final int base = iterator.next();
 
-			invertedBuilder.put(base, base);
-		}
+      while (iterator.hasNext()) {
+        final int id = iterator.next();
+        builder.put(id, base);
+        invertedBuilder.put(base, id);
+      }
 
-		INVERTED_MAPPINGS = invertedBuilder.build();
-		MAPPINGS = builder.build();
-	}
+      invertedBuilder.put(base, base);
+    }
 
-	/**
-	 * Get base item id for provided variation item id.
-	 *
-	 * @param itemId the item id
-	 * @return the base item id
-	 */
-	public static int map(int itemId)
-	{
-		return MAPPINGS.getOrDefault(itemId, itemId);
-	}
+    INVERTED_MAPPINGS = invertedBuilder.build();
+    MAPPINGS = builder.build();
+  }
 
-	/**
-	 * Get item ids for provided variation item id.
-	 *
-	 * @param itemId the item id
-	 * @return the item ids
-	 */
-	public static Collection<Integer> getVariations(int itemId)
-	{
-		return INVERTED_MAPPINGS.asMap().getOrDefault(itemId, Collections.singletonList(itemId));
-	}
+  /**
+   * Get base item id for provided variation item id.
+   *
+   * @param itemId the item id
+   * @return the base item id
+   */
+  public static int map(int itemId) {
+    return MAPPINGS.getOrDefault(itemId, itemId);
+  }
+
+  /**
+   * Get item ids for provided variation item id.
+   *
+   * @param itemId the item id
+   * @return the item ids
+   */
+  public static Collection<Integer> getVariations(int itemId) {
+    return INVERTED_MAPPINGS.asMap().getOrDefault(itemId, Collections.singletonList(itemId));
+  }
 }

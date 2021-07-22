@@ -1,35 +1,37 @@
 package net.runelite.rs.api;
+
 import net.runelite.api.Tile;
 import net.runelite.api.TileItem;
 import net.runelite.mapping.Import;
 
-public interface RSTileItem extends RSRenderable, TileItem
-{
-	@Import("id")
-	@Override
-	int getId();
+public interface RSTileItem extends RSRenderable, TileItem {
 
-	@Import("id")
-	void setId(int id);
+  @Import("id")
+  @Override
+  int getId();
 
-	@Import("quantity")
-	@Override
-	int getQuantity();
+  @Import("id")
+  void setId(int id);
 
-	@Import("quantity")
-	void setQuantity(int quantity);
+  @Import("quantity")
+  @Override
+  int getQuantity();
 
-	int getX();
+  @Import("quantity")
+  void setQuantity(int quantity);
 
-	void setX(int x);
+  int getX();
 
-	int getY();
+  void setX(int x);
 
-	void setY(int y);
+  int getY();
 
-	/**
-	 * Get the tile this item is on
-	 * @return
-	 */
-	Tile getTile();
+  void setY(int y);
+
+  /**
+   * Get the tile this item is on
+   *
+   * @return
+   */
+  Tile getTile();
 }

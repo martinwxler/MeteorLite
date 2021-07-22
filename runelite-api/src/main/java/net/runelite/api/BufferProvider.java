@@ -27,11 +27,11 @@ package net.runelite.api;
 /**
  * Represents an engine graphic buffer.
  */
-public interface BufferProvider
-{
-	int[] getPixels();
+public interface BufferProvider {
 
-	int getWidth();
+  int[] getPixels();
 
-	int getHeight();
+  int getWidth();
+
+  int getHeight();
 }

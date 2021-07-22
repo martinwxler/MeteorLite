@@ -15,18 +15,16 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.stats;
 
+import java.util.Arrays;
+import java.util.List;
 import org.jetbrains.java.decompiler.main.TextBuffer;
 import org.jetbrains.java.decompiler.main.collectors.BytecodeMappingTracer;
 import org.jetbrains.java.decompiler.modules.decompiler.DecHelper;
 import org.jetbrains.java.decompiler.modules.decompiler.ExprProcessor;
 import org.jetbrains.java.decompiler.modules.decompiler.StatEdge;
 
-import java.util.Arrays;
-import java.util.List;
-
 
 public class SequenceStatement extends Statement {
-
 
   // *****************************************************************************
   // constructors
@@ -62,7 +60,6 @@ public class SequenceStatement extends Statement {
       }
     }
   }
-
 
   // *****************************************************************************
   // public methods
@@ -105,7 +102,8 @@ public class SequenceStatement extends Statement {
     buf.append(ExprProcessor.listToJava(varDefinitions, indent, tracer));
 
     if (islabeled) {
-      buf.appendIndent(indent++).append("label").append(this.id.toString()).append(": {").appendLineSeparator();
+      buf.appendIndent(indent++).append("label").append(this.id.toString()).append(": {")
+          .appendLineSeparator();
       tracer.incrementCurrentSourceLine();
     }
 
@@ -127,7 +125,7 @@ public class SequenceStatement extends Statement {
     }
 
     if (islabeled) {
-      buf.appendIndent(indent-1).append("}").appendLineSeparator();
+      buf.appendIndent(indent - 1).append("}").appendLineSeparator();
       tracer.incrementCurrentSourceLine();
     }
 

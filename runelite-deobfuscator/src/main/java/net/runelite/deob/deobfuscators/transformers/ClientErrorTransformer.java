@@ -41,65 +41,62 @@ import net.runelite.deob.Transformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ClientErrorTransformer implements Transformer
-{
-	private static final Logger logger = LoggerFactory.getLogger(ClientErrorTransformer.class);
+public class ClientErrorTransformer implements Transformer {
 
-	private boolean done = false;
+  private static final Logger logger = LoggerFactory.getLogger(ClientErrorTransformer.class);
 
-	@Override
-	public void transform(ClassGroup group)
-	{
-		for (ClassFile cf : group.getClasses())
-		{
-			for (Method m : cf.getMethods())
-			{
-				transform(m);
-			}
-		}
+  private boolean done = false;
 
-		logger.info("Transformed: " + done);
-	}
+  @Override
+  public void transform(ClassGroup group) {
+    for (ClassFile cf : group.getClasses()) {
+      for (Method m : cf.getMethods()) {
+        transform(m);
+      }
+    }
 
-	private void transform(Method m)
-	{
-		if (!m.isStatic() || m.getDescriptor().size() != 2
-			|| !m.getDescriptor().getTypeOfArg(0).equals(Type.STRING)
-			|| !m.getDescriptor().getTypeOfArg(1).equals(Type.THROWABLE))
-			return;
+    logger.info("Transformed: " + done);
+  }
 
-		Code code = m.getCode();
-		Instructions ins = code.getInstructions();
+  private void transform(Method m) {
+    if (!m.isStatic() || m.getDescriptor().size() != 2
+        || !m.getDescriptor().getTypeOfArg(0).equals(Type.STRING)
+        || !m.getDescriptor().getTypeOfArg(1).equals(Type.THROWABLE)) {
+      return;
+    }
+
+    Code code = m.getCode();
+    Instructions ins = code.getInstructions();
 
 		/*
 			Makes it so the old code in this method is logically dead,
 			letting the mapper map it but making it so it's never executed.
 		 */
 
-		Instruction aload0 = new ALoad(ins, 1); // load throwable
+    Instruction aload0 = new ALoad(ins, 1); // load throwable
 
-		IfNull ifNull = new IfNull(ins, InstructionType.IFNULL);
-		ifNull.setTo(ins.createLabelFor(ins.getInstructions().get(0)));
+    IfNull ifNull = new IfNull(ins, InstructionType.IFNULL);
+    ifNull.setTo(ins.createLabelFor(ins.getInstructions().get(0)));
 
-		Instruction aload1 = new ALoad(ins, 1); // load throwable
+    Instruction aload1 = new ALoad(ins, 1); // load throwable
 
-		InvokeVirtual printStackTrace = new InvokeVirtual(ins,
-			new net.runelite.asm.pool.Method(
-				new net.runelite.asm.pool.Class("java/lang/Throwable"),
-				"printStackTrace",
-				new Signature("()V")
-			)
-		);
+    InvokeVirtual printStackTrace = new InvokeVirtual(ins,
+        new net.runelite.asm.pool.Method(
+            new net.runelite.asm.pool.Class("java/lang/Throwable"),
+            "printStackTrace",
+            new Signature("()V")
+        )
+    );
 
-		Instruction ret = new VReturn(ins);
+    Instruction ret = new VReturn(ins);
 
-		ins.addInstruction(0, aload0);
-		ins.addInstruction(1, ifNull);
-		ins.addInstruction(2, aload1);
-		ins.addInstruction(3, printStackTrace);
-		ins.addInstruction(4, ret);
+    ins.addInstruction(0, aload0);
+    ins.addInstruction(1, ifNull);
+    ins.addInstruction(2, aload1);
+    ins.addInstruction(3, printStackTrace);
+    ins.addInstruction(4, ret);
 
-		done = true;
-	}
+    done = true;
+  }
 
 }

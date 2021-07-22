@@ -15,10 +15,9 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler;
 
-import org.jetbrains.java.decompiler.modules.decompiler.stats.Statement;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.Statement;
 
 public class StatEdge {
 
@@ -31,26 +30,19 @@ public class StatEdge {
   public static final int TYPE_FINALLYEXIT = 32;
 
   public static final int[] TYPES = new int[]{
-    TYPE_REGULAR,
-    TYPE_EXCEPTION,
-    TYPE_BREAK,
-    TYPE_CONTINUE,
-    TYPE_FINALLYEXIT
+      TYPE_REGULAR,
+      TYPE_EXCEPTION,
+      TYPE_BREAK,
+      TYPE_CONTINUE,
+      TYPE_FINALLYEXIT
   };
-
-  private int type;
-
-  private Statement source;
-
-  private Statement destination;
-
-  private List<String> exceptions;
-
   public Statement closure;
-
   public boolean labeled = true;
-
   public boolean explicit = true;
+  private int type;
+  private Statement source;
+  private Statement destination;
+  private List<String> exceptions;
 
   public StatEdge(int type, Statement source, Statement destination, Statement closure) {
     this(type, source, destination);

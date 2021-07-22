@@ -36,7 +36,8 @@ public class RootStatement extends Statement {
   }
 
   public TextBuffer toJava(int indent, BytecodeMappingTracer tracer) {
-    return ExprProcessor.listToJava(varDefinitions, indent, tracer).append(first.toJava(indent, tracer));
+    return ExprProcessor.listToJava(varDefinitions, indent, tracer)
+        .append(first.toJava(indent, tracer));
   }
 
   public DummyExitStatement getDummyExit() {

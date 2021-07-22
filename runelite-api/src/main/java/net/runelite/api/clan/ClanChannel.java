@@ -30,25 +30,28 @@ import javax.annotation.Nullable;
 /**
  * A clan channel.
  */
-public interface ClanChannel
-{
-	/**
-	 * The name of the channel
-	 * @return
-	 */
-	String getName();
+public interface ClanChannel {
 
-	/**
-	 * The members currently online in the channel.
-	 * @return
-	 */
-	List<ClanChannelMember> getMembers();
+  /**
+   * The name of the channel
+   *
+   * @return
+   */
+  String getName();
 
-	/**
-	 * Find a clan member by name
-	 * @param name
-	 * @return
-	 */
-	@Nullable
-	ClanChannelMember findMember(String name);
+  /**
+   * The members currently online in the channel.
+   *
+   * @return
+   */
+  List<ClanChannelMember> getMembers();
+
+  /**
+   * Find a clan member by name
+   *
+   * @param name
+   * @return
+   */
+  @Nullable
+  ClanChannelMember findMember(String name);
 }

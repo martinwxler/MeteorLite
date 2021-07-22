@@ -3,39 +3,39 @@ package net.runelite.rs.api;
 import net.runelite.api.ObjectComposition;
 import net.runelite.mapping.Import;
 
-public interface RSObjectComposition extends ObjectComposition
-{
-	@Import("id")
-	@Override
-	int getId();
+public interface RSObjectComposition extends ObjectComposition {
 
-	@Import("name")
-	@Override
-	String getName();
+  @Import("id")
+  @Override
+  int getId();
 
-	@Import("actions")
-	@Override
-	String[] getActions();
+  @Import("name")
+  @Override
+  String getName();
 
-	@Import("mapSceneId")
-	@Override
-	int getMapSceneId();
+  @Import("actions")
+  @Override
+  String[] getActions();
 
-	@Import("mapIconId")
-	@Override
-	int getMapIconId();
+  @Import("mapSceneId")
+  @Override
+  int getMapSceneId();
 
-	@Import("transforms")
-	@Override
-	int[] getImpostorIds();
+  @Import("mapIconId")
+  @Override
+  int getMapIconId();
 
-	@Import("transform")
-	@Override
-	RSObjectComposition getImpostor();
+  @Import("transforms")
+  @Override
+  int[] getImpostorIds();
 
-	@Import("params")
-	RSIterableNodeHashTable getParams();
+  @Import("transform")
+  @Override
+  RSObjectComposition getImpostor();
 
-	@Import("params")
-	void setParams(RSIterableNodeHashTable params);
+  @Import("params")
+  RSIterableNodeHashTable getParams();
+
+  @Import("params")
+  void setParams(RSIterableNodeHashTable params);
 }

@@ -38,69 +38,60 @@ import net.runelite.asm.execution.StackContext;
 import net.runelite.asm.execution.Value;
 import org.objectweb.asm.MethodVisitor;
 
-public class SiPush extends Instruction implements PushConstantInstruction, IntInstruction
-{
-	private short s;
+public class SiPush extends Instruction implements PushConstantInstruction, IntInstruction {
 
-	public SiPush(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
-	
-	public SiPush(Instructions instructions, short value)
-	{
-		super(instructions, InstructionType.SIPUSH);
+  private short s;
 
-		s = value;
-	}
+  public SiPush(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
 
-	@Override
-	public String toString()
-	{
-		return "sipush " + s;
-	}
+  public SiPush(Instructions instructions, short value) {
+    super(instructions, InstructionType.SIPUSH);
 
-	@Override
-	public void accept(MethodVisitor visitor)
-	{
-		visitor.visitIntInsn(this.getType().getCode(), s);
-	}
+    s = value;
+  }
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ins = new InstructionContext(this, frame);
-		Stack stack = frame.getStack();
-		
-		StackContext ctx = new StackContext(ins, Type.INT, new Value((int) s)); // sign extend
-		stack.push(ctx);
-		
-		ins.push(ctx);
-		
-		return ins;
-	}
+  @Override
+  public String toString() {
+    return "sipush " + s;
+  }
 
-	@Override
-	public Object getConstant()
-	{
-		return s;
-	}
+  @Override
+  public void accept(MethodVisitor visitor) {
+    visitor.visitIntInsn(this.getType().getCode(), s);
+  }
 
-	@Override
-	public Instruction setConstant(Object entry)
-	{
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ins = new InstructionContext(this, frame);
+    Stack stack = frame.getStack();
 
-	@Override
-	public int getOperand()
-	{
-		return s & 0xFFFF;
-	}
+    StackContext ctx = new StackContext(ins, Type.INT, new Value((int) s)); // sign extend
+    stack.push(ctx);
 
-	@Override
-	public void setOperand(int operand)
-	{
-		s = (short) operand;
-	}
+    ins.push(ctx);
+
+    return ins;
+  }
+
+  @Override
+  public Object getConstant() {
+    return s;
+  }
+
+  @Override
+  public Instruction setConstant(Object entry) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public int getOperand() {
+    return s & 0xFFFF;
+  }
+
+  @Override
+  public void setOperand(int operand) {
+    s = (short) operand;
+  }
 }

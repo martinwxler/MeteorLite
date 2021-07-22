@@ -25,93 +25,90 @@
 package net.runelite.deob;
 
 import javax.annotation.Nullable;
-import net.runelite.asm.attributes.Annotated;
+import net.runelite.asm.Annotation;
 import net.runelite.asm.ClassFile;
 import net.runelite.asm.Field;
 import net.runelite.asm.Method;
 import net.runelite.asm.Type;
-import net.runelite.asm.Annotation;
+import net.runelite.asm.attributes.Annotated;
 import net.runelite.asm.signature.Signature;
 import org.jetbrains.annotations.NotNull;
 
-public class DeobAnnotations
-{
-	public static final Type OBFUSCATED_NAME = new Type("Lnet/runelite/mapping/ObfuscatedName;");
-	public static final Type EXPORT = new Type("Lnet/runelite/mapping/Export;");
-	public static final Type IMPLEMENTS = new Type("Lnet/runelite/mapping/Implements;");
-	public static final Type OBFUSCATED_GETTER = new Type("Lnet/runelite/mapping/ObfuscatedGetter;");
-	public static final Type OBFUSCATED_SIGNATURE = new Type("Lnet/runelite/mapping/ObfuscatedSignature;");
+public class DeobAnnotations {
 
-	public static Signature getObfuscatedSignature(Method m)
-	{
-		Object val = get(m, OBFUSCATED_SIGNATURE, "descriptor");
+  public static final Type OBFUSCATED_NAME = new Type("Lnet/runelite/mapping/ObfuscatedName;");
+  public static final Type EXPORT = new Type("Lnet/runelite/mapping/Export;");
+  public static final Type IMPLEMENTS = new Type("Lnet/runelite/mapping/Implements;");
+  public static final Type OBFUSCATED_GETTER = new Type("Lnet/runelite/mapping/ObfuscatedGetter;");
+  public static final Type OBFUSCATED_SIGNATURE = new Type(
+      "Lnet/runelite/mapping/ObfuscatedSignature;");
 
-		if (val == null)
-			return null;
+  public static Signature getObfuscatedSignature(Method m) {
+    Object val = get(m, OBFUSCATED_SIGNATURE, "descriptor");
 
-		return new Signature((String) val);
-	}
+    if (val == null) {
+      return null;
+    }
 
-	public static Type getObfuscatedType(Field f)
-	{
-		Object val = get(f, OBFUSCATED_SIGNATURE, "descriptor");
+    return new Signature((String) val);
+  }
 
-		if (val == null)
-			return null;
+  public static Type getObfuscatedType(Field f) {
+    Object val = get(f, OBFUSCATED_SIGNATURE, "descriptor");
 
-		return new Type((String) val);
-	}
+    if (val == null) {
+      return null;
+    }
 
-	@Nullable
-	public static String getObfuscatedName(@NotNull Annotated an)
-	{
-		return getStringValue(an, OBFUSCATED_NAME);
-	}
+    return new Type((String) val);
+  }
 
-	@Nullable
-	public static String getExportedName(@NotNull Annotated an)
-	{
-		return getStringValue(an, EXPORT);
-	}
+  @Nullable
+  public static String getObfuscatedName(@NotNull Annotated an) {
+    return getStringValue(an, OBFUSCATED_NAME);
+  }
 
-	@Nullable
-	public static String getImplements(@NotNull ClassFile cf)
-	{
-		return getStringValue(cf, IMPLEMENTS);
-	}
+  @Nullable
+  public static String getExportedName(@NotNull Annotated an) {
+    return getStringValue(an, EXPORT);
+  }
 
-	@Nullable
-	public static Number getObfuscatedGetter(@NotNull Field field)
-	{
-		final Annotation a = field.findAnnotation(OBFUSCATED_GETTER);
-		if (a == null)
-			return null;
+  @Nullable
+  public static String getImplements(@NotNull ClassFile cf) {
+    return getStringValue(cf, IMPLEMENTS);
+  }
 
-		if (field.getType().equals(Type.INT))
-			return (Integer) a.get("intValue");
-		if (field.getType().equals(Type.LONG))
-			return (Long) a.get("longValue"); // very long v
-		throw new IllegalArgumentException("Field with getter but not a long or an int?");
-	}
+  @Nullable
+  public static Number getObfuscatedGetter(@NotNull Field field) {
+    final Annotation a = field.findAnnotation(OBFUSCATED_GETTER);
+    if (a == null) {
+      return null;
+    }
 
-	@Nullable
-	public static String getDecoder(@NotNull Method method)
-	{
-		Annotation a = method.findAnnotation(OBFUSCATED_SIGNATURE);
-		return a == null ? null : (String) a.get("garbageValue");
-	}
+    if (field.getType().equals(Type.INT)) {
+      return (Integer) a.get("intValue");
+    }
+    if (field.getType().equals(Type.LONG)) {
+      return (Long) a.get("longValue"); // very long v
+    }
+    throw new IllegalArgumentException("Field with getter but not a long or an int?");
+  }
 
-	@Nullable
-	public static Object get(Annotated an, Type type, String name)
-	{
-		final Annotation a = an.findAnnotation(type);
-		return a == null ? null : a.get(name);
-	}
+  @Nullable
+  public static String getDecoder(@NotNull Method method) {
+    Annotation a = method.findAnnotation(OBFUSCATED_SIGNATURE);
+    return a == null ? null : (String) a.get("garbageValue");
+  }
 
-	@Nullable
-	public static String getStringValue(Annotated an, Type type)
-	{
-		final Annotation a = an.findAnnotation(type);
-		return a == null ? null : a.getValueString();
-	}
+  @Nullable
+  public static Object get(Annotated an, Type type, String name) {
+    final Annotation a = an.findAnnotation(type);
+    return a == null ? null : a.get(name);
+  }
+
+  @Nullable
+  public static String getStringValue(Annotated an, Type type) {
+    final Annotation a = an.findAnnotation(type);
+    return a == null ? null : a.getValueString();
+  }
 }

@@ -26,70 +26,62 @@ package net.runelite.api.events;
 
 import java.util.Iterator;
 import lombok.AccessLevel;
+import lombok.Data;
 import lombok.Setter;
 import net.runelite.api.MenuEntry;
-import lombok.Data;
 
 /**
  * An event where a menu has been opened.
  */
 @Data
-public class MenuOpened implements Iterable<MenuEntry>
-{
-	/**
-	 * This should be set to true if anything about the menu
-	 * in menuEntries is changed, so the changes can be
-	 * propagated through to the client.
-	 */
-	@Setter(AccessLevel.NONE)
-	private boolean modified;
+public class MenuOpened implements Iterable<MenuEntry> {
 
-	/**
-	 * The menu entries in the newly opened menu.
-	 * <p>
-	 * The entries in this menu are reversed, the last entry in the
-	 * array will appear first (at the top) in the opened menu.
-	 */
-	private MenuEntry[] menuEntries;
+  /**
+   * This should be set to true if anything about the menu in menuEntries is changed, so the changes
+   * can be propagated through to the client.
+   */
+  @Setter(AccessLevel.NONE)
+  private boolean modified;
 
-	/**
-	 * Gets the entry that will be displayed first in the menu.
-	 *
-	 * @return the first entry
-	 */
-	public MenuEntry getFirstEntry()
-	{
-		if (menuEntries.length > 0)
-		{
-			return menuEntries[menuEntries.length - 1];
-		}
+  /**
+   * The menu entries in the newly opened menu.
+   * <p>
+   * The entries in this menu are reversed, the last entry in the array will appear first (at the
+   * top) in the opened menu.
+   */
+  private MenuEntry[] menuEntries;
 
-		return null;
-	}
+  /**
+   * Gets the entry that will be displayed first in the menu.
+   *
+   * @return the first entry
+   */
+  public MenuEntry getFirstEntry() {
+    if (menuEntries.length > 0) {
+      return menuEntries[menuEntries.length - 1];
+    }
 
-	public void setModified()
-	{
-		this.modified = true;
-	}
+    return null;
+  }
 
-	@Override
-	public Iterator<MenuEntry> iterator()
-	{
-		return new Iterator<MenuEntry>()
-		{
-			int index = 0;
+  public void setModified() {
+    this.modified = true;
+  }
 
-			@Override
-			public boolean hasNext()
-			{
-				return index < menuEntries.length;
-			}
+  @Override
+  public Iterator<MenuEntry> iterator() {
+    return new Iterator<MenuEntry>() {
+      int index = 0;
 
-			@Override
-			public MenuEntry next()
-			{
-				return menuEntries[index++];
-			}
-		};
-	}
+      @Override
+      public boolean hasNext() {
+        return index < menuEntries.length;
+      }
+
+      @Override
+      public MenuEntry next() {
+        return menuEntries[index++];
+      }
+    };
+  }
 }

@@ -16,37 +16,33 @@ import net.runelite.asm.attributes.Code;
 import net.runelite.asm.attributes.code.Exception;
 import org.objectweb.asm.Opcodes;
 
-public class Java8Ifier extends InjectTransformer
-{
-	public Java8Ifier(InjectData inject)
-	{
-		super(inject);
-	}
+public class Java8Ifier extends InjectTransformer {
 
-	@Override
-	void transformImpl()
-	{
-		inject.forEachPair(this::makeJava8);
-	}
+  public Java8Ifier(InjectData inject) {
+    super(inject);
+  }
 
-	private void makeJava8(ClassFile rsc, ClassFile vanilla)
-	{
-		vanilla.setVersion(Opcodes.V1_8);
-		for (Method method : vanilla.getMethods())
-		{
-			if (!method.getName().equals("<init>"))
-			{
-				continue;
-			}
+  @Override
+  void transformImpl() {
+    inject.forEachPair(this::makeJava8);
+  }
 
-			fixTryCatch(method);
-		}
-	}
+  private void makeJava8(ClassFile rsc, ClassFile vanilla) {
+    vanilla.setVersion(Opcodes.V1_8);
+    for (Method method : vanilla.getMethods()) {
+      if (!method.getName().equals("<init>")) {
+        continue;
+      }
 
-	private void fixTryCatch(Method method)
-	{
-		Code code = method.getCode();
-		List<Exception> remove = code.getExceptions().getExceptions().stream().filter(e -> e.getCatchType() != null && e.getCatchType().getName().equals("java/lang/RuntimeException")).collect(Collectors.toList());
-		remove.forEach(code.getExceptions()::remove);
-	}
+      fixTryCatch(method);
+    }
+  }
+
+  private void fixTryCatch(Method method) {
+    Code code = method.getCode();
+    List<Exception> remove = code.getExceptions().getExceptions().stream().filter(
+        e -> e.getCatchType() != null && e.getCatchType().getName()
+            .equals("java/lang/RuntimeException")).collect(Collectors.toList());
+    remove.forEach(code.getExceptions()::remove);
+  }
 }

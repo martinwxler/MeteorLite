@@ -36,92 +36,84 @@ import net.runelite.asm.execution.InstructionContext;
 import net.runelite.asm.execution.Stack;
 import net.runelite.asm.execution.StackContext;
 
-public class Dup extends Instruction implements DupInstruction
-{
-	public Dup(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
+public class Dup extends Instruction implements DupInstruction {
 
-	public Dup(Instructions instructions)
-	{
-		super(instructions, InstructionType.DUP);
-	}
+  public Dup(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ins = new InstructionContext(this, frame);
-		Stack stack = frame.getStack();
-		
-		StackContext obj = stack.pop();
-		ins.pop(obj);
-		
-		StackContext ctx = new StackContext(ins, obj.getType(), obj.getValue());
-		stack.push(ctx);
-		
-		ins.push(ctx);
-		
-		ctx = new StackContext(ins, obj.getType(), obj.getValue());
-		stack.push(ctx);
-		
-		ins.push(ctx);
-		
-		return ins;
-	}
-	
-	@Override
-	public boolean removeStack()
-	{
-		// removing something from the stack this pushed at index 'idx'
-		// idx = 0 is top of the stack, goes up.
-		//
-		// the stack is relative to post-execute of this instruction
-		
-		// for dup, to remove one of the things pushed by it you simply
-		// remove the dup instruction
-		super.removeStack();
-		// do not continue as the other branch still uses what we left
-		// usually this is for new dup invokespecial and we end up with
-		// an unused new/invokesepcial
-		return false;
-	}
+  public Dup(Instructions instructions) {
+    super(instructions, InstructionType.DUP);
+  }
 
-	@Override
-	public StackContext getOriginal(StackContext sctx)
-	{
-		// ctx = stack pushed by this instruction, return stack popped by this instruction
-		InstructionContext ctx = sctx.getPushed();
-		assert ctx.getInstruction() == this;
-		assert ctx.getPushes().contains(sctx);
-		return ctx.getPops().get(0);
-	}
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ins = new InstructionContext(this, frame);
+    Stack stack = frame.getStack();
 
-	@Override
-	public StackContext getOtherBranch(StackContext sctx)
-	{
-		InstructionContext ctx = sctx.getPushed();
-		assert ctx.getInstruction() == this;
-		
-		List<StackContext> pushes = ctx.getPushes();
-		assert pushes.contains(sctx);
-		
-		int idx = pushes.indexOf(sctx);
-		assert idx == 0 || idx == 1;
-		
-		return pushes.get(~idx & 1);
-	}
+    StackContext obj = stack.pop();
+    ins.pop(obj);
 
-	@Override
-	public List<StackContext> getDuplicated(InstructionContext ictx)
-	{
-		assert ictx.getInstruction() == this;
-		return new ArrayList<>(ictx.getPops());
-	}
+    StackContext ctx = new StackContext(ins, obj.getType(), obj.getValue());
+    stack.push(ctx);
 
-	@Override
-	public List<StackContext> getCopies(InstructionContext ictx)
-	{
-		return new ArrayList<>(ictx.getPushes());
-	}
+    ins.push(ctx);
+
+    ctx = new StackContext(ins, obj.getType(), obj.getValue());
+    stack.push(ctx);
+
+    ins.push(ctx);
+
+    return ins;
+  }
+
+  @Override
+  public boolean removeStack() {
+    // removing something from the stack this pushed at index 'idx'
+    // idx = 0 is top of the stack, goes up.
+    //
+    // the stack is relative to post-execute of this instruction
+
+    // for dup, to remove one of the things pushed by it you simply
+    // remove the dup instruction
+    super.removeStack();
+    // do not continue as the other branch still uses what we left
+    // usually this is for new dup invokespecial and we end up with
+    // an unused new/invokesepcial
+    return false;
+  }
+
+  @Override
+  public StackContext getOriginal(StackContext sctx) {
+    // ctx = stack pushed by this instruction, return stack popped by this instruction
+    InstructionContext ctx = sctx.getPushed();
+    assert ctx.getInstruction() == this;
+    assert ctx.getPushes().contains(sctx);
+    return ctx.getPops().get(0);
+  }
+
+  @Override
+  public StackContext getOtherBranch(StackContext sctx) {
+    InstructionContext ctx = sctx.getPushed();
+    assert ctx.getInstruction() == this;
+
+    List<StackContext> pushes = ctx.getPushes();
+    assert pushes.contains(sctx);
+
+    int idx = pushes.indexOf(sctx);
+    assert idx == 0 || idx == 1;
+
+    return pushes.get(~idx & 1);
+  }
+
+  @Override
+  public List<StackContext> getDuplicated(InstructionContext ictx) {
+    assert ictx.getInstruction() == this;
+    return new ArrayList<>(ictx.getPops());
+  }
+
+  @Override
+  public List<StackContext> getCopies(InstructionContext ictx) {
+    return new ArrayList<>(ictx.getPushes());
+  }
 }

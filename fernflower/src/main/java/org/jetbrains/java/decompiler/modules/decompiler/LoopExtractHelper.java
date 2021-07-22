@@ -15,14 +15,13 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Set;
 import org.jetbrains.java.decompiler.modules.decompiler.stats.DoStatement;
 import org.jetbrains.java.decompiler.modules.decompiler.stats.IfStatement;
 import org.jetbrains.java.decompiler.modules.decompiler.stats.SequenceStatement;
 import org.jetbrains.java.decompiler.modules.decompiler.stats.Statement;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Set;
 
 
 public class LoopExtractHelper {
@@ -64,7 +63,7 @@ public class LoopExtractHelper {
     }
 
     if (stat.type == Statement.TYPE_DO) {
-      if (extractLoop((DoStatement)stat)) {
+      if (extractLoop((DoStatement) stat)) {
         return 2;
       }
     }
@@ -80,15 +79,15 @@ public class LoopExtractHelper {
     }
 
     for (StatEdge edge : stat.getLabelEdges()) {
-      if (edge.getType() != StatEdge.TYPE_CONTINUE && edge.getDestination().type != Statement.TYPE_DUMMYEXIT) {
+      if (edge.getType() != StatEdge.TYPE_CONTINUE
+          && edge.getDestination().type != Statement.TYPE_DUMMYEXIT) {
         return false;
       }
     }
 
     if (!extractLastIf(stat)) {
       return extractFirstIf(stat);
-    }
-    else {
+    } else {
       return true;
     }
   }
@@ -102,14 +101,15 @@ public class LoopExtractHelper {
     }
 
     if (last.type == Statement.TYPE_IF) {
-      IfStatement lastif = (IfStatement)last;
+      IfStatement lastif = (IfStatement) last;
       if (lastif.iftype == IfStatement.IFTYPE_IF && lastif.getIfstat() != null) {
         Statement ifstat = lastif.getIfstat();
         StatEdge elseedge = lastif.getAllSuccessorEdges().get(0);
 
         if (elseedge.getType() == StatEdge.TYPE_CONTINUE && elseedge.closure == stat) {
 
-          Set<Statement> set = stat.getNeighboursSet(StatEdge.TYPE_CONTINUE, Statement.DIRECTION_BACKWARD);
+          Set<Statement> set = stat
+              .getNeighboursSet(StatEdge.TYPE_CONTINUE, Statement.DIRECTION_BACKWARD);
           set.remove(last);
 
           if (set.isEmpty()) { // no direct continues in a do{}while loop
@@ -134,7 +134,7 @@ public class LoopExtractHelper {
 
     // found an if statement
     if (first.type == Statement.TYPE_IF) {
-      IfStatement firstif = (IfStatement)first;
+      IfStatement firstif = (IfStatement) first;
 
       if (firstif.getFirst().getExprents().isEmpty()) {
 

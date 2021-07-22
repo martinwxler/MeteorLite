@@ -39,107 +39,94 @@ import net.runelite.asm.pool.Class;
 import net.runelite.asm.pool.Field;
 import org.objectweb.asm.MethodVisitor;
 
-public class GetField extends Instruction implements GetFieldInstruction
-{
-	private Field field;
-	private net.runelite.asm.Field myField;
+public class GetField extends Instruction implements GetFieldInstruction {
 
-	public GetField(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
+  private Field field;
+  private net.runelite.asm.Field myField;
 
-	public GetField(Instructions instructions, Field field)
-	{
-		super(instructions, InstructionType.GETFIELD);
+  public GetField(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
 
-		this.field = field;
-	}
+  public GetField(Instructions instructions, Field field) {
+    super(instructions, InstructionType.GETFIELD);
 
-	@Override
-	public String toString()
-	{
-		Method m = this.getInstructions().getCode().getMethod();
-		return "getfield " + myField + " in " + m;// + " at pc 0x" + Integer.toHexString(this.getPc());
-	}
+    this.field = field;
+  }
 
-	@Override
-	public void accept(MethodVisitor visitor)
-	{
-		visitor.visitFieldInsn(this.getType().getCode(),
-			field.getClazz().getName(),
-			field.getName(),
-			field.getType().toString()
-		);
-	}
+  @Override
+  public String toString() {
+    Method m = this.getInstructions().getCode().getMethod();
+    return "getfield " + myField + " in " + m;// + " at pc 0x" + Integer.toHexString(this.getPc());
+  }
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ins = new InstructionContext(this, frame);
-		Stack stack = frame.getStack();
+  @Override
+  public void accept(MethodVisitor visitor) {
+    visitor.visitFieldInsn(this.getType().getCode(),
+        field.getClazz().getName(),
+        field.getName(),
+        field.getType().toString()
+    );
+  }
 
-		StackContext object = stack.pop();
-		ins.pop(object);
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ins = new InstructionContext(this, frame);
+    Stack stack = frame.getStack();
 
-		StackContext ctx = new StackContext(ins, field.getType(), Value.UNKNOWN);
-		stack.push(ctx);
+    StackContext object = stack.pop();
+    ins.pop(object);
 
-		ins.push(ctx);
+    StackContext ctx = new StackContext(ins, field.getType(), Value.UNKNOWN);
+    stack.push(ctx);
 
-		if (myField != null)
-		{
-			frame.getExecution().order(frame, myField);
-		}
+    ins.push(ctx);
 
-		return ins;
-	}
+    if (myField != null) {
+      frame.getExecution().order(frame, myField);
+    }
 
-	@Override
-	public Field getField()
-	{
-		return field;
-	}
+    return ins;
+  }
 
-	@Override
-	public net.runelite.asm.Field getMyField()
-	{
-		Class clazz = field.getClazz();
+  @Override
+  public Field getField() {
+    return field;
+  }
 
-		ClassFile cf = this.getInstructions().getCode().getMethod().getClassFile().getGroup().findClass(clazz.getName());
-		if (cf == null)
-		{
-			return null;
-		}
+  @Override
+  public void setField(Field field) {
+    this.field = field;
+  }
 
-		net.runelite.asm.Field f2 = cf.findFieldDeep(field.getName(), field.getType());
-		return f2;
-	}
+  @Override
+  public net.runelite.asm.Field getMyField() {
+    Class clazz = field.getClazz();
 
-	@Override
-	public void lookup()
-	{
-		myField = getMyField();
-	}
+    ClassFile cf = this.getInstructions().getCode().getMethod().getClassFile().getGroup()
+        .findClass(clazz.getName());
+    if (cf == null) {
+      return null;
+    }
 
-	@Override
-	public void regeneratePool()
-	{
-		if (myField != null)
-		{
-			// only rebuild field info if the field has changed.
-			// otherwise it will rewrite the pool field into to something
-			// different if the field was deep
-			if (getMyField() != myField)
-			{
-				field = myField.getPoolField();
-			}
-		}
-	}
+    net.runelite.asm.Field f2 = cf.findFieldDeep(field.getName(), field.getType());
+    return f2;
+  }
 
-	@Override
-	public void setField(Field field)
-	{
-		this.field = field;
-	}
+  @Override
+  public void lookup() {
+    myField = getMyField();
+  }
+
+  @Override
+  public void regeneratePool() {
+    if (myField != null) {
+      // only rebuild field info if the field has changed.
+      // otherwise it will rewrite the pool field into to something
+      // different if the field was deep
+      if (getMyField() != myField) {
+        field = myField.getPoolField();
+      }
+    }
+  }
 }

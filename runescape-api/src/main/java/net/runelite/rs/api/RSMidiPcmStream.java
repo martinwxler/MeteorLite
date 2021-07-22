@@ -26,8 +26,8 @@ package net.runelite.rs.api;
 
 import net.runelite.mapping.Import;
 
-public interface RSMidiPcmStream
-{
-	@Import("setPcmStreamVolume")
-	void setPcmStreamVolume$api(int volume);
+public interface RSMidiPcmStream {
+
+  @Import("setPcmStreamVolume")
+  void setPcmStreamVolume$api(int volume);
 }

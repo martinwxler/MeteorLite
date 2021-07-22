@@ -15,6 +15,11 @@
  */
 package org.jetbrains.java.decompiler.modules.code;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import org.jetbrains.java.decompiler.code.CodeConstants;
 import org.jetbrains.java.decompiler.code.Instruction;
 import org.jetbrains.java.decompiler.code.InstructionSequence;
@@ -23,8 +28,6 @@ import org.jetbrains.java.decompiler.code.cfg.ControlFlowGraph;
 import org.jetbrains.java.decompiler.code.cfg.ExceptionRangeCFG;
 import org.jetbrains.java.decompiler.main.DecompilerContext;
 import org.jetbrains.java.decompiler.main.extern.IFernflowerPreferences;
-
-import java.util.*;
 
 public class DeadCodeHelper {
 
@@ -78,7 +81,8 @@ public class DeadCodeHelper {
     while (cont);
   }
 
-  private static boolean removeEmptyBlock(ControlFlowGraph graph, BasicBlock block, boolean merging) {
+  private static boolean removeEmptyBlock(ControlFlowGraph graph, BasicBlock block,
+      boolean merging) {
 
     boolean deletedRanges = false;
 
@@ -87,9 +91,9 @@ public class DeadCodeHelper {
       if (block.getSuccs().size() > 1) {
         if (block.getPreds().size() > 1) {
           // ambiguous block
-          throw new RuntimeException("ERROR: empty block with multiple predecessors and successors found");
-        }
-        else if (!merging) {
+          throw new RuntimeException(
+              "ERROR: empty block with multiple predecessors and successors found");
+        } else if (!merging) {
           throw new RuntimeException("ERROR: empty block with multiple successors found");
         }
       }
@@ -104,7 +108,7 @@ public class DeadCodeHelper {
 
           // FIXME: flag in the basic block
           if (pred.getSuccs().size() != 1 || (!pred.getSeq().isEmpty()
-                                              && pred.getSeq().getLastInstr().group == CodeConstants.GROUP_SWITCH)) {
+              && pred.getSeq().getLastInstr().group == CodeConstants.GROUP_SWITCH)) {
             return false;
           }
         }
@@ -118,8 +122,7 @@ public class DeadCodeHelper {
           for (BasicBlock pred : i == 0 ? setPreds : setSuccs) {
             if (setCommonExceptionHandlers == null) {
               setCommonExceptionHandlers = new HashSet<>(pred.getSuccExceptions());
-            }
-            else {
+            } else {
               setCommonExceptionHandlers.retainAll(pred.getSuccExceptions());
             }
           }
@@ -146,13 +149,11 @@ public class DeadCodeHelper {
               lstRanges.remove(i);
 
               deletedRanges = true;
-            }
-            else {
+            } else {
               return false;
             }
           }
         }
-
 
         // connect remaining nodes
         if (merging) {
@@ -164,8 +165,7 @@ public class DeadCodeHelper {
             block.removeSuccessor(succ);
             pred.addSuccessor(succ);
           }
-        }
-        else {
+        } else {
           for (BasicBlock pred : setPreds) {
             for (BasicBlock succ : setSuccs) {
               pred.replaceSuccessor(block, succ);
@@ -184,8 +184,7 @@ public class DeadCodeHelper {
         if (graph.getFirst() == block) {
           if (setSuccs.size() != 1) {
             throw new RuntimeException("multiple or no entry blocks!");
-          }
-          else {
+          } else {
             graph.setFirst(setSuccs.iterator().next());
           }
         }
@@ -219,8 +218,7 @@ public class DeadCodeHelper {
       BasicBlock node = lstNodes.remove(0);
       if (marked.contains(node)) {
         continue;
-      }
-      else {
+      } else {
         marked.add(node);
       }
 
@@ -278,11 +276,11 @@ public class DeadCodeHelper {
 
         boolean ok = false;
 
-        if (seq.getLastInstr().opcode >= CodeConstants.opc_ireturn && seq.getLastInstr().opcode <= CodeConstants.opc_return) {
+        if (seq.getLastInstr().opcode >= CodeConstants.opc_ireturn
+            && seq.getLastInstr().opcode <= CodeConstants.opc_return) {
           if (len == 1) {
             ok = true;
-          }
-          else if (seq.getLastInstr().opcode != CodeConstants.opc_return) {
+          } else if (seq.getLastInstr().opcode != CodeConstants.opc_return) {
             switch (seq.getInstr(0).opcode) {
               case CodeConstants.opc_iload:
               case CodeConstants.opc_lload:
@@ -319,8 +317,7 @@ public class DeadCodeHelper {
               if (firstpred) {
                 setPredHandlersIntersection.addAll(pred.getSuccExceptions());
                 firstpred = false;
-              }
-              else {
+              } else {
                 setPredHandlersIntersection.retainAll(pred.getSuccExceptions());
               }
 
@@ -351,7 +348,6 @@ public class DeadCodeHelper {
               }
             }
           }
-
 
           if (block.getPreds().size() == 1 && block.getPredExceptions().isEmpty()) {
 
@@ -400,7 +396,8 @@ public class DeadCodeHelper {
         if (block.getSuccs().size() == 1) {
           BasicBlock next = block.getSuccs().get(0);
 
-          if (next != graph.getLast() && (seq.isEmpty() || seq.getLastInstr().group != CodeConstants.GROUP_SWITCH)) {
+          if (next != graph.getLast() && (seq.isEmpty()
+              || seq.getLastInstr().group != CodeConstants.GROUP_SWITCH)) {
 
             if (next.getPreds().size() == 1 && next.getPredExceptions().isEmpty()
                 && next != graph.getFirst()) {

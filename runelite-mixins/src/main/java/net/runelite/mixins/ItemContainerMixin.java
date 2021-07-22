@@ -36,122 +36,108 @@ import net.runelite.rs.api.RSItemContainer;
 import net.runelite.rs.api.RSNodeHashTable;
 
 @Mixin(RSItemContainer.class)
-public abstract class ItemContainerMixin implements RSItemContainer
-{
-	@Shadow("client")
-	private static RSClient client;
+public abstract class ItemContainerMixin implements RSItemContainer {
 
-	@Shadow("changedItemContainers")
-	private static int[] changedItemContainers;
+  @Shadow("client")
+  private static RSClient client;
 
-	@Inject
-	@Override
-	public Item[] getItems()
-	{
-		int[] itemIds = getItemIds();
-		int[] stackSizes = getStackSizes();
-		Item[] items = new Item[itemIds.length];
+  @Shadow("changedItemContainers")
+  private static int[] changedItemContainers;
 
-		for (int i = 0; i < itemIds.length; ++i)
-		{
-			Item item = new Item(
-				itemIds[i],
-				stackSizes[i]
-			);
-			items[i] = item;
-		}
+  @FieldHook("changedItemContainers")
+  @Inject
+  public static void onItemContainerUpdate(int idx) {
+    if (idx != -1) {
+      int changedId = idx - 1 & 31;
+      int containerId = changedItemContainers[changedId];
 
-		return items;
-	}
+      RSNodeHashTable itemContainers = client.getItemContainers();
 
-	@Inject
-	@Override
-	public Item getItem(int slot)
-	{
-		int[] itemIds = getItemIds();
-		int[] stackSizes = getStackSizes();
-		if (slot >= 0 && slot < itemIds.length && itemIds[slot] != -1)
-		{
-			return new Item(itemIds[slot], stackSizes[slot]);
-		}
+      RSItemContainer changedContainer = (RSItemContainer) itemContainers.get$api(containerId);
+      RSItemContainer changedContainerInvOther = (RSItemContainer) itemContainers
+          .get$api(containerId | 0x8000);
 
-		return null;
-	}
+      if (changedContainer != null) {
+        ItemContainerChanged event = new ItemContainerChanged(containerId, changedContainer);
+        client.getCallbacks().postDeferred(event);
+      }
 
-	@Inject
-	@Override
-	public boolean contains(int itemId)
-	{
-		int[] itemIds = getItemIds();
-		for (int id : itemIds)
-		{
-			if (id == itemId)
-			{
-				return true;
-			}
-		}
+      if (changedContainerInvOther != null) {
+        ItemContainerChanged event = new ItemContainerChanged(containerId | 0x8000,
+            changedContainerInvOther);
+        client.getCallbacks().postDeferred(event);
+      }
+    }
+  }
 
-		return false;
-	}
+  @Inject
+  @Override
+  public Item[] getItems() {
+    int[] itemIds = getItemIds();
+    int[] stackSizes = getStackSizes();
+    Item[] items = new Item[itemIds.length];
 
-	@Inject
-	@Override
-	public int count(int itemId)
-	{
-		int[] itemIds = getItemIds();
-		int[] stackSizes = getStackSizes();
-		int count = 0;
+    for (int i = 0; i < itemIds.length; ++i) {
+      Item item = new Item(
+          itemIds[i],
+          stackSizes[i]
+      );
+      items[i] = item;
+    }
 
-		for (int i = 0; i < itemIds.length; i++)
-		{
-			if (itemIds[i] != itemId)
-			{
-				continue;
-			}
+    return items;
+  }
 
-			int stack = stackSizes[i];
-			if (stack > 1)
-			{
-				return stack;
-			}
+  @Inject
+  @Override
+  public Item getItem(int slot) {
+    int[] itemIds = getItemIds();
+    int[] stackSizes = getStackSizes();
+    if (slot >= 0 && slot < itemIds.length && itemIds[slot] != -1) {
+      return new Item(itemIds[slot], stackSizes[slot]);
+    }
 
-			count++;
-		}
+    return null;
+  }
 
-		return count;
-	}
+  @Inject
+  @Override
+  public boolean contains(int itemId) {
+    int[] itemIds = getItemIds();
+    for (int id : itemIds) {
+      if (id == itemId) {
+        return true;
+      }
+    }
 
-	@FieldHook("changedItemContainers")
-	@Inject
-	public static void onItemContainerUpdate(int idx)
-	{
-		if (idx != -1)
-		{
-			int changedId = idx - 1 & 31;
-			int containerId = changedItemContainers[changedId];
+    return false;
+  }
 
-			RSNodeHashTable itemContainers = client.getItemContainers();
-			
-			RSItemContainer changedContainer = (RSItemContainer) itemContainers.get$api(containerId);
-			RSItemContainer changedContainerInvOther = (RSItemContainer) itemContainers.get$api(containerId | 0x8000);
+  @Inject
+  @Override
+  public int count(int itemId) {
+    int[] itemIds = getItemIds();
+    int[] stackSizes = getStackSizes();
+    int count = 0;
 
-			if (changedContainer != null)
-			{
-				ItemContainerChanged event = new ItemContainerChanged(containerId, changedContainer);
-				client.getCallbacks().postDeferred(event);
-			}
-			
-			if (changedContainerInvOther != null)
-			{
-				ItemContainerChanged event = new ItemContainerChanged(containerId | 0x8000, changedContainerInvOther);
-				client.getCallbacks().postDeferred(event);
-			}
-		}
-	}
+    for (int i = 0; i < itemIds.length; i++) {
+      if (itemIds[i] != itemId) {
+        continue;
+      }
 
-	@Inject
-	public int size()
-	{
-		return getItemIds().length;
-	}
+      int stack = stackSizes[i];
+      if (stack > 1) {
+        return stack;
+      }
+
+      count++;
+    }
+
+    return count;
+  }
+
+  @Inject
+  public int size() {
+    return getItemIds().length;
+  }
 }

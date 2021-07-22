@@ -25,78 +25,71 @@
  */
 package meteor.plugins.groundmarkers;
 
+import java.awt.Color;
 import meteor.config.Alpha;
 import meteor.config.Config;
 import meteor.config.ConfigGroup;
 import meteor.config.ConfigItem;
 
-import java.awt.*;
-
 @ConfigGroup(GroundMarkerConfig.GROUND_MARKER_CONFIG_GROUP)
-public interface GroundMarkerConfig extends Config
-{
-	String GROUND_MARKER_CONFIG_GROUP = "groundMarker";
-	String SHOW_IMPORT_EXPORT_KEY_NAME = "showImportExport";
-	String SHOW_CLEAR_KEY_NAME = "showClear";
+public interface GroundMarkerConfig extends Config {
 
-	@Alpha
-	@ConfigItem(
-		keyName = "markerColor",
-		name = "Tile color",
-		description = "Configures the color of marked tile"
-	)
-	default Color markerColor()
-	{
-		return Color.YELLOW;
-	}
+  String GROUND_MARKER_CONFIG_GROUP = "groundMarker";
+  String SHOW_IMPORT_EXPORT_KEY_NAME = "showImportExport";
+  String SHOW_CLEAR_KEY_NAME = "showClear";
 
-	@ConfigItem(
-		keyName = "rememberTileColors",
-		name = "Remember color per tile",
-		description = "Color tiles using the color from time of placement"
-	)
-	default boolean rememberTileColors()
-	{
-		return false;
-	}
+  @Alpha
+  @ConfigItem(
+      keyName = "markerColor",
+      name = "Tile color",
+      description = "Configures the color of marked tile"
+  )
+  default Color markerColor() {
+    return Color.YELLOW;
+  }
 
-	@ConfigItem(
-		keyName = "drawOnMinimap",
-		name = "Draw tiles on minimap",
-		description = "Configures whether marked tiles should be drawn on minimap"
-	)
-	default boolean drawTileOnMinimmap()
-	{
-		return false;
-	}
+  @ConfigItem(
+      keyName = "rememberTileColors",
+      name = "Remember color per tile",
+      description = "Color tiles using the color from time of placement"
+  )
+  default boolean rememberTileColors() {
+    return false;
+  }
 
-	@ConfigItem(
-		keyName = SHOW_IMPORT_EXPORT_KEY_NAME,
-		name = "Show Import/Export options",
-		description = "Show the Import/Export options on the minimap right-click menu"
-	)
-	default boolean showImportExport()
-	{
-		return true;
-	}
+  @ConfigItem(
+      keyName = "drawOnMinimap",
+      name = "Draw tiles on minimap",
+      description = "Configures whether marked tiles should be drawn on minimap"
+  )
+  default boolean drawTileOnMinimmap() {
+    return false;
+  }
 
-	@ConfigItem(
-		keyName = SHOW_CLEAR_KEY_NAME,
-		name = "Show Clear option",
-		description = "Show the Clear option on the minimap right-click menu, which deletes all currently loaded markers"
-	)
-	default boolean showClear()
-	{
-		return false;
-	}
+  @ConfigItem(
+      keyName = SHOW_IMPORT_EXPORT_KEY_NAME,
+      name = "Show Import/Export options",
+      description = "Show the Import/Export options on the minimap right-click menu"
+  )
+  default boolean showImportExport() {
+    return true;
+  }
 
-	@ConfigItem(
-		keyName = "borderWidth",
-		name = "Border Width",
-		description = "Width of the marked tile border"
-	)
-	default double borderWidth()
-	{
-		return 2;
-	}
+  @ConfigItem(
+      keyName = SHOW_CLEAR_KEY_NAME,
+      name = "Show Clear option",
+      description = "Show the Clear option on the minimap right-click menu, which deletes all currently loaded markers"
+  )
+  default boolean showClear() {
+    return false;
+  }
+
+  @ConfigItem(
+      keyName = "borderWidth",
+      name = "Border Width",
+      description = "Width of the marked tile border"
+  )
+  default double borderWidth() {
+    return 2;
+  }
 }

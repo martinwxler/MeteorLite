@@ -15,24 +15,23 @@
  */
 package org.jetbrains.java.decompiler.struct.gen.generics;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.jetbrains.java.decompiler.code.CodeConstants;
 import org.jetbrains.java.decompiler.main.DecompilerContext;
 import org.jetbrains.java.decompiler.main.extern.IFernflowerLogger;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class GenericMain {
 
   private static final String[] typeNames = {
-    "byte",
-    "char",
-    "double",
-    "float",
-    "int",
-    "long",
-    "short",
-    "boolean",
+      "byte",
+      "char",
+      "double",
+      "float",
+      "int",
+      "long",
+      "short",
+      "boolean",
   };
 
   public static GenericClassDescriptor parseClassSignature(String signature) {
@@ -53,9 +52,9 @@ public class GenericMain {
       }
 
       return descriptor;
-    }
-    catch (RuntimeException e) {
-      DecompilerContext.getLogger().writeMessage("Invalid signature: " + original, IFernflowerLogger.Severity.WARN);
+    } catch (RuntimeException e) {
+      DecompilerContext.getLogger()
+          .writeMessage("Invalid signature: " + original, IFernflowerLogger.Severity.WARN);
       return null;
     }
   }
@@ -65,9 +64,9 @@ public class GenericMain {
       GenericFieldDescriptor descriptor = new GenericFieldDescriptor();
       descriptor.type = new GenericType(signature);
       return descriptor;
-    }
-    catch (RuntimeException e) {
-      DecompilerContext.getLogger().writeMessage("Invalid signature: " + signature, IFernflowerLogger.Severity.WARN);
+    } catch (RuntimeException e) {
+      DecompilerContext.getLogger()
+          .writeMessage("Invalid signature: " + signature, IFernflowerLogger.Severity.WARN);
       return null;
     }
   }
@@ -102,14 +101,15 @@ public class GenericMain {
       }
 
       return descriptor;
-    }
-    catch (RuntimeException e) {
-      DecompilerContext.getLogger().writeMessage("Invalid signature: " + original, IFernflowerLogger.Severity.WARN);
+    } catch (RuntimeException e) {
+      DecompilerContext.getLogger()
+          .writeMessage("Invalid signature: " + original, IFernflowerLogger.Severity.WARN);
       return null;
     }
   }
 
-  private static String parseFormalParameters(String signature, List<String> parameters, List<List<GenericType>> bounds) {
+  private static String parseFormalParameters(String signature, List<String> parameters,
+      List<List<GenericType>> bounds) {
     if (signature.charAt(0) != '<') {
       return signature;
     }
@@ -154,11 +154,9 @@ public class GenericMain {
         lstBounds.add(new GenericType(bound));
         value = value.substring(bound.length());
 
-
         if (value.length() == 0 || value.charAt(0) != ':') {
           break;
-        }
-        else {
+        } else {
           value = value.substring(1);
         }
       }
@@ -183,14 +181,11 @@ public class GenericMain {
     int tp = type.type;
     if (tp <= CodeConstants.TYPE_BOOLEAN) {
       return typeNames[tp];
-    }
-    else if (tp == CodeConstants.TYPE_VOID) {
+    } else if (tp == CodeConstants.TYPE_VOID) {
       return "void";
-    }
-    else if (tp == CodeConstants.TYPE_GENVAR) {
+    } else if (tp == CodeConstants.TYPE_GENVAR) {
       return type.value;
-    }
-    else if (tp == CodeConstants.TYPE_OBJECT) {
+    } else if (tp == CodeConstants.TYPE_OBJECT) {
       StringBuilder buffer = new StringBuilder();
       appendClassName(type, buffer);
       return buffer.toString();
@@ -205,13 +200,12 @@ public class GenericMain {
     if (enclosingClasses.isEmpty()) {
       String name = type.value.replace('/', '.');
       buffer.append(DecompilerContext.getImportCollector().getShortName(name));
-    }
-    else {
+    } else {
       for (GenericType tp : enclosingClasses) {
         if (buffer.length() == 0) {
-          buffer.append(DecompilerContext.getImportCollector().getShortName(tp.value.replace('/', '.')));
-        }
-        else {
+          buffer.append(
+              DecompilerContext.getImportCollector().getShortName(tp.value.replace('/', '.')));
+        } else {
           buffer.append(tp.value);
         }
 

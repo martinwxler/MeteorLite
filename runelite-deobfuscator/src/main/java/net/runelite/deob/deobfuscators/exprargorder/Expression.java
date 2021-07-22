@@ -31,70 +31,60 @@ import net.runelite.asm.attributes.code.InstructionType;
 import net.runelite.asm.execution.InstructionContext;
 import net.runelite.asm.execution.MethodContext;
 
-public class Expression
-{
-	private final InstructionContext head;
-	private final List<Expression> exprs = new ArrayList<>();
-	private final List<Expression> comExprs = new ArrayList<>();
+public class Expression {
 
-	public List<Expression> sortedExprs;
-	private int exprHash;
+  private final InstructionContext head;
+  private final List<Expression> exprs = new ArrayList<>();
+  private final List<Expression> comExprs = new ArrayList<>();
 
-	public Expression(InstructionContext head)
-	{
-		this.head = head;
-	}
+  public List<Expression> sortedExprs;
+  private int exprHash;
 
-	public InstructionType getType()
-	{
-		return head.getInstruction().getType();
-	}
+  public Expression(InstructionContext head) {
+    this.head = head;
+  }
 
-	public InstructionContext getHead()
-	{
-		return head;
-	}
+  public InstructionType getType() {
+    return head.getInstruction().getType();
+  }
 
-	public void addExpr(Expression expr)
-	{
-		exprs.add(expr);
-	}
+  public InstructionContext getHead() {
+    return head;
+  }
 
-	public List<Expression> getExprs()
-	{
-		return Collections.unmodifiableList(exprs);
-	}
+  public void addExpr(Expression expr) {
+    exprs.add(expr);
+  }
 
-	public void addComExpr(Expression expr)
-	{
-		comExprs.add(expr);
-	}
+  public List<Expression> getExprs() {
+    return Collections.unmodifiableList(exprs);
+  }
 
-	public List<Expression> getComExprs()
-	{
-		return Collections.unmodifiableList(comExprs);
-	}
+  public void addComExpr(Expression expr) {
+    comExprs.add(expr);
+  }
 
-	public void sort(MethodContext ctx)
-	{
-		for (Expression e : comExprs)
-		{
-			e.sort(ctx);
-		}
-		for (Expression e : exprs)
-		{
-			e.sort(ctx);
-		}
+  public List<Expression> getComExprs() {
+    return Collections.unmodifiableList(comExprs);
+  }
 
-		sortedExprs = new ArrayList<>(comExprs);
-		Collections.sort(sortedExprs, (e1, e2) -> ExprArgOrder.compare(ctx.getMethod(), getType(), e1, e2));
-		Collections.reverse(sortedExprs);
+  public void sort(MethodContext ctx) {
+    for (Expression e : comExprs) {
+      e.sort(ctx);
+    }
+    for (Expression e : exprs) {
+      e.sort(ctx);
+    }
 
-		int hash = 0;
-		for (Expression e : sortedExprs)
-		{
-			hash ^= e.exprHash;
-		}
-		exprHash = hash;
-	}
+    sortedExprs = new ArrayList<>(comExprs);
+    Collections
+        .sort(sortedExprs, (e1, e2) -> ExprArgOrder.compare(ctx.getMethod(), getType(), e1, e2));
+    Collections.reverse(sortedExprs);
+
+    int hash = 0;
+    for (Expression e : sortedExprs) {
+      hash ^= e.exprHash;
+    }
+    exprHash = hash;
+  }
 }

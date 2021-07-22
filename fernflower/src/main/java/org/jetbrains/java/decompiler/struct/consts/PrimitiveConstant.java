@@ -55,23 +55,23 @@ public class PrimitiveConstant extends PooledConstant {
   // *****************************************************************************
 
   public int getInt() {
-    return ((Integer)value).intValue();
+    return ((Integer) value).intValue();
   }
 
   public long getLong() {
-    return ((Long)value).longValue();
+    return ((Long) value).longValue();
   }
 
   public float getFloat() {
-    return ((Float)value).floatValue();
+    return ((Float) value).floatValue();
   }
 
   public double getDouble() {
-    return ((Double)value).doubleValue();
+    return ((Double) value).doubleValue();
   }
 
   public String getString() {
-    return (String)value;
+    return (String) value;
   }
 
   public void resolveConstant(ConstantPool pool) {
@@ -107,20 +107,25 @@ public class PrimitiveConstant extends PooledConstant {
   }
 
   public boolean equals(Object o) {
-    if (o == this) return true;
-    if (o == null || !(o instanceof PrimitiveConstant)) return false;
+    if (o == this) {
+      return true;
+    }
+    if (o == null || !(o instanceof PrimitiveConstant)) {
+      return false;
+    }
 
-    PrimitiveConstant cn = (PrimitiveConstant)o;
+    PrimitiveConstant cn = (PrimitiveConstant) o;
     return this.type == cn.type &&
-           this.isArray == cn.isArray &&
-           this.value.equals(cn.value);
+        this.isArray == cn.isArray &&
+        this.value.equals(cn.value);
   }
 
   private void initConstant() {
     if (type == CONSTANT_Class) {
       String className = getString();
       isArray =
-        (className.length() > 0 && className.charAt(0) == '['); // empty string for a class name seems to be possible in some android files
+          (className.length() > 0 && className.charAt(0)
+              == '['); // empty string for a class name seems to be possible in some android files
     }
   }
 }

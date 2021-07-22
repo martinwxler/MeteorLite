@@ -30,20 +30,20 @@ import lombok.Value;
  * Posted when an interface is about to be closed
  */
 @Value
-public class WidgetClosed
-{
-	/**
-	 * The ID of the interface that is closed
-	 */
-	private final int groupId;
+public class WidgetClosed {
 
-	/**
-	 * @see net.runelite.api.widgets.WidgetModalMode
-	 */
-	private final int modalMode;
+  /**
+   * The ID of the interface that is closed
+   */
+  private final int groupId;
 
-	/**
-	 * If the interface will be unloaded or if it will be immediately reloaded
-	 */
-	private final boolean unload;
+  /**
+   * @see net.runelite.api.widgets.WidgetModalMode
+   */
+  private final int modalMode;
+
+  /**
+   * If the interface will be unloaded or if it will be immediately reloaded
+   */
+  private final boolean unload;
 }

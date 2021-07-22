@@ -15,20 +15,20 @@
  */
 package org.jetbrains.java.decompiler.main.decompiler;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
 import org.jetbrains.java.decompiler.main.Fernflower;
 import org.jetbrains.java.decompiler.main.extern.IBytecodeProvider;
 import org.jetbrains.java.decompiler.main.extern.IFernflowerLogger;
 import org.jetbrains.java.decompiler.main.extern.IResultSaver;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
-
 public class BaseDecompiler {
 
   private final Fernflower fernflower;
 
-  public BaseDecompiler(IBytecodeProvider provider, IResultSaver saver, Map<String, Object> options, IFernflowerLogger logger) {
+  public BaseDecompiler(IBytecodeProvider provider, IResultSaver saver, Map<String, Object> options,
+      IFernflowerLogger logger) {
     fernflower = new Fernflower(provider, saver, options, logger);
   }
 
@@ -39,8 +39,7 @@ public class BaseDecompiler {
   public void decompileContext() {
     try {
       fernflower.decompileContext();
-    }
-    finally {
+    } finally {
       fernflower.clearContext();
     }
   }

@@ -37,74 +37,65 @@ import net.runelite.asm.execution.Stack;
 import net.runelite.asm.execution.StackContext;
 import org.objectweb.asm.MethodVisitor;
 
-public class CheckCast extends Instruction implements TypeInstruction
-{
-	private Type type;
-	private ClassFile myClass;
+public class CheckCast extends Instruction implements TypeInstruction {
 
-	public CheckCast(Instructions instructions)
-	{
-		super(instructions, InstructionType.CHECKCAST);
-	}
+  private Type type;
+  private ClassFile myClass;
 
-	public CheckCast(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
+  public CheckCast(Instructions instructions) {
+    super(instructions, InstructionType.CHECKCAST);
+  }
 
-	@Override
-	public void accept(MethodVisitor visitor)
-	{
-		visitor.visitTypeInsn(this.getType().getCode(), type.toAsmString());
-	}
+  public CheckCast(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ins = new InstructionContext(this, frame);
-		Stack stack = frame.getStack();
+  @Override
+  public void accept(MethodVisitor visitor) {
+    visitor.visitTypeInsn(this.getType().getCode(), type.toAsmString());
+  }
 
-		StackContext value = stack.pop();
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ins = new InstructionContext(this, frame);
+    Stack stack = frame.getStack();
 
-		ins.pop(value);
+    StackContext value = stack.pop();
 
-		StackContext ctx = new StackContext(ins,
-			type,
-			value.getValue()
-		);
-		stack.push(ctx);
+    ins.pop(value);
 
-		ins.push(ctx);
+    StackContext ctx = new StackContext(ins,
+        type,
+        value.getValue()
+    );
+    stack.push(ctx);
 
-		return ins;
-	}
+    ins.push(ctx);
 
-	@Override
-	public void lookup()
-	{
-		ClassGroup group = this.getInstructions().getCode().getMethod().getClassFile().getGroup();
-		myClass = group.findClass(type.getInternalName());
-	}
+    return ins;
+  }
 
-	@Override
-	public void regeneratePool()
-	{
-		if (myClass != null)
-		{
-			int dimms = type.getDimensions();
-			type = Type.getType("L" + myClass.getName() + ";", dimms);
-		}
-	}
+  @Override
+  public void lookup() {
+    ClassGroup group = this.getInstructions().getCode().getMethod().getClassFile().getGroup();
+    myClass = group.findClass(type.getInternalName());
+  }
 
-	@Override
-	public Type getType_()
-	{
-		return type;
-	}
+  @Override
+  public void regeneratePool() {
+    if (myClass != null) {
+      int dimms = type.getDimensions();
+      type = Type.getType("L" + myClass.getName() + ";", dimms);
+    }
+  }
 
-	@Override
-	public void setType(Type type)
-	{
-		this.type = type;
-	}
+  @Override
+  public Type getType_() {
+    return type;
+  }
+
+  @Override
+  public void setType(Type type) {
+    this.type = type;
+  }
 }

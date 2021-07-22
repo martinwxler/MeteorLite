@@ -30,54 +30,46 @@ import java.util.Collection;
 import net.runelite.asm.Method;
 import net.runelite.asm.attributes.code.Instruction;
 
-public class MethodContext
-{
-	private Execution execution;
-	private Method method;
-	private Multimap<InstructionContext, Instruction> visited = HashMultimap.create();
-	public Multimap<Instruction, InstructionContext> contexts = HashMultimap.create();
+public class MethodContext {
 
-	public MethodContext(Execution execution, Method method)
-	{
-		this.execution = execution;
-		this.method = method;
-	}
+  public Multimap<Instruction, InstructionContext> contexts = HashMultimap.create();
+  private Execution execution;
+  private Method method;
+  private Multimap<InstructionContext, Instruction> visited = HashMultimap.create();
 
-	public Execution getExecution()
-	{
-		return execution;
-	}
+  public MethodContext(Execution execution, Method method) {
+    this.execution = execution;
+    this.method = method;
+  }
 
-	public Method getMethod()
-	{
-		return method;
-	}
+  public Execution getExecution() {
+    return execution;
+  }
 
-	protected boolean hasJumped(InstructionContext from, Instruction to)
-	{
-		Collection<Instruction> i = visited.get(from);
-		if (i != null && i.contains(to))
-		{
-			return true;
-		}
+  public Method getMethod() {
+    return method;
+  }
 
-		visited.put(from, to);
-		return false;
-	}
+  protected boolean hasJumped(InstructionContext from, Instruction to) {
+    Collection<Instruction> i = visited.get(from);
+    if (i != null && i.contains(to)) {
+      return true;
+    }
 
-	public Collection<InstructionContext> getInstructonContexts(Instruction i)
-	{
-		return contexts.get(i);
-	}
+    visited.put(from, to);
+    return false;
+  }
 
-	public Collection<InstructionContext> getInstructionContexts()
-	{
-		return contexts.values();
-	}
+  public Collection<InstructionContext> getInstructonContexts(Instruction i) {
+    return contexts.get(i);
+  }
 
-	public void reset()
-	{
-		contexts.clear();
-		visited.clear();
-	}
+  public Collection<InstructionContext> getInstructionContexts() {
+    return contexts.values();
+  }
+
+  public void reset() {
+    contexts.clear();
+    visited.clear();
+  }
 }

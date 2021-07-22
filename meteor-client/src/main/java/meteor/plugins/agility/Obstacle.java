@@ -25,17 +25,16 @@
  */
 package meteor.plugins.agility;
 
+import javax.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import net.runelite.api.Tile;
 
-import javax.annotation.Nullable;
-
 @Value
 @AllArgsConstructor
-class Obstacle
-{
-	private final Tile tile;
-	@Nullable
-	private final AgilityShortcut shortcut;
+class Obstacle {
+
+  private final Tile tile;
+  @Nullable
+  private final AgilityShortcut shortcut;
 }

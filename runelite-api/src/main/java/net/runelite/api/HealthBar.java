@@ -24,13 +24,13 @@
  */
 package net.runelite.api;
 
-public interface HealthBar
-{
-	SpritePixels getHealthBarFrontSprite();
+public interface HealthBar {
 
-	SpritePixels getHealthBarBackSprite();
+  SpritePixels getHealthBarFrontSprite();
 
-	int getHealthBarFrontSpriteId();
+  SpritePixels getHealthBarBackSprite();
 
-	void setPadding(int padding);
+  int getHealthBarFrontSpriteId();
+
+  void setPadding(int padding);
 }

@@ -3,22 +3,22 @@ package net.runelite.rs.api;
 import net.runelite.api.HealthBar;
 import net.runelite.mapping.Import;
 
-public interface RSHealthBarDefinition extends RSDualNode, HealthBar
-{
-	@Import("width")
-	int getHealthScale();
+public interface RSHealthBarDefinition extends RSDualNode, HealthBar {
 
-	@Import("frontSpriteID")
-	@Override
-	int getHealthBarFrontSpriteId();
+  @Import("width")
+  int getHealthScale();
 
-	@Import("getFrontSprite")
-	RSSpritePixels getHealthBarFrontSprite();
+  @Import("frontSpriteID")
+  @Override
+  int getHealthBarFrontSpriteId();
 
-	@Import("getBackSprite")
-	RSSpritePixels getHealthBarBackSprite();
+  @Import("getFrontSprite")
+  RSSpritePixels getHealthBarFrontSprite();
 
-	@Import("widthPadding")
-	@Override
-	void setPadding(int padding);
+  @Import("getBackSprite")
+  RSSpritePixels getHealthBarBackSprite();
+
+  @Import("widthPadding")
+  @Override
+  void setPadding(int padding);
 }

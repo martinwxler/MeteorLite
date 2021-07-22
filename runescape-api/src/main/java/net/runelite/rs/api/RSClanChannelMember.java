@@ -27,16 +27,16 @@ package net.runelite.rs.api;
 import net.runelite.api.clan.ClanChannelMember;
 import net.runelite.mapping.Import;
 
-public interface RSClanChannelMember extends ClanChannelMember
-{
-	@Import("rank")
-	byte getRSRank();
+public interface RSClanChannelMember extends ClanChannelMember {
 
-	@Import("world")
-	@Override
-	int getWorld$api();
+  @Import("rank")
+  byte getRSRank();
 
-	@Import("name")
-	@Override
-	String getName$api();
+  @Import("world")
+  @Override
+  int getWorld$api();
+
+  @Import("name")
+  @Override
+  String getName$api();
 }

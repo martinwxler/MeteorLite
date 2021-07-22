@@ -15,6 +15,9 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.stats;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import org.jetbrains.java.decompiler.code.CodeConstants;
 import org.jetbrains.java.decompiler.code.cfg.BasicBlock;
 import org.jetbrains.java.decompiler.main.DecompilerContext;
@@ -27,10 +30,6 @@ import org.jetbrains.java.decompiler.modules.decompiler.StatEdge;
 import org.jetbrains.java.decompiler.modules.decompiler.exps.VarExprent;
 import org.jetbrains.java.decompiler.modules.decompiler.vars.VarProcessor;
 import org.jetbrains.java.decompiler.struct.gen.VarType;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 
 public class CatchStatement extends Statement {
 
@@ -60,10 +59,11 @@ public class CatchStatement extends Statement {
         stats.addWithKey(stat, stat.id);
         exctstrings.add(new ArrayList<>(edge.getExceptions()));
 
-        vars.add(new VarExprent(DecompilerContext.getCounterContainer().getCounterAndIncrement(CounterContainer.VAR_COUNTER),
-                                new VarType(CodeConstants.TYPE_OBJECT, 0, edge.getExceptions().get(0)),
-                                // FIXME: for now simply the first type. Should get the first common superclass when possible.
-                                (VarProcessor)DecompilerContext.getProperty(DecompilerContext.CURRENT_VAR_PROCESSOR)));
+        vars.add(new VarExprent(DecompilerContext.getCounterContainer()
+            .getCounterAndIncrement(CounterContainer.VAR_COUNTER),
+            new VarType(CodeConstants.TYPE_OBJECT, 0, edge.getExceptions().get(0)),
+            // FIXME: for now simply the first type. Should get the first common superclass when possible.
+            (VarProcessor) DecompilerContext.getProperty(DecompilerContext.CURRENT_VAR_PROCESSOR)));
       }
     }
 
@@ -103,8 +103,7 @@ public class CatchStatement extends Statement {
         if (edge.getExceptions() != null && setHandlers.contains(stat)) {
           if (stat.getLastBasicType() != LASTBASICTYPE_GENERAL) {
             handlerok = false;
-          }
-          else {
+          } else {
             List<StatEdge> lstStatSuccs = stat.getSuccessorEdges(STATEDGE_DIRECT_ALL);
             if (!lstStatSuccs.isEmpty() && lstStatSuccs.get(0).getType() == StatEdge.TYPE_REGULAR) {
 
@@ -112,8 +111,7 @@ public class CatchStatement extends Statement {
 
               if (next == null) {
                 next = statn;
-              }
-              else if (next != statn) {
+              } else if (next != statn) {
                 handlerok = false;
               }
 
@@ -122,8 +120,7 @@ public class CatchStatement extends Statement {
               }
             }
           }
-        }
-        else {
+        } else {
           handlerok = false;
         }
 
@@ -157,7 +154,8 @@ public class CatchStatement extends Statement {
     buf.append(ExprProcessor.listToJava(varDefinitions, indent, tracer));
 
     if (isLabeled()) {
-      buf.appendIndent(indent).append("label").append(this.id.toString()).append(":").appendLineSeparator();
+      buf.appendIndent(indent).append("label").append(this.id.toString()).append(":")
+          .appendLineSeparator();
       tracer.incrementCurrentSourceLine();
     }
 
@@ -173,7 +171,9 @@ public class CatchStatement extends Statement {
       BasicBlock block = stat.getBasichead().getBlock();
       if (!block.getSeq().isEmpty() && block.getInstruction(0).opcode == CodeConstants.opc_astore) {
         Integer offset = block.getOldOffset(0);
-        if (offset > -1) tracer.addMapping(offset);
+        if (offset > -1) {
+          tracer.addMapping(offset);
+        }
       }
 
       buf.append(" catch (");
@@ -181,7 +181,8 @@ public class CatchStatement extends Statement {
       List<String> exception_types = exctstrings.get(i - 1);
       if (exception_types.size() > 1) { // multi-catch, Java 7 style
         for (int exc_index = 1; exc_index < exception_types.size(); ++exc_index) {
-          VarType exc_type = new VarType(CodeConstants.TYPE_OBJECT, 0, exception_types.get(exc_index));
+          VarType exc_type = new VarType(CodeConstants.TYPE_OBJECT, 0,
+              exception_types.get(exc_index));
           String exc_type_name = ExprProcessor.getCastTypeName(exc_type);
 
           buf.append(exc_type_name).append(" | ");
@@ -191,7 +192,7 @@ public class CatchStatement extends Statement {
       buf.append(") {").appendLineSeparator();
       tracer.incrementCurrentSourceLine();
       buf.append(ExprProcessor.jmpWrapper(stat, indent + 1, true, tracer)).appendIndent(indent)
-        .append("}");
+          .append("}");
     }
     buf.appendLineSeparator();
 
@@ -205,9 +206,10 @@ public class CatchStatement extends Statement {
 
     for (List<String> exc : this.exctstrings) {
       cs.exctstrings.add(new ArrayList<>(exc));
-      cs.vars.add(new VarExprent(DecompilerContext.getCounterContainer().getCounterAndIncrement(CounterContainer.VAR_COUNTER),
-                                 new VarType(CodeConstants.TYPE_OBJECT, 0, exc.get(0)),
-                                 (VarProcessor)DecompilerContext.getProperty(DecompilerContext.CURRENT_VAR_PROCESSOR)));
+      cs.vars.add(new VarExprent(DecompilerContext.getCounterContainer()
+          .getCounterAndIncrement(CounterContainer.VAR_COUNTER),
+          new VarType(CodeConstants.TYPE_OBJECT, 0, exc.get(0)),
+          (VarProcessor) DecompilerContext.getProperty(DecompilerContext.CURRENT_VAR_PROCESSOR)));
     }
 
     return cs;

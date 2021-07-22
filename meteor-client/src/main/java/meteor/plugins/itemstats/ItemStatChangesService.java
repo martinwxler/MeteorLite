@@ -24,12 +24,12 @@
  */
 package meteor.plugins.itemstats;
 
-public interface ItemStatChangesService
-{
-	/**
-	 * Get the item stat value
-	 *
-	 * @return ItemStatChanges
-	 */
-	Effect getItemStatChanges(int id);
+public interface ItemStatChangesService {
+
+  /**
+   * Get the item stat value
+   *
+   * @return ItemStatChanges
+   */
+  Effect getItemStatChanges(int id);
 }

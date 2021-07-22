@@ -38,72 +38,65 @@ import net.runelite.asm.execution.StackContext;
 import net.runelite.deob.deobfuscators.mapping.MappingExecutorUtil;
 import net.runelite.deob.deobfuscators.mapping.ParallelExecutorMapping;
 
-public class Return extends Instruction implements ReturnInstruction, MappableInstruction
-{
-	public Return(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
+public class Return extends Instruction implements ReturnInstruction, MappableInstruction {
 
-	public Return(Instructions instructions)
-	{
-		super(instructions, InstructionType.ARETURN);
-	}
+  public Return(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ins = new InstructionContext(this, frame);
-		Stack stack = frame.getStack();
+  public Return(Instructions instructions) {
+    super(instructions, InstructionType.ARETURN);
+  }
 
-		StackContext object = stack.pop();
-		ins.pop(object);
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ins = new InstructionContext(this, frame);
+    Stack stack = frame.getStack();
 
-		frame.stop();
+    StackContext object = stack.pop();
+    ins.pop(object);
 
-		return ins;
-	}
+    frame.stop();
 
-	@Override
-	public boolean isTerminal()
-	{
-		return true;
-	}
+    return ins;
+  }
 
-	@Override
-	public void map(ParallelExecutorMapping mappings, InstructionContext ctx, InstructionContext other)
-	{
-		StackContext s1 = ctx.getPops().get(0);
-		StackContext s2 = other.getPops().get(0);
+  @Override
+  public boolean isTerminal() {
+    return true;
+  }
 
-		InstructionContext i1 = MappingExecutorUtil.resolve(s1.getPushed(), s1);
-		InstructionContext i2 = MappingExecutorUtil.resolve(s2.getPushed(), s2);
+  @Override
+  public void map(ParallelExecutorMapping mappings, InstructionContext ctx,
+      InstructionContext other) {
+    StackContext s1 = ctx.getPops().get(0);
+    StackContext s2 = other.getPops().get(0);
 
-		if (i1.getInstruction() instanceof GetFieldInstruction && i2.getInstruction() instanceof GetFieldInstruction)
-		{
-			GetFieldInstruction f1 = (GetFieldInstruction) i1.getInstruction();
-			GetFieldInstruction f2 = (GetFieldInstruction) i2.getInstruction();
+    InstructionContext i1 = MappingExecutorUtil.resolve(s1.getPushed(), s1);
+    InstructionContext i2 = MappingExecutorUtil.resolve(s2.getPushed(), s2);
 
-			Field fi1 = f1.getMyField(), fi2 = f2.getMyField();
+    if (i1.getInstruction() instanceof GetFieldInstruction && i2
+        .getInstruction() instanceof GetFieldInstruction) {
+      GetFieldInstruction f1 = (GetFieldInstruction) i1.getInstruction();
+      GetFieldInstruction f2 = (GetFieldInstruction) i2.getInstruction();
 
-			if (fi1 != null && fi2 != null)
-			{
-				mappings.map(this, fi1, fi2);
-			}
-		}
-	}
+      Field fi1 = f1.getMyField(), fi2 = f2.getMyField();
 
-	@Override
-	public boolean isSame(InstructionContext thisIc, InstructionContext otherIc)
-	{
-		// check field type etc?
-		return this.getClass() == otherIc.getInstruction().getClass();
-	}
+      if (fi1 != null && fi2 != null) {
+        mappings.map(this, fi1, fi2);
+      }
+    }
+  }
 
-	@Override
-	public boolean canMap(InstructionContext thisIc)
-	{
-		// static methods can be inserted randomally and return things
-		return thisIc.getFrame().getMethod().isStatic() == false;
-	}
+  @Override
+  public boolean isSame(InstructionContext thisIc, InstructionContext otherIc) {
+    // check field type etc?
+    return this.getClass() == otherIc.getInstruction().getClass();
+  }
+
+  @Override
+  public boolean canMap(InstructionContext thisIc) {
+    // static methods can be inserted randomally and return things
+    return thisIc.getFrame().getMethod().isStatic() == false;
+  }
 }

@@ -24,108 +24,106 @@
  */
 package meteor;
 
+import static meteor.MeteorLite.DEFAULT_CONFIG_FILE;
+
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.name.Names;
+import java.applet.Applet;
+import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
+import javax.inject.Singleton;
+import meteor.callback.Hooks;
 import meteor.config.ConfigManager;
 import meteor.config.RuneLiteConfig;
+import meteor.eventbus.DeferredEventBus;
+import meteor.eventbus.EventBus;
 import meteor.plugins.itemstats.ItemStatChangesService;
 import meteor.plugins.itemstats.ItemStatChangesServiceImpl;
 import meteor.util.ExecutorServiceExceptionLogger;
+import meteor.util.NonScheduledExecutorServiceExceptionLogger;
 import net.runelite.api.Client;
 import net.runelite.api.hooks.Callbacks;
 import org.sponge.util.Logger;
-import meteor.callback.Hooks;
-import meteor.eventbus.DeferredEventBus;
-import meteor.eventbus.EventBus;
-import meteor.util.NonScheduledExecutorServiceExceptionLogger;
 
-import javax.annotation.Nullable;
-import javax.inject.Singleton;
-import java.applet.Applet;
-import java.io.File;
-import java.util.concurrent.*;
+public class MeteorLiteModule extends AbstractModule {
 
-import static meteor.MeteorLite.DEFAULT_CONFIG_FILE;
+  public Logger logger = new Logger("MeteorLite");
 
-public class MeteorLiteModule extends AbstractModule
-{
+  @Override
+  protected void configure() {
+    bind(Callbacks.class).to(Hooks.class);
+    bind(ScheduledExecutorService.class).toInstance(
+        new ExecutorServiceExceptionLogger(Executors.newSingleThreadScheduledExecutor()));
 
-	public Logger logger = new Logger("MeteorLite");
+    bind(EventBus.class)
+        .toInstance(new EventBus());
 
-	@Override
-	protected void configure()
-	{
-		bind(Callbacks.class).to(Hooks.class);
-		bind(ScheduledExecutorService.class).toInstance(new ExecutorServiceExceptionLogger(Executors.newSingleThreadScheduledExecutor()));
+    bind(EventBus.class)
+        .annotatedWith(Names.named("Deferred EventBus"))
+        .to(DeferredEventBus.class);
 
-		bind(EventBus.class)
-			.toInstance(new EventBus());
+    bind(ItemStatChangesService.class).to(ItemStatChangesServiceImpl.class);
+  }
 
-		bind(EventBus.class)
-			.annotatedWith(Names.named("Deferred EventBus"))
-			.to(DeferredEventBus.class);
-
-		bind(ItemStatChangesService.class).to(ItemStatChangesServiceImpl.class);
-	}
-
-	@com.google.inject.name.Named("config")
-	@Provides
-	@javax.inject.Singleton
-	File provideMeteorLiteConfig()
-	{
-		return DEFAULT_CONFIG_FILE;
-	}
+  @com.google.inject.name.Named("config")
+  @Provides
+  @javax.inject.Singleton
+  File provideMeteorLiteConfig() {
+    return DEFAULT_CONFIG_FILE;
+  }
 
 
-	@Provides
-	@Singleton
-	Applet provideApplet()
-	{
-		try {
-			return (Applet) this.getClass().getClassLoader().loadClass("Client").getDeclaredConstructor().newInstance();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+  @Provides
+  @Singleton
+  Applet provideApplet() {
+    try {
+      return (Applet) this.getClass().getClassLoader().loadClass("Client").getDeclaredConstructor()
+          .newInstance();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
 
-	@Provides
-	@Singleton
-	Logger provideLogger()
-	{
-		return logger;
-	}
+  @Provides
+  @Singleton
+  Logger provideLogger() {
+    return logger;
+  }
 
-	@Provides
-	@Singleton
-	Client provideClient(@Nullable Applet applet)
-	{
-		return applet instanceof Client ? (Client) applet : null;
-	}
+  @Provides
+  @Singleton
+  Client provideClient(@Nullable Applet applet) {
+    return applet instanceof Client ? (Client) applet : null;
+  }
 
-	@Provides
-	@Singleton
-	RuneLiteConfig provideConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(RuneLiteConfig.class);
-	}
+  @Provides
+  @Singleton
+  RuneLiteConfig provideConfig(ConfigManager configManager) {
+    return configManager.getConfig(RuneLiteConfig.class);
+  }
 
-	@Provides
-	@Singleton
-	ExecutorService provideExecutorService()
-	{
-		int poolSize = 2 * Runtime.getRuntime().availableProcessors();
+  @Provides
+  @Singleton
+  ExecutorService provideExecutorService() {
+    int poolSize = 2 * Runtime.getRuntime().availableProcessors();
 
-		// Will start up to poolSize threads (because of allowCoreThreadTimeOut) as necessary, and times out
-		// unused threads after 1 minute
-		ThreadPoolExecutor executor = new ThreadPoolExecutor(poolSize, poolSize,
-			60L, TimeUnit.SECONDS,
-			new LinkedBlockingQueue<>(),
-			new ThreadFactoryBuilder().setNameFormat("worker-%d").build());
-		executor.allowCoreThreadTimeOut(true);
+    // Will start up to poolSize threads (because of allowCoreThreadTimeOut) as necessary, and times out
+    // unused threads after 1 minute
+    ThreadPoolExecutor executor = new ThreadPoolExecutor(poolSize, poolSize,
+        60L, TimeUnit.SECONDS,
+        new LinkedBlockingQueue<>(),
+        new ThreadFactoryBuilder().setNameFormat("worker-%d").build());
+    executor.allowCoreThreadTimeOut(true);
 
-		return new NonScheduledExecutorServiceExceptionLogger(executor);
-	}
+    return new NonScheduledExecutorServiceExceptionLogger(executor);
+  }
 }

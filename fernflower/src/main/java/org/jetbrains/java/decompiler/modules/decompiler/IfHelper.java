@@ -15,6 +15,10 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import org.jetbrains.java.decompiler.modules.decompiler.exps.Exprent;
 import org.jetbrains.java.decompiler.modules.decompiler.exps.FunctionExprent;
 import org.jetbrains.java.decompiler.modules.decompiler.exps.IfExprent;
@@ -22,11 +26,6 @@ import org.jetbrains.java.decompiler.modules.decompiler.stats.IfStatement;
 import org.jetbrains.java.decompiler.modules.decompiler.stats.RootStatement;
 import org.jetbrains.java.decompiler.modules.decompiler.stats.SequenceStatement;
 import org.jetbrains.java.decompiler.modules.decompiler.stats.Statement;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
 
 
 public class IfHelper {
@@ -91,8 +90,7 @@ public class IfHelper {
       List<Statement> lst = new ArrayList<>();
       if (statement.type == Statement.TYPE_IF) {
         lst.add(statement);
-      }
-      else {
+      } else {
         lst.addAll(statement.getStats());
       }
 
@@ -101,7 +99,7 @@ public class IfHelper {
       for (Statement stat : lst) {
 
         if (stat.type == Statement.TYPE_IF) {
-          IfNode rtnode = buildGraph((IfStatement)stat, stsingle);
+          IfNode rtnode = buildGraph((IfStatement) stat, stsingle);
 
           if (rtnode == null) {
             continue;
@@ -122,7 +120,7 @@ public class IfHelper {
             }
           }
 
-          if (updated = reorderIf((IfStatement)stat)) {
+          if (updated = reorderIf((IfStatement) stat)) {
             setReorderedIfs.add(stat.id);
             break;
           }
@@ -148,8 +146,8 @@ public class IfHelper {
         // if-if branch
         if (ifbranch.succs.get(1).value == rtnode.succs.get(1).value) {
 
-          IfStatement ifparent = (IfStatement)rtnode.value;
-          IfStatement ifchild = (IfStatement)ifbranch.value;
+          IfStatement ifparent = (IfStatement) rtnode.value;
+          IfStatement ifchild = (IfStatement) ifbranch.value;
           Statement ifinner = ifbranch.succs.get(0).value;
 
           if (ifchild.getFirst().getExprents().isEmpty()) {
@@ -173,8 +171,7 @@ public class IfHelper {
               ifparent.getFirst().addSuccessor(ifedge);
 
               ifparent.setIfEdge(ifedge);
-            }
-            else {
+            } else {
               ifchild.getFirst().removeSuccessor(ifchild.getIfEdge());
 
               StatEdge ifedge = new StatEdge(StatEdge.TYPE_REGULAR, ifparent.getFirst(), ifinner);
@@ -200,7 +197,8 @@ public class IfHelper {
             lstOperands.add(statexpr.getCondition());
             lstOperands.add(ifchild.getHeadexprent().getCondition());
 
-            statexpr.setCondition(new FunctionExprent(FunctionExprent.FUNCTION_CADD, lstOperands, null));
+            statexpr.setCondition(
+                new FunctionExprent(FunctionExprent.FUNCTION_CADD, lstOperands, null));
             statexpr.addBytecodeOffsets(ifchild.getHeadexprent().bytecode);
 
             return true;
@@ -221,8 +219,8 @@ public class IfHelper {
         // if-else branch
         if (ifbranch.succs.get(0).value == rtnode.succs.get(1).value) {
 
-          IfStatement ifparent = (IfStatement)rtnode.value;
-          IfStatement ifchild = (IfStatement)ifbranch.value;
+          IfStatement ifparent = (IfStatement) rtnode.value;
+          IfStatement ifchild = (IfStatement) ifbranch.value;
 
           if (ifchild.getFirst().getExprents().isEmpty()) {
 
@@ -242,8 +240,7 @@ public class IfHelper {
               ifparent.getFirst().addSuccessor(ifedge);
 
               ifparent.setIfEdge(ifedge);
-            }
-            else {
+            } else {
               throw new RuntimeException("inconsistent if structure!");
             }
 
@@ -252,8 +249,10 @@ public class IfHelper {
 
             List<Exprent> lstOperands = new ArrayList<>();
             lstOperands.add(statexpr.getCondition());
-            lstOperands.add(new FunctionExprent(FunctionExprent.FUNCTION_BOOL_NOT, ifchild.getHeadexprent().getCondition(), null));
-            statexpr.setCondition(new FunctionExprent(FunctionExprent.FUNCTION_CADD, lstOperands, null));
+            lstOperands.add(new FunctionExprent(FunctionExprent.FUNCTION_BOOL_NOT,
+                ifchild.getHeadexprent().getCondition(), null));
+            statexpr.setCondition(
+                new FunctionExprent(FunctionExprent.FUNCTION_CADD, lstOperands, null));
             statexpr.addBytecodeOffsets(ifchild.getHeadexprent().bytecode);
 
             return true;
@@ -274,12 +273,12 @@ public class IfHelper {
 
         // else-if or else-else branch
         int path = elsebranch.succs.get(1).value == rtnode.succs.get(0).value ? 2 :
-                   (elsebranch.succs.get(0).value == rtnode.succs.get(0).value ? 1 : 0);
+            (elsebranch.succs.get(0).value == rtnode.succs.get(0).value ? 1 : 0);
 
         if (path > 0) {
 
-          IfStatement firstif = (IfStatement)rtnode.value;
-          IfStatement secondif = (IfStatement)elsebranch.value;
+          IfStatement firstif = (IfStatement) rtnode.value;
+          IfStatement secondif = (IfStatement) elsebranch.value;
           Statement parent = firstif.getParent();
 
           if (secondif.getFirst().getExprents().isEmpty()) {
@@ -309,13 +308,16 @@ public class IfHelper {
             lstOperands.add(firstif.getHeadexprent().getCondition());
 
             if (path == 2) {
-              lstOperands.set(0, new FunctionExprent(FunctionExprent.FUNCTION_BOOL_NOT, lstOperands.get(0), null));
+              lstOperands.set(0,
+                  new FunctionExprent(FunctionExprent.FUNCTION_BOOL_NOT, lstOperands.get(0), null));
             }
 
             lstOperands.add(statexpr.getCondition());
 
             statexpr
-              .setCondition(new FunctionExprent(path == 1 ? FunctionExprent.FUNCTION_COR : FunctionExprent.FUNCTION_CADD, lstOperands, null));
+                .setCondition(new FunctionExprent(
+                    path == 1 ? FunctionExprent.FUNCTION_COR : FunctionExprent.FUNCTION_CADD,
+                    lstOperands, null));
 
             if (secondif.getFirst().getExprents().isEmpty() &&
                 !firstif.getFirst().getExprents().isEmpty()) {
@@ -326,12 +328,11 @@ public class IfHelper {
             return true;
           }
         }
-      }
-      else if (elsebranch.succs.size() == 1) {
+      } else if (elsebranch.succs.size() == 1) {
 
         if (elsebranch.succs.get(0).value == rtnode.succs.get(0).value) {
 
-          IfStatement firstif = (IfStatement)rtnode.value;
+          IfStatement firstif = (IfStatement) rtnode.value;
           Statement second = elsebranch.value;
 
           firstif.removeAllSuccessors(second);
@@ -345,7 +346,8 @@ public class IfHelper {
           StatEdge ifedge = firstif.getIfEdge();
           firstif.getFirst().removeSuccessor(ifedge);
 
-          second.addSuccessor(new StatEdge(ifedge.getType(), second, ifedge.getDestination(), ifedge.closure));
+          second.addSuccessor(
+              new StatEdge(ifedge.getType(), second, ifedge.getDestination(), ifedge.closure));
 
           StatEdge newifedge = new StatEdge(StatEdge.TYPE_REGULAR, firstif.getFirst(), second);
           firstif.getFirst().addSuccessor(newifedge);
@@ -359,7 +361,9 @@ public class IfHelper {
           // negate the if condition
           IfExprent statexpr = firstif.getHeadexprent();
           statexpr
-            .setCondition(new FunctionExprent(FunctionExprent.FUNCTION_BOOL_NOT, statexpr.getCondition(), null));
+              .setCondition(
+                  new FunctionExprent(FunctionExprent.FUNCTION_BOOL_NOT, statexpr.getCondition(),
+                      null));
 
           return true;
         }
@@ -383,18 +387,17 @@ public class IfHelper {
     if (ifchild == null) {
       StatEdge edge = stat.getIfEdge();
       res.addChild(new IfNode(edge.getDestination()), 1);
-    }
-    else {
+    } else {
       IfNode ifnode = new IfNode(ifchild);
       res.addChild(ifnode, 0);
-      if (ifchild.type == Statement.TYPE_IF && ((IfStatement)ifchild).iftype == IfStatement.IFTYPE_IF) {
-        IfStatement stat2 = (IfStatement)ifchild;
+      if (ifchild.type == Statement.TYPE_IF
+          && ((IfStatement) ifchild).iftype == IfStatement.IFTYPE_IF) {
+        IfStatement stat2 = (IfStatement) ifchild;
         Statement ifchild2 = stat2.getIfstat();
         if (ifchild2 == null) {
           StatEdge edge = stat2.getIfEdge();
           ifnode.addChild(new IfNode(edge.getDestination()), 1);
-        }
-        else {
+        } else {
           ifnode.addChild(new IfNode(ifchild2), 0);
         }
       }
@@ -411,16 +414,15 @@ public class IfHelper {
 
     if (stsingle || edge.getType() != StatEdge.TYPE_REGULAR) {
       res.addChild(elsenode, 1);
-    }
-    else {
+    } else {
       res.addChild(elsenode, 0);
-      if (elsechild.type == Statement.TYPE_IF && ((IfStatement)elsechild).iftype == IfStatement.IFTYPE_IF) {
-        IfStatement stat2 = (IfStatement)elsechild;
+      if (elsechild.type == Statement.TYPE_IF
+          && ((IfStatement) elsechild).iftype == IfStatement.IFTYPE_IF) {
+        IfStatement stat2 = (IfStatement) elsechild;
         Statement ifchild2 = stat2.getIfstat();
         if (ifchild2 == null) {
           elsenode.addChild(new IfNode(stat2.getIfEdge().getDestination()), 1);
-        }
-        else {
+        } else {
           elsenode.addChild(new IfNode(ifchild2), 0);
         }
       }
@@ -455,17 +457,14 @@ public class IfHelper {
 
       if (ifstat.getIfEdge().getType() == StatEdge.TYPE_FINALLYEXIT) {
         ifdirect = true;
-      }
-      else {
+      } else {
         ifdirect = MergeHelper.isDirectPath(from, ifstat.getIfEdge().getDestination());
       }
-    }
-    else {
+    } else {
       List<StatEdge> lstSuccs = ifstat.getIfstat().getAllSuccessorEdges();
       if (!lstSuccs.isEmpty() && lstSuccs.get(0).getType() == StatEdge.TYPE_FINALLYEXIT) {
         ifdirect = true;
-      }
-      else {
+      } else {
         ifdirect = hasDirectEndEdge(ifstat.getIfstat(), from);
       }
     }
@@ -473,10 +472,10 @@ public class IfHelper {
     Statement last = parent.type == Statement.TYPE_SEQUENCE ? parent.getStats().getLast() : ifstat;
     noelsestat = (last == ifstat);
 
-    if (!last.getAllSuccessorEdges().isEmpty() && last.getAllSuccessorEdges().get(0).getType() == StatEdge.TYPE_FINALLYEXIT) {
+    if (!last.getAllSuccessorEdges().isEmpty()
+        && last.getAllSuccessorEdges().get(0).getType() == StatEdge.TYPE_FINALLYEXIT) {
       elsedirect = true;
-    }
-    else {
+    } else {
       elsedirect = hasDirectEndEdge(last, from);
     }
 
@@ -489,14 +488,13 @@ public class IfHelper {
     }
 
     if (!elsedirect && !noelsestat) {
-      SequenceStatement sequence = (SequenceStatement)parent;
+      SequenceStatement sequence = (SequenceStatement) parent;
 
       for (int i = sequence.getStats().size() - 1; i >= 0; i--) {
         Statement sttemp = sequence.getStats().get(i);
         if (sttemp == ifstat) {
           break;
-        }
-        else {
+        } else {
           if (elsedirectpath = existsPath(sttemp, next)) {
             break;
           }
@@ -504,9 +502,10 @@ public class IfHelper {
       }
     }
 
-    if ((ifdirect || ifdirectpath) && (elsedirect || elsedirectpath) && !noifstat && !noelsestat) {  // if - then - else
+    if ((ifdirect || ifdirectpath) && (elsedirect || elsedirectpath) && !noifstat
+        && !noelsestat) {  // if - then - else
 
-      SequenceStatement sequence = (SequenceStatement)parent;
+      SequenceStatement sequence = (SequenceStatement) parent;
 
       // build and cut the new else statement
       List<Statement> lst = new ArrayList<>();
@@ -514,8 +513,7 @@ public class IfHelper {
         Statement sttemp = sequence.getStats().get(i);
         if (sttemp == ifstat) {
           break;
-        }
-        else {
+        } else {
           lst.add(0, sttemp);
         }
       }
@@ -523,8 +521,7 @@ public class IfHelper {
       Statement stelse;
       if (lst.size() == 1) {
         stelse = lst.get(0);
-      }
-      else {
+      } else {
         stelse = new SequenceStatement(lst);
         stelse.setAllParent();
       }
@@ -549,12 +546,12 @@ public class IfHelper {
       //			}
 
       ifstat.iftype = IfStatement.IFTYPE_IFELSE;
-    }
-    else if (ifdirect && (!elsedirect || (noifstat && !noelsestat))) {  // if - then
+    } else if (ifdirect && (!elsedirect || (noifstat && !noelsestat))) {  // if - then
 
       // negate the if condition
       IfExprent statexpr = ifstat.getHeadexprent();
-      statexpr.setCondition(new FunctionExprent(FunctionExprent.FUNCTION_BOOL_NOT, statexpr.getCondition(), null));
+      statexpr.setCondition(
+          new FunctionExprent(FunctionExprent.FUNCTION_BOOL_NOT, statexpr.getCondition(), null));
 
       if (noelsestat) {
         StatEdge ifedge = ifstat.getIfEdge();
@@ -571,8 +568,7 @@ public class IfHelper {
           ifstat.getFirst().addSuccessor(elseedge);
 
           ifstat.setIfEdge(elseedge);
-        }
-        else {
+        } else {
           Statement ifbranch = ifstat.getIfstat();
           SequenceStatement newseq = new SequenceStatement(Arrays.asList(ifstat, ifbranch));
 
@@ -591,10 +587,9 @@ public class IfHelper {
 
           ifstat.addSuccessor(new StatEdge(StatEdge.TYPE_REGULAR, ifstat, ifbranch));
         }
-      }
-      else {
+      } else {
 
-        SequenceStatement sequence = (SequenceStatement)parent;
+        SequenceStatement sequence = (SequenceStatement) parent;
 
         // build and cut the new else statement
         List<Statement> lst = new ArrayList<>();
@@ -602,8 +597,7 @@ public class IfHelper {
           Statement sttemp = sequence.getStats().get(i);
           if (sttemp == ifstat) {
             break;
-          }
-          else {
+          } else {
             lst.add(0, sttemp);
           }
         }
@@ -611,8 +605,7 @@ public class IfHelper {
         Statement stelse;
         if (lst.size() == 1) {
           stelse = lst.get(0);
-        }
-        else {
+        } else {
           stelse = new SequenceStatement(lst);
           stelse.setAllParent();
         }
@@ -628,8 +621,7 @@ public class IfHelper {
           ifstat.getFirst().removeSuccessor(ifedge);
           ifedge.setSource(ifstat);
           ifstat.addSuccessor(ifedge);
-        }
-        else {
+        } else {
           Statement ifbranch = ifstat.getIfstat();
 
           ifstat.getFirst().removeSuccessor(ifstat.getIfEdge());
@@ -649,8 +641,7 @@ public class IfHelper {
         ifstat.getStats().addWithKey(stelse, stelse.id);
         stelse.setParent(ifstat);
       }
-    }
-    else {
+    } else {
       return false;
     }
 
@@ -678,10 +669,10 @@ public class IfHelper {
           }
           break;
         case Statement.TYPE_IF:
-          IfStatement ifstat = (IfStatement)stat;
+          IfStatement ifstat = (IfStatement) stat;
           if (ifstat.iftype == IfStatement.IFTYPE_IFELSE) {
             return hasDirectEndEdge(ifstat.getIfstat(), from) ||
-                   hasDirectEndEdge(ifstat.getElsestat(), from);
+                hasDirectEndEdge(ifstat.getElsestat(), from);
           }
           break;
         case Statement.TYPE_SYNCRONIZED:
@@ -704,11 +695,11 @@ public class IfHelper {
     Statement parent = stat.getParent();
     switch (parent.type) {
       case Statement.TYPE_ROOT:
-        return ((RootStatement)parent).getDummyExit();
+        return ((RootStatement) parent).getDummyExit();
       case Statement.TYPE_DO:
         return parent;
       case Statement.TYPE_SEQUENCE:
-        SequenceStatement sequence = (SequenceStatement)parent;
+        SequenceStatement sequence = (SequenceStatement) parent;
         if (sequence.getStats().getLast() != stat) {
           for (int i = sequence.getStats().size() - 1; i >= 0; i--) {
             if (sequence.getStats().get(i) == stat) {
@@ -733,6 +724,7 @@ public class IfHelper {
   }
 
   private static class IfNode {
+
     public final Statement value;
 
     public final List<IfNode> succs = new ArrayList<>();

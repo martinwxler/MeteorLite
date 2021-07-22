@@ -32,18 +32,18 @@ import net.runelite.api.Hitsplat;
  * An event called when an {@link Actor} health bar is updated from a {@link Hitsplat}.
  * <p>
  * This event is called when the health bar first appears and when the client gets new information
- * about the health bar of the actor. It does not fire when the health bar disappears.
- * The event will still fire even if the health ratio did not change for example from a 0 hitsplat.
+ * about the health bar of the actor. It does not fire when the health bar disappears. The event
+ * will still fire even if the health ratio did not change for example from a 0 hitsplat.
  */
 @Value
-public class HealthBarUpdated
-{
-	/**
-	 * The actor the hitsplat was applied to.
-	 */
-	Actor actor;
-	/**
-	 * The updated health ratio.
-	 */
-	int healthRatio;
+public class HealthBarUpdated {
+
+  /**
+   * The actor the hitsplat was applied to.
+   */
+  Actor actor;
+  /**
+   * The updated health ratio.
+   */
+  int healthRatio;
 }

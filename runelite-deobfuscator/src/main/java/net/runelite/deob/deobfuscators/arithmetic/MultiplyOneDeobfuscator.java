@@ -39,91 +39,81 @@ import net.runelite.deob.Deobfuscator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MultiplyOneDeobfuscator implements Deobfuscator
-{
-	private static final Logger logger = LoggerFactory.getLogger(MultiplyOneDeobfuscator.class);
+public class MultiplyOneDeobfuscator implements Deobfuscator {
 
-	private final boolean onlyConstants;
-	private int count;
+  private static final Logger logger = LoggerFactory.getLogger(MultiplyOneDeobfuscator.class);
 
-	public MultiplyOneDeobfuscator(boolean onlyConstants)
-	{
-		this.onlyConstants = onlyConstants;
-	}
+  private final boolean onlyConstants;
+  private int count;
 
-	private void visit(MethodContext mctx)
-	{
-		for (InstructionContext ictx : mctx.getInstructionContexts())
-		{
-			Instruction instruction = ictx.getInstruction();
+  public MultiplyOneDeobfuscator(boolean onlyConstants) {
+    this.onlyConstants = onlyConstants;
+  }
 
-			if (!(instruction instanceof IMul) && !(instruction instanceof LMul))
-			{
-				continue;
-			}
+  private void visit(MethodContext mctx) {
+    for (InstructionContext ictx : mctx.getInstructionContexts()) {
+      Instruction instruction = ictx.getInstruction();
 
-			Instructions ins = ictx.getInstruction().getInstructions();
-			if (ins == null)
-			{
-				continue;
-			}
+      if (!(instruction instanceof IMul) && !(instruction instanceof LMul)) {
+        continue;
+      }
 
-			List<Instruction> ilist = ins.getInstructions();
+      Instructions ins = ictx.getInstruction().getInstructions();
+      if (ins == null) {
+        continue;
+      }
 
-			if (!ilist.contains(ictx.getInstruction()))
-			{
-				continue; // already done
-			}
+      List<Instruction> ilist = ins.getInstructions();
 
-			StackContext one = ictx.getPops().get(0);
-			StackContext two = ictx.getPops().get(1);
+      if (!ilist.contains(ictx.getInstruction())) {
+        continue; // already done
+      }
 
-			StackContext other = null;
-			int removeIdx = -1;
-			if (one.getPushed().getInstruction() instanceof PushConstantInstruction
-				&& DMath.equals((Number) ((PushConstantInstruction) one.getPushed().getInstruction()).getConstant(), 1))
-			{
-				removeIdx = 0;
-				other = two;
-			}
-			else if (two.getPushed().getInstruction() instanceof PushConstantInstruction
-				&& DMath.equals((Number) ((PushConstantInstruction) two.getPushed().getInstruction()).getConstant(), 1))
-			{
-				removeIdx = 1;
-				other = one;
-			}
+      StackContext one = ictx.getPops().get(0);
+      StackContext two = ictx.getPops().get(1);
 
-			if (removeIdx == -1)
-			{
-				continue;
-			}
+      StackContext other = null;
+      int removeIdx = -1;
+      if (one.getPushed().getInstruction() instanceof PushConstantInstruction
+          && DMath.equals(
+          (Number) ((PushConstantInstruction) one.getPushed().getInstruction()).getConstant(), 1)) {
+        removeIdx = 0;
+        other = two;
+      } else if (two.getPushed().getInstruction() instanceof PushConstantInstruction
+          && DMath.equals(
+          (Number) ((PushConstantInstruction) two.getPushed().getInstruction()).getConstant(), 1)) {
+        removeIdx = 1;
+        other = one;
+      }
 
-			if (onlyConstants && !(other.getPushed().getInstruction() instanceof PushConstantInstruction))
-			{
-				continue;
-			}
+      if (removeIdx == -1) {
+        continue;
+      }
 
-			if (!MultiplicationDeobfuscator.isOnlyPath(ictx, removeIdx == 0 ? one : two))
-			{
-				continue;
-			}
+      if (onlyConstants && !(other.getPushed()
+          .getInstruction() instanceof PushConstantInstruction)) {
+        continue;
+      }
 
-			ictx.removeStack(removeIdx); // remove 1
-			ins.remove(instruction); // remove mul
+      if (!MultiplicationDeobfuscator.isOnlyPath(ictx, removeIdx == 0 ? one : two)) {
+        continue;
+      }
 
-			++count;
-		}
-	}
+      ictx.removeStack(removeIdx); // remove 1
+      ins.remove(instruction); // remove mul
 
-	@Override
-	public void run(ClassGroup group)
-	{
-		Execution e = new Execution(group);
-		e.addMethodContextVisitor(i -> visit(i));
-		e.populateInitialMethods();
-		e.run();
+      ++count;
+    }
+  }
 
-		logger.info("Removed " + count + " 1 multiplications");
-	}
+  @Override
+  public void run(ClassGroup group) {
+    Execution e = new Execution(group);
+    e.addMethodContextVisitor(i -> visit(i));
+    e.populateInitialMethods();
+    e.run();
+
+    logger.info("Removed " + count + " 1 multiplications");
+  }
 
 }

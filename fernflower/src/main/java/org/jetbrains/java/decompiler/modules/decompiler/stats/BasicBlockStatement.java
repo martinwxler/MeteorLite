@@ -53,8 +53,7 @@ public class BasicBlockStatement extends Statement {
     if (instr != null) {
       if (instr.group == CodeConstants.GROUP_JUMP && instr.opcode != CodeConstants.opc_goto) {
         lastBasicType = LASTBASICTYPE_IF;
-      }
-      else if (instr.group == CodeConstants.GROUP_SWITCH) {
+      } else if (instr.group == CodeConstants.GROUP_SWITCH) {
         lastBasicType = LASTBASICTYPE_SWITCH;
       }
     }
@@ -76,7 +75,8 @@ public class BasicBlockStatement extends Statement {
   public Statement getSimpleCopy() {
 
     BasicBlock newblock = new BasicBlock(
-      DecompilerContext.getCounterContainer().getCounterAndIncrement(CounterContainer.STATEMENT_COUNTER));
+        DecompilerContext.getCounterContainer()
+            .getCounterAndIncrement(CounterContainer.STATEMENT_COUNTER));
 
     SimpleInstructionSequence seq = new SimpleInstructionSequence();
     for (int i = 0; i < block.getSeq().length(); i++) {
@@ -87,7 +87,6 @@ public class BasicBlockStatement extends Statement {
 
     return new BasicBlockStatement(newblock);
   }
-
 
   // *****************************************************************************
   // getter and setter methods

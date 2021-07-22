@@ -17,16 +17,6 @@ package org.jetbrains.java.decompiler.main.extern;
 
 public abstract class IFernflowerLogger {
 
-  public enum Severity {
-    TRACE("TRACE: "), INFO("INFO:  "), WARN("WARN:  "), ERROR("ERROR: ");
-
-    public final String prefix;
-
-    Severity(String prefix) {
-      this.prefix = prefix;
-    }
-  }
-
   private Severity severity = Severity.INFO;
 
   public boolean accepts(Severity severity) {
@@ -45,19 +35,37 @@ public abstract class IFernflowerLogger {
     writeMessage(message, Severity.ERROR, t);
   }
 
-  public void startReadingClass(String className) { }
+  public void startReadingClass(String className) {
+  }
 
-  public void endReadingClass() { }
+  public void endReadingClass() {
+  }
 
-  public void startClass(String className) { }
+  public void startClass(String className) {
+  }
 
-  public void endClass() { }
+  public void endClass() {
+  }
 
-  public void startMethod(String methodName) { }
+  public void startMethod(String methodName) {
+  }
 
-  public void endMethod() { }
+  public void endMethod() {
+  }
 
-  public void startWriteClass(String className) { }
+  public void startWriteClass(String className) {
+  }
 
-  public void endWriteClass() { }
+  public void endWriteClass() {
+  }
+
+  public enum Severity {
+    TRACE("TRACE: "), INFO("INFO:  "), WARN("WARN:  "), ERROR("ERROR: ");
+
+    public final String prefix;
+
+    Severity(String prefix) {
+      this.prefix = prefix;
+    }
+  }
 }

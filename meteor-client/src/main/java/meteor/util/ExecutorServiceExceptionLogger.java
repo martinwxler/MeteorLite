@@ -36,124 +36,112 @@ import java.util.concurrent.TimeoutException;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Wrapper for ${@link ScheduledExecutorService} that will log all uncaught exceptions as warning to console
+ * Wrapper for ${@link ScheduledExecutorService} that will log all uncaught exceptions as warning to
+ * console
  */
 @RequiredArgsConstructor
-public class ExecutorServiceExceptionLogger implements ScheduledExecutorService
-{
-	private final ScheduledExecutorService service;
+public class ExecutorServiceExceptionLogger implements ScheduledExecutorService {
 
-	private static Runnable monitor(final Runnable command)
-	{
-		return RunnableExceptionLogger.wrap(command);
-	}
+  private final ScheduledExecutorService service;
 
-	private static <V> Callable<V> monitor(final Callable<V> command)
-	{
-		return CallableExceptionLogger.wrap(command);
-	}
+  private static Runnable monitor(final Runnable command) {
+    return RunnableExceptionLogger.wrap(command);
+  }
 
-	@Override
-	public <T> Future<T> submit(Callable<T> task)
-	{
-		return service.submit(monitor(task));
-	}
+  private static <V> Callable<V> monitor(final Callable<V> command) {
+    return CallableExceptionLogger.wrap(command);
+  }
 
-	@Override
-	public <T> Future<T> submit(Runnable task, T result)
-	{
-		return service.submit(monitor(task), result);
-	}
+  @Override
+  public <T> Future<T> submit(Callable<T> task) {
+    return service.submit(monitor(task));
+  }
 
-	@Override
-	public Future<?> submit(Runnable task)
-	{
-		return service.submit(monitor(task));
-	}
+  @Override
+  public <T> Future<T> submit(Runnable task, T result) {
+    return service.submit(monitor(task), result);
+  }
 
-	@Override
-	public void execute(Runnable command)
-	{
-		service.execute(monitor(command));
-	}
+  @Override
+  public Future<?> submit(Runnable task) {
+    return service.submit(monitor(task));
+  }
 
-	// Everything below is direct proxy to provided executor service
+  @Override
+  public void execute(Runnable command) {
+    service.execute(monitor(command));
+  }
 
-	@Override
-	public void shutdown()
-	{
-		service.shutdown();
-	}
+  // Everything below is direct proxy to provided executor service
 
-	@Override
-	public List<Runnable> shutdownNow()
-	{
-		return service.shutdownNow();
-	}
+  @Override
+  public void shutdown() {
+    service.shutdown();
+  }
 
-	@Override
-	public boolean isShutdown()
-	{
-		return service.isShutdown();
-	}
+  @Override
+  public List<Runnable> shutdownNow() {
+    return service.shutdownNow();
+  }
 
-	@Override
-	public boolean isTerminated()
-	{
-		return service.isTerminated();
-	}
+  @Override
+  public boolean isShutdown() {
+    return service.isShutdown();
+  }
 
-	@Override
-	public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException
-	{
-		return service.awaitTermination(timeout, unit);
-	}
+  @Override
+  public boolean isTerminated() {
+    return service.isTerminated();
+  }
 
-	@Override
-	public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException
-	{
-		return service.invokeAll(tasks);
-	}
+  @Override
+  public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+    return service.awaitTermination(timeout, unit);
+  }
 
-	@Override
-	public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException
-	{
-		return service.invokeAll(tasks, timeout, unit);
-	}
+  @Override
+  public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks)
+      throws InterruptedException {
+    return service.invokeAll(tasks);
+  }
 
-	@Override
-	public <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException
-	{
-		return service.invokeAny(tasks);
-	}
+  @Override
+  public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout,
+      TimeUnit unit) throws InterruptedException {
+    return service.invokeAll(tasks, timeout, unit);
+  }
 
-	@Override
-	public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException
-	{
-		return service.invokeAny(tasks, timeout, unit);
-	}
+  @Override
+  public <T> T invokeAny(Collection<? extends Callable<T>> tasks)
+      throws InterruptedException, ExecutionException {
+    return service.invokeAny(tasks);
+  }
 
-	@Override
-	public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit)
-	{
-		return service.schedule(command, delay, unit);
-	}
+  @Override
+  public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit)
+      throws InterruptedException, ExecutionException, TimeoutException {
+    return service.invokeAny(tasks, timeout, unit);
+  }
 
-	@Override
-	public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit)
-	{
-		return service.schedule(callable, delay, unit);
-	}
+  @Override
+  public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
+    return service.schedule(command, delay, unit);
+  }
 
-	@Override
-	public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit)
-	{
-		return service.scheduleAtFixedRate(command, initialDelay, period, unit);
-	}
+  @Override
+  public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
+    return service.schedule(callable, delay, unit);
+  }
 
-	@Override
-	public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit)
-	{
-		return service.scheduleWithFixedDelay(command, initialDelay, delay, unit);
-	}
+  @Override
+  public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period,
+      TimeUnit unit) {
+    return service.scheduleAtFixedRate(command, initialDelay, period, unit);
+  }
+
+  @Override
+  public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay,
+      TimeUnit unit) {
+    return service.scheduleWithFixedDelay(command, initialDelay, delay, unit);
+  }
 }

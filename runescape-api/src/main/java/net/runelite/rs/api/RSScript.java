@@ -3,19 +3,19 @@ package net.runelite.rs.api;
 import net.runelite.api.Script;
 import net.runelite.mapping.Import;
 
-public interface RSScript extends Script, RSDualNode
-{
-	@Import("intOperands")
-	@Override
-	int[] getIntOperands();
+public interface RSScript extends Script, RSDualNode {
 
-	@Import("opcodes")
-	@Override
-	int[] getInstructions();
+  @Import("intOperands")
+  @Override
+  int[] getIntOperands();
 
-	@Import("intArgumentCount")
-	int getIntArgumentCount();
+  @Import("opcodes")
+  @Override
+  int[] getInstructions();
 
-	@Import("stringArgumentCount")
-	int getStringArgumentCount();
+  @Import("intArgumentCount")
+  int getIntArgumentCount();
+
+  @Import("stringArgumentCount")
+  int getStringArgumentCount();
 }

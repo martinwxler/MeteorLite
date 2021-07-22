@@ -3,56 +3,60 @@ package net.runelite.rs.api;
 import net.runelite.api.SpritePixels;
 import net.runelite.mapping.Import;
 
-public interface RSSpritePixels extends SpritePixels
-{
-	@Import("drawTransBgAt")
-	@Override
-	void drawAt$api(int x, int y);
+public interface RSSpritePixels extends SpritePixels {
 
-	@Import("subHeight")
-	@Override
-	int getHeight();
+  @Import("drawTransBgAt")
+  @Override
+  void drawAt$api(int x, int y);
 
-	@Import("subWidth")
-	@Override
-	int getWidth();
+  @Import("subHeight")
+  @Override
+  int getHeight();
 
-	@Import("pixels")
-	@Override
-	int[] getPixels();
+  @Import("subWidth")
+  @Override
+  int getWidth();
 
-	@Import("setRaster")
-	void setRaster$api();
+  @Import("pixels")
+  @Override
+  int[] getPixels();
 
-	@Import("width")
-	@Override
-	int getMaxWidth();
+  @Import("setRaster")
+  void setRaster$api();
 
-	@Import("width")
-	@Override
-	void setMaxWidth(int maxWidth);
+  @Import("width")
+  @Override
+  int getMaxWidth();
 
-	@Import("height")
-	@Override
-	int getMaxHeight();
+  @Import("width")
+  @Override
+  void setMaxWidth(int maxWidth);
 
-	@Import("height")
-	@Override
-	void setMaxHeight(int maxHeight);
+  @Import("height")
+  @Override
+  int getMaxHeight();
 
-	@Import("xOffset")
-	@Override
-	int getOffsetX(); ;
+  @Import("height")
+  @Override
+  void setMaxHeight(int maxHeight);
 
-	@Import("xOffset")
-	@Override
-	void setOffsetX(int offsetX);
+  @Import("xOffset")
+  @Override
+  int getOffsetX();
 
-	@Import("yOffset")
-	@Override
-	int getOffsetY(); ;
+  ;
 
-	@Import("yOffset")
-	@Override
-	void setOffsetY(int offsetY);
+  @Import("xOffset")
+  @Override
+  void setOffsetX(int offsetX);
+
+  @Import("yOffset")
+  @Override
+  int getOffsetY();
+
+  ;
+
+  @Import("yOffset")
+  @Override
+  void setOffsetY(int offsetY);
 }

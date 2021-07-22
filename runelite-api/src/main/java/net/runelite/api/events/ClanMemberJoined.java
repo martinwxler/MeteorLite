@@ -32,8 +32,8 @@ import net.runelite.api.clan.ClanChannelMember;
  * An event when a clan member joins a clan channel.
  */
 @Value
-public class ClanMemberJoined
-{
-	private final ClanChannel clanChannel;
-	private final ClanChannelMember clanMember;
+public class ClanMemberJoined {
+
+  private final ClanChannel clanChannel;
+  private final ClanChannelMember clanMember;
 }

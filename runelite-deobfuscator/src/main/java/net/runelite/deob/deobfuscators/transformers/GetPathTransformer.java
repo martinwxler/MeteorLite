@@ -36,63 +36,53 @@ import net.runelite.deob.Transformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GetPathTransformer implements Transformer
-{
-	private static final Logger logger = LoggerFactory.getLogger(GetPathTransformer.class);
+public class GetPathTransformer implements Transformer {
 
-	private boolean done = false;
+  private static final Logger logger = LoggerFactory.getLogger(GetPathTransformer.class);
 
-	@Override
-	public void transform(ClassGroup group)
-	{
-		for (ClassFile cf : group.getClasses())
-		{
-			for (Method m : cf.getMethods())
-			{
-				transform(m);
-			}
-		}
+  private boolean done = false;
 
-		logger.info("Transformed: " + done);
-	}
+  @Override
+  public void transform(ClassGroup group) {
+    for (ClassFile cf : group.getClasses()) {
+      for (Method m : cf.getMethods()) {
+        transform(m);
+      }
+    }
 
-	private void transform(Method m)
-	{
-		int count = 0;
+    logger.info("Transformed: " + done);
+  }
 
-		if (m.getCode() == null)
-		{
-			return;
-		}
+  private void transform(Method m) {
+    int count = 0;
 
-		for (Instruction i : m.getCode().getInstructions().getInstructions())
-		{
-			if (i instanceof InvokeInstruction)
-			{
-				InvokeInstruction ii = (InvokeInstruction) i;
+    if (m.getCode() == null) {
+      return;
+    }
 
-				if (ii.getMethod().getName().equals("getPath"))
-				{
-					if (++count == 2)
-					{
-						removeInvoke(i);
-						done = true;
-						break;
-					}
-				}
-			}
-		}
-	}
+    for (Instruction i : m.getCode().getInstructions().getInstructions()) {
+      if (i instanceof InvokeInstruction) {
+        InvokeInstruction ii = (InvokeInstruction) i;
 
-	private void removeInvoke(Instruction i)
-	{
-		Instructions ins = i.getInstructions();
+        if (ii.getMethod().getName().equals("getPath")) {
+          if (++count == 2) {
+            removeInvoke(i);
+            done = true;
+            break;
+          }
+        }
+      }
+    }
+  }
 
-		int idx = ins.getInstructions().indexOf(i);
+  private void removeInvoke(Instruction i) {
+    Instructions ins = i.getInstructions();
 
-		ins.remove(i);
-		ins.getInstructions().add(idx, new Pop(ins)); // pop File
-		ins.getInstructions().add(idx + 1, new LDC(ins, ""));
-	}
+    int idx = ins.getInstructions().indexOf(i);
+
+    ins.remove(i);
+    ins.getInstructions().add(idx, new Pop(ins)); // pop File
+    ins.getInstructions().add(idx + 1, new LDC(ins, ""));
+  }
 
 }

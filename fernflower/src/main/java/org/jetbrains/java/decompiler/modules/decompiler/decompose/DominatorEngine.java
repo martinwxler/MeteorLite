@@ -15,11 +15,10 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.decompose;
 
+import java.util.List;
 import org.jetbrains.java.decompiler.modules.decompiler.StatEdge;
 import org.jetbrains.java.decompiler.modules.decompiler.stats.Statement;
 import org.jetbrains.java.decompiler.util.VBStyleCollection;
-
-import java.util.List;
 
 public class DominatorEngine {
 
@@ -30,6 +29,31 @@ public class DominatorEngine {
 
   public DominatorEngine(Statement statement) {
     this.statement = statement;
+  }
+
+  private static Integer getCommonIDom(Integer key1, Integer key2,
+      VBStyleCollection<Integer, Integer> orderedIDoms) {
+
+    if (key1 == null) {
+      return key2;
+    } else if (key2 == null) {
+      return key1;
+    }
+
+    int index1 = orderedIDoms.getIndexByKey(key1);
+    int index2 = orderedIDoms.getIndexByKey(key2);
+
+    while (index1 != index2) {
+      if (index1 > index2) {
+        key1 = orderedIDoms.getWithKey(key1);
+        index1 = orderedIDoms.getIndexByKey(key1);
+      } else {
+        key2 = orderedIDoms.getWithKey(key2);
+        index2 = orderedIDoms.getIndexByKey(key2);
+      }
+    }
+
+    return key1;
   }
 
   public void initialize() {
@@ -43,32 +67,6 @@ public class DominatorEngine {
     }
   }
 
-  private static Integer getCommonIDom(Integer key1, Integer key2, VBStyleCollection<Integer, Integer> orderedIDoms) {
-
-    if (key1 == null) {
-      return key2;
-    }
-    else if (key2 == null) {
-      return key1;
-    }
-
-    int index1 = orderedIDoms.getIndexByKey(key1);
-    int index2 = orderedIDoms.getIndexByKey(key2);
-
-    while (index1 != index2) {
-      if (index1 > index2) {
-        key1 = orderedIDoms.getWithKey(key1);
-        index1 = orderedIDoms.getIndexByKey(key1);
-      }
-      else {
-        key2 = orderedIDoms.getWithKey(key2);
-        index2 = orderedIDoms.getIndexByKey(key2);
-      }
-    }
-
-    return key1;
-  }
-
   private void calcIDoms() {
 
     orderStatements();
@@ -76,7 +74,8 @@ public class DominatorEngine {
     colOrderedIDoms.putWithKey(statement.getFirst().id, statement.getFirst().id);
 
     // exclude first statement
-    List<Integer> lstIds = colOrderedIDoms.getLstKeys().subList(1, colOrderedIDoms.getLstKeys().size());
+    List<Integer> lstIds = colOrderedIDoms.getLstKeys()
+        .subList(1, colOrderedIDoms.getLstKeys().size());
 
     while (true) {
 
@@ -117,8 +116,7 @@ public class DominatorEngine {
 
       if (idom.equals(node)) {
         return false; // root node
-      }
-      else {
+      } else {
         node = idom;
       }
     }

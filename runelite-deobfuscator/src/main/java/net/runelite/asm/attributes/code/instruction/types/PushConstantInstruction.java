@@ -26,9 +26,9 @@ package net.runelite.asm.attributes.code.instruction.types;
 
 import net.runelite.asm.attributes.code.Instruction;
 
-public interface PushConstantInstruction
-{
-	Object getConstant();
+public interface PushConstantInstruction {
 
-	Instruction setConstant(Object entry);
+  Object getConstant();
+
+  Instruction setConstant(Object entry);
 }

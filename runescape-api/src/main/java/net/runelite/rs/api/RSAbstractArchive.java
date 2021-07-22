@@ -3,33 +3,33 @@ package net.runelite.rs.api;
 import net.runelite.api.IndexDataBase;
 import net.runelite.mapping.Import;
 
-public interface RSAbstractArchive extends IndexDataBase
-{
-	@Import("takeFile")
-	@Override
-	byte[] getConfigData(int archiveId, int fileId);
+public interface RSAbstractArchive extends IndexDataBase {
 
-	@Import("getGroupFileIds")
-	@Override
-	int[] getFileIds(int groupId);
+  @Import("takeFile")
+  @Override
+  byte[] getConfigData(int archiveId, int fileId);
 
-	@Import("groupCount")
-	@Override
-	int getGroupCount$api();
+  @Import("getGroupFileIds")
+  @Override
+  int[] getFileIds(int groupId);
 
-	@Import("fileIds")
-	@Override
-	int[][] getFileIds();
+  @Import("groupCount")
+  @Override
+  int getGroupCount$api();
 
-	@Import("getFile")
-	@Override
-	byte[] getFile$api(int groupId, int fileId);
+  @Import("fileIds")
+  @Override
+  int[][] getFileIds();
 
-	@Import("getGroupFileCount")
-	@Override
-	int getGroupFileCount$api(int groupId);
+  @Import("getFile")
+  @Override
+  byte[] getFile$api(int groupId, int fileId);
 
-	@Import("fileCounts")
-	@Override
-	int[] getFileCounts();
+  @Import("getGroupFileCount")
+  @Override
+  int getGroupFileCount$api(int groupId);
+
+  @Import("fileCounts")
+  @Override
+  int[] getFileCounts();
 }

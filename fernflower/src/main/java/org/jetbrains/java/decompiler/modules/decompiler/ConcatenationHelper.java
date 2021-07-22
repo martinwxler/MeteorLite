@@ -15,17 +15,20 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler;
 
-import org.jetbrains.java.decompiler.code.CodeConstants;
-import org.jetbrains.java.decompiler.modules.decompiler.exps.*;
-import org.jetbrains.java.decompiler.struct.consts.PooledConstant;
-import org.jetbrains.java.decompiler.struct.consts.PrimitiveConstant;
-import org.jetbrains.java.decompiler.struct.gen.MethodDescriptor;
-import org.jetbrains.java.decompiler.struct.gen.VarType;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import org.jetbrains.java.decompiler.code.CodeConstants;
+import org.jetbrains.java.decompiler.modules.decompiler.exps.ConstExprent;
+import org.jetbrains.java.decompiler.modules.decompiler.exps.Exprent;
+import org.jetbrains.java.decompiler.modules.decompiler.exps.FunctionExprent;
+import org.jetbrains.java.decompiler.modules.decompiler.exps.InvocationExprent;
+import org.jetbrains.java.decompiler.modules.decompiler.exps.NewExprent;
+import org.jetbrains.java.decompiler.struct.consts.PooledConstant;
+import org.jetbrains.java.decompiler.struct.consts.PrimitiveConstant;
+import org.jetbrains.java.decompiler.struct.gen.MethodDescriptor;
+import org.jetbrains.java.decompiler.struct.gen.VarType;
 
 public class ConcatenationHelper {
 
@@ -33,9 +36,13 @@ public class ConcatenationHelper {
   private static final String bufferClass = "java/lang/StringBuffer";
   private static final String stringClass = "java/lang/String";
 
-  private static final VarType builderType = new VarType(CodeConstants.TYPE_OBJECT, 0, "java/lang/StringBuilder");
-  private static final VarType bufferType = new VarType(CodeConstants.TYPE_OBJECT, 0, "java/lang/StringBuffer");
-
+  private static final VarType builderType = new VarType(CodeConstants.TYPE_OBJECT, 0,
+      "java/lang/StringBuilder");
+  private static final VarType bufferType = new VarType(CodeConstants.TYPE_OBJECT, 0,
+      "java/lang/StringBuffer");
+  // See StringConcatFactory in jdk sources
+  private static final char TAG_ARG = '\u0001';
+  private static final char TAG_CONST = '\u0002';
 
   public static Exprent contractStringConcat(Exprent expr) {
 
@@ -44,19 +51,17 @@ public class ConcatenationHelper {
 
     // first quick test
     if (expr.type == Exprent.EXPRENT_INVOCATION) {
-      InvocationExprent iex = (InvocationExprent)expr;
+      InvocationExprent iex = (InvocationExprent) expr;
       if ("toString".equals(iex.getName())) {
         if (builderClass.equals(iex.getClassname())) {
           cltype = builderType;
-        }
-        else if (bufferClass.equals(iex.getClassname())) {
+        } else if (bufferClass.equals(iex.getClassname())) {
           cltype = bufferType;
         }
         if (cltype != null) {
           exprTmp = iex.getInstance();
         }
-      }
-      else if ("makeConcatWithConstants".equals(iex.getName())) { // java 9 style
+      } else if ("makeConcatWithConstants".equals(iex.getName())) { // java 9 style
         List<Exprent> parameters = extractParameters(iex.getBootstrapArguments(), iex);
         if (parameters.size() >= 2) {
           return createConcatExprent(parameters, expr.bytecode);
@@ -68,7 +73,6 @@ public class ConcatenationHelper {
       return expr;
     }
 
-
     // iterate in depth, collecting possible operands
     List<Exprent> lstOperands = new ArrayList<>();
 
@@ -78,7 +82,7 @@ public class ConcatenationHelper {
 
       switch (exprTmp.type) {
         case Exprent.EXPRENT_INVOCATION:
-          InvocationExprent iex = (InvocationExprent)exprTmp;
+          InvocationExprent iex = (InvocationExprent) exprTmp;
           if (isAppendConcat(iex, cltype)) {
             lstOperands.add(0, iex.getLstParameters().get(0));
             exprTmp = iex.getInstance();
@@ -86,7 +90,7 @@ public class ConcatenationHelper {
           }
           break;
         case Exprent.EXPRENT_NEW:
-          NewExprent nex = (NewExprent)exprTmp;
+          NewExprent nex = (NewExprent) exprTmp;
           if (isNewConcat(nex, cltype)) {
             VarType[] params = nex.getConstructor().getDescriptor().params;
             if (params.length == 1) {
@@ -98,8 +102,7 @@ public class ConcatenationHelper {
 
       if (found == 0) {
         return expr;
-      }
-      else if (found == 2) {
+      } else if (found == 2) {
         break;
       }
     }
@@ -143,22 +146,20 @@ public class ConcatenationHelper {
     Exprent func = lstOperands.get(0);
 
     for (int i = 1; i < lstOperands.size(); i++) {
-      func = new FunctionExprent(FunctionExprent.FUNCTION_STR_CONCAT, Arrays.asList(func, lstOperands.get(i)), bytecode);
+      func = new FunctionExprent(FunctionExprent.FUNCTION_STR_CONCAT,
+          Arrays.asList(func, lstOperands.get(i)), bytecode);
     }
 
     return func;
   }
 
-  // See StringConcatFactory in jdk sources
-  private static final char TAG_ARG = '\u0001';
-  private static final char TAG_CONST = '\u0002';
-
-  private static List<Exprent> extractParameters(List<PooledConstant> bootstrapArguments, InvocationExprent expr) {
+  private static List<Exprent> extractParameters(List<PooledConstant> bootstrapArguments,
+      InvocationExprent expr) {
     List<Exprent> parameters = expr.getLstParameters();
     if (bootstrapArguments != null) {
       PooledConstant constant = bootstrapArguments.get(0);
       if (constant.type == CodeConstants.CONSTANT_String) {
-        String recipe = ((PrimitiveConstant)constant).getString();
+        String recipe = ((PrimitiveConstant) constant).getString();
 
         List<Exprent> res = new ArrayList<>();
         StringBuilder acc = new StringBuilder();
@@ -179,8 +180,7 @@ public class ConcatenationHelper {
             if (c == TAG_ARG) {
               res.add(parameters.get(parameterId++));
             }
-          }
-          else {
+          } else {
             // Not a special characters, this is a constant embedded into
             // the recipe itself.
             acc.append(c);
@@ -230,7 +230,7 @@ public class ConcatenationHelper {
     if (expr.getNewType().equals(cltype)) {
       VarType[] params = expr.getConstructor().getDescriptor().params;
       if (params.length == 0 || (params.length == 1 &&
-                                 params[0].equals(VarType.VARTYPE_STRING))) {
+          params[0].equals(VarType.VARTYPE_STRING))) {
         return true;
       }
     }
@@ -241,7 +241,7 @@ public class ConcatenationHelper {
   private static Exprent removeStringValueOf(Exprent exprent) {
 
     if (exprent.type == Exprent.EXPRENT_INVOCATION) {
-      InvocationExprent iex = (InvocationExprent)exprent;
+      InvocationExprent iex = (InvocationExprent) exprent;
       if ("valueOf".equals(iex.getName()) && stringClass.equals(iex.getClassname())) {
         MethodDescriptor md = iex.getDescriptor();
         if (md.params.length == 1) {

@@ -24,53 +24,60 @@
  */
 package meteor.plugins.itemstats.potions;
 
-import lombok.RequiredArgsConstructor;
-import net.runelite.api.Client;
-import meteor.plugins.itemstats.*;
-import meteor.plugins.itemstats.stats.Stat;
+import static meteor.plugins.itemstats.Builders.perc;
+import static meteor.plugins.itemstats.stats.Stats.ATTACK;
+import static meteor.plugins.itemstats.stats.Stats.DEFENCE;
+import static meteor.plugins.itemstats.stats.Stats.HITPOINTS;
+import static meteor.plugins.itemstats.stats.Stats.MAGIC;
+import static meteor.plugins.itemstats.stats.Stats.RANGED;
+import static meteor.plugins.itemstats.stats.Stats.STRENGTH;
 
 import java.util.Comparator;
 import java.util.stream.Stream;
-
-import static meteor.plugins.itemstats.Builders.perc;
-import static meteor.plugins.itemstats.stats.Stats.*;
+import lombok.RequiredArgsConstructor;
+import meteor.plugins.itemstats.BoostedStatBoost;
+import meteor.plugins.itemstats.Effect;
+import meteor.plugins.itemstats.SimpleStatBoost;
+import meteor.plugins.itemstats.StatChange;
+import meteor.plugins.itemstats.StatsChanges;
+import meteor.plugins.itemstats.stats.Stat;
+import net.runelite.api.Client;
 
 @RequiredArgsConstructor
-public class SaradominBrew implements Effect
-{
-	private static final Stat[] saradominBrewStats = {
-		ATTACK, STRENGTH, RANGED, MAGIC
-	};
+public class SaradominBrew implements Effect {
 
-	private final double percH; //percentage heal
-	private final double percD; //percentage defence boost
-	private final double percSD; //percentage stat drain
-	private final int deltaB; //delta boosted
-	private final int deltaR; //delta reduced
+  private static final Stat[] saradominBrewStats = {
+      ATTACK, STRENGTH, RANGED, MAGIC
+  };
 
-	@Override
-	public StatsChanges calculate(Client client)
-	{
-		StatsChanges changes = new StatsChanges(0);
-		SimpleStatBoost hitpoints = new SimpleStatBoost(HITPOINTS, true, perc(percH, deltaB));
-		SimpleStatBoost defence = new SimpleStatBoost(DEFENCE, true, perc(percD, deltaB));
-		BoostedStatBoost calc = new BoostedStatBoost(null, false, perc(percSD, -deltaR));
-		changes.setStatChanges(Stream.concat(
-			Stream.of(hitpoints.effect(client)),
-			Stream.concat(
-			Stream.of(defence.effect(client)),
-			Stream.of(saradominBrewStats)
-				.filter(stat -> 1 < stat.getValue(client))
-				.map(stat ->
-				{
-					calc.setStat(stat);
-					return calc.effect(client);
-				})
-			)
-		).toArray(StatChange[]::new));
-		changes.setPositivity(Stream.of(changes.getStatChanges())
-			.map(sc -> sc.getPositivity())
-			.max(Comparator.comparing(Enum::ordinal)).get());
-		return changes;
-	}
+  private final double percH; //percentage heal
+  private final double percD; //percentage defence boost
+  private final double percSD; //percentage stat drain
+  private final int deltaB; //delta boosted
+  private final int deltaR; //delta reduced
+
+  @Override
+  public StatsChanges calculate(Client client) {
+    StatsChanges changes = new StatsChanges(0);
+    SimpleStatBoost hitpoints = new SimpleStatBoost(HITPOINTS, true, perc(percH, deltaB));
+    SimpleStatBoost defence = new SimpleStatBoost(DEFENCE, true, perc(percD, deltaB));
+    BoostedStatBoost calc = new BoostedStatBoost(null, false, perc(percSD, -deltaR));
+    changes.setStatChanges(Stream.concat(
+        Stream.of(hitpoints.effect(client)),
+        Stream.concat(
+            Stream.of(defence.effect(client)),
+            Stream.of(saradominBrewStats)
+                .filter(stat -> 1 < stat.getValue(client))
+                .map(stat ->
+                {
+                  calc.setStat(stat);
+                  return calc.effect(client);
+                })
+        )
+    ).toArray(StatChange[]::new));
+    changes.setPositivity(Stream.of(changes.getStatChanges())
+        .map(sc -> sc.getPositivity())
+        .max(Comparator.comparing(Enum::ordinal)).get());
+    return changes;
+  }
 }

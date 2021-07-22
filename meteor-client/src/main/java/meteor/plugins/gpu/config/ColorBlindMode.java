@@ -24,10 +24,9 @@
  */
 package meteor.plugins.gpu.config;
 
-public enum ColorBlindMode
-{
-	NONE,
-	PROTANOPE,
-	DEUTERANOPE,
-	TRITANOPE;
+public enum ColorBlindMode {
+  NONE,
+  PROTANOPE,
+  DEUTERANOPE,
+  TRITANOPE;
 }

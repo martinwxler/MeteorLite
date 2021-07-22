@@ -30,11 +30,11 @@ import net.runelite.api.HeadIcon;
 import net.runelite.api.Player;
 
 @Data
-public class OverheadPrayerChanged
-{
-	private final Player player;
+public class OverheadPrayerChanged {
 
-	private final HeadIcon oldHeadIcon;
+  private final Player player;
 
-	private final HeadIcon newHeadIcon;
+  private final HeadIcon oldHeadIcon;
+
+  private final HeadIcon newHeadIcon;
 }

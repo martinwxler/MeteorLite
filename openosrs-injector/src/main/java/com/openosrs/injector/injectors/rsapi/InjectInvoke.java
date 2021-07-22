@@ -30,7 +30,6 @@
  */
 package com.openosrs.injector.injectors.rsapi;
 
-import com.openosrs.injector.InjectException;
 import com.openosrs.injector.InjectUtil;
 import com.openosrs.injector.rsapi.RSApiMethod;
 import java.util.List;
@@ -51,99 +50,89 @@ import net.runelite.asm.attributes.code.instructions.SiPush;
 import net.runelite.asm.signature.Signature;
 import org.sponge.util.Logger;
 
-public class InjectInvoke
-{
-	public static void inject(ClassFile targetClass, RSApiMethod apiMethod, Method vanillaMethod, String garbage)
-	{
-		if (targetClass.findMethod(apiMethod.getName(), apiMethod.getSignature()) != null)
-		{
-			new Logger("InjectGetter").debug("Duplicate invoker method " + apiMethod.getMethod().toString());
-		}
+public class InjectInvoke {
 
-		final Method method = new Method(targetClass, apiMethod.getName(), apiMethod.getSignature());
-		method.setPublic();
+  public static void inject(ClassFile targetClass, RSApiMethod apiMethod, Method vanillaMethod,
+      String garbage) {
+    if (targetClass.findMethod(apiMethod.getName(), apiMethod.getSignature()) != null) {
+      new Logger("InjectGetter")
+          .debug("Duplicate invoker method " + apiMethod.getMethod().toString());
+    }
 
-		final Code code = new Code(method);
-		method.setCode(code);
+    final Method method = new Method(targetClass, apiMethod.getName(), apiMethod.getSignature());
+    method.setPublic();
 
-		final Instructions instructions = code.getInstructions();
-		final List<Instruction> ins = instructions.getInstructions();
+    final Code code = new Code(method);
+    method.setCode(code);
 
-		int varIdx = 0;
-		if (!vanillaMethod.isStatic())
-		{
-			ins.add(new ALoad(instructions, varIdx));
-		}
-		++varIdx;
+    final Instructions instructions = code.getInstructions();
+    final List<Instruction> ins = instructions.getInstructions();
 
-		final Signature apiSig = apiMethod.getSignature();
-		final Signature vanSig = vanillaMethod.getDescriptor();
-		for (int i = 0; i < apiSig.size(); i++)
-		{
-			final Type type = apiSig.getTypeOfArg(i);
-			final Instruction loadInstruction = InjectUtil.createLoadForTypeIndex(instructions, type, varIdx);
-			ins.add(loadInstruction);
+    int varIdx = 0;
+    if (!vanillaMethod.isStatic()) {
+      ins.add(new ALoad(instructions, varIdx));
+    }
+    ++varIdx;
 
-			final Type obType = vanSig.getTypeOfArg(i);
-			if (!type.equals(obType))
-			{
-				final CheckCast checkCast = new CheckCast(instructions);
-				checkCast.setType(obType);
-				ins.add(checkCast);
-			}
+    final Signature apiSig = apiMethod.getSignature();
+    final Signature vanSig = vanillaMethod.getDescriptor();
+    for (int i = 0; i < apiSig.size(); i++) {
+      final Type type = apiSig.getTypeOfArg(i);
+      final Instruction loadInstruction = InjectUtil
+          .createLoadForTypeIndex(instructions, type, varIdx);
+      ins.add(loadInstruction);
 
-			varIdx += type.getSize();
-		}
+      final Type obType = vanSig.getTypeOfArg(i);
+      if (!type.equals(obType)) {
+        final CheckCast checkCast = new CheckCast(instructions);
+        checkCast.setType(obType);
+        ins.add(checkCast);
+      }
 
-		if (apiSig.size() != vanSig.size())
-		{
-			if (garbage == null)
-			{
-				garbage = "0";
-			}
+      varIdx += type.getSize();
+    }
 
-			switch (vanSig.getTypeOfArg(vanSig.size() - 1).toString())
-			{
-				case "Z":
-				case "B":
-				case "C":
-					ins.add(new BiPush(instructions, Byte.parseByte(garbage)));
-					break;
-				case "S":
-					ins.add(new SiPush(instructions, Short.parseShort(garbage)));
-					break;
-				case "I":
-					ins.add(new LDC(instructions, Integer.parseInt(garbage)));
-					break;
-				case "D":
-					ins.add(new LDC(instructions, Double.parseDouble(garbage)));
-					break;
-				case "F":
-					ins.add(new LDC(instructions, Float.parseFloat(garbage)));
-					break;
-				case "J":
-					ins.add(new LDC(instructions, Long.parseLong(garbage)));
-					break;
-				default:
-					throw new RuntimeException("Unknown type");
-			}
-		}
+    if (apiSig.size() != vanSig.size()) {
+      if (garbage == null) {
+        garbage = "0";
+      }
 
-		if (vanillaMethod.isStatic())
-		{
-			ins.add(new InvokeStatic(instructions, vanillaMethod.getPoolMethod()));
-		}
-		else if (vanillaMethod.getClassFile().isInterface())
-		{
-			ins.add(new InvokeInterface(instructions, vanillaMethod.getPoolMethod()));
-		}
-		else
-		{
-			ins.add(new InvokeVirtual(instructions, vanillaMethod.getPoolMethod()));
-		}
+      switch (vanSig.getTypeOfArg(vanSig.size() - 1).toString()) {
+        case "Z":
+        case "B":
+        case "C":
+          ins.add(new BiPush(instructions, Byte.parseByte(garbage)));
+          break;
+        case "S":
+          ins.add(new SiPush(instructions, Short.parseShort(garbage)));
+          break;
+        case "I":
+          ins.add(new LDC(instructions, Integer.parseInt(garbage)));
+          break;
+        case "D":
+          ins.add(new LDC(instructions, Double.parseDouble(garbage)));
+          break;
+        case "F":
+          ins.add(new LDC(instructions, Float.parseFloat(garbage)));
+          break;
+        case "J":
+          ins.add(new LDC(instructions, Long.parseLong(garbage)));
+          break;
+        default:
+          throw new RuntimeException("Unknown type");
+      }
+    }
 
-		ins.add(InjectUtil.createReturnForType(instructions, vanSig.getReturnValue()));
+    if (vanillaMethod.isStatic()) {
+      ins.add(new InvokeStatic(instructions, vanillaMethod.getPoolMethod()));
+    } else if (vanillaMethod.getClassFile().isInterface()) {
+      ins.add(new InvokeInterface(instructions, vanillaMethod.getPoolMethod()));
+    } else {
+      ins.add(new InvokeVirtual(instructions, vanillaMethod.getPoolMethod()));
+    }
 
-		targetClass.addMethod(method);
-	}
+    ins.add(InjectUtil.createReturnForType(instructions, vanSig.getReturnValue()));
+
+    targetClass.addMethod(method);
+  }
 }

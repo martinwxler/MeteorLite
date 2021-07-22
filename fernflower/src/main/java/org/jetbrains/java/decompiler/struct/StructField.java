@@ -15,10 +15,9 @@
  */
 package org.jetbrains.java.decompiler.struct;
 
+import java.io.IOException;
 import org.jetbrains.java.decompiler.struct.consts.ConstantPool;
 import org.jetbrains.java.decompiler.util.DataInputFullStream;
-
-import java.io.IOException;
 
 /*
   field_info {
@@ -41,7 +40,8 @@ public class StructField extends StructMember {
     int descriptorIndex = in.readUnsignedShort();
 
     ConstantPool pool = clStruct.getPool();
-    String[] values = pool.getClassElement(ConstantPool.FIELD, clStruct.qualifiedName, nameIndex, descriptorIndex);
+    String[] values = pool
+        .getClassElement(ConstantPool.FIELD, clStruct.qualifiedName, nameIndex, descriptorIndex);
     name = values[0];
     descriptor = values[1];
 

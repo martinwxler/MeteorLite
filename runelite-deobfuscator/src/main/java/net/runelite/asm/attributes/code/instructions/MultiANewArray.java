@@ -37,79 +37,68 @@ import net.runelite.asm.execution.StackContext;
 import net.runelite.asm.execution.Value;
 import org.objectweb.asm.MethodVisitor;
 
-public class MultiANewArray extends Instruction
-{
-	private Type type;
-	private int dimensions;
-	private ClassFile myClass;
+public class MultiANewArray extends Instruction {
 
-	public MultiANewArray(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
+  private Type type;
+  private int dimensions;
+  private ClassFile myClass;
 
-	@Override
-	public void accept(MethodVisitor visitor)
-	{
-		visitor.visitMultiANewArrayInsn(type.toString(), dimensions);
-	}
+  public MultiANewArray(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ins = new InstructionContext(this, frame);
-		Stack stack = frame.getStack();
+  @Override
+  public void accept(MethodVisitor visitor) {
+    visitor.visitMultiANewArrayInsn(type.toString(), dimensions);
+  }
 
-		Value[] lenghts = new Value[dimensions];
-		for (int i = 0; i < dimensions; ++i)
-		{
-			StackContext ctx = stack.pop();
-			ins.pop(ctx);
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ins = new InstructionContext(this, frame);
+    Stack stack = frame.getStack();
 
-			lenghts[i] = ctx.getValue();
-		}
+    Value[] lenghts = new Value[dimensions];
+    for (int i = 0; i < dimensions; ++i) {
+      StackContext ctx = stack.pop();
+      ins.pop(ctx);
 
-		StackContext ctx = new StackContext(ins, type, Value.newArray(lenghts));
-		stack.push(ctx);
+      lenghts[i] = ctx.getValue();
+    }
 
-		ins.push(ctx);
+    StackContext ctx = new StackContext(ins, type, Value.newArray(lenghts));
+    stack.push(ctx);
 
-		return ins;
-	}
+    ins.push(ctx);
 
-	@Override
-	public void lookup()
-	{
-		ClassGroup group = this.getInstructions().getCode().getMethod().getClassFile().getGroup();
-		myClass = group.findClass(type.getInternalName());
-	}
+    return ins;
+  }
 
-	@Override
-	public void regeneratePool()
-	{
-		if (myClass != null)
-		{
-			type = Type.getType("L" + myClass.getName() + ";", type.getDimensions());
-		}
-	}
+  @Override
+  public void lookup() {
+    ClassGroup group = this.getInstructions().getCode().getMethod().getClassFile().getGroup();
+    myClass = group.findClass(type.getInternalName());
+  }
 
-	public Type getArrayType()
-	{
-		return type;
-	}
+  @Override
+  public void regeneratePool() {
+    if (myClass != null) {
+      type = Type.getType("L" + myClass.getName() + ";", type.getDimensions());
+    }
+  }
 
-	public void setArrayType(Type type)
-	{
-		this.type = type;
-	}
+  public Type getArrayType() {
+    return type;
+  }
 
-	public int getDimensions()
-	{
-		return this.dimensions;
-	}
+  public void setArrayType(Type type) {
+    this.type = type;
+  }
 
-	public void setDimensions(int dimensions)
-	{
-		this.dimensions = dimensions;
-	}
+  public int getDimensions() {
+    return this.dimensions;
+  }
+
+  public void setDimensions(int dimensions) {
+    this.dimensions = dimensions;
+  }
 }

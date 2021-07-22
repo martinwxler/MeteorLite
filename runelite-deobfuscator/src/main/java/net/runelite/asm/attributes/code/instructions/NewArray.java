@@ -37,84 +37,77 @@ import net.runelite.asm.execution.StackContext;
 import net.runelite.asm.execution.Value;
 import org.objectweb.asm.MethodVisitor;
 
-public class NewArray extends Instruction implements IntInstruction
-{
-	private int type;
+public class NewArray extends Instruction implements IntInstruction {
 
-	public NewArray(Instructions instructions, InstructionType type)
-	{
-		super(instructions, type);
-	}
+  private int type;
 
-	public int getArrayType()
-	{
-		return type;
-	}
+  public NewArray(Instructions instructions, InstructionType type) {
+    super(instructions, type);
+  }
 
-	@Override
-	public void accept(MethodVisitor visitor)
-	{
-		visitor.visitIntInsn(this.getType().getCode(), type & 0xFF);
-	}
+  public int getArrayType() {
+    return type;
+  }
 
-	@Override
-	public InstructionContext execute(Frame frame)
-	{
-		InstructionContext ins = new InstructionContext(this, frame);
-		Stack stack = frame.getStack();
-		
-		StackContext count = stack.pop();
-		ins.pop(count);
-		
-		String t;
-		switch (type)
-		{
-			case 4:
-				t = "[Z";
-				break;
-			case 5:
-				t = "[C";
-				break;
-			case 6:
-				t = "[F";
-				break;
-			case 7:
-				t = "[D";
-				break;
-			case 8:
-				t = "[B";
-				break;
-			case 9:
-				t = "[S";
-				break;
-			case 10:
-				t = "[I";
-				break;
-			case 11:
-				t = "[J";
-				break;
-			default:
-				throw new IllegalStateException("unknown array type " + type);
-		}
+  @Override
+  public void accept(MethodVisitor visitor) {
+    visitor.visitIntInsn(this.getType().getCode(), type & 0xFF);
+  }
 
-		StackContext ctx = new StackContext(ins, new Type(t), Value.newArray(count.getValue()));
-		stack.push(ctx);
-		
-		ins.push(ctx);
-		
-		return ins;
-	}
+  @Override
+  public InstructionContext execute(Frame frame) {
+    InstructionContext ins = new InstructionContext(this, frame);
+    Stack stack = frame.getStack();
 
-	@Override
-	public int getOperand()
-	{
-		return type;
-	}
+    StackContext count = stack.pop();
+    ins.pop(count);
 
-	@Override
-	public void setOperand(int operand)
-	{
-		type = operand;
-	}
+    String t;
+    switch (type) {
+      case 4:
+        t = "[Z";
+        break;
+      case 5:
+        t = "[C";
+        break;
+      case 6:
+        t = "[F";
+        break;
+      case 7:
+        t = "[D";
+        break;
+      case 8:
+        t = "[B";
+        break;
+      case 9:
+        t = "[S";
+        break;
+      case 10:
+        t = "[I";
+        break;
+      case 11:
+        t = "[J";
+        break;
+      default:
+        throw new IllegalStateException("unknown array type " + type);
+    }
+
+    StackContext ctx = new StackContext(ins, new Type(t), Value.newArray(count.getValue()));
+    stack.push(ctx);
+
+    ins.push(ctx);
+
+    return ins;
+  }
+
+  @Override
+  public int getOperand() {
+    return type;
+  }
+
+  @Override
+  public void setOperand(int operand) {
+    type = operand;
+  }
 
 }

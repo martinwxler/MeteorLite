@@ -36,12 +36,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Documented
-public @interface Replace
-{
-	/**
-	 * Method to replace
-	 *
-	 * @return
-	 */
-	String value();
+public @interface Replace {
+
+  /**
+   * Method to replace
+   *
+   * @return
+   */
+  String value();
 }

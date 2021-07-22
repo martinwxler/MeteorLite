@@ -15,6 +15,7 @@
  */
 package org.jetbrains.java.decompiler.struct;
 
+import java.io.IOException;
 import org.jetbrains.java.decompiler.code.CodeConstants;
 import org.jetbrains.java.decompiler.struct.consts.ConstantPool;
 import org.jetbrains.java.decompiler.struct.consts.PrimitiveConstant;
@@ -22,8 +23,6 @@ import org.jetbrains.java.decompiler.struct.lazy.LazyLoader;
 import org.jetbrains.java.decompiler.util.DataInputFullStream;
 import org.jetbrains.java.decompiler.util.InterpreterUtil;
 import org.jetbrains.java.decompiler.util.VBStyleCollection;
-
-import java.io.IOException;
 
 /*
   class_file {
@@ -96,7 +95,8 @@ public class StructClass extends StructMember {
     fields = new VBStyleCollection<>(length);
     for (int i = 0; i < length; i++) {
       StructField field = new StructField(in, this);
-      fields.addWithKey(field, InterpreterUtil.makeUniqueKey(field.getName(), field.getDescriptor()));
+      fields
+          .addWithKey(field, InterpreterUtil.makeUniqueKey(field.getName(), field.getDescriptor()));
     }
 
     // methods
@@ -104,7 +104,8 @@ public class StructClass extends StructMember {
     methods = new VBStyleCollection<>(length);
     for (int i = 0; i < length; i++) {
       StructMethod method = new StructMethod(in, this);
-      methods.addWithKey(method, InterpreterUtil.makeUniqueKey(method.getName(), method.getDescriptor()));
+      methods.addWithKey(method,
+          InterpreterUtil.makeUniqueKey(method.getName(), method.getDescriptor()));
     }
 
     // attributes
@@ -171,7 +172,8 @@ public class StructClass extends StructMember {
   }
 
   public boolean isVersionGE_1_5() {
-    return (majorVersion > 48 || (majorVersion == 48 && minorVersion > 0)); // FIXME: check second condition
+    return (majorVersion > 48 || (majorVersion == 48
+        && minorVersion > 0)); // FIXME: check second condition
   }
 
   public boolean isVersionGE_1_7() {

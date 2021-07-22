@@ -24,6 +24,9 @@
  */
 package net.runelite.deob.deobfuscators.transformers.buffer;
 
+import static net.runelite.asm.attributes.code.InstructionType.GETFIELD;
+import static net.runelite.asm.attributes.code.InstructionType.INVOKEVIRTUAL;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -33,8 +36,6 @@ import net.runelite.asm.ClassGroup;
 import net.runelite.asm.Method;
 import net.runelite.asm.attributes.Code;
 import net.runelite.asm.attributes.code.Instruction;
-import static net.runelite.asm.attributes.code.InstructionType.GETFIELD;
-import static net.runelite.asm.attributes.code.InstructionType.INVOKEVIRTUAL;
 import net.runelite.asm.attributes.code.instructions.InvokeVirtual;
 import net.runelite.asm.execution.Execution;
 import net.runelite.asm.execution.InstructionContext;
@@ -42,78 +43,68 @@ import net.runelite.asm.signature.Signature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PacketFlushFinder
-{
-	private static final Logger logger = LoggerFactory.getLogger(PacketFlushFinder.class);
+public class PacketFlushFinder {
 
-	private final ClassGroup group;
+  private static final Logger logger = LoggerFactory.getLogger(PacketFlushFinder.class);
 
-	private final List<InstructionContext> queueForWrite = new ArrayList<>();
+  private final ClassGroup group;
 
-	public PacketFlushFinder(ClassGroup group)
-	{
-		this.group = group;
-	}
+  private final List<InstructionContext> queueForWrite = new ArrayList<>();
 
-	public List<InstructionContext> getQueueForWrite()
-	{
-		return queueForWrite;
-	}
+  public PacketFlushFinder(ClassGroup group) {
+    this.group = group;
+  }
 
-	public void find()
-	{
-		ClassFile client = group.findClass("Client");
-		if (client == null)
-		{
-			client = group.findClass("client");
-		}
+  public List<InstructionContext> getQueueForWrite() {
+    return queueForWrite;
+  }
 
-		for (Method method : client.getMethods())
-		{
-			find(method);
-		}
-	}
+  public void find() {
+    ClassFile client = group.findClass("Client");
+    if (client == null) {
+      client = group.findClass("client");
+    }
 
-	private void find(Method method)
-	{
-		Code code = method.getCode();
-		Set<Instruction> checked = new HashSet<>();
+    for (Method method : client.getMethods()) {
+      find(method);
+    }
+  }
 
-		Execution e = new Execution(group);
-		e.addMethod(method);
-		e.noInvoke = true;
-		e.noExceptions = true;
-		e.addExecutionVisitor(ic ->
-		{
-			Instruction i = ic.getInstruction();
+  private void find(Method method) {
+    Code code = method.getCode();
+    Set<Instruction> checked = new HashSet<>();
 
-			if (checked.contains(i))
-			{
-				return;
-			}
-			checked.add(i);
+    Execution e = new Execution(group);
+    e.addMethod(method);
+    e.noInvoke = true;
+    e.noExceptions = true;
+    e.addExecutionVisitor(ic ->
+    {
+      Instruction i = ic.getInstruction();
 
-			if (i.getType() != INVOKEVIRTUAL)
-			{
-				return;
-			}
+      if (checked.contains(i)) {
+        return;
+      }
+      checked.add(i);
 
-			InvokeVirtual iv = (InvokeVirtual) i;
-			// queueForWrite
-			if (!iv.getMethod().getType().equals(new Signature("([BII)V")))
-			{
-				return;
-			}
+      if (i.getType() != INVOKEVIRTUAL) {
+        return;
+      }
 
-			InstructionContext lengthCtx = ic.getPops().get(0).getPushed();
-			if (lengthCtx.getInstruction().getType() != GETFIELD)
-			{
-				return;
-			}
+      InvokeVirtual iv = (InvokeVirtual) i;
+      // queueForWrite
+      if (!iv.getMethod().getType().equals(new Signature("([BII)V"))) {
+        return;
+      }
 
-			queueForWrite.add(ic);
-		});
-		e.run();
-	}
+      InstructionContext lengthCtx = ic.getPops().get(0).getPushed();
+      if (lengthCtx.getInstruction().getType() != GETFIELD) {
+        return;
+      }
+
+      queueForWrite.add(ic);
+    });
+    e.run();
+  }
 
 }

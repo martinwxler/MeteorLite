@@ -30,63 +30,55 @@ import net.runelite.asm.attributes.code.instruction.types.LVTInstructionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Mappings
-{
-	private static final Logger logger = LoggerFactory.getLogger(Mappings.class);
+public class Mappings {
 
-	private final int maxVariables;
-	private int offset;
-	private Map<Integer, LVTType> map = new HashMap<>();
-	private Map<MapKey, Integer> newIdxMap = new HashMap<>();
+  private static final Logger logger = LoggerFactory.getLogger(Mappings.class);
 
-	public Mappings(int maxVariables)
-	{
-		this.maxVariables = maxVariables;
-	}
+  private final int maxVariables;
+  private int offset;
+  private Map<Integer, LVTType> map = new HashMap<>();
+  private Map<MapKey, Integer> newIdxMap = new HashMap<>();
 
-	private static LVTType toLvtType(LVTInstructionType type)
-	{
-		switch (type)
-		{
-			case DOUBLE:
-			case LONG:
-				return LVTType.LONG;
-			case FLOAT:
-			case INT:
-				return LVTType.INT;
-			case OBJECT:
-				return LVTType.OBJECT;
-			default:
-				throw new IllegalArgumentException("Unknown type " + type);
-		}
-	}
+  public Mappings(int maxVariables) {
+    this.maxVariables = maxVariables;
+  }
 
-	public Integer remap(int idx, LVTInstructionType type)
-	{
-		LVTType seen = map.get(idx);
+  private static LVTType toLvtType(LVTInstructionType type) {
+    switch (type) {
+      case DOUBLE:
+      case LONG:
+        return LVTType.LONG;
+      case FLOAT:
+      case INT:
+        return LVTType.INT;
+      case OBJECT:
+        return LVTType.OBJECT;
+      default:
+        throw new IllegalArgumentException("Unknown type " + type);
+    }
+  }
 
-		if (seen == null)
-		{
-			map.put(idx, toLvtType(type));
-		}
-		else if (toLvtType(type) != seen)
-		{
-			MapKey key = new MapKey(idx, toLvtType(type));
+  public Integer remap(int idx, LVTInstructionType type) {
+    LVTType seen = map.get(idx);
 
-			Integer newIdx = newIdxMap.get(key);
-			if (newIdx == null)
-			{
-				newIdx = maxVariables + offset;
-				newIdxMap.put(key, newIdx);
+    if (seen == null) {
+      map.put(idx, toLvtType(type));
+    } else if (toLvtType(type) != seen) {
+      MapKey key = new MapKey(idx, toLvtType(type));
 
-				logger.debug("Mapping {} -> {}", idx, newIdx);
+      Integer newIdx = newIdxMap.get(key);
+      if (newIdx == null) {
+        newIdx = maxVariables + offset;
+        newIdxMap.put(key, newIdx);
 
-				offset += type.getSlots();
-			}
+        logger.debug("Mapping {} -> {}", idx, newIdx);
 
-			return newIdx;
-		}
+        offset += type.getSlots();
+      }
 
-		return null;
-	}
+      return newIdx;
+    }
+
+    return null;
+  }
 }

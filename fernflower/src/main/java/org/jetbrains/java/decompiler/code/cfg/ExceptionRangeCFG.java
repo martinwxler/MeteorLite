@@ -15,11 +15,10 @@
  */
 package org.jetbrains.java.decompiler.code.cfg;
 
-import org.jetbrains.java.decompiler.main.DecompilerContext;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.jetbrains.java.decompiler.main.DecompilerContext;
 
 public class ExceptionRangeCFG {
 
@@ -29,7 +28,8 @@ public class ExceptionRangeCFG {
 
   private List<String> exceptionTypes;
 
-  public ExceptionRangeCFG(List<BasicBlock> protectedRange, BasicBlock handler, List<String> exceptionType) {
+  public ExceptionRangeCFG(List<BasicBlock> protectedRange, BasicBlock handler,
+      List<String> exceptionType) {
     this.protectedRange = protectedRange;
     this.handler = handler;
 
@@ -92,8 +92,7 @@ public class ExceptionRangeCFG {
 
     if (exceptionType == null) {
       this.exceptionTypes = null;
-    }
-    else {
+    } else {
       this.exceptionTypes.add(exceptionType);
     }
   }
@@ -106,7 +105,6 @@ public class ExceptionRangeCFG {
 
     return exceptionTypes.stream().distinct().collect(Collectors.joining(":"));
   }
-
 
   //	public void setExceptionType(String exceptionType) {
   //		this.exceptionType = exceptionType;

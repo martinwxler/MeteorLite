@@ -40,8 +40,7 @@ public class FastSparseSetFactory<E> {
 
       if (index % 32 == 0) {
         mask = 1;
-      }
-      else {
+      } else {
         mask <<= 1;
       }
 
@@ -59,8 +58,7 @@ public class FastSparseSetFactory<E> {
     if (lastMask == -1 || lastMask == 0x80000000) {
       lastMask = 1;
       lastBlock++;
-    }
-    else {
+    } else {
       lastMask <<= 1;
     }
 
@@ -88,6 +86,7 @@ public class FastSparseSetFactory<E> {
 
 
   public static class FastSparseSet<E> implements Iterable<E> {
+
     public static final FastSparseSet[] EMPTY_ARRAY = new FastSparseSet[0];
 
     private final FastSparseSetFactory<E> factory;
@@ -112,6 +111,16 @@ public class FastSparseSetFactory<E> {
 
       this.data = data;
       this.next = next;
+    }
+
+    private static void changeNext(int[] arrnext, int key, int oldnext, int newnext) {
+      for (int i = key - 1; i >= 0; i--) {
+        if (arrnext[i] == oldnext) {
+          arrnext[i] = newnext;
+        } else {
+          break;
+        }
+      }
     }
 
     public FastSparseSet<E> getCopy() {
@@ -254,17 +263,6 @@ public class FastSparseSetFactory<E> {
       }
     }
 
-    private static void changeNext(int[] arrnext, int key, int oldnext, int newnext) {
-      for (int i = key - 1; i >= 0; i--) {
-        if (arrnext[i] == oldnext) {
-          arrnext[i] = newnext;
-        }
-        else {
-          break;
-        }
-      }
-    }
-
     public void union(FastSparseSet<E> set) {
 
       int[] extdata = set.getData();
@@ -354,10 +352,14 @@ public class FastSparseSetFactory<E> {
 
 
     public boolean equals(Object o) {
-      if (o == this) return true;
-      if (o == null || !(o instanceof FastSparseSet)) return false;
+      if (o == this) {
+        return true;
+      }
+      if (o == null || !(o instanceof FastSparseSet)) {
+        return false;
+      }
 
-      int[] longdata = ((FastSparseSet)o).getData();
+      int[] longdata = ((FastSparseSet) o).getData();
       int[] shortdata = data;
 
       if (data.length > longdata.length) {
@@ -390,12 +392,10 @@ public class FastSparseSetFactory<E> {
         if (block != 0) {
           if (found) {
             return 2;
-          }
-          else {
+          } else {
             if ((block & (block - 1)) == 0) {
               found = true;
-            }
-            else {
+            } else {
               return 2;
             }
           }
@@ -532,8 +532,7 @@ public class FastSparseSetFactory<E> {
     public E next() {
       if (next_pointer >= 0) {
         pointer = next_pointer;
-      }
-      else {
+      } else {
         pointer = getNextIndex(pointer);
         if (pointer == -1) {
           pointer = size;

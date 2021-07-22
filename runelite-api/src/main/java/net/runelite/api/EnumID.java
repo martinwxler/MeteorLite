@@ -29,26 +29,26 @@ package net.runelite.api;
  * <p>
  * Note: This class is not complete and may be missing mapped IDs.
  */
-public final class EnumID
-{
-	public static final int MUSIC_TRACK_NAMES = 812;
-	public static final int MUSIC_TRACK_IDS = 819;
-	public static final int XPDROP_COLORS = 1169;
+public final class EnumID {
 
-	/**
-	 * Translates spellbook varbit into enum ID
-	 */
-	public static final int SPELLBOOKS = 1981;
+  public static final int MUSIC_TRACK_NAMES = 812;
+  public static final int MUSIC_TRACK_IDS = 819;
+  public static final int XPDROP_COLORS = 1169;
 
-	/**
-	 * key: index in spellbook, value: NullItemID corresponding to spell
-	 */
-	public static final int STANDARD_SPELLBOOK = 1982;
-	public static final int ANCIENT_SPELLBOOK = 1983;
-	public static final int LUNAR_SPELLBOOK = 1984;
-	public static final int ARCEUUS_SPELLBOOK = 1985;
+  /**
+   * Translates spellbook varbit into enum ID
+   */
+  public static final int SPELLBOOKS = 1981;
 
-	public static final int FRIENDS_CHAT_RANK_ICONS = 1543;
-	public static final int CLAN_RANK_NAME = 3797;
-	public static final int CLAN_RANK_GRAPHIC = 3798;
+  /**
+   * key: index in spellbook, value: NullItemID corresponding to spell
+   */
+  public static final int STANDARD_SPELLBOOK = 1982;
+  public static final int ANCIENT_SPELLBOOK = 1983;
+  public static final int LUNAR_SPELLBOOK = 1984;
+  public static final int ARCEUUS_SPELLBOOK = 1985;
+
+  public static final int FRIENDS_CHAT_RANK_ICONS = 1543;
+  public static final int CLAN_RANK_NAME = 3797;
+  public static final int CLAN_RANK_GRAPHIC = 3798;
 }

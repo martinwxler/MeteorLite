@@ -28,8 +28,8 @@ import lombok.Value;
 import net.runelite.api.Skill;
 
 @Value
-public class FakeXpDrop
-{
-	Skill skill;
-	int xp;
+public class FakeXpDrop {
+
+  Skill skill;
+  int xp;
 }

@@ -1,5 +1,5 @@
 package meteor.config;
 
-public class Button
-{
+public class Button {
+
 }

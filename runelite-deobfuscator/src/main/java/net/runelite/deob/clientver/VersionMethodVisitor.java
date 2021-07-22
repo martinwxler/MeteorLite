@@ -28,33 +28,28 @@ package net.runelite.deob.clientver;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-public class VersionMethodVisitor extends MethodVisitor
-{
-	private int state = 0;
-	private int version = -1;
+public class VersionMethodVisitor extends MethodVisitor {
 
-	VersionMethodVisitor()
-	{
-		super(Opcodes.ASM5);
-	}
+  private int state = 0;
+  private int version = -1;
 
-	@Override
-	public void visitIntInsn(int opcode, int operand)
-	{
-		if (state == 2)
-		{
-			version = operand;
-			++state;
-		}
+  VersionMethodVisitor() {
+    super(Opcodes.ASM5);
+  }
 
-		if (operand == 765 || operand == 503)
-		{
-			++state;
-		}
-	}
+  @Override
+  public void visitIntInsn(int opcode, int operand) {
+    if (state == 2) {
+      version = operand;
+      ++state;
+    }
 
-	public int getVersion()
-	{
-		return version;
-	}
+    if (operand == 765 || operand == 503) {
+      ++state;
+    }
+  }
+
+  public int getVersion() {
+    return version;
+  }
 }

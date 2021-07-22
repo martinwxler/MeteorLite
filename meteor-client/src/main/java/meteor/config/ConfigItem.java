@@ -31,53 +31,53 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface ConfigItem
-{
-	int position() default -1;
+public @interface ConfigItem {
 
-	String keyName();
+  int position() default -1;
 
-	String name();
+  String keyName();
 
-	String description();
+  String name();
 
-	boolean hidden() default false;
+  String description();
 
-	String warning() default "";
+  boolean hidden() default false;
 
-	boolean secret() default false;
+  String warning() default "";
 
-	String section() default "";
+  boolean secret() default false;
 
-	String title() default "";
+  String section() default "";
 
-	boolean parse() default false;
+  String title() default "";
 
-	Class<?> clazz() default void.class;
+  boolean parse() default false;
 
-	String method() default "";
+  Class<?> clazz() default void.class;
 
-	String unhide() default "";
+  String method() default "";
 
-	String unhideValue() default "";
+  String unhide() default "";
 
-	String hide() default "";
+  String unhideValue() default "";
 
-	String hideValue() default "";
+  String hide() default "";
 
-	String enabledBy() default "";
+  String hideValue() default "";
 
-	String enabledByValue() default "";
+  String enabledBy() default "";
 
-	String disabledBy() default "";
+  String enabledByValue() default "";
 
-	String disabledByValue() default "";
+  String disabledBy() default "";
 
-	/**
-	 * Use this to indicate the enum class that is going to be used in the multiple select config.
-	 * This implementation made debugging problems with multiple selects a lot easier
-	 *
-	 * @return The Enum that will be used for the multiple select
-	 */
-	Class<? extends Enum> enumClass() default Enum.class;
+  String disabledByValue() default "";
+
+  /**
+   * Use this to indicate the enum class that is going to be used in the multiple select config.
+   * This implementation made debugging problems with multiple selects a lot easier
+   *
+   * @return The Enum that will be used for the multiple select
+   */
+  Class<? extends Enum> enumClass() default Enum.class;
 }

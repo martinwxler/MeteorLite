@@ -24,41 +24,38 @@
  */
 package net.runelite.asm.visitors;
 
+import net.runelite.asm.Annotation;
 import net.runelite.asm.ClassFile;
 import net.runelite.asm.Field;
 import net.runelite.asm.Type;
-import net.runelite.asm.Annotation;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Opcodes;
 
-public class ClassFieldVisitor extends FieldVisitor
-{
-	private final Field field;
+public class ClassFieldVisitor extends FieldVisitor {
 
-	ClassFieldVisitor(ClassFile cf, int access, String name, Type desc, Object value)
-	{
-		super(Opcodes.ASM5);
+  private final Field field;
 
-		this.field = new Field(cf, name, desc);
-		this.field.setAccessFlags(access);
-		this.field.setValue(value);
+  ClassFieldVisitor(ClassFile cf, int access, String name, Type desc, Object value) {
+    super(Opcodes.ASM5);
 
-		cf.addField(field);
-	}
+    this.field = new Field(cf, name, desc);
+    this.field.setAccessFlags(access);
+    this.field.setValue(value);
 
-	@Override
-	public AnnotationVisitor visitAnnotation(String desc, boolean visible)
-	{
-		Annotation annotation = new Annotation(new Type(desc), visible);
-		this.field.addAnnotation(annotation);
-		return annotation;
-	}
+    cf.addField(field);
+  }
 
-	@Override
-	public void visitAttribute(Attribute attr)
-	{
-		System.out.println(attr);
-	}
+  @Override
+  public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+    Annotation annotation = new Annotation(new Type(desc), visible);
+    this.field.addAnnotation(annotation);
+    return annotation;
+  }
+
+  @Override
+  public void visitAttribute(Attribute attr) {
+    System.out.println(attr);
+  }
 }

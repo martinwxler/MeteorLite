@@ -24,7 +24,8 @@ public class FullInstructionSequence extends InstructionSequence {
   // constructors
   // *****************************************************************************
 
-  public FullInstructionSequence(VBStyleCollection<Instruction, Integer> collinstr, ExceptionTable extable) {
+  public FullInstructionSequence(VBStyleCollection<Instruction, Integer> collinstr,
+      ExceptionTable extable) {
     super(collinstr);
     this.exceptionTable = extable;
 

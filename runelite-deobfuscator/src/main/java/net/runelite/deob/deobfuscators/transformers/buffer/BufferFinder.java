@@ -39,77 +39,65 @@ import org.slf4j.LoggerFactory;
  *
  * @author Adam
  */
-public class BufferFinder
-{
-	private static final Logger logger = LoggerFactory.getLogger(BufferFinder.class);
+public class BufferFinder {
 
-	private final ClassGroup group;
+  private static final Logger logger = LoggerFactory.getLogger(BufferFinder.class);
 
-	private ClassFile buffer, packetBuffer;
+  private final ClassGroup group;
 
-	public BufferFinder(ClassGroup group)
-	{
-		this.group = group;
-	}
+  private ClassFile buffer, packetBuffer;
 
-	public ClassFile getBuffer()
-	{
-		return buffer;
-	}
+  public BufferFinder(ClassGroup group) {
+    this.group = group;
+  }
 
-	public ClassFile getPacketBuffer()
-	{
-		return packetBuffer;
-	}
+  public ClassFile getBuffer() {
+    return buffer;
+  }
 
-	public void find()
-	{
-		for (ClassFile cf : group.getClasses())
-		{
-			for (Method m : cf.getMethods())
-			{
-				Code code = m.getCode();
+  public ClassFile getPacketBuffer() {
+    return packetBuffer;
+  }
 
-				if (findModPow(code))
-				{
-					buffer = cf;
+  public void find() {
+    for (ClassFile cf : group.getClasses()) {
+      for (Method m : cf.getMethods()) {
+        Code code = m.getCode();
 
-					// packetBuffer extends this
-					packetBuffer = group.getClasses().stream()
-						.filter(cl -> cl.getParent() == cf)
-						.findAny()
-						.get();
+        if (findModPow(code)) {
+          buffer = cf;
 
-					logger.info("Identified buffer {}, packetBuffer {}", buffer, packetBuffer);
-				}
-			}
-		}
-	}
+          // packetBuffer extends this
+          packetBuffer = group.getClasses().stream()
+              .filter(cl -> cl.getParent() == cf)
+              .findAny()
+              .get();
 
-	// Find encryptRsa in buffer
-	private boolean findModPow(Code code)
-	{
-		if (code == null)
-		{
-			return false;
-		}
+          logger.info("Identified buffer {}, packetBuffer {}", buffer, packetBuffer);
+        }
+      }
+    }
+  }
 
-		Instructions instructions = code.getInstructions();
+  // Find encryptRsa in buffer
+  private boolean findModPow(Code code) {
+    if (code == null) {
+      return false;
+    }
 
-		for (Instruction i : instructions.getInstructions())
-		{
-			if (!(i instanceof InvokeVirtual))
-			{
-				continue;
-			}
+    Instructions instructions = code.getInstructions();
 
-			InvokeVirtual iv = (InvokeVirtual) i;
-			net.runelite.asm.pool.Method method = iv.getMethod();
-			if (method.getName().equals("modPow"))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+    for (Instruction i : instructions.getInstructions()) {
+      if (!(i instanceof InvokeVirtual)) {
+        continue;
+      }
+
+      InvokeVirtual iv = (InvokeVirtual) i;
+      net.runelite.asm.pool.Method method = iv.getMethod();
+      if (method.getName().equals("modPow")) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

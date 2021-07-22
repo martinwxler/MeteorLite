@@ -15,6 +15,9 @@
  */
 package org.jetbrains.java.decompiler.main;
 
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import org.jetbrains.java.decompiler.main.collectors.BytecodeSourceMapper;
 import org.jetbrains.java.decompiler.main.collectors.CounterContainer;
 import org.jetbrains.java.decompiler.main.collectors.ImportCollector;
@@ -24,11 +27,8 @@ import org.jetbrains.java.decompiler.main.extern.IFernflowerPreferences;
 import org.jetbrains.java.decompiler.modules.renamer.PoolInterceptor;
 import org.jetbrains.java.decompiler.struct.StructContext;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
 public class DecompilerContext {
+
   public static final String CURRENT_CLASS = "CURRENT_CLASS";
   public static final String CURRENT_CLASS_WRAPPER = "CURRENT_CLASS_WRAPPER";
   public static final String CURRENT_CLASS_NODE = "CURRENT_CLASS_NODE";
@@ -141,12 +141,12 @@ public class DecompilerContext {
 
   public static void setLogger(IFernflowerLogger logger) {
     if (logger != null) {
-      String level = (String)getProperty(IFernflowerPreferences.LOG_LEVEL);
+      String level = (String) getProperty(IFernflowerPreferences.LOG_LEVEL);
       if (level != null) {
         try {
           logger.setSeverity(IFernflowerLogger.Severity.valueOf(level.toUpperCase(Locale.US)));
+        } catch (IllegalArgumentException ignore) {
         }
-        catch (IllegalArgumentException ignore) { }
       }
     }
     getCurrentContext().logger = logger;
@@ -154,6 +154,6 @@ public class DecompilerContext {
 
   public static String getNewLineSeparator() {
     return getOption(IFernflowerPreferences.NEW_LINE_SEPARATOR) ?
-           IFernflowerPreferences.LINE_SEPARATOR_UNX : IFernflowerPreferences.LINE_SEPARATOR_WIN;
+        IFernflowerPreferences.LINE_SEPARATOR_UNX : IFernflowerPreferences.LINE_SEPARATOR_WIN;
   }
 }

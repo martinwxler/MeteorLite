@@ -30,11 +30,11 @@ import net.runelite.api.Player;
 import net.runelite.api.SkullIcon;
 
 @Data
-public class PlayerSkullChanged
-{
-	private final Player player;
+public class PlayerSkullChanged {
 
-	private final SkullIcon oldSkullIcon;
+  private final Player player;
 
-	private final SkullIcon newSkullIcon;
+  private final SkullIcon oldSkullIcon;
+
+  private final SkullIcon newSkullIcon;
 }

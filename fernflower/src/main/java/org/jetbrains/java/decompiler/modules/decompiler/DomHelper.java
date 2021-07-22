@@ -15,6 +15,14 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import org.jetbrains.java.decompiler.code.cfg.BasicBlock;
 import org.jetbrains.java.decompiler.code.cfg.ControlFlowGraph;
 import org.jetbrains.java.decompiler.code.cfg.ExceptionRangeCFG;
@@ -22,13 +30,22 @@ import org.jetbrains.java.decompiler.main.DecompilerContext;
 import org.jetbrains.java.decompiler.main.extern.IFernflowerLogger;
 import org.jetbrains.java.decompiler.modules.decompiler.decompose.FastExtendedPostdominanceHelper;
 import org.jetbrains.java.decompiler.modules.decompiler.deobfuscator.IrreducibleCFGDeobfuscator;
-import org.jetbrains.java.decompiler.modules.decompiler.stats.*;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.BasicBlockStatement;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.CatchAllStatement;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.CatchStatement;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.DoStatement;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.DummyExitStatement;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.GeneralStatement;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.IfStatement;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.RootStatement;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.SequenceStatement;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.Statement;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.SwitchStatement;
+import org.jetbrains.java.decompiler.modules.decompiler.stats.SynchronizedStatement;
 import org.jetbrains.java.decompiler.util.FastFixedSetFactory;
 import org.jetbrains.java.decompiler.util.FastFixedSetFactory.FastFixedSet;
 import org.jetbrains.java.decompiler.util.InterpreterUtil;
 import org.jetbrains.java.decompiler.util.VBStyleCollection;
-
-import java.util.*;
 
 public class DomHelper {
 
@@ -49,10 +66,10 @@ public class DomHelper {
     DummyExitStatement dummyexit = new DummyExitStatement();
 
     Statement general;
-    if (stats.size() > 1 || firstblock.isSuccessor(firstblock)) { // multiple basic blocks or an infinite loop of one block
+    if (stats.size() > 1 || firstblock
+        .isSuccessor(firstblock)) { // multiple basic blocks or an infinite loop of one block
       general = new GeneralStatement(firstst, stats, null);
-    }
-    else { // one straightforward basic block
+    } else { // one straightforward basic block
       RootStatement root = new RootStatement(firstst, dummyexit);
       firstst.addSuccessor(new StatEdge(StatEdge.TYPE_BREAK, firstst, dummyexit, root));
 
@@ -68,21 +85,19 @@ public class DomHelper {
         int type;
         if (stsucc == firstst) {
           type = StatEdge.TYPE_CONTINUE;
-        }
-        else if (graph.getFinallyExits().contains(block)) {
+        } else if (graph.getFinallyExits().contains(block)) {
           type = StatEdge.TYPE_FINALLYEXIT;
           stsucc = dummyexit;
-        }
-        else if (succ.id == graph.getLast().id) {
+        } else if (succ.id == graph.getLast().id) {
           type = StatEdge.TYPE_BREAK;
           stsucc = dummyexit;
-        }
-        else {
+        } else {
           type = StatEdge.TYPE_REGULAR;
         }
 
-        stat.addSuccessor(new StatEdge(type, stat, (type == StatEdge.TYPE_CONTINUE) ? general : stsucc,
-                                       (type == StatEdge.TYPE_REGULAR) ? null : general));
+        stat.addSuccessor(
+            new StatEdge(type, stat, (type == StatEdge.TYPE_CONTINUE) ? general : stsucc,
+                (type == StatEdge.TYPE_REGULAR) ? null : general));
       }
 
       // exceptions edges
@@ -108,7 +123,8 @@ public class DomHelper {
     StrongConnectivityHelper schelper = new StrongConnectivityHelper(container);
     List<List<Statement>> components = schelper.getComponents();
 
-    List<Statement> lstStats = container.getPostReversePostOrderList(StrongConnectivityHelper.getExitReps(components));
+    List<Statement> lstStats = container
+        .getPostReversePostOrderList(StrongConnectivityHelper.getExitReps(components));
 
     FastFixedSetFactory<Statement> factory = new FastFixedSetFactory<>(lstStats);
 
@@ -124,8 +140,7 @@ public class DomHelper {
       if (StrongConnectivityHelper.isExitComponent(lst)) {
         tmpSet = factory.spawnEmptySet();
         tmpSet.addAll(lst);
-      }
-      else {
+      } else {
         tmpSet = initSet.getCopy();
       }
 
@@ -146,15 +161,15 @@ public class DomHelper {
         FastFixedSet<Statement> doms = lists.get(stat);
         FastFixedSet<Statement> domsSuccs = factory.spawnEmptySet();
 
-        List<Statement> lstSuccs = stat.getNeighbours(StatEdge.TYPE_REGULAR, Statement.DIRECTION_FORWARD);
+        List<Statement> lstSuccs = stat
+            .getNeighbours(StatEdge.TYPE_REGULAR, Statement.DIRECTION_FORWARD);
         for (int j = 0; j < lstSuccs.size(); j++) {
           Statement succ = lstSuccs.get(j);
           FastFixedSet<Statement> succlst = lists.get(succ);
 
           if (j == 0) {
             domsSuccs.union(succlst);
-          }
-          else {
+          } else {
             domsSuccs.intersection(succlst);
           }
         }
@@ -167,7 +182,8 @@ public class DomHelper {
 
           lists.put(stat, domsSuccs);
 
-          List<Statement> lstPreds = stat.getNeighbours(StatEdge.TYPE_REGULAR, Statement.DIRECTION_BACKWARD);
+          List<Statement> lstPreds = stat
+              .getNeighbours(StatEdge.TYPE_REGULAR, Statement.DIRECTION_BACKWARD);
           for (Statement pred : lstPreds) {
             setFlagNodes.add(pred);
           }
@@ -235,7 +251,7 @@ public class DomHelper {
     }
 
     if (stat.type == Statement.TYPE_SYNCRONIZED) {
-      ((SynchronizedStatement)stat).removeExc();
+      ((SynchronizedStatement) stat).removeExc();
     }
   }
 
@@ -267,12 +283,14 @@ public class DomHelper {
 
             if (next.type == Statement.TYPE_CATCHALL) {
 
-              CatchAllStatement ca = (CatchAllStatement)next;
+              CatchAllStatement ca = (CatchAllStatement) next;
 
-              if (ca.getFirst().isContainsMonitorExit() && ca.getHandler().isContainsMonitorExit()) {
+              if (ca.getFirst().isContainsMonitorExit() && ca.getHandler()
+                  .isContainsMonitorExit()) {
 
                 // remove the head block from sequence
-                current.removeSuccessor(current.getSuccessorEdges(Statement.STATEDGE_DIRECT_ALL).get(0));
+                current.removeSuccessor(
+                    current.getSuccessorEdges(Statement.STATEDGE_DIRECT_ALL).get(0));
 
                 for (StatEdge edge : current.getPredecessorEdges(Statement.STATEDGE_DIRECT_ALL)) {
                   current.removePredecessor(edge);
@@ -284,7 +302,8 @@ public class DomHelper {
                 stat.setFirst(stat.getStats().get(0));
 
                 // new statement
-                SynchronizedStatement sync = new SynchronizedStatement(current, ca.getFirst(), ca.getHandler());
+                SynchronizedStatement sync = new SynchronizedStatement(current, ca.getFirst(),
+                    ca.getHandler());
                 sync.setAllParent();
 
                 for (StatEdge edge : new HashSet<>(ca.getLabelEdges())) {
@@ -308,14 +327,14 @@ public class DomHelper {
     }
   }
 
-  private static boolean processStatement(Statement general, HashMap<Integer, Set<Integer>> mapExtPost) {
+  private static boolean processStatement(Statement general,
+      HashMap<Integer, Set<Integer>> mapExtPost) {
 
     if (general.type == Statement.TYPE_ROOT) {
       Statement stat = general.getFirst();
       if (stat.type != Statement.TYPE_GENERAL) {
         return true;
-      }
-      else {
+      } else {
         boolean complete = processStatement(stat, mapExtPost);
         if (complete) {
           // replace general purpose statement with simple one
@@ -330,8 +349,8 @@ public class DomHelper {
     for (int mapstage = 0; mapstage < 2; mapstage++) {
 
       for (int reducibility = 0;
-           reducibility < 5;
-           reducibility++) { // FIXME: implement proper node splitting. For now up to 5 nodes in sequence are splitted.
+          reducibility < 5;
+          reducibility++) { // FIXME: implement proper node splitting. For now up to 5 nodes in sequence are splitted.
 
         if (reducibility > 0) {
 
@@ -342,13 +361,16 @@ public class DomHelper {
           // take care of irreducible control flow graphs
           if (IrreducibleCFGDeobfuscator.isStatementIrreducible(general)) {
             if (!IrreducibleCFGDeobfuscator.splitIrreducibleNode(general)) {
-              DecompilerContext.getLogger().writeMessage("Irreducible statement cannot be decomposed!", IFernflowerLogger.Severity.ERROR);
+              DecompilerContext.getLogger()
+                  .writeMessage("Irreducible statement cannot be decomposed!",
+                      IFernflowerLogger.Severity.ERROR);
               break;
             }
-          }
-          else {
+          } else {
             if (mapstage == 2 || mapRefreshed) { // last chance lost
-              DecompilerContext.getLogger().writeMessage("Statement cannot be decomposed although reducible!", IFernflowerLogger.Severity.ERROR);
+              DecompilerContext.getLogger()
+                  .writeMessage("Statement cannot be decomposed although reducible!",
+                      IFernflowerLogger.Severity.ERROR);
             }
             break;
           }
@@ -378,21 +400,20 @@ public class DomHelper {
             Statement stat = findGeneralStatement(general, forceall, mapExtPost);
 
             if (stat != null) {
-              boolean complete = processStatement(stat, general.getFirst() == stat ? mapExtPost : new HashMap<>());
+              boolean complete = processStatement(stat,
+                  general.getFirst() == stat ? mapExtPost : new HashMap<>());
 
               if (complete) {
                 // replace general purpose statement with simple one
                 general.replaceStatement(stat, stat.getFirst());
-              }
-              else {
+              } else {
                 return false;
               }
 
               mapExtPost = new HashMap<>();
               mapRefreshed = true;
               reducibility = 0;
-            }
-            else {
+            } else {
               break;
             }
           }
@@ -407,8 +428,7 @@ public class DomHelper {
 
       if (mapRefreshed) {
         break;
-      }
-      else {
+      } else {
         mapExtPost = new HashMap<>();
       }
     }
@@ -416,7 +436,8 @@ public class DomHelper {
     return false;
   }
 
-  private static Statement findGeneralStatement(Statement stat, boolean forceall, HashMap<Integer, Set<Integer>> mapExtPost) {
+  private static Statement findGeneralStatement(Statement stat, boolean forceall,
+      HashMap<Integer, Set<Integer>> mapExtPost) {
 
     VBStyleCollection<Statement, Integer> stats = stat.getStats();
     VBStyleCollection<List<Integer>, Integer> vbPost;
@@ -448,8 +469,7 @@ public class DomHelper {
           lst.add(id);
         }
       }
-    }
-    else {
+    } else {
       vbPost = calcPostDominators(stat);
     }
 
@@ -498,9 +518,10 @@ public class DomHelper {
 
             boolean addhd = (setNodes.size() == 0); // first handler == head
             if (!addhd) {
-              List<Statement> hdsupp = handler.getNeighbours(StatEdge.TYPE_EXCEPTION, Statement.DIRECTION_BACKWARD);
+              List<Statement> hdsupp = handler
+                  .getNeighbours(StatEdge.TYPE_EXCEPTION, Statement.DIRECTION_BACKWARD);
               addhd = (setNodes.containsAll(hdsupp) && (setNodes.size() > hdsupp.size()
-                                                        || setNodes.size() == 1)); // strict subset
+                  || setNodes.size() == 1)); // strict subset
             }
 
             if (addhd) {
@@ -514,14 +535,17 @@ public class DomHelper {
                   setNodes.add(st);
                   if (st != head) {
                     // record predeccessors except for the head
-                    setPreds.addAll(st.getNeighbours(StatEdge.TYPE_REGULAR, Statement.DIRECTION_BACKWARD));
+                    setPreds.addAll(
+                        st.getNeighbours(StatEdge.TYPE_REGULAR, Statement.DIRECTION_BACKWARD));
                   }
 
                   // put successors on the stack
-                  lstStack.addAll(st.getNeighbours(StatEdge.TYPE_REGULAR, Statement.DIRECTION_FORWARD));
+                  lstStack
+                      .addAll(st.getNeighbours(StatEdge.TYPE_REGULAR, Statement.DIRECTION_FORWARD));
 
                   // exception edges
-                  setHandlers.addAll(st.getNeighbours(StatEdge.TYPE_EXCEPTION, Statement.DIRECTION_FORWARD));
+                  setHandlers.addAll(
+                      st.getNeighbours(StatEdge.TYPE_EXCEPTION, Statement.DIRECTION_FORWARD));
                 }
               }
 
@@ -539,13 +563,15 @@ public class DomHelper {
         // check exception handlers
         setHandlers.clear();
         for (Statement st : setNodes) {
-          setHandlers.addAll(st.getNeighbours(StatEdge.TYPE_EXCEPTION, Statement.DIRECTION_FORWARD));
+          setHandlers
+              .addAll(st.getNeighbours(StatEdge.TYPE_EXCEPTION, Statement.DIRECTION_FORWARD));
         }
         setHandlers.removeAll(setNodes);
 
         boolean excok = true;
         for (Statement handler : setHandlers) {
-          if (!handler.getNeighbours(StatEdge.TYPE_EXCEPTION, Statement.DIRECTION_BACKWARD).containsAll(setNodes)) {
+          if (!handler.getNeighbours(StatEdge.TYPE_EXCEPTION, Statement.DIRECTION_BACKWARD)
+              .containsAll(setNodes)) {
             excok = false;
             break;
           }
@@ -558,7 +584,8 @@ public class DomHelper {
           setPreds.removeAll(setNodes);
           if (setPreds.size() == 0) {
             if ((setNodes.size() > 1 ||
-                 head.getNeighbours(StatEdge.TYPE_REGULAR, Statement.DIRECTION_BACKWARD).contains(head))
+                head.getNeighbours(StatEdge.TYPE_REGULAR, Statement.DIRECTION_BACKWARD)
+                    .contains(head))
                 && setNodes.size() < stats.size()) {
               if (checkSynchronizedCompleteness(head, setNodes)) {
                 res = new GeneralStatement(head, setNodes, same ? null : post);
@@ -575,7 +602,8 @@ public class DomHelper {
     return null;
   }
 
-  private static boolean checkSynchronizedCompleteness(Statement head, HashSet<Statement> setNodes) {
+  private static boolean checkSynchronizedCompleteness(Statement head,
+      HashSet<Statement> setNodes) {
 
     // check exit nodes
     for (Statement stat : setNodes) {
@@ -594,7 +622,8 @@ public class DomHelper {
     return true;
   }
 
-  private static boolean findSimpleStatements(Statement stat, HashMap<Integer, Set<Integer>> mapExtPost) {
+  private static boolean findSimpleStatements(Statement stat,
+      HashMap<Integer, Set<Integer>> mapExtPost) {
 
     boolean found, success = false;
 
@@ -639,15 +668,13 @@ public class DomHelper {
                 setNew.addAll(set);
 
                 mapExtPost.remove(key);
-              }
-              else {
+              } else {
                 if (set.size() < oldsize) {
                   set.add(newid);
                 }
               }
             }
           }
-
 
           found = true;
           break;

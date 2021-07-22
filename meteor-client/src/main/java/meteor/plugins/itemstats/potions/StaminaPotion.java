@@ -25,30 +25,31 @@
  */
 package meteor.plugins.itemstats.potions;
 
-import net.runelite.api.*;
-import meteor.plugins.itemstats.StatBoost;
-
 import static meteor.plugins.itemstats.stats.Stats.RUN_ENERGY;
 
-public class StaminaPotion extends StatBoost
-{
-	public StaminaPotion()
-	{
-		super(RUN_ENERGY, false);
-	}
+import meteor.plugins.itemstats.StatBoost;
+import net.runelite.api.Client;
+import net.runelite.api.EquipmentInventorySlot;
+import net.runelite.api.InventoryID;
+import net.runelite.api.Item;
+import net.runelite.api.ItemContainer;
+import net.runelite.api.ItemID;
 
-	@Override
-	public int heals(Client client)
-	{
-		ItemContainer equipContainer = client.getItemContainer(InventoryID.EQUIPMENT);
-		if (equipContainer != null)
-		{
-			Item ring = equipContainer.getItem(EquipmentInventorySlot.RING.getSlotIdx());
-			if (ring != null && ring.getId() == ItemID.RING_OF_ENDURANCE)
-			{
-				return 40;
-			}
-		}
-		return 20;
-	}
+public class StaminaPotion extends StatBoost {
+
+  public StaminaPotion() {
+    super(RUN_ENERGY, false);
+  }
+
+  @Override
+  public int heals(Client client) {
+    ItemContainer equipContainer = client.getItemContainer(InventoryID.EQUIPMENT);
+    if (equipContainer != null) {
+      Item ring = equipContainer.getItem(EquipmentInventorySlot.RING.getSlotIdx());
+      if (ring != null && ring.getId() == ItemID.RING_OF_ENDURANCE) {
+        return 40;
+      }
+    }
+    return 20;
+  }
 }

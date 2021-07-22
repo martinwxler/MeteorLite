@@ -15,11 +15,10 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.vars;
 
-import org.jetbrains.java.decompiler.modules.decompiler.exps.Exprent;
-import org.jetbrains.java.decompiler.struct.gen.VarType;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.jetbrains.java.decompiler.modules.decompiler.exps.Exprent;
+import org.jetbrains.java.decompiler.struct.gen.VarType;
 
 public class CheckTypesResult {
 
@@ -44,6 +43,7 @@ public class CheckTypesResult {
   }
 
   public static class ExprentTypePair {
+
     public final Exprent exprent;
     public final VarType type;
     public final VarType desttype;

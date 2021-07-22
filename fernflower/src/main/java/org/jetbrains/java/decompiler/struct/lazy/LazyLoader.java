@@ -15,15 +15,14 @@
  */
 package org.jetbrains.java.decompiler.struct.lazy;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import org.jetbrains.java.decompiler.main.extern.IBytecodeProvider;
 import org.jetbrains.java.decompiler.struct.StructMethod;
 import org.jetbrains.java.decompiler.struct.attr.StructGeneralAttribute;
 import org.jetbrains.java.decompiler.struct.consts.ConstantPool;
 import org.jetbrains.java.decompiler.util.DataInputFullStream;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class LazyLoader {
 
@@ -32,6 +31,14 @@ public class LazyLoader {
 
   public LazyLoader(IBytecodeProvider provider) {
     this.provider = provider;
+  }
+
+  public static void skipAttributes(DataInputFullStream in) throws IOException {
+    int length = in.readUnsignedShort();
+    for (int i = 0; i < length; i++) {
+      in.discard(2);
+      in.discard(in.readInt());
+    }
   }
 
   public void addClassLink(String classname, Link link) {
@@ -54,8 +61,7 @@ public class LazyLoader {
       }
 
       return null;
-    }
-    catch (IOException ex) {
+    } catch (IOException ex) {
       throw new RuntimeException(ex);
     }
   }
@@ -70,8 +76,7 @@ public class LazyLoader {
         ConstantPool pool = mt.getClassStruct().getPool();
         if (pool == null) {
           pool = new ConstantPool(in);
-        }
-        else {
+        } else {
           ConstantPool.skipPool(in);
         }
 
@@ -95,7 +100,8 @@ public class LazyLoader {
           int nameIndex = in.readUnsignedShort();
           int descriptorIndex = in.readUnsignedShort();
 
-          String[] values = pool.getClassElement(ConstantPool.METHOD, className, nameIndex, descriptorIndex);
+          String[] values = pool
+              .getClassElement(ConstantPool.METHOD, className, nameIndex, descriptorIndex);
           if (!mt.getName().equals(values[0]) || !mt.getDescriptor().equals(values[1])) {
             skipAttributes(in);
             continue;
@@ -120,13 +126,13 @@ public class LazyLoader {
       }
 
       return null;
-    }
-    catch (IOException ex) {
+    } catch (IOException ex) {
       throw new RuntimeException(ex);
     }
   }
 
-  public DataInputFullStream getClassStream(String externalPath, String internalPath) throws IOException {
+  public DataInputFullStream getClassStream(String externalPath, String internalPath)
+      throws IOException {
     byte[] bytes = provider.getBytecode(externalPath, internalPath);
     return new DataInputFullStream(bytes);
   }
@@ -136,16 +142,8 @@ public class LazyLoader {
     return link == null ? null : getClassStream(link.externalPath, link.internalPath);
   }
 
-  public static void skipAttributes(DataInputFullStream in) throws IOException {
-    int length = in.readUnsignedShort();
-    for (int i = 0; i < length; i++) {
-      in.discard(2);
-      in.discard(in.readInt());
-    }
-  }
-
-
   public static class Link {
+
     public static final int CLASS = 1;
     public static final int ENTRY = 2;
 

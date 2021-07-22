@@ -15,10 +15,9 @@
  */
 package org.jetbrains.java.decompiler.struct.consts;
 
-import org.jetbrains.java.decompiler.code.CodeConstants;
-
 import java.io.DataOutputStream;
 import java.io.IOException;
+import org.jetbrains.java.decompiler.code.CodeConstants;
 
 /*
     cp_info {
@@ -39,7 +38,6 @@ public class PooledConstant implements CodeConstants, VariableTypeEnum {
   public boolean own = false;
 
   public int returnType;
-
 
   // *****************************************************************************
   // private fields
@@ -101,7 +99,6 @@ public class PooledConstant implements CodeConstants, VariableTypeEnum {
   public Object getValue(int index) {
     return values[index];
   }
-
 
   // *****************************************************************************
   // getter and setter methods

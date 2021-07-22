@@ -25,193 +25,172 @@
 package meteor.game.chatbox;
 
 import com.google.inject.Inject;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import meteor.input.KeyListener;
 import net.runelite.api.FontID;
-import net.runelite.api.widgets.*;
+import net.runelite.api.widgets.JavaScriptCallback;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetPositionMode;
+import net.runelite.api.widgets.WidgetSizeMode;
+import net.runelite.api.widgets.WidgetTextAlignment;
+import net.runelite.api.widgets.WidgetType;
 
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.List;
+public class ChatboxTextMenuInput extends ChatboxInput implements KeyListener {
 
-public class ChatboxTextMenuInput extends ChatboxInput implements KeyListener
-{
-	@Data
-	@AllArgsConstructor
-	private static final class Entry
-	{
-		private String text;
-		private Runnable callback;
-	}
+  private final ChatboxPanelManager chatboxPanelManager;
+  @Getter
+  private String title;
+  @Getter
+  private List<Entry> options = new ArrayList<>();
+  @Getter
+  private Runnable onClose;
 
-	private final ChatboxPanelManager chatboxPanelManager;
+  @Inject
+  protected ChatboxTextMenuInput(ChatboxPanelManager chatboxPanelManager) {
+    this.chatboxPanelManager = chatboxPanelManager;
+  }
 
-	@Getter
-	private String title;
+  public ChatboxTextMenuInput title(String title) {
+    this.title = title;
+    return this;
+  }
 
-	@Getter
-	private List<Entry> options = new ArrayList<>();
+  public ChatboxTextMenuInput option(String text, Runnable callback) {
+    options.add(new Entry(text, callback));
+    return this;
+  }
 
-	@Getter
-	private Runnable onClose;
+  public ChatboxTextMenuInput onClose(Runnable onClose) {
+    this.onClose = onClose;
+    return this;
+  }
 
-	@Inject
-	protected ChatboxTextMenuInput(ChatboxPanelManager chatboxPanelManager)
-	{
-		this.chatboxPanelManager = chatboxPanelManager;
-	}
+  public ChatboxTextMenuInput build() {
+    if (title == null) {
+      throw new IllegalStateException("Title must be set");
+    }
 
-	public ChatboxTextMenuInput title(String title)
-	{
-		this.title = title;
-		return this;
-	}
+    if (options.size() < 1) {
+      throw new IllegalStateException("You must have atleast 1 option");
+    }
 
-	public ChatboxTextMenuInput option(String text, Runnable callback)
-	{
-		options.add(new Entry(text, callback));
-		return this;
-	}
+    chatboxPanelManager.openInput(this);
+    return this;
+  }
 
-	public ChatboxTextMenuInput onClose(Runnable onClose)
-	{
-		this.onClose = onClose;
-		return this;
-	}
+  @Override
+  protected void open() {
+    Widget container = chatboxPanelManager.getContainerWidget();
 
-	public ChatboxTextMenuInput build()
-	{
-		if (title == null)
-		{
-			throw new IllegalStateException("Title must be set");
-		}
+    Widget prompt = container.createChild(-1, WidgetType.TEXT);
+    prompt.setText(title);
+    prompt.setTextColor(0x800000);
+    prompt.setFontId(FontID.QUILL_8);
+    prompt.setXPositionMode(WidgetPositionMode.ABSOLUTE_CENTER);
+    prompt.setOriginalX(0);
+    prompt.setYPositionMode(WidgetPositionMode.ABSOLUTE_TOP);
+    prompt.setOriginalY(8);
+    prompt.setOriginalHeight(24);
+    prompt.setXTextAlignment(WidgetTextAlignment.CENTER);
+    prompt.setYTextAlignment(WidgetTextAlignment.CENTER);
+    prompt.setWidthMode(WidgetSizeMode.MINUS);
+    prompt.revalidate();
 
-		if (options.size() < 1)
-		{
-			throw new IllegalStateException("You must have atleast 1 option");
-		}
+    int y = prompt.getRelativeX() + prompt.getHeight() + 6;
+    int height = container.getHeight() - y - 8;
+    int step = height / options.size();
+    int maxStep = options.size() >= 3 ? 25 : 30;
+    if (step > maxStep) {
+      int ds = step - maxStep;
+      step = maxStep;
+      y += (ds * options.size()) / 2;
+    }
 
-		chatboxPanelManager.openInput(this);
-		return this;
-	}
+    for (Entry option : options) {
+      Widget optWidget = container.createChild(-1, WidgetType.TEXT);
+      optWidget.setText(option.text);
+      optWidget.setFontId(FontID.QUILL_8);
+      optWidget.setXPositionMode(WidgetPositionMode.ABSOLUTE_CENTER);
+      optWidget.setOriginalX(0);
+      optWidget.setYPositionMode(WidgetPositionMode.ABSOLUTE_TOP);
+      optWidget.setOriginalY(y);
+      optWidget.setOriginalHeight(24);
+      optWidget.setXTextAlignment(WidgetTextAlignment.CENTER);
+      optWidget.setYTextAlignment(WidgetTextAlignment.CENTER);
+      optWidget.setWidthMode(WidgetSizeMode.MINUS);
+      optWidget.setAction$api(0, "Continue");
+      optWidget.setOnOpListener((JavaScriptCallback) ev -> callback(option));
+      optWidget.setOnMouseOverListener((JavaScriptCallback) ev -> optWidget.setTextColor(0xFFFFFF));
+      optWidget.setOnMouseLeaveListener((JavaScriptCallback) ev -> optWidget.setTextColor(0));
+      optWidget.setHasListener(true);
+      optWidget.revalidate();
 
-	@Override
-	protected void open()
-	{
-		Widget container = chatboxPanelManager.getContainerWidget();
+      y += step;
+    }
+  }
 
-		Widget prompt = container.createChild(-1, WidgetType.TEXT);
-		prompt.setText(title);
-		prompt.setTextColor(0x800000);
-		prompt.setFontId(FontID.QUILL_8);
-		prompt.setXPositionMode(WidgetPositionMode.ABSOLUTE_CENTER);
-		prompt.setOriginalX(0);
-		prompt.setYPositionMode(WidgetPositionMode.ABSOLUTE_TOP);
-		prompt.setOriginalY(8);
-		prompt.setOriginalHeight(24);
-		prompt.setXTextAlignment(WidgetTextAlignment.CENTER);
-		prompt.setYTextAlignment(WidgetTextAlignment.CENTER);
-		prompt.setWidthMode(WidgetSizeMode.MINUS);
-		prompt.revalidate();
+  private void callback(Entry entry) {
+    Widget container = chatboxPanelManager.getContainerWidget();
+    container.setOnKeyListener((Object[]) null);
 
-		int y = prompt.getRelativeX() + prompt.getHeight() + 6;
-		int height = container.getHeight() - y - 8;
-		int step = height / options.size();
-		int maxStep = options.size() >= 3 ? 25 : 30;
-		if (step > maxStep)
-		{
-			int ds = step - maxStep;
-			step = maxStep;
-			y += (ds * options.size()) / 2;
-		}
+    chatboxPanelManager.close();
 
-		for (Entry option : options)
-		{
-			Widget optWidget = container.createChild(-1, WidgetType.TEXT);
-			optWidget.setText(option.text);
-			optWidget.setFontId(FontID.QUILL_8);
-			optWidget.setXPositionMode(WidgetPositionMode.ABSOLUTE_CENTER);
-			optWidget.setOriginalX(0);
-			optWidget.setYPositionMode(WidgetPositionMode.ABSOLUTE_TOP);
-			optWidget.setOriginalY(y);
-			optWidget.setOriginalHeight(24);
-			optWidget.setXTextAlignment(WidgetTextAlignment.CENTER);
-			optWidget.setYTextAlignment(WidgetTextAlignment.CENTER);
-			optWidget.setWidthMode(WidgetSizeMode.MINUS);
-			optWidget.setAction$api(0, "Continue");
-			optWidget.setOnOpListener((JavaScriptCallback) ev -> callback(option));
-			optWidget.setOnMouseOverListener((JavaScriptCallback) ev -> optWidget.setTextColor(0xFFFFFF));
-			optWidget.setOnMouseLeaveListener((JavaScriptCallback) ev -> optWidget.setTextColor(0));
-			optWidget.setHasListener(true);
-			optWidget.revalidate();
+    entry.callback.run();
+  }
 
-			y += step;
-		}
-	}
+  @Override
+  protected void close() {
+    if (onClose != null) {
+      onClose.run();
+    }
+  }
 
-	private void callback(Entry entry)
-	{
-		Widget container = chatboxPanelManager.getContainerWidget();
-		container.setOnKeyListener((Object[]) null);
+  @Override
+  public void keyTyped(KeyEvent e) {
+    if (!chatboxPanelManager.shouldTakeInput()) {
+      return;
+    }
 
-		chatboxPanelManager.close();
+    char c = e.getKeyChar();
 
-		entry.callback.run();
-	}
+    if (c == '\033') {
+      chatboxPanelManager.close();
+      e.consume();
+      return;
+    }
 
-	@Override
-	protected void close()
-	{
-		if (onClose != null)
-		{
-			onClose.run();
-		}
-	}
+    int n = c - '1';
+    if (n >= 0 && n < options.size()) {
+      callback(options.get(n));
+      e.consume();
+    }
+  }
 
+  @Override
+  public void keyPressed(KeyEvent e) {
+    if (!chatboxPanelManager.shouldTakeInput()) {
+      return;
+    }
 
-	@Override
-	public void keyTyped(KeyEvent e)
-	{
-		if (!chatboxPanelManager.shouldTakeInput())
-		{
-			return;
-		}
+    if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+      e.consume();
+    }
+  }
 
-		char c = e.getKeyChar();
+  @Override
+  public void keyReleased(KeyEvent e) {
+  }
 
-		if (c == '\033')
-		{
-			chatboxPanelManager.close();
-			e.consume();
-			return;
-		}
+  @Data
+  @AllArgsConstructor
+  private static final class Entry {
 
-		int n = c - '1';
-		if (n >= 0 && n < options.size())
-		{
-			callback(options.get(n));
-			e.consume();
-		}
-	}
-
-	@Override
-	public void keyPressed(KeyEvent e)
-	{
-		if (!chatboxPanelManager.shouldTakeInput())
-		{
-			return;
-		}
-
-		if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
-		{
-			e.consume();
-		}
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e)
-	{
-	}
+    private String text;
+    private Runnable callback;
+  }
 }

@@ -3,16 +3,16 @@ package net.runelite.rs.api;
 import net.runelite.api.FontTypeFace;
 import net.runelite.mapping.Import;
 
-public interface RSAbstractFont extends FontTypeFace
-{
-	@Import("stringWidth")
-	@Override
-	int getTextWidth(String text);
+public interface RSAbstractFont extends FontTypeFace {
 
-	@Import("ascent")
-	@Override
-	int getBaseline();
+  @Import("stringWidth")
+  @Override
+  int getTextWidth(String text);
 
-	@Import("draw")
-	void drawTextLeftAligned(String text, int x, int y, int fontColor, int shadowColor);
+  @Import("ascent")
+  @Override
+  int getBaseline();
+
+  @Import("draw")
+  void drawTextLeftAligned(String text, int x, int y, int fontColor, int shadowColor);
 }

@@ -24,22 +24,20 @@
  */
 package meteor.plugins.itemstats;
 
-import net.runelite.api.Client;
 import meteor.plugins.itemstats.delta.DeltaCalculator;
+import net.runelite.api.Client;
 
-public class Food extends FoodBase
-{
-	private final DeltaCalculator p;
+public class Food extends FoodBase {
 
-	public Food(DeltaCalculator p)
-	{
-		this.p = p;
-	}
+  private final DeltaCalculator p;
 
-	@Override
-	public int heals(Client client)
-	{
-		return p.calculateDelta(getStat().getMaximum(client));
-	}
+  public Food(DeltaCalculator p) {
+    this.p = p;
+  }
+
+  @Override
+  public int heals(Client client) {
+    return p.calculateDelta(getStat().getMaximum(client));
+  }
 
 }

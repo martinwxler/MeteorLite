@@ -30,47 +30,48 @@ import javax.annotation.Nullable;
 /**
  * Represents an inventory that contains items.
  */
-public interface ItemContainer extends Node
-{
-	/**
-	 * Gets an array of all items in the container.
-	 *
-	 * @return the items held
-	 */
-	@Nonnull
-	Item[] getItems();
+public interface ItemContainer extends Node {
 
-	/**
-	 * Gets an item from the container at the given slot.
-	 *
-	 * @param slot
-	 * @return the item
-	 * @see Item
-	 */
-	@Nullable
-	Item getItem(int slot);
+  /**
+   * Gets an array of all items in the container.
+   *
+   * @return the items held
+   */
+  @Nonnull
+  Item[] getItems();
 
-	/**
-	 * Check if this item container contains the given item
-	 *
-	 * @param itemId
-	 * @return
-	 * @see ItemID
-	 */
-	boolean contains(int itemId);
+  /**
+   * Gets an item from the container at the given slot.
+   *
+   * @param slot
+   * @return the item
+   * @see Item
+   */
+  @Nullable
+  Item getItem(int slot);
 
-	/**
-	 * Counts how many of an item this item container contains
-	 *
-	 * @param itemId
-	 * @return
-	 * @see ItemID
-	 */
-	int count(int itemId);
+  /**
+   * Check if this item container contains the given item
+   *
+   * @param itemId
+   * @return
+   * @see ItemID
+   */
+  boolean contains(int itemId);
 
-	/**
-	 * Get the number of items in this item container. May include empty slots.
-	 * @return
-	 */
-	int size();
+  /**
+   * Counts how many of an item this item container contains
+   *
+   * @param itemId
+   * @return
+   * @see ItemID
+   */
+  int count(int itemId);
+
+  /**
+   * Get the number of items in this item container. May include empty slots.
+   *
+   * @return
+   */
+  int size();
 }

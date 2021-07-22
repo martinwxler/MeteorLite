@@ -45,161 +45,136 @@ import org.objectweb.asm.util.CheckClassAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JarUtil
-{
-	private static final Logger logger = LoggerFactory.getLogger(JarUtil.class);
+public class JarUtil {
 
-	public static ClassGroup load(File jarfile)
-	{
-		ClassGroup group = new ClassGroup();
+  private static final Logger logger = LoggerFactory.getLogger(JarUtil.class);
 
-		try (JarFile jar = new JarFile(jarfile))
-		{
-			for (Enumeration<JarEntry> it = jar.entries(); it.hasMoreElements();)
-			{
-				JarEntry entry = it.nextElement();
+  public static ClassGroup load(File jarfile) {
+    ClassGroup group = new ClassGroup();
 
-				if (!entry.getName().endsWith(".class") || entry.getName().contains("net/runelite/rs/Reflection"))
-				{
-					continue;
-				}
+    try (JarFile jar = new JarFile(jarfile)) {
+      for (Enumeration<JarEntry> it = jar.entries(); it.hasMoreElements(); ) {
+        JarEntry entry = it.nextElement();
 
-				InputStream is = jar.getInputStream(entry);
+        if (!entry.getName().endsWith(".class") || entry.getName()
+            .contains("net/runelite/rs/Reflection")) {
+          continue;
+        }
 
-				ClassReader reader = new ClassReader(is);
-				ClassFileVisitor cv = new ClassFileVisitor();
+        InputStream is = jar.getInputStream(entry);
 
-				reader.accept(cv, ClassReader.SKIP_FRAMES);
+        ClassReader reader = new ClassReader(is);
+        ClassFileVisitor cv = new ClassFileVisitor();
 
-				group.addClass(cv.getClassFile());
-			}
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
+        reader.accept(cv, ClassReader.SKIP_FRAMES);
 
-		group.initialize();
+        group.addClass(cv.getClassFile());
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
-		return group;
-	}
+    group.initialize();
 
-	public static ClassGroup addReflection(ClassGroup group, File jarfile)
-	{
-		try (JarFile jar = new JarFile(jarfile))
-		{
-			for (Enumeration<JarEntry> it = jar.entries(); it.hasMoreElements();)
-			{
-				JarEntry entry = it.nextElement();
+    return group;
+  }
 
-				if (!entry.getName().contains("net/runelite/rs/Reflection"))
-				{
-					continue;
-				}
+  public static ClassGroup addReflection(ClassGroup group, File jarfile) {
+    try (JarFile jar = new JarFile(jarfile)) {
+      for (Enumeration<JarEntry> it = jar.entries(); it.hasMoreElements(); ) {
+        JarEntry entry = it.nextElement();
 
-				InputStream is = jar.getInputStream(entry);
+        if (!entry.getName().contains("net/runelite/rs/Reflection")) {
+          continue;
+        }
 
-				ClassReader reader = new ClassReader(is);
-				ClassFileVisitor cv = new ClassFileVisitor();
+        InputStream is = jar.getInputStream(entry);
 
-				reader.accept(cv, ClassReader.SKIP_FRAMES);
+        ClassReader reader = new ClassReader(is);
+        ClassFileVisitor cv = new ClassFileVisitor();
 
-				group.addClass(cv.getClassFile());
-			}
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
+        reader.accept(cv, ClassReader.SKIP_FRAMES);
 
-		group.initialize();
+        group.addClass(cv.getClassFile());
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
-		return group;
-	}
+    group.initialize();
 
-	public static ClassFile loadClass(byte[] bytes)
-	{
-		ClassReader reader = new ClassReader(bytes);
-		ClassFileVisitor cv = new ClassFileVisitor();
-		reader.accept(cv, ClassReader.SKIP_FRAMES);
-		return cv.getClassFile();
-	}
+    return group;
+  }
 
-	public static ClassGroup loadClasses(Collection<File> files) throws IOException
-	{
-		final ClassGroup group = new ClassGroup();
+  public static ClassFile loadClass(byte[] bytes) {
+    ClassReader reader = new ClassReader(bytes);
+    ClassFileVisitor cv = new ClassFileVisitor();
+    reader.accept(cv, ClassReader.SKIP_FRAMES);
+    return cv.getClassFile();
+  }
 
-		for (File file : files)
-		{
-			if (!file.getName().endsWith(".class"))
-			{
-				continue;
-			}
+  public static ClassGroup loadClasses(Collection<File> files) throws IOException {
+    final ClassGroup group = new ClassGroup();
 
-			try (InputStream is = new FileInputStream(file))
-			{
-				ClassReader reader = new ClassReader(is);
-				ClassFileVisitor cv = new ClassFileVisitor();
+    for (File file : files) {
+      if (!file.getName().endsWith(".class")) {
+        continue;
+      }
 
-				reader.accept(cv, ClassReader.SKIP_FRAMES);
+      try (InputStream is = new FileInputStream(file)) {
+        ClassReader reader = new ClassReader(is);
+        ClassFileVisitor cv = new ClassFileVisitor();
 
-				group.addClass(cv.getClassFile());
-			}
-		}
+        reader.accept(cv, ClassReader.SKIP_FRAMES);
 
-		group.initialize();
+        group.addClass(cv.getClassFile());
+      }
+    }
 
-		return group;
-	}
+    group.initialize();
 
-	public static void save(ClassGroup group, File jarfile)
-	{
-		try (JarOutputStream jout = new JarOutputStream(new FileOutputStream(jarfile)))
-		{
-			for (ClassFile cf : group.getClasses())
-			{
-				JarEntry entry = new JarEntry(cf.getName() + ".class");
-				entry.setTime(-1);
-				jout.putNextEntry(entry);
+    return group;
+  }
 
-				byte[] data = writeClass(group, cf);
+  public static void save(ClassGroup group, File jarfile) {
+    try (JarOutputStream jout = new JarOutputStream(new FileOutputStream(jarfile))) {
+      for (ClassFile cf : group.getClasses()) {
+        JarEntry entry = new JarEntry(cf.getName() + ".class");
+        entry.setTime(-1);
+        jout.putNextEntry(entry);
 
-				jout.write(data);
-				jout.closeEntry();
-			}
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-	}
+        byte[] data = writeClass(group, cf);
 
-	public static byte[] writeClass(ClassGroup group, ClassFile cf)
-	{
-		ClassWriter writer = new NonloadingClassWriter(group, ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
-		CheckClassAdapter cca = new CheckClassAdapter(writer, false);
+        jout.write(data);
+        jout.closeEntry();
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
 
-		cf.accept(cca);
+  public static byte[] writeClass(ClassGroup group, ClassFile cf) {
+    ClassWriter writer = new NonloadingClassWriter(group,
+        ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+    CheckClassAdapter cca = new CheckClassAdapter(writer, false);
 
-		byte[] data = writer.toByteArray();
+    cf.accept(cca);
 
-		validateDataFlow(cf.getName(), data);
+    byte[] data = writer.toByteArray();
 
-		return data;
-	}
+    validateDataFlow(cf.getName(), data);
 
-	private static void validateDataFlow(String name, byte[] data)
-	{
-		try
-		{
-			ClassReader cr = new ClassReader(data);
-			ClassWriter cw = new ClassWriter(cr, 0);
-			ClassVisitor cv = new CheckClassAdapter(cw, true);
-			cr.accept(cv, 0);
-		}
-		catch (Exception ex)
-		{
-			logger.warn("Class {} failed validation", name, ex);
-		}
-	}
+    return data;
+  }
+
+  private static void validateDataFlow(String name, byte[] data) {
+    try {
+      ClassReader cr = new ClassReader(data);
+      ClassWriter cw = new ClassWriter(cr, 0);
+      ClassVisitor cv = new CheckClassAdapter(cw, true);
+      cr.accept(cv, 0);
+    } catch (Exception ex) {
+      logger.warn("Class {} failed validation", name, ex);
+    }
+  }
 }

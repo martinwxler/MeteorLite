@@ -37,120 +37,108 @@ import net.runelite.asm.attributes.code.Instruction;
 import net.runelite.asm.attributes.code.Label;
 import net.runelite.asm.attributes.code.instruction.types.JumpingInstruction;
 
-public class ControlFlowGraph
-{
-	private final Map<Label, Block> blocks = new HashMap<>();
-	private final List<Block> allBlocks = new ArrayList<>();
-	private final Block head;
+public class ControlFlowGraph {
 
-	public ControlFlowGraph(Code code)
-	{
-		int id = 0;
-		this.head = new Block();
-		for (Instruction i : code.getInstructions())
-			if (i instanceof Label)
-				blocks.computeIfAbsent((Label) i, lbl -> {
-					Block b = new Block();
-					allBlocks.add(b);
-					return b;
-				});
+  private final Map<Label, Block> blocks = new HashMap<>();
+  private final List<Block> allBlocks = new ArrayList<>();
+  private final Block head;
 
-		allBlocks.add(0, head);
-		Block cur = head;
-		for (Instruction i : code.getInstructions())
-		{
-			if (i instanceof Label)
-			{
-				Block next = blocks.get(i);
-				if (next.getId() == -1)
-				{
-					next.setId(id++);
-				}
-				if (next != cur)
-				{
-					Instruction last = cur.getInstructions().isEmpty()
-						? null
-						: cur.getInstructions().get(cur.getInstructions().size() - 1);
-					if (last == null || !last.isTerminal())
-					{
-						assert next.getPred() == null;
-						assert cur.getSucc() == null;
-						// previous block flows directly into next
-						next.setPred(cur);
-						cur.setSucc(next);
-					}
-					cur = next;
-				}
-			}
-			cur.addInstruction(i);
-			if (i instanceof JumpingInstruction)
-			{
-				JumpingInstruction ji = (JumpingInstruction) i;
-				for (Label l : ji.getJumps())
-				{
-					Block next = blocks.get(l);
-					if (next.getId() == -1)
-					{
-						next.setId(id++);
-					}
-					cur.addNext(next);
-					next.addPrev(cur);
-				}
-			}
-		}
+  public ControlFlowGraph(Code code) {
+    int id = 0;
+    this.head = new Block();
+    for (Instruction i : code.getInstructions()) {
+      if (i instanceof Label) {
+        blocks.computeIfAbsent((Label) i, lbl -> {
+          Block b = new Block();
+          allBlocks.add(b);
+          return b;
+        });
+      }
+    }
 
-		assert head.getPred() == null;
-	}
+    allBlocks.add(0, head);
+    Block cur = head;
+    for (Instruction i : code.getInstructions()) {
+      if (i instanceof Label) {
+        Block next = blocks.get(i);
+        if (next.getId() == -1) {
+          next.setId(id++);
+        }
+        if (next != cur) {
+          Instruction last = cur.getInstructions().isEmpty()
+              ? null
+              : cur.getInstructions().get(cur.getInstructions().size() - 1);
+          if (last == null || !last.isTerminal()) {
+            assert next.getPred() == null;
+            assert cur.getSucc() == null;
+            // previous block flows directly into next
+            next.setPred(cur);
+            cur.setSucc(next);
+          }
+          cur = next;
+        }
+      }
+      cur.addInstruction(i);
+      if (i instanceof JumpingInstruction) {
+        JumpingInstruction ji = (JumpingInstruction) i;
+        for (Label l : ji.getJumps()) {
+          Block next = blocks.get(l);
+          if (next.getId() == -1) {
+            next.setId(id++);
+          }
+          cur.addNext(next);
+          next.addPrev(cur);
+        }
+      }
+    }
 
-	List<Block> topologicalSort()
-	{
-		final List<Block> ret = new ArrayList<>();
-		walk(head, ret, new HashSet<>());
-		Collections.reverse(ret);
-		return ret;
-	}
+    assert head.getPred() == null;
+  }
 
-	private static void walk(Block cur, List<Block> order, Set<Block> done)
-	{
-		Block dirsucc = cur.getSucc();
-		if (dirsucc != null && done.add(dirsucc))
-			walk(cur.getSucc(), order, done);
-		List<Block> succs = cur.getSuccs();
-		succs.sort(Block::compare);
-		for (Block succ : succs)
-			if (done.add(succ))
-				walk(succ, order, done);
-		order.add(cur);
-	}
+  public ControlFlowGraph(Block head) {
+    this.head = head;
+  }
 
-	public ControlFlowGraph(Block head)
-	{
-		this.head = head;
-	}
+  private static void walk(Block cur, List<Block> order, Set<Block> done) {
+    Block dirsucc = cur.getSucc();
+    if (dirsucc != null && done.add(dirsucc)) {
+      walk(cur.getSucc(), order, done);
+    }
+    List<Block> succs = cur.getSuccs();
+    succs.sort(Block::compare);
+    for (Block succ : succs) {
+      if (done.add(succ)) {
+        walk(succ, order, done);
+      }
+    }
+    order.add(cur);
+  }
 
-	public Block getBlock(Label label)
-	{
-		return blocks.get(label);
-	}
+  List<Block> topologicalSort() {
+    final List<Block> ret = new ArrayList<>();
+    walk(head, ret, new HashSet<>());
+    Collections.reverse(ret);
+    return ret;
+  }
 
-	public Collection<Block> getBlocks()
-	{
-		return allBlocks;
-	}
+  public Block getBlock(Label label) {
+    return blocks.get(label);
+  }
 
-	@Override
-	public String toString()
-	{
-		StringBuilder sb = new StringBuilder();
-		for (Block b : allBlocks)
-		{
-			sb.append(b.toString());
-		}
-		return sb.toString();
-	}
+  public Collection<Block> getBlocks() {
+    return allBlocks;
+  }
 
-	public Block getHead()
-	{
-		return head;
-	}
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    for (Block b : allBlocks) {
+      sb.append(b.toString());
+    }
+    return sb.toString();
+  }
+
+  public Block getHead() {
+    return head;
+  }
 }

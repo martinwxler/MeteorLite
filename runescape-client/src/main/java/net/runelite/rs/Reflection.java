@@ -37,251 +37,208 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-
+import javax.swing.JOptionPane;
 import net.runelite.mapping.ObfuscatedGetter;
 import net.runelite.mapping.ObfuscatedName;
 import net.runelite.mapping.ObfuscatedSignature;
 import org.sponge.util.Logger;
 
-import javax.swing.*;
+public class Reflection {
 
-public class Reflection
-{
-	static Logger logger = new Logger("Reflection");
-	private static int mappedClasses = 0;
-	public static boolean printDebugMessages = false;
-	public static Enumeration<URL> systemResources;
+  public static boolean printDebugMessages = false;
+  public static Enumeration<URL> systemResources;
+  public static Map<String, Class<?>> classes = new HashMap<>();
+  static Logger logger = new Logger("Reflection");
+  private static int mappedClasses = 0;
 
-	public static Map<String, Class<?>> classes = new HashMap<>();
+  static {
+    try {
+      Path path = new File("../runescape-client/build/classes/java/main/")
+          .toPath();
 
-	static
-	{
-		try
-		{
-			Path path = new File("../runescape-client/build/classes/java/main/")
-					.toPath();
+      Files.walk(path)
+          .filter(Files::isRegularFile)
+          .forEach(f ->
+          {
+            String className = f
+                .getName(f.getNameCount() - 1)
+                .toString()
+                .replace(".class", "");
 
-			Files.walk(path)
-					.filter(Files::isRegularFile)
-					.forEach(f ->
-					{
-						String className = f
-								.getName(f.getNameCount() - 1)
-								.toString()
-								.replace(".class", "");
+            try {
+              Class<?> clazz = Class.forName(className);
 
-						try
-						{
-							Class<?> clazz = Class.forName(className);
+              ObfuscatedName obfuscatedName = clazz
+                  .getAnnotation(ObfuscatedName.class);
 
-							ObfuscatedName obfuscatedName = clazz
-									.getAnnotation(ObfuscatedName.class);
+              if (obfuscatedName != null) {
+                classes.put(obfuscatedName.value(), clazz);
+                mappedClasses++;
+              }
+            } catch (ClassNotFoundException ignore) {
+            }
+          });
+      if (mappedClasses < 300) {
+        JOptionPane.showMessageDialog(null, "Obfuscated Mapping failure" +
+            "!!!Jagex servers will deny total interaction shortly!!!\n" +
+            "!!!Please Log Out immediately!!!");
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 
-							if (obfuscatedName != null)
-							{
-								classes.put(obfuscatedName.value(), clazz);
-								mappedClasses++;
-							}
-						}
-						catch (ClassNotFoundException ignore)
-						{
-						}
-					});
-			if (mappedClasses < 300)
-			{
-				JOptionPane.showMessageDialog(null, "Obfuscated Mapping failure" +
-						"!!!Jagex servers will deny total interaction shortly!!!\n" +
-						"!!!Please Log Out immediately!!!");
-			}
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
+  public static Class<?> findClass(String name) throws ClassNotFoundException {
+    Class<?> clazz = classes.get(name);
 
-	public static Class<?> findClass(String name) throws ClassNotFoundException
-	{
-		Class<?> clazz = classes.get(name);
+    if (clazz != null) {
+      return clazz;
+    }
 
-		if (clazz != null)
-		{
-			return clazz;
-		}
+    return Class.forName(name);
+  }
 
-		return Class.forName(name);
-	}
+  public static Field findField(Class<?> clazz, String name) throws NoSuchFieldException {
+    for (Field f : clazz.getDeclaredFields()) {
+      ObfuscatedName annotation = f.getAnnotation(ObfuscatedName.class);
+      if (annotation != null && annotation.value().equals(name)) {
+        if (printDebugMessages) {
+          logger.info("[Get] " + f.getName() + " in " + clazz);
+        }
+        return f;
+      }
+    }
 
-	public static Field findField(Class<?> clazz, String name) throws NoSuchFieldException
-	{
-		for (Field f : clazz.getDeclaredFields())
-		{
-			ObfuscatedName annotation = f.getAnnotation(ObfuscatedName.class);
-			if (annotation != null && annotation.value().equals(name))
-			{
-				if (printDebugMessages)
-					logger.info("[Get] " + f.getName() + " in " + clazz);
-				return f;
-			}
-		}
+    return clazz.getDeclaredField(name);
+  }
 
-		return clazz.getDeclaredField(name);
-	}
+  public static String getMethodName(Method method) {
+    ObfuscatedName annotation = method.getAnnotation(ObfuscatedName.class);
+    if (annotation != null) {
+      return annotation.value();
+    }
+    return method.getName();
+  }
 
-	public static String getMethodName(Method method)
-	{
-		ObfuscatedName annotation = method.getAnnotation(ObfuscatedName.class);
-		if (annotation != null)
-		{
-			return annotation.value();
-		}
-		return method.getName();
-	}
+  public static Class<?>[] getParameterTypes(Method method) {
+    ObfuscatedSignature sig = method.getAnnotation(ObfuscatedSignature.class);
+    Class<?>[] types = method.getParameterTypes();
 
-	public static Class<?>[] getParameterTypes(Method method)
-	{
-		ObfuscatedSignature sig = method.getAnnotation(ObfuscatedSignature.class);
-		Class<?>[] types = method.getParameterTypes();
+    if (sig == null) {
+      return types;
+    }
 
-		if (sig == null)
-		{
-			return types;
-		}
+    String s = sig.descriptor();
+    int i = s.lastIndexOf(')');
+    char c = s.charAt(i - 1);
 
-		String s = sig.descriptor();
-		int i = s.lastIndexOf(')');
-		char c = s.charAt(i - 1);
+    Class<?> last;
 
-		Class<?> last;
+    switch (c) {
+      case 'B':
+        last = byte.class;
+        break;
+      case 'I':
+        last = int.class;
+        break;
+      case 'S':
+        last = short.class;
+        break;
+      default:
+        throw new IllegalStateException();
+    }
 
-		switch (c)
-		{
-			case 'B':
-				last = byte.class;
-				break;
-			case 'I':
-				last = int.class;
-				break;
-			case 'S':
-				last = short.class;
-				break;
-			default:
-				throw new IllegalStateException();
-		}
+    types = Arrays.copyOf(types, types.length + 1);
+    types[types.length - 1] = last;
+    return types;
+  }
 
-		types = Arrays.copyOf(types, types.length + 1);
-		types[types.length - 1] = last;
-		return types;
-	}
+  public static int getInt(Field field, Object obj)
+      throws IllegalArgumentException, IllegalAccessException {
+    if (printDebugMessages) {
+      logger.info("[Get] " + field);
+    }
 
-	public static int getInt(Field field, Object obj) throws IllegalArgumentException, IllegalAccessException
-	{
-		if (printDebugMessages)
-		{
-			logger.info("[Get] " + field);
-		}
+    boolean unset = false;
+    if ((field.getModifiers() & Modifier.PRIVATE) == 0) {
+      // we're outside of the package so set it accessable
+      // to behave like we are in the package
+      field.setAccessible(true);
+      unset = true;
+    }
 
-		boolean unset = false;
-		if ((field.getModifiers() & Modifier.PRIVATE) == 0)
-		{
-			// we're outside of the package so set it accessable
-			// to behave like we are in the package
-			field.setAccessible(true);
-			unset = true;
-		}
+    int i;
+    try {
+      i = field.getInt(obj);
+    } catch (Exception ex) {
+      throw ex;
+    } finally {
+      if (unset) {
+        field.setAccessible(false);
+      }
+    }
 
-		int i;
-		try
-		{
-			i = field.getInt(obj);
-		}
-		catch (Exception ex)
-		{
-			throw ex;
-		}
-		finally
-		{
-			if (unset)
-			{
-				field.setAccessible(false);
-			}
-		}
+    ObfuscatedGetter og = field.getAnnotation(ObfuscatedGetter.class);
+    if (og != null) {
+      int getter = og.intValue();
+      int setter = modInverse(getter);
 
-		ObfuscatedGetter og = field.getAnnotation(ObfuscatedGetter.class);
-		if (og != null)
-		{
-			int getter = og.intValue();
-			int setter = modInverse(getter);
+      // encrypt
+      i *= setter;
+    }
+    return i;
+  }
 
-			// encrypt
-			i *= setter;
-		}
-		return i;
-	}
+  public static void setInt(Field field, Object obj, int value)
+      throws IllegalArgumentException, IllegalAccessException {
+    if (printDebugMessages) {
+      logger.error("Jagex SetField - " + field + " to " + value);
+    }
 
-	public static void setInt(Field field, Object obj, int value) throws IllegalArgumentException, IllegalAccessException
-	{
-		if (printDebugMessages)
-		{
-			logger.error("Jagex SetField - " + field + " to " + value);
-		}
+    ObfuscatedGetter og = field.getAnnotation(ObfuscatedGetter.class);
+    if (og != null) {
+      int getter = og.intValue();
 
-		ObfuscatedGetter og = field.getAnnotation(ObfuscatedGetter.class);
-		if (og != null)
-		{
-			int getter = og.intValue();
+      // decrypt
+      value *= getter;
+    }
 
-			// decrypt
-			value *= getter;
-		}
+    boolean unset = false;
+    if ((field.getModifiers() & Modifier.PRIVATE) == 0) {
+      // we're outside of the package so set it accessable
+      // to behave like we are in the package
+      field.setAccessible(true);
+      unset = true;
+    }
 
-		boolean unset = false;
-		if ((field.getModifiers() & Modifier.PRIVATE) == 0)
-		{
-			// we're outside of the package so set it accessable
-			// to behave like we are in the package
-			field.setAccessible(true);
-			unset = true;
-		}
+    try {
+      field.setInt(obj, value);
+    } finally {
+      if (unset) {
+        field.setAccessible(false);
+      }
+    }
+  }
 
-		try
-		{
-			field.setInt(obj, value);
-		}
-		finally
-		{
-			if (unset)
-			{
-				field.setAccessible(false);
-			}
-		}
-	}
+  public static BigInteger modInverse(BigInteger val, int bits) {
+    BigInteger shift = BigInteger.ONE.shiftLeft(bits);
+    return val.modInverse(shift);
+  }
 
-	public static BigInteger modInverse(BigInteger val, int bits)
-	{
-		BigInteger shift = BigInteger.ONE.shiftLeft(bits);
-		return val.modInverse(shift);
-	}
+  public static int modInverse(int val) {
+    return modInverse(BigInteger.valueOf(val), 32).intValue();
+  }
 
-	public static int modInverse(int val)
-	{
-		return modInverse(BigInteger.valueOf(val), 32).intValue();
-	}
+  public static Object invoke(Method method, Object object, Object[] args)
+      throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    if (printDebugMessages) {
+      logger.error("Jagex InvokeMethod - " + method);
+    }
 
-	public static Object invoke(Method method, Object object, Object[] args) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
-	{
-		if (printDebugMessages)
-		{
-			logger.error("Jagex InvokeMethod - " + method);
-		}
-
-		try
-		{
-			return method.invoke(object, args);
-		}
-		catch (Throwable ex)
-		{
-			throw ex;
-		}
-	}
+    try {
+      return method.invoke(object, args);
+    } catch (Throwable ex) {
+      throw ex;
+    }
+  }
 }

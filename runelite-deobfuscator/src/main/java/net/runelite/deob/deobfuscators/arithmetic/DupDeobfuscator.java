@@ -47,229 +47,201 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Removes the duplication of multiplication instructions to make
- * MultiplicationDeobfuscator easier
+ * Removes the duplication of multiplication instructions to make MultiplicationDeobfuscator easier
  *
  * @author Adam
  */
-public class DupDeobfuscator implements Deobfuscator
-{
-	private static final Logger logger = LoggerFactory.getLogger(DupDeobfuscator.class);
+public class DupDeobfuscator implements Deobfuscator {
 
-	private int count;
+  private static final Logger logger = LoggerFactory.getLogger(DupDeobfuscator.class);
 
-	private void visit(InstructionContext i)
-	{
-		if (!(i.getInstruction() instanceof DupInstruction))
-		{
-			return;
-		}
+  private int count;
 
-		DupInstruction di = (DupInstruction) i.getInstruction();
+  private void visit(InstructionContext i) {
+    if (!(i.getInstruction() instanceof DupInstruction)) {
+      return;
+    }
 
-		List<StackContext> sctxs = di.getDuplicated(i); // stack values being duplicated
+    DupInstruction di = (DupInstruction) i.getInstruction();
 
-		for (StackContext sctx : sctxs)
-		{
-			InstructionContext ic = sctx.getPushed();
+    List<StackContext> sctxs = di.getDuplicated(i); // stack values being duplicated
 
-			if (ic.getInstruction() instanceof IMul)
-			{
-				if (i.getInstruction() instanceof Dup)
-				{
-					logger.debug("Dup instruction {} duplicates multiplication result {}", i, ic);
+    for (StackContext sctx : sctxs) {
+      InstructionContext ic = sctx.getPushed();
 
-					undup(i);
-					++count;
-					return;
-				}
-				if (i.getInstruction() instanceof Dup_X1)
-				{
-					logger.debug("Dup_X1 instruction {} duplicates multiplication result {}", i, ic);
+      if (ic.getInstruction() instanceof IMul) {
+        if (i.getInstruction() instanceof Dup) {
+          logger.debug("Dup instruction {} duplicates multiplication result {}", i, ic);
 
-					undup_x1(i);
-					++count;
-					return;
-				}
+          undup(i);
+          ++count;
+          return;
+        }
+        if (i.getInstruction() instanceof Dup_X1) {
+          logger.debug("Dup_X1 instruction {} duplicates multiplication result {}", i, ic);
 
-				logger.warn("Dup instruction {} pops imul", i);
-			}
-			else if (ic.getInstruction() instanceof LMul)
-			{
-				if (i.getInstruction() instanceof Dup2_X1)
-				{
-					logger.debug("Dup_X2 instruction {} duplicates multiplication result {}", i, ic);
+          undup_x1(i);
+          ++count;
+          return;
+        }
 
-					undup2_x1(i);
-					++count;
-					return;
-				}
-				
-				logger.warn("Dup instruction {} pops lmul", i);
-			}
-		}
+        logger.warn("Dup instruction {} pops imul", i);
+      } else if (ic.getInstruction() instanceof LMul) {
+        if (i.getInstruction() instanceof Dup2_X1) {
+          logger.debug("Dup_X2 instruction {} duplicates multiplication result {}", i, ic);
 
-		// find if mul pops anything duplicated
-		sctxs = di.getCopies(i);
+          undup2_x1(i);
+          ++count;
+          return;
+        }
 
-		for (StackContext sctx : sctxs)
-		{
-			for (InstructionContext ic : sctx.getPopped())
-			{
-				if (ic.getInstruction() instanceof IMul)
-				{
-					if (i.getInstruction() instanceof Dup)
-					{
-						logger.debug("imul {} pops dup instruction {}", ic, i);
+        logger.warn("Dup instruction {} pops lmul", i);
+      }
+    }
 
-						undup(i);
-						++count;
-						return;
-					}
-					if (i.getInstruction() instanceof Dup_X1)
-					{
-						logger.debug("imul {} pops dup x1 instruction {}", ic, i);
+    // find if mul pops anything duplicated
+    sctxs = di.getCopies(i);
 
-						undup_x1(i);
-						++count;
-						return;
-					}
+    for (StackContext sctx : sctxs) {
+      for (InstructionContext ic : sctx.getPopped()) {
+        if (ic.getInstruction() instanceof IMul) {
+          if (i.getInstruction() instanceof Dup) {
+            logger.debug("imul {} pops dup instruction {}", ic, i);
 
-					logger.warn("imul pops dup instruction {}", i);
-				}
-				else if (ic.getInstruction() instanceof LMul)
-				{
-					if (i.getInstruction() instanceof Dup2_X1)
-					{
-						logger.debug("imul {} pops dup2 x1 instruction {}", ic, i);
+            undup(i);
+            ++count;
+            return;
+          }
+          if (i.getInstruction() instanceof Dup_X1) {
+            logger.debug("imul {} pops dup x1 instruction {}", ic, i);
 
-						undup2_x1(i);
-						++count;
-						return;
-					}
+            undup_x1(i);
+            ++count;
+            return;
+          }
 
-					logger.warn("lmul pops dup instruction {}", i);
-				}
-			}
-		}
-	}
+          logger.warn("imul pops dup instruction {}", i);
+        } else if (ic.getInstruction() instanceof LMul) {
+          if (i.getInstruction() instanceof Dup2_X1) {
+            logger.debug("imul {} pops dup2 x1 instruction {}", ic, i);
 
-	private void undup(InstructionContext ictx)
-	{
-		assert ictx.getInstruction() instanceof Dup;
+            undup2_x1(i);
+            ++count;
+            return;
+          }
 
-		Instructions instructions = ictx.getInstruction().getInstructions();
+          logger.warn("lmul pops dup instruction {}", i);
+        }
+      }
+    }
+  }
 
-		StackContext duplicated = ictx.getPops().get(0);
+  private void undup(InstructionContext ictx) {
+    assert ictx.getInstruction() instanceof Dup;
 
-		int idx = instructions.getInstructions().indexOf(ictx.getInstruction());
-		assert idx != -1;
+    Instructions instructions = ictx.getInstruction().getInstructions();
 
-		// replace dup with duplicated instructions
-		instructions.remove(ictx.getInstruction());
+    StackContext duplicated = ictx.getPops().get(0);
 
-		// insert copy
-		copy(duplicated, instructions, idx);
-	}
+    int idx = instructions.getInstructions().indexOf(ictx.getInstruction());
+    assert idx != -1;
 
-	private void undup_x1(InstructionContext ictx)
-	{
-		assert ictx.getInstruction() instanceof Dup_X1;
+    // replace dup with duplicated instructions
+    instructions.remove(ictx.getInstruction());
 
-		Instructions instructions = ictx.getInstruction().getInstructions();
+    // insert copy
+    copy(duplicated, instructions, idx);
+  }
 
-		StackContext duplicated = ictx.getPops().get(0);
+  private void undup_x1(InstructionContext ictx) {
+    assert ictx.getInstruction() instanceof Dup_X1;
 
-		// replace dup_x1 with swap
-		int idx = instructions.replace(ictx.getInstruction(), new Swap(instructions));
+    Instructions instructions = ictx.getInstruction().getInstructions();
 
-		// copy imul and insert after idx
-		copy(duplicated, instructions, idx + 1);
-	}
+    StackContext duplicated = ictx.getPops().get(0);
 
-	private void undup2_x1(InstructionContext ictx)
-	{
-		assert ictx.getInstruction() instanceof Dup2_X1;
-		assert ictx.getPops().size() == 2; // only support this form
+    // replace dup_x1 with swap
+    int idx = instructions.replace(ictx.getInstruction(), new Swap(instructions));
 
-		// I L -> L I L
+    // copy imul and insert after idx
+    copy(duplicated, instructions, idx + 1);
+  }
 
-		Instructions instructions = ictx.getInstruction().getInstructions();
+  private void undup2_x1(InstructionContext ictx) {
+    assert ictx.getInstruction() instanceof Dup2_X1;
+    assert ictx.getPops().size() == 2; // only support this form
 
-		// can't swap a long on the stack, so
+    // I L -> L I L
 
-		int idx = instructions.getInstructions().indexOf(ictx.getInstruction());
-		assert idx != -1;
+    Instructions instructions = ictx.getInstruction().getInstructions();
 
-		instructions.remove(ictx.getInstruction()); // remove dup2_x1
-		instructions.addInstruction(idx++, new Pop2(instructions)); // pop long
-		instructions.addInstruction(idx++, new Pop(instructions)); // pop int
+    // can't swap a long on the stack, so
 
-		// insert copy of long
-		idx = copy(ictx.getPops().get(0), instructions, idx);
-		// insert copy of int
-		idx = copy(ictx.getPops().get(1), instructions, idx);
-		// insert copy of long
-		/* idx = */ copy(ictx.getPops().get(0), instructions, idx);
-	}
+    int idx = instructions.getInstructions().indexOf(ictx.getInstruction());
+    assert idx != -1;
 
-	/**
-	 * copy the instruction which pushed sctx and insert into instructions
-	 * starting at index idx
-	 */
-	private int copy(StackContext sctx, Instructions instructions, int idx)
-	{
-		InstructionContext ictx = sctx.getPushed();
+    instructions.remove(ictx.getInstruction()); // remove dup2_x1
+    instructions.addInstruction(idx++, new Pop2(instructions)); // pop long
+    instructions.addInstruction(idx++, new Pop(instructions)); // pop int
 
-		if (ictx.getInstruction() instanceof DupInstruction)
-		{
-			// we only care about one path
-			DupInstruction di = (DupInstruction) ictx.getInstruction();
-			sctx = di.getOriginal(sctx);
-			ictx = sctx.getPushed();
-		}
+    // insert copy of long
+    idx = copy(ictx.getPops().get(0), instructions, idx);
+    // insert copy of int
+    idx = copy(ictx.getPops().get(1), instructions, idx);
+    // insert copy of long
+    /* idx = */
+    copy(ictx.getPops().get(0), instructions, idx);
+  }
 
-		// copy required instructions
-		// the first thing popped was pushed last, so reverse
-		for (StackContext s : Lists.reverse(ictx.getPops()))
-		{
-			idx = copy(s, instructions, idx);
-		}
+  /**
+   * copy the instruction which pushed sctx and insert into instructions starting at index idx
+   */
+  private int copy(StackContext sctx, Instructions instructions, int idx) {
+    InstructionContext ictx = sctx.getPushed();
 
-		// copy instruction
-		Instruction i = ictx.getInstruction();
+    if (ictx.getInstruction() instanceof DupInstruction) {
+      // we only care about one path
+      DupInstruction di = (DupInstruction) ictx.getInstruction();
+      sctx = di.getOriginal(sctx);
+      ictx = sctx.getPushed();
+    }
 
-		logger.debug("Duplicating instruction {} at index {}", i, idx);
+    // copy required instructions
+    // the first thing popped was pushed last, so reverse
+    for (StackContext s : Lists.reverse(ictx.getPops())) {
+      idx = copy(s, instructions, idx);
+    }
 
-		i = i.clone();
+    // copy instruction
+    Instruction i = ictx.getInstruction();
 
-		instructions.addInstruction(idx, i);
-		return idx + 1; // move on to next instruction
-	}
+    logger.debug("Duplicating instruction {} at index {}", i, idx);
 
-	private void visit(MethodContext mctx)
-	{
-		for (InstructionContext ictx : mctx.getInstructionContexts())
-		{
-			if (ictx.getInstruction().getInstructions() == null)
-			{
-				// already removed?
-				continue;
-			}
+    i = i.clone();
 
-			visit(ictx);
-		}
-	}
+    instructions.addInstruction(idx, i);
+    return idx + 1; // move on to next instruction
+  }
 
-	@Override
-	public void run(ClassGroup group)
-	{
-		Execution e = new Execution(group);
-		e.addMethodContextVisitor(m -> visit(m));
-		e.populateInitialMethods();
-		e.run();
+  private void visit(MethodContext mctx) {
+    for (InstructionContext ictx : mctx.getInstructionContexts()) {
+      if (ictx.getInstruction().getInstructions() == null) {
+        // already removed?
+        continue;
+      }
 
-		logger.info("Replaced {} dup instructions", count);
-	}
+      visit(ictx);
+    }
+  }
+
+  @Override
+  public void run(ClassGroup group) {
+    Execution e = new Execution(group);
+    e.addMethodContextVisitor(m -> visit(m));
+    e.populateInitialMethods();
+    e.run();
+
+    logger.info("Replaced {} dup instructions", count);
+  }
 
 }

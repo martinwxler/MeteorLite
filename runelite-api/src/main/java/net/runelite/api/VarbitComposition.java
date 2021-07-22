@@ -24,20 +24,20 @@
  */
 package net.runelite.api;
 
-public interface VarbitComposition
-{
-	/**
-	 * The varp index for this varbit
-	 */
-	int getIndex();
+public interface VarbitComposition {
 
-	/**
-	 * The least significant bit of the varbit
-	 */
-	int getLeastSignificantBit();
+  /**
+   * The varp index for this varbit
+   */
+  int getIndex();
 
-	/**
-	 * The most significant bit of the varbit (inclusive)
-	 */
-	int getMostSignificantBit();
+  /**
+   * The least significant bit of the varbit
+   */
+  int getLeastSignificantBit();
+
+  /**
+   * The most significant bit of the varbit (inclusive)
+   */
+  int getMostSignificantBit();
 }

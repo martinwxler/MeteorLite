@@ -3,15 +3,15 @@ package net.runelite.rs.api;
 import net.runelite.api.HashTable;
 import net.runelite.mapping.Import;
 
-public interface RSNodeHashTable extends HashTable
-{
-	@Import("get")
-	@Override
-	RSNode get$api(long value);
+public interface RSNodeHashTable extends HashTable {
 
-	@Import("size")
-	int getSize();
+  @Import("get")
+  @Override
+  RSNode get$api(long value);
 
-	@Import("buckets")
-	RSNode[] getBuckets();
+  @Import("size")
+  int getSize();
+
+  @Import("buckets")
+  RSNode[] getBuckets();
 }

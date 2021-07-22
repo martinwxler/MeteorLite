@@ -31,18 +31,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates a copy of the specified method should be copied into
- * the target class.
+ * Indicates a copy of the specified method should be copied into the target class.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Documented
-public @interface Copy
-{
-	/**
-	 * Method to copy
-	 *
-	 * @return
-	 */
-	String value();
+public @interface Copy {
+
+  /**
+   * Method to copy
+   *
+   * @return
+   */
+  String value();
 }

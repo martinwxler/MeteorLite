@@ -15,6 +15,14 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.vars;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 import org.jetbrains.java.decompiler.code.CodeConstants;
 import org.jetbrains.java.decompiler.main.DecompilerContext;
 import org.jetbrains.java.decompiler.main.collectors.VarNamesCollector;
@@ -28,9 +36,6 @@ import org.jetbrains.java.decompiler.modules.decompiler.stats.Statement;
 import org.jetbrains.java.decompiler.struct.StructClass;
 import org.jetbrains.java.decompiler.struct.StructMethod;
 import org.jetbrains.java.decompiler.struct.gen.MethodDescriptor;
-
-import java.util.*;
-import java.util.Map.Entry;
 
 public class VarDefinitionHelper {
 
@@ -63,7 +68,6 @@ public class VarDefinitionHelper {
     }
     paramcount += md.params.length;
 
-
     // method parameters are implicitly defined
     int varindex = 0;
     for (int i = 0; i < paramcount; i++) {
@@ -73,18 +77,17 @@ public class VarDefinitionHelper {
       if (thisvar) {
         if (i == 0) {
           varindex++;
-        }
-        else {
+        } else {
           varindex += md.params[i - 1].stackSize;
         }
-      }
-      else {
+      } else {
         varindex += md.params[i].stackSize;
       }
     }
 
     if (thisvar) {
-      StructClass current_class = (StructClass)DecompilerContext.getProperty(DecompilerContext.CURRENT_CLASS);
+      StructClass current_class = (StructClass) DecompilerContext
+          .getProperty(DecompilerContext.CURRENT_CLASS);
 
       varproc.getThisVars().put(new VarVersionPair(0, 0), current_class.qualifiedName);
       varproc.setVarName(new VarVersionPair(0, 0), "this");
@@ -100,10 +103,9 @@ public class VarDefinitionHelper {
 
       List<VarExprent> lstVars = null;
       if (st.type == Statement.TYPE_CATCHALL) {
-        lstVars = ((CatchAllStatement)st).getVars();
-      }
-      else if (st.type == Statement.TYPE_TRYCATCH) {
-        lstVars = ((CatchStatement)st).getVars();
+        lstVars = ((CatchAllStatement) st).getVars();
+      } else if (st.type == Statement.TYPE_TRYCATCH) {
+        lstVars = ((CatchStatement) st).getVars();
       }
 
       if (lstVars != null) {
@@ -120,6 +122,42 @@ public class VarDefinitionHelper {
     initStatement(root);
   }
 
+  private static List<VarExprent> getAllVars(List<Exprent> lst) {
+
+    List<VarExprent> res = new ArrayList<>();
+    List<Exprent> listTemp = new ArrayList<>();
+
+    for (Exprent expr : lst) {
+      listTemp.addAll(expr.getAllExprents(true));
+      listTemp.add(expr);
+    }
+
+    for (Exprent exprent : listTemp) {
+      if (exprent.type == Exprent.EXPRENT_VAR) {
+        res.add((VarExprent) exprent);
+      }
+    }
+
+    return res;
+  }
+
+  // *****************************************************************************
+  // private methods
+  // *****************************************************************************
+
+  private static boolean setDefinition(Exprent expr, Integer index) {
+    if (expr.type == Exprent.EXPRENT_ASSIGNMENT) {
+      Exprent left = ((AssignmentExprent) expr).getLeft();
+      if (left.type == Exprent.EXPRENT_VAR) {
+        VarExprent var = (VarExprent) left;
+        if (var.getIndex() == index.intValue()) {
+          var.setDefinition(true);
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 
   public void setVarDefinitions() {
 
@@ -138,14 +176,14 @@ public class VarDefinitionHelper {
 
       // special case for
       if (stat.type == Statement.TYPE_DO) {
-        DoStatement dstat = (DoStatement)stat;
+        DoStatement dstat = (DoStatement) stat;
         if (dstat.getLooptype() == DoStatement.LOOP_FOR) {
 
           if (dstat.getInitExprent() != null && setDefinition(dstat.getInitExprent(), index)) {
             continue;
-          }
-          else {
-            List<Exprent> lstSpecial = Arrays.asList(dstat.getConditionExprent(), dstat.getIncExprent());
+          } else {
+            List<Exprent> lstSpecial = Arrays
+                .asList(dstat.getConditionExprent(), dstat.getIncExprent());
             for (VarExprent var : getAllVars(lstSpecial)) {
               if (var.getIndex() == index.intValue()) {
                 stat = stat.getParent();
@@ -156,20 +194,16 @@ public class VarDefinitionHelper {
         }
       }
 
-
       Statement first = findFirstBlock(stat, index);
 
       List<Exprent> lst;
       if (first == null) {
         lst = stat.getVarDefinitions();
-      }
-      else if (first.getExprents() == null) {
+      } else if (first.getExprents() == null) {
         lst = first.getVarDefinitions();
-      }
-      else {
+      } else {
         lst = first.getExprents();
       }
-
 
       boolean defset = false;
 
@@ -179,11 +213,10 @@ public class VarDefinitionHelper {
         if (setDefinition(expr, index)) {
           defset = true;
           break;
-        }
-        else {
+        } else {
           boolean foundvar = false;
           for (Exprent exp : expr.getAllExprents(true)) {
-            if (exp.type == Exprent.EXPRENT_VAR && ((VarExprent)exp).getIndex() == index) {
+            if (exp.type == Exprent.EXPRENT_VAR && ((VarExprent) exp).getIndex() == index) {
               foundvar = true;
               break;
             }
@@ -196,18 +229,14 @@ public class VarDefinitionHelper {
       }
 
       if (!defset) {
-        VarExprent var = new VarExprent(index.intValue(), varproc.getVarType(new VarVersionPair(index.intValue(), 0)), varproc);
+        VarExprent var = new VarExprent(index.intValue(),
+            varproc.getVarType(new VarVersionPair(index.intValue(), 0)), varproc);
         var.setDefinition(true);
 
         lst.add(addindex, var);
       }
     }
   }
-
-
-  // *****************************************************************************
-  // private methods
-  // *****************************************************************************
 
   private Statement findFirstBlock(Statement stat, Integer varindex) {
 
@@ -225,8 +254,7 @@ public class VarDefinitionHelper {
 
         if (st.getExprents() != null) {
           return st;
-        }
-        else {
+        } else {
           stack.clear();
 
           switch (st.type) {
@@ -263,25 +291,23 @@ public class VarDefinitionHelper {
 
       for (Object obj : stat.getSequentialObjects()) {
         if (obj instanceof Statement) {
-          Statement st = (Statement)obj;
+          Statement st = (Statement) obj;
           childVars.addAll(initStatement(st));
 
           if (st.type == DoStatement.TYPE_DO) {
-            DoStatement dost = (DoStatement)st;
+            DoStatement dost = (DoStatement) st;
             if (dost.getLooptype() != DoStatement.LOOP_FOR &&
                 dost.getLooptype() != DoStatement.LOOP_DO) {
               currVars.add(dost.getConditionExprent());
             }
-          }
-          else if (st.type == DoStatement.TYPE_CATCHALL) {
-            CatchAllStatement fin = (CatchAllStatement)st;
+          } else if (st.type == DoStatement.TYPE_CATCHALL) {
+            CatchAllStatement fin = (CatchAllStatement) st;
             if (fin.isFinally() && fin.getMonitor() != null) {
               currVars.add(fin.getMonitor());
             }
           }
-        }
-        else if (obj instanceof Exprent) {
-          currVars.add((Exprent)obj);
+        } else if (obj instanceof Exprent) {
+          currVars.add((Exprent) obj);
         }
       }
 
@@ -295,8 +321,7 @@ public class VarDefinitionHelper {
       }
 
       condlst = getAllVars(currVars);
-    }
-    else {
+    } else {
       condlst = getAllVars(stat.getExprents());
     }
 
@@ -304,7 +329,6 @@ public class VarDefinitionHelper {
     for (VarExprent var : condlst) {
       mapCount.put(var.getIndex(), 2);
     }
-
 
     HashSet<Integer> set = new HashSet<>(mapCount.keySet());
 
@@ -318,38 +342,5 @@ public class VarDefinitionHelper {
     mapStatementVars.put(stat.id, set);
 
     return set;
-  }
-
-  private static List<VarExprent> getAllVars(List<Exprent> lst) {
-
-    List<VarExprent> res = new ArrayList<>();
-    List<Exprent> listTemp = new ArrayList<>();
-
-    for (Exprent expr : lst) {
-      listTemp.addAll(expr.getAllExprents(true));
-      listTemp.add(expr);
-    }
-
-    for (Exprent exprent : listTemp) {
-      if (exprent.type == Exprent.EXPRENT_VAR) {
-        res.add((VarExprent)exprent);
-      }
-    }
-
-    return res;
-  }
-
-  private static boolean setDefinition(Exprent expr, Integer index) {
-    if (expr.type == Exprent.EXPRENT_ASSIGNMENT) {
-      Exprent left = ((AssignmentExprent)expr).getLeft();
-      if (left.type == Exprent.EXPRENT_VAR) {
-        VarExprent var = (VarExprent)left;
-        if (var.getIndex() == index.intValue()) {
-          var.setDefinition(true);
-          return true;
-        }
-      }
-    }
-    return false;
   }
 }

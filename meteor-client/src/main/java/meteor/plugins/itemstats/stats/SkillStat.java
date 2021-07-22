@@ -27,26 +27,23 @@ package meteor.plugins.itemstats.stats;
 import net.runelite.api.Client;
 import net.runelite.api.Skill;
 
-public class SkillStat extends Stat
-{
-	private final Skill skill;
+public class SkillStat extends Stat {
 
-	SkillStat(Skill skill)
-	{
-		super(skill.getName());
-		this.skill = skill;
-	}
+  private final Skill skill;
 
-	@Override
-	public int getValue(Client client)
-	{
-		return client.getBoostedSkillLevel(this.skill);
-	}
+  SkillStat(Skill skill) {
+    super(skill.getName());
+    this.skill = skill;
+  }
 
-	@Override
-	public int getMaximum(Client client)
-	{
-		return client.getRealSkillLevel(this.skill);
-	}
+  @Override
+  public int getValue(Client client) {
+    return client.getBoostedSkillLevel(this.skill);
+  }
+
+  @Override
+  public int getMaximum(Client client) {
+    return client.getRealSkillLevel(this.skill);
+  }
 
 }

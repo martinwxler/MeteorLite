@@ -24,40 +24,38 @@
  */
 package meteor.eventbus.events;
 
-import lombok.Data;
-
 import javax.annotation.Nullable;
+import lombok.Data;
 
 /**
  * An event where a configuration entry has been modified.
  */
 @Data
-public class ConfigChanged
-{
-	/**
-	 * The parent group for the key.
-	 * <p>
-	 * Typically set to the name of a plugin to prevent potential collisions
-	 * between other key values that may have the same name.
-	 */
-	private String group;
+public class ConfigChanged {
 
-	/**
-	 * The profile that has changed, if any
-	 *
-	 */
-	@Nullable
-	private String profile;
-	/**
-	 * The configuration key that has been modified.
-	 */
-	private String key;
-	/**
-	 * The previous value of the entry.
-	 */
-	private String oldValue;
-	/**
-	 * The new value of the entry, null if the entry has been unset.
-	 */
-	private String newValue;
+  /**
+   * The parent group for the key.
+   * <p>
+   * Typically set to the name of a plugin to prevent potential collisions between other key values
+   * that may have the same name.
+   */
+  private String group;
+
+  /**
+   * The profile that has changed, if any
+   */
+  @Nullable
+  private String profile;
+  /**
+   * The configuration key that has been modified.
+   */
+  private String key;
+  /**
+   * The previous value of the entry.
+   */
+  private String oldValue;
+  /**
+   * The new value of the entry, null if the entry has been unset.
+   */
+  private String newValue;
 }

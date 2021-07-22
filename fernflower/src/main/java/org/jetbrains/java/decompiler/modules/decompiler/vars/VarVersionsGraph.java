@@ -15,96 +15,24 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.vars;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import org.jetbrains.java.decompiler.modules.decompiler.decompose.GenericDominatorEngine;
 import org.jetbrains.java.decompiler.modules.decompiler.decompose.IGraph;
 import org.jetbrains.java.decompiler.modules.decompiler.decompose.IGraphNode;
 import org.jetbrains.java.decompiler.util.VBStyleCollection;
 
-import java.util.*;
-
 
 public class VarVersionsGraph {
 
-  public int counter = 0;
-
   public final VBStyleCollection<VarVersionNode, VarVersionPair> nodes = new VBStyleCollection<>();
-
+  public int counter = 0;
   private GenericDominatorEngine engine;
-
-  public VarVersionNode createNode(VarVersionPair ver) {
-    VarVersionNode node;
-    nodes.addWithKey(node = new VarVersionNode(ver.var, ver.version), ver);
-    return node;
-  }
-
-  public void addNodes(Collection<VarVersionNode> colnodes, Collection<VarVersionPair> colpaars) {
-    nodes.addAllWithKey(colnodes, colpaars);
-  }
-
-  public boolean isDominatorSet(VarVersionNode node, HashSet<VarVersionNode> domnodes) {
-
-    if (domnodes.size() == 1) {
-      return engine.isDominator(node, domnodes.iterator().next());
-    }
-    else {
-
-      HashSet<VarVersionNode> marked = new HashSet<>();
-
-      if (domnodes.contains(node)) {
-        return true;
-      }
-
-      LinkedList<VarVersionNode> lstNodes = new LinkedList<>();
-      lstNodes.add(node);
-
-      while (!lstNodes.isEmpty()) {
-
-        VarVersionNode nd = lstNodes.remove(0);
-        if (marked.contains(nd)) {
-          continue;
-        }
-        else {
-          marked.add(nd);
-        }
-
-        if (nd.preds.isEmpty()) {
-          return false;
-        }
-
-        for (VarVersionEdge edge : nd.preds) {
-          VarVersionNode pred = edge.source;
-          if (!marked.contains(pred) && !domnodes.contains(pred)) {
-            lstNodes.add(pred);
-          }
-        }
-      }
-    }
-
-    return true;
-  }
-
-  public void initDominators() {
-
-    final HashSet<VarVersionNode> roots = new HashSet<>();
-
-    for (VarVersionNode node : nodes) {
-      if (node.preds.isEmpty()) {
-        roots.add(node);
-      }
-    }
-
-    engine = new GenericDominatorEngine(new IGraph() {
-      public List<? extends IGraphNode> getReversePostOrderList() {
-        return getReversedPostOrder(roots);
-      }
-
-      public Set<? extends IGraphNode> getRoots() {
-        return new HashSet<IGraphNode>(roots);
-      }
-    });
-
-    engine.initialize();
-  }
 
   private static LinkedList<VarVersionNode> getReversedPostOrder(Collection<VarVersionNode> roots) {
 
@@ -122,7 +50,8 @@ public class VarVersionsGraph {
     return lst;
   }
 
-  private static void addToReversePostOrderListIterative(VarVersionNode root, List<VarVersionNode> lst, HashSet<VarVersionNode> setVisited) {
+  private static void addToReversePostOrderListIterative(VarVersionNode root,
+      List<VarVersionNode> lst, HashSet<VarVersionNode> setVisited) {
 
     HashMap<VarVersionNode, List<VarVersionEdge>> mapNodeSuccs = new HashMap<>();
 
@@ -163,5 +92,78 @@ public class VarVersionsGraph {
         stackNode.removeLast();
       }
     }
+  }
+
+  public VarVersionNode createNode(VarVersionPair ver) {
+    VarVersionNode node;
+    nodes.addWithKey(node = new VarVersionNode(ver.var, ver.version), ver);
+    return node;
+  }
+
+  public void addNodes(Collection<VarVersionNode> colnodes, Collection<VarVersionPair> colpaars) {
+    nodes.addAllWithKey(colnodes, colpaars);
+  }
+
+  public boolean isDominatorSet(VarVersionNode node, HashSet<VarVersionNode> domnodes) {
+
+    if (domnodes.size() == 1) {
+      return engine.isDominator(node, domnodes.iterator().next());
+    } else {
+
+      HashSet<VarVersionNode> marked = new HashSet<>();
+
+      if (domnodes.contains(node)) {
+        return true;
+      }
+
+      LinkedList<VarVersionNode> lstNodes = new LinkedList<>();
+      lstNodes.add(node);
+
+      while (!lstNodes.isEmpty()) {
+
+        VarVersionNode nd = lstNodes.remove(0);
+        if (marked.contains(nd)) {
+          continue;
+        } else {
+          marked.add(nd);
+        }
+
+        if (nd.preds.isEmpty()) {
+          return false;
+        }
+
+        for (VarVersionEdge edge : nd.preds) {
+          VarVersionNode pred = edge.source;
+          if (!marked.contains(pred) && !domnodes.contains(pred)) {
+            lstNodes.add(pred);
+          }
+        }
+      }
+    }
+
+    return true;
+  }
+
+  public void initDominators() {
+
+    final HashSet<VarVersionNode> roots = new HashSet<>();
+
+    for (VarVersionNode node : nodes) {
+      if (node.preds.isEmpty()) {
+        roots.add(node);
+      }
+    }
+
+    engine = new GenericDominatorEngine(new IGraph() {
+      public List<? extends IGraphNode> getReversePostOrderList() {
+        return getReversedPostOrder(roots);
+      }
+
+      public Set<? extends IGraphNode> getRoots() {
+        return new HashSet<IGraphNode>(roots);
+      }
+    });
+
+    engine.initialize();
   }
 }

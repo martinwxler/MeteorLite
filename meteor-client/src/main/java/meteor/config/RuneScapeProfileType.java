@@ -24,37 +24,32 @@
  */
 package meteor.config;
 
+import java.util.function.Predicate;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.runelite.api.Client;
 import net.runelite.api.WorldType;
 
-import java.util.function.Predicate;
-
 @Getter
 @RequiredArgsConstructor
-public enum RuneScapeProfileType
-{
-	STANDARD(client -> true),
-	BETA(client -> client.getWorldType().contains(WorldType.TOURNAMENT)),
-	DEADMAN(client -> client.getWorldType().contains(WorldType.DEADMAN)),
-	TRAILBLAZER_LEAGUE(client -> client.getWorldType().contains(WorldType.LEAGUE)),
-	;
+public enum RuneScapeProfileType {
+  STANDARD(client -> true),
+  BETA(client -> client.getWorldType().contains(WorldType.TOURNAMENT)),
+  DEADMAN(client -> client.getWorldType().contains(WorldType.DEADMAN)),
+  TRAILBLAZER_LEAGUE(client -> client.getWorldType().contains(WorldType.LEAGUE)),
+  ;
 
-	private final Predicate<Client> test;
+  private final Predicate<Client> test;
 
-	public static RuneScapeProfileType getCurrent(Client client)
-	{
-		RuneScapeProfileType[] types = values();
-		for (int i = types.length - 1; i >= 0; i--)
-		{
-			RuneScapeProfileType type = types[i];
-			if (types[i].test.test(client))
-			{
-				return type;
-			}
-		}
+  public static RuneScapeProfileType getCurrent(Client client) {
+    RuneScapeProfileType[] types = values();
+    for (int i = types.length - 1; i >= 0; i--) {
+      RuneScapeProfileType type = types[i];
+      if (types[i].test.test(client)) {
+        return type;
+      }
+    }
 
-		return STANDARD;
-	}
+    return STANDARD;
+  }
 }

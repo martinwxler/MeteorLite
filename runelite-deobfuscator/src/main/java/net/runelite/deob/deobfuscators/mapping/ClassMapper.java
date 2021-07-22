@@ -32,54 +32,48 @@ import net.runelite.asm.ClassFile;
 import net.runelite.asm.Type;
 import net.runelite.asm.signature.Signature;
 
-public class ClassMapper
-{
-	private final ClassFile one, two;
+public class ClassMapper {
 
-	public ClassMapper(ClassFile one, ClassFile two)
-	{
-		this.one = one;
-		this.two = two;
-	}
+  private final ClassFile one, two;
 
-	private Multiset<Type> fieldCardinalities(ClassFile cf)
-	{
-		List<Type> t = cf.getFields().stream()
-			.filter(f -> !f.isStatic())
-			.map(f -> f.getType())
-			.collect(Collectors.toList());
+  public ClassMapper(ClassFile one, ClassFile two) {
+    this.one = one;
+    this.two = two;
+  }
 
-		return ImmutableMultiset.copyOf(t);
-	}
+  private Multiset<Type> fieldCardinalities(ClassFile cf) {
+    List<Type> t = cf.getFields().stream()
+        .filter(f -> !f.isStatic())
+        .map(f -> f.getType())
+        .collect(Collectors.toList());
 
-	private Multiset<Signature> methodCardinalities(ClassFile cf)
-	{
-		List<Signature> t = cf.getMethods().stream()
-			.filter(m -> !m.isStatic())
-			.filter(m -> !m.getName().startsWith("<"))
-			.map(m -> m.getDescriptor())
-			.collect(Collectors.toList());
+    return ImmutableMultiset.copyOf(t);
+  }
 
-		return ImmutableMultiset.copyOf(t);
-	}
+  private Multiset<Signature> methodCardinalities(ClassFile cf) {
+    List<Signature> t = cf.getMethods().stream()
+        .filter(m -> !m.isStatic())
+        .filter(m -> !m.getName().startsWith("<"))
+        .map(m -> m.getDescriptor())
+        .collect(Collectors.toList());
 
-	public boolean same()
-	{
-		Multiset<Type> c1 = fieldCardinalities(one), c2 = fieldCardinalities(two);
+    return ImmutableMultiset.copyOf(t);
+  }
 
-		if (!c1.equals(c2))
-		{
-			return false;
-		}
+  public boolean same() {
+    Multiset<Type> c1 = fieldCardinalities(one), c2 = fieldCardinalities(two);
 
-		Multiset<Signature> s1 = methodCardinalities(one);
-		Multiset<Signature> s2 = methodCardinalities(two);
+    if (!c1.equals(c2)) {
+      return false;
+    }
 
-		if (!s1.equals(s2))
-		{
-			return false;
-		}
+    Multiset<Signature> s1 = methodCardinalities(one);
+    Multiset<Signature> s2 = methodCardinalities(two);
 
-		return true;
-	}
+    if (!s1.equals(s2)) {
+      return false;
+    }
+
+    return true;
+  }
 }

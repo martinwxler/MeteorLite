@@ -26,71 +26,60 @@ package meteor.plugins.itemstats;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.runelite.api.Client;
 import meteor.plugins.itemstats.stats.Stat;
+import net.runelite.api.Client;
 
-public abstract class StatBoost extends SingleEffect
-{
-	@Getter
-	@Setter
-	private Stat stat;
-	@Getter
-	@Setter
-	private boolean boost;
+public abstract class StatBoost extends SingleEffect {
 
-	public StatBoost(Stat stat, boolean boost)
-	{
-		this.stat = stat;
-		this.boost = boost;
-	}
+  @Getter
+  @Setter
+  private Stat stat;
+  @Getter
+  @Setter
+  private boolean boost;
 
-	public abstract int heals(Client client);
+  public StatBoost(Stat stat, boolean boost) {
+    this.stat = stat;
+    this.boost = boost;
+  }
 
-	@Override
-	public StatChange effect(Client client)
-	{
-		int value = stat.getValue(client);
-		int max = stat.getMaximum(client);
+  public abstract int heals(Client client);
 
-		boolean hitCap = false;
+  @Override
+  public StatChange effect(Client client) {
+    int value = stat.getValue(client);
+    int max = stat.getMaximum(client);
 
-		int calcedDelta = heals(client);
-		if (boost && calcedDelta > 0)
-		{
-			max += calcedDelta;
-		}
-		if (value > max)
-		{
-			max = value;
-		}
-		int newValue = value + calcedDelta;
-		if (newValue > max)
-		{
-			newValue = max;
-			hitCap = true;
-		}
-		if (newValue < 0)
-		{
-			newValue = 0;
-		}
-		int delta = newValue - value;
-		StatChange out = new StatChange();
-		out.setStat(stat);
-		if (delta > 0)
-		{
-			out.setPositivity(hitCap ? Positivity.BETTER_CAPPED : Positivity.BETTER_UNCAPPED);
-		}
-		else if (delta == 0)
-		{
-			out.setPositivity(Positivity.NO_CHANGE);
-		}
-		else
-		{
-			out.setPositivity(Positivity.WORSE);
-		}
-		out.setAbsolute(newValue);
-		out.setRelative(delta);
-		out.setTheoretical(calcedDelta);
-		return out;
-	}
+    boolean hitCap = false;
+
+    int calcedDelta = heals(client);
+    if (boost && calcedDelta > 0) {
+      max += calcedDelta;
+    }
+    if (value > max) {
+      max = value;
+    }
+    int newValue = value + calcedDelta;
+    if (newValue > max) {
+      newValue = max;
+      hitCap = true;
+    }
+    if (newValue < 0) {
+      newValue = 0;
+    }
+    int delta = newValue - value;
+    StatChange out = new StatChange();
+    out.setStat(stat);
+    if (delta > 0) {
+      out.setPositivity(hitCap ? Positivity.BETTER_CAPPED : Positivity.BETTER_UNCAPPED);
+    } else if (delta == 0) {
+      out.setPositivity(Positivity.NO_CHANGE);
+    } else {
+      out.setPositivity(Positivity.WORSE);
+    }
+    out.setAbsolute(newValue);
+    out.setRelative(delta);
+    out.setTheoretical(calcedDelta);
+    return out;
+  }
 }

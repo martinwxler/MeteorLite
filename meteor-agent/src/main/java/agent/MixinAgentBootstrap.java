@@ -24,12 +24,8 @@
  */
 package agent;
 
-import org.sponge.util.Logger;
-import org.spongepowered.asm.launch.MixinBootstrap;
-import org.spongepowered.asm.mixin.MixinEnvironment;
-import org.spongepowered.asm.mixin.Mixins;
-import org.spongepowered.asm.mixin.transformer.MixinTransformer;
-import org.spongepowered.asm.service.ILegacyClassTransformer;
+import static org.sponge.util.Logger.ANSI_RESET;
+import static org.sponge.util.Logger.ANSI_YELLOW;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
@@ -38,94 +34,97 @@ import java.lang.reflect.Method;
 import java.security.ProtectionDomain;
 import java.util.HashSet;
 import java.util.Set;
-
-import static org.sponge.util.Logger.ANSI_RESET;
-import static org.sponge.util.Logger.ANSI_YELLOW;
+import org.sponge.util.Logger;
+import org.spongepowered.asm.launch.MixinBootstrap;
+import org.spongepowered.asm.mixin.MixinEnvironment;
+import org.spongepowered.asm.mixin.Mixins;
+import org.spongepowered.asm.mixin.transformer.MixinTransformer;
+import org.spongepowered.asm.service.ILegacyClassTransformer;
 
 @SuppressWarnings("Duplicates")
 public class MixinAgentBootstrap {
 
-    public static final ClassLoader CLASS_LOADER = ClassLoader.getSystemClassLoader();
+  public static final ClassLoader CLASS_LOADER = ClassLoader.getSystemClassLoader();
 
-    private static final Set<String> LOADED_CLASSES = new HashSet<>();
+  private static final Set<String> LOADED_CLASSES = new HashSet<>();
+  static Logger logger = new Logger("Agent");
+  private static Transformer transformer;
 
-    private static Transformer transformer;
+  public static void premain(String ops, Instrumentation instrumentation) {
 
-    static Logger logger = new Logger("Agent");
+    MixinBootstrap.getPlatform().inject();
+    MixinBootstrap.init();
 
-    public static void premain(String ops, Instrumentation instrumentation) {
+    Mixins.addConfiguration("mixins.json");
+    gotoPhase(MixinEnvironment.Phase.DEFAULT);
+
+    Transformer transformer = getTransformer();
+    instrumentation.addTransformer(transformer);
+    logger.info(ANSI_YELLOW + "---Sponge Mixins Agent Started---" + ANSI_RESET);
+  }
 
 
-        MixinBootstrap.getPlatform().inject();
-        MixinBootstrap.init();
+  public static Transformer getTransformer() {
+    if (transformer == null) {
+      transformer = new Transformer();
+    }
+    return transformer;
+  }
 
-        Mixins.addConfiguration("mixins.json");
-        gotoPhase(MixinEnvironment.Phase.DEFAULT);
+  public static boolean isClassLoaded(String name) {
+    return LOADED_CLASSES.contains(name);
+  }
 
-        Transformer transformer = getTransformer();
-        instrumentation.addTransformer(transformer);
-        logger.info(ANSI_YELLOW + "---Sponge Mixins Agent Started---" + ANSI_RESET);
+  private static void gotoPhase(MixinEnvironment.Phase phase) {
+    try {
+
+      Method gotoPhase = MixinEnvironment.class
+          .getDeclaredMethod("gotoPhase", MixinEnvironment.Phase.class);
+      gotoPhase.setAccessible(true);
+      gotoPhase.invoke(null, phase);
+    } catch (Throwable t) {
+      t.printStackTrace();
+    }
+  }
+
+  private static final class Transformer implements ClassFileTransformer, ILegacyClassTransformer {
+
+    private static final ILegacyClassTransformer MIXIN = constructTransformer();
+
+    private static ILegacyClassTransformer constructTransformer() {
+      try {
+        Constructor<MixinTransformer> constructor = MixinTransformer.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        return constructor.newInstance();
+      } catch (Throwable t) {
+        t.printStackTrace();
+      }
+      return new VoidLegacyTransformer();
     }
 
-
-    public static Transformer getTransformer() {
-        if (transformer == null) {
-            transformer = new Transformer();
-        }
-        return transformer;
+    @Override
+    public String getName() {
+      return this.getClass().getName();
     }
 
-    public static boolean isClassLoaded(String name) {
-        return LOADED_CLASSES.contains(name);
+    @Override
+    public boolean isDelegationExcluded() {
+      return true;
     }
 
-    private static void gotoPhase(MixinEnvironment.Phase phase) {
-        try {
+    @Override
+    public byte[] transform(ClassLoader loader, String name, Class<?> clazz,
+        ProtectionDomain domain, byte[] bytes) {
+      LOADED_CLASSES.add(name);
 
-            Method gotoPhase = MixinEnvironment.class.getDeclaredMethod("gotoPhase", MixinEnvironment.Phase.class);
-            gotoPhase.setAccessible(true);
-            gotoPhase.invoke(null, phase);
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
+      return MIXIN.transformClassBytes(name, name.replace("/", "."), bytes);
+
+
     }
 
-    private static final class Transformer implements ClassFileTransformer, ILegacyClassTransformer {
-        private static final ILegacyClassTransformer MIXIN = constructTransformer();
-
-        private static ILegacyClassTransformer constructTransformer() {
-            try {
-                Constructor<MixinTransformer> constructor = MixinTransformer.class.getDeclaredConstructor();
-                constructor.setAccessible(true);
-                return constructor.newInstance();
-            } catch (Throwable t) {
-                t.printStackTrace();
-            }
-            return new VoidLegacyTransformer();
-        }
-
-        @Override
-        public String getName() {
-            return this.getClass().getName();
-        }
-
-        @Override
-        public boolean isDelegationExcluded() {
-            return true;
-        }
-
-        @Override
-        public byte[] transform(ClassLoader loader, String name, Class<?> clazz, ProtectionDomain domain, byte[] bytes) {
-            LOADED_CLASSES.add(name);
-
-            return MIXIN.transformClassBytes(name, name.replace("/", "."), bytes);
-
-
-        }
-
-        @Override
-        public byte[] transformClassBytes(String name, String transformedName, byte[] bytes) {
-            return MIXIN.transformClassBytes(name, transformedName, bytes);
-        }
+    @Override
+    public byte[] transformClassBytes(String name, String transformedName, byte[] bytes) {
+      return MIXIN.transformClassBytes(name, transformedName, bytes);
     }
+  }
 }

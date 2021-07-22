@@ -24,6 +24,10 @@
  */
 package net.runelite.deob.deobfuscators.packetwrite;
 
+import static net.runelite.deob.deobfuscators.transformers.OpcodesTransformer.RUNELITE_OPCODES;
+import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
+import static org.objectweb.asm.Opcodes.ACC_STATIC;
+
 import java.util.Collection;
 import net.runelite.asm.ClassFile;
 import net.runelite.asm.ClassGroup;
@@ -36,64 +40,57 @@ import net.runelite.asm.attributes.code.instruction.types.PushConstantInstructio
 import net.runelite.asm.attributes.code.instructions.GetStatic;
 import net.runelite.asm.attributes.code.instructions.LDC;
 import net.runelite.asm.attributes.code.instructions.PutStatic;
-import static net.runelite.deob.deobfuscators.transformers.OpcodesTransformer.RUNELITE_OPCODES;
-import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
-import static org.objectweb.asm.Opcodes.ACC_STATIC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class OpcodeReplacer
-{
-	private static final Logger logger = LoggerFactory.getLogger(OpcodeReplacer.class);
+class OpcodeReplacer {
 
-	public void run(ClassGroup group, Collection<PacketWrite> writes)
-	{
-		int count = 0;
+  private static final Logger logger = LoggerFactory.getLogger(OpcodeReplacer.class);
 
-		ClassFile runeliteOpcodes = group.findClass(RUNELITE_OPCODES);
-		assert runeliteOpcodes != null : "Opcodes class must exist";
+  public void run(ClassGroup group, Collection<PacketWrite> writes) {
+    int count = 0;
 
-		for (PacketWrite wp : writes)
-		{
-			Instructions ins = wp.getInstructions();
+    ClassFile runeliteOpcodes = group.findClass(RUNELITE_OPCODES);
+    assert runeliteOpcodes != null : "Opcodes class must exist";
 
-			Instruction param = wp.getOpcodeIns();
-			if (!(param instanceof PushConstantInstruction))
-			{
-				continue;
-			}
+    for (PacketWrite wp : writes) {
+      Instructions ins = wp.getInstructions();
 
-			final String fieldName = "PACKET_CLIENT_" + wp.getOpcode();
+      Instruction param = wp.getOpcodeIns();
+      if (!(param instanceof PushConstantInstruction)) {
+        continue;
+      }
 
-			net.runelite.asm.pool.Field field = new net.runelite.asm.pool.Field(
-				new net.runelite.asm.pool.Class(RUNELITE_OPCODES),
-				fieldName,
-				Type.INT
-			);
-			ins.replace(param, new GetStatic(ins, field));
+      final String fieldName = "PACKET_CLIENT_" + wp.getOpcode();
 
-			if (runeliteOpcodes.findField(fieldName) == null)
-			{
-				Field opField = new Field(runeliteOpcodes, fieldName, Type.INT);
-				// ACC_FINAL causes javac to inline the fields, which prevents
-				// the mapper from doing field mapping
-				opField.setAccessFlags(ACC_PUBLIC | ACC_STATIC);
-				// setting a non-final static field value
-				// doesn't work with fernflower
-				opField.setValue(wp.getOpcode());
-				runeliteOpcodes.addField(opField);
+      net.runelite.asm.pool.Field field = new net.runelite.asm.pool.Field(
+          new net.runelite.asm.pool.Class(RUNELITE_OPCODES),
+          fieldName,
+          Type.INT
+      );
+      ins.replace(param, new GetStatic(ins, field));
 
-				// add initialization
-				Method clinit = runeliteOpcodes.findMethod("<clinit>");
-				assert clinit != null;
-				Instructions instructions = clinit.getCode().getInstructions();
-				instructions.addInstruction(0, new LDC(instructions, wp.getOpcode()));
-				instructions.addInstruction(1, new PutStatic(instructions, opField));
-			}
+      if (runeliteOpcodes.findField(fieldName) == null) {
+        Field opField = new Field(runeliteOpcodes, fieldName, Type.INT);
+        // ACC_FINAL causes javac to inline the fields, which prevents
+        // the mapper from doing field mapping
+        opField.setAccessFlags(ACC_PUBLIC | ACC_STATIC);
+        // setting a non-final static field value
+        // doesn't work with fernflower
+        opField.setValue(wp.getOpcode());
+        runeliteOpcodes.addField(opField);
 
-			++count;
-		}
+        // add initialization
+        Method clinit = runeliteOpcodes.findMethod("<clinit>");
+        assert clinit != null;
+        Instructions instructions = clinit.getCode().getInstructions();
+        instructions.addInstruction(0, new LDC(instructions, wp.getOpcode()));
+        instructions.addInstruction(1, new PutStatic(instructions, opField));
+      }
 
-		logger.info("Injected {} packet writes", count);
-	}
+      ++count;
+    }
+
+    logger.info("Injected {} packet writes", count);
+  }
 }

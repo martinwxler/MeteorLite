@@ -25,7 +25,7 @@
 package meteor.plugins.itemstats.delta;
 
 @FunctionalInterface
-public interface DeltaCalculator
-{
-	int calculateDelta(int max);
+public interface DeltaCalculator {
+
+  int calculateDelta(int max);
 }

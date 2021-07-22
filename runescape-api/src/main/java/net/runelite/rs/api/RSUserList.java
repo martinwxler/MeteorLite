@@ -4,27 +4,29 @@ import net.runelite.api.Nameable;
 import net.runelite.api.NameableContainer;
 import net.runelite.mapping.Import;
 
-public interface RSUserList<T extends Nameable> extends NameableContainer<T>
-{
-	@Import("array")
-	Nameable[] getNameables();
+public interface RSUserList<T extends Nameable> extends NameableContainer<T> {
 
-	@Import("getSize")
-	int getCount();
+  @Import("array")
+  Nameable[] getNameables();
 
-	@Import("getByUsername")
-	T findByName(RSUsername name);
+  @Import("getSize")
+  int getCount();
 
-	/**
-	 * Method called by the container when an element is added
-	 * @param name
-	 * @param prevName
-	 */
-	void rl$add(RSUsername name, RSUsername prevName);
+  @Import("getByUsername")
+  T findByName(RSUsername name);
 
-	/**
-	 * Method called by the container when an element is removed
-	 * @param nameable
-	 */
-	void rl$remove(RSUser nameable);
+  /**
+   * Method called by the container when an element is added
+   *
+   * @param name
+   * @param prevName
+   */
+  void rl$add(RSUsername name, RSUsername prevName);
+
+  /**
+   * Method called by the container when an element is removed
+   *
+   * @param nameable
+   */
+  void rl$remove(RSUser nameable);
 }

@@ -27,14 +27,13 @@ package net.runelite.api.events;
 import lombok.Data;
 
 /**
- * Event called when the client is checking if the menu should be
- * opened on left click.
+ * Event called when the client is checking if the menu should be opened on left click.
  */
 @Data
-public class MenuShouldLeftClick
-{
-	/**
-	 * If set to true, the menu will open on left click.
-	 */
-	private boolean forceRightClick;
+public class MenuShouldLeftClick {
+
+  /**
+   * If set to true, the menu will open on left click.
+   */
+  private boolean forceRightClick;
 }

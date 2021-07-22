@@ -34,74 +34,56 @@ import java.util.function.Supplier;
 import javax.inject.Singleton;
 
 @Singleton
-public class DrawManager
-{
-	private final List<Runnable> everyFrame = new CopyOnWriteArrayList<>();
-	private final Queue<Consumer<Image>> nextFrame = new ConcurrentLinkedQueue<>();
+public class DrawManager {
 
-	public void registerEveryFrameListener(Runnable everyFrameListener)
-	{
-		if (!everyFrame.contains(everyFrameListener))
-		{
-			everyFrame.add(everyFrameListener);
-		}
-	}
+  private final List<Runnable> everyFrame = new CopyOnWriteArrayList<>();
+  private final Queue<Consumer<Image>> nextFrame = new ConcurrentLinkedQueue<>();
 
-	public void unregisterEveryFrameListener(Runnable everyFrameListener)
-	{
-		everyFrame.remove(everyFrameListener);
-	}
+  public void registerEveryFrameListener(Runnable everyFrameListener) {
+    if (!everyFrame.contains(everyFrameListener)) {
+      everyFrame.add(everyFrameListener);
+    }
+  }
 
-	public void requestNextFrameListener(Consumer<Image> nextFrameListener)
-	{
-		nextFrame.add(nextFrameListener);
-	}
+  public void unregisterEveryFrameListener(Runnable everyFrameListener) {
+    everyFrame.remove(everyFrameListener);
+  }
 
-	public void processDrawComplete(Supplier<Image> imageSupplier)
-	{
-		for (Runnable everyFrameListener : everyFrame)
-		{
-			try
-			{
-				everyFrameListener.run();
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
+  public void requestNextFrameListener(Consumer<Image> nextFrameListener) {
+    nextFrame.add(nextFrameListener);
+  }
 
-		Consumer<Image> nextFrameListener = nextFrame.poll();
-		Image image = null;
-		while (nextFrameListener != null)
-		{
-			if (image == null)
-			{
-				try
-				{
-					image = imageSupplier.get();
-				}
-				catch (Exception ex)
-				{
-					ex.printStackTrace();
-				}
-			}
+  public void processDrawComplete(Supplier<Image> imageSupplier) {
+    for (Runnable everyFrameListener : everyFrame) {
+      try {
+        everyFrameListener.run();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
 
-			if (image == null)
-			{
-				nextFrame.clear();
-				break;
-			}
+    Consumer<Image> nextFrameListener = nextFrame.poll();
+    Image image = null;
+    while (nextFrameListener != null) {
+      if (image == null) {
+        try {
+          image = imageSupplier.get();
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
+      }
 
-			try
-			{
-				nextFrameListener.accept(image);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-			nextFrameListener = nextFrame.poll();
-		}
-	}
+      if (image == null) {
+        nextFrame.clear();
+        break;
+      }
+
+      try {
+        nextFrameListener.accept(image);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      nextFrameListener = nextFrame.poll();
+    }
+  }
 }

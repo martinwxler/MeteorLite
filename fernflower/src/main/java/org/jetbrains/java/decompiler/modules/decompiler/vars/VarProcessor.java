@@ -15,6 +15,16 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.vars;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import org.jetbrains.java.decompiler.main.collectors.VarNamesCollector;
 import org.jetbrains.java.decompiler.modules.decompiler.stats.RootStatement;
 import org.jetbrains.java.decompiler.modules.decompiler.stats.Statement;
@@ -23,16 +33,14 @@ import org.jetbrains.java.decompiler.struct.gen.MethodDescriptor;
 import org.jetbrains.java.decompiler.struct.gen.VarType;
 import org.jetbrains.java.decompiler.util.TextUtil;
 
-import java.util.*;
-import java.util.Map.Entry;
-
 public class VarProcessor {
+
   private final StructMethod method;
   private final MethodDescriptor methodDescriptor;
-  private Map<VarVersionPair, String> mapVarNames = new HashMap<>();
-  private VarVersionsProcessor varVersions;
   private final Map<VarVersionPair, String> thisVars = new HashMap<>();
   private final Set<VarVersionPair> externalVars = new HashSet<>();
+  private Map<VarVersionPair, String> mapVarNames = new HashMap<>();
+  private VarVersionsProcessor varVersions;
 
   public VarProcessor(StructMethod mt, MethodDescriptor md) {
     method = mt;
@@ -68,7 +76,8 @@ public class VarProcessor {
       Integer index = mapOriginalVarIndices.get(pair.var);
       if (index != null) {
         String debugName = mapDebugVarNames.get(index);
-        if (debugName != null && TextUtil.isValidIdentifier(debugName, method.getClassStruct().getBytecodeVersion())) {
+        if (debugName != null && TextUtil
+            .isValidIdentifier(debugName, method.getClassStruct().getBytecodeVersion())) {
           name = debugName;
         }
       }

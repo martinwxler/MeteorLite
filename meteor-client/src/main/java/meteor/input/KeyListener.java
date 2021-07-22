@@ -24,10 +24,9 @@
  */
 package meteor.input;
 
-public interface KeyListener extends java.awt.event.KeyListener
-{
-	default boolean isEnabledOnLoginScreen()
-	{
-		return false;
-	}
+public interface KeyListener extends java.awt.event.KeyListener {
+
+  default boolean isEnabledOnLoginScreen() {
+    return false;
+  }
 }

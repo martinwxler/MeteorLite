@@ -15,7 +15,12 @@
  */
 package org.jetbrains.java.decompiler.util;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -23,6 +28,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class InterpreterUtil {
+
   public static final boolean IS_WINDOWS = System.getProperty("os.name", "").startsWith("Windows");
 
   public static final int[] EMPTY_INT_ARRAY = new int[0];
@@ -30,7 +36,8 @@ public class InterpreterUtil {
   private static final int BUFFER_SIZE = 16 * 1024;
 
   public static void copyFile(File source, File target) throws IOException {
-    try (FileInputStream in = new FileInputStream(source); FileOutputStream out = new FileOutputStream(target)) {
+    try (FileInputStream in = new FileInputStream(
+        source); FileOutputStream out = new FileOutputStream(target)) {
       copyStream(in, out);
     }
   }
@@ -45,13 +52,13 @@ public class InterpreterUtil {
 
   public static byte[] getBytes(ZipFile archive, ZipEntry entry) throws IOException {
     try (InputStream stream = archive.getInputStream(entry)) {
-      return readBytes(stream, (int)entry.getSize());
+      return readBytes(stream, (int) entry.getSize());
     }
   }
 
   public static byte[] getBytes(File file) throws IOException {
     try (FileInputStream stream = new FileInputStream(file)) {
-      return readBytes(stream, (int)file.length());
+      return readBytes(stream, (int) file.length());
     }
   }
 
@@ -79,8 +86,7 @@ public class InterpreterUtil {
   public static boolean equalSets(Collection<?> c1, Collection<?> c2) {
     if (c1 == null) {
       return c2 == null;
-    }
-    else if (c2 == null) {
+    } else if (c2 == null) {
       return false;
     }
 
@@ -100,8 +106,7 @@ public class InterpreterUtil {
   public static boolean equalLists(List<?> first, List<?> second) {
     if (first == null) {
       return second == null;
-    }
-    else if (second == null) {
+    } else if (second == null) {
       return false;
     }
 

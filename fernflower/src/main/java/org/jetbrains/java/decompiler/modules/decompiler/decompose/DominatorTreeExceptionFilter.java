@@ -15,12 +15,15 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.decompose;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import org.jetbrains.java.decompiler.modules.decompiler.StatEdge;
 import org.jetbrains.java.decompiler.modules.decompiler.stats.Statement;
 import org.jetbrains.java.decompiler.util.VBStyleCollection;
-
-import java.util.*;
-import java.util.Map.Entry;
 
 public class DominatorTreeExceptionFilter {
 
@@ -31,13 +34,10 @@ public class DominatorTreeExceptionFilter {
 
   // handler, range nodes
   private final Map<Integer, Set<Integer>> mapExceptionRanges = new HashMap<>();
-
-  // handler, head dom
-  private Map<Integer, Integer> mapExceptionDoms = new HashMap<>();
-
   // statement, handler, exit nodes
   private final Map<Integer, Map<Integer, Integer>> mapExceptionRangeUniqueExit = new HashMap<>();
-
+  // handler, head dom
+  private Map<Integer, Integer> mapExceptionDoms = new HashMap<>();
   private DominatorEngine domEngine;
 
   public DominatorTreeExceptionFilter(Statement statement) {
@@ -98,7 +98,8 @@ public class DominatorTreeExceptionFilter {
   private void buildExceptionRanges() {
 
     for (Statement stat : statement.getStats()) {
-      List<Statement> lstPreds = stat.getNeighbours(StatEdge.TYPE_EXCEPTION, Statement.DIRECTION_BACKWARD);
+      List<Statement> lstPreds = stat
+          .getNeighbours(StatEdge.TYPE_EXCEPTION, Statement.DIRECTION_BACKWARD);
       if (!lstPreds.isEmpty()) {
 
         Set<Integer> set = new HashSet<>();
@@ -161,8 +162,7 @@ public class DominatorTreeExceptionFilter {
 
             if (!range.contains(childid)) {
               exit = childid;
-            }
-            else {
+            } else {
               // exit = map.containsKey(handler)?-1:mapChild.get(handler); FIXME: Eclipse bug?
               exit = map.containsKey(handler) ? -1 : mapChild.get(handler);
             }

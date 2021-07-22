@@ -15,13 +15,12 @@
  */
 package org.jetbrains.java.decompiler.modules.decompiler.exps;
 
-import org.jetbrains.java.decompiler.main.TextBuffer;
-import org.jetbrains.java.decompiler.main.collectors.BytecodeMappingTracer;
-import org.jetbrains.java.decompiler.util.InterpreterUtil;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import org.jetbrains.java.decompiler.main.TextBuffer;
+import org.jetbrains.java.decompiler.main.collectors.BytecodeMappingTracer;
+import org.jetbrains.java.decompiler.util.InterpreterUtil;
 
 public class MonitorExprent extends Exprent {
 
@@ -57,8 +56,7 @@ public class MonitorExprent extends Exprent {
 
     if (monType == MONITOR_ENTER) {
       return value.toJava(indent, tracer).enclose("synchronized(", ")");
-    }
-    else {
+    } else {
       return new TextBuffer();
     }
   }
@@ -72,12 +70,16 @@ public class MonitorExprent extends Exprent {
 
   @Override
   public boolean equals(Object o) {
-    if (o == this) return true;
-    if (o == null || !(o instanceof MonitorExprent)) return false;
+    if (o == this) {
+      return true;
+    }
+    if (o == null || !(o instanceof MonitorExprent)) {
+      return false;
+    }
 
-    MonitorExprent me = (MonitorExprent)o;
+    MonitorExprent me = (MonitorExprent) o;
     return monType == me.getMonType() &&
-           InterpreterUtil.equalObjects(value, me.getValue());
+        InterpreterUtil.equalObjects(value, me.getValue());
   }
 
   public int getMonType() {

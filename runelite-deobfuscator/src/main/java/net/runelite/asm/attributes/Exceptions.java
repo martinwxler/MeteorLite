@@ -30,30 +30,25 @@ import java.util.List;
 import net.runelite.asm.ClassFile;
 import net.runelite.asm.pool.Class;
 
-public class Exceptions
-{
-	private final List<Class> classes = new ArrayList<>();
+public class Exceptions {
 
-	public void addException(Class cl)
-	{
-		classes.add(cl);
-	}
+  private final List<Class> classes = new ArrayList<>();
 
-	public List<Class> getExceptions()
-	{
-		return classes;
-	}
-	
-	public void renameClass(ClassFile cf, String name)
-	{
-		for (Class c : new ArrayList<>(classes))
-		{
-			if (c.getName().equals(cf.getName()))
-			{
-				int idx = classes.indexOf(c);
-				classes.remove(idx);
-				classes.add(idx, new Class(name));
-			}
-		}
-	}
+  public void addException(Class cl) {
+    classes.add(cl);
+  }
+
+  public List<Class> getExceptions() {
+    return classes;
+  }
+
+  public void renameClass(ClassFile cf, String name) {
+    for (Class c : new ArrayList<>(classes)) {
+      if (c.getName().equals(cf.getName())) {
+        int idx = classes.indexOf(c);
+        classes.remove(idx);
+        classes.add(idx, new Class(name));
+      }
+    }
+  }
 }

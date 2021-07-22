@@ -3,69 +3,69 @@ package net.runelite.rs.api;
 import net.runelite.api.IndexedSprite;
 import net.runelite.mapping.Import;
 
-public interface RSIndexedSprite extends IndexedSprite
-{
-	@Import("pixels")
-	@Override
-	byte[] getPixels();
+public interface RSIndexedSprite extends IndexedSprite {
 
-	@Import("pixels")
-	@Override
-	void setPixels(byte[] pixels);
+  @Import("pixels")
+  @Override
+  byte[] getPixels();
 
-	@Import("palette")
-	@Override
-	int[] getPalette();
+  @Import("pixels")
+  @Override
+  void setPixels(byte[] pixels);
 
-	@Import("palette")
-	@Override
-	void setPalette(int[] palette);
+  @Import("palette")
+  @Override
+  int[] getPalette();
 
-	@Import("width")
-	@Override
-	int getOriginalWidth();
+  @Import("palette")
+  @Override
+  void setPalette(int[] palette);
 
-	@Import("width")
-	@Override
-	void setOriginalWidth(int originalWidth);
+  @Import("width")
+  @Override
+  int getOriginalWidth();
 
-	@Import("height")
-	@Override
-	int getOriginalHeight();
+  @Import("width")
+  @Override
+  void setOriginalWidth(int originalWidth);
 
-	@Import("height")
-	@Override
-	void setOriginalHeight(int originalHeight);
+  @Import("height")
+  @Override
+  int getOriginalHeight();
 
-	@Import("subHeight")
-	@Override
-	int getHeight();
+  @Import("height")
+  @Override
+  void setOriginalHeight(int originalHeight);
 
-	@Import("subHeight")
-	@Override
-	void setHeight(int height);
+  @Import("subHeight")
+  @Override
+  int getHeight();
 
-	@Import("xOffset")
-	@Override
-	int getOffsetX();
+  @Import("subHeight")
+  @Override
+  void setHeight(int height);
 
-	@Import("xOffset")
-	@Override
-	void setOffsetX(int offsetX);
+  @Import("xOffset")
+  @Override
+  int getOffsetX();
 
-	@Import("yOffset")
-	@Override
-	int getOffsetY();
+  @Import("xOffset")
+  @Override
+  void setOffsetX(int offsetX);
 
-	@Import("yOffset")
-	@Override
-	void setOffsetY(int offsetY);
+  @Import("yOffset")
+  @Override
+  int getOffsetY();
 
-	@Import("subWidth")
-	@Override
-	int getWidth();
+  @Import("yOffset")
+  @Override
+  void setOffsetY(int offsetY);
 
-	@Import("subWidth")
-	@Override
-	void setWidth(int width);
+  @Import("subWidth")
+  @Override
+  int getWidth();
+
+  @Import("subWidth")
+  @Override
+  void setWidth(int width);
 }

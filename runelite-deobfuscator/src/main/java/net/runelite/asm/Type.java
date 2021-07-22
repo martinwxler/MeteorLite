@@ -29,200 +29,155 @@ import net.runelite.asm.pool.Class;
 /**
  * Created by Kyle Fricilone on 8/20/2017
  */
-public class Type
-{
+public class Type {
 
-	public static final Type VOID = new Type("V");
-	public static final Type BOOLEAN = new Type("Z");
-	public static final Type CHAR = new Type("C");
-	public static final Type BYTE = new Type("B");
-	public static final Type SHORT = new Type("S");
-	public static final Type INT = new Type("I");
-	public static final Type FLOAT = new Type("F");
-	public static final Type LONG = new Type("J");
-	public static final Type DOUBLE = new Type("D");
-	public static final Type OBJECT = new Type("Ljava/lang/Object;");
-	public static final Type STRING = new Type("Ljava/lang/String;");
-	public static final Type THROWABLE = new Type("Ljava/lang/Throwable;");
-	public static final Type EXCEPTION = new Type("Ljava/lang/Exception;");
+  public static final Type VOID = new Type("V");
+  public static final Type BOOLEAN = new Type("Z");
+  public static final Type CHAR = new Type("C");
+  public static final Type BYTE = new Type("B");
+  public static final Type SHORT = new Type("S");
+  public static final Type INT = new Type("I");
+  public static final Type FLOAT = new Type("F");
+  public static final Type LONG = new Type("J");
+  public static final Type DOUBLE = new Type("D");
+  public static final Type OBJECT = new Type("Ljava/lang/Object;");
+  public static final Type STRING = new Type("Ljava/lang/String;");
+  public static final Type THROWABLE = new Type("Ljava/lang/Throwable;");
+  public static final Type EXCEPTION = new Type("Ljava/lang/Exception;");
 
-	private final String type;
+  private final String type;
 
-	public Type(String type)
-	{
-		this.type = type;
-	}
+  public Type(String type) {
+    this.type = type;
+  }
 
-	public boolean isPrimitive()
-	{
-		return this.equals(BOOLEAN) || this.equals(BYTE) || this.equals(SHORT) || this.equals(CHAR) || this.equals(INT)
-			|| this.equals(VOID) || this.equals(LONG) || this.equals(FLOAT) || this.equals(DOUBLE);
-	}
+  public static Type fromAsmString(String str) {
+    if (str.startsWith("[")) {
+      // array type
+      return new Type(str);
+    } else {
+      // object type
+      return new Type("L" + str + ";");
+    }
+  }
 
-	public boolean isObject()
-	{
-		return this.equals(OBJECT);
-	}
+  private static int getDimensions(String type) {
+    if (!type.startsWith("[")) {
+      return 0;
+    }
 
-	public boolean isArray()
-	{
-		return getDimensions() > 0;
-	}
+    return (int) type.chars().filter(i -> i == '[').count();
+  }
 
-	public boolean isStackInt()
-	{
-		return this.equals(BOOLEAN) || this.equals(BYTE) || this.equals(SHORT) || this.equals(CHAR) || this.equals(INT);
-	}
+  public static Type getType(String type, int dims) {
+    StringBuilder builder = new StringBuilder();
+    for (int i = 0; i < dims; i++) {
+      builder.append('[');
+    }
+    return new Type(builder.append(type).toString());
+  }
 
-	public int getSize()
-	{
-		if (this.equals(LONG) || this.equals(DOUBLE))
-		{
-			return 2;
-		}
+  public static Type getType(Object object) {
+    Type type;
 
-		if (this.equals(VOID))
-		{
-			return 0;
-		}
+    if (object instanceof Double) {
+      type = DOUBLE;
+    } else if (object instanceof Float) {
+      type = FLOAT;
+    } else if (object instanceof Integer) {
+      type = INT;
+    } else if (object instanceof Long) {
+      type = LONG;
+    } else if (object instanceof String) {
+      type = STRING;
+    } else if (object instanceof Class) {
+      type = new Type("L" + ((Class) object).getName() + ";");
+    } else {
+      throw new IllegalArgumentException("Unexpected object type: " + object.getClass());
+    }
 
-		return 1;
-	}
+    return type;
+  }
 
-	public int getDimensions()
-	{
-		return getDimensions(type);
-	}
+  public boolean isPrimitive() {
+    return this.equals(BOOLEAN) || this.equals(BYTE) || this.equals(SHORT) || this.equals(CHAR)
+        || this.equals(INT)
+        || this.equals(VOID) || this.equals(LONG) || this.equals(FLOAT) || this.equals(DOUBLE);
+  }
 
-	public Type getSubtype()
-	{
-		if (!type.startsWith("["))
-		{
-			throw new IllegalStateException(type + " is not an array");
-		}
-		return new Type(type.substring(1));
-	}
+  public boolean isObject() {
+    return this.equals(OBJECT);
+  }
 
-	public String getInternalName()
-	{
-		String s = type;
-		while (s.startsWith("["))
-		{
-			s = s.substring(1);
-		}
-		if (s.startsWith("L") && s.endsWith(";"))
-		{
-			return s.substring(1, s.length() - 1);
-		}
-		else
-		{
-			return s;
-		}
-	}
+  public boolean isArray() {
+    return getDimensions() > 0;
+  }
 
-	@Override
-	public boolean equals(Object o)
-	{
-		if (!(o instanceof Type))
-		{
-			return false;
-		}
+  public boolean isStackInt() {
+    return this.equals(BOOLEAN) || this.equals(BYTE) || this.equals(SHORT) || this.equals(CHAR)
+        || this.equals(INT);
+  }
 
-		Type other = (Type) o;
-		return type.equals(other.type);
-	}
+  public int getSize() {
+    if (this.equals(LONG) || this.equals(DOUBLE)) {
+      return 2;
+    }
 
-	@Override
-	public int hashCode()
-	{
-		return type.hashCode();
-	}
+    if (this.equals(VOID)) {
+      return 0;
+    }
 
-	@Override
-	public String toString()
-	{
-		return type;
-	}
+    return 1;
+  }
 
-	public String toAsmString()
-	{
-		if (type.startsWith("L") && type.endsWith(";"))
-		{
-			return type.substring(1, type.length() - 1);
-		}
-		else
-		{
-			return type;
-		}
-	}
+  public int getDimensions() {
+    return getDimensions(type);
+  }
 
-	public static Type fromAsmString(String str)
-	{
-		if (str.startsWith("["))
-		{
-			// array type
-			return new Type(str);
-		}
-		else
-		{
-			// object type
-			return new Type("L" + str + ";");
-		}
-	}
+  public Type getSubtype() {
+    if (!type.startsWith("[")) {
+      throw new IllegalStateException(type + " is not an array");
+    }
+    return new Type(type.substring(1));
+  }
 
-	private static int getDimensions(String type)
-	{
-		if (!type.startsWith("["))
-		{
-			return 0;
-		}
+  public String getInternalName() {
+    String s = type;
+    while (s.startsWith("[")) {
+      s = s.substring(1);
+    }
+    if (s.startsWith("L") && s.endsWith(";")) {
+      return s.substring(1, s.length() - 1);
+    } else {
+      return s;
+    }
+  }
 
-		return (int) type.chars().filter(i -> i == '[').count();
-	}
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof Type)) {
+      return false;
+    }
 
-	public static Type getType(String type, int dims)
-	{
-		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < dims; i++)
-		{
-			builder.append('[');
-		}
-		return new Type(builder.append(type).toString());
-	}
+    Type other = (Type) o;
+    return type.equals(other.type);
+  }
 
-	public static Type getType(Object object)
-	{
-		Type type;
+  @Override
+  public int hashCode() {
+    return type.hashCode();
+  }
 
-		if (object instanceof Double)
-		{
-			type = DOUBLE;
-		}
-		else if (object instanceof Float)
-		{
-			type = FLOAT;
-		}
-		else if (object instanceof Integer)
-		{
-			type = INT;
-		}
-		else if (object instanceof Long)
-		{
-			type = LONG;
-		}
-		else if (object instanceof String)
-		{
-			type = STRING;
-		}
-		else if (object instanceof Class)
-		{
-			type = new Type("L" + ((Class) object).getName() + ";");
-		}
-		else
-		{
-			throw new IllegalArgumentException("Unexpected object type: " + object.getClass());
-		}
+  @Override
+  public String toString() {
+    return type;
+  }
 
-		return type;
-	}
+  public String toAsmString() {
+    if (type.startsWith("L") && type.endsWith(";")) {
+      return type.substring(1, type.length() - 1);
+    } else {
+      return type;
+    }
+  }
 }

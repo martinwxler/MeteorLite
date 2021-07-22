@@ -24,22 +24,22 @@
  */
 package net.runelite.api.events;
 
+import lombok.Data;
 import net.runelite.api.DecorativeObject;
 import net.runelite.api.Tile;
-import lombok.Data;
 
 /**
  * An event where a {@link DecorativeObject} is attached to a {@link Tile}.
  */
 @Data
-public class DecorativeObjectSpawned
-{
-	/**
-	 * The affected tile.
-	 */
-	private Tile tile;
-	/**
-	 * The newly spawned decorative object.
-	 */
-	private DecorativeObject decorativeObject;
+public class DecorativeObjectSpawned {
+
+  /**
+   * The affected tile.
+   */
+  private Tile tile;
+  /**
+   * The newly spawned decorative object.
+   */
+  private DecorativeObject decorativeObject;
 }
