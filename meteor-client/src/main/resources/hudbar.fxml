@@ -8,105 +8,73 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" style="-fx-background-color: #1c313a; -fx-border-style: solid; -fx-border-color: #102027; -fx-border-width: 3;" id="toolbarBackground" maxHeight="-Infinity"
-  maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-  prefHeight="75.0"
-  prefWidth="4096.0" stylesheets="@css/toolbar/healthProgressBar.css"
-  xmlns="http://javafx.com/javafx/8.0.171" fx:controller="meteor.ui.controllers.HudbarFXMLController">
-  <HBox AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" maxWidth="50.0"
-    prefHeight="75.0" prefWidth="4044.0"/>
-  <HBox AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-13.0" alignment="CENTER"
-    layoutX="1819.0" layoutY="-2.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="41.0"
-    prefWidth="4044.0">
+
+<AnchorPane id="toolbarBackground" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="75.0" prefWidth="4096.0" style="-fx-background-color: #1c313a; -fx-border-style: solid; -fx-border-color: #102027; -fx-border-width: 3;" stylesheets="@css/toolbar/healthProgressBar.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="meteor.ui.controllers.HudbarFXMLController">
+  <JFXProgressBar fx:id="healthBar" layoutX="33.0" layoutY="6.0" prefHeight="25.0" prefWidth="3850.0" progress="1.0" secondaryProgress="0.0" AnchorPane.bottomAnchor="48.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="3.0" />
+  <ImageView fitHeight="17.0" fitWidth="26.0" layoutX="14.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="49.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="4062.4500007629395" AnchorPane.topAnchor="2.0">
+    <image>
+      <Image url="@skill_icons/HITPOINTS.png" />
+    </image>
+  </ImageView>
+  <ImageView fitHeight="24.0" fitWidth="26.0" layoutX="6.0" layoutY="31.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="23.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="4067.0" AnchorPane.topAnchor="23.0">
+    <image>
+      <Image url="@skill_icons/PRAYER.png" />
+    </image>
+  </ImageView>
+  <JFXProgressBar fx:id="prayerBar" layoutX="36.0" layoutY="39.0" prefHeight="18.0" prefWidth="3800.0" progress="1.0" secondaryProgress="0.0" stylesheets="@css/toolbar/prayerProgressBar.css" AnchorPane.bottomAnchor="23.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="27.0" />
+  <ImageView fitHeight="24.0" fitWidth="24.0" layoutX="-3.0" layoutY="54.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="48.0">
+    <image>
+      <Image url="@skill_icons/stats.png" />
+    </image>
+  </ImageView>
+  <JFXProgressBar layoutX="33.0" layoutY="42.0" prefHeight="25.0" prefWidth="3750.0" progress="1.0" secondaryProgress="0.0" stylesheets="@css/toolbar/xpProgressBar.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="52.0" fx:id="xpBar" />
+  <HBox maxWidth="50.0" prefHeight="75.0" prefWidth="4044.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+  <HBox alignment="CENTER" layoutX="1819.0" layoutY="-2.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="41.0" prefWidth="4044.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-13.0">
     <children>
-      <JFXTextArea editable="false" prefHeight="49.0" prefWidth="0.0" stylesheets="@css/hudbar/xptextarea.css"
-        text="100" unFocusColor="TRANSPARENT" fx:id="healthText">
+      <JFXTextArea fx:id="healthText" editable="false" prefHeight="49.0" prefWidth="0.0" stylesheets="@css/hudbar/xptextarea.css" text="100" unFocusColor="TRANSPARENT">
         <font>
-          <Font name="Candara" size="23.0"/>
+          <Font name="Candara" size="23.0" />
         </font>
       </JFXTextArea>
     </children>
   </HBox>
-  <HBox AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="12.0" alignment="CENTER"
-    layoutX="1829.0" layoutY="8.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="41.0"
-    prefWidth="4044.0">
+  <HBox alignment="CENTER" layoutX="1829.0" layoutY="8.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="41.0" prefWidth="4044.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="12.0">
     <children>
-      <JFXTextArea editable="false" prefHeight="70.0" prefWidth="18.0" stylesheets="@css/hudbar/xptextarea.css"
-        text="100" unFocusColor="TRANSPARENT" fx:id="prayerText">
+      <JFXTextArea fx:id="prayerText" editable="false" prefHeight="70.0" prefWidth="18.0" stylesheets="@css/hudbar/xptextarea.css" text="100" unFocusColor="TRANSPARENT">
         <font>
-          <Font name="Candara" size="23.0"/>
+          <Font name="Candara" size="23.0" />
         </font>
       </JFXTextArea>
     </children>
   </HBox>
-  <HBox AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="37.0" alignment="CENTER"
-    layoutX="1839.0" layoutY="18.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="41.0"
-    prefWidth="4044.0">
+  <HBox alignment="CENTER" layoutX="1839.0" layoutY="18.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="41.0" prefWidth="4044.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="37.0">
     <children>
-      <ImageView fitHeight="17.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true"
-        fx:id="currentSkillIcon">
-        <HBox.margin>
-          <Insets left="-4.0" top="-23.0"/>
-        </HBox.margin>
+      <ImageView fx:id="currentSkillIcon" fitHeight="17.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
         <image>
-          <Image url="@skill_icons/HITPOINTS.png"/>
+          <Image url="@skill_icons/HITPOINTS.png" />
         </image>
-      </ImageView>
-      <JFXTextArea editable="false" prefHeight="46.0" prefWidth="126.0"
-        stylesheets="@css/hudbar/xptextarea.css" text="66.6666%" unFocusColor="TRANSPARENT"
-        fx:id="xpText">
         <HBox.margin>
-          <Insets left="4.0"/>
+          <Insets left="-4.0" top="-23.0" />
         </HBox.margin>
+      </ImageView>
+      <JFXTextArea editable="false" prefHeight="46.0" prefWidth="126.0" stylesheets="@css/hudbar/xptextarea.css" text="66.6666%" unFocusColor="TRANSPARENT" fx:id="xpText">
         <font>
-          <Font name="Candara" size="23.0"/>
+          <Font name="Candara" size="23.0" />
         </font>
+        <HBox.margin>
+          <Insets left="4.0" />
+        </HBox.margin>
       </JFXTextArea>
     </children>
   </HBox>
-  <ImageView AnchorPane.bottomAnchor="49.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="4062.4500007629395" AnchorPane.topAnchor="2.0" fitHeight="17.0"
-    fitWidth="26.0" layoutX="14.0" layoutY="9.0"
-    pickOnBounds="true" preserveRatio="true">
-    <image>
-      <Image url="@skill_icons/HITPOINTS.png"/>
-    </image>
-  </ImageView>
-  <ImageView AnchorPane.bottomAnchor="23.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="4067.0" AnchorPane.topAnchor="23.0" fitHeight="24.0"
-    fitWidth="26.0" layoutX="6.0" layoutY="31.0"
-    pickOnBounds="true" preserveRatio="true">
-    <image>
-      <Image url="@skill_icons/PRAYER.png"/>
-    </image>
-  </ImageView>
-  <ImageView AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="48.0" fitHeight="24.0" fitWidth="24.0" layoutX="-3.0"
-    layoutY="54.0" pickOnBounds="true" preserveRatio="true">
-    <image>
-      <Image url="@skill_icons/stats.png"/>
-    </image>
-  </ImageView>
-  <JFXProgressBar AnchorPane.bottomAnchor="48.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="3.0"
-    layoutX="33.0" layoutY="6.0" prefHeight="25.0" prefWidth="3850.0"
-    progress="1.0" secondaryProgress="0.0" fx:id="healthBar"/>
-  <JFXProgressBar AnchorPane.bottomAnchor="23.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="27.0"
-    layoutX="36.0" layoutY="39.0" prefHeight="18.0"
-    prefWidth="3800.0" progress="1.0"
-    secondaryProgress="0.0" stylesheets="@css/toolbar/prayerProgressBar.css" fx:id="prayerBar"/>
-  <JFXProgressBar AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="52.0" layoutX="33.0"
-    layoutY="42.0" prefHeight="25.0"
-    prefWidth="3750.0" progress="1.0" secondaryProgress="0.0"
-    stylesheets="@css/toolbar/xpProgressBar.css" fx:id="xpBar"/>
-  <JFXTextArea AnchorPane.leftAnchor="33.0" AnchorPane.topAnchor="35.0" layoutX="36.0" layoutY="50.0" prefHeight="0.0"
-    prefWidth="99.0" stylesheets="@css/hudbar/xptextarea.css" text="1"
-    fx:id="currentLevel">
+  <JFXTextArea fx:id="currentLevel" layoutX="36.0" layoutY="50.0" prefHeight="0.0" prefWidth="99.0" stylesheets="@css/hudbar/xptextarea.css" text="1" AnchorPane.leftAnchor="33.0" AnchorPane.topAnchor="35.0">
     <font>
-      <Font name="Candara" size="23.0"/>
+      <Font name="Candara" size="23.0" />
     </font>
   </JFXTextArea>
-  <JFXTextArea AnchorPane.rightAnchor="-65.0" AnchorPane.topAnchor="33.0" layoutX="46.0" layoutY="60.0" prefHeight="0.0"
-    prefWidth="99.0" stylesheets="@css/hudbar/xptextarea.css" text="99"
-    fx:id="nextLevel">
+  <JFXTextArea fx:id="nextLevel" layoutX="46.0" layoutY="60.0" prefHeight="0.0" prefWidth="99.0" stylesheets="@css/hudbar/xptextarea.css" text="99" AnchorPane.rightAnchor="-65.0" AnchorPane.topAnchor="33.0">
     <font>
-      <Font name="Candara" size="23.0"/>
+      <Font name="Candara" size="23.0" />
     </font>
   </JFXTextArea>
 </AnchorPane>
