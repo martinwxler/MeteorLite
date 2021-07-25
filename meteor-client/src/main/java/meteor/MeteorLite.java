@@ -61,6 +61,8 @@ import meteor.plugins.stretchedmode.StretchedModePlugin;
 import meteor.ui.overlay.OverlayManager;
 import meteor.ui.overlay.tooltip.TooltipOverlay;
 import net.runelite.api.Client;
+import net.runelite.api.GameState;
+import net.runelite.api.events.GameStateChanged;
 import org.sponge.util.Logger;
 
 public class MeteorLite extends Application implements AppletStub, AppletContext {
@@ -255,12 +257,21 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
     panel.add(rightPanel, BorderLayout.EAST);
     frame.add(panel);
     panel.setVisible(true);
-    frame.setVisible(true);
     frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     applet.init();
     applet.start();
-    frame.requestFocus();
+
+  }
+
+  @Subscribe
+  public void onGameState(GameStateChanged event)
+  {
+    if (event.getGameState() == GameState.LOGIN_SCREEN)
+    {
+        frame.setVisible(true);
+        frame.requestFocus();
+    }
   }
 
   @Subscribe

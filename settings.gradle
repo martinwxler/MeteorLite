@@ -13,4 +13,5 @@ include 'injected-client'
 include 'meteor-logger'
 include 'runelite-script-assembler'
 include 'http-api'
+include 'meteor-mixins'
 

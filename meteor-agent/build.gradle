@@ -5,11 +5,6 @@ plugins {
 group 'org.meteorlite'
 version '1.0-SNAPSHOT'
 
-configurations {
-    shade
-    compile.extendsFrom shade
-}
-
 repositories {
     mavenCentral()
     jcenter()
@@ -20,7 +15,7 @@ repositories {
 
 dependencies {
     implementation(project(":meteor-client"))
-    shade 'org.spongepowered:mixin-bare:0.7.11-SNAPSHOT'
+    implementation 'org.spongepowered:mixin-bare:0.7.11-SNAPSHOT'
     implementation(project(":runescape-api"))
     implementation(project(":runelite-api"))
     implementation(project(":meteor-logger"))
