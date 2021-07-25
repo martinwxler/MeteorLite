@@ -61,8 +61,6 @@ import meteor.plugins.stretchedmode.StretchedModePlugin;
 import meteor.ui.overlay.OverlayManager;
 import meteor.ui.overlay.tooltip.TooltipOverlay;
 import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.events.GameStateChanged;
 import org.sponge.util.Logger;
 
 public class MeteorLite extends Application implements AppletStub, AppletContext {
@@ -82,8 +80,7 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
   public static JFXPanel toolbarJFXPanel = new JFXPanel();
   public static JFXPanel hudbarJFXPanel = new JFXPanel();
   public static JFXPanel rightPanel = new JFXPanel();
-  @Inject
-  public static Logger logger;
+  public static Logger logger = new Logger("MeteorLite");
   public static JPanel panel;
   public static JPanel gamePanel = new JPanel();
   public static BorderLayout layout = new BorderLayout();
@@ -94,6 +91,8 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
   private static boolean toolbarVisible = true;
   private static Map<String, String> properties;
   private static Map<String, String> parameters;
+  private long startTime;
+  private long loadTime;
 
   static {
     try {
@@ -163,6 +162,8 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
   }
 
   public void start() throws IOException {
+    startTime = System.currentTimeMillis();
+    loadJagexConfiguration();
 
     injector.injectMembers(client);
     injector.injectMembers(this);
@@ -172,7 +173,6 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
     configManager.load();
 
     overlayManager.add(tooltipOverlay.get());
-    logger.info(ANSI_YELLOW + "Guice injection completed" + ANSI_RESET);
 
     applet = (Applet) client;
 
@@ -181,9 +181,7 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
 
     setupFrame(applet);
 
-    logger.info(ANSI_YELLOW + "MeteorLite started" + ANSI_RESET);
-
-
+    logger.info(ANSI_YELLOW + "MeteorLite started in " + (System.currentTimeMillis() - startTime) + " ms" + ANSI_RESET);
   }
 
   private void startPlugins() {
@@ -200,6 +198,7 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
     MeteorLite.plugins.add(new GroundMarkerPlugin());
     MeteorLite.plugins.add(new ItemStatPlugin());
     MeteorLite.plugins.add(new ItemPricesPlugin());
+
     for (Plugin plugin : MeteorLite.plugins) {
       Injector injector = plugin.getInjector();
       if (injector == null) {
@@ -222,11 +221,7 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
   @Override
   public void start(Stage primaryStage) throws IOException {
     System.setProperty("sun.awt.noerasebackground", "true"); // fixes resize flickering
-
-    loadJagexConfiguration();
-
     injector = Guice.createInjector(module);
-
     injector.getInstance(MeteorLite.class).start();
   }
 
@@ -257,21 +252,11 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
     panel.add(rightPanel, BorderLayout.EAST);
     frame.add(panel);
     panel.setVisible(true);
+    frame.setVisible(true);
     frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     applet.init();
     applet.start();
-
-  }
-
-  @Subscribe
-  public void onGameState(GameStateChanged event)
-  {
-    if (event.getGameState() == GameState.LOGIN_SCREEN)
-    {
-        frame.setVisible(true);
-        frame.requestFocus();
-    }
   }
 
   @Subscribe

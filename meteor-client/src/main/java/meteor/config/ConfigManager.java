@@ -454,7 +454,7 @@ public class ConfigManager {
       log.warn("Unable to load settings", ex);
     }
 
-    log.debug("Loading in config from disk");
+    log.debug("Configuration loaded");
     swapProperties(newProperties, false);
 	  if (!loaded) {
 		  try {

@@ -298,8 +298,8 @@ public class ItemManager {
     this.itemClient = new ItemClient(okHttpClient);
     this.runeLiteConfig = runeLiteConfig;
 
-    scheduledExecutorService.scheduleWithFixedDelay(this::loadPrices, 0, 30, TimeUnit.MINUTES);
-    scheduledExecutorService.submit(this::loadStats);
+    loadPrices();
+    loadStats();
 
     itemImages = CacheBuilder.newBuilder()
         .maximumSize(128L)

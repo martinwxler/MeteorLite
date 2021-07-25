@@ -124,7 +124,6 @@ public class Hooks implements Callbacks {
   private static Graphics2D getGraphics(MainBufferProvider mainBufferProvider) {
     if (lastGraphics == null || lastMainBufferProvider != mainBufferProvider) {
       if (lastGraphics != null) {
-        log.debug("Graphics reset!");
         lastGraphics.dispose();
       }
 
@@ -370,7 +369,6 @@ public class Hooks implements Callbacks {
       // After logging in an NPC update happens outside of the normal game tick, which
       // is sent prior to skills and vars being bursted, so ignore it.
       ignoreNextNpcUpdate = false;
-      log.debug("Skipping login updateNpc");
     } else {
       // The NPC update event seem to run every server tick,
       // but having the game tick event after all packets

@@ -117,7 +117,7 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
     this.client = client;
     this.overlayManager = overlayManager;
     this.runeLiteConfig = runeLiteConfig;
-    keyManager.registerKeyListener(this);
+    keyManager.registerKeyListener(this, this.getClass());
     mouseManager.registerMouseListener(this);
     eventBus.register(this);
   }

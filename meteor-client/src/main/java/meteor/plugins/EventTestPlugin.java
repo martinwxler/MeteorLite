@@ -39,7 +39,7 @@ public class EventTestPlugin extends Plugin {
 
   @Subscribe
   public void test(GameStateChanged event) {
-    logger.event("GameStateChanged", "" + event.getGameState());
+    //logger.event("GameStateChanged", "" + event.getGameState());
   }
 
   @Subscribe

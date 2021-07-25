@@ -183,8 +183,6 @@ class TextureManager {
             1, gl.GL_RGBA, gl.GL_UNSIGNED_BYTE, pixelBuffer);
       }
     }
-
-    log.debug("Uploaded textures " + cnt);
   }
 
   /**

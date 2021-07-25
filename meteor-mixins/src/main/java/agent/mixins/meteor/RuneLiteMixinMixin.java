@@ -27,7 +27,5 @@ public abstract class RuneLiteMixinMixin implements RSClient {
     if (client == null) {
       client = MeteorLite.clientInstance = clientInstance;
     }
-
-    spongeLogger.debug("GameState ValueOf: " + client.getGameState());
   }
 }

@@ -130,7 +130,6 @@ public class EventBus {
 
         final Subscriber subscriber = new Subscriber(object, method, sub.priority(), lambda);
         builder.put(parameterClazz, subscriber);
-        log.debug("Registering " + parameterClazz + " - " + subscriber);
       }
     }
 

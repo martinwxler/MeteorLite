@@ -102,7 +102,6 @@ class SceneUploader {
     }
 
     stopwatch.stop();
-    MeteorLite.logger.debug("Scene upload time: " + stopwatch);
   }
 
   private void upload(Tile tile, GpuIntBuffer vertexBuffer, GpuFloatBuffer uvBuffer) {
