@@ -7,6 +7,7 @@ import com.google.inject.Binder;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.google.inject.Module;
 import java.applet.Applet;
 import java.applet.AppletContext;
@@ -16,6 +17,8 @@ import java.awt.BorderLayout;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -42,14 +45,17 @@ import javax.annotation.Nullable;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
+import meteor.config.Config;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
+import meteor.eventbus.events.ClientShutdown;
 import meteor.events.ToggleToolbarEvent;
 import meteor.plugins.BankPin;
 import meteor.plugins.EventTestPlugin;
 import meteor.plugins.agility.AgilityPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
+import meteor.plugins.cluescrolls.ClueScrollPlugin;
 import meteor.plugins.combatlevel.CombatLevelPlugin;
 import meteor.plugins.gpu.GpuPlugin;
 import meteor.plugins.groundmarkers.GroundMarkerPlugin;
@@ -58,6 +64,7 @@ import meteor.plugins.itemstats.ItemStatPlugin;
 import meteor.plugins.mousetooltips.MouseTooltipPlugin;
 import meteor.plugins.neverlog.NeverLogoutPlugin;
 import meteor.plugins.stretchedmode.StretchedModePlugin;
+import meteor.plugins.worldmap.WorldMapPlugin;
 import meteor.ui.overlay.OverlayManager;
 import meteor.ui.overlay.tooltip.TooltipOverlay;
 import net.runelite.api.Client;
@@ -170,6 +177,7 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
     eventBus.register(this);
 
     startPlugins();
+    configManager.loadDefaultPluginConfiguration(plugins);
     configManager.load();
 
     overlayManager.add(tooltipOverlay.get());
@@ -198,7 +206,8 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
     MeteorLite.plugins.add(new GroundMarkerPlugin());
     MeteorLite.plugins.add(new ItemStatPlugin());
     MeteorLite.plugins.add(new ItemPricesPlugin());
-
+    MeteorLite.plugins.add(new WorldMapPlugin());
+    MeteorLite.plugins.add(new ClueScrollPlugin());
     for (Plugin plugin : MeteorLite.plugins) {
       Injector injector = plugin.getInjector();
       if (injector == null) {
@@ -212,7 +221,17 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
         Injector pluginInjector = MeteorLite.injector.createChildInjector(pluginModule);
         pluginInjector.injectMembers(plugin);
         plugin.setInjector(pluginInjector);
+        for (Key<?> key : pluginInjector.getBindings().keySet())
+        {
+          Class<?> type = key.getTypeLiteral().getRawType();
+          if (Config.class.isAssignableFrom(type))
+          {
+            Config config = (Config) pluginInjector.getInstance(key);
+            configManager.setDefaultConfiguration(config, false);
+          }
+        }
       }
+
       plugin.init();
       plugin.startup();
     }
@@ -255,6 +274,13 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
     frame.setVisible(true);
     frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    frame.addWindowListener(new WindowAdapter() {
+                              @Override
+                              public void windowClosing(WindowEvent event) {
+                                ClientShutdown shutdown = new ClientShutdown();
+                                eventBus.post(shutdown);
+                              }
+                            });
     applet.init();
     applet.start();
   }

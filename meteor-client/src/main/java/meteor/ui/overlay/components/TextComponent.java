@@ -35,7 +35,7 @@ import javax.annotation.Nullable;
 import lombok.Setter;
 import meteor.ui.RenderableEntity;
 import meteor.util.ColorUtil;
-import net.runelite.api.util.Text;
+import meteor.util.Text;
 
 @Setter
 public class TextComponent implements RenderableEntity {

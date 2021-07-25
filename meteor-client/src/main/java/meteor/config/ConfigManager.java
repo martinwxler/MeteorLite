@@ -30,6 +30,10 @@ import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
+import com.google.inject.Binder;
+import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.Module;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -85,6 +89,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import lombok.NonNull;
+import meteor.MeteorLite;
 import meteor.Plugin;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
@@ -736,6 +741,43 @@ public class ConfigManager {
     return new ConfigDescriptor(group, sections, titles, items);
   }
 
+  public void loadDefaultPluginConfiguration(List<Plugin> plugins)
+  {
+    try
+    {
+      for (Object config : getPluginConfigProxies(plugins))
+      {
+        setDefaultConfiguration(config, false);
+      }
+    }
+    catch (ThreadDeath e)
+    {
+      throw e;
+    }
+    catch (Throwable ex)
+    {
+      log.warn("Unable to reset plugin configuration");
+      ex.printStackTrace();
+    }
+  }
+
+  public List<Config> getPluginConfigProxies(List<Plugin> plugins)
+  {
+    List<Config> list = new ArrayList<>();
+    plugins.forEach(pl ->
+    {
+      for (Key<?> key : pl.getInjector().getBindings().keySet()) {
+        Class<?> type = key.getTypeLiteral().getRawType();
+        if (Config.class.isAssignableFrom(type)) {
+          Config config = (Config) pl.getInjector().getInstance(key);
+          list.add(config);
+        }
+      }
+    }
+    );
+    return list;
+  }
+
   /**
    * Initialize the configuration from the default settings
    *
@@ -850,15 +892,19 @@ public class ConfigManager {
 
   @Subscribe(priority = 100)
   private void onClientShutdown(ClientShutdown e) {
-    Future<Void> f = sendConfig();
-    if (f != null) {
-      e.waitFor(f);
-    }
+    sendConfig();
   }
 
   @Nullable
-  private CompletableFuture<Void> sendConfig() {
-    return null;
+  private void sendConfig() {
+    try
+    {
+      saveToFile(propertiesFile);
+    }
+    catch (IOException ex)
+    {
+      log.warn("unable to save configuration file", ex);
+    }
   }
 
   public List<RuneScapeProfile> getRSProfiles() {

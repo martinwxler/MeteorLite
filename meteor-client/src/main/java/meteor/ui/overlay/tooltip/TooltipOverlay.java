@@ -24,6 +24,7 @@
  */
 package meteor.ui.overlay.tooltip;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -31,7 +32,6 @@ import java.awt.Rectangle;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import meteor.Config;
 import meteor.ui.overlay.Overlay;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayPosition;
@@ -93,13 +93,13 @@ public class TooltipOverlay extends Overlay {
       if (tooltip.getComponent() != null) {
         entity = tooltip.getComponent();
         if (entity instanceof PanelComponent) {
-          ((PanelComponent) entity).setBackgroundColor(Config.overlayBackground);
+          ((PanelComponent) entity).setBackgroundColor(Color.darkGray);
         }
       } else {
         final TooltipComponent tooltipComponent = new TooltipComponent();
         tooltipComponent.setModIcons(client.getModIcons());
         tooltipComponent.setText(tooltip.getText());
-        tooltipComponent.setBackgroundColor(Config.overlayBackground);
+        tooltipComponent.setBackgroundColor(Color.darkGray);
         entity = tooltipComponent;
       }
 

@@ -32,6 +32,7 @@ import com.google.inject.Provides;
 import com.google.inject.name.Names;
 import java.applet.Applet;
 import java.io.File;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;

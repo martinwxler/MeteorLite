@@ -10,10 +10,12 @@ import javax.annotation.Nonnull;
 import net.runelite.api.GameState;
 import net.runelite.api.GraphicsObject;
 import net.runelite.api.HashTable;
+import net.runelite.api.HintArrowType;
 import net.runelite.api.InventoryID;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
+import net.runelite.api.NPC;
 import net.runelite.api.NPCComposition;
 import net.runelite.api.Node;
 import net.runelite.api.ObjectComposition;
@@ -21,6 +23,7 @@ import net.runelite.api.Point;
 import net.runelite.api.Projectile;
 import net.runelite.api.ScriptEvent;
 import net.runelite.api.Skill;
+import net.runelite.api.SpritePixels;
 import net.runelite.api.Tile;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.WidgetNode;
@@ -54,6 +57,7 @@ import net.runelite.rs.api.RSNodeHashTable;
 import net.runelite.rs.api.RSPacketBuffer;
 import net.runelite.rs.api.RSPlayer;
 import net.runelite.rs.api.RSScriptEvent;
+import net.runelite.rs.api.RSSpritePixels;
 import net.runelite.rs.api.RSTileItem;
 import net.runelite.rs.api.RSWidget;
 import org.sponge.util.Logger;
@@ -769,4 +773,78 @@ public abstract class ClientMixin implements RSClient {
     return (RSItemContainer) itemContainers.get$api(inventory.getId());
   }
 
+  @Inject
+  @Override
+  public void clearHintArrow()
+  {
+    client.setHintArrowTargetType(HintArrowType.NONE.getValue());
+  }
+
+  @Inject
+  @Override
+  public NPC getHintArrowNpc()
+  {
+    if (getHintArrowType() == HintArrowType.NPC)
+    {
+      int idx = client.getHintArrowNpcTargetIdx();
+      RSNPC[] npcs = client.getCachedNPCs();
+
+      if (idx < 0 || idx >= npcs.length)
+      {
+        return null;
+      }
+
+      return npcs[idx];
+    }
+
+    return null;
+  }
+
+  @Inject
+  public RSSpritePixels createItemSprite(int itemId, int quantity, int border, int shadowColor, int stackable, boolean noted)
+  {
+    assert isClientThread() : "createItemSprite must be called on client thread";
+    return createRSItemSprite(itemId, quantity, border, shadowColor, stackable, noted);
+  }
+
+  @Inject
+  @Override
+  public SpritePixels createItemSprite(int itemId, int quantity, int border, int shadowColor, int stackable, boolean noted, int scale)
+  {
+    assert isClientThread() : "createItemSprite must be called on client thread";
+
+    int zoom = get3dZoom();
+    set3dZoom(scale);
+    try
+    {
+      return createItemSprite(itemId, quantity, border, shadowColor, stackable, noted);
+    }
+    finally
+    {
+      set3dZoom(zoom);
+    }
+  }
+
+  @Inject
+  @Override
+  public HintArrowType getHintArrowType()
+  {
+    int type = client.getHintArrowTargetType();
+    if (type == HintArrowType.NPC.getValue())
+    {
+      return HintArrowType.NPC;
+    }
+    else if (type == HintArrowType.PLAYER.getValue())
+    {
+      return HintArrowType.PLAYER;
+    }
+    else if (type == HintArrowType.WORLD_POSITION.getValue())
+    {
+      return HintArrowType.WORLD_POSITION;
+    }
+    else
+    {
+      return HintArrowType.NONE;
+    }
+  }
 }

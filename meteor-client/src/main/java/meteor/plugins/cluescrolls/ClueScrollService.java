@@ -1,15 +1,15 @@
 /*
- * Copyright (c) 2019, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Ron Young <https://github.com/raiyni>
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
  *
  * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
+ *     list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
+ *     this list of conditions and the following disclaimer in the documentation
+ *     and/or other materials provided with the distribution.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -22,17 +22,17 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api.util;
 
-import com.google.common.base.CharMatcher;
+package meteor.plugins.cluescrolls;
 
-class JagexPrintableCharMatcher extends CharMatcher {
+import meteor.plugins.cluescrolls.clues.ClueScroll;
 
-  @Override
-  public boolean matches(char c) {
-    // Characters which are printable
-    return (c >= 32 && c <= 126)
-        || c == 128
-        || (c >= 160 && c <= 255);
-  }
+public interface ClueScrollService
+{
+	/**
+	 * Get the clue scroll
+	 *
+	 * @return ClueScroll
+	 */
+	ClueScroll getClue();
 }

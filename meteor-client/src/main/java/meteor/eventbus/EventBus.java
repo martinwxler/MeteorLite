@@ -58,7 +58,11 @@ public class EventBus {
    * Instantiates EventBus with default exception handler
    */
   public EventBus() {
-    exceptionHandler = throwable -> log.warn("Uncaught exception in event subscriber");
+    exceptionHandler = throwable ->
+    {
+      throwable.printStackTrace();
+      log.warn("Uncaught exception in event subscriber");
+    };
   }
 
   /**
