@@ -1,6 +1,7 @@
 package net.runelite.mixins;
 
 import static net.runelite.api.MenuAction.UNKNOWN;
+import static net.runelite.api.Perspective.LOCAL_TILE_SIZE;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,6 +20,7 @@ import net.runelite.api.NPC;
 import net.runelite.api.NPCComposition;
 import net.runelite.api.Node;
 import net.runelite.api.ObjectComposition;
+import net.runelite.api.Player;
 import net.runelite.api.Point;
 import net.runelite.api.Projectile;
 import net.runelite.api.ScriptEvent;
@@ -28,6 +30,7 @@ import net.runelite.api.Tile;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.WidgetNode;
 import net.runelite.api.WorldType;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.MenuEntryAdded;
@@ -845,6 +848,81 @@ public abstract class ClientMixin implements RSClient {
     else
     {
       return HintArrowType.NONE;
+    }
+  }
+
+  @Inject
+  @Override
+  public void setHintArrow(NPC npc)
+  {
+    client.setHintArrowTargetType(HintArrowType.NPC.getValue());
+    client.setHintArrowNpcTargetIdx(npc.getIndex());
+  }
+
+  @Inject
+  @Override
+  public void setHintArrow(Player player)
+  {
+    client.setHintArrowTargetType(HintArrowType.PLAYER.getValue());
+    client.setHintArrowPlayerTargetIdx(((RSPlayer) player).getPlayerId());
+    hintPlayerChanged(-1);
+  }
+
+  @Inject
+  @Override
+  public void setHintArrow(WorldPoint point)
+  {
+    client.setHintArrowTargetType(HintArrowType.WORLD_POSITION.getValue());
+    client.setHintArrowX(point.getX());
+    client.setHintArrowY(point.getY());
+    // position the arrow in center of the tile
+    client.setHintArrowOffsetX(LOCAL_TILE_SIZE / 2);
+    client.setHintArrowOffsetY(LOCAL_TILE_SIZE / 2);
+  }
+
+  @Inject
+  @Override
+  public WorldPoint getHintArrowPoint()
+  {
+    if (getHintArrowType() == HintArrowType.WORLD_POSITION)
+    {
+      int x = client.getHintArrowX();
+      int y = client.getHintArrowY();
+      return new WorldPoint(x, y, client.getPlane());
+    }
+
+    return null;
+  }
+
+  @Inject
+  @Override
+  public Player getHintArrowPlayer()
+  {
+    if (getHintArrowType() == HintArrowType.PLAYER)
+    {
+      int idx = client.getHintArrowPlayerTargetIdx();
+      RSPlayer[] players = client.getCachedPlayers();
+
+      if (idx < 0 || idx >= players.length)
+      {
+        return null;
+      }
+
+      return players[idx];
+    }
+
+    return null;
+  }
+
+  @FieldHook("hintArrowPlayerIndex")
+  @Inject
+  public static void hintPlayerChanged(int ignored)
+  {
+    // Setting the localInteractingIndex (aka player target index, it only applies to players)
+    // causes that player to get priority over others when rendering/menus are added
+    if (client.getVar(VarPlayer.ATTACKING_PLAYER) == -1)
+    {
+      client.setLocalInteractingIndex(client.getHintArrowPlayerTargetIdx() & 2047);
     }
   }
 }

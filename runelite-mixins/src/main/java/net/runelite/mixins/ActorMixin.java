@@ -1,6 +1,10 @@
 package net.runelite.mixins;
 
+import java.awt.Polygon;
+import java.awt.image.BufferedImage;
 import net.runelite.api.Perspective;
+import net.runelite.api.Point;
+import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.mixins.Inject;
 import net.runelite.api.mixins.Mixin;
@@ -64,5 +68,26 @@ public abstract class ActorMixin implements RSActor {
       }
     }
     return -1;
+  }
+
+  @Inject
+  @Override
+  public Polygon getCanvasTilePoly()
+  {
+    return Perspective.getCanvasTilePoly(client, getLocalLocation());
+  }
+
+  @Inject
+  @Override
+  public LocalPoint getLocalLocation()
+  {
+    return new LocalPoint(getX(), getY());
+  }
+
+  @Inject
+  @Override
+  public Point getCanvasImageLocation(BufferedImage image, int zOffset)
+  {
+    return Perspective.getCanvasImageLocation(client, getLocalLocation(), image, zOffset);
   }
 }
