@@ -54,26 +54,32 @@ public class Keybind {
   // Bitmask of all supported modifiers
   private static final int KEYBOARD_MODIFIER_MASK = MODIFIER_TO_KEY_CODE.keySet().stream()
       .reduce((a, b) -> a | b).get();
-  private final int keyCode;
-  private final int modifiers;
+  private int keyCode;
+  private int modifiers;
 
   protected Keybind(int keyCode, int modifiers, boolean ignoreModifiers) {
-    modifiers &= KEYBOARD_MODIFIER_MASK;
+    try {
+      modifiers &= KEYBOARD_MODIFIER_MASK;
 
-    // If the keybind is just modifiers we don't want the keyCode to contain the modifier too,
-    // because this breaks if you do the keycode backwards
-    Integer mf = getModifierForKeyCode(keyCode);
-    if (mf != null) {
-      assert (modifiers & mf) != 0;
-      keyCode = KeyEvent.VK_UNDEFINED;
+      // If the keybind is just modifiers we don't want the keyCode to contain the modifier too,
+      // because this breaks if you do the keycode backwards
+      Integer mf = getModifierForKeyCode(keyCode);
+      if (mf != null) {
+        assert (modifiers & mf) != 0;
+        keyCode = KeyEvent.VK_UNDEFINED;
+      }
+
+      if (ignoreModifiers && keyCode != KeyEvent.VK_UNDEFINED) {
+        modifiers = 0;
+      }
+
+      this.keyCode = keyCode;
+      this.modifiers = modifiers;
     }
-
-    if (ignoreModifiers && keyCode != KeyEvent.VK_UNDEFINED) {
-      modifiers = 0;
+    catch (Exception e)
+    {
+      e.printStackTrace();
     }
-
-    this.keyCode = keyCode;
-    this.modifiers = modifiers;
   }
 
   public Keybind(int keyCode, int modifiers) {
@@ -89,9 +95,10 @@ public class Keybind {
     assert matches(e);
   }
 
-  @Nullable
   public static Integer getModifierForKeyCode(int keyCode) {
-    return MODIFIER_TO_KEY_CODE.inverse().get(keyCode);
+    if (MODIFIER_TO_KEY_CODE != null)
+      return MODIFIER_TO_KEY_CODE.inverse().get(keyCode);
+    else return -1;
   }
 
   /**

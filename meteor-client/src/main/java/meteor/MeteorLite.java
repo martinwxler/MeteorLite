@@ -51,10 +51,10 @@ import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ClientShutdown;
 import meteor.events.ToggleToolbarEvent;
-import meteor.plugins.BankPin;
 import meteor.plugins.EventTestPlugin;
 import meteor.plugins.agility.AgilityPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
+import meteor.plugins.bank.BankPlugin;
 import meteor.plugins.cluescrolls.ClueScrollPlugin;
 import meteor.plugins.combatlevel.CombatLevelPlugin;
 import meteor.plugins.gpu.GpuPlugin;
@@ -178,7 +178,6 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
     eventBus.register(this);
 
     startPlugins();
-    configManager.loadDefaultPluginConfiguration(plugins);
     configManager.load();
 
     overlayManager.add(tooltipOverlay.get());
@@ -200,7 +199,7 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
     MeteorLite.plugins.add(new GpuPlugin());
     MeteorLite.plugins.add(new AoeWarningPlugin());
     MeteorLite.plugins.add(new NeverLogoutPlugin());
-    MeteorLite.plugins.add(new BankPin());
+    MeteorLite.plugins.add(new BankPlugin());
     MeteorLite.plugins.add(new AgilityPlugin());
     MeteorLite.plugins.add(new MouseTooltipPlugin());
     MeteorLite.plugins.add(new CombatLevelPlugin());
