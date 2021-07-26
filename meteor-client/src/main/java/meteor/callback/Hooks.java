@@ -45,6 +45,7 @@ import meteor.MeteorLite;
 import meteor.eventbus.DeferredEventBus;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
+import meteor.input.KeyManager;
 import meteor.input.MouseManager;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayRenderer;
@@ -95,6 +96,7 @@ public class Hooks implements Callbacks {
   private long lastCheck;
   private boolean ignoreNextNpcUpdate;
   private boolean shouldProcessGameTick;
+  private final KeyManager keyManager;
 
   @Inject
   private Hooks(
@@ -103,7 +105,8 @@ public class Hooks implements Callbacks {
       ClientThread clientThread,
       MouseManager mouseManager,
       EventBus eventBus,
-      DeferredEventBus deferredEventBus
+      DeferredEventBus deferredEventBus,
+      KeyManager keyManager
   ) {
     this.client = client;
     this.clientThread = clientThread;
@@ -111,6 +114,7 @@ public class Hooks implements Callbacks {
     this.mouseManager = mouseManager;
     this.eventBus = eventBus;
     this.deferredEventBus = deferredEventBus;
+    this.keyManager = keyManager;
     eventBus.register(this);
   }
 
@@ -448,18 +452,21 @@ public class Hooks implements Callbacks {
   }
 
   @Override
-  public void keyPressed(KeyEvent keyEvent) {
-
+  public void keyPressed(KeyEvent keyEvent)
+  {
+    keyManager.processKeyPressed(keyEvent);
   }
 
   @Override
-  public void keyReleased(KeyEvent keyEvent) {
-
+  public void keyReleased(KeyEvent keyEvent)
+  {
+    keyManager.processKeyReleased(keyEvent);
   }
 
   @Override
-  public void keyTyped(KeyEvent keyEvent) {
-
+  public void keyTyped(KeyEvent keyEvent)
+  {
+    keyManager.processKeyTyped(keyEvent);
   }
 
   @Subscribe

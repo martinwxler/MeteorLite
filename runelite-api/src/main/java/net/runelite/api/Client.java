@@ -2220,4 +2220,33 @@ public interface Client extends GameEngine {
   boolean getOccluderEnabled();
 
   void setOccluderEnabled(boolean enabled);
+
+  /**
+   * Creates a RuneLiteObject, which is a modified {@link GraphicsObject}
+   */
+  RuneLiteObject createRuneLiteObject();
+
+  /**
+   * Loads a model from the cache
+   *
+   * @param id the ID of the model
+   */
+  Model loadModel(int id);
+
+  /**
+   * Loads a model from the cache and also recolors it
+   *
+   * @param id the ID of the model
+   * @param colorToFind array of hsl color values to find in the model to replace
+   * @param colorToReplace array of hsl color values to replace in the model
+   */
+  Model loadModel(int id, short[] colorToFind, short[] colorToReplace);
+
+  /**
+   * Loads an animation from the cache
+   *
+   * @param id the ID of the animation. Any int is allowed, but implementations in the client
+   * should be defined in {@link AnimationID}
+   */
+  Sequence loadAnimation(int id);
 }

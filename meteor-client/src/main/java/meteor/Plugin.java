@@ -6,7 +6,6 @@ import com.google.inject.Module;
 import java.awt.Graphics2D;
 import javax.inject.Inject;
 import meteor.eventbus.EventBus;
-import meteor.input.MouseManager;
 import net.runelite.api.Client;
 import org.sponge.util.Logger;
 
@@ -20,8 +19,6 @@ public class Plugin implements Module {
   @Inject
   public EventBus eventBus;
 
-  @Inject
-  public MouseManager mouseManager;
   private Injector injector;
 
   public void init() {

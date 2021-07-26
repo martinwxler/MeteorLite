@@ -259,4 +259,6 @@ public final class AnimationID {
 
   // POH Animations
   public static final int INCENSE_BURNER = 3687;
+
+  public static final int RAID_LIGHT_ANIMATION = 3101;
 }

@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javax.inject.Inject;
 import meteor.MeteorLite;
 import meteor.Plugin;
+import meteor.input.MouseManager;
 import meteor.ui.TranslateMouseListener;
 import meteor.ui.TranslateMouseWheelListener;
 
@@ -21,8 +22,13 @@ public class StretchedModePlugin extends Plugin {
   public static int scalingFactor = 100;
   public static boolean enabled = true;
   public String name = ANSI_CYAN + "StretchedModePlugin" + ANSI_YELLOW;
+
+  @Inject
+  private MouseManager mouseManager;
+
   @Inject
   private TranslateMouseListener mouseListener;
+
   @Inject
   private TranslateMouseWheelListener mouseWheelListener;
 

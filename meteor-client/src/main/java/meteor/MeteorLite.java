@@ -58,6 +58,7 @@ import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.cluescrolls.ClueScrollPlugin;
 import meteor.plugins.combatlevel.CombatLevelPlugin;
 import meteor.plugins.gpu.GpuPlugin;
+import meteor.plugins.grounditems.GroundItemsPlugin;
 import meteor.plugins.groundmarkers.GroundMarkerPlugin;
 import meteor.plugins.itemprices.ItemPricesPlugin;
 import meteor.plugins.itemstats.ItemStatPlugin;
@@ -208,6 +209,7 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
     MeteorLite.plugins.add(new ItemPricesPlugin());
     MeteorLite.plugins.add(new WorldMapPlugin());
     MeteorLite.plugins.add(new ClueScrollPlugin());
+    MeteorLite.plugins.add(new GroundItemsPlugin());
     for (Plugin plugin : MeteorLite.plugins) {
       Injector injector = plugin.getInjector();
       if (injector == null) {

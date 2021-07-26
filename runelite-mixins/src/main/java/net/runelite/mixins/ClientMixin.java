@@ -925,4 +925,10 @@ public abstract class ClientMixin implements RSClient {
       client.setLocalInteractingIndex(client.getHintArrowPlayerTargetIdx() & 2047);
     }
   }
+
+  @Inject
+  public boolean isKeyPressed(int keycode) {
+    boolean[] pressedKeys = client.getPressedKeys();
+    return pressedKeys[keycode];
+  }
 }
