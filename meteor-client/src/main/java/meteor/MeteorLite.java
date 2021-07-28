@@ -3,12 +3,9 @@ package meteor;
 import static org.sponge.util.Logger.ANSI_RESET;
 import static org.sponge.util.Logger.ANSI_YELLOW;
 
-import com.google.inject.Binder;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.google.inject.Module;
 import java.applet.Applet;
 import java.applet.AppletContext;
 import java.applet.AppletStub;
@@ -42,37 +39,29 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javax.annotation.Nullable;
+import javax.inject.Provider;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
-import meteor.config.Config;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ClientShutdown;
 import meteor.events.ToggleToolbarEvent;
-import meteor.plugins.EventTestPlugin;
-import meteor.plugins.agility.AgilityPlugin;
-import meteor.plugins.aoewarnings.AoeWarningPlugin;
-import meteor.plugins.bank.BankPlugin;
-import meteor.plugins.cluescrolls.ClueScrollPlugin;
-import meteor.plugins.combatlevel.CombatLevelPlugin;
-import meteor.plugins.gpu.GpuPlugin;
-import meteor.plugins.grounditems.GroundItemsPlugin;
-import meteor.plugins.groundmarkers.GroundMarkerPlugin;
-import meteor.plugins.itemprices.ItemPricesPlugin;
-import meteor.plugins.itemstats.ItemStatPlugin;
-import meteor.plugins.mousetooltips.MouseTooltipPlugin;
-import meteor.plugins.neverlog.NeverLogoutPlugin;
-import meteor.plugins.stretchedmode.StretchedModePlugin;
-import meteor.plugins.worldmap.WorldMapPlugin;
+import meteor.plugins.Plugin;
 import meteor.ui.overlay.OverlayManager;
+import meteor.ui.overlay.WidgetOverlay;
 import meteor.ui.overlay.tooltip.TooltipOverlay;
+import meteor.ui.overlay.worldmap.WorldMapOverlay;
 import net.runelite.api.Client;
 import org.sponge.util.Logger;
 
 public class MeteorLite extends Application implements AppletStub, AppletContext {
 
+  @Inject
+  private Provider<WorldMapOverlay> worldMapOverlay;
+
+  private PluginManager pluginManager = new PluginManager();
   public static final File METEOR_DIR = new File(System.getProperty("user.home"), ".meteorlite");
   public static final File CACHE_DIR = new File(METEOR_DIR, "cache");
   public static final File PLUGINS_DIR = new File(METEOR_DIR, "plugin-hub");
@@ -174,10 +163,15 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
     loadJagexConfiguration();
 
     injector.injectMembers(client);
+    injector.injectMembers(pluginManager);
     injector.injectMembers(this);
     eventBus.register(this);
 
-    startPlugins();
+    // Add core overlays
+    WidgetOverlay.createOverlays(client).forEach(overlayManager::add);
+    overlayManager.add(worldMapOverlay.get());
+
+    pluginManager.startInternalPlugins();
     configManager.load();
 
     overlayManager.add(tooltipOverlay.get());
@@ -190,52 +184,6 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
     setupFrame(applet);
 
     logger.info(ANSI_YELLOW + "MeteorLite started in " + (System.currentTimeMillis() - startTime) + " ms" + ANSI_RESET);
-  }
-
-  private void startPlugins() {
-    MeteorLite.plugins.add(new EventTestPlugin());
-    //MeteorLite.plugins.add(new DebugPlugin());
-    MeteorLite.plugins.add(new StretchedModePlugin());
-    MeteorLite.plugins.add(new GpuPlugin());
-    MeteorLite.plugins.add(new AoeWarningPlugin());
-    MeteorLite.plugins.add(new NeverLogoutPlugin());
-    MeteorLite.plugins.add(new BankPlugin());
-    MeteorLite.plugins.add(new AgilityPlugin());
-    MeteorLite.plugins.add(new MouseTooltipPlugin());
-    MeteorLite.plugins.add(new CombatLevelPlugin());
-    MeteorLite.plugins.add(new GroundMarkerPlugin());
-    MeteorLite.plugins.add(new ItemStatPlugin());
-    MeteorLite.plugins.add(new ItemPricesPlugin());
-    MeteorLite.plugins.add(new WorldMapPlugin());
-    MeteorLite.plugins.add(new ClueScrollPlugin());
-    MeteorLite.plugins.add(new GroundItemsPlugin());
-    for (Plugin plugin : MeteorLite.plugins) {
-      Injector injector = plugin.getInjector();
-      if (injector == null) {
-        // Create injector for the module
-        Module pluginModule = (Binder binder) ->
-        {
-          // Since the plugin itself is a module, it won't bind itself, so we'll bind it here
-          binder.bind((Class<Plugin>) plugin.getClass()).toInstance(plugin);
-          binder.install(plugin);
-        };
-        Injector pluginInjector = MeteorLite.injector.createChildInjector(pluginModule);
-        pluginInjector.injectMembers(plugin);
-        plugin.setInjector(pluginInjector);
-        for (Key<?> key : pluginInjector.getBindings().keySet())
-        {
-          Class<?> type = key.getTypeLiteral().getRawType();
-          if (Config.class.isAssignableFrom(type))
-          {
-            Config config = (Config) pluginInjector.getInstance(key);
-            configManager.setDefaultConfiguration(config, false);
-          }
-        }
-      }
-
-      plugin.init();
-      plugin.startup();
-    }
   }
 
   @Override

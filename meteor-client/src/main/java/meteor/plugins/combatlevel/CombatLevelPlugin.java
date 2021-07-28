@@ -30,10 +30,11 @@ import java.text.DecimalFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
-import meteor.Plugin;
+import meteor.plugins.Plugin;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ConfigChanged;
+import meteor.plugins.PluginDescriptor;
 import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.Client;
 import net.runelite.api.Experience;
@@ -46,6 +47,11 @@ import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 
+@PluginDescriptor(
+    name = "Combat Level",
+    description = "Show a more accurate combat level in Combat Options panel and other combat level functions",
+    tags = {"wilderness", "attack", "range"}
+)
 public class CombatLevelPlugin extends Plugin {
 
   private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.###");

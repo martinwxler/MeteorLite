@@ -27,11 +27,17 @@ package meteor.plugins.neverlog;
 
 import java.util.Random;
 import javax.inject.Inject;
-import meteor.Plugin;
+import meteor.plugins.Plugin;
 import meteor.eventbus.Subscribe;
+import meteor.plugins.PluginDescriptor;
 import net.runelite.api.Client;
 import net.runelite.api.events.GameTick;
 
+@PluginDescriptor(
+    name = "Never Logout",
+    description = "Prevents automatic session logout",
+    tags = {"actions", "overlay"}
+)
 public class NeverLogoutPlugin extends Plugin {
 
   @Inject

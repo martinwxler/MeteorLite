@@ -33,12 +33,13 @@ import java.awt.FontMetrics;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import meteor.Plugin;
+import meteor.plugins.Plugin;
 import meteor.callback.ClientThread;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.game.ItemManager;
+import meteor.plugins.PluginDescriptor;
 import meteor.ui.FontManager;
 import meteor.ui.JagexColors;
 import meteor.ui.overlay.OverlayManager;
@@ -64,6 +65,11 @@ import net.runelite.api.widgets.WidgetType;
 import net.runelite.http.api.item.ItemEquipmentStats;
 import net.runelite.http.api.item.ItemStats;
 
+@PluginDescriptor(
+    name = "Item Prices",
+    description = "Show prices on hover for items in your inventory and bank",
+    tags = {"bank", "inventory", "overlay", "high", "alchemy", "grand", "exchange", "tooltips"}
+)
 public class ItemStatPlugin extends Plugin {
 
   private static final int ORANGE_TEXT = JagexColors.DARK_ORANGE_INTERFACE_TEXT.getRGB();

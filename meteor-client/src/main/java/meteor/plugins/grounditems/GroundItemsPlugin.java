@@ -34,7 +34,7 @@ import com.google.common.collect.Table;
 import com.google.inject.Provides;
 import java.awt.Color;
 import java.awt.Rectangle;
-import static java.lang.Boolean.FALSE;
+
 import static java.lang.Boolean.TRUE;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -52,11 +52,12 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Value;
-import meteor.Plugin;
+import meteor.plugins.Plugin;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.eventbus.events.NpcLootReceived;
 import meteor.eventbus.events.PlayerLootReceived;
 import meteor.game.ItemStack;
+import meteor.plugins.PluginDescriptor;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
@@ -91,9 +92,13 @@ import static meteor.plugins.grounditems.config.MenuHighlightMode.NAME;
 import static meteor.plugins.grounditems.config.MenuHighlightMode.OPTION;
 import meteor.ui.overlay.OverlayManager;
 import meteor.util.ColorUtil;
-import meteor.util.QuantityFormatter;
 import meteor.util.Text;
 
+@PluginDescriptor(
+		name = "Ground Items",
+		description = "Highlight ground items and/or show price information",
+		tags = {"grand", "exchange", "high", "alchemy", "prices", "highlight", "overlay"}
+)
 public class GroundItemsPlugin extends Plugin
 {
 	@Value
@@ -478,6 +483,8 @@ public class GroundItemsPlugin extends Plugin
 
 			final WorldPoint worldPoint = WorldPoint.fromScene(client, sceneX, sceneY, client.getPlane());
 			GroundItem groundItem = collectedGroundItems.get(worldPoint, itemId);
+			if (groundItem == null)
+				return;
 			int quantity = groundItem.getQuantity();
 
 			final int gePrice = groundItem.getGePrice();

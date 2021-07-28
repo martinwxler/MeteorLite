@@ -25,7 +25,7 @@
 package meteor.eventbus.events;
 
 import lombok.Data;
-import meteor.Plugin;
+import meteor.plugins.Plugin;
 
 @Data
 public class PluginChanged {

@@ -4,101 +4,94 @@ import net.runelite.mapping.ObfuscatedGetter;
 import net.runelite.mapping.ObfuscatedName;
 import net.runelite.mapping.ObfuscatedSignature;
 
-@ObfuscatedName("cf")
+@ObfuscatedName("bd")
 @Implements("Script")
 public class Script extends DualNode {
+	@ObfuscatedName("s")
+	@ObfuscatedSignature(
+		descriptor = "Lhw;"
+	)
+	@Export("Script_cached")
+	static EvictingDualNodeHashTable Script_cached;
+	@ObfuscatedName("h")
+	public static boolean field877;
+	@ObfuscatedName("ac")
+	@Export("client")
+	@ObfuscatedSignature(
+		descriptor = "Lclient;"
+	)
+	static Client client;
+	@ObfuscatedName("t")
+	String field862;
+	@ObfuscatedName("v")
+	@Export("opcodes")
+	int[] opcodes;
+	@ObfuscatedName("j")
+	@Export("intOperands")
+	int[] intOperands;
+	@ObfuscatedName("l")
+	@Export("stringOperands")
+	String[] stringOperands;
+	@ObfuscatedName("n")
+	@ObfuscatedGetter(
+		intValue = 1660927915
+	)
+	@Export("localIntCount")
+	int localIntCount;
+	@ObfuscatedName("w")
+	@ObfuscatedGetter(
+		intValue = -2081440793
+	)
+	@Export("localStringCount")
+	int localStringCount;
+	@ObfuscatedName("f")
+	@ObfuscatedGetter(
+		intValue = -502913765
+	)
+	@Export("intArgumentCount")
+	int intArgumentCount;
+	@ObfuscatedName("o")
+	@ObfuscatedGetter(
+		intValue = -1150919323
+	)
+	@Export("stringArgumentCount")
+	int stringArgumentCount;
+	@ObfuscatedName("x")
+	@ObfuscatedSignature(
+		descriptor = "[Lmc;"
+	)
+	@Export("switches")
+	IterableNodeHashTable[] switches;
 
-  @ObfuscatedName("f")
-  @ObfuscatedSignature(
-      descriptor = "Lht;"
-  )
-  @Export("Script_cached")
-  static EvictingDualNodeHashTable Script_cached;
+	static {
+		Script_cached = new EvictingDualNodeHashTable(128);
+	}
 
-  static {
-    Script_cached = new EvictingDualNodeHashTable(128); // L: 12
-  }
+	Script() {
+	}
 
-  @ObfuscatedName("e")
-  String field1069;
-  @ObfuscatedName("v")
-  @Export("opcodes")
-  int[] opcodes;
-  @ObfuscatedName("y")
-  @Export("intOperands")
-  int[] intOperands;
-  @ObfuscatedName("j")
-  @Export("stringOperands")
-  String[] stringOperands;
-  @ObfuscatedName("o")
-  @ObfuscatedGetter(
-      intValue = -1160704097
-  )
-  @Export("localIntCount")
-  int localIntCount;
-  @ObfuscatedName("m")
-  @ObfuscatedGetter(
-      intValue = 622564641
-  )
-  @Export("localStringCount")
-  int localStringCount;
-  @ObfuscatedName("r")
-  @ObfuscatedGetter(
-      intValue = -2125275351
-  )
-  @Export("intArgumentCount")
-  int intArgumentCount;
-  @ObfuscatedName("h")
-  @ObfuscatedGetter(
-      intValue = -1075522957
-  )
-  @Export("stringArgumentCount")
-  int stringArgumentCount;
-  @ObfuscatedName("d")
-  @ObfuscatedSignature(
-      descriptor = "[Lmo;"
-  )
-  @Export("switches")
-  IterableNodeHashTable[] switches;
+	@ObfuscatedName("l")
+	@ObfuscatedSignature(
+		descriptor = "(II)[Lmc;",
+		garbageValue = "-631335991"
+	)
+	@Export("newIterableNodeHashTable")
+	IterableNodeHashTable[] newIterableNodeHashTable(int var1) {
+		return new IterableNodeHashTable[var1];
+	}
 
-  Script() {
-  } // L: 23
+	@ObfuscatedName("f")
+	@ObfuscatedSignature(
+		descriptor = "(IIB)I",
+		garbageValue = "-17"
+	)
+	public static int method1724(int var0, int var1) {
+		int var2;
+		for (var2 = 0; var1 > 0; --var1) {
+			var2 = var2 << 1 | var0 & 1;
+			var0 >>>= 1;
+		}
 
-  @ObfuscatedName("hb")
-  @ObfuscatedSignature(
-      descriptor = "(I)V",
-      garbageValue = "2884568"
-  )
-  @Export("addCancelMenuEntry")
-  static void addCancelMenuEntry() {
-    class34.method407(); // L: 7735
-    Client.menuActions[0] = "Cancel"; // L: 7736
-    Client.menuTargets[0] = ""; // L: 7737
-    Client.menuOpcodes[0] = 1006; // L: 7738
-    Client.menuShiftClick[0] = false; // L: 7739
-    Client.menuOptionsCount = 1; // L: 7740
-  } // L: 7741
-
-  @ObfuscatedName("ku")
-  @ObfuscatedSignature(
-      descriptor = "(Liv;I)V",
-      garbageValue = "-1229350050"
-  )
-  @Export("invalidateWidget")
-  static void invalidateWidget(Widget var0) {
-    if (var0.cycle == Client.field830) { // L: 11013
-      Client.field831[var0.rootIndex] = true; // L: 11014
-    }
-
-  } // L: 11016
-
-  @ObfuscatedName("y")
-  @ObfuscatedSignature(
-      descriptor = "(II)[Lmo;",
-      garbageValue = "-592819583"
-  )
-  @Export("newIterableNodeHashTable")
-  IterableNodeHashTable[] newIterableNodeHashTable(int var1) {
-    return new IterableNodeHashTable[var1]; // L: 150
-  }
+		return var2;
+	}
 }

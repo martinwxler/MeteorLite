@@ -401,7 +401,7 @@ public interface GroundItemsConfig extends Config
 	)
 	default boolean textOutline()
 	{
-		return false;
+		return true;
 	}
 
 	@ConfigItem(

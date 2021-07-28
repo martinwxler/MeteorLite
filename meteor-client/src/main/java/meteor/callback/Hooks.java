@@ -49,6 +49,7 @@ import meteor.input.KeyManager;
 import meteor.input.MouseManager;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayRenderer;
+import meteor.ui.overlay.infobox.InfoBoxManager;
 import meteor.util.RSTimeUnit;
 import net.runelite.api.BufferProvider;
 import net.runelite.api.Client;
@@ -97,6 +98,7 @@ public class Hooks implements Callbacks {
   private boolean ignoreNextNpcUpdate;
   private boolean shouldProcessGameTick;
   private final KeyManager keyManager;
+  private final InfoBoxManager infoBoxManager;
 
   @Inject
   private Hooks(
@@ -106,7 +108,8 @@ public class Hooks implements Callbacks {
       MouseManager mouseManager,
       EventBus eventBus,
       DeferredEventBus deferredEventBus,
-      KeyManager keyManager
+      KeyManager keyManager,
+      InfoBoxManager infoBoxManager
   ) {
     this.client = client;
     this.clientThread = clientThread;
@@ -115,6 +118,7 @@ public class Hooks implements Callbacks {
     this.eventBus = eventBus;
     this.deferredEventBus = deferredEventBus;
     this.keyManager = keyManager;
+    this.infoBoxManager = infoBoxManager;
     eventBus.register(this);
   }
 
@@ -226,11 +230,11 @@ public class Hooks implements Callbacks {
       //scheduler.tick();
 
       // cull infoboxes
-      //infoBoxManager.cull();
+      infoBoxManager.cull();
 
       //chatMessageManager.process();
 
-      //checkWorldMap();
+      checkWorldMap();
     } catch (Exception ex) {
       log.warn("error during main loop tasks", ex);
     }

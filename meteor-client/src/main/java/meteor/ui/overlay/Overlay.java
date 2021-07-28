@@ -35,7 +35,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import meteor.MeteorLite;
-import meteor.Plugin;
+import meteor.plugins.Plugin;
 import meteor.ui.overlay.components.LayoutableRenderableEntity;
 import net.runelite.api.Client;
 import net.runelite.api.widgets.WidgetInfo;

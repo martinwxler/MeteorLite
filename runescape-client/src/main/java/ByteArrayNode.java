@@ -2,15 +2,14 @@ import net.runelite.mapping.Export;
 import net.runelite.mapping.Implements;
 import net.runelite.mapping.ObfuscatedName;
 
-@ObfuscatedName("mi")
+@ObfuscatedName("mn")
 @Implements("ByteArrayNode")
 public class ByteArrayNode extends Node {
+	@ObfuscatedName("s")
+	@Export("byteArray")
+	public byte[] byteArray;
 
-  @ObfuscatedName("f")
-  @Export("byteArray")
-  public byte[] byteArray;
-
-  public ByteArrayNode(byte[] var1) {
-    this.byteArray = var1; // L: 7
-  } // L: 8
+	public ByteArrayNode(byte[] var1) {
+		this.byteArray = var1;
+	}
 }

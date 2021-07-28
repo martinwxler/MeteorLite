@@ -30,11 +30,10 @@ import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.function.Predicate;
-import meteor.Plugin;
+import meteor.plugins.Plugin;
 import meteor.eventbus.events.ConfigChanged;
+import meteor.plugins.PluginDescriptor;
 import meteor.plugins.agility.AgilityShortcut;
-import meteor.ui.overlay.OverlayManager;
-import meteor.ui.overlay.worldmap.WorldMapOverlay;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Quest;
@@ -51,6 +50,11 @@ import meteor.ui.overlay.worldmap.WorldMapPointManager;
 import meteor.util.ImageUtil;
 import meteor.util.Text;
 
+@PluginDescriptor(
+		name = "World Map",
+		description = "Enhance the world map to display additional information",
+		tags = {"agility", "dungeon", "fairy", "farming", "rings", "teleports"}
+)
 public class WorldMapPlugin extends Plugin
 {
 	static final BufferedImage BLANK_ICON;
@@ -140,12 +144,6 @@ public class WorldMapPlugin extends Plugin
 	@Inject
 	private WorldMapPointManager worldMapPointManager;
 
-	@Inject
-	private WorldMapOverlay worldMapOverlay;
-
-	@Inject
-	private OverlayManager overlayManager;
-
 	private int agilityLevel = 0;
 	private int woodcuttingLevel = 0;
 
@@ -160,7 +158,6 @@ public class WorldMapPlugin extends Plugin
 	@Override
 	public void startup()
 	{
-		overlayManager.add(worldMapOverlay);
 		agilityLevel = client.getRealSkillLevel(Skill.AGILITY);
 		woodcuttingLevel = client.getRealSkillLevel(Skill.WOODCUTTING);
 		if (client.getGameState() == GameState.LOGGED_IN)
@@ -170,7 +167,6 @@ public class WorldMapPlugin extends Plugin
 	@Override
 	public void shutdown()
 	{
-		overlayManager.remove(worldMapOverlay);
 		worldMapPointManager.removeIf(MapPoint.class::isInstance);
 		agilityLevel = 0;
 		woodcuttingLevel = 0;

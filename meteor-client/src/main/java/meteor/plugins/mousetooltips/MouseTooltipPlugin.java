@@ -26,10 +26,16 @@ package meteor.plugins.mousetooltips;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
-import meteor.Plugin;
+import meteor.plugins.Plugin;
 import meteor.config.ConfigManager;
+import meteor.plugins.PluginDescriptor;
 import meteor.ui.overlay.OverlayManager;
 
+@PluginDescriptor(
+    name = "Mouse Tooltips",
+    description = "Render default actions as a tooltip",
+    tags = {"actions", "overlay"}
+)
 public class MouseTooltipPlugin extends Plugin {
 
   @Inject

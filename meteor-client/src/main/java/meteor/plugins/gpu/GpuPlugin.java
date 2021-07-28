@@ -75,10 +75,11 @@ import jogamp.nativewindow.SurfaceScaleUtils;
 import jogamp.nativewindow.jawt.x11.X11JAWTWindow;
 import jogamp.nativewindow.macosx.OSXUtil;
 import jogamp.newt.awt.NewtFactoryAWT;
-import meteor.Plugin;
+import meteor.plugins.Plugin;
 import meteor.callback.ClientThread;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
+import meteor.plugins.PluginDescriptor;
 import meteor.plugins.gpu.config.AntiAliasingMode;
 import meteor.plugins.gpu.config.UIScalingMode;
 import meteor.plugins.gpu.template.Template;
@@ -101,6 +102,13 @@ import net.runelite.api.hooks.DrawCallbacks;
 import org.jocl.CL;
 import org.sponge.util.Logger;
 
+@PluginDescriptor(
+    name = "GPU",
+    description = "Utilizes the GPU",
+    enabledByDefault = false,
+    tags = {"fog", "draw distance"},
+    loadInSafeMode = false
+)
 public class GpuPlugin extends Plugin implements DrawCallbacks {
 
   // This is the maximum number of triangles the compute shaders support

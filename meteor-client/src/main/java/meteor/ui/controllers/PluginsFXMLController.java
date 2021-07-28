@@ -5,7 +5,7 @@ import java.io.IOException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import meteor.MeteorLite;
-import meteor.Plugin;
+import meteor.plugins.Plugin;
 import meteor.plugins.stretchedmode.StretchedModePlugin;
 import net.runelite.rs.Reflection;
 import org.sponge.util.Logger;

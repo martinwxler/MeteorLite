@@ -35,8 +35,9 @@ import java.util.Set;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
-import meteor.Plugin;
+import meteor.plugins.Plugin;
 import meteor.eventbus.Subscribe;
+import meteor.plugins.PluginDescriptor;
 import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
@@ -54,6 +55,10 @@ import net.runelite.api.events.ProjectileMoved;
 import net.runelite.api.events.ProjectileSpawned;
 import org.apache.commons.lang3.ArrayUtils;
 
+@PluginDescriptor(
+    name = "AOE Warnings",
+    description = "Shows helpful warnings for area of effect attacks"
+)
 public class AoeWarningPlugin extends Plugin {
 
   private static final int VERZIK_REGION = 12611;

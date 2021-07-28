@@ -39,10 +39,11 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
-import meteor.Plugin;
+import meteor.plugins.Plugin;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.game.chatbox.ChatboxPanelManager;
+import meteor.plugins.PluginDescriptor;
 import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -56,6 +57,11 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOptionClicked;
 
+@PluginDescriptor(
+    name = "Ground Markers",
+    description = "Enable marking of tiles using the Shift key",
+    tags = {"overlay", "tiles"}
+)
 public class GroundMarkerPlugin extends Plugin {
 
   private static final String CONFIG_GROUP = "groundMarker";

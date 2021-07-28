@@ -43,11 +43,10 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.inject.Named;
 import joptsimple.internal.Strings;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import meteor.Plugin;
+import meteor.plugins.Plugin;
+import meteor.plugins.PluginDescriptor;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
@@ -126,6 +125,11 @@ import meteor.util.ImageUtil;
 import meteor.util.Text;
 import org.apache.commons.lang3.ArrayUtils;
 
+@PluginDescriptor(
+		name = "Clue Scroll",
+		description = "Show answers to clue scroll riddles, anagrams, ciphers, and cryptic clues",
+		tags = {"arrow", "hints", "world", "map", "coordinates", "emotes"}
+)
 public class ClueScrollPlugin extends Plugin
 {
 	private static final Color HIGHLIGHT_BORDER_COLOR = Color.ORANGE;

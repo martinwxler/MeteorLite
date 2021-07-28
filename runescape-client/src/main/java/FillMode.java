@@ -1,57 +1,53 @@
-import net.runelite.mapping.Export;
-import net.runelite.mapping.Implements;
-import net.runelite.mapping.ObfuscatedGetter;
-import net.runelite.mapping.ObfuscatedName;
-import net.runelite.mapping.ObfuscatedSignature;
+import net.runelite.mapping.*;
 
-@ObfuscatedName("oj")
+@ObfuscatedName("ou")
 @Implements("FillMode")
 public enum FillMode implements Enumerated {
-  @ObfuscatedName("f")
-  @ObfuscatedSignature(
-      descriptor = "Loj;"
-  )
-  @Export("SOLID")
-  SOLID(0, 0),
-  @ObfuscatedName("e")
-  @ObfuscatedSignature(
-      descriptor = "Loj;"
-  )
-  field4241(1, 1),
-  @ObfuscatedName("v")
-  @ObfuscatedSignature(
-      descriptor = "Loj;"
-  )
-  field4239(2, 2);
+	@ObfuscatedName("s")
+	@ObfuscatedSignature(
+		descriptor = "Lou;"
+	)
+	@Export("SOLID")
+	SOLID(0, 0),
+	@ObfuscatedName("t")
+	@ObfuscatedSignature(
+		descriptor = "Lou;"
+	)
+	field4255(1, 1),
+	@ObfuscatedName("v")
+	@ObfuscatedSignature(
+		descriptor = "Lou;"
+	)
+	field4256(2, 2);
 
-  @ObfuscatedName("m")
-  @ObfuscatedGetter(
-      intValue = 2014293349
-  )
-  static int field4244;
-  @ObfuscatedName("y")
-  @ObfuscatedGetter(
-      intValue = -1583860177
-  )
-  public final int field4242;
-  @ObfuscatedName("j")
-  @ObfuscatedGetter(
-      intValue = -76883829
-  )
-  final int field4243;
+	@ObfuscatedName("p")
+	@ObfuscatedGetter(
+		intValue = -839032429
+	)
+	static int field4259;
+	@ObfuscatedName("j")
+	@ObfuscatedGetter(
+		intValue = 698833695
+	)
+	public final int field4257;
+	@ObfuscatedName("l")
+	@ObfuscatedGetter(
+		intValue = -1768437689
+	)
+	final int field4258;
 
-  FillMode(int var3, int var4) {
-    this.field4242 = var3; // L: 19
-    this.field4243 = var4; // L: 20
-  } // L: 21
+	FillMode(int var3, int var4) {
+		this.field4257 = var3;
+		this.field4258 = var4;
+	}
 
-  @ObfuscatedName("f")
-  @ObfuscatedSignature(
-      descriptor = "(I)I",
-      garbageValue = "-1154679040"
-  )
-  @Export("rsOrdinal")
-  public int rsOrdinal() {
-    return this.field4243; // L: 24
-  }
+	@ObfuscatedName("s")
+	@ObfuscatedSignature(
+		descriptor = "(I)I",
+		garbageValue = "-1806959663"
+	)
+	@Export("rsOrdinal")
+	public int rsOrdinal() {
+		return this.field4258;
+	}
 }

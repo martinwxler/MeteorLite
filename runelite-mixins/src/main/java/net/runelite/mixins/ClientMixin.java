@@ -22,6 +22,7 @@ import net.runelite.api.Node;
 import net.runelite.api.ObjectComposition;
 import net.runelite.api.Player;
 import net.runelite.api.Point;
+import net.runelite.api.Prayer;
 import net.runelite.api.Projectile;
 import net.runelite.api.ScriptEvent;
 import net.runelite.api.Skill;
@@ -930,5 +931,32 @@ public abstract class ClientMixin implements RSClient {
   public boolean isKeyPressed(int keycode) {
     boolean[] pressedKeys = client.getPressedKeys();
     return pressedKeys[keycode];
+  }
+
+  @Inject
+  private static boolean invertYaw;
+
+  @Inject
+  @Override
+  public void setInvertYaw(boolean state)
+  {
+    invertYaw = state;
+  }
+
+  @Inject
+  private static boolean invertPitch;
+
+  @Inject
+  @Override
+  public void setInvertPitch(boolean state)
+  {
+    invertPitch = state;
+  }
+
+  @Inject
+  @Override
+  public boolean isPrayerActive(Prayer prayer)
+  {
+    return getVar(prayer.getVarbit()) == 1;
   }
 }

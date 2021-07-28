@@ -1,13 +1,13 @@
 package meteor.plugins.agility;
 
-import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
-import meteor.Plugin;
+import meteor.plugins.Plugin;
 import meteor.eventbus.Subscribe;
+import meteor.plugins.PluginDescriptor;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.GameState;
@@ -30,6 +30,11 @@ import net.runelite.api.events.WallObjectChanged;
 import net.runelite.api.events.WallObjectDespawned;
 import net.runelite.api.events.WallObjectSpawned;
 
+@PluginDescriptor(
+    name = "Agility",
+    description = "Show helpful information about agility courses and obstacles",
+    tags = {"grace", "marks", "overlay", "shortcuts", "skilling", "traps", "sepulchre"}
+)
 public class AgilityPlugin extends Plugin {
 
   public final Map<TileObject, Obstacle> obstacles = new HashMap<>();
@@ -172,11 +177,4 @@ public class AgilityPlugin extends Plugin {
       }
     }
   }
-
-  @Override
-  public void paintAboveScene(Graphics2D graphics2D) {
-
-  }
-
-
 }

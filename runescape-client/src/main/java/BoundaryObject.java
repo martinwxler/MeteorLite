@@ -4,73 +4,78 @@ import net.runelite.mapping.ObfuscatedGetter;
 import net.runelite.mapping.ObfuscatedName;
 import net.runelite.mapping.ObfuscatedSignature;
 
-@ObfuscatedName("hr")
+@ObfuscatedName("hs")
 @Implements("BoundaryObject")
 public final class BoundaryObject {
+	@ObfuscatedName("tr")
+	@ObfuscatedGetter(
+		intValue = -1924657947
+	)
+	@Export("foundItemIdCount")
+	static int foundItemIdCount;
+	@ObfuscatedName("x")
+	@ObfuscatedSignature(
+		descriptor = "Lae;"
+	)
+	@Export("soundSystem")
+	static SoundSystem soundSystem;
+	@ObfuscatedName("s")
+	@ObfuscatedGetter(
+		intValue = 1178102363
+	)
+	@Export("tileHeight")
+	int tileHeight;
+	@ObfuscatedName("t")
+	@ObfuscatedGetter(
+		intValue = 2140931437
+	)
+	@Export("x")
+	int x;
+	@ObfuscatedName("v")
+	@ObfuscatedGetter(
+		intValue = -691288565
+	)
+	@Export("y")
+	int y;
+	@ObfuscatedName("j")
+	@ObfuscatedGetter(
+		intValue = -287218543
+	)
+	@Export("orientationA")
+	int orientationA;
+	@ObfuscatedName("l")
+	@ObfuscatedGetter(
+		intValue = 780112513
+	)
+	@Export("orientationB")
+	int orientationB;
+	@ObfuscatedName("n")
+	@ObfuscatedSignature(
+		descriptor = "Lgy;"
+	)
+	@Export("renderable1")
+	public Renderable renderable1;
+	@ObfuscatedName("w")
+	@ObfuscatedSignature(
+		descriptor = "Lgy;"
+	)
+	@Export("renderable2")
+	public Renderable renderable2;
+	@ObfuscatedName("f")
+	@ObfuscatedGetter(
+		longValue = -849579815865927251L
+	)
+	@Export("tag")
+	public long tag;
+	@ObfuscatedName("o")
+	@ObfuscatedGetter(
+		intValue = -1574259549
+	)
+	@Export("flags")
+	int flags;
 
-  @ObfuscatedName("dq")
-  @ObfuscatedSignature(
-      descriptor = "Llk;"
-  )
-  @Export("js5Socket")
-  static AbstractSocket js5Socket;
-  @ObfuscatedName("o")
-  @ObfuscatedSignature(
-      descriptor = "Lgr;"
-  )
-  @Export("renderable1")
-  public Renderable renderable1;
-  @ObfuscatedName("m")
-  @ObfuscatedSignature(
-      descriptor = "Lgr;"
-  )
-  @Export("renderable2")
-  public Renderable renderable2;
-  @ObfuscatedName("r")
-  @ObfuscatedGetter(
-      longValue = -5150257183506372715L
-  )
-  @Export("tag")
-  public long tag;
-  @ObfuscatedName("f")
-  @ObfuscatedGetter(
-      intValue = 1552806681
-  )
-  @Export("tileHeight")
-  int tileHeight;
-  @ObfuscatedName("e")
-  @ObfuscatedGetter(
-      intValue = 846668797
-  )
-  @Export("x")
-  int x;
-  @ObfuscatedName("v")
-  @ObfuscatedGetter(
-      intValue = 1111067733
-  )
-  @Export("y")
-  int y;
-  @ObfuscatedName("y")
-  @ObfuscatedGetter(
-      intValue = 1521438593
-  )
-  @Export("orientationA")
-  int orientationA;
-  @ObfuscatedName("j")
-  @ObfuscatedGetter(
-      intValue = 33814439
-  )
-  @Export("orientationB")
-  int orientationB;
-  @ObfuscatedName("h")
-  @ObfuscatedGetter(
-      intValue = -1106373897
-  )
-  @Export("flags")
-  int flags;
-
-  BoundaryObject() {
-    this.tag = 0L; // L: 11
-    this.flags = 0; // L: 12
-  } // L: 14
+	BoundaryObject() {
+		this.tag = 0L;
+		this.flags = 0;
+	}
 }

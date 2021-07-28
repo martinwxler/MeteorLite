@@ -7,7 +7,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
-import meteor.Plugin;
 import meteor.eventbus.Subscribe;
 import net.runelite.api.DecorativeObject;
 import net.runelite.api.GameObject;
@@ -24,6 +23,10 @@ import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.PlayerSpawned;
 import net.runelite.api.events.WallObjectSpawned;
 
+@PluginDescriptor(
+    name = "Debug",
+    description = "Shows overlays for various entities"
+)
 public class DebugPlugin extends Plugin {
 
   public String name = ANSI_CYAN + "EventLoggerPlugin" + ANSI_YELLOW;
@@ -81,7 +84,7 @@ public class DebugPlugin extends Plugin {
     players.add(event.getPlayer());
   }
 
-  @Override
+  //TODO: implement into rl overlay
   public void paintAboveScene(Graphics2D graphics2D) {
     if (shouldPaint) {
       graphics2D.setColor(Color.cyan);

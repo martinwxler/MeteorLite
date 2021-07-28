@@ -9,11 +9,17 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javax.inject.Inject;
 import meteor.MeteorLite;
-import meteor.Plugin;
+import meteor.plugins.Plugin;
 import meteor.input.MouseManager;
+import meteor.plugins.PluginDescriptor;
 import meteor.ui.TranslateMouseListener;
 import meteor.ui.TranslateMouseWheelListener;
 
+@PluginDescriptor(
+    name = "Stretched Mode",
+    description = "Stretches the game in fixed and resizable modes.",
+    tags = {"resize", "ui", "interface", "stretch", "scaling", "fixed"}
+)
 public class StretchedModePlugin extends Plugin {
 
   public static boolean integerScalingEnabled = false;

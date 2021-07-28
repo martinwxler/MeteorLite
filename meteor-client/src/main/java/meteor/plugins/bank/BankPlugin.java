@@ -36,7 +36,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import meteor.Plugin;
+import meteor.plugins.Plugin;
+import meteor.plugins.PluginDescriptor;
 import net.runelite.api.Client;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
@@ -66,6 +67,11 @@ import meteor.input.KeyManager;
 import meteor.util.QuantityFormatter;
 import org.sponge.util.Logger;
 
+@PluginDescriptor(
+		name = "Bank",
+		description = "Modifications to the banking interface",
+		tags = {"grand", "exchange", "high", "alchemy", "prices", "deposit", "pin"}
+)
 public class BankPlugin extends Plugin
 {
 	private static final String DEPOSIT_WORN = "Deposit worn items";
@@ -208,11 +214,6 @@ public class BankPlugin extends Plugin
 				break;
 			case "bankpinButtonSetup":
 			{
-				if (!config.bankPinKeyboard())
-				{
-					return;
-				}
-
 				final int compId = intStack[intStackSize - 2];
 				final int buttonId = intStack[intStackSize - 1];
 				Widget button = client.getWidget(compId);

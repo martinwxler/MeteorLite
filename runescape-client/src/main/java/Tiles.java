@@ -4,138 +4,222 @@ import net.runelite.mapping.ObfuscatedGetter;
 import net.runelite.mapping.ObfuscatedName;
 import net.runelite.mapping.ObfuscatedSignature;
 
-@ObfuscatedName("ca")
+@ObfuscatedName("bo")
 @Implements("Tiles")
 public final class Tiles {
+	@ObfuscatedName("s")
+	@Export("Tiles_heights")
+	static int[][][] Tiles_heights;
+	@ObfuscatedName("t")
+	@Export("Tiles_renderFlags")
+	static byte[][][] Tiles_renderFlags;
+	@ObfuscatedName("v")
+	@ObfuscatedGetter(
+		intValue = 1321271985
+	)
+	@Export("Tiles_minPlane")
+	static int Tiles_minPlane;
+	@ObfuscatedName("n")
+	static byte[][][] field915;
+	@ObfuscatedName("w")
+	static byte[][][] field909;
+	@ObfuscatedName("o")
+	static int[][] field904;
+	@ObfuscatedName("r")
+	@Export("Tiles_saturation")
+	static int[] Tiles_saturation;
+	@ObfuscatedName("c")
+	static final int[] field907;
+	@ObfuscatedName("i")
+	static final int[] field908;
+	@ObfuscatedName("m")
+	static final int[] field905;
+	@ObfuscatedName("b")
+	static final int[] field912;
+	@ObfuscatedName("z")
+	static final int[] field903;
+	@ObfuscatedName("d")
+	static final int[] field914;
+	@ObfuscatedName("y")
+	@ObfuscatedGetter(
+		intValue = -1747716653
+	)
+	static int field913;
+	@ObfuscatedName("g")
+	@ObfuscatedGetter(
+		intValue = -589771949
+	)
+	static int field899;
+	@ObfuscatedName("eo")
+	@ObfuscatedSignature(
+		descriptor = "Ljs;"
+	)
+	@Export("archive15")
+	static Archive archive15;
+	@ObfuscatedName("ix")
+	@ObfuscatedGetter(
+		intValue = 1644626137
+	)
+	@Export("selectedItemWidget")
+	static int selectedItemWidget;
 
-  @ObfuscatedName("q")
-  static final int[] field1102;
-  @ObfuscatedName("s")
-  static final int[] field1107;
-  @ObfuscatedName("p")
-  static final int[] field1100;
-  @ObfuscatedName("c")
-  static final int[] field1105;
-  @ObfuscatedName("n")
-  static final int[] field1106;
-  @ObfuscatedName("l")
-  static final int[] field1097;
-  @ObfuscatedName("h")
-  @Export("ByteArrayPool_arrays")
-  public static byte[][][] ByteArrayPool_arrays;
-  @ObfuscatedName("f")
-  @Export("Tiles_heights")
-  static int[][][] Tiles_heights;
-  @ObfuscatedName("e")
-  @Export("Tiles_renderFlags")
-  static byte[][][] Tiles_renderFlags;
-  @ObfuscatedName("v")
-  @ObfuscatedGetter(
-      intValue = -879678159
-  )
-  @Export("Tiles_minPlane")
-  static int Tiles_minPlane;
-  @ObfuscatedName("j")
-  static byte[][][] field1111;
-  @ObfuscatedName("z")
-  @Export("Tiles_saturation")
-  static int[] Tiles_saturation;
-  @ObfuscatedName("k")
-  static int[] field1095;
-  @ObfuscatedName("g")
-  static int[][][] field1101;
-  @ObfuscatedName("w")
-  @ObfuscatedGetter(
-      intValue = 892658251
-  )
-  static int field1108;
-  @ObfuscatedName("a")
-  @ObfuscatedGetter(
-      intValue = 1828170801
-  )
-  static int field1109;
+	static {
+		Tiles_heights = new int[4][105][105];
+		Tiles_renderFlags = new byte[4][104][104];
+		Tiles_minPlane = 99;
+		field907 = new int[]{1, 2, 4, 8};
+		field908 = new int[]{16, 32, 64, 128};
+		field905 = new int[]{1, 0, -1, 0};
+		field912 = new int[]{0, -1, 0, 1};
+		field903 = new int[]{1, -1, -1, 1};
+		field914 = new int[]{-1, -1, 1, 1};
+		field913 = (int)(Math.random() * 17.0D) - 8;
+		field899 = (int)(Math.random() * 33.0D) - 16;
+	}
 
-  static {
-    Tiles_heights = new int[4][105][105]; // L: 16
-    Tiles_renderFlags = new byte[4][104][104]; // L: 17
-    Tiles_minPlane = 99; // L: 18
-    field1102 = new int[]{1, 2, 4, 8}; // L: 34
-    field1107 = new int[]{16, 32, 64, 128}; // L: 35
-    field1100 = new int[]{1, 0, -1, 0}; // L: 36
-    field1105 = new int[]{0, -1, 0, 1};
-    field1106 = new int[]{1, -1, -1, 1};
-    field1097 = new int[]{-1, -1, 1, 1};
-    field1108 = (int) (Math.random() * 17.0D) - 8;
-    field1109 = (int) (Math.random() * 33.0D) - 16;
-  }
+	@ObfuscatedName("s")
+	@ObfuscatedSignature(
+		descriptor = "(I)[Lja;",
+		garbageValue = "853934177"
+	)
+	public static GameBuild[] method1769() {
+		return new GameBuild[]{GameBuild.BUILDLIVE, GameBuild.RC, GameBuild.LIVE, GameBuild.WIP};
+	}
 
-  @ObfuscatedName("e")
-  @ObfuscatedSignature(
-      descriptor = "(II)Leu;",
-      garbageValue = "-1940168302"
-  )
-  @Export("SpotAnimationDefinition_get")
-  public static SpotAnimationDefinition SpotAnimationDefinition_get(int var0) {
-    SpotAnimationDefinition var1 = (SpotAnimationDefinition) SpotAnimationDefinition.SpotAnimationDefinition_cached
-        .get((long) var0); // L: 37
-    if (var1 != null) { // L: 38
-      return var1;
-    } else {
-      byte[] var2 = SpotAnimationDefinition.SpotAnimationDefinition_archive
-          .takeFile(13, var0); // L: 39
-      var1 = new SpotAnimationDefinition(); // L: 40
-      var1.id = var0; // L: 41
-      if (var2 != null) { // L: 42
-        var1.decode(new Buffer(var2));
-      }
+	@ObfuscatedName("v")
+	@ObfuscatedSignature(
+		descriptor = "(Lnu;I)V",
+		garbageValue = "2117423398"
+	)
+	static final void method1747(PacketBuffer var0) {
+		int var1 = 0;
+		var0.importIndex();
 
-      SpotAnimationDefinition.SpotAnimationDefinition_cached.put(var1, (long) var0); // L: 43
-      return var1; // L: 44
-    }
-  }
+		byte[] var10000;
+		int var2;
+		int var4;
+		int var5;
+		for (var2 = 0; var2 < Players.Players_count; ++var2) {
+			var5 = Players.Players_indices[var2];
+			if ((Players.field1174[var5] & 1) == 0) {
+				if (var1 > 0) {
+					--var1;
+					var10000 = Players.field1174;
+					var10000[var5] = (byte)(var10000[var5] | 2);
+				} else {
+					var4 = var0.readBits(1);
+					if (var4 == 0) {
+						var1 = class249.method4826(var0);
+						var10000 = Players.field1174;
+						var10000[var5] = (byte)(var10000[var5] | 2);
+					} else {
+						Renderable.readPlayerUpdate(var0, var5);
+					}
+				}
+			}
+		}
 
-  @ObfuscatedName("e")
-  @ObfuscatedSignature(
-      descriptor = "(IB)Lez;",
-      garbageValue = "107"
-  )
-  @Export("getObjectDefinition")
-  public static ObjectComposition getObjectDefinition(int var0) {
-    ObjectComposition var1 = (ObjectComposition) ObjectComposition.ObjectDefinition_cached
-        .get((long) var0); // L: 79
-    if (var1 != null) { // L: 80
-      return var1;
-    } else {
-      byte[] var2 = ObjectComposition.ObjectDefinition_archive.takeFile(6, var0); // L: 81
-      var1 = new ObjectComposition(); // L: 82
-      var1.id = var0; // L: 83
-      if (var2 != null) { // L: 84
-        var1.decode(new Buffer(var2));
-      }
+		var0.exportIndex();
+		if (var1 != 0) {
+			throw new RuntimeException();
+		} else {
+			var0.importIndex();
 
-      var1.postDecode(); // L: 85
-      if (var1.isSolid) { // L: 86
-        var1.interactType = 0; // L: 87
-        var1.boolean1 = false; // L: 88
-      }
+			for (var2 = 0; var2 < Players.Players_count; ++var2) {
+				var5 = Players.Players_indices[var2];
+				if ((Players.field1174[var5] & 1) != 0) {
+					if (var1 > 0) {
+						--var1;
+						var10000 = Players.field1174;
+						var10000[var5] = (byte)(var10000[var5] | 2);
+					} else {
+						var4 = var0.readBits(1);
+						if (var4 == 0) {
+							var1 = class249.method4826(var0);
+							var10000 = Players.field1174;
+							var10000[var5] = (byte)(var10000[var5] | 2);
+						} else {
+							Renderable.readPlayerUpdate(var0, var5);
+						}
+					}
+				}
+			}
 
-      ObjectComposition.ObjectDefinition_cached.put(var1, (long) var0); // L: 90
-      return var1; // L: 91
-    }
-  }
+			var0.exportIndex();
+			if (var1 != 0) {
+				throw new RuntimeException();
+			} else {
+				var0.importIndex();
 
-  @ObfuscatedName("h")
-  @ObfuscatedSignature(
-      descriptor = "(I)[I",
-      garbageValue = "1675810560"
-  )
-  public static int[] method2154() {
-    int[] var0 = new int[KeyHandler.field274]; // L: 257
+				for (var2 = 0; var2 < Players.Players_emptyIdxCount; ++var2) {
+					var5 = Players.Players_emptyIndices[var2];
+					if ((Players.field1174[var5] & 1) != 0) {
+						if (var1 > 0) {
+							--var1;
+							var10000 = Players.field1174;
+							var10000[var5] = (byte)(var10000[var5] | 2);
+						} else {
+							var4 = var0.readBits(1);
+							if (var4 == 0) {
+								var1 = class249.method4826(var0);
+								var10000 = Players.field1174;
+								var10000[var5] = (byte)(var10000[var5] | 2);
+							} else if (class102.updateExternalPlayer(var0, var5)) {
+								var10000 = Players.field1174;
+								var10000[var5] = (byte)(var10000[var5] | 2);
+							}
+						}
+					}
+				}
 
-    for (int var1 = 0; var1 < KeyHandler.field274; ++var1) { // L: 258
-      var0[var1] = KeyHandler.field273[var1]; // L: 259
-    }
+				var0.exportIndex();
+				if (var1 != 0) {
+					throw new RuntimeException();
+				} else {
+					var0.importIndex();
 
-    return var0; // L: 261
-  }
+					for (var2 = 0; var2 < Players.Players_emptyIdxCount; ++var2) {
+						var5 = Players.Players_emptyIndices[var2];
+						if ((Players.field1174[var5] & 1) == 0) {
+							if (var1 > 0) {
+								--var1;
+								var10000 = Players.field1174;
+								var10000[var5] = (byte)(var10000[var5] | 2);
+							} else {
+								var4 = var0.readBits(1);
+								if (var4 == 0) {
+									var1 = class249.method4826(var0);
+									var10000 = Players.field1174;
+									var10000[var5] = (byte)(var10000[var5] | 2);
+								} else if (class102.updateExternalPlayer(var0, var5)) {
+									var10000 = Players.field1174;
+									var10000[var5] = (byte)(var10000[var5] | 2);
+								}
+							}
+						}
+					}
+
+					var0.exportIndex();
+					if (var1 != 0) {
+						throw new RuntimeException();
+					} else {
+						Players.Players_count = 0;
+						Players.Players_emptyIdxCount = 0;
+
+						for (var2 = 1; var2 < 2048; ++var2) {
+							var10000 = Players.field1174;
+							var10000[var2] = (byte)(var10000[var2] >> 1);
+							Player var3 = Client.players[var2];
+							if (var3 != null) {
+								Players.Players_indices[++Players.Players_count - 1] = var2;
+							} else {
+								Players.Players_emptyIndices[++Players.Players_emptyIdxCount - 1] = var2;
+							}
+						}
+
+					}
+				}
+			}
+		}
+	}
 }

@@ -4,38 +4,32 @@ import net.runelite.mapping.ObfuscatedGetter;
 import net.runelite.mapping.ObfuscatedName;
 import net.runelite.mapping.ObfuscatedSignature;
 
-@ObfuscatedName("lm")
+@ObfuscatedName("lk")
 @Implements("DefaultsGroup")
 public class DefaultsGroup {
+	@ObfuscatedName("s")
+	@ObfuscatedSignature(
+		descriptor = "Llk;"
+	)
+	static final DefaultsGroup field3904;
+	@ObfuscatedName("lu")
+	@ObfuscatedGetter(
+		intValue = -694914585
+	)
+	@Export("menuY")
+	static int menuY;
+	@ObfuscatedName("t")
+	@ObfuscatedGetter(
+		intValue = 1809855359
+	)
+	@Export("group")
+	final int group;
 
-  @ObfuscatedName("f")
-  @ObfuscatedSignature(
-      descriptor = "Llm;"
-  )
-  static final DefaultsGroup field3890;
-  @ObfuscatedName("aq")
-  @ObfuscatedSignature(
-      descriptor = "Llw;"
-  )
-  static Bounds field3891;
-  @ObfuscatedName("fu")
-  @ObfuscatedSignature(
-      descriptor = "Llk;"
-  )
-  static AbstractSocket field3887;
+	static {
+		field3904 = new DefaultsGroup(3);
+	}
 
-  static {
-    field3890 = new DefaultsGroup(3); // L: 4
-  }
-
-  @ObfuscatedName("e")
-  @ObfuscatedGetter(
-      intValue = 1341790971
-  )
-  @Export("group")
-  final int group;
-
-  DefaultsGroup(int var1) {
-    this.group = var1; // L: 8
-  } // L: 9
+	DefaultsGroup(int var1) {
+		this.group = var1;
+	}
 }

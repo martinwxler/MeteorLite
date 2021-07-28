@@ -4,7 +4,6 @@ import static org.sponge.util.Logger.ANSI_CYAN;
 import static org.sponge.util.Logger.ANSI_YELLOW;
 
 import com.google.inject.Inject;
-import meteor.Plugin;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.GameMessageReceived;
 import net.runelite.api.Client;
@@ -28,6 +27,10 @@ import net.runelite.api.events.WallObjectDespawned;
 import net.runelite.api.events.WallObjectSpawned;
 import org.sponge.util.Logger;
 
+@PluginDescriptor(
+    name = "Event Test",
+    description = "prints debug text for untested events"
+)
 public class EventTestPlugin extends Plugin {
 
   public String name = ANSI_CYAN + "EventLoggerPlugin" + ANSI_YELLOW;

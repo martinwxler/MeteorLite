@@ -29,7 +29,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import lombok.Getter;
 import lombok.Setter;
-import meteor.Plugin;
+import meteor.plugins.Plugin;
 import meteor.ui.FontManager;
 import meteor.ui.overlay.components.ComponentConstants;
 import meteor.ui.overlay.components.PanelComponent;

@@ -26,7 +26,7 @@ package meteor.plugins.itemprices;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
-import meteor.Plugin;
+import meteor.plugins.Plugin;
 import meteor.config.ConfigManager;
 import meteor.ui.overlay.OverlayManager;
 
