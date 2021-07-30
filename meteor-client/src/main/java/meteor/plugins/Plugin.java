@@ -11,6 +11,11 @@ import org.sponge.util.Logger;
 
 public class Plugin implements Module {
 
+  public Plugin()
+  {
+    logger.name = this.getClass().getAnnotation(PluginDescriptor.class).name();
+  }
+
   public Logger logger = new Logger("");
 
   @Inject

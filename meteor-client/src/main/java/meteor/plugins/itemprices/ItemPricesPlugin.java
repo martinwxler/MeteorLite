@@ -28,8 +28,14 @@ import com.google.inject.Provides;
 import javax.inject.Inject;
 import meteor.plugins.Plugin;
 import meteor.config.ConfigManager;
+import meteor.plugins.PluginDescriptor;
 import meteor.ui.overlay.OverlayManager;
 
+@PluginDescriptor(
+    name = "Item Prices",
+    description = "Show prices on hover for items in your inventory and bank",
+    tags = {"bank", "inventory", "overlay", "high", "alchemy", "grand", "exchange", "tooltips"}
+)
 public class ItemPricesPlugin extends Plugin {
 
   @Inject

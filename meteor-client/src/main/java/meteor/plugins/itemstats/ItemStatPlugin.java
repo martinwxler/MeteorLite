@@ -47,6 +47,7 @@ import meteor.util.QuantityFormatter;
 import net.runelite.api.Client;
 import net.runelite.api.Constants;
 import net.runelite.api.FontID;
+import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
@@ -345,6 +346,9 @@ public class ItemStatPlugin extends Plugin {
   }
 
   private void resetGEInventory() {
+    if (client.getGameState() != GameState.LOGGED_IN)
+      return;
+
     final Widget invContainer = getInventoryContainer();
 
     if (invContainer == null) {
