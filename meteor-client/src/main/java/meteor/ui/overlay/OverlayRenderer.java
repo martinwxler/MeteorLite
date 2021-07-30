@@ -610,8 +610,7 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
       graphics.setFont(runeLiteConfig.interfaceFontType().getFont());
     }
 
-    //TODO: Disabling this fixes bad graphics translations. might have to fix later.
-    //graphics.translate(point.x, point.y);
+    graphics.translate(point.x, point.y);
     overlay.getBounds().setLocation(point);
 
     final Dimension overlayDimension;
