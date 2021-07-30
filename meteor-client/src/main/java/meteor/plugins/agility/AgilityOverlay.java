@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import meteor.ui.overlay.Overlay;
+import meteor.ui.overlay.OverlayLayer;
+import meteor.ui.overlay.OverlayPosition;
 import net.runelite.api.Perspective;
 import net.runelite.api.Point;
 import net.runelite.api.Skill;
@@ -25,6 +27,8 @@ public class AgilityOverlay extends Overlay {
   public AgilityOverlay(AgilityPlugin agilityPlugin) {
     super(agilityPlugin);
     plugin = agilityPlugin;
+    setPosition(OverlayPosition.DYNAMIC);
+    setLayer(OverlayLayer.ABOVE_SCENE);
   }
 
   @Override

@@ -17,6 +17,7 @@ import meteor.plugins.boosts.BoostsPlugin;
 import meteor.plugins.camera.CameraPlugin;
 import meteor.plugins.cluescrolls.ClueScrollPlugin;
 import meteor.plugins.combatlevel.CombatLevelPlugin;
+import meteor.plugins.fishing.FishingPlugin;
 import meteor.plugins.gpu.GpuPlugin;
 import meteor.plugins.grounditems.GroundItemsPlugin;
 import meteor.plugins.groundmarkers.GroundMarkerPlugin;
@@ -56,6 +57,7 @@ public class PluginManager {
     MeteorLite.plugins.add(new GroundItemsPlugin());
     MeteorLite.plugins.add(new CameraPlugin());
     MeteorLite.plugins.add(new BoostsPlugin());
+    MeteorLite.plugins.add(new FishingPlugin());
 
     for (Plugin plugin : MeteorLite.plugins) {
       Injector injector = plugin.getInjector();

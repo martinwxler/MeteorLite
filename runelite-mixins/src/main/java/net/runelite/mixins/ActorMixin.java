@@ -90,4 +90,11 @@ public abstract class ActorMixin implements RSActor {
   {
     return Perspective.getCanvasImageLocation(client, getLocalLocation(), image, zOffset);
   }
+
+  @Inject
+  @Override
+  public Point getMinimapLocation()
+  {
+    return Perspective.localToMinimap(client, getLocalLocation());
+  }
 }
