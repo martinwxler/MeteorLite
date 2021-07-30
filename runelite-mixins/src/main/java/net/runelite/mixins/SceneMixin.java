@@ -653,10 +653,6 @@ public abstract class SceneMixin implements RSScene {
   @Copy("drawTileMinimap")
   @Replace("drawTileMinimap")
   public void copy$drawTile(int[] pixels, int pixelOffset, int width, int z, int x, int y) {
-    if (!hdMinimapEnabled) {
-      copy$drawTile(pixels, pixelOffset, width, z, x, y);
-      return;
-    }
     Tile tile = getTiles()[z][x][y];
     if (tile == null) {
       return;

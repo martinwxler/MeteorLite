@@ -5,6 +5,7 @@ import java.io.IOException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import meteor.MeteorLite;
+import meteor.PluginManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.stretchedmode.StretchedModePlugin;
 import net.runelite.rs.Reflection;
@@ -19,7 +20,7 @@ public class PluginsFXMLController {
   @FXML
   protected void toggleStretchedMode(ActionEvent event) {
     StretchedModePlugin.enabled = !StretchedModePlugin.enabled;
-    for (Plugin p : MeteorLite.plugins) {
+    for (Plugin p : PluginManager.plugins) {
       if (p instanceof StretchedModePlugin) {
         p.client.setStretchedEnabled(StretchedModePlugin.enabled);
         ((StretchedModePlugin) p).updateConfig();

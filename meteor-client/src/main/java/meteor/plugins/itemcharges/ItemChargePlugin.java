@@ -69,7 +69,6 @@ import meteor.util.Text;
 	description = "Show number of item charges remaining",
 	tags = {"inventory", "notifications", "overlay"}
 )
-@Slf4j
 public class ItemChargePlugin extends Plugin
 {
 	private static final Pattern DODGY_CHECK_PATTERN = Pattern.compile(

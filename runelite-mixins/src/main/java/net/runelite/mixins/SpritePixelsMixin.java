@@ -136,11 +136,6 @@ public abstract class SpritePixelsMixin implements RSSpritePixels {
   public void copy$drawAlphaMapped(int x, int y, int width, int height, int xOffset, int yOffset,
       int rotation,
       int zoom, int[] xOffsets, int[] yOffsets) {
-    if (!hdMinimapEnabled) {
-      copy$drawAlphaMapped(x, y, width, height, xOffset, yOffset, rotation, zoom, xOffsets,
-          yOffsets);
-      return;
-    }
     try {
       int[] graphicsPixels = client.getGraphicsPixels();
 

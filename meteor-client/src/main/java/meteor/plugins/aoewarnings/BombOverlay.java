@@ -36,6 +36,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import meteor.MeteorLite;
+import meteor.PluginManager;
 import meteor.plugins.Plugin;
 import meteor.ui.overlay.Overlay;
 import meteor.ui.overlay.OverlayLayer;
@@ -77,7 +78,7 @@ public class BombOverlay extends Overlay {
 
   private void drawDangerZone(Graphics2D graphics) {
     if (plugin == null) {
-      for (Plugin p : MeteorLite.plugins) {
+      for (Plugin p : PluginManager.plugins) {
         if (p instanceof AoeWarningPlugin) {
           plugin = (AoeWarningPlugin) p;
         }

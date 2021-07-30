@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.input.MouseEvent;
 import meteor.MeteorLite;
+import meteor.PluginManager;
 import meteor.plugins.Plugin;
 import org.sponge.util.Logger;
 
@@ -23,7 +24,7 @@ public class ConfigFXMLController {
   private JFXSlider scalingFactorSlider;
 
   {
-    for (Plugin p : MeteorLite.plugins) {
+    for (Plugin p : PluginManager.plugins) {
       if (p instanceof StretchedModePlugin) {
         plugin = (StretchedModePlugin) p;
       }

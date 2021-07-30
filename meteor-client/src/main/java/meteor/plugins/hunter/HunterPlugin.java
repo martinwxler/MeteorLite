@@ -49,7 +49,6 @@ import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.ui.overlay.OverlayManager;
 
-@Slf4j
 @PluginDescriptor(
 	name = "Hunter",
 	description = "Show the state of your traps",
