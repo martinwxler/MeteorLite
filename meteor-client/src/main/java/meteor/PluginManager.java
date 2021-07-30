@@ -5,6 +5,8 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Module;
+import java.util.ArrayList;
+import java.util.List;
 import meteor.config.Config;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
@@ -21,6 +23,8 @@ import meteor.plugins.fishing.FishingPlugin;
 import meteor.plugins.gpu.GpuPlugin;
 import meteor.plugins.grounditems.GroundItemsPlugin;
 import meteor.plugins.groundmarkers.GroundMarkerPlugin;
+import meteor.plugins.hunter.HunterPlugin;
+import meteor.plugins.itemcharges.ItemChargePlugin;
 import meteor.plugins.itemprices.ItemPricesPlugin;
 import meteor.plugins.itemstats.ItemStatPlugin;
 import meteor.plugins.mousetooltips.MouseTooltipPlugin;
@@ -36,30 +40,34 @@ public class PluginManager {
   @Inject
   private ConfigManager configManager;
 
+  public static List<Plugin> plugins = new ArrayList<>();
+
   public void startInternalPlugins()
   {
-    MeteorLite.plugins.add(new EventTestPlugin());
+   plugins.add(new EventTestPlugin());
     //MeteorLite.plugins.add(new DebugPlugin());
 
-    MeteorLite.plugins.add(new StretchedModePlugin());
-    MeteorLite.plugins.add(new GpuPlugin());
-    MeteorLite.plugins.add(new AoeWarningPlugin());
-    MeteorLite.plugins.add(new NeverLogoutPlugin());
-    MeteorLite.plugins.add(new BankPlugin());
-    MeteorLite.plugins.add(new AgilityPlugin());
-    MeteorLite.plugins.add(new MouseTooltipPlugin());
-    MeteorLite.plugins.add(new CombatLevelPlugin());
-    MeteorLite.plugins.add(new GroundMarkerPlugin());
-    MeteorLite.plugins.add(new ItemStatPlugin());
-    MeteorLite.plugins.add(new ItemPricesPlugin());
-    MeteorLite.plugins.add(new WorldMapPlugin());
-    MeteorLite.plugins.add(new ClueScrollPlugin());
-    MeteorLite.plugins.add(new GroundItemsPlugin());
-    MeteorLite.plugins.add(new CameraPlugin());
-    MeteorLite.plugins.add(new BoostsPlugin());
-    MeteorLite.plugins.add(new FishingPlugin());
+    plugins.add(new StretchedModePlugin());
+    plugins.add(new GpuPlugin());
+    plugins.add(new AoeWarningPlugin());
+    plugins.add(new NeverLogoutPlugin());
+    plugins.add(new BankPlugin());
+    plugins.add(new AgilityPlugin());
+    plugins.add(new MouseTooltipPlugin());
+    plugins.add(new CombatLevelPlugin());
+    plugins.add(new GroundMarkerPlugin());
+    plugins.add(new ItemStatPlugin());
+    plugins.add(new ItemPricesPlugin());
+    plugins.add(new WorldMapPlugin());
+    plugins.add(new ClueScrollPlugin());
+    plugins.add(new GroundItemsPlugin());
+    plugins.add(new CameraPlugin());
+    plugins.add(new BoostsPlugin());
+    plugins.add(new FishingPlugin());
+    plugins.add(new HunterPlugin());
+    plugins.add(new ItemChargePlugin());
 
-    for (Plugin plugin : MeteorLite.plugins) {
+    for (Plugin plugin : plugins) {
       Injector injector = plugin.getInjector();
       if (injector == null) {
         // Create injector for the module

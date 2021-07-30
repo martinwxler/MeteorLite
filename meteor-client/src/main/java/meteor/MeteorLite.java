@@ -25,11 +25,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidParameterException;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javafx.application.Application;
@@ -48,7 +46,6 @@ import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ClientShutdown;
 import meteor.events.ToggleToolbarEvent;
-import meteor.plugins.Plugin;
 import meteor.ui.overlay.OverlayManager;
 import meteor.ui.overlay.WidgetOverlay;
 import meteor.ui.overlay.tooltip.TooltipOverlay;
@@ -70,7 +67,6 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
   public static final File LOGS_DIR = new File(METEOR_DIR, "logs");
   public static final File DEFAULT_SESSION_FILE = new File(METEOR_DIR, "session");
   public static final File DEFAULT_CONFIG_FILE = new File(METEOR_DIR, "settings.properties");
-  public static List<Plugin> plugins = new ArrayList<>();
   public static Client clientInstance; // This is reserved for the Sponge Mixins Agent
   public static Injector injector;
   public static boolean pluginsPanelVisible = false;
