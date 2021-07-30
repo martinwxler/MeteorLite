@@ -37,7 +37,7 @@ It is built using the gradle task
 clean build run
 ```
 
-**Credits**
+**Credits**  
 OpenOSRS staff :  https://github.com/open-osrs/runelite  
 RuneLite staff :  https://github.com/runelite/runelite  
 RuneScape staff :  https://oldschool.runescape.com/  
