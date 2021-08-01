@@ -9,12 +9,34 @@ import net.runelite.api.mixins.Shadow;
 import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSModel;
 import net.runelite.rs.api.RSPlayer;
+import net.runelite.rs.api.RSUsername;
 
 @Mixin(RSPlayer.class)
 public abstract class PlayerMixin implements RSPlayer {
 
   @Shadow("client")
   private static RSClient client;
+
+  @Inject
+  @Override
+  public String getName()
+  {
+    final RSUsername rsName = getRsName();
+
+    if (rsName == null)
+    {
+      return null;
+    }
+
+    String name = rsName.getName$api();
+
+    if (name == null)
+    {
+      return null;
+    }
+
+    return name.replace('\u00A0', ' ');
+  }
 
   @Inject
   @Override

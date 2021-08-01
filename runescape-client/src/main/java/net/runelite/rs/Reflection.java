@@ -24,11 +24,23 @@
  */
 package net.runelite.rs;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.net.URL;
 import java.nio.file.Files;
@@ -46,50 +58,86 @@ import org.sponge.util.Logger;
 public class Reflection {
 
   public static boolean printDebugMessages = false;
-  public static Enumeration<URL> systemResources;
-  public static Map<String, Class<?>> classes = new HashMap<>();
+  public static Map<String, Class<?>> classMap = new HashMap<>();
+  static HashMap<String, String> refmap;
   static Logger logger = new Logger("Reflection");
   private static int mappedClasses = 0;
 
   static {
     try {
-      Path path = new File("../runescape-client/build/classes/java/main/")
-          .toPath();
+      HashMap<String, String> type = new HashMap<>();
+      try (Reader reader = new InputStreamReader(Reflection.class
+          .getResourceAsStream("/osrs-refmap-198.json"))) {
+        refmap = (HashMap<String, String>) new Gson().fromJson(reader, type.getClass());
+      }
+      for (String s : refmap.keySet())
+      {
+        try {
+          Class<?> clazz = Class.forName(refmap.get(s));
+          ObfuscatedName obfuscatedName = clazz
+              .getAnnotation(ObfuscatedName.class);
+          if (obfuscatedName != null) {
+            classMap.put(obfuscatedName.value(), clazz);
+            mappedClasses++;
+          }
+        }
+        catch (Exception e)
+        {
+          e.printStackTrace();
+        }
+      }
 
-      Files.walk(path)
-          .filter(Files::isRegularFile)
-          .forEach(f ->
-          {
-            String className = f
-                .getName(f.getNameCount() - 1)
-                .toString()
-                .replace(".class", "");
-
-            try {
-              Class<?> clazz = Class.forName(className);
-
-              ObfuscatedName obfuscatedName = clazz
-                  .getAnnotation(ObfuscatedName.class);
-
-              if (obfuscatedName != null) {
-                classes.put(obfuscatedName.value(), clazz);
-                mappedClasses++;
-              }
-            } catch (ClassNotFoundException ignore) {
-            }
-          });
       if (mappedClasses < 300) {
         JOptionPane.showMessageDialog(null, "Obfuscated Mapping failure" +
             "!!!Jagex servers will deny total interaction shortly!!!\n" +
             "!!!Please Log Out immediately!!!");
+      }
+      if (false)
+      {
+        Map<String, Class<?>> classMap = new HashMap<>();
+        Path path = new File("../runescape-client/build/classes/java/main/")
+            .toPath();
+
+        Files.walk(path)
+            .filter(Files::isRegularFile)
+            .forEach(f ->
+            {
+              String className = f
+                  .getName(f.getNameCount() - 1)
+                  .toString()
+                  .replace(".class", "");
+
+              try {
+                Class<?> clazz = Class.forName(className);
+
+                ObfuscatedName obfuscatedName = clazz
+                    .getAnnotation(ObfuscatedName.class);
+
+                if (obfuscatedName != null) {
+                  classMap.put(obfuscatedName.value(), clazz);
+                }
+              } catch (ClassNotFoundException ignore) {
+              }
+            });
+        HashMap<String, String> refmap = new HashMap<>();
+        for (String s : classMap.keySet())
+        {
+          refmap.put(s, classMap.get(s).getName());
+        }
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        try (Writer writer = new FileWriter("./osrs-refmap-198.json")) {
+          gson.toJson(refmap, writer);
+        }
       }
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
+
+
   public static Class<?> findClass(String name) throws ClassNotFoundException {
-    Class<?> clazz = classes.get(name);
+    Class<?> clazz = classMap.get(name);
 
     if (clazz != null) {
       return clazz;

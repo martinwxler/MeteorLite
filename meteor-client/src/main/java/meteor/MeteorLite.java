@@ -192,6 +192,7 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
   public void setupFrame(Applet applet) throws IOException {
     frame = new JFrame();
     frame.setSize(1280, 720);
+    frame.setMinimumSize(new Dimension(1280, 720));
     panel = new JPanel();
     panel.setLayout(layout);
     panel.setSize(1280, 720);

@@ -4,9 +4,11 @@ import static org.sponge.util.Logger.ANSI_CYAN;
 import static org.sponge.util.Logger.ANSI_YELLOW;
 
 import com.google.inject.Inject;
+import meteor.MeteorLite;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.GameMessageReceived;
 import net.runelite.api.Client;
+import net.runelite.api.GameState;
 import net.runelite.api.events.DecorativeObjectChanged;
 import net.runelite.api.events.DecorativeObjectDespawned;
 import net.runelite.api.events.DecorativeObjectSpawned;
@@ -14,6 +16,7 @@ import net.runelite.api.events.GameObjectChanged;
 import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameTick;
 import net.runelite.api.events.GroundObjectChanged;
 import net.runelite.api.events.GroundObjectDespawned;
 import net.runelite.api.events.GroundObjectSpawned;
@@ -46,6 +49,12 @@ public class EventTestPlugin extends Plugin {
   }
 
   @Subscribe
+  public void onGameTick(GameTick event)
+  {
+    MeteorLite.frame.setTitle("MeteorLite - " + client.getLocalPlayer().getName());
+  }
+
+  @Subscribe
   public void test1(GameMessageReceived event) {
     logger.event("GameMessageReceived", "" + event.text);
   }
@@ -57,7 +66,7 @@ public class EventTestPlugin extends Plugin {
 
   @Subscribe
   public void test3(NpcChanged event) {
-    logger.event("NpcChanged", event.getNpc().getName());
+    //logger.event("NpcChanged", event.getNpc().getName());
   }
 
   @Subscribe
@@ -77,7 +86,7 @@ public class EventTestPlugin extends Plugin {
 
   @Subscribe
   public void test7(GameObjectChanged event) {
-    logger.event("GameObjectChanged", event.getGameObject().getName());
+    //logger.event("GameObjectChanged", event.getGameObject().getName());
   }
 
   @Subscribe
