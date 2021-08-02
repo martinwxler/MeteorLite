@@ -28,6 +28,7 @@ import meteor.plugins.implings.ImplingsPlugin;
 import meteor.plugins.itemcharges.ItemChargePlugin;
 import meteor.plugins.itemprices.ItemPricesPlugin;
 import meteor.plugins.itemstats.ItemStatPlugin;
+import meteor.plugins.menuentryswapper.MenuEntrySwapperPlugin;
 import meteor.plugins.mousetooltips.MouseTooltipPlugin;
 import meteor.plugins.neverlog.NeverLogoutPlugin;
 import meteor.plugins.npcindicators.NpcIndicatorsPlugin;
@@ -72,6 +73,7 @@ public class PluginManager {
     plugins.add(new ObjectIndicatorsPlugin());
     plugins.add(new NpcIndicatorsPlugin());
     plugins.add(new ImplingsPlugin());
+    plugins.add(new MenuEntrySwapperPlugin());
 
     for (Plugin plugin : plugins) {
       Injector injector = plugin.getInjector();
