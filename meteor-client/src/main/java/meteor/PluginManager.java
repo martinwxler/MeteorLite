@@ -24,6 +24,7 @@ import meteor.plugins.gpu.GpuPlugin;
 import meteor.plugins.grounditems.GroundItemsPlugin;
 import meteor.plugins.groundmarkers.GroundMarkerPlugin;
 import meteor.plugins.hunter.HunterPlugin;
+import meteor.plugins.implings.ImplingsPlugin;
 import meteor.plugins.itemcharges.ItemChargePlugin;
 import meteor.plugins.itemprices.ItemPricesPlugin;
 import meteor.plugins.itemstats.ItemStatPlugin;
@@ -70,6 +71,7 @@ public class PluginManager {
     plugins.add(new ItemChargePlugin());
     plugins.add(new ObjectIndicatorsPlugin());
     plugins.add(new NpcIndicatorsPlugin());
+    plugins.add(new ImplingsPlugin());
 
     for (Plugin plugin : plugins) {
       Injector injector = plugin.getInjector();
