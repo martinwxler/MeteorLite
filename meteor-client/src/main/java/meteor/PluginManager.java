@@ -29,6 +29,8 @@ import meteor.plugins.itemprices.ItemPricesPlugin;
 import meteor.plugins.itemstats.ItemStatPlugin;
 import meteor.plugins.mousetooltips.MouseTooltipPlugin;
 import meteor.plugins.neverlog.NeverLogoutPlugin;
+import meteor.plugins.npcindicators.NpcIndicatorsPlugin;
+import meteor.plugins.objectindicators.ObjectIndicatorsPlugin;
 import meteor.plugins.stretchedmode.StretchedModePlugin;
 import meteor.plugins.worldmap.WorldMapPlugin;
 
@@ -66,6 +68,8 @@ public class PluginManager {
     plugins.add(new FishingPlugin());
     plugins.add(new HunterPlugin());
     plugins.add(new ItemChargePlugin());
+    plugins.add(new ObjectIndicatorsPlugin());
+    plugins.add(new NpcIndicatorsPlugin());
 
     for (Plugin plugin : plugins) {
       Injector injector = plugin.getInjector();

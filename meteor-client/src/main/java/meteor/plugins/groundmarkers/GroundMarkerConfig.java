@@ -45,7 +45,7 @@ public interface GroundMarkerConfig extends Config {
       description = "Configures the color of marked tile"
   )
   default Color markerColor() {
-    return Color.YELLOW;
+    return Color.CYAN;
   }
 
   @ConfigItem(

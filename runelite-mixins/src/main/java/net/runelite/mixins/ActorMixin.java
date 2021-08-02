@@ -6,7 +6,10 @@ import net.runelite.api.Perspective;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.ActorDeath;
+import net.runelite.api.events.HealthBarUpdated;
 import net.runelite.api.mixins.Inject;
+import net.runelite.api.mixins.MethodHook;
 import net.runelite.api.mixins.Mixin;
 import net.runelite.api.mixins.Shadow;
 import net.runelite.rs.api.RSActor;
@@ -96,5 +99,38 @@ public abstract class ActorMixin implements RSActor {
   public Point getMinimapLocation()
   {
     return Perspective.localToMinimap(client, getLocalLocation());
+  }
+
+  @Inject
+  private boolean dead;
+
+  @Inject
+  @Override
+  public boolean isDead()
+  {
+    return dead;
+  }
+
+  @Inject
+  @Override
+  public void setDead(boolean dead)
+  {
+    this.dead = dead;
+  }
+
+  @Inject
+  @MethodHook("addHealthBar")
+  public void setCombatInfo(int combatInfoId, int gameCycle, int var3, int var4, int healthRatio, int health)
+  {
+    if (healthRatio == 0)
+    {
+      final ActorDeath event = new ActorDeath(this);
+      client.getCallbacks().post(event);
+
+      this.setDead(true);
+    }
+
+    final HealthBarUpdated event = new HealthBarUpdated(this, healthRatio);
+    client.getCallbacks().post(event);
   }
 }

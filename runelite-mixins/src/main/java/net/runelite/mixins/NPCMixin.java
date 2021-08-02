@@ -1,6 +1,7 @@
 package net.runelite.mixins;
 
 import java.awt.Shape;
+import net.runelite.api.NPCComposition;
 import net.runelite.api.Perspective;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.NpcChanged;
@@ -90,5 +91,17 @@ public abstract class NPCMixin implements RSNPC {
     int tileHeight = Perspective.getTileHeight(client, tileHeightPoint, client.getPlane());
 
     return model.getConvexHull(getX(), getY(), getOrientation(), tileHeight);
+  }
+
+  @Inject
+  @Override
+  public NPCComposition getTransformedComposition()
+  {
+    RSNPCComposition composition = getComposition();
+    if (composition != null && composition.getConfigs() != null)
+    {
+      composition = composition.transform$api();
+    }
+    return composition;
   }
 }
