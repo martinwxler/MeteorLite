@@ -963,4 +963,21 @@ public abstract class ClientMixin implements RSClient {
 
   @Inject
   public static RSArchive[] archives = new RSArchive[21];
+
+  @Inject
+  @Override
+  public List<NPC> getNpcs()
+  {
+    int validNpcIndexes = getNpcIndexesCount();
+    int[] npcIndexes = getNpcIndices();
+    NPC[] cachedNpcs = getCachedNPCs();
+    List<NPC> npcs = new ArrayList<NPC>(validNpcIndexes);
+
+    for (int i = 0; i < validNpcIndexes; ++i)
+    {
+      npcs.add(cachedNpcs[npcIndexes[i]]);
+    }
+
+    return npcs;
+  }
 }

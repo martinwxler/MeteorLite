@@ -785,4 +785,15 @@ public interface MenuEntrySwapperConfig extends Config
 	{
 		return false;
 	}
+
+	@ConfigItem(
+			keyName = "swapReleaseLizards",
+			name = "Release Lizards",
+			description = "Swap Release with Wield for lizards",
+			section = npcSection
+	)
+	default boolean swapLizardRelease()
+	{
+		return true;
+	}
 }

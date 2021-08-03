@@ -168,7 +168,7 @@ public class HudbarFXMLController {
                       try {
                           skillIconMap.put(s, SwingFXUtils.toFXImage(ImageIO.read(
                               Objects.requireNonNull(ClassLoader.getSystemClassLoader()
-                                  .getResource("skill_icons/" + s + ".png"))),
+                                  .getResource("skill_icons/" + s.toLowerCase() + ".png"))),
                               null));
                       } catch (IOException e) {
                           e.printStackTrace();

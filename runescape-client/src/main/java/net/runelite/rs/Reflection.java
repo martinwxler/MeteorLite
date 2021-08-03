@@ -67,7 +67,7 @@ public class Reflection {
     try {
       HashMap<String, String> type = new HashMap<>();
       try (Reader reader = new InputStreamReader(Reflection.class
-          .getResourceAsStream("/osrs-refmap-198.json"))) {
+          .getResourceAsStream("/osrs-refmap.json"))) {
         refmap = (HashMap<String, String>) new Gson().fromJson(reader, type.getClass());
       }
       for (String s : refmap.keySet())
@@ -89,45 +89,9 @@ public class Reflection {
 
       if (mappedClasses < 300) {
         JOptionPane.showMessageDialog(null, "Obfuscated Mapping failure" +
-            "!!!Jagex servers will deny total interaction shortly!!!\n" +
-            "!!!Please Log Out immediately!!!");
-      }
-      if (false)
-      {
-        Map<String, Class<?>> classMap = new HashMap<>();
-        Path path = new File("../runescape-client/build/classes/java/main/")
-            .toPath();
-
-        Files.walk(path)
-            .filter(Files::isRegularFile)
-            .forEach(f ->
-            {
-              String className = f
-                  .getName(f.getNameCount() - 1)
-                  .toString()
-                  .replace(".class", "");
-
-              try {
-                Class<?> clazz = Class.forName(className);
-
-                ObfuscatedName obfuscatedName = clazz
-                    .getAnnotation(ObfuscatedName.class);
-
-                if (obfuscatedName != null) {
-                  classMap.put(obfuscatedName.value(), clazz);
-                }
-              } catch (ClassNotFoundException ignore) {
-              }
-            });
-        HashMap<String, String> refmap = new HashMap<>();
-        for (String s : classMap.keySet())
-        {
-          refmap.put(s, classMap.get(s).getName());
-        }
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        try (Writer writer = new FileWriter("./osrs-refmap-198.json")) {
-          gson.toJson(refmap, writer);
-        }
+            "!!!Jagex servers will deny total interaction with entities!!!\n" +
+            "!!!Client will exit immediately!!!");
+        System.exit(-1);
       }
     } catch (Exception e) {
       e.printStackTrace();

@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id "com.github.johnrengelman.shadow" version "5.2.0"
 }
 
 group 'org.meteorlite'
@@ -26,11 +27,12 @@ dependencies {
     implementation(project(":runelite-api"))
     implementation(project(":meteor-logger"))
     implementation(project(":http-api"))
+    implementation(project(":runelite-annotations"))
     compileOnly(project(":runescape-client"))
     implementation group: 'de.jensd', name: 'fontawesomefx-fontawesome', version: '4.7.0-5'
     implementation 'com.jfoenix:jfoenix:8.0.10'
     implementation group: 'org.jetbrains', name: 'annotations', version: '21.0.1'
-    runtimeClasspath(files("../openosrs-injector/build/injected/injected-client.jar"))
+    runtimeOnly(files("../openosrs-injector/build/injected/injected-client.jar"))
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
     annotationProcessor group: 'org.jetbrains', name: 'annotations', version: '21.0.1'
@@ -90,7 +92,7 @@ test {
     useJUnitPlatform()
 }
 
-mainClassName = 'Launcher'
+mainClassName = 'meteor.MeteorLite'
 
 applicationDefaultJvmArgs = [
         "-javaagent:../meteor-agent/build/libs/meteor-agent-1.0-SNAPSHOT.jar=agent.MixinAgentBootstrap;",

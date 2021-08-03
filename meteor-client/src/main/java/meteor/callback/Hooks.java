@@ -263,7 +263,6 @@ public class Hooks implements Callbacks {
     WorldMapManager manager = renderOverview.getWorldMapManager();
 
     if (manager != null && manager.isLoaded$api()) {
-      log.debug("World map was closed, reinitializing");
       renderOverview.initializeWorldMap(renderOverview.getWorldMapData());
     }
   }
