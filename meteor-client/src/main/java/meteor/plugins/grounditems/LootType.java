@@ -24,11 +24,10 @@
  */
 package meteor.plugins.grounditems;
 
-enum LootType
-{
-	UNKNOWN,
-	TABLE,
-	DROPPED,
-	PVP,
-	PVM;
+enum LootType {
+  UNKNOWN,
+  TABLE,
+  DROPPED,
+  PVP,
+  PVM
 }

@@ -84,12 +84,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import lombok.NonNull;
-import meteor.plugins.Plugin;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ClientShutdown;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.eventbus.events.RuneScapeProfileChanged;
+import meteor.plugins.Plugin;
 import meteor.util.ColorUtil;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
@@ -122,8 +122,8 @@ public class ConfigManager {
   private final ConfigInvocationHandler handler = new ConfigInvocationHandler(this);
   private final Map<String, String> pendingChanges = new HashMap<>();
   private final Map<String, Consumer<? super Plugin>> consumers = new HashMap<>();
-  private File propertiesFile;
-  private Logger log = new Logger("ConfigManager");
+  private final File propertiesFile;
+  private final Logger log = new Logger("ConfigManager");
   private Properties properties = new Properties();
 
   // null => we need to make a new profile
@@ -295,7 +295,7 @@ public class ConfigManager {
         return getElementType((EnumSet) object).getCanonicalName() + "{}";
       }
 
-      return ((EnumSet) object).toArray()[0].getClass().getCanonicalName() + "{" + object.toString()
+      return ((EnumSet) object).toArray()[0].getClass().getCanonicalName() + "{" + object
           + "}";
     }
 
@@ -455,13 +455,13 @@ public class ConfigManager {
 
     log.debug("Configuration loaded");
     swapProperties(newProperties, false);
-	  if (!loaded) {
-		  try {
-			  saveToFile(propertiesFile);
-		  } catch (IOException e) {
-			  e.printStackTrace();
-		  }
-	  }
+    if (!loaded) {
+      try {
+        saveToFile(propertiesFile);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
   }
 
   private void saveToFile(final File propertiesFile) throws IOException {
@@ -735,39 +735,31 @@ public class ConfigManager {
     return new ConfigDescriptor(group, sections, titles, items);
   }
 
-  public void loadDefaultPluginConfiguration(List<Plugin> plugins)
-  {
-    try
-    {
-      for (Object config : getPluginConfigProxies(plugins))
-      {
+  public void loadDefaultPluginConfiguration(List<Plugin> plugins) {
+    try {
+      for (Object config : getPluginConfigProxies(plugins)) {
         setDefaultConfiguration(config, false);
       }
-    }
-    catch (ThreadDeath e)
-    {
+    } catch (ThreadDeath e) {
       throw e;
-    }
-    catch (Throwable ex)
-    {
+    } catch (Throwable ex) {
       log.warn("Unable to reset plugin configuration");
       ex.printStackTrace();
     }
   }
 
-  public List<Config> getPluginConfigProxies(List<Plugin> plugins)
-  {
+  public List<Config> getPluginConfigProxies(List<Plugin> plugins) {
     List<Config> list = new ArrayList<>();
     plugins.forEach(pl ->
-    {
-      for (Key<?> key : pl.getInjector().getBindings().keySet()) {
-        Class<?> type = key.getTypeLiteral().getRawType();
-        if (Config.class.isAssignableFrom(type)) {
-          Config config = (Config) pl.getInjector().getInstance(key);
-          list.add(config);
+        {
+          for (Key<?> key : pl.getInjector().getBindings().keySet()) {
+            Class<?> type = key.getTypeLiteral().getRawType();
+            if (Config.class.isAssignableFrom(type)) {
+              Config config = (Config) pl.getInjector().getInstance(key);
+              list.add(config);
+            }
+          }
         }
-      }
-    }
     );
     return list;
   }
@@ -891,12 +883,9 @@ public class ConfigManager {
 
   @Nullable
   private void sendConfig() {
-    try
-    {
+    try {
       saveToFile(propertiesFile);
-    }
-    catch (IOException ex)
-    {
+    } catch (IOException ex) {
       log.warn("unable to save configuration file", ex);
     }
   }
@@ -1101,11 +1090,12 @@ public class ConfigManager {
       });
     }
 
-    Set<String> keys = (Set<String>) ImmutableSet.copyOf((Set) properties.keySet());
+    ImmutableSet<Object> keys = ImmutableSet.copyOf(properties.keySet());
     keys:
-    for (String key : keys) {
+    for (Object o : keys) {
+      if (o instanceof String)
       for (Predicate<String> mig : migrators) {
-        if (mig.test(key)) {
+        if (mig.test((String) o)) {
           continue keys;
         }
       }

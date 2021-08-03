@@ -34,88 +34,85 @@ import net.runelite.api.coords.WorldPoint;
 /**
  * Wrapper class for a GameObject that represents a hunter trap.
  */
-class HunterTrap
-{
-	/**
-	 * A hunter trap stays up 1 minute before collapsing.
-	 */
-	static final Duration TRAP_TIME = Duration.ofMinutes(1);
+class HunterTrap {
 
-	/**
-	 * The time in milliseconds when the trap was placed.
-	 */
-	@Getter
-	private Instant placedOn;
+  /**
+   * A hunter trap stays up 1 minute before collapsing.
+   */
+  static final Duration TRAP_TIME = Duration.ofMinutes(1);
 
-	/**
-	 * The state of the trap.
-	 */
-	@Getter
-	@Setter
-	private State state;
+  /**
+   * The time in milliseconds when the trap was placed.
+   */
+  @Getter
+  private Instant placedOn;
 
-	/**
-	 * The ID of the game object this is representing
-	 */
-	@Getter
-	private int objectId;
+  /**
+   * The state of the trap.
+   */
+  @Getter
+  @Setter
+  private State state;
 
-	@Getter
-	private WorldPoint worldLocation;
+  /**
+   * The ID of the game object this is representing
+   */
+  @Getter
+  private final int objectId;
 
-	/**
-	 * The states a trap can be in.
-	 */
-	enum State
-	{
-		/**
-		 * A laid out trap.
-		 */
-		OPEN,
-		/**
-		 * A trap that is empty.
-		 */
-		EMPTY,
-		/**
-		 * A trap that caught something.
-		 */
-		FULL,
-		/**
-		 * A trap that is closing.
-		 */
-		TRANSITION
-	}
+  @Getter
+  private final WorldPoint worldLocation;
 
-	/**
-	 * Constructor for a HunterTrap object
-	 *
-	 * @param gameObject The gameobject thats corresponds with this trap.
-	 */
-	HunterTrap(GameObject gameObject)
-	{
-		this.state = State.OPEN;
-		this.placedOn = Instant.now();
-		this.objectId = gameObject.getId();
-		this.worldLocation = gameObject.getWorldLocation();
-	}
+  /**
+   * Constructor for a HunterTrap object
+   *
+   * @param gameObject The gameobject thats corresponds with this trap.
+   */
+  HunterTrap(GameObject gameObject) {
+    this.state = State.OPEN;
+    this.placedOn = Instant.now();
+    this.objectId = gameObject.getId();
+    this.worldLocation = gameObject.getWorldLocation();
+  }
 
-	/**
-	 * Calculates how much time is left before the trap is collapsing.
-	 *
-	 * @return Value between 0 and 1. 0 means the trap was laid moments ago.
-	 * 1 is a trap that's about to collapse.
-	 */
-	public double getTrapTimeRelative()
-	{
-		Duration duration = Duration.between(placedOn, Instant.now());
-		return duration.compareTo(TRAP_TIME) < 0 ? (double) duration.toMillis() / TRAP_TIME.toMillis() : 1;
-	}
+  /**
+   * Calculates how much time is left before the trap is collapsing.
+   *
+   * @return Value between 0 and 1. 0 means the trap was laid moments ago. 1 is a trap that's about
+   * to collapse.
+   */
+  public double getTrapTimeRelative() {
+    Duration duration = Duration.between(placedOn, Instant.now());
+    return duration.compareTo(TRAP_TIME) < 0 ? (double) duration.toMillis() / TRAP_TIME.toMillis()
+        : 1;
+  }
 
-	/**
-	 * Resets the time value when the trap was placed.
-	 */
-	public void resetTimer()
-	{
-		placedOn = Instant.now();
-	}
+  /**
+   * Resets the time value when the trap was placed.
+   */
+  public void resetTimer() {
+    placedOn = Instant.now();
+  }
+
+  /**
+   * The states a trap can be in.
+   */
+  enum State {
+    /**
+     * A laid out trap.
+     */
+    OPEN,
+    /**
+     * A trap that is empty.
+     */
+    EMPTY,
+    /**
+     * A trap that caught something.
+     */
+    FULL,
+    /**
+     * A trap that is closing.
+     */
+    TRANSITION
+  }
 }

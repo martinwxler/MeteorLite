@@ -35,39 +35,39 @@ import meteor.ui.RenderableEntity;
 import net.runelite.api.Point;
 
 @Setter
-public class ProgressPieComponent implements RenderableEntity
-{
-	private int diameter = 25;
-	private Color borderColor = Color.WHITE;
-	private Color fill = Color.WHITE;
-	private Stroke stroke = new BasicStroke(1);
-	private double progress;
-	private Point position;
+public class ProgressPieComponent implements RenderableEntity {
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		//Construct the arc
-		Arc2D.Float arc = new Arc2D.Float(Arc2D.PIE);
-		arc.setAngleStart(90);
-		arc.setAngleExtent(progress * 360);
-		arc.setFrame(position.getX() - diameter / 2, position.getY() - diameter / 2, diameter, diameter);
+  private int diameter = 25;
+  private Color borderColor = Color.WHITE;
+  private Color fill = Color.WHITE;
+  private Stroke stroke = new BasicStroke(1);
+  private double progress;
+  private Point position;
 
-		//Draw the inside of the arc
-		graphics.setColor(fill);
-		graphics.fill(arc);
+  @Override
+  public Dimension render(Graphics2D graphics) {
+    //Construct the arc
+    Arc2D.Float arc = new Arc2D.Float(Arc2D.PIE);
+    arc.setAngleStart(90);
+    arc.setAngleExtent(progress * 360);
+    arc.setFrame(position.getX() - diameter / 2, position.getY() - diameter / 2, diameter,
+        diameter);
 
-		//Draw the outlines of the arc
-		graphics.setStroke(stroke);
-		graphics.setColor(borderColor);
-		graphics.drawOval(position.getX() - diameter / 2, position.getY() - diameter / 2, diameter, diameter);
+    //Draw the inside of the arc
+    graphics.setColor(fill);
+    graphics.fill(arc);
 
-		return new Dimension(diameter, diameter);
-	}
+    //Draw the outlines of the arc
+    graphics.setStroke(stroke);
+    graphics.setColor(borderColor);
+    graphics.drawOval(position.getX() - diameter / 2, position.getY() - diameter / 2, diameter,
+        diameter);
 
-	public void setBorder(Color border, int size)
-	{
-		this.borderColor = border;
-		stroke = new BasicStroke(size);
-	}
+    return new Dimension(diameter, diameter);
+  }
+
+  public void setBorder(Color border, int size) {
+    this.borderColor = border;
+    stroke = new BasicStroke(size);
+  }
 }

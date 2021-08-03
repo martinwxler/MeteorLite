@@ -30,67 +30,61 @@ import java.awt.Graphics2D;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Setter;
-import net.runelite.api.GraphicID;
-import net.runelite.api.NPC;
-import net.runelite.api.NpcID;
 import meteor.game.FishingSpot;
 import meteor.ui.overlay.Overlay;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayPosition;
 import meteor.ui.overlay.OverlayUtil;
+import net.runelite.api.GraphicID;
+import net.runelite.api.NPC;
+import net.runelite.api.NpcID;
 
-class FishingSpotMinimapOverlay extends Overlay
-{
-	private final FishingPlugin plugin;
-	private final FishingConfig config;
+class FishingSpotMinimapOverlay extends Overlay {
 
-	@Setter(AccessLevel.PACKAGE)
-	private boolean hidden;
+  private final FishingPlugin plugin;
+  private final FishingConfig config;
 
-	@Inject
-	public FishingSpotMinimapOverlay(FishingPlugin plugin, FishingConfig config)
-	{
-		setPosition(OverlayPosition.DYNAMIC);
-		setLayer(OverlayLayer.ABOVE_WIDGETS);
-		this.plugin = plugin;
-		this.config = config;
-	}
+  @Setter(AccessLevel.PACKAGE)
+  private boolean hidden;
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		if (hidden)
-		{
-			return null;
-		}
+  @Inject
+  public FishingSpotMinimapOverlay(FishingPlugin plugin, FishingConfig config) {
+    setPosition(OverlayPosition.DYNAMIC);
+    setLayer(OverlayLayer.ABOVE_WIDGETS);
+    this.plugin = plugin;
+    this.config = config;
+  }
 
-		for (NPC npc : plugin.getFishingSpots())
-		{
-			FishingSpot spot = FishingSpot.findSpot(npc.getId());
+  @Override
+  public Dimension render(Graphics2D graphics) {
+    if (hidden) {
+      return null;
+    }
 
-			if (spot == null)
-			{
-				continue;
-			}
+    for (NPC npc : plugin.getFishingSpots()) {
+      FishingSpot spot = FishingSpot.findSpot(npc.getId());
 
-			if (config.onlyCurrentSpot() && plugin.getCurrentSpot() != null && plugin.getCurrentSpot() != spot)
-			{
-				continue;
-			}
+      if (spot == null) {
+        continue;
+      }
 
-			Color color = npc.getGraphic() == GraphicID.FLYING_FISH
-				? config.getMinnowsOverlayColor()
-				: npc.getId() == NpcID.FISHING_SPOT_10569
-				? config.getHarpoonfishOverlayColor()
-				: config.getOverlayColor();
+      if (config.onlyCurrentSpot() && plugin.getCurrentSpot() != null
+          && plugin.getCurrentSpot() != spot) {
+        continue;
+      }
 
-			net.runelite.api.Point minimapLocation = npc.getMinimapLocation();
-			if (minimapLocation != null)
-			{
-				OverlayUtil.renderMinimapLocation(graphics, minimapLocation, color.darker());
-			}
-		}
+      Color color = npc.getGraphic() == GraphicID.FLYING_FISH
+          ? config.getMinnowsOverlayColor()
+          : npc.getId() == NpcID.FISHING_SPOT_10569
+              ? config.getHarpoonfishOverlayColor()
+              : config.getOverlayColor();
 
-		return null;
-	}
+      net.runelite.api.Point minimapLocation = npc.getMinimapLocation();
+      if (minimapLocation != null) {
+        OverlayUtil.renderMinimapLocation(graphics, minimapLocation, color.darker());
+      }
+    }
+
+    return null;
+  }
 }

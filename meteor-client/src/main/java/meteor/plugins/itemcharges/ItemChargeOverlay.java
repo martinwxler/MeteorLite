@@ -30,63 +30,55 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import javax.inject.Inject;
-import net.runelite.api.widgets.WidgetItem;
 import meteor.ui.FontManager;
 import meteor.ui.overlay.WidgetItemOverlay;
 import meteor.ui.overlay.components.TextComponent;
+import net.runelite.api.widgets.WidgetItem;
 
-class ItemChargeOverlay extends WidgetItemOverlay
-{
-	private final ItemChargePlugin itemChargePlugin;
-	private final ItemChargeConfig config;
+class ItemChargeOverlay extends WidgetItemOverlay {
 
-	@Inject
-	ItemChargeOverlay(ItemChargePlugin itemChargePlugin, ItemChargeConfig config)
-	{
-		this.itemChargePlugin = itemChargePlugin;
-		this.config = config;
-		showOnInventory();
-		showOnEquipment();
-	}
+  private final ItemChargePlugin itemChargePlugin;
+  private final ItemChargeConfig config;
 
-	@Override
-	public void renderItemOverlay(Graphics2D graphics, int itemId, WidgetItem widgetItem)
-	{
-		int charges;
-		ItemWithConfig itemWithConfig = ItemWithConfig.findItem(itemId);
-		if (itemWithConfig != null)
-		{
-			if (!itemWithConfig.getType().getEnabled().test(config))
-			{
-				return;
-			}
+  @Inject
+  ItemChargeOverlay(ItemChargePlugin itemChargePlugin, ItemChargeConfig config) {
+    this.itemChargePlugin = itemChargePlugin;
+    this.config = config;
+    showOnInventory();
+    showOnEquipment();
+  }
 
-			charges = itemChargePlugin.getItemCharges(itemWithConfig.getConfigKey());
-		}
-		else
-		{
-			ItemWithCharge chargeItem = ItemWithCharge.findItem(itemId);
-			if (chargeItem == null)
-			{
-				return;
-			}
+  @Override
+  public void renderItemOverlay(Graphics2D graphics, int itemId, WidgetItem widgetItem) {
+    int charges;
+    ItemWithConfig itemWithConfig = ItemWithConfig.findItem(itemId);
+    if (itemWithConfig != null) {
+      if (!itemWithConfig.getType().getEnabled().test(config)) {
+        return;
+      }
 
-			ItemChargeType type = chargeItem.getType();
-			if (!type.getEnabled().test(config))
-			{
-				return;
-			}
+      charges = itemChargePlugin.getItemCharges(itemWithConfig.getConfigKey());
+    } else {
+      ItemWithCharge chargeItem = ItemWithCharge.findItem(itemId);
+      if (chargeItem == null) {
+        return;
+      }
 
-			charges = chargeItem.getCharges();
-		}
+      ItemChargeType type = chargeItem.getType();
+      if (!type.getEnabled().test(config)) {
+        return;
+      }
 
-		graphics.setFont(FontManager.getRunescapeSmallFont());
+      charges = chargeItem.getCharges();
+    }
 
-		final Rectangle bounds = widgetItem.getCanvasBounds();
-		final TextComponent textComponent = new TextComponent();
-		textComponent.setPosition(new Point(bounds.x - 1, bounds.y + 15));
-		textComponent.setText(charges < 0 ? "?" : String.valueOf(charges));
-		textComponent.setColor(itemChargePlugin.getColor(charges));
-		textComponent.render(graphics);
-	}
+    graphics.setFont(FontManager.getRunescapeSmallFont());
+
+    final Rectangle bounds = widgetItem.getCanvasBounds();
+    final TextComponent textComponent = new TextComponent();
+    textComponent.setPosition(new Point(bounds.x - 1, bounds.y + 15));
+    textComponent.setText(charges < 0 ? "?" : String.valueOf(charges));
+    textComponent.setColor(itemChargePlugin.getColor(charges));
+    textComponent.render(graphics);
+  }
 }

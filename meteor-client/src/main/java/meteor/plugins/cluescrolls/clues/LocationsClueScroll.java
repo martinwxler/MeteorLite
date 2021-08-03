@@ -26,9 +26,9 @@ package meteor.plugins.cluescrolls.clues;
 
 import net.runelite.api.coords.WorldPoint;
 
-public interface LocationsClueScroll
-{
-	void reset();
+public interface LocationsClueScroll {
 
-	WorldPoint[] getLocations();
+  void reset();
+
+  WorldPoint[] getLocations();
 }

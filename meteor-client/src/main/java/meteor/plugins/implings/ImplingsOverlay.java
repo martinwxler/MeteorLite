@@ -30,6 +30,10 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.util.List;
 import javax.inject.Inject;
+import meteor.ui.overlay.Overlay;
+import meteor.ui.overlay.OverlayLayer;
+import meteor.ui.overlay.OverlayPosition;
+import meteor.ui.overlay.OverlayUtil;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
@@ -37,109 +41,89 @@ import net.runelite.api.Perspective;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import meteor.ui.overlay.Overlay;
-import meteor.ui.overlay.OverlayLayer;
-import meteor.ui.overlay.OverlayPosition;
-import meteor.ui.overlay.OverlayUtil;
 
 /**
  * @author robin
  */
-public class ImplingsOverlay extends Overlay
-{
-	private final Client client;
-	private final ImplingsConfig config;
-	private final ImplingsPlugin plugin;
+public class ImplingsOverlay extends Overlay {
 
-	@Inject
-	private ImplingsOverlay(Client client, ImplingsConfig config, ImplingsPlugin plugin)
-	{
-		setPosition(OverlayPosition.DYNAMIC);
-		setLayer(OverlayLayer.ABOVE_SCENE);
-		this.config = config;
-		this.client = client;
-		this.plugin = plugin;
-	}
+  private final Client client;
+  private final ImplingsConfig config;
+  private final ImplingsPlugin plugin;
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		List<NPC> implings = plugin.getImplings();
+  @Inject
+  private ImplingsOverlay(Client client, ImplingsConfig config, ImplingsPlugin plugin) {
+    setPosition(OverlayPosition.DYNAMIC);
+    setLayer(OverlayLayer.ABOVE_SCENE);
+    this.config = config;
+    this.client = client;
+    this.plugin = plugin;
+  }
 
-		if (implings.isEmpty())
-		{
-			return null;
-		}
+  @Override
+  public Dimension render(Graphics2D graphics) {
+    List<NPC> implings = plugin.getImplings();
 
-		for (NPC imp : implings)
-		{
-			Color color = plugin.npcToColor(imp);
-			if (!plugin.showNpc(imp) || color == null)
-			{
-				continue;
-			}
+    if (implings.isEmpty()) {
+      return null;
+    }
 
-			drawImp(graphics, imp, imp.getName(), color);
-		}
+    for (NPC imp : implings) {
+      Color color = plugin.npcToColor(imp);
+      if (!plugin.showNpc(imp) || color == null) {
+        continue;
+      }
 
-		//Draw static spawns
-		if (config.showSpawn())
-		{
-			for (ImplingSpawn spawn : ImplingSpawn.values())
-			{
-				if (plugin.showImplingType(spawn.getType()) == ImplingsConfig.ImplingMode.NONE)
-				{
-					continue;
-				}
+      drawImp(graphics, imp, imp.getName(), color);
+    }
 
-				String impName = spawn.getType().getName();
-				drawSpawn(graphics, spawn.getSpawnLocation(), impName, config.getSpawnColor());
-			}
-		}
+    //Draw static spawns
+    if (config.showSpawn()) {
+      for (ImplingSpawn spawn : ImplingSpawn.values()) {
+        if (plugin.showImplingType(spawn.getType()) == ImplingsConfig.ImplingMode.NONE) {
+          continue;
+        }
 
-		return null;
-	}
+        String impName = spawn.getType().getName();
+        drawSpawn(graphics, spawn.getSpawnLocation(), impName, config.getSpawnColor());
+      }
+    }
 
-	private void drawSpawn(Graphics2D graphics, WorldPoint point, String text, Color color)
-	{
-		//Don't draw spawns if Player is not in range
-		if (point.distanceTo(client.getLocalPlayer().getWorldLocation()) >= 32)
-		{
-			return;
-		}
+    return null;
+  }
 
-		LocalPoint localPoint = LocalPoint.fromWorld(client, point);
-		if (localPoint == null)
-		{
-			return;
-		}
+  private void drawSpawn(Graphics2D graphics, WorldPoint point, String text, Color color) {
+    //Don't draw spawns if Player is not in range
+    if (point.distanceTo(client.getLocalPlayer().getWorldLocation()) >= 32) {
+      return;
+    }
 
-		Polygon poly = Perspective.getCanvasTilePoly(client, localPoint);
-		if (poly != null)
-		{
-			OverlayUtil.renderPolygon(graphics, poly, color);
-		}
+    LocalPoint localPoint = LocalPoint.fromWorld(client, point);
+    if (localPoint == null) {
+      return;
+    }
 
-		Point textPoint = Perspective.getCanvasTextLocation(client, graphics, localPoint, text, 0);
-		if (textPoint != null)
-		{
-			OverlayUtil.renderTextLocation(graphics, textPoint, text, color);
-		}
-	}
+    Polygon poly = Perspective.getCanvasTilePoly(client, localPoint);
+    if (poly != null) {
+      OverlayUtil.renderPolygon(graphics, poly, color);
+    }
 
-	private void drawImp(Graphics2D graphics, Actor actor, String text, Color color)
-	{
-		Polygon poly = actor.getCanvasTilePoly();
-		if (poly != null)
-		{
-			OverlayUtil.renderPolygon(graphics, poly, color);
-		}
+    Point textPoint = Perspective.getCanvasTextLocation(client, graphics, localPoint, text, 0);
+    if (textPoint != null) {
+      OverlayUtil.renderTextLocation(graphics, textPoint, text, color);
+    }
+  }
 
-		Point textLocation = actor.getCanvasTextLocation(graphics, text, actor.getLogicalHeight());
-		if (textLocation != null)
-		{
-			OverlayUtil.renderTextLocation(graphics, textLocation, text, color);
-		}
-	}
+  private void drawImp(Graphics2D graphics, Actor actor, String text, Color color) {
+    Polygon poly = actor.getCanvasTilePoly();
+    if (poly != null) {
+      OverlayUtil.renderPolygon(graphics, poly, color);
+    }
+
+    Point textLocation = actor.getCanvasTextLocation(graphics, text, actor.getLogicalHeight());
+    if (textLocation != null) {
+      OverlayUtil.renderTextLocation(graphics, textLocation, text, color);
+    }
+  }
 
 }

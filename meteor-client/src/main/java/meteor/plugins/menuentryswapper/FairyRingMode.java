@@ -29,18 +29,16 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum FairyRingMode
-{
-	ZANARIS("Zanaris"),
-	LAST_DESTINATION("Last-Destination"),
-	CONFIGURE("Configure"),
-	OFF("Off");
+public enum FairyRingMode {
+  ZANARIS("Zanaris"),
+  LAST_DESTINATION("Last-Destination"),
+  CONFIGURE("Configure"),
+  OFF("Off");
 
-	private final String name;
+  private final String name;
 
-	@Override
-	public String toString()
-	{
-		return name;
-	}
+  @Override
+  public String toString() {
+    return name;
+  }
 }

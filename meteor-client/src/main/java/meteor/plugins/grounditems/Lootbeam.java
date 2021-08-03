@@ -24,56 +24,52 @@
  */
 package meteor.plugins.grounditems;
 
+import java.awt.Color;
 import net.runelite.api.AnimationID;
 import net.runelite.api.Client;
 import net.runelite.api.JagexColor;
 import net.runelite.api.RuneLiteObject;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import java.awt.Color;
 
-class Lootbeam
-{
-	private static final int RAID_LIGHT_MODEL = 5809;
-	private static final short RAID_LIGHT_FIND_COLOR = 6371;
+class Lootbeam {
 
-	private final RuneLiteObject runeLiteObject;
-	private final Client client;
-	private Color color;
+  private static final int RAID_LIGHT_MODEL = 5809;
+  private static final short RAID_LIGHT_FIND_COLOR = 6371;
 
-	public Lootbeam(Client client, WorldPoint worldPoint, Color color)
-	{
-		this.client = client;
-		runeLiteObject = client.createRuneLiteObject();
+  private final RuneLiteObject runeLiteObject;
+  private final Client client;
+  private Color color;
 
-		setColor(color);
-		runeLiteObject.setAnimation(client.loadAnimation(AnimationID.RAID_LIGHT_ANIMATION));
-		runeLiteObject.setShouldLoop(true);
+  public Lootbeam(Client client, WorldPoint worldPoint, Color color) {
+    this.client = client;
+    runeLiteObject = client.createRuneLiteObject();
 
-		LocalPoint lp = LocalPoint.fromWorld(client, worldPoint);
-		runeLiteObject.setLocation(lp, client.getPlane());
+    setColor(color);
+    runeLiteObject.setAnimation(client.loadAnimation(AnimationID.RAID_LIGHT_ANIMATION));
+    runeLiteObject.setShouldLoop(true);
 
-		runeLiteObject.setActive(true);
-	}
+    LocalPoint lp = LocalPoint.fromWorld(client, worldPoint);
+    runeLiteObject.setLocation(lp, client.getPlane());
 
-	public void setColor(Color color)
-	{
-		if (this.color != null && this.color.equals(color))
-		{
-			return;
-		}
+    runeLiteObject.setActive(true);
+  }
 
-		this.color = color;
-		runeLiteObject.setModel(client.loadModel(
-			RAID_LIGHT_MODEL,
-			new short[]{RAID_LIGHT_FIND_COLOR},
-			new short[]{JagexColor.rgbToHSL(color.getRGB(), 1.0d)}
-		));
-	}
+  public void setColor(Color color) {
+    if (this.color != null && this.color.equals(color)) {
+      return;
+    }
 
-	public void remove()
-	{
-		runeLiteObject.setActive(false);
-	}
+    this.color = color;
+    runeLiteObject.setModel(client.loadModel(
+        RAID_LIGHT_MODEL,
+        new short[]{RAID_LIGHT_FIND_COLOR},
+        new short[]{JagexColor.rgbToHSL(color.getRGB(), 1.0d)}
+    ));
+  }
+
+  public void remove() {
+    runeLiteObject.setActive(false);
+  }
 
 }

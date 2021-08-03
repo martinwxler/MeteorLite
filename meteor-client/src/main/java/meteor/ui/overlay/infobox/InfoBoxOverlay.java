@@ -36,13 +36,10 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import lombok.Getter;
 import lombok.NonNull;
-import meteor.eventbus.events.InfoBoxMenuClicked;
-import net.runelite.api.Client;
-import net.runelite.api.MenuAction;
-import net.runelite.api.events.MenuOptionClicked;
 import meteor.config.RuneLiteConfig;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
+import meteor.eventbus.events.InfoBoxMenuClicked;
 import meteor.ui.overlay.Overlay;
 import meteor.ui.overlay.OverlayMenuEntry;
 import meteor.ui.overlay.OverlayPanel;
@@ -52,174 +49,162 @@ import meteor.ui.overlay.components.InfoBoxComponent;
 import meteor.ui.overlay.components.LayoutableRenderableEntity;
 import meteor.ui.overlay.tooltip.Tooltip;
 import meteor.ui.overlay.tooltip.TooltipManager;
+import net.runelite.api.Client;
+import net.runelite.api.MenuAction;
+import net.runelite.api.events.MenuOptionClicked;
 
-public class InfoBoxOverlay extends OverlayPanel
-{
-	private static final int GAP = 1;
-	private static final int DEFAULT_WRAP_COUNT = 4;
+public class InfoBoxOverlay extends OverlayPanel {
 
-	private final InfoBoxManager infoboxManager;
-	private final TooltipManager tooltipManager;
-	private final Client client;
-	private final RuneLiteConfig config;
-	private final EventBus eventBus;
-	private final String name;
-	private ComponentOrientation orientation;
+  private static final int GAP = 1;
+  private static final int DEFAULT_WRAP_COUNT = 4;
 
-	@Getter
-	private final List<meteor.ui.overlay.infobox.InfoBox> infoBoxes = new CopyOnWriteArrayList<>();
+  private final InfoBoxManager infoboxManager;
+  private final TooltipManager tooltipManager;
+  private final Client client;
+  private final RuneLiteConfig config;
+  private final EventBus eventBus;
+  private final String name;
+  @Getter
+  private final List<meteor.ui.overlay.infobox.InfoBox> infoBoxes = new CopyOnWriteArrayList<>();
+  private ComponentOrientation orientation;
+  private InfoBoxComponent hoveredComponent;
 
-	private InfoBoxComponent hoveredComponent;
+  InfoBoxOverlay(
+      InfoBoxManager infoboxManager,
+      TooltipManager tooltipManager,
+      Client client,
+      RuneLiteConfig config,
+      EventBus eventBus,
+      String name,
+      @NonNull ComponentOrientation orientation) {
+    this.tooltipManager = tooltipManager;
+    this.infoboxManager = infoboxManager;
+    this.client = client;
+    this.config = config;
+    this.eventBus = eventBus;
+    this.name = name;
+    this.orientation = orientation;
+    setPosition(OverlayPosition.TOP_LEFT);
+    setClearChildren(false);
+    setDragTargetable(true);
 
-	InfoBoxOverlay(
-		InfoBoxManager infoboxManager,
-		TooltipManager tooltipManager,
-		Client client,
-		RuneLiteConfig config,
-		EventBus eventBus,
-		String name,
-		@NonNull ComponentOrientation orientation)
-	{
-		this.tooltipManager = tooltipManager;
-		this.infoboxManager = infoboxManager;
-		this.client = client;
-		this.config = config;
-		this.eventBus = eventBus;
-		this.name = name;
-		this.orientation = orientation;
-		setPosition(OverlayPosition.TOP_LEFT);
-		setClearChildren(false);
-		setDragTargetable(true);
+    panelComponent.setWrap(true);
+    panelComponent.setBackgroundColor(null);
+    panelComponent.setBorder(new Rectangle());
+    panelComponent.setGap(new Point(GAP, GAP));
+  }
 
-		panelComponent.setWrap(true);
-		panelComponent.setBackgroundColor(null);
-		panelComponent.setBorder(new Rectangle());
-		panelComponent.setGap(new Point(GAP, GAP));
-	}
+  @Override
+  public String getName() {
+    return this.name;
+  }
 
-	@Override
-	public String getName()
-	{
-		return this.name;
-	}
+  @Override
+  public Dimension render(Graphics2D graphics) {
+    final boolean menuOpen = client.isMenuOpen();
+    if (!menuOpen) {
+      hoveredComponent = null;
+    }
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		final boolean menuOpen = client.isMenuOpen();
-		if (!menuOpen)
-		{
-			hoveredComponent = null;
-		}
+    if (infoBoxes.isEmpty()) {
+      return null;
+    }
 
-		if (infoBoxes.isEmpty())
-		{
-			return null;
-		}
+    // Set preferred size to the size of DEFAULT_WRAP_COUNT infoboxes, including the padding - which is applied
+    // to the last infobox prior to wrapping too.
+    panelComponent.setPreferredSize(new Dimension(DEFAULT_WRAP_COUNT * (config.infoBoxSize() + GAP),
+        DEFAULT_WRAP_COUNT * (config.infoBoxSize() + GAP)));
+    panelComponent.setOrientation(orientation);
 
-		// Set preferred size to the size of DEFAULT_WRAP_COUNT infoboxes, including the padding - which is applied
-		// to the last infobox prior to wrapping too.
-		panelComponent.setPreferredSize(new Dimension(DEFAULT_WRAP_COUNT * (config.infoBoxSize() + GAP), DEFAULT_WRAP_COUNT * (config.infoBoxSize() + GAP)));
-		panelComponent.setOrientation(orientation);
+    for (meteor.ui.overlay.infobox.InfoBox box : infoBoxes) {
+      if (!box.render()) {
+        continue;
+      }
 
-		for (meteor.ui.overlay.infobox.InfoBox box : infoBoxes)
-		{
-			if (!box.render())
-			{
-				continue;
-			}
+      final String text = box.getText();
+      final Color color = box.getTextColor();
 
-			final String text = box.getText();
-			final Color color = box.getTextColor();
+      final InfoBoxComponent infoBoxComponent = new InfoBoxComponent();
+      infoBoxComponent.setText(text);
+      if (color != null) {
+        infoBoxComponent.setColor(color);
+      }
+      infoBoxComponent.setOutline(config.infoBoxTextOutline());
+      infoBoxComponent.setImage(box.getScaledImage());
+      infoBoxComponent.setTooltip(box.getTooltip());
+      infoBoxComponent.setPreferredSize(new Dimension(config.infoBoxSize(), config.infoBoxSize()));
+      infoBoxComponent.setBackgroundColor(config.overlayBackgroundColor());
+      infoBoxComponent.setInfoBox(box);
+      panelComponent.getChildren().add(infoBoxComponent);
+    }
 
-			final InfoBoxComponent infoBoxComponent = new InfoBoxComponent();
-			infoBoxComponent.setText(text);
-			if (color != null)
-			{
-				infoBoxComponent.setColor(color);
-			}
-			infoBoxComponent.setOutline(config.infoBoxTextOutline());
-			infoBoxComponent.setImage(box.getScaledImage());
-			infoBoxComponent.setTooltip(box.getTooltip());
-			infoBoxComponent.setPreferredSize(new Dimension(config.infoBoxSize(), config.infoBoxSize()));
-			infoBoxComponent.setBackgroundColor(config.overlayBackgroundColor());
-			infoBoxComponent.setInfoBox(box);
-			panelComponent.getChildren().add(infoBoxComponent);
-		}
+    final Dimension dimension = super.render(graphics);
 
-		final Dimension dimension = super.render(graphics);
+    // Handle tooltips
+    final Point mouse = new Point(client.getMouseCanvasPosition().getX(),
+        client.getMouseCanvasPosition().getY());
 
-		// Handle tooltips
-		final Point mouse = new Point(client.getMouseCanvasPosition().getX(), client.getMouseCanvasPosition().getY());
+    for (final LayoutableRenderableEntity child : panelComponent.getChildren()) {
+      final InfoBoxComponent component = (InfoBoxComponent) child;
 
-		for (final LayoutableRenderableEntity child : panelComponent.getChildren())
-		{
-			final InfoBoxComponent component = (InfoBoxComponent) child;
+      // Create intersection rectangle
+      final Rectangle intersectionRectangle = new Rectangle(component.getBounds());
+      intersectionRectangle.translate(getBounds().x, getBounds().y);
 
-			// Create intersection rectangle
-			final Rectangle intersectionRectangle = new Rectangle(component.getBounds());
-			intersectionRectangle.translate(getBounds().x, getBounds().y);
+      if (intersectionRectangle.contains(mouse)) {
+        final String tooltip = component.getTooltip();
+        if (!Strings.isNullOrEmpty(tooltip)) {
+          tooltipManager.add(new Tooltip(tooltip));
+        }
 
-			if (intersectionRectangle.contains(mouse))
-			{
-				final String tooltip = component.getTooltip();
-				if (!Strings.isNullOrEmpty(tooltip))
-				{
-					tooltipManager.add(new Tooltip(tooltip));
-				}
+        if (!menuOpen) {
+          hoveredComponent = component;
+        }
+        break;
+      }
+    }
 
-				if (!menuOpen)
-				{
-					hoveredComponent = component;
-				}
-				break;
-			}
-		}
+    panelComponent.getChildren().clear();
+    return dimension;
+  }
 
-		panelComponent.getChildren().clear();
-		return dimension;
-	}
+  @Override
+  public List<OverlayMenuEntry> getMenuEntries() {
+    // we dynamically build the menu options based on which infobox is hovered
+    return hoveredComponent == null ? Collections.emptyList()
+        : hoveredComponent.getInfoBox().getMenuEntries();
+  }
 
-	@Override
-	public List<OverlayMenuEntry> getMenuEntries()
-	{
-		// we dynamically build the menu options based on which infobox is hovered
-		return hoveredComponent == null ? Collections.emptyList() : hoveredComponent.getInfoBox().getMenuEntries();
-	}
+  @Subscribe
+  public void onMenuOptionClicked(MenuOptionClicked menuOptionClicked) {
+    if (menuOptionClicked.getMenuAction() != MenuAction.RUNELITE_INFOBOX
+        || hoveredComponent == null) {
+      return;
+    }
 
-	@Subscribe
-	public void onMenuOptionClicked(MenuOptionClicked menuOptionClicked)
-	{
-		if (menuOptionClicked.getMenuAction() != MenuAction.RUNELITE_INFOBOX || hoveredComponent == null)
-		{
-			return;
-		}
+    meteor.ui.overlay.infobox.InfoBox infoBox = hoveredComponent.getInfoBox();
+    OverlayMenuEntry overlayMenuEntry = infoBox.getMenuEntries().stream()
+        .filter(me -> me.getOption().equals(menuOptionClicked.getMenuOption()))
+        .findAny()
+        .orElse(null);
+    if (overlayMenuEntry != null) {
+      eventBus.post(new InfoBoxMenuClicked(overlayMenuEntry, infoBox));
+    }
+  }
 
-		meteor.ui.overlay.infobox.InfoBox infoBox = hoveredComponent.getInfoBox();
-		OverlayMenuEntry overlayMenuEntry = infoBox.getMenuEntries().stream()
-			.filter(me -> me.getOption().equals(menuOptionClicked.getMenuOption()))
-			.findAny()
-			.orElse(null);
-		if (overlayMenuEntry != null)
-		{
-			eventBus.post(new InfoBoxMenuClicked(overlayMenuEntry, infoBox));
-		}
-	}
+  @Override
+  public boolean onDrag(Overlay source) {
+    if (!(source instanceof InfoBoxOverlay)) {
+      return false;
+    }
 
-	@Override
-	public boolean onDrag(Overlay source)
-	{
-		if (!(source instanceof InfoBoxOverlay))
-		{
-			return false;
-		}
+    infoboxManager.mergeInfoBoxes((InfoBoxOverlay) source, this);
+    return true;
+  }
 
-		infoboxManager.mergeInfoBoxes((InfoBoxOverlay) source, this);
-		return true;
-	}
-
-	ComponentOrientation flip()
-	{
-		return orientation = orientation == ComponentOrientation.HORIZONTAL ? ComponentOrientation.VERTICAL : ComponentOrientation.HORIZONTAL;
-	}
+  ComponentOrientation flip() {
+    return orientation =
+        orientation == ComponentOrientation.HORIZONTAL ? ComponentOrientation.VERTICAL
+            : ComponentOrientation.HORIZONTAL;
+  }
 }

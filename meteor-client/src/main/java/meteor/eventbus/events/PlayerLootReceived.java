@@ -30,8 +30,8 @@ import meteor.game.ItemStack;
 import net.runelite.api.Player;
 
 @Value
-public class PlayerLootReceived
-{
-	private final Player player;
-	private final Collection<ItemStack> items;
+public class PlayerLootReceived {
+
+  private final Player player;
+  private final Collection<ItemStack> items;
 }

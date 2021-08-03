@@ -24,6 +24,9 @@
  */
 package meteor.plugins.cluescrolls.clues;
 
+import static meteor.plugins.cluescrolls.ClueScrollOverlay.TITLED_CONTENT_COLOR;
+import static meteor.plugins.cluescrolls.ClueScrollWorldOverlay.IMAGE_Z_OFFSET;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.regex.Matcher;
@@ -31,77 +34,70 @@ import java.util.regex.Pattern;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.runelite.api.NPC;
-import net.runelite.api.coords.WorldPoint;
-import static meteor.plugins.cluescrolls.ClueScrollOverlay.TITLED_CONTENT_COLOR;
 import meteor.plugins.cluescrolls.ClueScrollPlugin;
-import static meteor.plugins.cluescrolls.ClueScrollWorldOverlay.IMAGE_Z_OFFSET;
 import meteor.ui.overlay.OverlayUtil;
 import meteor.ui.overlay.components.LineComponent;
 import meteor.ui.overlay.components.PanelComponent;
 import meteor.ui.overlay.components.TitleComponent;
+import net.runelite.api.NPC;
+import net.runelite.api.coords.WorldPoint;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class MusicClue extends ClueScroll implements NpcClueScroll
-{
-	private static final WorldPoint LOCATION = new WorldPoint(2990, 3384, 0);
-	private static final String CECILIA = "Cecilia";
-	private static final Pattern SONG_PATTERN = Pattern.compile("<col=ffffff>([A-Za-z !&',.]+)</col>");
+public class MusicClue extends ClueScroll implements NpcClueScroll {
 
-	private final String song;
+  private static final WorldPoint LOCATION = new WorldPoint(2990, 3384, 0);
+  private static final String CECILIA = "Cecilia";
+  private static final Pattern SONG_PATTERN = Pattern
+      .compile("<col=ffffff>([A-Za-z !&',.]+)</col>");
 
-	@Override
-	public void makeOverlayHint(PanelComponent panelComponent, ClueScrollPlugin plugin)
-	{
-		panelComponent.getChildren().add(TitleComponent.builder().text("Music Clue").build());
-		panelComponent.getChildren().add(LineComponent.builder().left("NPC:").build());
-		panelComponent.getChildren().add(LineComponent.builder()
-			.left(CECILIA)
-			.leftColor(TITLED_CONTENT_COLOR)
-			.build());
+  private final String song;
 
-		panelComponent.getChildren().add(LineComponent.builder().left("Location:").build());
-		panelComponent.getChildren().add(LineComponent.builder()
-			.left("Falador Park")
-			.leftColor(TITLED_CONTENT_COLOR)
-			.build());
+  public static MusicClue forText(String text) {
+    final Matcher m = SONG_PATTERN.matcher(text);
+    if (m.find()) {
+      final String song = m.group(1);
+      return new MusicClue(song);
+    }
+    return null;
+  }
 
-		panelComponent.getChildren().add(LineComponent.builder().left("Song:").build());
-		panelComponent.getChildren().add(LineComponent.builder()
-			.left(song)
-			.leftColor(TITLED_CONTENT_COLOR)
-			.build());
-	}
+  @Override
+  public void makeOverlayHint(PanelComponent panelComponent, ClueScrollPlugin plugin) {
+    panelComponent.getChildren().add(TitleComponent.builder().text("Music Clue").build());
+    panelComponent.getChildren().add(LineComponent.builder().left("NPC:").build());
+    panelComponent.getChildren().add(LineComponent.builder()
+        .left(CECILIA)
+        .leftColor(TITLED_CONTENT_COLOR)
+        .build());
 
-	@Override
-	public void makeWorldOverlayHint(Graphics2D graphics, ClueScrollPlugin plugin)
-	{
-		if (!LOCATION.isInScene(plugin.getClient()))
-		{
-			return;
-		}
+    panelComponent.getChildren().add(LineComponent.builder().left("Location:").build());
+    panelComponent.getChildren().add(LineComponent.builder()
+        .left("Falador Park")
+        .leftColor(TITLED_CONTENT_COLOR)
+        .build());
 
-		for (NPC npc : plugin.getNpcsToMark())
-		{
-			OverlayUtil.renderActorOverlayImage(graphics, npc, plugin.getClueScrollImage(), Color.ORANGE, IMAGE_Z_OFFSET);
-		}
-	}
+    panelComponent.getChildren().add(LineComponent.builder().left("Song:").build());
+    panelComponent.getChildren().add(LineComponent.builder()
+        .left(song)
+        .leftColor(TITLED_CONTENT_COLOR)
+        .build());
+  }
 
-	@Override
-	public String[] getNpcs()
-	{
-		return new String[] {CECILIA};
-	}
+  @Override
+  public void makeWorldOverlayHint(Graphics2D graphics, ClueScrollPlugin plugin) {
+    if (!LOCATION.isInScene(plugin.getClient())) {
+      return;
+    }
 
-	public static MusicClue forText(String text)
-	{
-		final Matcher m = SONG_PATTERN.matcher(text);
-		if (m.find())
-		{
-			final String song = m.group(1);
-			return new MusicClue(song);
-		}
-		return null;
-	}
+    for (NPC npc : plugin.getNpcsToMark()) {
+      OverlayUtil.renderActorOverlayImage(graphics, npc, plugin.getClueScrollImage(), Color.ORANGE,
+          IMAGE_Z_OFFSET);
+    }
+  }
+
+  @Override
+  public String[] getNpcs() {
+    return new String[]{CECILIA};
+  }
 }

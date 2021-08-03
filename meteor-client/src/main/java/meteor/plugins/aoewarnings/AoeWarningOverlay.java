@@ -37,7 +37,6 @@ import java.time.Instant;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import meteor.MeteorLite;
 import meteor.PluginManager;
 import meteor.plugins.Plugin;
 import meteor.ui.overlay.Overlay;

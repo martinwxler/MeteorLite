@@ -26,13 +26,12 @@ package meteor.plugins.cluescrolls.clues;
 
 import net.runelite.api.coords.WorldPoint;
 
-public interface LocationClueScroll
-{
-	WorldPoint getLocation();
+public interface LocationClueScroll {
 
-	default WorldPoint[] getLocations()
-	{
-		WorldPoint location = getLocation();
-		return location == null ? new WorldPoint[0] : new WorldPoint[]{location};
-	}
+  WorldPoint getLocation();
+
+  default WorldPoint[] getLocations() {
+    WorldPoint location = getLocation();
+    return location == null ? new WorldPoint[0] : new WorldPoint[]{location};
+  }
 }

@@ -55,10 +55,6 @@ import org.sponge.util.Logger;
 
 public class MeteorLite extends Application implements AppletStub, AppletContext {
 
-  @Inject
-  private Provider<WorldMapOverlay> worldMapOverlay;
-
-  private PluginManager pluginManager = new PluginManager();
   public static final File METEOR_DIR = new File(System.getProperty("user.home"), ".meteorlite");
   public static final File CACHE_DIR = new File(METEOR_DIR, "cache");
   public static final File PLUGINS_DIR = new File(METEOR_DIR, "plugin-hub");
@@ -84,8 +80,6 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
   private static boolean toolbarVisible = true;
   private static Map<String, String> properties;
   private static Map<String, String> parameters;
-  private long startTime;
-  private long loadTime;
 
   static {
     try {
@@ -105,6 +99,11 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
   @Nullable
   public Client client;
   Applet applet;
+  @Inject
+  private Provider<WorldMapOverlay> worldMapOverlay;
+  private final PluginManager pluginManager = new PluginManager();
+  private long startTime;
+  private long loadTime;
   @Inject
   private OverlayManager overlayManager;
   @Inject
@@ -179,7 +178,9 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
 
     setupFrame(applet);
 
-    logger.info(ANSI_YELLOW + "MeteorLite started in " + (System.currentTimeMillis() - startTime) + " ms" + ANSI_RESET);
+    logger.info(
+        ANSI_YELLOW + "MeteorLite started in " + (System.currentTimeMillis() - startTime) + " ms"
+            + ANSI_RESET);
   }
 
   @Override
@@ -221,12 +222,12 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
     frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     frame.addWindowListener(new WindowAdapter() {
-                              @Override
-                              public void windowClosing(WindowEvent event) {
-                                ClientShutdown shutdown = new ClientShutdown();
-                                eventBus.post(shutdown);
-                              }
-                            });
+      @Override
+      public void windowClosing(WindowEvent event) {
+        ClientShutdown shutdown = new ClientShutdown();
+        eventBus.post(shutdown);
+      }
+    });
     applet.init();
     applet.start();
   }

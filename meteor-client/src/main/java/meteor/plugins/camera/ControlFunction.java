@@ -30,17 +30,15 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum ControlFunction
-{
-	NONE("None"),
-	CONTROL_TO_ZOOM("Hold to zoom"),
-	CONTROL_TO_RESET("Reset zoom");
+public enum ControlFunction {
+  NONE("None"),
+  CONTROL_TO_ZOOM("Hold to zoom"),
+  CONTROL_TO_RESET("Reset zoom");
 
-	private final String name;
+  private final String name;
 
-	@Override
-	public String toString()
-	{
-		return getName();
-	}
+  @Override
+  public String toString() {
+    return getName();
+  }
 }

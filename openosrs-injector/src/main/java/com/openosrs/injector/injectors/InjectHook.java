@@ -126,13 +126,16 @@ public class InjectHook extends AbstractInjector {
           deobField = InjectUtil.findFieldDeep(deobTarget, hookName);
         }
 
-        assert mixinMethod.isStatic() == deobField
-            .isStatic() : "Mixin method isn't static but deob has a static method named the same as the hook, and I was too lazy to do something about this bug";
+        if (mixinMethod.isStatic() != deobField
+            .isStatic())
+        {
+          log.error("Mixin method isn't static but deob has a static method named the same as the hook, and I was too lazy to do something about this bug");
+          System.exit(-1);
+        }
 
-        final Number getter = DeobAnnotations.getObfuscatedGetter(deobField);
         final Field obField = inject.toVanilla(deobField);
 
-        final HookInfo info = new HookInfo(targetClass.getPoolClass(), mixinMethod, before, getter);
+        final HookInfo info = new HookInfo(targetClass.getPoolClass(), mixinMethod, before);
 
         hooked.put(obField, info);
       }
@@ -189,7 +192,10 @@ public class InjectHook extends AbstractInjector {
       }
 
       int idx = ins.getInstructions().indexOf(sfi);
-      assert idx != -1;
+      if (idx == -1)
+      {
+        throw new RuntimeException("idx -1");
+      }
 
       try {
         if (hookInfo.before) {
@@ -256,7 +262,10 @@ public class InjectHook extends AbstractInjector {
       ++injectedHooks;
 
       int idx = ins.getInstructions().indexOf(i);
-      assert idx != -1;
+      if (idx == -1)
+      {
+        throw new RuntimeException("idx -1");
+      }
 
       try {
         if (hookInfo.before) {
@@ -286,13 +295,6 @@ public class InjectHook extends AbstractInjector {
       idx = recursivelyPush(ins, idx, object);
       ins.getInstructions().add(idx++, new Swap(ins));
 
-      if (hookInfo.getter instanceof Integer) {
-        ins.getInstructions().add(idx++, new LDC(ins, hookInfo.getter));
-        ins.getInstructions().add(idx++, new IMul(ins));
-      } else if (hookInfo.getter instanceof Long) {
-        ins.getInstructions().add(idx++, new LDC(ins, hookInfo.getter));
-        ins.getInstructions().add(idx++, new LMul(ins));
-      }
     } else {
       ins.getInstructions().add(idx++, new Dup(ins)); // dup value
     }
@@ -352,7 +354,6 @@ public class InjectHook extends AbstractInjector {
     final Class targetClass;
     final Method method;
     final boolean before;
-    final Number getter;
 
     Instruction getInvoke(Instructions instructions) {
       return InjectUtil.createInvokeFor(

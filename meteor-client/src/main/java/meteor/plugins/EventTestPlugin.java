@@ -8,7 +8,6 @@ import meteor.MeteorLite;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.GameMessageReceived;
 import net.runelite.api.Client;
-import net.runelite.api.GameState;
 import net.runelite.api.events.DecorativeObjectChanged;
 import net.runelite.api.events.DecorativeObjectDespawned;
 import net.runelite.api.events.DecorativeObjectSpawned;
@@ -49,8 +48,7 @@ public class EventTestPlugin extends Plugin {
   }
 
   @Subscribe
-  public void onGameTick(GameTick event)
-  {
+  public void onGameTick(GameTick event) {
     MeteorLite.frame.setTitle("MeteorLite - " + client.getLocalPlayer().getName());
   }
 

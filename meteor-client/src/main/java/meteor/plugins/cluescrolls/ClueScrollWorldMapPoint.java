@@ -26,47 +26,45 @@ package meteor.plugins.cluescrolls;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import meteor.ui.overlay.worldmap.WorldMapPoint;
 import net.runelite.api.Point;
 import net.runelite.api.coords.WorldPoint;
-import meteor.ui.overlay.worldmap.WorldMapPoint;
 
-class ClueScrollWorldMapPoint extends WorldMapPoint
-{
-	private final ClueScrollPlugin plugin;
-	private final BufferedImage clueScrollWorldImage;
-	private final Point clueScrollWorldImagePoint;
+class ClueScrollWorldMapPoint extends WorldMapPoint {
 
-	ClueScrollWorldMapPoint(final WorldPoint worldPoint, ClueScrollPlugin plugin)
-	{
-		super(worldPoint, null);
+  private final ClueScrollPlugin plugin;
+  private final BufferedImage clueScrollWorldImage;
+  private final Point clueScrollWorldImagePoint;
 
-		clueScrollWorldImage = new BufferedImage(plugin.getMapArrow().getWidth(), plugin.getMapArrow().getHeight(), BufferedImage.TYPE_INT_ARGB);
-		Graphics graphics = clueScrollWorldImage.getGraphics();
-		graphics.drawImage(plugin.getMapArrow(), 0, 0, null);
-		graphics.drawImage(plugin.getClueScrollImage(), 0, 0, null);
-		clueScrollWorldImagePoint = new Point(
-			clueScrollWorldImage.getWidth() / 2,
-			clueScrollWorldImage.getHeight());
+  ClueScrollWorldMapPoint(final WorldPoint worldPoint, ClueScrollPlugin plugin) {
+    super(worldPoint, null);
 
-		this.plugin = plugin;
-		this.setSnapToEdge(true);
-		this.setJumpOnClick(true);
-		this.setName("Clue Scroll");
-		this.setImage(clueScrollWorldImage);
-		this.setImagePoint(clueScrollWorldImagePoint);
-	}
+    clueScrollWorldImage = new BufferedImage(plugin.getMapArrow().getWidth(),
+        plugin.getMapArrow().getHeight(), BufferedImage.TYPE_INT_ARGB);
+    Graphics graphics = clueScrollWorldImage.getGraphics();
+    graphics.drawImage(plugin.getMapArrow(), 0, 0, null);
+    graphics.drawImage(plugin.getClueScrollImage(), 0, 0, null);
+    clueScrollWorldImagePoint = new Point(
+        clueScrollWorldImage.getWidth() / 2,
+        clueScrollWorldImage.getHeight());
 
-	@Override
-	public void onEdgeSnap()
-	{
-		this.setImage(plugin.getClueScrollImage());
-		this.setImagePoint(null);
-	}
+    this.plugin = plugin;
+    this.setSnapToEdge(true);
+    this.setJumpOnClick(true);
+    this.setName("Clue Scroll");
+    this.setImage(clueScrollWorldImage);
+    this.setImagePoint(clueScrollWorldImagePoint);
+  }
 
-	@Override
-	public void onEdgeUnsnap()
-	{
-		this.setImage(clueScrollWorldImage);
-		this.setImagePoint(clueScrollWorldImagePoint);
-	}
+  @Override
+  public void onEdgeSnap() {
+    this.setImage(plugin.getClueScrollImage());
+    this.setImagePoint(null);
+  }
+
+  @Override
+  public void onEdgeUnsnap() {
+    this.setImage(clueScrollWorldImage);
+    this.setImagePoint(clueScrollWorldImagePoint);
+  }
 }

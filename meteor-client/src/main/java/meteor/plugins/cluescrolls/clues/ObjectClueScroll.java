@@ -24,7 +24,7 @@
  */
 package meteor.plugins.cluescrolls.clues;
 
-public interface ObjectClueScroll extends LocationClueScroll
-{
-	int[] getObjectIds();
+public interface ObjectClueScroll extends LocationClueScroll {
+
+  int[] getObjectIds();
 }

@@ -29,13 +29,12 @@ import lombok.Value;
 
 @Value
 @RequiredArgsConstructor
-class NamedQuantity
-{
-	private final String name;
-	private final int quantity;
+class NamedQuantity {
 
-	NamedQuantity(GroundItem groundItem)
-	{
-		this(groundItem.getName(), groundItem.getQuantity());
-	}
+  private final String name;
+  private final int quantity;
+
+  NamedQuantity(GroundItem groundItem) {
+    this(groundItem.getName(), groundItem.getQuantity());
+  }
 }

@@ -28,35 +28,33 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import lombok.Getter;
 import lombok.ToString;
-import net.runelite.api.EquipmentInventorySlot;
 import meteor.ui.overlay.infobox.Counter;
+import net.runelite.api.EquipmentInventorySlot;
 
 @Getter
 @ToString
-class ItemChargeInfobox extends Counter
-{
-	private final ItemChargePlugin plugin;
-	private final int item;
-	private final EquipmentInventorySlot slot;
+class ItemChargeInfobox extends Counter {
 
-	ItemChargeInfobox(
-		ItemChargePlugin plugin,
-		BufferedImage image,
-		String name,
-		int charges,
-		int item,
-		EquipmentInventorySlot slot)
-	{
-		super(image, plugin, charges);
-		setTooltip(name);
-		this.plugin = plugin;
-		this.item = item;
-		this.slot = slot;
-	}
+  private final ItemChargePlugin plugin;
+  private final int item;
+  private final EquipmentInventorySlot slot;
 
-	@Override
-	public Color getTextColor()
-	{
-		return getPlugin().getColor(getCount());
-	}
+  ItemChargeInfobox(
+      ItemChargePlugin plugin,
+      BufferedImage image,
+      String name,
+      int charges,
+      int item,
+      EquipmentInventorySlot slot) {
+    super(image, plugin, charges);
+    setTooltip(name);
+    this.plugin = plugin;
+    this.item = item;
+    this.slot = slot;
+  }
+
+  @Override
+  public Color getTextColor() {
+    return getPlugin().getColor(getCount());
+  }
 }

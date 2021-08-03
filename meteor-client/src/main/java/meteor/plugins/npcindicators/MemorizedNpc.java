@@ -32,48 +32,46 @@ import net.runelite.api.NPC;
 import net.runelite.api.NPCComposition;
 import net.runelite.api.coords.WorldPoint;
 
-class MemorizedNpc
-{
-	@Getter
-	private int npcIndex;
+class MemorizedNpc {
 
-	@Getter
-	private String npcName;
+  @Getter
+  private final int npcIndex;
 
-	@Getter
-	private int npcSize;
+  @Getter
+  private final String npcName;
 
-	/**
-	 * The time the npc died at, in game ticks, relative to the tick counter
-	 */
-	@Getter
-	@Setter
-	private int diedOnTick;
+  @Getter
+  private int npcSize;
 
-	/**
-	 * The time it takes for the npc to respawn, in game ticks
-	 */
-	@Getter
-	@Setter
-	private int respawnTime;
+  /**
+   * The time the npc died at, in game ticks, relative to the tick counter
+   */
+  @Getter
+  @Setter
+  private int diedOnTick;
 
-	@Getter
-	@Setter
-	private List<WorldPoint> possibleRespawnLocations;
+  /**
+   * The time it takes for the npc to respawn, in game ticks
+   */
+  @Getter
+  @Setter
+  private int respawnTime;
 
-	MemorizedNpc(NPC npc)
-	{
-		this.npcName = npc.getName();
-		this.npcIndex = npc.getIndex();
-		this.possibleRespawnLocations = new ArrayList<>();
-		this.respawnTime = -1;
-		this.diedOnTick = -1;
+  @Getter
+  @Setter
+  private List<WorldPoint> possibleRespawnLocations;
 
-		final NPCComposition composition = npc.getTransformedComposition();
+  MemorizedNpc(NPC npc) {
+    this.npcName = npc.getName();
+    this.npcIndex = npc.getIndex();
+    this.possibleRespawnLocations = new ArrayList<>();
+    this.respawnTime = -1;
+    this.diedOnTick = -1;
 
-		if (composition != null)
-		{
-			this.npcSize = composition.getSize();
-		}
-	}
+    final NPCComposition composition = npc.getTransformedComposition();
+
+    if (composition != null) {
+      this.npcSize = composition.getSize();
+    }
+  }
 }

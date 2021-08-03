@@ -24,6 +24,11 @@
  */
 package meteor.plugins.cluescrolls.clues;
 
+import static meteor.plugins.cluescrolls.ClueScrollOverlay.TITLED_CONTENT_COLOR;
+import static net.runelite.api.ItemID.TORN_CLUE_SCROLL_PART_1;
+import static net.runelite.api.ItemID.TORN_CLUE_SCROLL_PART_2;
+import static net.runelite.api.ItemID.TORN_CLUE_SCROLL_PART_3;
+
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.util.AbstractMap;
@@ -33,160 +38,136 @@ import java.util.Map;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.runelite.api.InventoryID;
-import net.runelite.api.ItemContainer;
-import static net.runelite.api.ItemID.TORN_CLUE_SCROLL_PART_1;
-import static net.runelite.api.ItemID.TORN_CLUE_SCROLL_PART_2;
-import static net.runelite.api.ItemID.TORN_CLUE_SCROLL_PART_3;
-import net.runelite.api.coords.WorldPoint;
-import static meteor.plugins.cluescrolls.ClueScrollOverlay.TITLED_CONTENT_COLOR;
 import meteor.plugins.cluescrolls.ClueScrollPlugin;
 import meteor.ui.overlay.components.LineComponent;
 import meteor.ui.overlay.components.PanelComponent;
 import meteor.ui.overlay.components.TitleComponent;
 import meteor.util.Text;
+import net.runelite.api.InventoryID;
+import net.runelite.api.ItemContainer;
+import net.runelite.api.coords.WorldPoint;
 
 @Getter
 @RequiredArgsConstructor
-public class ThreeStepCrypticClue extends ClueScroll implements TextClueScroll, ObjectClueScroll, NpcClueScroll, LocationsClueScroll
-{
-	public static ThreeStepCrypticClue forText(String plainText, String text)
-	{
-		final String[] split = text.split("<br>\\s*<br>");
-		final List<Map.Entry<CrypticClue, Boolean>> steps = new ArrayList<>(split.length);
+public class ThreeStepCrypticClue extends ClueScroll implements TextClueScroll, ObjectClueScroll,
+    NpcClueScroll, LocationsClueScroll {
 
-		for (String part : split)
-		{
-			boolean isDone = part.contains("<str>");
-			final String rawText = Text.sanitizeMultilineText(part);
+  private final List<Map.Entry<CrypticClue, Boolean>> clueSteps;
+  private final String text;
 
-			for (CrypticClue clue : CrypticClue.CLUES)
-			{
-				if (!rawText.equalsIgnoreCase(clue.getText()))
-				{
-					continue;
-				}
+  public static ThreeStepCrypticClue forText(String plainText, String text) {
+    final String[] split = text.split("<br>\\s*<br>");
+    final List<Map.Entry<CrypticClue, Boolean>> steps = new ArrayList<>(split.length);
 
-				steps.add(new AbstractMap.SimpleEntry<>(clue, isDone));
-				break;
-			}
-		}
+    for (String part : split) {
+      boolean isDone = part.contains("<str>");
+      final String rawText = Text.sanitizeMultilineText(part);
 
-		if (steps.isEmpty() || steps.size() < 3)
-		{
-			return null;
-		}
+      for (CrypticClue clue : CrypticClue.CLUES) {
+        if (!rawText.equalsIgnoreCase(clue.getText())) {
+          continue;
+        }
 
-		return new ThreeStepCrypticClue(steps, plainText);
-	}
+        steps.add(new AbstractMap.SimpleEntry<>(clue, isDone));
+        break;
+      }
+    }
 
-	private final List<Map.Entry<CrypticClue, Boolean>> clueSteps;
-	private final String text;
+    if (steps.isEmpty() || steps.size() < 3) {
+      return null;
+    }
 
-	@Override
-	public void makeOverlayHint(PanelComponent panelComponent, ClueScrollPlugin plugin)
-	{
-		panelComponent.setPreferredSize(new Dimension(200, 0));
+    return new ThreeStepCrypticClue(steps, plainText);
+  }
 
-		for (int i = 0; i < clueSteps.size(); i++)
-		{
-			final Map.Entry<CrypticClue, Boolean> e = clueSteps.get(i);
+  @Override
+  public void makeOverlayHint(PanelComponent panelComponent, ClueScrollPlugin plugin) {
+    panelComponent.setPreferredSize(new Dimension(200, 0));
 
-			if (!e.getValue())
-			{
-				CrypticClue c = e.getKey();
+    for (int i = 0; i < clueSteps.size(); i++) {
+      final Map.Entry<CrypticClue, Boolean> e = clueSteps.get(i);
 
-				panelComponent.getChildren().add(TitleComponent.builder().text("Cryptic Clue #" + (i + 1)).build());
-				panelComponent.getChildren().add(LineComponent.builder().left("Solution:").build());
-				panelComponent.getChildren().add(LineComponent.builder()
-					.left(c.getSolution())
-					.leftColor(TITLED_CONTENT_COLOR)
-					.build());
-			}
-		}
-	}
+      if (!e.getValue()) {
+        CrypticClue c = e.getKey();
 
-	@Override
-	public void makeWorldOverlayHint(Graphics2D graphics, ClueScrollPlugin plugin)
-	{
-		for (Map.Entry<CrypticClue, Boolean> e : clueSteps)
-		{
-			if (!e.getValue())
-			{
-				e.getKey().makeWorldOverlayHint(graphics, plugin);
-			}
-		}
-	}
+        panelComponent.getChildren()
+            .add(TitleComponent.builder().text("Cryptic Clue #" + (i + 1)).build());
+        panelComponent.getChildren().add(LineComponent.builder().left("Solution:").build());
+        panelComponent.getChildren().add(LineComponent.builder()
+            .left(c.getSolution())
+            .leftColor(TITLED_CONTENT_COLOR)
+            .build());
+      }
+    }
+  }
 
-	public boolean update(int containerId, final ItemContainer itemContainer)
-	{
-		if (containerId == InventoryID.INVENTORY.getId())
-		{
-			return checkForPart(itemContainer, TORN_CLUE_SCROLL_PART_1, 0) ||
-				checkForPart(itemContainer, TORN_CLUE_SCROLL_PART_2, 1) ||
-				checkForPart(itemContainer, TORN_CLUE_SCROLL_PART_3, 2);
-		}
+  @Override
+  public void makeWorldOverlayHint(Graphics2D graphics, ClueScrollPlugin plugin) {
+    for (Map.Entry<CrypticClue, Boolean> e : clueSteps) {
+      if (!e.getValue()) {
+        e.getKey().makeWorldOverlayHint(graphics, plugin);
+      }
+    }
+  }
 
-		return false;
-	}
+  public boolean update(int containerId, final ItemContainer itemContainer) {
+    if (containerId == InventoryID.INVENTORY.getId()) {
+      return checkForPart(itemContainer, TORN_CLUE_SCROLL_PART_1, 0) ||
+          checkForPart(itemContainer, TORN_CLUE_SCROLL_PART_2, 1) ||
+          checkForPart(itemContainer, TORN_CLUE_SCROLL_PART_3, 2);
+    }
 
-	private boolean checkForPart(final ItemContainer itemContainer, int clueScrollPart, int index)
-	{
-		// If we have the part then that step is done
-		if (itemContainer.contains(clueScrollPart))
-		{
-			final Map.Entry<CrypticClue, Boolean> entry = clueSteps.get(index);
+    return false;
+  }
 
-			if (!entry.getValue())
-			{
-				entry.setValue(true);
-				return true;
-			}
-		}
+  private boolean checkForPart(final ItemContainer itemContainer, int clueScrollPart, int index) {
+    // If we have the part then that step is done
+    if (itemContainer.contains(clueScrollPart)) {
+      final Map.Entry<CrypticClue, Boolean> entry = clueSteps.get(index);
 
-		return false;
-	}
+      if (!entry.getValue()) {
+        entry.setValue(true);
+        return true;
+      }
+    }
 
-	@Override
-	public void reset()
-	{
-		for (Map.Entry<CrypticClue, Boolean> clueStep : clueSteps)
-		{
-			clueStep.setValue(false);
-		}
-	}
+    return false;
+  }
 
-	@Override
-	public WorldPoint getLocation()
-	{
-		return null;
-	}
+  @Override
+  public void reset() {
+    for (Map.Entry<CrypticClue, Boolean> clueStep : clueSteps) {
+      clueStep.setValue(false);
+    }
+  }
 
-	@Override
-	public WorldPoint[] getLocations()
-	{
-		return clueSteps.stream()
-			.filter(s -> !s.getValue())
-			.map(s -> s.getKey().getLocation())
-			.filter(Objects::nonNull)
-			.toArray(WorldPoint[]::new);
-	}
+  @Override
+  public WorldPoint getLocation() {
+    return null;
+  }
 
-	@Override
-	public String[] getNpcs()
-	{
-		return clueSteps.stream()
-			.filter(s -> !s.getValue())
-			.map(s -> s.getKey().getNpc())
-			.toArray(String[]::new);
-	}
+  @Override
+  public WorldPoint[] getLocations() {
+    return clueSteps.stream()
+        .filter(s -> !s.getValue())
+        .map(s -> s.getKey().getLocation())
+        .filter(Objects::nonNull)
+        .toArray(WorldPoint[]::new);
+  }
 
-	@Override
-	public int[] getObjectIds()
-	{
-		return clueSteps.stream()
-			.filter(s -> !s.getValue())
-			.mapToInt(s -> s.getKey().getObjectId())
-			.toArray();
-	}
+  @Override
+  public String[] getNpcs() {
+    return clueSteps.stream()
+        .filter(s -> !s.getValue())
+        .map(s -> s.getKey().getNpc())
+        .toArray(String[]::new);
+  }
+
+  @Override
+  public int[] getObjectIds() {
+    return clueSteps.stream()
+        .filter(s -> !s.getValue())
+        .mapToInt(s -> s.getKey().getObjectId())
+        .toArray();
+  }
 }

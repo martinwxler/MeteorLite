@@ -315,6 +315,6 @@ public class ContainableFrame extends JFrame {
   public enum Mode {
     ALWAYS,
     RESIZING,
-    NEVER;
+    NEVER
   }
 }

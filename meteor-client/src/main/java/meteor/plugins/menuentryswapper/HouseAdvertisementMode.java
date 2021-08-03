@@ -29,17 +29,15 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum HouseAdvertisementMode
-{
-	VIEW("View"),
-	ADD_HOUSE("Add-House"),
-	VISIT_LAST("Visit-Last");
+public enum HouseAdvertisementMode {
+  VIEW("View"),
+  ADD_HOUSE("Add-House"),
+  VISIT_LAST("Visit-Last");
 
-	private final String name;
+  private final String name;
 
-	@Override
-	public String toString()
-	{
-		return name;
-	}
+  @Override
+  public String toString() {
+    return name;
+  }
 }

@@ -24,7 +24,7 @@
  */
 package meteor.plugins.cluescrolls.clues;
 
-public interface TextClueScroll
-{
-	String getText();
+public interface TextClueScroll {
+
+  String getText();
 }

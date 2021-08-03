@@ -28,29 +28,29 @@ import java.awt.Graphics2D;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import net.runelite.api.Varbits;
 import meteor.plugins.cluescrolls.ClueScrollPlugin;
 import meteor.ui.overlay.components.PanelComponent;
+import net.runelite.api.Varbits;
 
-public abstract class ClueScroll
-{
-	@Setter(AccessLevel.PROTECTED)
-	@Getter(AccessLevel.PUBLIC)
-	private boolean requiresSpade;
+public abstract class ClueScroll {
 
-	@Setter(AccessLevel.PROTECTED)
-	@Getter(AccessLevel.PUBLIC)
-	private boolean requiresLight;
+  @Setter(AccessLevel.PROTECTED)
+  @Getter(AccessLevel.PUBLIC)
+  private boolean requiresSpade;
 
-	@Setter(AccessLevel.PROTECTED)
-	@Getter(AccessLevel.PUBLIC)
-	private Varbits hasFirePit;
+  @Setter(AccessLevel.PROTECTED)
+  @Getter(AccessLevel.PUBLIC)
+  private boolean requiresLight;
 
-	@Setter(AccessLevel.PROTECTED)
-	@Getter(AccessLevel.PUBLIC)
-	private Enemy enemy;
+  @Setter(AccessLevel.PROTECTED)
+  @Getter(AccessLevel.PUBLIC)
+  private Varbits hasFirePit;
 
-	public abstract void makeOverlayHint(PanelComponent panelComponent, ClueScrollPlugin plugin);
+  @Setter(AccessLevel.PROTECTED)
+  @Getter(AccessLevel.PUBLIC)
+  private Enemy enemy;
 
-	public abstract void makeWorldOverlayHint(Graphics2D graphics, ClueScrollPlugin plugin);
+  public abstract void makeOverlayHint(PanelComponent panelComponent, ClueScrollPlugin plugin);
+
+  public abstract void makeWorldOverlayHint(Graphics2D graphics, ClueScrollPlugin plugin);
 }

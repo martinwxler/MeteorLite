@@ -27,48 +27,40 @@ package meteor.plugins.cluescrolls.clues.item;
 import net.runelite.api.Client;
 import net.runelite.api.Item;
 
-public class AnyRequirementCollection implements ItemRequirement
-{
-	private final String name;
-	private final ItemRequirement[] requirements;
+public class AnyRequirementCollection implements ItemRequirement {
 
-	public AnyRequirementCollection(String name, ItemRequirement... requirements)
-	{
-		this.name = name;
-		this.requirements = requirements;
-	}
+  private final String name;
+  private final ItemRequirement[] requirements;
 
-	@Override
-	public boolean fulfilledBy(int itemId)
-	{
-		for (ItemRequirement requirement : requirements)
-		{
-			if (requirement.fulfilledBy(itemId))
-			{
-				return true;
-			}
-		}
+  public AnyRequirementCollection(String name, ItemRequirement... requirements) {
+    this.name = name;
+    this.requirements = requirements;
+  }
 
-		return false;
-	}
+  @Override
+  public boolean fulfilledBy(int itemId) {
+    for (ItemRequirement requirement : requirements) {
+      if (requirement.fulfilledBy(itemId)) {
+        return true;
+      }
+    }
 
-	@Override
-	public boolean fulfilledBy(Item[] items)
-	{
-		for (ItemRequirement requirement : requirements)
-		{
-			if (requirement.fulfilledBy(items))
-			{
-				return true;
-			}
-		}
+    return false;
+  }
 
-		return false;
-	}
+  @Override
+  public boolean fulfilledBy(Item[] items) {
+    for (ItemRequirement requirement : requirements) {
+      if (requirement.fulfilledBy(items)) {
+        return true;
+      }
+    }
 
-	@Override
-	public String getCollectiveName(Client client)
-	{
-		return name;
-	}
+    return false;
+  }
+
+  @Override
+  public String getCollectiveName(Client client) {
+    return name;
+  }
 }

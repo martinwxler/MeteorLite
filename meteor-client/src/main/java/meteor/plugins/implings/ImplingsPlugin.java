@@ -31,191 +31,174 @@ import java.util.List;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
+import meteor.config.ConfigManager;
+import meteor.eventbus.Subscribe;
+import meteor.plugins.Plugin;
+import meteor.plugins.PluginDescriptor;
+import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.GameState;
 import net.runelite.api.NPC;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.NpcChanged;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
-import meteor.config.ConfigManager;
-import meteor.eventbus.Subscribe;
-import meteor.plugins.Plugin;
-import meteor.plugins.PluginDescriptor;
-import meteor.ui.overlay.OverlayManager;
 
 @PluginDescriptor(
-	name = "Implings",
-	description = "Highlight nearby implings on the minimap and on-screen",
-	tags = {"hunter", "minimap", "overlay", "imp"}
+    name = "Implings",
+    description = "Highlight nearby implings on the minimap and on-screen",
+    tags = {"hunter", "minimap", "overlay", "imp"}
 )
-public class ImplingsPlugin extends Plugin
-{
-	@Getter(AccessLevel.PACKAGE)
-	private final List<NPC> implings = new ArrayList<>();
+public class ImplingsPlugin extends Plugin {
 
-	@Inject
-	private OverlayManager overlayManager;
+  @Getter(AccessLevel.PACKAGE)
+  private final List<NPC> implings = new ArrayList<>();
 
-	@Inject
-	private ImplingsOverlay overlay;
+  @Inject
+  private OverlayManager overlayManager;
 
-	@Inject
-	private ImplingMinimapOverlay minimapOverlay;
+  @Inject
+  private ImplingsOverlay overlay;
 
-	@Inject
-	private ImplingsConfig config;
+  @Inject
+  private ImplingMinimapOverlay minimapOverlay;
 
-	@Provides
-	ImplingsConfig getConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(ImplingsConfig.class);
-	}
+  @Inject
+  private ImplingsConfig config;
 
-	@Override
-	public void startup()
-	{
-		overlayManager.add(overlay);
-		overlayManager.add(minimapOverlay);
-	}
+  @Provides
+  ImplingsConfig getConfig(ConfigManager configManager) {
+    return configManager.getConfig(ImplingsConfig.class);
+  }
 
-	@Override
-	public void shutdown()
-	{
-		implings.clear();
-		overlayManager.remove(overlay);
-		overlayManager.remove(minimapOverlay);
-	}
+  @Override
+  public void startup() {
+    overlayManager.add(overlay);
+    overlayManager.add(minimapOverlay);
+  }
 
-	@Subscribe
-	public void onNpcSpawned(NpcSpawned npcSpawned)
-	{
-		NPC npc = npcSpawned.getNpc();
-		Impling impling = Impling.findImpling(npc.getId());
+  @Override
+  public void shutdown() {
+    implings.clear();
+    overlayManager.remove(overlay);
+    overlayManager.remove(minimapOverlay);
+  }
 
-		if (impling != null)
-		{
-			implings.add(npc);
-		}
-	}
+  @Subscribe
+  public void onNpcSpawned(NpcSpawned npcSpawned) {
+    NPC npc = npcSpawned.getNpc();
+    Impling impling = Impling.findImpling(npc.getId());
 
-	@Subscribe
-	public void onNpcChanged(NpcChanged npcCompositionChanged)
-	{
-		NPC npc = npcCompositionChanged.getNpc();
-		Impling impling = Impling.findImpling(npc.getId());
+    if (impling != null) {
+      implings.add(npc);
+    }
+  }
 
-		if (impling != null)
-		{
-			if (!implings.contains(npc))
-			{
-				implings.add(npc);
-			}
-		}
-	}
+  @Subscribe
+  public void onNpcChanged(NpcChanged npcCompositionChanged) {
+    NPC npc = npcCompositionChanged.getNpc();
+    Impling impling = Impling.findImpling(npc.getId());
 
-	@Subscribe
-	public void onGameStateChanged(GameStateChanged event)
-	{
-		if (event.getGameState() == GameState.LOGIN_SCREEN || event.getGameState() == GameState.HOPPING)
-		{
-			implings.clear();
-		}
-	}
+    if (impling != null) {
+      if (!implings.contains(npc)) {
+        implings.add(npc);
+      }
+    }
+  }
 
-	@Subscribe
-	public void onNpcDespawned(NpcDespawned npcDespawned)
-	{
-		if (implings.isEmpty())
-		{
-			return;
-		}
+  @Subscribe
+  public void onGameStateChanged(GameStateChanged event) {
+    if (event.getGameState() == GameState.LOGIN_SCREEN
+        || event.getGameState() == GameState.HOPPING) {
+      implings.clear();
+    }
+  }
 
-		NPC npc = npcDespawned.getNpc();
-		implings.remove(npc);
-	}
+  @Subscribe
+  public void onNpcDespawned(NpcDespawned npcDespawned) {
+    if (implings.isEmpty()) {
+      return;
+    }
 
-	boolean showNpc(NPC npc)
-	{
-		Impling impling = Impling.findImpling(npc.getId());
-		if (impling == null)
-		{
-			return false;
-		}
+    NPC npc = npcDespawned.getNpc();
+    implings.remove(npc);
+  }
 
-		ImplingsConfig.ImplingMode impMode = showImplingType(impling.getImplingType());
-		return impMode == ImplingsConfig.ImplingMode.HIGHLIGHT || impMode == ImplingsConfig.ImplingMode.NOTIFY;
-	}
+  boolean showNpc(NPC npc) {
+    Impling impling = Impling.findImpling(npc.getId());
+    if (impling == null) {
+      return false;
+    }
 
-	ImplingsConfig.ImplingMode showImplingType(ImplingType implingType)
-	{
-		switch (implingType)
-		{
-			case BABY:
-				return config.showBaby();
-			case YOUNG:
-				return config.showYoung();
-			case GOURMET:
-				return config.showGourmet();
-			case EARTH:
-				return config.showEarth();
-			case ESSENCE:
-				return config.showEssence();
-			case ECLECTIC:
-				return config.showEclectic();
-			case NATURE:
-				return config.showNature();
-			case MAGPIE:
-				return config.showMagpie();
-			case NINJA:
-				return config.showNinja();
-			case CRYSTAL:
-				return config.showCrystal();
-			case DRAGON:
-				return config.showDragon();
-			case LUCKY:
-				return config.showLucky();
-			default:
-				return ImplingsConfig.ImplingMode.NONE;
-		}
-	}
+    ImplingsConfig.ImplingMode impMode = showImplingType(impling.getImplingType());
+    return impMode == ImplingsConfig.ImplingMode.HIGHLIGHT
+        || impMode == ImplingsConfig.ImplingMode.NOTIFY;
+  }
 
-	Color npcToColor(NPC npc)
-	{
-		Impling impling = Impling.findImpling(npc.getId());
-		if (impling == null)
-		{
-			return null;
-		}
+  ImplingsConfig.ImplingMode showImplingType(ImplingType implingType) {
+    switch (implingType) {
+      case BABY:
+        return config.showBaby();
+      case YOUNG:
+        return config.showYoung();
+      case GOURMET:
+        return config.showGourmet();
+      case EARTH:
+        return config.showEarth();
+      case ESSENCE:
+        return config.showEssence();
+      case ECLECTIC:
+        return config.showEclectic();
+      case NATURE:
+        return config.showNature();
+      case MAGPIE:
+        return config.showMagpie();
+      case NINJA:
+        return config.showNinja();
+      case CRYSTAL:
+        return config.showCrystal();
+      case DRAGON:
+        return config.showDragon();
+      case LUCKY:
+        return config.showLucky();
+      default:
+        return ImplingsConfig.ImplingMode.NONE;
+    }
+  }
 
-		switch (impling.getImplingType())
-		{
+  Color npcToColor(NPC npc) {
+    Impling impling = Impling.findImpling(npc.getId());
+    if (impling == null) {
+      return null;
+    }
 
-			case BABY:
-				return config.getBabyColor();
-			case YOUNG:
-				return config.getYoungColor();
-			case GOURMET:
-				return config.getGourmetColor();
-			case EARTH:
-				return config.getEarthColor();
-			case ESSENCE:
-				return config.getEssenceColor();
-			case ECLECTIC:
-				return config.getEclecticColor();
-			case NATURE:
-				return config.getNatureColor();
-			case MAGPIE:
-				return config.getMagpieColor();
-			case NINJA:
-				return config.getNinjaColor();
-			case CRYSTAL:
-				return config.getCrystalColor();
-			case DRAGON:
-				return config.getDragonColor();
-			case LUCKY:
-				return config.getLuckyColor();
-			default:
-				return null;
-		}
-	}
+    switch (impling.getImplingType()) {
+
+      case BABY:
+        return config.getBabyColor();
+      case YOUNG:
+        return config.getYoungColor();
+      case GOURMET:
+        return config.getGourmetColor();
+      case EARTH:
+        return config.getEarthColor();
+      case ESSENCE:
+        return config.getEssenceColor();
+      case ECLECTIC:
+        return config.getEclecticColor();
+      case NATURE:
+        return config.getNatureColor();
+      case MAGPIE:
+        return config.getMagpieColor();
+      case NINJA:
+        return config.getNinjaColor();
+      case CRYSTAL:
+        return config.getCrystalColor();
+      case DRAGON:
+        return config.getDragonColor();
+      case LUCKY:
+        return config.getLuckyColor();
+      default:
+        return null;
+    }
+  }
 }

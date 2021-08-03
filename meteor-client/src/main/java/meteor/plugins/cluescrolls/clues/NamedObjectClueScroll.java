@@ -27,15 +27,15 @@ package meteor.plugins.cluescrolls.clues;
 import javax.annotation.Nullable;
 
 /**
- * Represents a clue which should highlight objects of a given name rather than a specific ID and location, as some
- * clues will call for a general action which can be completed at any number of locations. The area in which this
- * highlighting should occur can be restricted by giving a non-null array of region IDs where only objects within those
- * regions will be highlighted.
+ * Represents a clue which should highlight objects of a given name rather than a specific ID and
+ * location, as some clues will call for a general action which can be completed at any number of
+ * locations. The area in which this highlighting should occur can be restricted by giving a
+ * non-null array of region IDs where only objects within those regions will be highlighted.
  */
-public interface NamedObjectClueScroll
-{
-	String[] getObjectNames();
+public interface NamedObjectClueScroll {
 
-	@Nullable
-	int[] getObjectRegions();
+  String[] getObjectNames();
+
+  @Nullable
+  int[] getObjectRegions();
 }

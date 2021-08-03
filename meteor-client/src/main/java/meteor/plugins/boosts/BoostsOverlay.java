@@ -24,6 +24,9 @@
  */
 package meteor.plugins.boosts;
 
+import static meteor.ui.overlay.OverlayManager.OPTION_CONFIGURE;
+import static net.runelite.api.MenuAction.RUNELITE_OVERLAY_CONFIG;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -31,120 +34,105 @@ import java.util.Set;
 import javax.inject.Inject;
 import meteor.plugins.PluginDescriptor;
 import meteor.ui.overlay.OverlayLayer;
-import net.runelite.api.Client;
-import static net.runelite.api.MenuAction.RUNELITE_OVERLAY_CONFIG;
-import net.runelite.api.Skill;
-import static meteor.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 import meteor.ui.overlay.OverlayMenuEntry;
 import meteor.ui.overlay.OverlayPanel;
 import meteor.ui.overlay.OverlayPosition;
 import meteor.ui.overlay.OverlayPriority;
 import meteor.ui.overlay.components.LineComponent;
 import meteor.util.ColorUtil;
+import net.runelite.api.Client;
+import net.runelite.api.Skill;
 
 @PluginDescriptor(
-		name = "Boosts Information",
-		description = "Show combat and/or skill boost information",
-		tags = {"combat", "notifications", "skilling", "overlay"}
+    name = "Boosts Information",
+    description = "Show combat and/or skill boost information",
+    tags = {"combat", "notifications", "skilling", "overlay"}
 )
-class BoostsOverlay extends OverlayPanel
-{
-	private final Client client;
-	private final BoostsConfig config;
-	private final BoostsPlugin plugin;
+class BoostsOverlay extends OverlayPanel {
 
-	@Inject
-	private BoostsOverlay(Client client, BoostsConfig config, BoostsPlugin plugin)
-	{
-		super(plugin);
-		this.plugin = plugin;
-		this.client = client;
-		this.config = config;
-		setLayer(OverlayLayer.ALWAYS_ON_TOP);
-		setResizable(false);
-		setPosition(OverlayPosition.TOP_LEFT);
-		setPriority(OverlayPriority.MED);
-		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Boosts overlay"));
-	}
+  private final Client client;
+  private final BoostsConfig config;
+  private final BoostsPlugin plugin;
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		if (config.displayInfoboxes())
-		{
-			return null;
-		}
+  @Inject
+  private BoostsOverlay(Client client, BoostsConfig config, BoostsPlugin plugin) {
+    super(plugin);
+    this.plugin = plugin;
+    this.client = client;
+    this.config = config;
+    setLayer(OverlayLayer.ALWAYS_ON_TOP);
+    setResizable(false);
+    setPosition(OverlayPosition.TOP_LEFT);
+    setPriority(OverlayPriority.MED);
+    getMenuEntries()
+        .add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Boosts overlay"));
+  }
 
-		int nextChange = plugin.getChangeDownTicks();
+  @Override
+  public Dimension render(Graphics2D graphics) {
+    if (config.displayInfoboxes()) {
+      return null;
+    }
 
-		if (nextChange != -1)
-		{
-			panelComponent.getChildren().add(LineComponent.builder()
-				.left("Next + restore in")
-				.right(String.valueOf(plugin.getChangeTime(nextChange)))
-				.build());
-		}
+    int nextChange = plugin.getChangeDownTicks();
 
-		nextChange = plugin.getChangeUpTicks();
+    if (nextChange != -1) {
+      panelComponent.getChildren().add(LineComponent.builder()
+          .left("Next + restore in")
+          .right(String.valueOf(plugin.getChangeTime(nextChange)))
+          .build());
+    }
 
-		if (nextChange != -1)
-		{
-			panelComponent.getChildren().add(LineComponent.builder()
-				.left("Next - restore in")
-				.right(String.valueOf(plugin.getChangeTime(nextChange)))
-				.build());
-		}
+    nextChange = plugin.getChangeUpTicks();
 
-		final Set<Skill> boostedSkills = plugin.getSkillsToDisplay();
+    if (nextChange != -1) {
+      panelComponent.getChildren().add(LineComponent.builder()
+          .left("Next - restore in")
+          .right(String.valueOf(plugin.getChangeTime(nextChange)))
+          .build());
+    }
 
-		if (boostedSkills.isEmpty())
-		{
-			return super.render(graphics);
-		}
+    final Set<Skill> boostedSkills = plugin.getSkillsToDisplay();
 
-		if (plugin.canShowBoosts())
-		{
-			for (Skill skill : boostedSkills)
-			{
-				final int boosted = client.getBoostedSkillLevel(skill);
-				final int base = client.getRealSkillLevel(skill);
-				final int boost = boosted - base;
-				final Color strColor = getTextColor(boost);
-				String str;
+    if (boostedSkills.isEmpty()) {
+      return super.render(graphics);
+    }
 
-				if (config.useRelativeBoost())
-				{
-					str = String.valueOf(boost);
-					if (boost > 0)
-					{
-						str = "+" + str;
-					}
-				}
-				else
-				{
-					str = ColorUtil.prependColorTag(Integer.toString(boosted), strColor)
-						+ ColorUtil.prependColorTag("/" + base, Color.WHITE);
-				}
+    if (plugin.canShowBoosts()) {
+      for (Skill skill : boostedSkills) {
+        final int boosted = client.getBoostedSkillLevel(skill);
+        final int base = client.getRealSkillLevel(skill);
+        final int boost = boosted - base;
+        final Color strColor = getTextColor(boost);
+        String str;
 
-				panelComponent.getChildren().add(LineComponent.builder()
-					.left(skill.getName())
-					.right(str)
-					.rightColor(strColor)
-					.build());
-			}
-		}
+        if (config.useRelativeBoost()) {
+          str = String.valueOf(boost);
+          if (boost > 0) {
+            str = "+" + str;
+          }
+        } else {
+          str = ColorUtil.prependColorTag(Integer.toString(boosted), strColor)
+              + ColorUtil.prependColorTag("/" + base, Color.WHITE);
+        }
 
-		return super.render(graphics);
-	}
+        panelComponent.getChildren().add(LineComponent.builder()
+            .left(skill.getName())
+            .right(str)
+            .rightColor(strColor)
+            .build());
+      }
+    }
 
-	private Color getTextColor(int boost)
-	{
-		if (boost < 0)
-		{
-			return new Color(238, 51, 51);
-		}
+    return super.render(graphics);
+  }
 
-		return boost <= config.boostThreshold() ? Color.YELLOW : Color.GREEN;
+  private Color getTextColor(int boost) {
+    if (boost < 0) {
+      return new Color(238, 51, 51);
+    }
 
-	}
+    return boost <= config.boostThreshold() ? Color.YELLOW : Color.GREEN;
+
+  }
 }

@@ -46,13 +46,11 @@ public class UpdateRefmap {
           }
         });
     HashMap<String, String> refmap = new HashMap<>();
-    for (String s : classMap.keySet())
-    {
+    for (String s : classMap.keySet()) {
       refmap.put(s, classMap.get(s).getName());
     }
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    try (Writer writer = new FileWriter("./meteor-client/src/main/resources/osrs-refmap.json"))
-    {
+    try (Writer writer = new FileWriter("./meteor-client/src/main/resources/osrs-refmap.json")) {
       gson.toJson(refmap, writer);
     }
     System.exit(0);

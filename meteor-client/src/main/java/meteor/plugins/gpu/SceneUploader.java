@@ -27,7 +27,6 @@ package meteor.plugins.gpu;
 import com.google.common.base.Stopwatch;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import meteor.MeteorLite;
 import net.runelite.api.Client;
 import net.runelite.api.Constants;
 import net.runelite.api.DecorativeObject;

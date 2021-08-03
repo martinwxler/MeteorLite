@@ -49,8 +49,9 @@ public class KeyManager {
   }
 
   public void registerKeyListener(meteor.input.KeyListener keyListener) {
-    if (keyListenerMap.get(keyListener) == null)
+    if (keyListenerMap.get(keyListener) == null) {
       log.error("[WARNING] Anonymous KeyListener has been added");
+    }
     if (!keyListeners.contains(keyListener)) {
       keyListeners.add(keyListener);
     }

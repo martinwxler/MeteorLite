@@ -35,8 +35,8 @@ import java.util.Set;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
-import meteor.plugins.Plugin;
 import meteor.eventbus.Subscribe;
+import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.Client;
@@ -78,13 +78,13 @@ public class AoeWarningPlugin extends Plugin {
   @Inject
   private OverlayManager overlayManager;
   @Getter(AccessLevel.PACKAGE)
-  private List<WorldPoint> lightningTrail = new ArrayList<>();
+  private final List<WorldPoint> lightningTrail = new ArrayList<>();
   @Getter(AccessLevel.PACKAGE)
-  private List<GameObject> acidTrail = new ArrayList<>();
+  private final List<GameObject> acidTrail = new ArrayList<>();
   @Getter(AccessLevel.PACKAGE)
-  private List<GameObject> crystalSpike = new ArrayList<>();
+  private final List<GameObject> crystalSpike = new ArrayList<>();
   @Getter(AccessLevel.PACKAGE)
-  private List<GameObject> wintertodtSnowFall = new ArrayList<>();
+  private final List<GameObject> wintertodtSnowFall = new ArrayList<>();
 
   public AoeWarningPlugin() {
   }

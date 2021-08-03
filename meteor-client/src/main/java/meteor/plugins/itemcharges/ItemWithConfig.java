@@ -33,42 +33,49 @@ import net.runelite.api.ItemID;
 
 @AllArgsConstructor
 @Getter
-enum ItemWithConfig
-{
-	DODGY_NECKLACE(ItemID.DODGY_NECKLACE, ItemChargeConfig.KEY_DODGY_NECKLACE, ItemChargeType.DODGY_NECKLACE),
-	BINDING_NECKLACE(ItemID.BINDING_NECKLACE, ItemChargeConfig.KEY_BINDING_NECKLACE, ItemChargeType.BINDING_NECKLACE),
-	EXPLORERS_RING_1(ItemID.EXPLORERS_RING_1, ItemChargeConfig.KEY_EXPLORERS_RING, ItemChargeType.EXPLORER_RING),
-	EXPLORERS_RING_2(ItemID.EXPLORERS_RING_2, ItemChargeConfig.KEY_EXPLORERS_RING, ItemChargeType.EXPLORER_RING),
-	EXPLORERS_RING_3(ItemID.EXPLORERS_RING_3, ItemChargeConfig.KEY_EXPLORERS_RING, ItemChargeType.EXPLORER_RING),
-	EXPLORERS_RING_4(ItemID.EXPLORERS_RING_4, ItemChargeConfig.KEY_EXPLORERS_RING, ItemChargeType.EXPLORER_RING),
-	RING_OF_FORGING(ItemID.RING_OF_FORGING, ItemChargeConfig.KEY_RING_OF_FORGING, ItemChargeType.RING_OF_FORGING),
-	AMULET_OF_CHEMISTRY(ItemID.AMULET_OF_CHEMISTRY, ItemChargeConfig.KEY_AMULET_OF_CHEMISTRY, ItemChargeType.AMULET_OF_CHEMISTRY),
-	AMULET_OF_BOUNTY(ItemID.AMULET_OF_BOUNTY, ItemChargeConfig.KEY_AMULET_OF_BOUNTY, ItemChargeType.AMULET_OF_BOUNTY),
-	BRACELET_OF_SLAUGHTER(ItemID.BRACELET_OF_SLAUGHTER, ItemChargeConfig.KEY_BRACELET_OF_SLAUGHTER, ItemChargeType.BRACELET_OF_SLAUGHTER),
-	EXPEDITIOUS_BRACELET(ItemID.EXPEDITIOUS_BRACELET, ItemChargeConfig.KEY_EXPEDITIOUS_BRACELET, ItemChargeType.EXPEDITIOUS_BRACELET),
-	CHRONICLE(ItemID.CHRONICLE, ItemChargeConfig.KEY_CHRONICLE, ItemChargeType.TELEPORT);
+enum ItemWithConfig {
+  DODGY_NECKLACE(ItemID.DODGY_NECKLACE, ItemChargeConfig.KEY_DODGY_NECKLACE,
+      ItemChargeType.DODGY_NECKLACE),
+  BINDING_NECKLACE(ItemID.BINDING_NECKLACE, ItemChargeConfig.KEY_BINDING_NECKLACE,
+      ItemChargeType.BINDING_NECKLACE),
+  EXPLORERS_RING_1(ItemID.EXPLORERS_RING_1, ItemChargeConfig.KEY_EXPLORERS_RING,
+      ItemChargeType.EXPLORER_RING),
+  EXPLORERS_RING_2(ItemID.EXPLORERS_RING_2, ItemChargeConfig.KEY_EXPLORERS_RING,
+      ItemChargeType.EXPLORER_RING),
+  EXPLORERS_RING_3(ItemID.EXPLORERS_RING_3, ItemChargeConfig.KEY_EXPLORERS_RING,
+      ItemChargeType.EXPLORER_RING),
+  EXPLORERS_RING_4(ItemID.EXPLORERS_RING_4, ItemChargeConfig.KEY_EXPLORERS_RING,
+      ItemChargeType.EXPLORER_RING),
+  RING_OF_FORGING(ItemID.RING_OF_FORGING, ItemChargeConfig.KEY_RING_OF_FORGING,
+      ItemChargeType.RING_OF_FORGING),
+  AMULET_OF_CHEMISTRY(ItemID.AMULET_OF_CHEMISTRY, ItemChargeConfig.KEY_AMULET_OF_CHEMISTRY,
+      ItemChargeType.AMULET_OF_CHEMISTRY),
+  AMULET_OF_BOUNTY(ItemID.AMULET_OF_BOUNTY, ItemChargeConfig.KEY_AMULET_OF_BOUNTY,
+      ItemChargeType.AMULET_OF_BOUNTY),
+  BRACELET_OF_SLAUGHTER(ItemID.BRACELET_OF_SLAUGHTER, ItemChargeConfig.KEY_BRACELET_OF_SLAUGHTER,
+      ItemChargeType.BRACELET_OF_SLAUGHTER),
+  EXPEDITIOUS_BRACELET(ItemID.EXPEDITIOUS_BRACELET, ItemChargeConfig.KEY_EXPEDITIOUS_BRACELET,
+      ItemChargeType.EXPEDITIOUS_BRACELET),
+  CHRONICLE(ItemID.CHRONICLE, ItemChargeConfig.KEY_CHRONICLE, ItemChargeType.TELEPORT);
 
-	private final int itemId;
-	private final String configKey;
-	private final ItemChargeType type;
+  private static final Map<Integer, ItemWithConfig> ID_MAP;
 
-	private static final Map<Integer, ItemWithConfig> ID_MAP;
+  static {
+    ImmutableMap.Builder<Integer, ItemWithConfig> builder = new ImmutableMap.Builder<>();
 
-	static
-	{
-		ImmutableMap.Builder<Integer, ItemWithConfig> builder = new ImmutableMap.Builder<>();
+    for (ItemWithConfig item : values()) {
+      builder.put(item.getItemId(), item);
+    }
 
-		for (ItemWithConfig item : values())
-		{
-			builder.put(item.getItemId(), item);
-		}
+    ID_MAP = builder.build();
+  }
 
-		ID_MAP = builder.build();
-	}
+  private final int itemId;
+  private final String configKey;
+  private final ItemChargeType type;
 
-	@Nullable
-	static ItemWithConfig findItem(int itemId)
-	{
-		return ID_MAP.get(itemId);
-	}
+  @Nullable
+  static ItemWithConfig findItem(int itemId) {
+    return ID_MAP.get(itemId);
+  }
 }

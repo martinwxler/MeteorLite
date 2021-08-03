@@ -29,54 +29,48 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.util.List;
 import javax.inject.Inject;
-import net.runelite.api.NPC;
-import net.runelite.api.Point;
 import meteor.ui.overlay.Overlay;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayPosition;
 import meteor.ui.overlay.OverlayUtil;
+import net.runelite.api.NPC;
+import net.runelite.api.Point;
 
-public class ImplingMinimapOverlay extends Overlay
-{
-	private final ImplingsPlugin plugin;
-	private final ImplingsConfig config;
+public class ImplingMinimapOverlay extends Overlay {
 
-	@Inject
-	private ImplingMinimapOverlay(ImplingsPlugin plugin, ImplingsConfig config)
-	{
-		setPosition(OverlayPosition.DYNAMIC);
-		setLayer(OverlayLayer.ABOVE_WIDGETS);
-		this.plugin = plugin;
-		this.config = config;
-	}
+  private final ImplingsPlugin plugin;
+  private final ImplingsConfig config;
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		List<NPC> imps = plugin.getImplings();
-		if (imps.isEmpty())
-		{
-			return null;
-		}
+  @Inject
+  private ImplingMinimapOverlay(ImplingsPlugin plugin, ImplingsConfig config) {
+    setPosition(OverlayPosition.DYNAMIC);
+    setLayer(OverlayLayer.ABOVE_WIDGETS);
+    this.plugin = plugin;
+    this.config = config;
+  }
 
-		for (NPC imp : imps)
-		{
-			Point impLocation = imp.getMinimapLocation();
-			Color color = plugin.npcToColor(imp);
-			if (!plugin.showNpc(imp) || impLocation == null || color == null)
-			{
-				continue;
-			}
+  @Override
+  public Dimension render(Graphics2D graphics) {
+    List<NPC> imps = plugin.getImplings();
+    if (imps.isEmpty()) {
+      return null;
+    }
 
-			OverlayUtil.renderMinimapLocation(graphics, impLocation, color);
+    for (NPC imp : imps) {
+      Point impLocation = imp.getMinimapLocation();
+      Color color = plugin.npcToColor(imp);
+      if (!plugin.showNpc(imp) || impLocation == null || color == null) {
+        continue;
+      }
 
-			if (config.showName())
-			{
-				Point textLocation = new Point(impLocation.getX() + 1, impLocation.getY());
-				OverlayUtil.renderTextLocation(graphics, textLocation, imp.getName(), color);
-			}
-		}
+      OverlayUtil.renderMinimapLocation(graphics, impLocation, color);
 
-		return null;
-	}
+      if (config.showName()) {
+        Point textLocation = new Point(impLocation.getX() + 1, impLocation.getY());
+        OverlayUtil.renderTextLocation(graphics, textLocation, imp.getName(), color);
+      }
+    }
+
+    return null;
+  }
 }

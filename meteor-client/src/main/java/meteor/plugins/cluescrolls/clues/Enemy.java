@@ -29,30 +29,29 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum Enemy
-{
-	//appears in hard clue emote steps in the wilderness
-	DOUBLE_AGENT_65("Double Agent level 65"),
-	//appears in hard clue emote steps not in the wilderness
-	DOUBLE_AGENT_108("Double Agent level 108"),
-	//appears for master clue emote steps all areas
-	DOUBLE_AGENT_141("Double Agent level 141"),
-	//appears for hard clue coordinate steps in the wilderness
-	ZAMORAK_WIZARD("Zamorak Wizard"),
-	//appears for hard clue coordinate steps not in the wilderness
-	SARADOMIN_WIZARD("Saradomin Wizard"),
-	//appears for elite clue coordinate steps in most areas
-	ARMADYLEAN_OR_BANDOSIAN_GUARD("Armadylean OR Bandosian Guard"),
-	//appears for elite clue coordinate steps on the west side of the Isle of Souls
-	ARMADYLEAN_GUARD("Armadylean Guard"),
-	//appears for elite clue coordinate steps on the east side of the Isle of Souls
-	BANDOSIAN_GUARD("Bandosian Guard"),
-	//appears for master clue coordinate and hot cold clues when single-way combat
-	BRASSICAN_MAGE("Brassican Mage"),
-	//appears for master clue coordinate and hot cold clues when multi-way combat
-	ANCIENT_WIZARDS("Ancient Wizard Trio"),
-	//There is a master hot cold step that overlaps the border of multi and single according to the wiki.
-	BRASSICAN_OR_WIZARDS("Brassican Mage OR Ancient Wizards");
+public enum Enemy {
+  //appears in hard clue emote steps in the wilderness
+  DOUBLE_AGENT_65("Double Agent level 65"),
+  //appears in hard clue emote steps not in the wilderness
+  DOUBLE_AGENT_108("Double Agent level 108"),
+  //appears for master clue emote steps all areas
+  DOUBLE_AGENT_141("Double Agent level 141"),
+  //appears for hard clue coordinate steps in the wilderness
+  ZAMORAK_WIZARD("Zamorak Wizard"),
+  //appears for hard clue coordinate steps not in the wilderness
+  SARADOMIN_WIZARD("Saradomin Wizard"),
+  //appears for elite clue coordinate steps in most areas
+  ARMADYLEAN_OR_BANDOSIAN_GUARD("Armadylean OR Bandosian Guard"),
+  //appears for elite clue coordinate steps on the west side of the Isle of Souls
+  ARMADYLEAN_GUARD("Armadylean Guard"),
+  //appears for elite clue coordinate steps on the east side of the Isle of Souls
+  BANDOSIAN_GUARD("Bandosian Guard"),
+  //appears for master clue coordinate and hot cold clues when single-way combat
+  BRASSICAN_MAGE("Brassican Mage"),
+  //appears for master clue coordinate and hot cold clues when multi-way combat
+  ANCIENT_WIZARDS("Ancient Wizard Trio"),
+  //There is a master hot cold step that overlaps the border of multi and single according to the wiki.
+  BRASSICAN_OR_WIZARDS("Brassican Mage OR Ancient Wizards");
 
-	private final String text;
+  private final String text;
 }

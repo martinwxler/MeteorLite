@@ -33,12 +33,12 @@ import java.awt.FontMetrics;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import meteor.plugins.Plugin;
 import meteor.callback.ClientThread;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.game.ItemManager;
+import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.ui.FontManager;
 import meteor.ui.JagexColors;
@@ -346,8 +346,9 @@ public class ItemStatPlugin extends Plugin {
   }
 
   private void resetGEInventory() {
-    if (client.getGameState() != GameState.LOGGED_IN)
+    if (client.getGameState() != GameState.LOGGED_IN) {
       return;
+    }
 
     final Widget invContainer = getInventoryContainer();
 

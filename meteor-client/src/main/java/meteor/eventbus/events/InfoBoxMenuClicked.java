@@ -29,8 +29,8 @@ import meteor.ui.overlay.OverlayMenuEntry;
 import meteor.ui.overlay.infobox.InfoBox;
 
 @Value
-public class InfoBoxMenuClicked
-{
-	private OverlayMenuEntry entry;
-	private InfoBox infoBox;
+public class InfoBoxMenuClicked {
+
+  private OverlayMenuEntry entry;
+  private InfoBox infoBox;
 }

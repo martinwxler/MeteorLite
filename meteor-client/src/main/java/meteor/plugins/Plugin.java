@@ -3,7 +3,6 @@ package meteor.plugins;
 import com.google.inject.Binder;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import java.awt.Graphics2D;
 import javax.inject.Inject;
 import meteor.eventbus.EventBus;
 import net.runelite.api.Client;
@@ -11,20 +10,16 @@ import org.sponge.util.Logger;
 
 public class Plugin implements Module {
 
-  public Plugin()
-  {
-    logger.name = this.getClass().getAnnotation(PluginDescriptor.class).name();
-  }
-
   public Logger logger = new Logger("");
-
   @Inject
   public Client client;
-
   @Inject
   public EventBus eventBus;
-
   private Injector injector;
+
+  public Plugin() {
+    logger.name = this.getClass().getAnnotation(PluginDescriptor.class).name();
+  }
 
   public void startup() {
 
@@ -47,8 +42,7 @@ public class Plugin implements Module {
 
   }
 
-  public String getName()
-  {
+  public String getName() {
     return getClass().getAnnotation(PluginDescriptor.class).name();
   }
 }

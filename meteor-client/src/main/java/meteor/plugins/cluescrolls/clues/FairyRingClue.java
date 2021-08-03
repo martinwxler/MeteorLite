@@ -24,84 +24,80 @@
  */
 package meteor.plugins.cluescrolls.clues;
 
+import static meteor.plugins.cluescrolls.ClueScrollOverlay.TITLED_CONTENT_COLOR;
+
 import com.google.common.collect.ImmutableSet;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.Set;
 import lombok.Getter;
-import net.runelite.api.coords.LocalPoint;
-import net.runelite.api.coords.WorldPoint;
-import static meteor.plugins.cluescrolls.ClueScrollOverlay.TITLED_CONTENT_COLOR;
 import meteor.plugins.cluescrolls.ClueScrollPlugin;
 import meteor.ui.overlay.OverlayUtil;
 import meteor.ui.overlay.components.LineComponent;
 import meteor.ui.overlay.components.PanelComponent;
 import meteor.ui.overlay.components.TitleComponent;
+import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldPoint;
 
 @Getter
-public class FairyRingClue extends ClueScroll implements TextClueScroll, LocationClueScroll
-{
-	private static final Set<FairyRingClue> CLUES = ImmutableSet.of(
-		new FairyRingClue("A I R 2 3 3 1", new WorldPoint(2702, 3246, 0)),
-		new FairyRingClue("A I Q 0 4 4 0", new WorldPoint(3000, 3110, 0)),
-		new FairyRingClue("A L P 1 1 4 0", new WorldPoint(2504, 3633, 0)),
-		new FairyRingClue("B L P 6 2 0 0", new WorldPoint(2439, 5132, 0)),
-		new FairyRingClue("B J R 1 1 2 3", new WorldPoint(2648, 4729, 0)),
-		new FairyRingClue("B I P 7 0 1 3", new WorldPoint(3407, 3330, 0)),
-		new FairyRingClue("C I S 0 0 0 9", new WorldPoint(1630, 3868, 0)),
-		new FairyRingClue("C K P 0 2 2 4", new WorldPoint(2073, 4846, 0)),
-		new FairyRingClue("D I P 8 5 1 1", new WorldPoint(3041, 4770, 0)),
-		new FairyRingClue("D K S 2 3 1 0", new WorldPoint(2747, 3720, 0))
-	);
+public class FairyRingClue extends ClueScroll implements TextClueScroll, LocationClueScroll {
 
-	private String text;
-	private WorldPoint location;
+  private static final Set<FairyRingClue> CLUES = ImmutableSet.of(
+      new FairyRingClue("A I R 2 3 3 1", new WorldPoint(2702, 3246, 0)),
+      new FairyRingClue("A I Q 0 4 4 0", new WorldPoint(3000, 3110, 0)),
+      new FairyRingClue("A L P 1 1 4 0", new WorldPoint(2504, 3633, 0)),
+      new FairyRingClue("B L P 6 2 0 0", new WorldPoint(2439, 5132, 0)),
+      new FairyRingClue("B J R 1 1 2 3", new WorldPoint(2648, 4729, 0)),
+      new FairyRingClue("B I P 7 0 1 3", new WorldPoint(3407, 3330, 0)),
+      new FairyRingClue("C I S 0 0 0 9", new WorldPoint(1630, 3868, 0)),
+      new FairyRingClue("C K P 0 2 2 4", new WorldPoint(2073, 4846, 0)),
+      new FairyRingClue("D I P 8 5 1 1", new WorldPoint(3041, 4770, 0)),
+      new FairyRingClue("D K S 2 3 1 0", new WorldPoint(2747, 3720, 0))
+  );
 
-	private FairyRingClue(String text, WorldPoint location)
-	{
-		this.text = text;
-		this.location = location;
-		setRequiresSpade(true);
-	}
+  private final String text;
+  private final WorldPoint location;
 
-	@Override
-	public void makeOverlayHint(PanelComponent panelComponent, ClueScrollPlugin plugin)
-	{
-		panelComponent.getChildren().add(TitleComponent.builder().text("Fairy Ring Clue").build());
-		panelComponent.getChildren().add(LineComponent.builder().left("Code:").build());
-		panelComponent.getChildren().add(LineComponent.builder()
-			.left(getText().substring(0, 5))
-			.leftColor(TITLED_CONTENT_COLOR)
-			.build());
+  private FairyRingClue(String text, WorldPoint location) {
+    this.text = text;
+    this.location = location;
+    setRequiresSpade(true);
+  }
 
-		panelComponent.getChildren().add(LineComponent.builder()
-			.left("Travel to the fairy ring to see where to dig.")
-			.build());
-	}
+  public static FairyRingClue forText(String text) {
+    for (FairyRingClue clue : CLUES) {
+      if (clue.text.equalsIgnoreCase(text)) {
+        return clue;
+      }
+    }
 
-	@Override
-	public void makeWorldOverlayHint(Graphics2D graphics, ClueScrollPlugin plugin)
-	{
-		LocalPoint localLocation = LocalPoint.fromWorld(plugin.getClient(), getLocation());
+    return null;
+  }
 
-		if (localLocation == null)
-		{
-			return;
-		}
+  @Override
+  public void makeOverlayHint(PanelComponent panelComponent, ClueScrollPlugin plugin) {
+    panelComponent.getChildren().add(TitleComponent.builder().text("Fairy Ring Clue").build());
+    panelComponent.getChildren().add(LineComponent.builder().left("Code:").build());
+    panelComponent.getChildren().add(LineComponent.builder()
+        .left(getText().substring(0, 5))
+        .leftColor(TITLED_CONTENT_COLOR)
+        .build());
 
-		OverlayUtil.renderTileOverlay(plugin.getClient(), graphics, localLocation, plugin.getSpadeImage(), Color.ORANGE);
-	}
+    panelComponent.getChildren().add(LineComponent.builder()
+        .left("Travel to the fairy ring to see where to dig.")
+        .build());
+  }
 
-	public static FairyRingClue forText(String text)
-	{
-		for (FairyRingClue clue : CLUES)
-		{
-			if (clue.text.equalsIgnoreCase(text))
-			{
-				return clue;
-			}
-		}
+  @Override
+  public void makeWorldOverlayHint(Graphics2D graphics, ClueScrollPlugin plugin) {
+    LocalPoint localLocation = LocalPoint.fromWorld(plugin.getClient(), getLocation());
 
-		return null;
-	}
+    if (localLocation == null) {
+      return;
+    }
+
+    OverlayUtil
+        .renderTileOverlay(plugin.getClient(), graphics, localLocation, plugin.getSpadeImage(),
+            Color.ORANGE);
+  }
 }

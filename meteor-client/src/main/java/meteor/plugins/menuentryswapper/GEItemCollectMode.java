@@ -29,18 +29,16 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum GEItemCollectMode
-{
-	DEFAULT("Default"),
-	ITEMS("Collect-items"),
-	NOTES("Collect-notes"),
-	BANK("Bank");
+public enum GEItemCollectMode {
+  DEFAULT("Default"),
+  ITEMS("Collect-items"),
+  NOTES("Collect-notes"),
+  BANK("Bank");
 
-	private final String name;
+  private final String name;
 
-	@Override
-	public String toString()
-	{
-		return name;
-	}
+  @Override
+  public String toString() {
+    return name;
+  }
 }

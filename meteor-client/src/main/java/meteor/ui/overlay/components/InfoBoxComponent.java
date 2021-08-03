@@ -38,75 +38,70 @@ import meteor.ui.FontManager;
 import meteor.ui.overlay.infobox.InfoBox;
 
 @Setter
-public class InfoBoxComponent implements LayoutableRenderableEntity
-{
-	private static final int SEPARATOR = 3;
-	private static final int DEFAULT_SIZE = 32;
+public class InfoBoxComponent implements LayoutableRenderableEntity {
 
-	@Getter
-	private String tooltip;
+  private static final int SEPARATOR = 3;
+  private static final int DEFAULT_SIZE = 32;
+  @Getter
+  private final Rectangle bounds = new Rectangle();
+  @Getter
+  private String tooltip;
+  private Point preferredLocation = new Point();
+  private Dimension preferredSize = new Dimension(DEFAULT_SIZE, DEFAULT_SIZE);
+  private String text;
+  private Color color = Color.WHITE;
+  private boolean outline;
+  private Color backgroundColor = ComponentConstants.STANDARD_BACKGROUND_COLOR;
+  private BufferedImage image;
+  @Getter
+  private InfoBox infoBox;
 
-	@Getter
-	private final Rectangle bounds = new Rectangle();
+  @Override
+  public Dimension render(Graphics2D graphics) {
+    if (image == null) {
+      return new Dimension();
+    }
 
-	private Point preferredLocation = new Point();
-	private Dimension preferredSize = new Dimension(DEFAULT_SIZE, DEFAULT_SIZE);
-	private String text;
-	private Color color = Color.WHITE;
-	private boolean outline;
-	private Color backgroundColor = ComponentConstants.STANDARD_BACKGROUND_COLOR;
-	private BufferedImage image;
-	@Getter
-	private InfoBox infoBox;
+    graphics.setFont(getSize() < DEFAULT_SIZE ? FontManager.getRunescapeSmallFont()
+        : FontManager.getRunescapeFont());
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		if (image == null)
-		{
-			return new Dimension();
-		}
+    final int baseX = preferredLocation.x;
+    final int baseY = preferredLocation.y;
 
-		graphics.setFont(getSize() < DEFAULT_SIZE ? FontManager.getRunescapeSmallFont() : FontManager.getRunescapeFont());
+    // Calculate dimensions
+    final FontMetrics metrics = graphics.getFontMetrics();
+    final int size = getSize();
+    final Rectangle bounds = new Rectangle(baseX, baseY, size, size);
 
-		final int baseX = preferredLocation.x;
-		final int baseY = preferredLocation.y;
+    // Render background
+    final BackgroundComponent backgroundComponent = new BackgroundComponent();
+    backgroundComponent.setBackgroundColor(backgroundColor);
+    backgroundComponent.setRectangle(bounds);
+    backgroundComponent.render(graphics);
 
-		// Calculate dimensions
-		final FontMetrics metrics = graphics.getFontMetrics();
-		final int size = getSize();
-		final Rectangle bounds = new Rectangle(baseX, baseY, size, size);
+    // Render image
+    graphics.drawImage(
+        image,
+        baseX + (size - image.getWidth(null)) / 2,
+        baseY + (size - image.getHeight(null)) / 2,
+        null);
 
-		// Render background
-		final BackgroundComponent backgroundComponent = new BackgroundComponent();
-		backgroundComponent.setBackgroundColor(backgroundColor);
-		backgroundComponent.setRectangle(bounds);
-		backgroundComponent.render(graphics);
+    // Render caption
+    if (!Strings.isNullOrEmpty(text)) {
+      final TextComponent textComponent = new TextComponent();
+      textComponent.setColor(color);
+      textComponent.setOutline(outline);
+      textComponent.setText(text);
+      textComponent.setPosition(
+          new Point(baseX + ((size - metrics.stringWidth(text)) / 2), baseY + size - SEPARATOR));
+      textComponent.render(graphics);
+    }
 
-		// Render image
-		graphics.drawImage(
-			image,
-			baseX + (size - image.getWidth(null)) / 2,
-			baseY + (size - image.getHeight(null)) / 2,
-			null);
+    this.bounds.setBounds(bounds);
+    return bounds.getSize();
+  }
 
-		// Render caption
-		if (!Strings.isNullOrEmpty(text))
-		{
-			final TextComponent textComponent = new TextComponent();
-			textComponent.setColor(color);
-			textComponent.setOutline(outline);
-			textComponent.setText(text);
-			textComponent.setPosition(new Point(baseX + ((size - metrics.stringWidth(text)) / 2), baseY + size - SEPARATOR));
-			textComponent.render(graphics);
-		}
-
-		this.bounds.setBounds(bounds);
-		return bounds.getSize();
-	}
-
-	private int getSize()
-	{
-		return Math.max(preferredSize.width, preferredSize.height);
-	}
+  private int getSize() {
+    return Math.max(preferredSize.width, preferredSize.height);
+  }
 }

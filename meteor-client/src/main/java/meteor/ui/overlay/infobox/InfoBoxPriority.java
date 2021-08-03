@@ -24,10 +24,9 @@
  */
 package meteor.ui.overlay.infobox;
 
-public enum InfoBoxPriority
-{
-	HIGH,
-	MED,
-	NONE,
-	LOW
+public enum InfoBoxPriority {
+  HIGH,
+  MED,
+  NONE,
+  LOW
 }

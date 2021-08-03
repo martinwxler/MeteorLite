@@ -27,5 +27,5 @@ package meteor.config;
 public enum RequestFocusType {
   OFF,
   REQUEST,
-  FORCE;
+  FORCE
 }

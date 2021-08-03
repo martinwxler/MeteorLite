@@ -27,11 +27,11 @@ package meteor.plugins.cluescrolls.clues.item;
 import net.runelite.api.Client;
 import net.runelite.api.Item;
 
-public interface ItemRequirement
-{
-	boolean fulfilledBy(int itemId);
+public interface ItemRequirement {
 
-	boolean fulfilledBy(Item[] items);
+  boolean fulfilledBy(int itemId);
 
-	String getCollectiveName(Client client);
+  boolean fulfilledBy(Item[] items);
+
+  String getCollectiveName(Client client);
 }

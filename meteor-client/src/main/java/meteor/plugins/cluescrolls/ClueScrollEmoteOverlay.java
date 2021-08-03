@@ -27,87 +27,78 @@ package meteor.plugins.cluescrolls;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import javax.inject.Inject;
-import net.runelite.api.Client;
-import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import meteor.plugins.cluescrolls.clues.ClueScroll;
 import meteor.plugins.cluescrolls.clues.EmoteClue;
 import meteor.ui.overlay.Overlay;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayPosition;
+import net.runelite.api.Client;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 
-class ClueScrollEmoteOverlay extends Overlay
-{
-	private final ClueScrollPlugin plugin;
-	private final Client client;
+class ClueScrollEmoteOverlay extends Overlay {
 
-	private boolean hasScrolled;
+  private final ClueScrollPlugin plugin;
+  private final Client client;
 
-	@Inject
-	private ClueScrollEmoteOverlay(ClueScrollPlugin plugin, Client client)
-	{
-		setPosition(OverlayPosition.DYNAMIC);
-		setLayer(OverlayLayer.ABOVE_WIDGETS);
-		this.plugin = plugin;
-		this.client = client;
-	}
+  private boolean hasScrolled;
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		ClueScroll clue = plugin.getClue();
+  @Inject
+  private ClueScrollEmoteOverlay(ClueScrollPlugin plugin, Client client) {
+    setPosition(OverlayPosition.DYNAMIC);
+    setLayer(OverlayLayer.ABOVE_WIDGETS);
+    this.plugin = plugin;
+    this.client = client;
+  }
 
-		if (!(clue instanceof EmoteClue))
-		{
-			hasScrolled = false;
-			return null;
-		}
+  @Override
+  public Dimension render(Graphics2D graphics) {
+    ClueScroll clue = plugin.getClue();
 
-		EmoteClue emoteClue = (EmoteClue) clue;
+    if (!(clue instanceof EmoteClue)) {
+      hasScrolled = false;
+      return null;
+    }
 
-		if (!emoteClue.getFirstEmote().hasSprite())
-		{
-			return null;
-		}
+    EmoteClue emoteClue = (EmoteClue) clue;
 
-		Widget emoteContainer = client.getWidget(WidgetInfo.EMOTE_CONTAINER);
+    if (!emoteClue.getFirstEmote().hasSprite()) {
+      return null;
+    }
 
-		if (emoteContainer == null || emoteContainer.isHidden())
-		{
-			return null;
-		}
+    Widget emoteContainer = client.getWidget(WidgetInfo.EMOTE_CONTAINER);
 
-		Widget emoteWindow = client.getWidget(WidgetInfo.EMOTE_WINDOW);
+    if (emoteContainer == null || emoteContainer.isHidden()) {
+      return null;
+    }
 
-		if (emoteWindow == null)
-		{
-			return null;
-		}
+    Widget emoteWindow = client.getWidget(WidgetInfo.EMOTE_WINDOW);
 
-		Widget firstEmoteWidget = null;
-		Widget secondEmoteWidget = null;
+    if (emoteWindow == null) {
+      return null;
+    }
 
-		for (Widget emoteWidget : emoteContainer.getDynamicChildren())
-		{
-			if (emoteWidget.getSpriteId() == emoteClue.getFirstEmote().getSpriteId())
-			{
-				firstEmoteWidget = emoteWidget;
-				plugin.highlightWidget(graphics, emoteWidget, emoteWindow, null,
-					emoteClue.getSecondEmote() != null ? "1st" : null);
-			}
-			else if (emoteClue.getSecondEmote() != null
-				&& emoteWidget.getSpriteId() == emoteClue.getSecondEmote().getSpriteId())
-			{
-				secondEmoteWidget = emoteWidget;
-				plugin.highlightWidget(graphics, emoteWidget, emoteWindow, null, "2nd");
-			}
-		}
-		if (!hasScrolled)
-		{
-			hasScrolled = true;
-			plugin.scrollToWidget(WidgetInfo.EMOTE_CONTAINER, WidgetInfo.EMOTE_SCROLLBAR, firstEmoteWidget, secondEmoteWidget);
-		}
+    Widget firstEmoteWidget = null;
+    Widget secondEmoteWidget = null;
 
-		return null;
-	}
+    for (Widget emoteWidget : emoteContainer.getDynamicChildren()) {
+      if (emoteWidget.getSpriteId() == emoteClue.getFirstEmote().getSpriteId()) {
+        firstEmoteWidget = emoteWidget;
+        plugin.highlightWidget(graphics, emoteWidget, emoteWindow, null,
+            emoteClue.getSecondEmote() != null ? "1st" : null);
+      } else if (emoteClue.getSecondEmote() != null
+          && emoteWidget.getSpriteId() == emoteClue.getSecondEmote().getSpriteId()) {
+        secondEmoteWidget = emoteWidget;
+        plugin.highlightWidget(graphics, emoteWidget, emoteWindow, null, "2nd");
+      }
+    }
+    if (!hasScrolled) {
+      hasScrolled = true;
+      plugin
+          .scrollToWidget(WidgetInfo.EMOTE_CONTAINER, WidgetInfo.EMOTE_SCROLLBAR, firstEmoteWidget,
+              secondEmoteWidget);
+    }
+
+    return null;
+  }
 }

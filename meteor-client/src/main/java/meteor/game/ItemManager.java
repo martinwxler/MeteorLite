@@ -289,6 +289,7 @@ public class ItemManager {
   Logger log = new Logger("ItemManager");
   private Map<Integer, ItemPrice> itemPrices = Collections.emptyMap();
   private Map<Integer, ItemStats> itemStats = Collections.emptyMap();
+
   @Inject
   public ItemManager(Client client, ScheduledExecutorService scheduledExecutorService,
       ClientThread clientThread,

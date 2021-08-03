@@ -27,72 +27,66 @@ package meteor.plugins.boosts;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import lombok.Getter;
-import net.runelite.api.Client;
-import net.runelite.api.Skill;
 import meteor.ui.overlay.infobox.InfoBox;
 import meteor.ui.overlay.infobox.InfoBoxPriority;
+import net.runelite.api.Client;
+import net.runelite.api.Skill;
 
-public class BoostIndicator extends InfoBox
-{
-	private final BoostsPlugin plugin;
-	private final BoostsConfig config;
-	private final Client client;
+public class BoostIndicator extends InfoBox {
 
-	@Getter
-	private final Skill skill;
+  private final BoostsPlugin plugin;
+  private final BoostsConfig config;
+  private final Client client;
 
-	BoostIndicator(Skill skill, BufferedImage image, BoostsPlugin plugin, Client client, BoostsConfig config)
-	{
-		super(image, plugin);
-		this.plugin = plugin;
-		this.config = config;
-		this.client = client;
-		this.skill = skill;
-		setTooltip(skill.getName() + " boost");
-		setPriority(InfoBoxPriority.HIGH);
-	}
+  @Getter
+  private final Skill skill;
 
-	@Override
-	public String getText()
-	{
-		if (!config.useRelativeBoost())
-		{
-			return String.valueOf(client.getBoostedSkillLevel(skill));
-		}
+  BoostIndicator(Skill skill, BufferedImage image, BoostsPlugin plugin, Client client,
+      BoostsConfig config) {
+    super(image, plugin);
+    this.plugin = plugin;
+    this.config = config;
+    this.client = client;
+    this.skill = skill;
+    setTooltip(skill.getName() + " boost");
+    setPriority(InfoBoxPriority.HIGH);
+  }
 
-		int boost = client.getBoostedSkillLevel(skill) - client.getRealSkillLevel(skill);
-		String text = String.valueOf(boost);
-		if (boost > 0)
-		{
-			text = "+" + text;
-		}
+  @Override
+  public String getText() {
+    if (!config.useRelativeBoost()) {
+      return String.valueOf(client.getBoostedSkillLevel(skill));
+    }
 
-		return text;
-	}
+    int boost = client.getBoostedSkillLevel(skill) - client.getRealSkillLevel(skill);
+    String text = String.valueOf(boost);
+    if (boost > 0) {
+      text = "+" + text;
+    }
 
-	@Override
-	public Color getTextColor()
-	{
-		int boosted = client.getBoostedSkillLevel(skill),
-			base = client.getRealSkillLevel(skill);
+    return text;
+  }
 
-		if (boosted < base)
-		{
-			return new Color(238, 51, 51);
-		}
+  @Override
+  public Color getTextColor() {
+    int boosted = client.getBoostedSkillLevel(skill),
+        base = client.getRealSkillLevel(skill);
 
-		return boosted - base <= config.boostThreshold() ? Color.YELLOW : Color.GREEN;
-	}
+    if (boosted < base) {
+      return new Color(238, 51, 51);
+    }
 
-	@Override
-	public boolean render()
-	{
-		return config.displayInfoboxes() && plugin.canShowBoosts() && plugin.getSkillsToDisplay().contains(getSkill());
-	}
+    return boosted - base <= config.boostThreshold() ? Color.YELLOW : Color.GREEN;
+  }
 
-	@Override
-	public String getName()
-	{
-		return "Boost " + skill.getName();
-	}
+  @Override
+  public boolean render() {
+    return config.displayInfoboxes() && plugin.canShowBoosts() && plugin.getSkillsToDisplay()
+        .contains(getSkill());
+  }
+
+  @Override
+  public String getName() {
+    return "Boost " + skill.getName();
+  }
 }

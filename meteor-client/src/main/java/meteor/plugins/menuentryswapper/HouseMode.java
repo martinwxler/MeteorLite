@@ -30,18 +30,16 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum HouseMode
-{
-	ENTER("Enter"),
-	HOME("Home"),
-	BUILD_MODE("Build mode"),
-	FRIENDS_HOUSE("Friend's House");
+public enum HouseMode {
+  ENTER("Enter"),
+  HOME("Home"),
+  BUILD_MODE("Build mode"),
+  FRIENDS_HOUSE("Friend's House");
 
-	private final String name;
+  private final String name;
 
-	@Override
-	public String toString()
-	{
-		return name;
-	}
+  @Override
+  public String toString() {
+    return name;
+  }
 }

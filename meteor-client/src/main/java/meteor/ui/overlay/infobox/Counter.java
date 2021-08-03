@@ -32,28 +32,25 @@ import lombok.ToString;
 import meteor.plugins.Plugin;
 
 @ToString
-public class Counter extends meteor.ui.overlay.infobox.InfoBox
-{
-	@Getter
-	@Setter
-	private int count;
+public class Counter extends meteor.ui.overlay.infobox.InfoBox {
 
-	public Counter(BufferedImage image, Plugin plugin, int count)
-	{
-		super(image, plugin);
-		this.count = count;
-	}
+  @Getter
+  @Setter
+  private int count;
 
-	@Override
-	public String getText()
-	{
-		return Integer.toString(getCount());
-	}
+  public Counter(BufferedImage image, Plugin plugin, int count) {
+    super(image, plugin);
+    this.count = count;
+  }
 
-	@Override
-	public Color getTextColor()
-	{
-		return Color.WHITE;
-	}
+  @Override
+  public String getText() {
+    return Integer.toString(getCount());
+  }
+
+  @Override
+  public Color getTextColor() {
+    return Color.WHITE;
+  }
 
 }

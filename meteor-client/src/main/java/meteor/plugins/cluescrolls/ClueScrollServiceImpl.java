@@ -30,19 +30,17 @@ import javax.inject.Singleton;
 import meteor.plugins.cluescrolls.clues.ClueScroll;
 
 @Singleton
-class ClueScrollServiceImpl implements ClueScrollService
-{
-	private final ClueScrollPlugin plugin;
+class ClueScrollServiceImpl implements ClueScrollService {
 
-	@Inject
-	private ClueScrollServiceImpl(ClueScrollPlugin plugin)
-	{
-		this.plugin = plugin;
-	}
+  private final ClueScrollPlugin plugin;
 
-	@Override
-	public ClueScroll getClue()
-	{
-		return plugin.getClue();
-	}
+  @Inject
+  private ClueScrollServiceImpl(ClueScrollPlugin plugin) {
+    this.plugin = plugin;
+  }
+
+  @Override
+  public ClueScroll getClue() {
+    return plugin.getClue();
+  }
 }

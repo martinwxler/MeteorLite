@@ -27,6 +27,7 @@ package meteor.plugins.bank;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import meteor.callback.ClientThread;
 import net.runelite.api.Client;
 import net.runelite.api.ScriptID;
 import net.runelite.api.VarClientInt;
@@ -34,86 +35,74 @@ import net.runelite.api.VarClientStr;
 import net.runelite.api.vars.InputType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
-import meteor.callback.ClientThread;
 import org.apache.commons.lang3.ArrayUtils;
 
 @Singleton
-public class BankSearch
-{
-	private final Client client;
-	private final ClientThread clientThread;
+public class BankSearch {
 
-	@Inject
-	private BankSearch(
-		final Client client,
-		final ClientThread clientThread
-	)
-	{
-		this.client = client;
-		this.clientThread = clientThread;
-	}
+  private final Client client;
+  private final ClientThread clientThread;
 
-	public void layoutBank()
-	{
-		Widget bankContainer = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
-		if (bankContainer == null || bankContainer.isHidden())
-		{
-			return;
-		}
+  @Inject
+  private BankSearch(
+      final Client client,
+      final ClientThread clientThread
+  ) {
+    this.client = client;
+    this.clientThread = clientThread;
+  }
 
-		Object[] scriptArgs = bankContainer.getOnInvTransmitListener();
-		if (scriptArgs == null)
-		{
-			return;
-		}
+  public void layoutBank() {
+    Widget bankContainer = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
+    if (bankContainer == null || bankContainer.isHidden()) {
+      return;
+    }
 
-		client.runScript(scriptArgs);
-	}
+    Object[] scriptArgs = bankContainer.getOnInvTransmitListener();
+    if (scriptArgs == null) {
+      return;
+    }
 
-	public void initSearch()
-	{
-		clientThread.invoke(() ->
-		{
-			Widget bankContainer = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
-			if (bankContainer == null || bankContainer.isHidden())
-			{
-				return;
-			}
+    client.runScript(scriptArgs);
+  }
 
-			Object[] bankBuildArgs = bankContainer.getOnInvTransmitListener();
-			if (bankBuildArgs == null)
-			{
-				return;
-			}
+  public void initSearch() {
+    clientThread.invoke(() ->
+    {
+      Widget bankContainer = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
+      if (bankContainer == null || bankContainer.isHidden()) {
+        return;
+      }
 
-			// the search toggle script requires 1 as its first argument
-			Object[] searchToggleArgs = ArrayUtils.insert(1, bankBuildArgs, 1);
-			searchToggleArgs[0] = ScriptID.BANKMAIN_SEARCH_TOGGLE;
+      Object[] bankBuildArgs = bankContainer.getOnInvTransmitListener();
+      if (bankBuildArgs == null) {
+        return;
+      }
 
-			// reset search to clear tab tags and also allow us to initiate a new search while searching
-			reset(true);
-			client.runScript(searchToggleArgs);
-		});
-	}
+      // the search toggle script requires 1 as its first argument
+      Object[] searchToggleArgs = ArrayUtils.insert(1, bankBuildArgs, 1);
+      searchToggleArgs[0] = ScriptID.BANKMAIN_SEARCH_TOGGLE;
 
-	public void reset(boolean closeChat)
-	{
-		clientThread.invoke(() ->
-		{
-			// This ensures that any chatbox input (e.g from search) will not remain visible when
-			// selecting/changing tab
-			if (closeChat)
-			{
-				// this clears the input text and type, and resets the chatbox to allow input
-				client.runScript(ScriptID.MESSAGE_LAYER_CLOSE, 1, 1, 0);
-			}
-			else
-			{
-				client.setVar(VarClientInt.INPUT_TYPE, InputType.NONE.getType());
-				client.setVar(VarClientStr.INPUT_TEXT, "");
-			}
+      // reset search to clear tab tags and also allow us to initiate a new search while searching
+      reset(true);
+      client.runScript(searchToggleArgs);
+    });
+  }
 
-			layoutBank();
-		});
-	}
+  public void reset(boolean closeChat) {
+    clientThread.invoke(() ->
+    {
+      // This ensures that any chatbox input (e.g from search) will not remain visible when
+      // selecting/changing tab
+      if (closeChat) {
+        // this clears the input text and type, and resets the chatbox to allow input
+        client.runScript(ScriptID.MESSAGE_LAYER_CLOSE, 1, 1, 0);
+      } else {
+        client.setVar(VarClientInt.INPUT_TYPE, InputType.NONE.getType());
+        client.setVar(VarClientStr.INPUT_TEXT, "");
+      }
+
+      layoutBank();
+    });
+  }
 }

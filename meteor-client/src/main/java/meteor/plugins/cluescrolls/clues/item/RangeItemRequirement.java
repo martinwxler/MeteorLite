@@ -27,42 +27,36 @@ package meteor.plugins.cluescrolls.clues.item;
 import net.runelite.api.Client;
 import net.runelite.api.Item;
 
-public class RangeItemRequirement implements ItemRequirement
-{
-	private final String name;
-	private final int startItemId;
-	private final int endItemId;
+public class RangeItemRequirement implements ItemRequirement {
 
-	public RangeItemRequirement(String name, int startItemId, int endItemId)
-	{
-		this.name = name;
-		this.startItemId = startItemId;
-		this.endItemId = endItemId;
-	}
+  private final String name;
+  private final int startItemId;
+  private final int endItemId;
 
-	@Override
-	public boolean fulfilledBy(int itemId)
-	{
-		return itemId >= startItemId && itemId <= endItemId;
-	}
+  public RangeItemRequirement(String name, int startItemId, int endItemId) {
+    this.name = name;
+    this.startItemId = startItemId;
+    this.endItemId = endItemId;
+  }
 
-	@Override
-	public boolean fulfilledBy(Item[] items)
-	{
-		for (Item item : items)
-		{
-			if (item.getId() >= startItemId && item.getId() <= endItemId)
-			{
-				return true;
-			}
-		}
+  @Override
+  public boolean fulfilledBy(int itemId) {
+    return itemId >= startItemId && itemId <= endItemId;
+  }
 
-		return false;
-	}
+  @Override
+  public boolean fulfilledBy(Item[] items) {
+    for (Item item : items) {
+      if (item.getId() >= startItemId && item.getId() <= endItemId) {
+        return true;
+      }
+    }
 
-	@Override
-	public String getCollectiveName(Client client)
-	{
-		return name;
-	}
+    return false;
+  }
+
+  @Override
+  public String getCollectiveName(Client client) {
+    return name;
+  }
 }

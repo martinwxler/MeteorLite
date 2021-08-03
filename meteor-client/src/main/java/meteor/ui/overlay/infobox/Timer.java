@@ -36,67 +36,60 @@ import meteor.plugins.Plugin;
 
 @Getter
 @ToString
-public class Timer extends meteor.ui.overlay.infobox.InfoBox
-{
-	private final Instant startTime;
-	private Instant endTime;
-	private Duration duration;
+public class Timer extends meteor.ui.overlay.infobox.InfoBox {
 
-	public Timer(long period, ChronoUnit unit, BufferedImage image, Plugin plugin)
-	{
-		super(image, plugin);
+  private final Instant startTime;
+  private Instant endTime;
+  private Duration duration;
 
-		Preconditions.checkArgument(period > 0, "negative period!");
+  public Timer(long period, ChronoUnit unit, BufferedImage image, Plugin plugin) {
+    super(image, plugin);
 
-		startTime = Instant.now();
-		duration = Duration.of(period, unit);
-		endTime = startTime.plus(duration);
-	}
+    Preconditions.checkArgument(period > 0, "negative period!");
 
-	@Override
-	public String getText()
-	{
-		Duration timeLeft = Duration.between(Instant.now(), endTime);
+    startTime = Instant.now();
+    duration = Duration.of(period, unit);
+    endTime = startTime.plus(duration);
+  }
 
-		int seconds = (int) (timeLeft.toMillis() / 1000L);
+  @Override
+  public String getText() {
+    Duration timeLeft = Duration.between(Instant.now(), endTime);
 
-		int minutes = (seconds % 3600) / 60;
-		int secs = seconds % 60;
+    int seconds = (int) (timeLeft.toMillis() / 1000L);
 
-		return String.format("%d:%02d", minutes, secs);
-	}
+    int minutes = (seconds % 3600) / 60;
+    int secs = seconds % 60;
 
-	@Override
-	public Color getTextColor()
-	{
-		Duration timeLeft = Duration.between(Instant.now(), endTime);
+    return String.format("%d:%02d", minutes, secs);
+  }
 
-		//check if timer has 10% of time left
-		if (timeLeft.getSeconds() < (duration.getSeconds() * .10))
-		{
-			return Color.RED.brighter();
-		}
+  @Override
+  public Color getTextColor() {
+    Duration timeLeft = Duration.between(Instant.now(), endTime);
 
-		return Color.WHITE;
-	}
+    //check if timer has 10% of time left
+    if (timeLeft.getSeconds() < (duration.getSeconds() * .10)) {
+      return Color.RED.brighter();
+    }
 
-	@Override
-	public boolean render()
-	{
-		Duration timeLeft = Duration.between(Instant.now(), endTime);
-		return !timeLeft.isNegative();
-	}
+    return Color.WHITE;
+  }
 
-	@Override
-	public boolean cull()
-	{
-		Duration timeLeft = Duration.between(Instant.now(), endTime);
-		return timeLeft.isZero() || timeLeft.isNegative();
-	}
+  @Override
+  public boolean render() {
+    Duration timeLeft = Duration.between(Instant.now(), endTime);
+    return !timeLeft.isNegative();
+  }
 
-	public void setDuration(Duration duration)
-	{
-		this.duration = duration;
-		endTime = startTime.plus(duration);
-	}
+  @Override
+  public boolean cull() {
+    Duration timeLeft = Duration.between(Instant.now(), endTime);
+    return timeLeft.isZero() || timeLeft.isNegative();
+  }
+
+  public void setDuration(Duration duration) {
+    this.duration = duration;
+    endTime = startTime.plus(duration);
+  }
 }

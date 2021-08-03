@@ -27,12 +27,12 @@ package meteor.plugins.cluescrolls;
 
 import meteor.plugins.cluescrolls.clues.ClueScroll;
 
-public interface ClueScrollService
-{
-	/**
-	 * Get the clue scroll
-	 *
-	 * @return ClueScroll
-	 */
-	ClueScroll getClue();
+public interface ClueScrollService {
+
+  /**
+   * Get the clue scroll
+   *
+   * @return ClueScroll
+   */
+  ClueScroll getClue();
 }

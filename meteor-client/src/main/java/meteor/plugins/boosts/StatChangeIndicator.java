@@ -29,38 +29,36 @@ import java.awt.image.BufferedImage;
 import meteor.ui.overlay.infobox.InfoBox;
 import meteor.ui.overlay.infobox.InfoBoxPriority;
 
-public class StatChangeIndicator extends InfoBox
-{
-	private final boolean up;
-	private final BoostsPlugin plugin;
-	private final BoostsConfig config;
+public class StatChangeIndicator extends InfoBox {
 
-	StatChangeIndicator(boolean up, BufferedImage image, BoostsPlugin plugin, BoostsConfig config)
-	{
-		super(image, plugin);
-		this.up = up;
-		this.plugin = plugin;
-		this.config = config;
-		setPriority(InfoBoxPriority.MED);
-		setTooltip(up ? "Next debuff change" : "Next buff change");
-	}
+  private final boolean up;
+  private final BoostsPlugin plugin;
+  private final BoostsConfig config;
 
-	@Override
-	public String getText()
-	{
-		return String.format("%02d", plugin.getChangeTime(up ? plugin.getChangeUpTicks() : plugin.getChangeDownTicks()));
-	}
+  StatChangeIndicator(boolean up, BufferedImage image, BoostsPlugin plugin, BoostsConfig config) {
+    super(image, plugin);
+    this.up = up;
+    this.plugin = plugin;
+    this.config = config;
+    setPriority(InfoBoxPriority.MED);
+    setTooltip(up ? "Next debuff change" : "Next buff change");
+  }
 
-	@Override
-	public Color getTextColor()
-	{
-		return (up ? plugin.getChangeUpTicks() : plugin.getChangeDownTicks()) < 10 ? Color.RED.brighter() : Color.WHITE;
-	}
+  @Override
+  public String getText() {
+    return String.format("%02d",
+        plugin.getChangeTime(up ? plugin.getChangeUpTicks() : plugin.getChangeDownTicks()));
+  }
 
-	@Override
-	public boolean render()
-	{
-		final int time = up ? plugin.getChangeUpTicks() : plugin.getChangeDownTicks();
-		return config.displayInfoboxes() && time != -1;
-	}
+  @Override
+  public Color getTextColor() {
+    return (up ? plugin.getChangeUpTicks() : plugin.getChangeDownTicks()) < 10 ? Color.RED
+        .brighter() : Color.WHITE;
+  }
+
+  @Override
+  public boolean render() {
+    final int time = up ? plugin.getChangeUpTicks() : plugin.getChangeDownTicks();
+    return config.displayInfoboxes() && time != -1;
+  }
 }

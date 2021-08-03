@@ -33,36 +33,33 @@ import net.runelite.api.coords.WorldPoint;
 
 @Data
 @Builder
-class GroundItem
-{
-	private int id;
-	private int itemId;
-	private String name;
-	private int quantity;
-	private WorldPoint location;
-	private int height;
-	private int haPrice;
-	private int gePrice;
-	private int offset;
-	private boolean tradeable;
-	@Nonnull
-	private LootType lootType;
-	@Nullable
-	private Instant spawnTime;
-	private boolean stackable;
+class GroundItem {
 
-	int getHaPrice()
-	{
-		return haPrice * quantity;
-	}
+  private int id;
+  private int itemId;
+  private String name;
+  private int quantity;
+  private WorldPoint location;
+  private int height;
+  private int haPrice;
+  private int gePrice;
+  private int offset;
+  private boolean tradeable;
+  @Nonnull
+  private LootType lootType;
+  @Nullable
+  private Instant spawnTime;
+  private boolean stackable;
 
-	int getGePrice()
-	{
-		return gePrice * quantity;
-	}
+  int getHaPrice() {
+    return haPrice * quantity;
+  }
 
-	boolean isMine()
-	{
-		return lootType != LootType.UNKNOWN;
-	}
+  int getGePrice() {
+    return gePrice * quantity;
+  }
+
+  boolean isMine() {
+    return lootType != LootType.UNKNOWN;
+  }
 }

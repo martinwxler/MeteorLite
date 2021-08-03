@@ -12,10 +12,12 @@ import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
 import meteor.plugins.EventTestPlugin;
 import meteor.plugins.Plugin;
+import meteor.plugins.actions.ActionPlugin;
 import meteor.plugins.agility.AgilityPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.bank.BankPlugin;
 import meteor.plugins.boosts.BoostsPlugin;
+import meteor.plugins.botutils.BotUtils;
 import meteor.plugins.camera.CameraPlugin;
 import meteor.plugins.cluescrolls.ClueScrollPlugin;
 import meteor.plugins.combatlevel.CombatLevelPlugin;
@@ -38,17 +40,14 @@ import meteor.plugins.worldmap.WorldMapPlugin;
 
 public class PluginManager {
 
+  public static List<Plugin> plugins = new ArrayList<>();
   @Inject
   private EventBus eventBus;
-
   @Inject
   private ConfigManager configManager;
 
-  public static List<Plugin> plugins = new ArrayList<>();
-
-  public void startInternalPlugins()
-  {
-   plugins.add(new EventTestPlugin());
+  public void startInternalPlugins() {
+    plugins.add(new EventTestPlugin());
     //MeteorLite.plugins.add(new DebugPlugin());
 
     plugins.add(new StretchedModePlugin());
@@ -74,6 +73,7 @@ public class PluginManager {
     plugins.add(new NpcIndicatorsPlugin());
     plugins.add(new ImplingsPlugin());
     plugins.add(new MenuEntrySwapperPlugin());
+    plugins.add(new ActionPlugin());
 
     for (Plugin plugin : plugins) {
       Injector injector = plugin.getInjector();
@@ -88,11 +88,9 @@ public class PluginManager {
         Injector pluginInjector = MeteorLite.injector.createChildInjector(pluginModule);
         pluginInjector.injectMembers(plugin);
         plugin.setInjector(pluginInjector);
-        for (Key<?> key : pluginInjector.getBindings().keySet())
-        {
+        for (Key<?> key : pluginInjector.getBindings().keySet()) {
           Class<?> type = key.getTypeLiteral().getRawType();
-          if (Config.class.isAssignableFrom(type))
-          {
+          if (Config.class.isAssignableFrom(type)) {
             Config config = (Config) pluginInjector.getInstance(key);
             configManager.setDefaultConfiguration(config, false);
           }

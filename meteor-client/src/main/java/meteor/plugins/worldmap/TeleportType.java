@@ -28,20 +28,18 @@ package meteor.plugins.worldmap;
 import lombok.Getter;
 
 @Getter
-public enum TeleportType
-{
-	NORMAL_MAGIC(""),
-	ANCIENT_MAGICKS("Ancient - "),
-	LUNAR_MAGIC("Lunar - "),
-	ARCEUUS_MAGIC("Arceuus - "),
-	JEWELLERY("Jewellery - "),
-	SCROLL(""),
-	OTHER("");
+public enum TeleportType {
+  NORMAL_MAGIC(""),
+  ANCIENT_MAGICKS("Ancient - "),
+  LUNAR_MAGIC("Lunar - "),
+  ARCEUUS_MAGIC("Arceuus - "),
+  JEWELLERY("Jewellery - "),
+  SCROLL(""),
+  OTHER("");
 
-	private String prefix;
+  private final String prefix;
 
-	TeleportType(String prefix)
-	{
-		this.prefix = prefix;
-	}
+  TeleportType(String prefix) {
+    this.prefix = prefix;
+  }
 }

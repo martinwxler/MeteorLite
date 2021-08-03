@@ -40,6 +40,7 @@ public class WidgetOverlay extends Overlay {
   protected final Client client;
   private final WidgetInfo widgetInfo;
   private final Rectangle parentBounds = new Rectangle();
+
   private WidgetOverlay(final Client client, final WidgetInfo widgetInfo,
       final OverlayPosition overlayPosition) {
     this.client = client;

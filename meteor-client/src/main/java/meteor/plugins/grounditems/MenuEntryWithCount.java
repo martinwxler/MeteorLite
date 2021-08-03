@@ -29,17 +29,16 @@ import lombok.RequiredArgsConstructor;
 import net.runelite.api.MenuEntry;
 
 @RequiredArgsConstructor
-class MenuEntryWithCount
-{
-	@Getter
-	private final MenuEntry entry;
+class MenuEntryWithCount {
 
-	@Getter
-	private int count = 1;
+  @Getter
+  private final MenuEntry entry;
 
-	void increment()
-	{
-		count++;
-	}
+  @Getter
+  private int count = 1;
+
+  void increment() {
+    count++;
+  }
 }
 

@@ -37,6 +37,14 @@ import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import meteor.eventbus.Subscribe;
+import meteor.ui.FontManager;
+import meteor.ui.JagexColors;
+import meteor.ui.overlay.Overlay;
+import meteor.ui.overlay.OverlayLayer;
+import meteor.ui.overlay.OverlayPosition;
+import meteor.ui.overlay.OverlayPriority;
+import meteor.util.ColorUtil;
 import net.runelite.api.Client;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
@@ -48,373 +56,329 @@ import net.runelite.api.widgets.JavaScriptCallback;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
-import meteor.eventbus.Subscribe;
-import meteor.ui.FontManager;
-import meteor.ui.JagexColors;
-import meteor.ui.overlay.Overlay;
-import meteor.ui.overlay.OverlayLayer;
-import meteor.ui.overlay.OverlayPosition;
-import meteor.ui.overlay.OverlayPriority;
-import meteor.util.ColorUtil;
 
 @Singleton
-public class WorldMapOverlay extends Overlay
-{
-	private static final String FOCUS_ON = "Focus on";
+public class WorldMapOverlay extends Overlay {
 
-	private static final int TOOLTIP_OFFSET_HEIGHT = 25;
-	private static final int TOOLTIP_OFFSET_WIDTH = 5;
-	private static final int TOOLTIP_PADDING_HEIGHT = 1;
-	private static final int TOOLTIP_PADDING_WIDTH = 2;
-	private static final int TOOLTIP_TEXT_OFFSET_HEIGHT = -2;
+  private static final String FOCUS_ON = "Focus on";
 
-	private static final Splitter TOOLTIP_SPLITTER = Splitter.on("<br>").trimResults().omitEmptyStrings();
+  private static final int TOOLTIP_OFFSET_HEIGHT = 25;
+  private static final int TOOLTIP_OFFSET_WIDTH = 5;
+  private static final int TOOLTIP_PADDING_HEIGHT = 1;
+  private static final int TOOLTIP_PADDING_WIDTH = 2;
+  private static final int TOOLTIP_TEXT_OFFSET_HEIGHT = -2;
 
-	private final WorldMapPointManager worldMapPointManager;
-	private final Client client;
+  private static final Splitter TOOLTIP_SPLITTER = Splitter.on("<br>").trimResults()
+      .omitEmptyStrings();
 
-	private final List<MenuEntry> mapMenuEntries = new ArrayList<>();
+  private final WorldMapPointManager worldMapPointManager;
+  private final Client client;
 
-	@Inject
-	private WorldMapOverlay(
-		Client client,
-		WorldMapPointManager worldMapPointManager)
-	{
-		this.client = client;
-		this.worldMapPointManager = worldMapPointManager;
-		setPosition(OverlayPosition.DYNAMIC);
-		setPriority(OverlayPriority.HIGHEST);
-		setLayer(OverlayLayer.MANUAL);
-		drawAfterInterface(WidgetID.WORLD_MAP_GROUP_ID);
-	}
+  private final List<MenuEntry> mapMenuEntries = new ArrayList<>();
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		final List<WorldMapPoint> points = worldMapPointManager.getWorldMapPoints();
+  @Inject
+  private WorldMapOverlay(
+      Client client,
+      WorldMapPointManager worldMapPointManager) {
+    this.client = client;
+    this.worldMapPointManager = worldMapPointManager;
+    setPosition(OverlayPosition.DYNAMIC);
+    setPriority(OverlayPriority.HIGHEST);
+    setLayer(OverlayLayer.MANUAL);
+    drawAfterInterface(WidgetID.WORLD_MAP_GROUP_ID);
+  }
 
-		if (points.isEmpty())
-		{
-			return null;
-		}
+  @Override
+  public Dimension render(Graphics2D graphics) {
+    final List<WorldMapPoint> points = worldMapPointManager.getWorldMapPoints();
 
-		Widget widget = client.getWidget(WidgetInfo.WORLD_MAP_VIEW);
-		Widget bottomBar = client.getWidget(WidgetInfo.WORLD_MAP_BOTTOM_BAR);
-		if (widget == null || bottomBar == null)
-		{
-			return null;
-		}
+    if (points.isEmpty()) {
+      return null;
+    }
 
-		bottomBar.setOnTimerListener((JavaScriptCallback) ev ->
-		{
-			if (client.isMenuOpen() || mapMenuEntries.isEmpty())
-			{
-				return;
-			}
+    Widget widget = client.getWidget(WidgetInfo.WORLD_MAP_VIEW);
+    Widget bottomBar = client.getWidget(WidgetInfo.WORLD_MAP_BOTTOM_BAR);
+    if (widget == null || bottomBar == null) {
+      return null;
+    }
 
-			MenuEntry[] entries = client.getMenuEntries();
-			int end = entries.length;
-			entries = Arrays.copyOf(entries, end + mapMenuEntries.size());
-			for (int i = 0; i < mapMenuEntries.size(); i++)
-			{
-				entries[end + i] = mapMenuEntries.get(i);
-			}
-			client.setMenuEntries(entries);
-		});
-		bottomBar.setHasListener(true);
+    bottomBar.setOnTimerListener((JavaScriptCallback) ev ->
+    {
+      if (client.isMenuOpen() || mapMenuEntries.isEmpty()) {
+        return;
+      }
 
-		final Rectangle worldMapRectangle = widget.getBounds();
-		final Area mapViewArea = getWorldMapClipArea(worldMapRectangle);
-		final Rectangle canvasBounds = new Rectangle(0, 0, client.getCanvasWidth(), client.getCanvasHeight());
-		final Area canvasViewArea = getWorldMapClipArea(canvasBounds);
-		Area currentClip = null;
+      MenuEntry[] entries = client.getMenuEntries();
+      int end = entries.length;
+      entries = Arrays.copyOf(entries, end + mapMenuEntries.size());
+      for (int i = 0; i < mapMenuEntries.size(); i++) {
+        entries[end + i] = mapMenuEntries.get(i);
+      }
+      client.setMenuEntries(entries);
+    });
+    bottomBar.setHasListener(true);
 
-		Point mousePos = client.getMouseCanvasPosition();
-		if (!mapViewArea.contains(mousePos.getX(), mousePos.getY()))
-		{
-			mousePos = null;
-		}
+    final Rectangle worldMapRectangle = widget.getBounds();
+    final Area mapViewArea = getWorldMapClipArea(worldMapRectangle);
+    final Rectangle canvasBounds = new Rectangle(0, 0, client.getCanvasWidth(),
+        client.getCanvasHeight());
+    final Area canvasViewArea = getWorldMapClipArea(canvasBounds);
+    Area currentClip = null;
 
-		mapMenuEntries.clear();
+    Point mousePos = client.getMouseCanvasPosition();
+    if (!mapViewArea.contains(mousePos.getX(), mousePos.getY())) {
+      mousePos = null;
+    }
 
-		WorldMapPoint tooltipPoint = null;
+    mapMenuEntries.clear();
 
-		for (WorldMapPoint worldPoint : points)
-		{
-			BufferedImage image = worldPoint.getImage();
-			WorldPoint point = worldPoint.getWorldPoint();
+    WorldMapPoint tooltipPoint = null;
 
-			if (image != null && point != null)
-			{
-				Point drawPoint = mapWorldPointToGraphicsPoint(point);
-				if (drawPoint == null)
-				{
-					continue;
-				}
+    for (WorldMapPoint worldPoint : points) {
+      BufferedImage image = worldPoint.getImage();
+      WorldPoint point = worldPoint.getWorldPoint();
 
-				if (worldPoint.isSnapToEdge() && canvasViewArea != currentClip)
-				{
-					graphics.setClip(canvasViewArea);
-					currentClip = canvasViewArea;
-				}
-				else if (!worldPoint.isSnapToEdge() && mapViewArea != currentClip)
-				{
-					graphics.setClip(mapViewArea);
-					currentClip = mapViewArea;
-				}
+      if (image != null && point != null) {
+        Point drawPoint = mapWorldPointToGraphicsPoint(point);
+        if (drawPoint == null) {
+          continue;
+        }
 
-				if (worldPoint.isSnapToEdge())
-				{
-					// Get a smaller rect for edge-snapped icons so they display correctly at the edge
-					final Rectangle snappedRect = widget.getBounds();
-					snappedRect.grow(-image.getWidth() / 2, -image.getHeight() / 2);
+        if (worldPoint.isSnapToEdge() && canvasViewArea != currentClip) {
+          graphics.setClip(canvasViewArea);
+          currentClip = canvasViewArea;
+        } else if (!worldPoint.isSnapToEdge() && mapViewArea != currentClip) {
+          graphics.setClip(mapViewArea);
+          currentClip = mapViewArea;
+        }
 
-					final Rectangle unsnappedRect = new Rectangle(snappedRect);
-					if (worldPoint.getImagePoint() != null)
-					{
-						int dx = worldPoint.getImagePoint().getX() - (image.getWidth() / 2);
-						int dy = worldPoint.getImagePoint().getY() - (image.getHeight() / 2);
-						unsnappedRect.translate(dx, dy);
-					}
-					// Make the unsnap rect slightly smaller so a smaller snapped image doesn't cause a freak out
-					if (worldPoint.isCurrentlyEdgeSnapped())
-					{
-						unsnappedRect.grow(-image.getWidth(), -image.getHeight());
-					}
+        if (worldPoint.isSnapToEdge()) {
+          // Get a smaller rect for edge-snapped icons so they display correctly at the edge
+          final Rectangle snappedRect = widget.getBounds();
+          snappedRect.grow(-image.getWidth() / 2, -image.getHeight() / 2);
 
-					if (unsnappedRect.contains(drawPoint.getX(), drawPoint.getY()))
-					{
-						if (worldPoint.isCurrentlyEdgeSnapped())
-						{
-							worldPoint.setCurrentlyEdgeSnapped(false);
-							worldPoint.onEdgeUnsnap();
-						}
-					}
-					else
-					{
-						drawPoint = clipToRectangle(drawPoint, snappedRect);
-						if (!worldPoint.isCurrentlyEdgeSnapped())
-						{
-							worldPoint.setCurrentlyEdgeSnapped(true);
-							worldPoint.onEdgeSnap();
-						}
-					}
-				}
+          final Rectangle unsnappedRect = new Rectangle(snappedRect);
+          if (worldPoint.getImagePoint() != null) {
+            int dx = worldPoint.getImagePoint().getX() - (image.getWidth() / 2);
+            int dy = worldPoint.getImagePoint().getY() - (image.getHeight() / 2);
+            unsnappedRect.translate(dx, dy);
+          }
+          // Make the unsnap rect slightly smaller so a smaller snapped image doesn't cause a freak out
+          if (worldPoint.isCurrentlyEdgeSnapped()) {
+            unsnappedRect.grow(-image.getWidth(), -image.getHeight());
+          }
 
-				int drawX = drawPoint.getX();
-				int drawY = drawPoint.getY();
+          if (unsnappedRect.contains(drawPoint.getX(), drawPoint.getY())) {
+            if (worldPoint.isCurrentlyEdgeSnapped()) {
+              worldPoint.setCurrentlyEdgeSnapped(false);
+              worldPoint.onEdgeUnsnap();
+            }
+          } else {
+            drawPoint = clipToRectangle(drawPoint, snappedRect);
+            if (!worldPoint.isCurrentlyEdgeSnapped()) {
+              worldPoint.setCurrentlyEdgeSnapped(true);
+              worldPoint.onEdgeSnap();
+            }
+          }
+        }
 
-				if (worldPoint.getImagePoint() == null)
-				{
-					drawX -= image.getWidth() / 2;
-					drawY -= image.getHeight() / 2;
-				}
-				else
-				{
-					drawX -= worldPoint.getImagePoint().getX();
-					drawY -= worldPoint.getImagePoint().getY();
-				}
+        int drawX = drawPoint.getX();
+        int drawY = drawPoint.getY();
 
-				graphics.drawImage(image, drawX, drawY, null);
-				Rectangle clickbox = new Rectangle(drawX, drawY, image.getWidth(), image.getHeight());
-				if (mousePos != null && clickbox.contains(mousePos.getX(), mousePos.getY()))
-				{
-					if (!Strings.isNullOrEmpty(worldPoint.getTooltip()))
-					{
-						tooltipPoint = worldPoint;
-					}
+        if (worldPoint.getImagePoint() == null) {
+          drawX -= image.getWidth() / 2;
+          drawY -= image.getHeight() / 2;
+        } else {
+          drawX -= worldPoint.getImagePoint().getX();
+          drawY -= worldPoint.getImagePoint().getY();
+        }
 
-					if (worldPoint.isJumpOnClick())
-					{
-						assert worldPoint.getName() != null;
+        graphics.drawImage(image, drawX, drawY, null);
+        Rectangle clickbox = new Rectangle(drawX, drawY, image.getWidth(), image.getHeight());
+        if (mousePos != null && clickbox.contains(mousePos.getX(), mousePos.getY())) {
+          if (!Strings.isNullOrEmpty(worldPoint.getTooltip())) {
+            tooltipPoint = worldPoint;
+          }
 
-						WorldPoint target = worldPoint.getTarget();
-						if (target == null)
-						{
-							target = worldPoint.getWorldPoint();
-						}
+          if (worldPoint.isJumpOnClick()) {
+            assert worldPoint.getName() != null;
 
-						MenuEntry entry = new MenuEntry();
-						entry.setType(MenuAction.RUNELITE.getId());
-						entry.setOption(FOCUS_ON);
-						entry.setTarget(ColorUtil.wrapWithColorTag(worldPoint.getName(), JagexColors.MENU_TARGET));
-						entry.setIdentifier(target.getPlane() << 28 | target.getX() << 14 | target.getY());
-						mapMenuEntries.add(entry);
-					}
-				}
-			}
-		}
+            WorldPoint target = worldPoint.getTarget();
+            if (target == null) {
+              target = worldPoint.getWorldPoint();
+            }
 
-		final Widget rsTooltip = client.getWidget(WidgetInfo.WORLD_MAP_TOOLTIP);
-		if (rsTooltip != null)
-		{
-			rsTooltip.setHidden(tooltipPoint != null);
-		}
+            MenuEntry entry = new MenuEntry();
+            entry.setType(MenuAction.RUNELITE.getId());
+            entry.setOption(FOCUS_ON);
+            entry.setTarget(
+                ColorUtil.wrapWithColorTag(worldPoint.getName(), JagexColors.MENU_TARGET));
+            entry.setIdentifier(target.getPlane() << 28 | target.getX() << 14 | target.getY());
+            mapMenuEntries.add(entry);
+          }
+        }
+      }
+    }
 
-		if (tooltipPoint != null)
-		{
-			drawTooltip(graphics, tooltipPoint);
-		}
+    final Widget rsTooltip = client.getWidget(WidgetInfo.WORLD_MAP_TOOLTIP);
+    if (rsTooltip != null) {
+      rsTooltip.setHidden(tooltipPoint != null);
+    }
 
-		return null;
-	}
+    if (tooltipPoint != null) {
+      drawTooltip(graphics, tooltipPoint);
+    }
 
-	@Subscribe
-	private void onMenuOptionClicked(MenuOptionClicked ev)
-	{
-		if (ev.getMenuAction() == MenuAction.RUNELITE && FOCUS_ON.equals(ev.getMenuOption()))
-		{
-			int pxy = ev.getId();
-			WorldPoint wp = new WorldPoint(
-				pxy >> 14 & 0x3fff,
-				pxy & 0x3fff,
-				pxy >> 28);
+    return null;
+  }
 
-			client.getRenderOverview().setWorldMapPositionTarget(wp);
-		}
-	}
+  @Subscribe
+  private void onMenuOptionClicked(MenuOptionClicked ev) {
+    if (ev.getMenuAction() == MenuAction.RUNELITE && FOCUS_ON.equals(ev.getMenuOption())) {
+      int pxy = ev.getId();
+      WorldPoint wp = new WorldPoint(
+          pxy >> 14 & 0x3fff,
+          pxy & 0x3fff,
+          pxy >> 28);
 
-	/**
-	 * Get the screen coordinates for a WorldPoint on the world map
-	 *
-	 * @param worldPoint WorldPoint to get screen coordinates of
-	 * @return Point of screen coordinates of the center of the world point
-	 */
-	public Point mapWorldPointToGraphicsPoint(WorldPoint worldPoint)
-	{
-		RenderOverview ro = client.getRenderOverview();
+      client.getRenderOverview().setWorldMapPositionTarget(wp);
+    }
+  }
 
-		if (!ro.getWorldMapData().surfaceContainsPosition(worldPoint.getX(), worldPoint.getY()))
-		{
-			return null;
-		}
+  /**
+   * Get the screen coordinates for a WorldPoint on the world map
+   *
+   * @param worldPoint WorldPoint to get screen coordinates of
+   * @return Point of screen coordinates of the center of the world point
+   */
+  public Point mapWorldPointToGraphicsPoint(WorldPoint worldPoint) {
+    RenderOverview ro = client.getRenderOverview();
 
-		float pixelsPerTile = ro.getWorldMapZoom();
+    if (!ro.getWorldMapData().surfaceContainsPosition(worldPoint.getX(), worldPoint.getY())) {
+      return null;
+    }
 
-		Widget map = client.getWidget(WidgetInfo.WORLD_MAP_VIEW);
-		if (map != null)
-		{
-			Rectangle worldMapRect = map.getBounds();
+    float pixelsPerTile = ro.getWorldMapZoom();
 
-			int widthInTiles = (int) Math.ceil(worldMapRect.getWidth() / pixelsPerTile);
-			int heightInTiles = (int) Math.ceil(worldMapRect.getHeight() / pixelsPerTile);
+    Widget map = client.getWidget(WidgetInfo.WORLD_MAP_VIEW);
+    if (map != null) {
+      Rectangle worldMapRect = map.getBounds();
 
-			Point worldMapPosition = ro.getWorldMapPosition();
+      int widthInTiles = (int) Math.ceil(worldMapRect.getWidth() / pixelsPerTile);
+      int heightInTiles = (int) Math.ceil(worldMapRect.getHeight() / pixelsPerTile);
 
-			//Offset in tiles from anchor sides
-			int yTileMax = worldMapPosition.getY() - heightInTiles / 2;
-			int yTileOffset = (yTileMax - worldPoint.getY() - 1) * -1;
-			int xTileOffset = worldPoint.getX() + widthInTiles / 2 - worldMapPosition.getX();
+      Point worldMapPosition = ro.getWorldMapPosition();
 
-			int xGraphDiff = ((int) (xTileOffset * pixelsPerTile));
-			int yGraphDiff = (int) (yTileOffset * pixelsPerTile);
+      //Offset in tiles from anchor sides
+      int yTileMax = worldMapPosition.getY() - heightInTiles / 2;
+      int yTileOffset = (yTileMax - worldPoint.getY() - 1) * -1;
+      int xTileOffset = worldPoint.getX() + widthInTiles / 2 - worldMapPosition.getX();
 
-			//Center on tile.
-			yGraphDiff -= pixelsPerTile - Math.ceil(pixelsPerTile / 2);
-			xGraphDiff += pixelsPerTile - Math.ceil(pixelsPerTile / 2);
+      int xGraphDiff = ((int) (xTileOffset * pixelsPerTile));
+      int yGraphDiff = (int) (yTileOffset * pixelsPerTile);
 
-			yGraphDiff = worldMapRect.height - yGraphDiff;
-			yGraphDiff += (int) worldMapRect.getY();
-			xGraphDiff += (int) worldMapRect.getX();
+      //Center on tile.
+      yGraphDiff -= pixelsPerTile - Math.ceil(pixelsPerTile / 2);
+      xGraphDiff += pixelsPerTile - Math.ceil(pixelsPerTile / 2);
 
-			return new Point(xGraphDiff, yGraphDiff);
-		}
-		return null;
-	}
+      yGraphDiff = worldMapRect.height - yGraphDiff;
+      yGraphDiff += (int) worldMapRect.getY();
+      xGraphDiff += (int) worldMapRect.getX();
 
-	/**
-	 * Gets a clip area which excludes the area of widgets which overlay the world map.
-	 *
-	 * @param baseRectangle The base area to clip from
-	 * @return              An {@link Area} representing <code>baseRectangle</code>, with the area
-	 *                      of visible widgets overlaying the world map clipped from it.
-	 */
-	private Area getWorldMapClipArea(Rectangle baseRectangle)
-	{
-		final Widget overview = client.getWidget(WidgetInfo.WORLD_MAP_OVERVIEW_MAP);
-		final Widget surfaceSelector = client.getWidget(WidgetInfo.WORLD_MAP_SURFACE_SELECTOR);
+      return new Point(xGraphDiff, yGraphDiff);
+    }
+    return null;
+  }
 
-		Area clipArea = new Area(baseRectangle);
+  /**
+   * Gets a clip area which excludes the area of widgets which overlay the world map.
+   *
+   * @param baseRectangle The base area to clip from
+   * @return An {@link Area} representing <code>baseRectangle</code>, with the area of visible
+   * widgets overlaying the world map clipped from it.
+   */
+  private Area getWorldMapClipArea(Rectangle baseRectangle) {
+    final Widget overview = client.getWidget(WidgetInfo.WORLD_MAP_OVERVIEW_MAP);
+    final Widget surfaceSelector = client.getWidget(WidgetInfo.WORLD_MAP_SURFACE_SELECTOR);
 
-		if (overview != null && !overview.isHidden())
-		{
-			clipArea.subtract(new Area(overview.getBounds()));
-		}
+    Area clipArea = new Area(baseRectangle);
 
-		if (surfaceSelector != null && !surfaceSelector.isHidden())
-		{
-			clipArea.subtract(new Area(surfaceSelector.getBounds()));
-		}
+    if (overview != null && !overview.isHidden()) {
+      clipArea.subtract(new Area(overview.getBounds()));
+    }
 
-		return clipArea;
-	}
+    if (surfaceSelector != null && !surfaceSelector.isHidden()) {
+      clipArea.subtract(new Area(surfaceSelector.getBounds()));
+    }
 
-	private void drawTooltip(Graphics2D graphics, WorldMapPoint worldPoint)
-	{
-		String tooltip = worldPoint.getTooltip();
-		Point drawPoint = mapWorldPointToGraphicsPoint(worldPoint.getWorldPoint());
-		if (tooltip == null || tooltip.length() <= 0 || drawPoint == null)
-		{
-			return;
-		}
+    return clipArea;
+  }
 
-		List<String> rows = TOOLTIP_SPLITTER.splitToList(tooltip);
+  private void drawTooltip(Graphics2D graphics, WorldMapPoint worldPoint) {
+    String tooltip = worldPoint.getTooltip();
+    Point drawPoint = mapWorldPointToGraphicsPoint(worldPoint.getWorldPoint());
+    if (tooltip == null || tooltip.length() <= 0 || drawPoint == null) {
+      return;
+    }
 
-		if (rows.isEmpty())
-		{
-			return;
-		}
+    List<String> rows = TOOLTIP_SPLITTER.splitToList(tooltip);
 
-		drawPoint = new Point(drawPoint.getX() + TOOLTIP_OFFSET_WIDTH, drawPoint.getY() + TOOLTIP_OFFSET_HEIGHT);
+    if (rows.isEmpty()) {
+      return;
+    }
 
-		final Rectangle bounds = new Rectangle(0, 0, client.getCanvasWidth(), client.getCanvasHeight());
-		final Area mapArea = getWorldMapClipArea(bounds);
-		graphics.setClip(mapArea);
-		graphics.setColor(JagexColors.TOOLTIP_BACKGROUND);
-		graphics.setFont(FontManager.getRunescapeFont());
-		FontMetrics fm = graphics.getFontMetrics();
-		int width = rows.stream().map(fm::stringWidth).max(Integer::compareTo).get();
-		int height = fm.getHeight();
+    drawPoint = new Point(drawPoint.getX() + TOOLTIP_OFFSET_WIDTH,
+        drawPoint.getY() + TOOLTIP_OFFSET_HEIGHT);
 
-		Rectangle tooltipRect = new Rectangle(drawPoint.getX() - TOOLTIP_PADDING_WIDTH, drawPoint.getY() - TOOLTIP_PADDING_HEIGHT, width + TOOLTIP_PADDING_WIDTH * 2, height * rows.size() + TOOLTIP_PADDING_HEIGHT * 2);
-		graphics.fillRect((int) tooltipRect.getX(), (int) tooltipRect.getY(), (int) tooltipRect.getWidth(), (int) tooltipRect.getHeight());
+    final Rectangle bounds = new Rectangle(0, 0, client.getCanvasWidth(), client.getCanvasHeight());
+    final Area mapArea = getWorldMapClipArea(bounds);
+    graphics.setClip(mapArea);
+    graphics.setColor(JagexColors.TOOLTIP_BACKGROUND);
+    graphics.setFont(FontManager.getRunescapeFont());
+    FontMetrics fm = graphics.getFontMetrics();
+    int width = rows.stream().map(fm::stringWidth).max(Integer::compareTo).get();
+    int height = fm.getHeight();
 
-		graphics.setColor(JagexColors.TOOLTIP_BORDER);
-		graphics.drawRect((int) tooltipRect.getX(), (int) tooltipRect.getY(), (int) tooltipRect.getWidth(), (int) tooltipRect.getHeight());
+    Rectangle tooltipRect = new Rectangle(drawPoint.getX() - TOOLTIP_PADDING_WIDTH,
+        drawPoint.getY() - TOOLTIP_PADDING_HEIGHT, width + TOOLTIP_PADDING_WIDTH * 2,
+        height * rows.size() + TOOLTIP_PADDING_HEIGHT * 2);
+    graphics
+        .fillRect((int) tooltipRect.getX(), (int) tooltipRect.getY(), (int) tooltipRect.getWidth(),
+            (int) tooltipRect.getHeight());
 
-		graphics.setColor(JagexColors.TOOLTIP_TEXT);
-		for (int i = 0; i < rows.size(); i++)
-		{
-			graphics.drawString(rows.get(i), drawPoint.getX(), drawPoint.getY() + TOOLTIP_TEXT_OFFSET_HEIGHT + (i + 1) * height);
-		}
-	}
+    graphics.setColor(JagexColors.TOOLTIP_BORDER);
+    graphics
+        .drawRect((int) tooltipRect.getX(), (int) tooltipRect.getY(), (int) tooltipRect.getWidth(),
+            (int) tooltipRect.getHeight());
 
-	private Point clipToRectangle(Point drawPoint, Rectangle mapDisplayRectangle)
-	{
-		int clippedX = drawPoint.getX();
+    graphics.setColor(JagexColors.TOOLTIP_TEXT);
+    for (int i = 0; i < rows.size(); i++) {
+      graphics.drawString(rows.get(i), drawPoint.getX(),
+          drawPoint.getY() + TOOLTIP_TEXT_OFFSET_HEIGHT + (i + 1) * height);
+    }
+  }
 
-		if (drawPoint.getX() < mapDisplayRectangle.getX())
-		{
-			clippedX = (int) mapDisplayRectangle.getX();
-		}
+  private Point clipToRectangle(Point drawPoint, Rectangle mapDisplayRectangle) {
+    int clippedX = drawPoint.getX();
 
-		if (drawPoint.getX() > mapDisplayRectangle.getX() + mapDisplayRectangle.getWidth())
-		{
-			clippedX = (int) (mapDisplayRectangle.getX() + mapDisplayRectangle.getWidth());
-		}
+    if (drawPoint.getX() < mapDisplayRectangle.getX()) {
+      clippedX = (int) mapDisplayRectangle.getX();
+    }
 
-		int clippedY = drawPoint.getY();
+    if (drawPoint.getX() > mapDisplayRectangle.getX() + mapDisplayRectangle.getWidth()) {
+      clippedX = (int) (mapDisplayRectangle.getX() + mapDisplayRectangle.getWidth());
+    }
 
-		if (drawPoint.getY() < mapDisplayRectangle.getY())
-		{
-			clippedY = (int) mapDisplayRectangle.getY();
-		}
+    int clippedY = drawPoint.getY();
 
-		if (drawPoint.getY() > mapDisplayRectangle.getY() + mapDisplayRectangle.getHeight())
-		{
-			clippedY = (int) (mapDisplayRectangle.getY() + mapDisplayRectangle.getHeight());
-		}
+    if (drawPoint.getY() < mapDisplayRectangle.getY()) {
+      clippedY = (int) mapDisplayRectangle.getY();
+    }
 
-		return new Point(clippedX, clippedY);
-	}
+    if (drawPoint.getY() > mapDisplayRectangle.getY() + mapDisplayRectangle.getHeight()) {
+      clippedY = (int) (mapDisplayRectangle.getY() + mapDisplayRectangle.getHeight());
+    }
+
+    return new Point(clippedX, clippedY);
+  }
 }

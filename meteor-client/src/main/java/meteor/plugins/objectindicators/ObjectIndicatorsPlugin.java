@@ -42,7 +42,11 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import meteor.config.ConfigManager;
+import meteor.eventbus.Subscribe;
+import meteor.plugins.Plugin;
+import meteor.plugins.PluginDescriptor;
+import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.Client;
 import net.runelite.api.DecorativeObject;
 import net.runelite.api.GameObject;
@@ -69,405 +73,354 @@ import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.WallObjectChanged;
 import net.runelite.api.events.WallObjectDespawned;
 import net.runelite.api.events.WallObjectSpawned;
-import meteor.config.ConfigManager;
-import meteor.eventbus.Subscribe;
-import meteor.plugins.Plugin;
-import meteor.plugins.PluginDescriptor;
-import meteor.ui.overlay.OverlayManager;
 
 @PluginDescriptor(
-	name = "Object Markers",
-	description = "Enable marking of objects using the Shift key",
-	tags = {"overlay", "objects", "mark", "marker"},
-	enabledByDefault = false
+    name = "Object Markers",
+    description = "Enable marking of objects using the Shift key",
+    tags = {"overlay", "objects", "mark", "marker"},
+    enabledByDefault = false
 )
-public class ObjectIndicatorsPlugin extends Plugin
-{
-	private static final String CONFIG_GROUP = "objectindicators";
-	private static final String MARK = "Mark object";
-	private static final String UNMARK = "Unmark object";
+public class ObjectIndicatorsPlugin extends Plugin {
 
-	@Getter(AccessLevel.PACKAGE)
-	private final List<ColorTileObject> objects = new ArrayList<>();
-	private final Map<Integer, Set<ObjectPoint>> points = new HashMap<>();
+  private static final String CONFIG_GROUP = "objectindicators";
+  private static final String MARK = "Mark object";
+  private static final String UNMARK = "Unmark object";
 
-	@Inject
-	private Client client;
+  @Getter(AccessLevel.PACKAGE)
+  private final List<ColorTileObject> objects = new ArrayList<>();
+  private final Map<Integer, Set<ObjectPoint>> points = new HashMap<>();
 
-	@Inject
-	private ConfigManager configManager;
+  @Inject
+  private Client client;
 
-	@Inject
-	private OverlayManager overlayManager;
+  @Inject
+  private ConfigManager configManager;
 
-	@Inject
-	private ObjectIndicatorsOverlay overlay;
+  @Inject
+  private OverlayManager overlayManager;
 
-	@Inject
-	private ObjectIndicatorsConfig config;
+  @Inject
+  private ObjectIndicatorsOverlay overlay;
 
-	@Inject
-	private Gson gson;
+  @Inject
+  private ObjectIndicatorsConfig config;
 
-	@Provides
-	ObjectIndicatorsConfig provideConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(ObjectIndicatorsConfig.class);
-	}
+  @Inject
+  private Gson gson;
 
-	@Override
-	public void startup()
-	{
-		overlayManager.add(overlay);
-	}
+  @Provides
+  ObjectIndicatorsConfig provideConfig(ConfigManager configManager) {
+    return configManager.getConfig(ObjectIndicatorsConfig.class);
+  }
 
-	@Override
-	public void shutdown()
-	{
-		overlayManager.remove(overlay);
-		points.clear();
-		objects.clear();
-	}
+  @Override
+  public void startup() {
+    overlayManager.add(overlay);
+  }
 
-	@Subscribe
-	public void onWallObjectSpawned(WallObjectSpawned event)
-	{
-		checkObjectPoints(event.getWallObject());
-	}
+  @Override
+  public void shutdown() {
+    overlayManager.remove(overlay);
+    points.clear();
+    objects.clear();
+  }
 
-	@Subscribe
-	public void onWallObjectChanged(WallObjectChanged event)
-	{
-		WallObject previous = event.getPrevious();
-		WallObject wallObject = event.getWallObject();
+  @Subscribe
+  public void onWallObjectSpawned(WallObjectSpawned event) {
+    checkObjectPoints(event.getWallObject());
+  }
 
-		objects.removeIf(o -> o.getTileObject() == previous);
-		checkObjectPoints(wallObject);
-	}
+  @Subscribe
+  public void onWallObjectChanged(WallObjectChanged event) {
+    WallObject previous = event.getPrevious();
+    WallObject wallObject = event.getWallObject();
 
-	@Subscribe
-	public void onWallObjectDespawned(WallObjectDespawned event)
-	{
-		objects.removeIf(o -> o.getTileObject() == event.getWallObject());
-	}
+    objects.removeIf(o -> o.getTileObject() == previous);
+    checkObjectPoints(wallObject);
+  }
 
-	@Subscribe
-	public void onGameObjectSpawned(GameObjectSpawned event)
-	{
-		checkObjectPoints(event.getGameObject());
-	}
+  @Subscribe
+  public void onWallObjectDespawned(WallObjectDespawned event) {
+    objects.removeIf(o -> o.getTileObject() == event.getWallObject());
+  }
 
-	@Subscribe
-	public void onDecorativeObjectSpawned(DecorativeObjectSpawned event)
-	{
-		checkObjectPoints(event.getDecorativeObject());
-	}
+  @Subscribe
+  public void onGameObjectSpawned(GameObjectSpawned event) {
+    checkObjectPoints(event.getGameObject());
+  }
 
-	@Subscribe
-	public void onGameObjectDespawned(GameObjectDespawned event)
-	{
-		objects.removeIf(o -> o.getTileObject() == event.getGameObject());
-	}
+  @Subscribe
+  public void onDecorativeObjectSpawned(DecorativeObjectSpawned event) {
+    checkObjectPoints(event.getDecorativeObject());
+  }
 
-	@Subscribe
-	public void onDecorativeObjectDespawned(DecorativeObjectDespawned event)
-	{
-		objects.removeIf(o -> o.getTileObject() == event.getDecorativeObject());
-	}
+  @Subscribe
+  public void onGameObjectDespawned(GameObjectDespawned event) {
+    objects.removeIf(o -> o.getTileObject() == event.getGameObject());
+  }
 
-	@Subscribe
-	public void onGroundObjectSpawned(GroundObjectSpawned event)
-	{
-		checkObjectPoints(event.getGroundObject());
-	}
+  @Subscribe
+  public void onDecorativeObjectDespawned(DecorativeObjectDespawned event) {
+    objects.removeIf(o -> o.getTileObject() == event.getDecorativeObject());
+  }
 
-	@Subscribe
-	public void onGroundObjectDespawned(GroundObjectDespawned event)
-	{
-		objects.removeIf(o -> o.getTileObject() == event.getGroundObject());
-	}
+  @Subscribe
+  public void onGroundObjectSpawned(GroundObjectSpawned event) {
+    checkObjectPoints(event.getGroundObject());
+  }
 
-	@Subscribe
-	public void onGameStateChanged(GameStateChanged gameStateChanged)
-	{
-		GameState gameState = gameStateChanged.getGameState();
-		if (gameState == GameState.LOADING)
-		{
-			// Reload points with new map regions
+  @Subscribe
+  public void onGroundObjectDespawned(GroundObjectDespawned event) {
+    objects.removeIf(o -> o.getTileObject() == event.getGroundObject());
+  }
 
-			points.clear();
-			for (int regionId : client.getMapRegions())
-			{
-				// load points for region
-				final Set<ObjectPoint> regionPoints = loadPoints(regionId);
-				if (regionPoints != null)
-				{
-					points.put(regionId, regionPoints);
-				}
-			}
-		}
+  @Subscribe
+  public void onGameStateChanged(GameStateChanged gameStateChanged) {
+    GameState gameState = gameStateChanged.getGameState();
+    if (gameState == GameState.LOADING) {
+      // Reload points with new map regions
 
-		if (gameStateChanged.getGameState() != GameState.LOGGED_IN && gameStateChanged.getGameState() != GameState.CONNECTION_LOST)
-		{
-			objects.clear();
-		}
-	}
+      points.clear();
+      for (int regionId : client.getMapRegions()) {
+        // load points for region
+        final Set<ObjectPoint> regionPoints = loadPoints(regionId);
+        if (regionPoints != null) {
+          points.put(regionId, regionPoints);
+        }
+      }
+    }
 
-	@Subscribe
-	public void onMenuEntryAdded(MenuEntryAdded event)
-	{
-		if (event.getType() != MenuAction.EXAMINE_OBJECT.getId() || !client.isKeyPressed(KeyCode.KC_SHIFT))
-		{
-			return;
-		}
+    if (gameStateChanged.getGameState() != GameState.LOGGED_IN
+        && gameStateChanged.getGameState() != GameState.CONNECTION_LOST) {
+      objects.clear();
+    }
+  }
 
-		final Tile tile = client.getScene().getTiles()[client.getPlane()][event.getActionParam0()][event.getActionParam1()];
-		final TileObject tileObject = findTileObject(tile, event.getIdentifier());
+  @Subscribe
+  public void onMenuEntryAdded(MenuEntryAdded event) {
+    if (event.getType() != MenuAction.EXAMINE_OBJECT.getId() || !client
+        .isKeyPressed(KeyCode.KC_SHIFT)) {
+      return;
+    }
 
-		if (tileObject == null)
-		{
-			return;
-		}
+    final Tile tile = client.getScene().getTiles()[client.getPlane()][event.getActionParam0()][event
+        .getActionParam1()];
+    final TileObject tileObject = findTileObject(tile, event.getIdentifier());
 
-		MenuEntry[] menuEntries = client.getMenuEntries();
-		menuEntries = Arrays.copyOf(menuEntries, menuEntries.length + 1);
-		MenuEntry menuEntry = menuEntries[menuEntries.length - 1] = new MenuEntry();
-		menuEntry.setOption(objects.stream().anyMatch(o -> o.getTileObject() == tileObject) ? UNMARK : MARK);
-		menuEntry.setTarget(event.getTarget());
-		menuEntry.setParam0(event.getActionParam0());
-		menuEntry.setParam1(event.getActionParam1());
-		menuEntry.setIdentifier(event.getIdentifier());
-		menuEntry.setType(MenuAction.RUNELITE.getId());
-		client.setMenuEntries(menuEntries);
-	}
+    if (tileObject == null) {
+      return;
+    }
 
-	@Subscribe
-	public void onMenuOptionClicked(MenuOptionClicked event)
-	{
-		if (event.getMenuAction() != MenuAction.RUNELITE
-			|| !(event.getMenuOption().equals(MARK) || event.getMenuOption().equals(UNMARK)))
-		{
-			return;
-		}
+    MenuEntry[] menuEntries = client.getMenuEntries();
+    menuEntries = Arrays.copyOf(menuEntries, menuEntries.length + 1);
+    MenuEntry menuEntry = menuEntries[menuEntries.length - 1] = new MenuEntry();
+    menuEntry
+        .setOption(objects.stream().anyMatch(o -> o.getTileObject() == tileObject) ? UNMARK : MARK);
+    menuEntry.setTarget(event.getTarget());
+    menuEntry.setParam0(event.getActionParam0());
+    menuEntry.setParam1(event.getActionParam1());
+    menuEntry.setIdentifier(event.getIdentifier());
+    menuEntry.setType(MenuAction.RUNELITE.getId());
+    client.setMenuEntries(menuEntries);
+  }
 
-		Scene scene = client.getScene();
-		Tile[][][] tiles = scene.getTiles();
-		final int x = event.getActionParam();
-		final int y = event.getWidgetId();
-		final int z = client.getPlane();
-		final Tile tile = tiles[z][x][y];
+  @Subscribe
+  public void onMenuOptionClicked(MenuOptionClicked event) {
+    if (event.getMenuAction() != MenuAction.RUNELITE
+        || !(event.getMenuOption().equals(MARK) || event.getMenuOption().equals(UNMARK))) {
+      return;
+    }
 
-		TileObject object = findTileObject(tile, event.getId());
-		if (object == null)
-		{
-			return;
-		}
+    Scene scene = client.getScene();
+    Tile[][][] tiles = scene.getTiles();
+    final int x = event.getActionParam();
+    final int y = event.getWidgetId();
+    final int z = client.getPlane();
+    final Tile tile = tiles[z][x][y];
 
-		// object.getId() is always the base object id, getObjectComposition transforms it to
-		// the correct object we see
-		ObjectComposition objectDefinition = getObjectComposition(object.getId());
-		String name = objectDefinition.getName();
-		// Name is probably never "null" - however prevent adding it if it is, as it will
-		// become ambiguous as objects with no name are assigned name "null"
-		if (Strings.isNullOrEmpty(name) || name.equals("null"))
-		{
-			return;
-		}
+    TileObject object = findTileObject(tile, event.getId());
+    if (object == null) {
+      return;
+    }
 
-		markObject(objectDefinition, name, object);
-	}
+    // object.getId() is always the base object id, getObjectComposition transforms it to
+    // the correct object we see
+    ObjectComposition objectDefinition = getObjectComposition(object.getId());
+    String name = objectDefinition.getName();
+    // Name is probably never "null" - however prevent adding it if it is, as it will
+    // become ambiguous as objects with no name are assigned name "null"
+    if (Strings.isNullOrEmpty(name) || name.equals("null")) {
+      return;
+    }
 
-	private void checkObjectPoints(TileObject object)
-	{
-		final WorldPoint worldPoint = WorldPoint.fromLocalInstance(client, object.getLocalLocation(), object.getPlane());
-		final Set<ObjectPoint> objectPoints = points.get(worldPoint.getRegionID());
+    markObject(objectDefinition, name, object);
+  }
 
-		if (objectPoints == null)
-		{
-			return;
-		}
+  private void checkObjectPoints(TileObject object) {
+    final WorldPoint worldPoint = WorldPoint
+        .fromLocalInstance(client, object.getLocalLocation(), object.getPlane());
+    final Set<ObjectPoint> objectPoints = points.get(worldPoint.getRegionID());
 
-		ObjectComposition objectComposition = client.getObjectDefinition(object.getId());
-		if (objectComposition.getImpostorIds() == null)
-		{
-			// Multiloc names are instead checked in the overlay
-			String name = objectComposition.getName();
-			if (Strings.isNullOrEmpty(name) || name.equals("null"))
-			{
-				// was marked, but name has changed
-				return;
-			}
-		}
+    if (objectPoints == null) {
+      return;
+    }
 
-		for (ObjectPoint objectPoint : objectPoints)
-		{
-			if (worldPoint.getRegionX() == objectPoint.getRegionX()
-					&& worldPoint.getRegionY() == objectPoint.getRegionY()
-					&& worldPoint.getPlane() == objectPoint.getZ()
-					&& objectPoint.getId() == object.getId())
-			{
-				objects.add(new ColorTileObject(object,
-					objectComposition,
-					objectPoint.getName(),
-					objectPoint.getColor()));
-				break;
-			}
-		}
-	}
+    ObjectComposition objectComposition = client.getObjectDefinition(object.getId());
+    if (objectComposition.getImpostorIds() == null) {
+      // Multiloc names are instead checked in the overlay
+      String name = objectComposition.getName();
+      if (Strings.isNullOrEmpty(name) || name.equals("null")) {
+        // was marked, but name has changed
+        return;
+      }
+    }
 
-	private TileObject findTileObject(Tile tile, int id)
-	{
-		if (tile == null)
-		{
-			return null;
-		}
+    for (ObjectPoint objectPoint : objectPoints) {
+      if (worldPoint.getRegionX() == objectPoint.getRegionX()
+          && worldPoint.getRegionY() == objectPoint.getRegionY()
+          && worldPoint.getPlane() == objectPoint.getZ()
+          && objectPoint.getId() == object.getId()) {
+        objects.add(new ColorTileObject(object,
+            objectComposition,
+            objectPoint.getName(),
+            objectPoint.getColor()));
+        break;
+      }
+    }
+  }
 
-		final GameObject[] tileGameObjects = tile.getGameObjects();
-		final DecorativeObject tileDecorativeObject = tile.getDecorativeObject();
-		final WallObject tileWallObject = tile.getWallObject();
-		final GroundObject groundObject = tile.getGroundObject();
+  private TileObject findTileObject(Tile tile, int id) {
+    if (tile == null) {
+      return null;
+    }
 
-		if (objectIdEquals(tileWallObject, id))
-		{
-			return tileWallObject;
-		}
+    final GameObject[] tileGameObjects = tile.getGameObjects();
+    final DecorativeObject tileDecorativeObject = tile.getDecorativeObject();
+    final WallObject tileWallObject = tile.getWallObject();
+    final GroundObject groundObject = tile.getGroundObject();
 
-		if (objectIdEquals(tileDecorativeObject, id))
-		{
-			return tileDecorativeObject;
-		}
+    if (objectIdEquals(tileWallObject, id)) {
+      return tileWallObject;
+    }
 
-		if (objectIdEquals(groundObject, id))
-		{
-			return groundObject;
-		}
+    if (objectIdEquals(tileDecorativeObject, id)) {
+      return tileDecorativeObject;
+    }
 
-		for (GameObject object : tileGameObjects)
-		{
-			if (objectIdEquals(object, id))
-			{
-				return object;
-			}
-		}
+    if (objectIdEquals(groundObject, id)) {
+      return groundObject;
+    }
 
-		return null;
-	}
+    for (GameObject object : tileGameObjects) {
+      if (objectIdEquals(object, id)) {
+        return object;
+      }
+    }
 
-	private boolean objectIdEquals(TileObject tileObject, int id)
-	{
-		if (tileObject == null)
-		{
-			return false;
-		}
+    return null;
+  }
 
-		if (tileObject.getId() == id)
-		{
-			return true;
-		}
+  private boolean objectIdEquals(TileObject tileObject, int id) {
+    if (tileObject == null) {
+      return false;
+    }
 
-		// Menu action EXAMINE_OBJECT sends the transformed object id, not the base id, unlike
-		// all of the GAME_OBJECT_OPTION actions, so check the id against the impostor ids
-		final ObjectComposition comp = client.getObjectDefinition(tileObject.getId());
+    if (tileObject.getId() == id) {
+      return true;
+    }
 
-		if (comp.getImpostorIds() != null)
-		{
-			for (int impostorId : comp.getImpostorIds())
-			{
-				if (impostorId == id)
-				{
-					return true;
-				}
-			}
-		}
+    // Menu action EXAMINE_OBJECT sends the transformed object id, not the base id, unlike
+    // all of the GAME_OBJECT_OPTION actions, so check the id against the impostor ids
+    final ObjectComposition comp = client.getObjectDefinition(tileObject.getId());
 
-		return false;
-	}
+    if (comp.getImpostorIds() != null) {
+      for (int impostorId : comp.getImpostorIds()) {
+        if (impostorId == id) {
+          return true;
+        }
+      }
+    }
 
-	/** mark or unmark an object
-	 *
-	 * @param objectComposition transformed composition of object based on vars
-	 * @param name name of objectComposition
-	 * @param object tile object, for multilocs object.getId() is the base id
-	 */
-	private void markObject(ObjectComposition objectComposition, String name, final TileObject object)
-	{
-		final WorldPoint worldPoint = WorldPoint.fromLocalInstance(client, object.getLocalLocation());
-		final int regionId = worldPoint.getRegionID();
-		final Color color = config.markerColor();
-		final ObjectPoint point = new ObjectPoint(
-			object.getId(),
-			name,
-			regionId,
-			worldPoint.getRegionX(),
-			worldPoint.getRegionY(),
-			worldPoint.getPlane(),
-			color);
+    return false;
+  }
 
-		Set<ObjectPoint> objectPoints = points.computeIfAbsent(regionId, k -> new HashSet<>());
+  /**
+   * mark or unmark an object
+   *
+   * @param objectComposition transformed composition of object based on vars
+   * @param name              name of objectComposition
+   * @param object            tile object, for multilocs object.getId() is the base id
+   */
+  private void markObject(ObjectComposition objectComposition, String name,
+      final TileObject object) {
+    final WorldPoint worldPoint = WorldPoint.fromLocalInstance(client, object.getLocalLocation());
+    final int regionId = worldPoint.getRegionID();
+    final Color color = config.markerColor();
+    final ObjectPoint point = new ObjectPoint(
+        object.getId(),
+        name,
+        regionId,
+        worldPoint.getRegionX(),
+        worldPoint.getRegionY(),
+        worldPoint.getPlane(),
+        color);
 
-		if (objects.removeIf(o -> o.getTileObject() == object))
-		{
-			// Find the object point that caused this object to be marked, there are two cases:
-			// 1) object is a multiloc, the name may have changed since marking - match from base id
-			// 2) not a multiloc, but an object has spawned with an identical name and a different
-			//    id as what was originally marked
-			if (!objectPoints.removeIf(op -> ((op.getId() == -1 || op.getId() == object.getId()) || op.getName().equals(objectComposition.getName()))
-				&& op.getRegionX() == worldPoint.getRegionX()
-				&& op.getRegionY() == worldPoint.getRegionY()
-				&& op.getZ() == worldPoint.getPlane()))
-			{
-			}
+    Set<ObjectPoint> objectPoints = points.computeIfAbsent(regionId, k -> new HashSet<>());
 
-		}
-		else
-		{
-			objectPoints.add(point);
-			objects.add(new ColorTileObject(object,
-				client.getObjectDefinition(object.getId()),
-				name,
-				color));
-		}
+    if (objects.removeIf(o -> o.getTileObject() == object)) {
+      // Find the object point that caused this object to be marked, there are two cases:
+      // 1) object is a multiloc, the name may have changed since marking - match from base id
+      // 2) not a multiloc, but an object has spawned with an identical name and a different
+      //    id as what was originally marked
+      if (!objectPoints.removeIf(op ->
+          ((op.getId() == -1 || op.getId() == object.getId()) || op.getName()
+              .equals(objectComposition.getName()))
+              && op.getRegionX() == worldPoint.getRegionX()
+              && op.getRegionY() == worldPoint.getRegionY()
+              && op.getZ() == worldPoint.getPlane())) {
+      }
 
-		savePoints(regionId, objectPoints);
-	}
+    } else {
+      objectPoints.add(point);
+      objects.add(new ColorTileObject(object,
+          client.getObjectDefinition(object.getId()),
+          name,
+          color));
+    }
 
-	private void savePoints(final int id, final Set<ObjectPoint> points)
-	{
-		if (points.isEmpty())
-		{
-			configManager.unsetConfiguration(CONFIG_GROUP, "region_" + id);
-		}
-		else
-		{
-			final String json = gson.toJson(points);
-			configManager.setConfiguration(CONFIG_GROUP, "region_" + id, json);
-		}
-	}
+    savePoints(regionId, objectPoints);
+  }
 
-	private Set<ObjectPoint> loadPoints(final int id)
-	{
-		final String json = configManager.getConfiguration(CONFIG_GROUP, "region_" + id);
+  private void savePoints(final int id, final Set<ObjectPoint> points) {
+    if (points.isEmpty()) {
+      configManager.unsetConfiguration(CONFIG_GROUP, "region_" + id);
+    } else {
+      final String json = gson.toJson(points);
+      configManager.setConfiguration(CONFIG_GROUP, "region_" + id, json);
+    }
+  }
 
-		if (Strings.isNullOrEmpty(json))
-		{
-			return null;
-		}
+  private Set<ObjectPoint> loadPoints(final int id) {
+    final String json = configManager.getConfiguration(CONFIG_GROUP, "region_" + id);
 
-		Set<ObjectPoint> points = gson.fromJson(json, new TypeToken<Set<ObjectPoint>>()
-		{
-		}.getType());
-		// Prior to multiloc support the plugin would mark objects named "null", which breaks
-		// in most cases due to the specific object being identified being ambiguous, so remove
-		// them
-		return points.stream()
-			.filter(point -> !point.getName().equals("null"))
-			.collect(Collectors.toSet());
-	}
+    if (Strings.isNullOrEmpty(json)) {
+      return null;
+    }
 
-	@Nullable
-	private ObjectComposition getObjectComposition(int id)
-	{
-		ObjectComposition objectComposition = client.getObjectDefinition(id);
-		return objectComposition.getImpostorIds() == null ? objectComposition : objectComposition.getImpostor();
-	}
+    Set<ObjectPoint> points = gson.fromJson(json, new TypeToken<Set<ObjectPoint>>() {
+    }.getType());
+    // Prior to multiloc support the plugin would mark objects named "null", which breaks
+    // in most cases due to the specific object being identified being ambiguous, so remove
+    // them
+    return points.stream()
+        .filter(point -> !point.getName().equals("null"))
+        .collect(Collectors.toSet());
+  }
+
+  @Nullable
+  private ObjectComposition getObjectComposition(int id) {
+    ObjectComposition objectComposition = client.getObjectDefinition(id);
+    return objectComposition.getImpostorIds() == null ? objectComposition
+        : objectComposition.getImpostor();
+  }
 }

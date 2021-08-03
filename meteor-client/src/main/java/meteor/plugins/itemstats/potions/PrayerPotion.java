@@ -45,6 +45,7 @@ public class PrayerPotion extends StatBoost {
   public PrayerPotion(int delta) {
     this(delta, BASE_PERC);
   }
+
   PrayerPotion(int delta, double perc) {
     super(PRAYER, false);
     this.delta = delta;

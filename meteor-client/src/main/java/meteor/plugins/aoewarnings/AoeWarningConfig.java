@@ -281,8 +281,8 @@ public interface AoeWarningConfig {
     ITALIC("Italic", Font.ITALIC),
     PLAIN("Plain", Font.PLAIN);
 
-    private String name;
-    private int font;
+    private final String name;
+    private final int font;
 
     @Override
     public String toString() {

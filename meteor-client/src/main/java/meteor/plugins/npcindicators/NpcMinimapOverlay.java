@@ -29,58 +29,51 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import javax.inject.Inject;
-import net.runelite.api.NPC;
-import net.runelite.api.NPCComposition;
-import net.runelite.api.Point;
 import meteor.ui.overlay.Overlay;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayPosition;
 import meteor.ui.overlay.OverlayUtil;
 import meteor.util.Text;
+import net.runelite.api.NPC;
+import net.runelite.api.NPCComposition;
+import net.runelite.api.Point;
 
-public class NpcMinimapOverlay extends Overlay
-{
-	private final NpcIndicatorsConfig config;
-	private final NpcIndicatorsPlugin plugin;
+public class NpcMinimapOverlay extends Overlay {
 
-	@Inject
-	NpcMinimapOverlay(NpcIndicatorsConfig config, NpcIndicatorsPlugin plugin)
-	{
-		this.config = config;
-		this.plugin = plugin;
-		setPosition(OverlayPosition.DYNAMIC);
-		setLayer(OverlayLayer.ABOVE_WIDGETS);
-	}
+  private final NpcIndicatorsConfig config;
+  private final NpcIndicatorsPlugin plugin;
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		for (NPC npc : plugin.getHighlightedNpcs())
-		{
-			renderNpcOverlay(graphics, npc, Text.removeTags(npc.getName()), config.getHighlightColor());
-		}
+  @Inject
+  NpcMinimapOverlay(NpcIndicatorsConfig config, NpcIndicatorsPlugin plugin) {
+    this.config = config;
+    this.plugin = plugin;
+    setPosition(OverlayPosition.DYNAMIC);
+    setLayer(OverlayLayer.ABOVE_WIDGETS);
+  }
 
-		return null;
-	}
+  @Override
+  public Dimension render(Graphics2D graphics) {
+    for (NPC npc : plugin.getHighlightedNpcs()) {
+      renderNpcOverlay(graphics, npc, Text.removeTags(npc.getName()), config.getHighlightColor());
+    }
 
-	private void renderNpcOverlay(Graphics2D graphics, NPC actor, String name, Color color)
-	{
-		NPCComposition npcComposition = actor.getTransformedComposition();
-		if (npcComposition == null || !npcComposition.isInteractible()
-			|| (actor.isDead() && config.ignoreDeadNpcs()))
-		{
-			return;
-		}
+    return null;
+  }
 
-		Point minimapLocation = actor.getMinimapLocation();
-		if (minimapLocation != null)
-		{
-			OverlayUtil.renderMinimapLocation(graphics, minimapLocation, color.darker());
+  private void renderNpcOverlay(Graphics2D graphics, NPC actor, String name, Color color) {
+    NPCComposition npcComposition = actor.getTransformedComposition();
+    if (npcComposition == null || !npcComposition.isInteractible()
+        || (actor.isDead() && config.ignoreDeadNpcs())) {
+      return;
+    }
 
-			if (config.drawMinimapNames())
-			{
-				OverlayUtil.renderTextLocation(graphics, minimapLocation, name, color);
-			}
-		}
-	}
+    Point minimapLocation = actor.getMinimapLocation();
+    if (minimapLocation != null) {
+      OverlayUtil.renderMinimapLocation(graphics, minimapLocation, color.darker());
+
+      if (config.drawMinimapNames()) {
+        OverlayUtil.renderTextLocation(graphics, minimapLocation, name, color);
+      }
+    }
+  }
 }

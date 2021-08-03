@@ -25,6 +25,9 @@
  */
 package meteor.plugins.cluescrolls.clues;
 
+import static meteor.plugins.cluescrolls.ClueScrollOverlay.TITLED_CONTENT_COLOR;
+import static meteor.plugins.cluescrolls.ClueScrollWorldOverlay.IMAGE_Z_OFFSET;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.Arrays;
@@ -36,13 +39,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.NPC;
-import net.runelite.api.coords.LocalPoint;
-import net.runelite.api.coords.WorldPoint;
-import static meteor.plugins.cluescrolls.ClueScrollOverlay.TITLED_CONTENT_COLOR;
 import meteor.plugins.cluescrolls.ClueScrollPlugin;
-import static meteor.plugins.cluescrolls.ClueScrollWorldOverlay.IMAGE_Z_OFFSET;
 import meteor.plugins.cluescrolls.clues.hotcold.HotColdArea;
 import meteor.plugins.cluescrolls.clues.hotcold.HotColdLocation;
 import meteor.plugins.cluescrolls.clues.hotcold.HotColdSolver;
@@ -52,323 +49,280 @@ import meteor.ui.overlay.OverlayUtil;
 import meteor.ui.overlay.components.LineComponent;
 import meteor.ui.overlay.components.PanelComponent;
 import meteor.ui.overlay.components.TitleComponent;
+import net.runelite.api.NPC;
+import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldPoint;
 
-@EqualsAndHashCode(callSuper = false, exclude = { "hotColdSolver", "location" })
+@EqualsAndHashCode(callSuper = false, exclude = {"hotColdSolver", "location"})
 @Getter
-public class HotColdClue extends ClueScroll implements LocationClueScroll, LocationsClueScroll, TextClueScroll, NpcClueScroll
-{
-	private static final HotColdClue BEGINNER_CLUE = new HotColdClue("Buried beneath the ground, who knows where it's found. Lucky for you, A man called Reldo may have a clue.",
-		"Reldo",
-		"Speak to Reldo to receive a strange device.",
-		new WorldPoint(3211, 3494, 0));
-	private static final HotColdClue MASTER_CLUE = new HotColdClue("Buried beneath the ground, who knows where it's found. Lucky for you, A man called Jorral may have a clue.",
-		"Jorral",
-		"Speak to Jorral to receive a strange device.",
-		new WorldPoint(2436, 3347, 0));
-	private static final HotColdClue MASTER_CLUE_LEAGUE = new HotColdClue("Buried beneath the ground, who knows where it's found. Lucky for you, A man called Watson may have a clue.",
-		"Watson",
-		"Speak to Watson to receive a strange device.",
-		new WorldPoint(1645, 3572, 0));
+public class HotColdClue extends ClueScroll implements LocationClueScroll, LocationsClueScroll,
+    TextClueScroll, NpcClueScroll {
 
-	private final String text;
-	private final String npc;
-	private final String solution;
-	private final WorldPoint npcLocation;
-	@Nullable
-	private HotColdSolver hotColdSolver;
-	private WorldPoint location;
+  private static final HotColdClue BEGINNER_CLUE = new HotColdClue(
+      "Buried beneath the ground, who knows where it's found. Lucky for you, A man called Reldo may have a clue.",
+      "Reldo",
+      "Speak to Reldo to receive a strange device.",
+      new WorldPoint(3211, 3494, 0));
+  private static final HotColdClue MASTER_CLUE = new HotColdClue(
+      "Buried beneath the ground, who knows where it's found. Lucky for you, A man called Jorral may have a clue.",
+      "Jorral",
+      "Speak to Jorral to receive a strange device.",
+      new WorldPoint(2436, 3347, 0));
+  private static final HotColdClue MASTER_CLUE_LEAGUE = new HotColdClue(
+      "Buried beneath the ground, who knows where it's found. Lucky for you, A man called Watson may have a clue.",
+      "Watson",
+      "Speak to Watson to receive a strange device.",
+      new WorldPoint(1645, 3572, 0));
 
-	public static HotColdClue forText(String text)
-	{
-		if (BEGINNER_CLUE.text.equalsIgnoreCase(text))
-		{
-			BEGINNER_CLUE.reset();
-			return BEGINNER_CLUE;
-		}
-		else if (MASTER_CLUE.text.equalsIgnoreCase(text))
-		{
-			MASTER_CLUE.reset();
-			return MASTER_CLUE;
-		}
-		else if (MASTER_CLUE_LEAGUE.text.equalsIgnoreCase(text))
-		{
-			MASTER_CLUE_LEAGUE.reset();
-			return MASTER_CLUE_LEAGUE;
-		}
+  private final String text;
+  private final String npc;
+  private final String solution;
+  private final WorldPoint npcLocation;
+  @Nullable
+  private HotColdSolver hotColdSolver;
+  private WorldPoint location;
 
-		return null;
-	}
+  private HotColdClue(String text, String npc, String solution, WorldPoint npcLocation) {
+    this.text = text;
+    this.npc = npc;
+    this.solution = solution;
+    this.npcLocation = npcLocation;
+    setRequiresSpade(true);
+    initializeSolver();
+  }
 
-	private HotColdClue(String text, String npc, String solution, WorldPoint npcLocation)
-	{
-		this.text = text;
-		this.npc = npc;
-		this.solution = solution;
-		this.npcLocation = npcLocation;
-		setRequiresSpade(true);
-		initializeSolver();
-	}
+  public static HotColdClue forText(String text) {
+    if (BEGINNER_CLUE.text.equalsIgnoreCase(text)) {
+      BEGINNER_CLUE.reset();
+      return BEGINNER_CLUE;
+    } else if (MASTER_CLUE.text.equalsIgnoreCase(text)) {
+      MASTER_CLUE.reset();
+      return MASTER_CLUE;
+    } else if (MASTER_CLUE_LEAGUE.text.equalsIgnoreCase(text)) {
+      MASTER_CLUE_LEAGUE.reset();
+      return MASTER_CLUE_LEAGUE;
+    }
 
-	@Override
-	public WorldPoint[] getLocations()
-	{
-		if (hotColdSolver == null)
-		{
-			return new WorldPoint[0];
-		}
+    return null;
+  }
 
-		if (hotColdSolver.getLastWorldPoint() == null)
-		{
-			return new WorldPoint[] {npcLocation};
-		}
-		else
-		{
-			return hotColdSolver.getPossibleLocations().stream().map(HotColdLocation::getWorldPoint).toArray(WorldPoint[]::new);
-		}
-	}
+  @Override
+  public WorldPoint[] getLocations() {
+    if (hotColdSolver == null) {
+      return new WorldPoint[0];
+    }
 
-	@Override
-	public void makeOverlayHint(PanelComponent panelComponent, ClueScrollPlugin plugin)
-	{
-		if (hotColdSolver == null)
-		{
-			return;
-		}
+    if (hotColdSolver.getLastWorldPoint() == null) {
+      return new WorldPoint[]{npcLocation};
+    } else {
+      return hotColdSolver.getPossibleLocations().stream().map(HotColdLocation::getWorldPoint)
+          .toArray(WorldPoint[]::new);
+    }
+  }
 
-		panelComponent.getChildren().add(TitleComponent.builder()
-			.text("Hot/Cold Clue")
-			.build());
+  @Override
+  public void makeOverlayHint(PanelComponent panelComponent, ClueScrollPlugin plugin) {
+    if (hotColdSolver == null) {
+      return;
+    }
 
-		// strange device has not been tested yet, show how to get it
-		if (hotColdSolver.getLastWorldPoint() == null && location == null)
-		{
-			if (getNpc() != null)
-			{
-				panelComponent.getChildren().add(LineComponent.builder()
-					.left("NPC:")
-					.build());
-				panelComponent.getChildren().add(LineComponent.builder()
-					.left(getNpc())
-					.leftColor(TITLED_CONTENT_COLOR)
-					.build());
-			}
+    panelComponent.getChildren().add(TitleComponent.builder()
+        .text("Hot/Cold Clue")
+        .build());
 
-			panelComponent.getChildren().add(LineComponent.builder()
-				.left("Solution:")
-				.build());
-			panelComponent.getChildren().add(LineComponent.builder()
-				.left(getSolution())
-				.leftColor(TITLED_CONTENT_COLOR)
-				.build());
-		}
-		// strange device has been tested, show possible locations for final dig spot
-		else
-		{
-			panelComponent.getChildren().add(LineComponent.builder()
-				.left("Possible locations:")
-				.build());
+    // strange device has not been tested yet, show how to get it
+    if (hotColdSolver.getLastWorldPoint() == null && location == null) {
+      if (getNpc() != null) {
+        panelComponent.getChildren().add(LineComponent.builder()
+            .left("NPC:")
+            .build());
+        panelComponent.getChildren().add(LineComponent.builder()
+            .left(getNpc())
+            .leftColor(TITLED_CONTENT_COLOR)
+            .build());
+      }
 
-			final Map<HotColdArea, Integer> locationCounts = new EnumMap<>(HotColdArea.class);
-			final Collection<HotColdLocation> digLocations = hotColdSolver.getPossibleLocations();
+      panelComponent.getChildren().add(LineComponent.builder()
+          .left("Solution:")
+          .build());
+      panelComponent.getChildren().add(LineComponent.builder()
+          .left(getSolution())
+          .leftColor(TITLED_CONTENT_COLOR)
+          .build());
+    }
+    // strange device has been tested, show possible locations for final dig spot
+    else {
+      panelComponent.getChildren().add(LineComponent.builder()
+          .left("Possible locations:")
+          .build());
 
-			for (HotColdLocation hotColdLocation : digLocations)
-			{
-				HotColdArea hotColdArea = hotColdLocation.getHotColdArea();
+      final Map<HotColdArea, Integer> locationCounts = new EnumMap<>(HotColdArea.class);
+      final Collection<HotColdLocation> digLocations = hotColdSolver.getPossibleLocations();
 
-				if (locationCounts.containsKey(hotColdArea))
-				{
-					locationCounts.put(hotColdArea, locationCounts.get(hotColdArea) + 1);
-				}
-				else
-				{
-					locationCounts.put(hotColdArea, 1);
-				}
-			}
+      for (HotColdLocation hotColdLocation : digLocations) {
+        HotColdArea hotColdArea = hotColdLocation.getHotColdArea();
 
-			if (digLocations.size() > 10)
-			{
-				for (HotColdArea area : locationCounts.keySet())
-				{
-					panelComponent.getChildren().add(LineComponent.builder()
-						.left(area.getName())
-						.right(Integer.toString(locationCounts.get(area)))
-						.build());
-				}
-			}
-			else
-			{
-				for (HotColdArea area : locationCounts.keySet())
-				{
-					panelComponent.getChildren().add(LineComponent.builder()
-						.left(area.getName() + ':')
-						.build());
+        if (locationCounts.containsKey(hotColdArea)) {
+          locationCounts.put(hotColdArea, locationCounts.get(hotColdArea) + 1);
+        } else {
+          locationCounts.put(hotColdArea, 1);
+        }
+      }
 
-					for (HotColdLocation hotColdLocation : digLocations)
-					{
-						if (hotColdLocation.getHotColdArea() == area)
-						{
-							panelComponent.getChildren().add(LineComponent.builder()
-								.left("- " + hotColdLocation.getArea())
-								.leftColor(Color.LIGHT_GRAY)
-								.build());
+      if (digLocations.size() > 10) {
+        for (HotColdArea area : locationCounts.keySet()) {
+          panelComponent.getChildren().add(LineComponent.builder()
+              .left(area.getName())
+              .right(Integer.toString(locationCounts.get(area)))
+              .build());
+        }
+      } else {
+        for (HotColdArea area : locationCounts.keySet()) {
+          panelComponent.getChildren().add(LineComponent.builder()
+              .left(area.getName() + ':')
+              .build());
 
-							if (digLocations.size() <= 5 && hotColdLocation.getEnemy() != null)
-							{
-								panelComponent.getChildren().add(LineComponent.builder()
-									.left(hotColdLocation.getEnemy().getText())
-									.leftColor(Color.YELLOW)
-									.build());
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+          for (HotColdLocation hotColdLocation : digLocations) {
+            if (hotColdLocation.getHotColdArea() == area) {
+              panelComponent.getChildren().add(LineComponent.builder()
+                  .left("- " + hotColdLocation.getArea())
+                  .leftColor(Color.LIGHT_GRAY)
+                  .build());
 
-	@Override
-	public void makeWorldOverlayHint(Graphics2D graphics, ClueScrollPlugin plugin)
-	{
-		if (hotColdSolver == null)
-		{
-			return;
-		}
+              if (digLocations.size() <= 5 && hotColdLocation.getEnemy() != null) {
+                panelComponent.getChildren().add(LineComponent.builder()
+                    .left(hotColdLocation.getEnemy().getText())
+                    .leftColor(Color.YELLOW)
+                    .build());
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 
-		// when final location has been found
-		if (location != null)
-		{
-			LocalPoint localLocation = LocalPoint.fromWorld(plugin.getClient(), getLocation());
+  @Override
+  public void makeWorldOverlayHint(Graphics2D graphics, ClueScrollPlugin plugin) {
+    if (hotColdSolver == null) {
+      return;
+    }
 
-			if (localLocation != null)
-			{
-				OverlayUtil.renderTileOverlay(plugin.getClient(), graphics, localLocation, plugin.getSpadeImage(), Color.ORANGE);
-			}
+    // when final location has been found
+    if (location != null) {
+      LocalPoint localLocation = LocalPoint.fromWorld(plugin.getClient(), getLocation());
 
-			return;
-		}
+      if (localLocation != null) {
+        OverlayUtil
+            .renderTileOverlay(plugin.getClient(), graphics, localLocation, plugin.getSpadeImage(),
+                Color.ORANGE);
+      }
 
-		// when strange device hasn't been activated yet, show npc who gives you the strange device
-		if (hotColdSolver.getLastWorldPoint() == null && plugin.getNpcsToMark() != null)
-		{
-			for (NPC npcToMark : plugin.getNpcsToMark())
-			{
-				OverlayUtil.renderActorOverlayImage(graphics, npcToMark, plugin.getClueScrollImage(), Color.ORANGE, IMAGE_Z_OFFSET);
-			}
-		}
+      return;
+    }
 
-		// once the number of possible dig locations is below 10, show the dig spots
-		final Collection<HotColdLocation> digLocations = hotColdSolver.getPossibleLocations();
-		if (digLocations.size() < 10)
-		{
-			// Mark potential dig locations
-			for (HotColdLocation hotColdLocation : digLocations)
-			{
-				WorldPoint wp = hotColdLocation.getWorldPoint();
-				LocalPoint localLocation = LocalPoint.fromWorld(plugin.getClient(), wp.getX(), wp.getY());
+    // when strange device hasn't been activated yet, show npc who gives you the strange device
+    if (hotColdSolver.getLastWorldPoint() == null && plugin.getNpcsToMark() != null) {
+      for (NPC npcToMark : plugin.getNpcsToMark()) {
+        OverlayUtil
+            .renderActorOverlayImage(graphics, npcToMark, plugin.getClueScrollImage(), Color.ORANGE,
+                IMAGE_Z_OFFSET);
+      }
+    }
 
-				if (localLocation == null)
-				{
-					return;
-				}
+    // once the number of possible dig locations is below 10, show the dig spots
+    final Collection<HotColdLocation> digLocations = hotColdSolver.getPossibleLocations();
+    if (digLocations.size() < 10) {
+      // Mark potential dig locations
+      for (HotColdLocation hotColdLocation : digLocations) {
+        WorldPoint wp = hotColdLocation.getWorldPoint();
+        LocalPoint localLocation = LocalPoint.fromWorld(plugin.getClient(), wp.getX(), wp.getY());
 
-				OverlayUtil.renderTileOverlay(plugin.getClient(), graphics, localLocation, plugin.getSpadeImage(), Color.ORANGE);
-			}
-		}
-	}
+        if (localLocation == null) {
+          return;
+        }
 
-	public boolean update(final String message, final ClueScrollPlugin plugin)
-	{
-		if (hotColdSolver == null)
-		{
-			return false;
-		}
+        OverlayUtil
+            .renderTileOverlay(plugin.getClient(), graphics, localLocation, plugin.getSpadeImage(),
+                Color.ORANGE);
+      }
+    }
+  }
 
-		final Set<HotColdTemperature> temperatureSet;
+  public boolean update(final String message, final ClueScrollPlugin plugin) {
+    if (hotColdSolver == null) {
+      return false;
+    }
 
-		if (this == BEGINNER_CLUE)
-		{
-			temperatureSet = HotColdTemperature.BEGINNER_HOT_COLD_TEMPERATURES;
-		}
-		else if (this == MASTER_CLUE || this == MASTER_CLUE_LEAGUE)
-		{
-			temperatureSet = HotColdTemperature.MASTER_HOT_COLD_TEMPERATURES;
-		}
-		else
-		{
-			temperatureSet = null;
-		}
+    final Set<HotColdTemperature> temperatureSet;
 
-		final HotColdTemperature temperature = HotColdTemperature.getFromTemperatureSet(temperatureSet, message);
+    if (this == BEGINNER_CLUE) {
+      temperatureSet = HotColdTemperature.BEGINNER_HOT_COLD_TEMPERATURES;
+    } else if (this == MASTER_CLUE || this == MASTER_CLUE_LEAGUE) {
+      temperatureSet = HotColdTemperature.MASTER_HOT_COLD_TEMPERATURES;
+    } else {
+      temperatureSet = null;
+    }
 
-		if (temperature == null)
-		{
-			return false;
-		}
+    final HotColdTemperature temperature = HotColdTemperature
+        .getFromTemperatureSet(temperatureSet, message);
 
-		// Convert from real to overworld
-		final WorldPoint localWorld = ClueScrollPlugin.getMirrorPoint(plugin.getClient().getLocalPlayer().getWorldLocation(), true);
+    if (temperature == null) {
+      return false;
+    }
 
-		if (localWorld == null)
-		{
-			return false;
-		}
+    // Convert from real to overworld
+    final WorldPoint localWorld = ClueScrollPlugin
+        .getMirrorPoint(plugin.getClient().getLocalPlayer().getWorldLocation(), true);
 
-		boolean master = this == MASTER_CLUE || this == MASTER_CLUE_LEAGUE;
-		if ((this == BEGINNER_CLUE && temperature == HotColdTemperature.BEGINNER_VISIBLY_SHAKING)
-			|| (master && temperature == HotColdTemperature.MASTER_VISIBLY_SHAKING))
-		{
-			markFinalSpot(localWorld);
-		}
-		else
-		{
-			location = null;
-		}
+    if (localWorld == null) {
+      return false;
+    }
 
-		final HotColdTemperatureChange temperatureChange = HotColdTemperatureChange.of(message);
-		hotColdSolver.signal(localWorld, temperature, temperatureChange);
+    boolean master = this == MASTER_CLUE || this == MASTER_CLUE_LEAGUE;
+    if ((this == BEGINNER_CLUE && temperature == HotColdTemperature.BEGINNER_VISIBLY_SHAKING)
+        || (master && temperature == HotColdTemperature.MASTER_VISIBLY_SHAKING)) {
+      markFinalSpot(localWorld);
+    } else {
+      location = null;
+    }
 
-		return true;
-	}
+    final HotColdTemperatureChange temperatureChange = HotColdTemperatureChange.of(message);
+    hotColdSolver.signal(localWorld, temperature, temperatureChange);
 
-	@Override
-	public void reset()
-	{
-		location = null;
-		initializeSolver();
-	}
+    return true;
+  }
 
-	private void initializeSolver()
-	{
-		final boolean isBeginner;
+  @Override
+  public void reset() {
+    location = null;
+    initializeSolver();
+  }
 
-		if (this == BEGINNER_CLUE)
-		{
-			isBeginner = true;
-		}
-		else if (this == MASTER_CLUE || this == MASTER_CLUE_LEAGUE)
-		{
-			isBeginner = false;
-		}
-		else
-		{
-			hotColdSolver = null;
-			return;
-		}
+  private void initializeSolver() {
+    final boolean isBeginner;
 
-		final Set<HotColdLocation> locations = Arrays.stream(HotColdLocation.values())
-			.filter(l -> l.isBeginnerClue() == isBeginner)
-			.collect(Collectors.toSet());
-		hotColdSolver = new HotColdSolver(locations);
-	}
+    if (this == BEGINNER_CLUE) {
+      isBeginner = true;
+    } else if (this == MASTER_CLUE || this == MASTER_CLUE_LEAGUE) {
+      isBeginner = false;
+    } else {
+      hotColdSolver = null;
+      return;
+    }
 
-	private void markFinalSpot(WorldPoint wp)
-	{
-		this.location = wp;
-	}
+    final Set<HotColdLocation> locations = Arrays.stream(HotColdLocation.values())
+        .filter(l -> l.isBeginnerClue() == isBeginner)
+        .collect(Collectors.toSet());
+    hotColdSolver = new HotColdSolver(locations);
+  }
 
-	@Override
-	public String[] getNpcs()
-	{
-		return new String[] {npc};
-	}
+  private void markFinalSpot(WorldPoint wp) {
+    this.location = wp;
+  }
+
+  @Override
+  public String[] getNpcs() {
+    return new String[]{npc};
+  }
 }

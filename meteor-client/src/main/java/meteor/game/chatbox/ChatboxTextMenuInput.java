@@ -46,7 +46,7 @@ public class ChatboxTextMenuInput extends ChatboxInput implements KeyListener {
   @Getter
   private String title;
   @Getter
-  private List<Entry> options = new ArrayList<>();
+  private final List<Entry> options = new ArrayList<>();
   @Getter
   private Runnable onClose;
 

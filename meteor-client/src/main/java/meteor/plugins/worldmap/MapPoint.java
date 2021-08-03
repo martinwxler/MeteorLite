@@ -30,27 +30,26 @@ import lombok.experimental.SuperBuilder;
 import meteor.ui.overlay.worldmap.WorldMapPoint;
 
 @SuperBuilder
-class MapPoint extends WorldMapPoint
-{
-	enum Type
-	{
-		TELEPORT,
-		RUNECRAFT_ALTAR,
-		MINING_SITE,
-		DUNGEON,
-		HUNTER,
-		FISHING,
-		KOUREND_TASK,
-		FARMING_PATCH,
-		TRANSPORTATION,
-		MINIGAME,
-		FAIRY_RING,
-		AGILITY_COURSE,
-		AGILITY_SHORTCUT,
-		QUEST,
-		RARE_TREE
-	}
+class MapPoint extends WorldMapPoint {
 
-	@Getter
-	private final Type type;
+  @Getter
+  private final Type type;
+
+  enum Type {
+    TELEPORT,
+    RUNECRAFT_ALTAR,
+    MINING_SITE,
+    DUNGEON,
+    HUNTER,
+    FISHING,
+    KOUREND_TASK,
+    FARMING_PATCH,
+    TRANSPORTATION,
+    MINIGAME,
+    FAIRY_RING,
+    AGILITY_COURSE,
+    AGILITY_SHORTCUT,
+    QUEST,
+    RARE_TREE
+  }
 }

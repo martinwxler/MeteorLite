@@ -29,162 +29,152 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.util.Map;
 import javax.inject.Inject;
-import net.runelite.api.Client;
-import net.runelite.api.Perspective;
-import net.runelite.api.coords.LocalPoint;
-import net.runelite.api.coords.WorldPoint;
 import meteor.ui.overlay.Overlay;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayPosition;
 import meteor.ui.overlay.components.ProgressPieComponent;
 import meteor.util.ColorUtil;
+import net.runelite.api.Client;
+import net.runelite.api.Perspective;
+import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldPoint;
 
 /**
- * Represents the overlay that shows timers on traps that are placed by the
- * player.
+ * Represents the overlay that shows timers on traps that are placed by the player.
  */
-public class TrapOverlay extends Overlay
-{
-	/**
-	 * The timer is low when only 25% is left.
-	 */
-	private static final double TIMER_LOW = 0.25; // When the timer is under a quarter left, if turns red.
+public class TrapOverlay extends Overlay {
 
-	private final Client client;
-	private final HunterPlugin plugin;
-	private final HunterConfig config;
+  /**
+   * The timer is low when only 25% is left.
+   */
+  private static final double TIMER_LOW = 0.25; // When the timer is under a quarter left, if turns red.
 
-	private Color colorOpen, colorOpenBorder;
-	private Color colorEmpty, colorEmptyBorder;
-	private Color colorFull, colorFullBorder;
-	private Color colorTrans, colorTransBorder;
+  private final Client client;
+  private final HunterPlugin plugin;
+  private final HunterConfig config;
 
-	@Inject
-	TrapOverlay(Client client, HunterPlugin plugin, HunterConfig config)
-	{
-		setPosition(OverlayPosition.DYNAMIC);
-		setLayer(OverlayLayer.ABOVE_SCENE);
-		this.plugin = plugin;
-		this.config = config;
-		this.client = client;
-	}
+  private Color colorOpen, colorOpenBorder;
+  private Color colorEmpty, colorEmptyBorder;
+  private Color colorFull, colorFullBorder;
+  private Color colorTrans, colorTransBorder;
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		drawTraps(graphics);
-		return null;
-	}
+  @Inject
+  TrapOverlay(Client client, HunterPlugin plugin, HunterConfig config) {
+    setPosition(OverlayPosition.DYNAMIC);
+    setLayer(OverlayLayer.ABOVE_SCENE);
+    this.plugin = plugin;
+    this.config = config;
+    this.client = client;
+  }
 
-	/**
-	 * Updates the timer colors.
-	 */
-	public void updateConfig()
-	{
-		colorEmptyBorder = config.getEmptyTrapColor();
-		colorEmpty = ColorUtil.colorWithAlpha(colorEmptyBorder, (int)(colorEmptyBorder.getAlpha() / 2.5));
-		colorFullBorder = config.getFullTrapColor();
-		colorFull = ColorUtil.colorWithAlpha(colorFullBorder, (int)(colorFullBorder.getAlpha() / 2.5));
-		colorOpenBorder = config.getOpenTrapColor();
-		colorOpen = ColorUtil.colorWithAlpha(colorOpenBorder, (int)(colorOpenBorder.getAlpha() / 2.5));
-		colorTransBorder = config.getTransTrapColor();
-		colorTrans = ColorUtil.colorWithAlpha(colorTransBorder, (int)(colorTransBorder.getAlpha() / 2.5));
-	}
+  @Override
+  public Dimension render(Graphics2D graphics) {
+    drawTraps(graphics);
+    return null;
+  }
 
-	/**
-	 * Iterates over all the traps that were placed by the local player, and
-	 * draws a circle or a timer on the trap, depending on the trap state.
-	 *
-	 * @param graphics
-	 */
-	private void drawTraps(Graphics2D graphics)
-	{
-		for (Map.Entry<WorldPoint, HunterTrap> entry : plugin.getTraps().entrySet())
-		{
-			HunterTrap trap = entry.getValue();
+  /**
+   * Updates the timer colors.
+   */
+  public void updateConfig() {
+    colorEmptyBorder = config.getEmptyTrapColor();
+    colorEmpty = ColorUtil
+        .colorWithAlpha(colorEmptyBorder, (int) (colorEmptyBorder.getAlpha() / 2.5));
+    colorFullBorder = config.getFullTrapColor();
+    colorFull = ColorUtil.colorWithAlpha(colorFullBorder, (int) (colorFullBorder.getAlpha() / 2.5));
+    colorOpenBorder = config.getOpenTrapColor();
+    colorOpen = ColorUtil.colorWithAlpha(colorOpenBorder, (int) (colorOpenBorder.getAlpha() / 2.5));
+    colorTransBorder = config.getTransTrapColor();
+    colorTrans = ColorUtil
+        .colorWithAlpha(colorTransBorder, (int) (colorTransBorder.getAlpha() / 2.5));
+  }
 
-			switch (trap.getState())
-			{
-				case OPEN:
-					drawTimerOnTrap(graphics, trap, colorOpen, colorOpenBorder, colorEmpty, colorOpenBorder);
-					break;
-				case EMPTY:
-					drawTimerOnTrap(graphics, trap, colorEmpty, colorEmptyBorder, colorEmpty, colorEmptyBorder);
-					break;
-				case FULL:
-					drawTimerOnTrap(graphics, trap, colorFull, colorFullBorder, colorFull, colorFullBorder);
-					break;
-				case TRANSITION:
-					drawCircleOnTrap(graphics, trap, colorTrans, colorTransBorder);
-					break;
-			}
-		}
-	}
+  /**
+   * Iterates over all the traps that were placed by the local player, and draws a circle or a timer
+   * on the trap, depending on the trap state.
+   *
+   * @param graphics
+   */
+  private void drawTraps(Graphics2D graphics) {
+    for (Map.Entry<WorldPoint, HunterTrap> entry : plugin.getTraps().entrySet()) {
+      HunterTrap trap = entry.getValue();
 
-	/**
-	 * Draws a timer on a given trap.
-	 *
-	 * @param graphics
-	 * @param trap The trap on which the timer needs to be drawn
-	 * @param fill The fill color of the timer
-	 * @param border The border color of the timer
-	 * @param fillTimeLow The fill color of the timer when it is low
-	 * @param borderTimeLow The border color of the timer when it is low
-	 */
-	private void drawTimerOnTrap(Graphics2D graphics, HunterTrap trap, Color fill, Color border, Color fillTimeLow, Color borderTimeLow)
-	{
-		if (trap.getWorldLocation().getPlane() != client.getPlane())
-		{
-			return;
-		}
-		LocalPoint localLoc = LocalPoint.fromWorld(client, trap.getWorldLocation());
-		if (localLoc == null)
-		{
-			return;
-		}
-		net.runelite.api.Point loc = Perspective.localToCanvas(client, localLoc, client.getPlane());
+      switch (trap.getState()) {
+        case OPEN:
+          drawTimerOnTrap(graphics, trap, colorOpen, colorOpenBorder, colorEmpty, colorOpenBorder);
+          break;
+        case EMPTY:
+          drawTimerOnTrap(graphics, trap, colorEmpty, colorEmptyBorder, colorEmpty,
+              colorEmptyBorder);
+          break;
+        case FULL:
+          drawTimerOnTrap(graphics, trap, colorFull, colorFullBorder, colorFull, colorFullBorder);
+          break;
+        case TRANSITION:
+          drawCircleOnTrap(graphics, trap, colorTrans, colorTransBorder);
+          break;
+      }
+    }
+  }
 
-		if (loc == null)
-		{
-			return;
-		}
+  /**
+   * Draws a timer on a given trap.
+   *
+   * @param graphics
+   * @param trap          The trap on which the timer needs to be drawn
+   * @param fill          The fill color of the timer
+   * @param border        The border color of the timer
+   * @param fillTimeLow   The fill color of the timer when it is low
+   * @param borderTimeLow The border color of the timer when it is low
+   */
+  private void drawTimerOnTrap(Graphics2D graphics, HunterTrap trap, Color fill, Color border,
+      Color fillTimeLow, Color borderTimeLow) {
+    if (trap.getWorldLocation().getPlane() != client.getPlane()) {
+      return;
+    }
+    LocalPoint localLoc = LocalPoint.fromWorld(client, trap.getWorldLocation());
+    if (localLoc == null) {
+      return;
+    }
+    net.runelite.api.Point loc = Perspective.localToCanvas(client, localLoc, client.getPlane());
 
-		double timeLeft = 1 - trap.getTrapTimeRelative();
+    if (loc == null) {
+      return;
+    }
 
-		ProgressPieComponent pie = new ProgressPieComponent();
-		pie.setFill(timeLeft > TIMER_LOW ? fill : fillTimeLow);
-		pie.setBorderColor(timeLeft > TIMER_LOW ? border : borderTimeLow);
-		pie.setPosition(loc);
-		pie.setProgress(timeLeft);
-		pie.render(graphics);
-	}
+    double timeLeft = 1 - trap.getTrapTimeRelative();
 
-	/**
-	 * Draws a timer on a given trap.
-	 *
-	 * @param graphics
-	 * @param trap The trap on which the timer needs to be drawn
-	 * @param fill The fill color of the timer
-	 * @param border The border color of the timer
-	 */
-	private void drawCircleOnTrap(Graphics2D graphics, HunterTrap trap, Color fill, Color border)
-	{
-		if (trap.getWorldLocation().getPlane() != client.getPlane())
-		{
-			return;
-		}
-		LocalPoint localLoc = LocalPoint.fromWorld(client, trap.getWorldLocation());
-		if (localLoc == null)
-		{
-			return;
-		}
-		net.runelite.api.Point loc = Perspective.localToCanvas(client, localLoc, client.getPlane());
+    ProgressPieComponent pie = new ProgressPieComponent();
+    pie.setFill(timeLeft > TIMER_LOW ? fill : fillTimeLow);
+    pie.setBorderColor(timeLeft > TIMER_LOW ? border : borderTimeLow);
+    pie.setPosition(loc);
+    pie.setProgress(timeLeft);
+    pie.render(graphics);
+  }
 
-		ProgressPieComponent pie = new ProgressPieComponent();
-		pie.setFill(fill);
-		pie.setBorderColor(border);
-		pie.setPosition(loc);
-		pie.setProgress(1);
-		pie.render(graphics);
-	}
+  /**
+   * Draws a timer on a given trap.
+   *
+   * @param graphics
+   * @param trap     The trap on which the timer needs to be drawn
+   * @param fill     The fill color of the timer
+   * @param border   The border color of the timer
+   */
+  private void drawCircleOnTrap(Graphics2D graphics, HunterTrap trap, Color fill, Color border) {
+    if (trap.getWorldLocation().getPlane() != client.getPlane()) {
+      return;
+    }
+    LocalPoint localLoc = LocalPoint.fromWorld(client, trap.getWorldLocation());
+    if (localLoc == null) {
+      return;
+    }
+    net.runelite.api.Point loc = Perspective.localToCanvas(client, localLoc, client.getPlane());
+
+    ProgressPieComponent pie = new ProgressPieComponent();
+    pie.setFill(fill);
+    pie.setBorderColor(border);
+    pie.setPosition(loc);
+    pie.setProgress(1);
+    pie.render(graphics);
+  }
 }

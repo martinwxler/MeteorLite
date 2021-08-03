@@ -24,7 +24,7 @@
  */
 package meteor.plugins.cluescrolls.clues;
 
-public interface NpcClueScroll
-{
-	String[] getNpcs();
+public interface NpcClueScroll {
+
+  String[] getNpcs();
 }

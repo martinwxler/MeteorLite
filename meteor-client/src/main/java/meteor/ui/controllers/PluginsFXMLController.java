@@ -4,7 +4,6 @@ import com.jfoenix.controls.JFXToggleButton;
 import java.io.IOException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import meteor.MeteorLite;
 import meteor.PluginManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.stretchedmode.StretchedModePlugin;

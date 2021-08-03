@@ -32,23 +32,20 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 @Singleton
-public class WorldMapPointManager
-{
-	@Getter(AccessLevel.PACKAGE)
-	private final List<WorldMapPoint> worldMapPoints = new CopyOnWriteArrayList<>();
+public class WorldMapPointManager {
 
-	public void add(WorldMapPoint worldMapPoint)
-	{
-		worldMapPoints.add(worldMapPoint);
-	}
+  @Getter(AccessLevel.PACKAGE)
+  private final List<WorldMapPoint> worldMapPoints = new CopyOnWriteArrayList<>();
 
-	public void remove(WorldMapPoint worldMapPoint)
-	{
-		worldMapPoints.remove(worldMapPoint);
-	}
+  public void add(WorldMapPoint worldMapPoint) {
+    worldMapPoints.add(worldMapPoint);
+  }
 
-	public void removeIf(Predicate<WorldMapPoint> filter)
-	{
-		worldMapPoints.removeIf(filter);
-	}
+  public void remove(WorldMapPoint worldMapPoint) {
+    worldMapPoints.remove(worldMapPoint);
+  }
+
+  public void removeIf(Predicate<WorldMapPoint> filter) {
+    worldMapPoints.removeIf(filter);
+  }
 }

@@ -37,4 +37,5 @@ public class StatChanged {
   int xp;
   int level;
   int boostedLevel;
+  int xpChange;
 }

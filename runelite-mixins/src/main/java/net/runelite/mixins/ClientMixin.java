@@ -6,8 +6,11 @@ import static net.runelite.api.Perspective.LOCAL_TILE_SIZE;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nonnull;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.GameState;
 import net.runelite.api.GraphicsObject;
 import net.runelite.api.HashTable;
@@ -16,6 +19,7 @@ import net.runelite.api.InventoryID;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
+import net.runelite.api.MessageNode;
 import net.runelite.api.NPC;
 import net.runelite.api.NPCComposition;
 import net.runelite.api.Node;
@@ -32,6 +36,8 @@ import net.runelite.api.VarPlayer;
 import net.runelite.api.WidgetNode;
 import net.runelite.api.WorldType;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.CanvasSizeChanged;
+import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.MenuEntryAdded;
@@ -54,6 +60,7 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.api.widgets.WidgetType;
 import net.runelite.rs.api.RSArchive;
+import net.runelite.rs.api.RSChatChannel;
 import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSItemContainer;
 import net.runelite.rs.api.RSNPC;
@@ -287,6 +294,9 @@ public abstract class ClientMixin implements RSClient {
     }
   }
 
+  @Inject
+  public static HashMap<Skill, Integer> oldXpMap = new HashMap<>();
+
   @FieldHook("experience")
   @Inject
   public static void experiencedChanged(int idx) {
@@ -295,13 +305,25 @@ public abstract class ClientMixin implements RSClient {
     // We subtract one here because 'Overall' isn't considered a skill that's updated.
     if (idx < possibleSkills.length - 1) {
       Skill updatedSkill = possibleSkills[idx];
+      int newXp = client.getSkillExperience(updatedSkill);
+      int oldXp;
+      try
+      {
+        oldXp = oldXpMap.get(updatedSkill);
+      }
+      catch (Exception e)
+      {
+        oldXp = 0;
+      }
       StatChanged statChanged = new StatChanged(
           updatedSkill,
-          client.getSkillExperience(updatedSkill),
+          newXp,
           client.getRealSkillLevel(updatedSkill),
-          client.getBoostedSkillLevel(updatedSkill)
+          client.getBoostedSkillLevel(updatedSkill),
+          newXp - oldXp
       );
       client.getCallbacks().post(statChanged);
+      oldXpMap.put(updatedSkill, client.getSkillExperience(updatedSkill));
     }
   }
 
@@ -320,7 +342,8 @@ public abstract class ClientMixin implements RSClient {
           skills[skillIdx],
           client.getSkillExperiences()[skillIdx],
           client.getRealSkillLevels()[skillIdx],
-          client.getBoostedSkillLevels()[skillIdx]
+          client.getBoostedSkillLevels()[skillIdx],
+          0
       );
       client.getCallbacks().post(statChanged);
     }
@@ -979,5 +1002,62 @@ public abstract class ClientMixin implements RSClient {
     }
 
     return npcs;
+  }
+
+  @FieldHook("canvasWidth")
+  @Inject
+  public static void canvasWidthChanged(int idx)
+  {
+    client.getCallbacks().post(CanvasSizeChanged.INSTANCE);
+  }
+
+  @FieldHook("canvasHeight")
+  @Inject
+  public static void canvasHeightChanged(int idx)
+  {
+    client.getCallbacks().post(CanvasSizeChanged.INSTANCE);
+  }
+
+  @Inject
+  public MessageNode addChatMessage(ChatMessageType type, String name, String message, String sender, boolean postEvent)
+  {
+    copy$addChatMessage(type.getType(), name, message, sender);
+
+    // Get the message node which was added
+    @SuppressWarnings("unchecked") Map<Integer, RSChatChannel> chatLineMap = client.getChatLineMap();
+    RSChatChannel chatLineBuffer = chatLineMap.get(type.getType());
+    MessageNode messageNode = chatLineBuffer.getLines()[0];
+
+    if (postEvent)
+    {
+      final ChatMessage chatMessage = new ChatMessage(messageNode, type, name, message, sender, messageNode.getTimestamp());
+      client.getCallbacks().post(chatMessage);
+    }
+
+    return messageNode;
+  }
+
+  @Inject
+  @Override
+  public MessageNode addChatMessage(ChatMessageType type, String name, String message, String sender)
+  {
+    return addChatMessage(type, name, message, sender, true);
+  }
+
+  @SuppressWarnings("InfiniteRecursion")
+  @Copy("addChatMessage")
+  @Replace("addChatMessage")
+  public static void copy$addChatMessage(int type, String name, String message, String sender)
+  {
+    copy$addChatMessage(type, name, message, sender);
+
+    // Get the message node which was added
+    @SuppressWarnings("unchecked") Map<Integer, RSChatChannel> chatLineMap = client.getChatLineMap();
+    RSChatChannel chatLineBuffer = chatLineMap.get(type);
+    MessageNode messageNode = chatLineBuffer.getLines()[0];
+
+    final ChatMessageType chatMessageType = ChatMessageType.of(type);
+    final ChatMessage chatMessage = new ChatMessage(messageNode, chatMessageType, name, message, sender, messageNode.getTimestamp());
+    client.getCallbacks().post(chatMessage);
   }
 }

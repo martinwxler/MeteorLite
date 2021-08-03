@@ -28,7 +28,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import javax.annotation.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -75,9 +74,7 @@ public class Keybind {
 
       this.keyCode = keyCode;
       this.modifiers = modifiers;
-    }
-    catch (Exception e)
-    {
+    } catch (Exception e) {
       e.printStackTrace();
     }
   }
@@ -96,9 +93,11 @@ public class Keybind {
   }
 
   public static Integer getModifierForKeyCode(int keyCode) {
-    if (MODIFIER_TO_KEY_CODE != null)
+    if (MODIFIER_TO_KEY_CODE != null) {
       return MODIFIER_TO_KEY_CODE.inverse().get(keyCode);
-    else return -1;
+    } else {
+      return -1;
+    }
   }
 
   /**

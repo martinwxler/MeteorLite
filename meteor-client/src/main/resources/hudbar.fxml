@@ -47,7 +47,7 @@
       </JFXTextArea>
     </children>
   </HBox>
-  <HBox alignment="CENTER" layoutX="1839.0" layoutY="18.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="41.0" prefWidth="4044.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="37.0">
+  <HBox alignment="CENTER" layoutX="1839.0" layoutY="18.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="41.0" prefWidth="4044.0" AnchorPane.leftAnchor="45.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="37.0">
     <children>
       <ImageView fx:id="currentSkillIcon" fitHeight="17.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
         <image>
@@ -57,7 +57,7 @@
           <Insets left="-4.0" top="-23.0" />
         </HBox.margin>
       </ImageView>
-      <JFXTextArea editable="false" prefHeight="46.0" prefWidth="126.0" stylesheets="@css/hudbar/xptextarea.css" text="66.6666%" unFocusColor="TRANSPARENT" fx:id="xpText">
+      <JFXTextArea editable="false" prefHeight="70.0" prefWidth="176.0" stylesheets="@css/hudbar/xptextarea.css" text="66.6666% (666x)" unFocusColor="TRANSPARENT" fx:id="xpText">
         <font>
           <Font name="Candara" size="23.0" />
         </font>

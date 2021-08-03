@@ -27,8 +27,8 @@ package meteor.plugins.neverlog;
 
 import java.util.Random;
 import javax.inject.Inject;
-import meteor.plugins.Plugin;
 import meteor.eventbus.Subscribe;
+import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import net.runelite.api.Client;
 import net.runelite.api.events.GameTick;
@@ -45,7 +45,7 @@ public class NeverLogoutPlugin extends Plugin {
 
   private int randomTick;
 
-  private Random random = new Random();
+  private final Random random = new Random();
 
   @Subscribe
   private void onGametick(GameTick gameTick) {

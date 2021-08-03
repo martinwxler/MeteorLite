@@ -75,10 +75,10 @@ import jogamp.nativewindow.SurfaceScaleUtils;
 import jogamp.nativewindow.jawt.x11.X11JAWTWindow;
 import jogamp.nativewindow.macosx.OSXUtil;
 import jogamp.newt.awt.NewtFactoryAWT;
-import meteor.plugins.Plugin;
 import meteor.callback.ClientThread;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
+import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.plugins.gpu.config.AntiAliasingMode;
 import meteor.plugins.gpu.config.UIScalingMode;
@@ -1132,8 +1132,8 @@ public class GpuPlugin extends Plugin implements DrawCallbacks {
 
     try {
       glDrawable.swapBuffers();
+    } catch (Exception ignore) {
     }
-    catch (Exception ignore){};
 
     drawManager.processDrawComplete(this::screenshot);
   }

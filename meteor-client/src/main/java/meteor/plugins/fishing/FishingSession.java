@@ -28,9 +28,9 @@ import java.time.Instant;
 import lombok.Getter;
 import lombok.Setter;
 
-class FishingSession
-{
-	@Getter
-	@Setter
-	private Instant lastFishCaught;
+class FishingSession {
+
+  @Getter
+  @Setter
+  private Instant lastFishCaught;
 }

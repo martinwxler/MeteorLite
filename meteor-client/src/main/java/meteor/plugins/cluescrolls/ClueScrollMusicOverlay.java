@@ -28,83 +28,74 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import javax.inject.Inject;
-import net.runelite.api.Client;
-import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import meteor.plugins.cluescrolls.clues.ClueScroll;
 import meteor.plugins.cluescrolls.clues.MusicClue;
 import meteor.ui.overlay.Overlay;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayPosition;
+import net.runelite.api.Client;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 
-class ClueScrollMusicOverlay extends Overlay
-{
-	private static final Rectangle PADDING = new Rectangle(2, 1, 0, 1);
+class ClueScrollMusicOverlay extends Overlay {
 
-	private final ClueScrollPlugin plugin;
-	private final Client client;
+  private static final Rectangle PADDING = new Rectangle(2, 1, 0, 1);
 
-	private boolean hasScrolled;
+  private final ClueScrollPlugin plugin;
+  private final Client client;
 
-	@Inject
-	private ClueScrollMusicOverlay(ClueScrollPlugin plugin, Client client)
-	{
-		setPosition(OverlayPosition.DYNAMIC);
-		setLayer(OverlayLayer.ABOVE_WIDGETS);
-		this.plugin = plugin;
-		this.client = client;
-	}
+  private boolean hasScrolled;
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		ClueScroll clue = plugin.getClue();
+  @Inject
+  private ClueScrollMusicOverlay(ClueScrollPlugin plugin, Client client) {
+    setPosition(OverlayPosition.DYNAMIC);
+    setLayer(OverlayLayer.ABOVE_WIDGETS);
+    this.plugin = plugin;
+    this.client = client;
+  }
 
-		if (!(clue instanceof MusicClue))
-		{
-			hasScrolled = false;
-			return null;
-		}
+  @Override
+  public Dimension render(Graphics2D graphics) {
+    ClueScroll clue = plugin.getClue();
 
-		MusicClue musicClue = (MusicClue) clue;
+    if (!(clue instanceof MusicClue)) {
+      hasScrolled = false;
+      return null;
+    }
 
-		Widget musicContainer = client.getWidget(WidgetInfo.MUSIC_WINDOW);
+    MusicClue musicClue = (MusicClue) clue;
 
-		if (musicContainer == null || musicContainer.isHidden())
-		{
-			return null;
-		}
+    Widget musicContainer = client.getWidget(WidgetInfo.MUSIC_WINDOW);
 
-		Widget trackList = client.getWidget(WidgetInfo.MUSIC_TRACK_LIST);
-		String trackToFind = musicClue.getSong();
-		Widget found = null;
+    if (musicContainer == null || musicContainer.isHidden()) {
+      return null;
+    }
 
-		if (trackList == null)
-		{
-			return null;
-		}
+    Widget trackList = client.getWidget(WidgetInfo.MUSIC_TRACK_LIST);
+    String trackToFind = musicClue.getSong();
+    Widget found = null;
 
-		for (Widget track : trackList.getDynamicChildren())
-		{
-			if (track.getText().equals(trackToFind))
-			{
-				found = track;
-				break;
-			}
-		}
+    if (trackList == null) {
+      return null;
+    }
 
-		if (found == null)
-		{
-			return null;
-		}
+    for (Widget track : trackList.getDynamicChildren()) {
+      if (track.getText().equals(trackToFind)) {
+        found = track;
+        break;
+      }
+    }
 
-		if (!hasScrolled)
-		{
-			hasScrolled = true;
-			plugin.scrollToWidget(WidgetInfo.MUSIC_TRACK_LIST, WidgetInfo.MUSIC_TRACK_SCROLLBAR, found);
-		}
-		plugin.highlightWidget(graphics, found, trackList, PADDING, null);
+    if (found == null) {
+      return null;
+    }
 
-		return null;
-	}
+    if (!hasScrolled) {
+      hasScrolled = true;
+      plugin.scrollToWidget(WidgetInfo.MUSIC_TRACK_LIST, WidgetInfo.MUSIC_TRACK_SCROLLBAR, found);
+    }
+    plugin.highlightWidget(graphics, found, trackList, PADDING, null);
+
+    return null;
+  }
 }

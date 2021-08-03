@@ -94,6 +94,7 @@ public class ChatboxTextInput extends ChatboxInput implements KeyListener, Mouse
   private Predicate<MouseEvent> isInBounds = null;
   private ToIntFunction<Integer> getLineOffset = null;
   private ToIntFunction<Point> getPointCharOffset = null;
+
   @Inject
   protected ChatboxTextInput(ChatboxPanelManager chatboxPanelManager, ClientThread clientThread) {
     this.chatboxPanelManager = chatboxPanelManager;

@@ -98,90 +98,96 @@ public class HudbarFXMLController {
   //TODO: Do this better.
   @Subscribe
   public void onClientTick(ClientTick event) {
-      if (p != null && !updatingHud) {
-          Platform.runLater(() -> {
-              updatingHud = true; //prevent stacking runs
-              int i = getRestoreValue(Skill.HITPOINTS.getName());
-              if (i > 0) {
-                  double d = ((client.getBoostedSkillLevel(Skill.HITPOINTS) + i) / (double) client
-                      .getRealSkillLevel(Skill.HITPOINTS));
-                  if (d <= 1.0) {
-                      healthBar.lookup(".secondary-bar").lookup(".secondary-bar")
-                          .setStyle("-fx-background-color: #087f23");
-                  } else {
-                      healthBar.lookup(".secondary-bar").lookup(".secondary-bar")
-                          .setStyle("-fx-background-color: #ffeb3b");
-                  }
-                  healthBar.setSecondaryProgress(d);
-              } else {
-                  healthBar.setSecondaryProgress(0.0);
-              }
+    if (p != null && !updatingHud) {
+      Platform.runLater(() -> {
+        updatingHud = true; //prevent stacking runs
+        int i = getRestoreValue(Skill.HITPOINTS.getName());
+        if (i > 0) {
+          double d = ((client.getBoostedSkillLevel(Skill.HITPOINTS) + i) / (double) client
+              .getRealSkillLevel(Skill.HITPOINTS));
+          if (d <= 1.0) {
+            healthBar.lookup(".secondary-bar").lookup(".secondary-bar")
+                .setStyle("-fx-background-color: #087f23");
+          } else {
+            healthBar.lookup(".secondary-bar").lookup(".secondary-bar")
+                .setStyle("-fx-background-color: #ffeb3b");
+          }
+          healthBar.setSecondaryProgress(d);
+        } else {
+          healthBar.setSecondaryProgress(0.0);
+        }
 
-              updatingHud = false;
-          });
-      }
+        updatingHud = false;
+      });
+    }
   }
 
   @Subscribe
   public void onGameTick(GameTick event) {
-      if (p != null) {
-          Platform.runLater(() -> {
-              healthBar.setProgress((client.getBoostedSkillLevel(Skill.HITPOINTS) / (double) client
-                  .getRealSkillLevel(Skill.HITPOINTS)));
-              healthText.setText(client.getBoostedSkillLevel(Skill.HITPOINTS) + "");
-              prayerBar.setProgress((client.getBoostedSkillLevel(Skill.PRAYER) / (double) client
-                  .getRealSkillLevel(Skill.PRAYER)));
-              prayerText.setText(client.getBoostedSkillLevel(Skill.PRAYER) + "");
-          });
-      } else {
-          p = client.getLocalPlayer();
-      }
+    if (p != null) {
+      Platform.runLater(() -> {
+        healthBar.setProgress((client.getBoostedSkillLevel(Skill.HITPOINTS) / (double) client
+            .getRealSkillLevel(Skill.HITPOINTS)));
+        healthText.setText(client.getBoostedSkillLevel(Skill.HITPOINTS) + "");
+        prayerBar.setProgress((client.getBoostedSkillLevel(Skill.PRAYER) / (double) client
+            .getRealSkillLevel(Skill.PRAYER)));
+        prayerText.setText(client.getBoostedSkillLevel(Skill.PRAYER) + "");
+      });
+    } else {
+      p = client.getLocalPlayer();
+    }
   }
 
   @Subscribe
   public void onStatChanged(StatChanged event) {
     XpTable currentLvl = XpTable.of(client.getSkillExperience(event.getSkill()));
-      if (currentLvl == null) {
-          return;
-      }
+    if (currentLvl == null) {
+      return;
+    }
     int currentSkillXP = client.getSkillExperience(event.getSkill());
     int currentLvlProgress = currentSkillXP - currentLvl.startXP;
     double nextLvlPercentage = (currentLvlProgress / (double) currentLvl.neededXP);
-      if (p != null) {
-          Platform.runLater(() -> {
-              if (event.getSkill() != Skill.HITPOINTS) {
-                  if (currentLvl.getLvl() == 999) {
-                      currentLevel.setText("MAX");
-                      nextLevel.setText("MAX");
-                      xpText.setVisible(false);
-                  } else {
-                      currentLevel.setText(event.getLevel() + "");
-                      nextLevel.setText(event.getLevel() + 1 + "");
-                      xpText.setVisible(true);
-                  }
-              }
+    if (p != null) {
+      Platform.runLater(() -> {
+        if (event.getSkill() != Skill.HITPOINTS) {
+          if (currentLvl.getLvl() == 999) {
+            currentLevel.setText("MAX");
+            nextLevel.setText("MAX");
+            xpText.setVisible(false);
+          } else {
+            currentLevel.setText(event.getLevel() + "");
+            nextLevel.setText(event.getLevel() + 1 + "");
+            xpText.setVisible(true);
+          }
+        }
 
-              if (event.getSkill() != Skill.HITPOINTS) {
-                  xpBar.setProgress(nextLvlPercentage);
-                  String s = event.getSkill().toString();
-                  if (skillIconMap.get(s) == null) {
-                      try {
-                          skillIconMap.put(s, SwingFXUtils.toFXImage(ImageIO.read(
-                              Objects.requireNonNull(ClassLoader.getSystemClassLoader()
-                                  .getResource("skill_icons/" + s.toLowerCase() + ".png"))),
-                              null));
-                      } catch (IOException e) {
-                          e.printStackTrace();
-                      }
-                  }
-                  currentSkillIcon.setImage(skillIconMap.get(s));
-                  String no = String.format("%.4f", nextLvlPercentage * 100);
-                  xpText.setText(no + "%");
-              }
-          });
-      } else {
-          p = client.getLocalPlayer();
-      }
+        if (event.getSkill() != Skill.HITPOINTS) {
+          xpBar.setProgress(nextLvlPercentage);
+          String s = event.getSkill().toString();
+          if (skillIconMap.get(s) == null) {
+            try {
+              skillIconMap.put(s, SwingFXUtils.toFXImage(ImageIO.read(
+                  Objects.requireNonNull(ClassLoader.getSystemClassLoader()
+                      .getResource("skill_icons/" + s.toLowerCase() + ".png"))),
+                  null));
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
+          }
+          currentSkillIcon.setImage(skillIconMap.get(s));
+          String no = String.format("%.4f", nextLvlPercentage * 100);
+          int actionsLeft = 0;
+          if (event.getXpChange() != 0) {
+            actionsLeft =
+                (currentLvl.neededXP - (currentSkillXP - currentLvl.startXP)) / event.getXpChange();
+            actionsLeft++; // Always +1
+            xpText.setText(no + "%  (" + actionsLeft + ")");
+          }
+        }
+      });
+    } else {
+      p = client.getLocalPlayer();
+    }
   }
 
   private int getRestoreValue(String skill) {

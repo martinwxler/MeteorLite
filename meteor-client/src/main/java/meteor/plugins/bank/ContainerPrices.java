@@ -27,8 +27,8 @@ package meteor.plugins.bank;
 import lombok.Value;
 
 @Value
-class ContainerPrices
-{
-	private long gePrice;
-	private long highAlchPrice;
+class ContainerPrices {
+
+  private long gePrice;
+  private long highAlchPrice;
 }

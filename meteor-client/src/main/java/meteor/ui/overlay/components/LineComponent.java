@@ -40,159 +40,139 @@ import meteor.util.Text;
 
 @Setter
 @Builder
-public class LineComponent implements LayoutableRenderableEntity
-{
-	private String left;
-	private String right;
+public class LineComponent implements LayoutableRenderableEntity {
 
-	@Builder.Default
-	private Color leftColor = Color.WHITE;
+  @Builder.Default
+  @Getter
+  private final Rectangle bounds = new Rectangle();
+  private String left;
+  private String right;
+  @Builder.Default
+  private Color leftColor = Color.WHITE;
+  @Builder.Default
+  private Color rightColor = Color.WHITE;
+  private Font leftFont;
+  private Font rightFont;
+  @Builder.Default
+  private Point preferredLocation = new Point();
+  @Builder.Default
+  private Dimension preferredSize = new Dimension(ComponentConstants.STANDARD_WIDTH, 0);
 
-	@Builder.Default
-	private Color rightColor = Color.WHITE;
+  private static int getLineWidth(final String line, final FontMetrics metrics) {
+    return metrics.stringWidth(Text.removeTags(line));
+  }
 
-	private Font leftFont;
+  private static String[] lineBreakText(String text, int maxWidth, FontMetrics metrics) {
+    final String[] words = text.split(" ");
 
-	private Font rightFont;
+    if (words.length == 0) {
+      return new String[0];
+    }
 
-	@Builder.Default
-	private Point preferredLocation = new Point();
+    final StringBuilder wrapped = new StringBuilder(words[0]);
+    int spaceLeft = maxWidth - metrics.stringWidth(wrapped.toString());
 
-	@Builder.Default
-	private Dimension preferredSize = new Dimension(ComponentConstants.STANDARD_WIDTH, 0);
+    for (int i = 1; i < words.length; i++) {
+      final String word = words[i];
+      final int wordLen = metrics.stringWidth(word);
+      final int spaceWidth = metrics.stringWidth(" ");
 
-	@Builder.Default
-	@Getter
-	private final Rectangle bounds = new Rectangle();
+      if (wordLen + spaceWidth > spaceLeft) {
+        wrapped.append("\n").append(word);
+        spaceLeft = maxWidth - wordLen;
+      } else {
+        wrapped.append(" ").append(word);
+        spaceLeft -= spaceWidth + wordLen;
+      }
+    }
 
-	@Override
-	public Dimension render(Graphics2D graphics)
-	{
-		// Prevent NPEs
-		final String left = MoreObjects.firstNonNull(this.left, "");
-		final String right = MoreObjects.firstNonNull(this.right, "");
+    return wrapped.toString().split("\n");
+  }
 
-		final Font leftFont = MoreObjects.firstNonNull(this.leftFont, graphics.getFont());
-		final Font rightFont = MoreObjects.firstNonNull(this.rightFont, graphics.getFont());
-		final FontMetrics lfm = graphics.getFontMetrics(leftFont), rfm = graphics.getFontMetrics(rightFont);
-		final int fmHeight = Math.max(lfm.getHeight(), rfm.getHeight());
-		final int baseX = preferredLocation.x;
-		final int baseY = preferredLocation.y + fmHeight;
-		int x = baseX;
-		int y = baseY;
-		final int leftFullWidth = getLineWidth(left, lfm);
-		final int rightFullWidth = getLineWidth(right, rfm);
-		final TextComponent textComponent = new TextComponent();
+  @Override
+  public Dimension render(Graphics2D graphics) {
+    // Prevent NPEs
+    final String left = MoreObjects.firstNonNull(this.left, "");
+    final String right = MoreObjects.firstNonNull(this.right, "");
 
-		if (preferredSize.width < leftFullWidth + rightFullWidth)
-		{
-			int leftSmallWidth = preferredSize.width;
-			int rightSmallWidth = 0;
+    final Font leftFont = MoreObjects.firstNonNull(this.leftFont, graphics.getFont());
+    final Font rightFont = MoreObjects.firstNonNull(this.rightFont, graphics.getFont());
+    final FontMetrics lfm = graphics.getFontMetrics(leftFont), rfm = graphics
+        .getFontMetrics(rightFont);
+    final int fmHeight = Math.max(lfm.getHeight(), rfm.getHeight());
+    final int baseX = preferredLocation.x;
+    final int baseY = preferredLocation.y + fmHeight;
+    int x = baseX;
+    int y = baseY;
+    final int leftFullWidth = getLineWidth(left, lfm);
+    final int rightFullWidth = getLineWidth(right, rfm);
+    final TextComponent textComponent = new TextComponent();
 
-			if (!Strings.isNullOrEmpty(right))
-			{
-				rightSmallWidth = (preferredSize.width / 3);
-				leftSmallWidth -= rightSmallWidth;
-			}
+    if (preferredSize.width < leftFullWidth + rightFullWidth) {
+      int leftSmallWidth = preferredSize.width;
+      int rightSmallWidth = 0;
 
-			final String[] leftSplitLines = lineBreakText(left, leftSmallWidth, lfm);
-			final String[] rightSplitLines = lineBreakText(right, rightSmallWidth, rfm);
+      if (!Strings.isNullOrEmpty(right)) {
+        rightSmallWidth = (preferredSize.width / 3);
+        leftSmallWidth -= rightSmallWidth;
+      }
 
-			int lineCount = Math.max(leftSplitLines.length, rightSplitLines.length);
+      final String[] leftSplitLines = lineBreakText(left, leftSmallWidth, lfm);
+      final String[] rightSplitLines = lineBreakText(right, rightSmallWidth, rfm);
 
-			for (int i = 0; i < lineCount; i++)
-			{
-				if (i < leftSplitLines.length)
-				{
-					final String leftText = leftSplitLines[i];
-					textComponent.setPosition(new Point(x, y));
-					textComponent.setText(leftText);
-					textComponent.setColor(leftColor);
-					textComponent.setFont(leftFont);
-					textComponent.render(graphics);
-				}
+      int lineCount = Math.max(leftSplitLines.length, rightSplitLines.length);
 
-				if (i < rightSplitLines.length)
-				{
-					final String rightText = rightSplitLines[i];
-					textComponent.setPosition(new Point(x + preferredSize.width - getLineWidth(rightText, rfm), y));
-					textComponent.setText(rightText);
-					textComponent.setColor(rightColor);
-					textComponent.setFont(rightFont);
-					textComponent.render(graphics);
-				}
+      for (int i = 0; i < lineCount; i++) {
+        if (i < leftSplitLines.length) {
+          final String leftText = leftSplitLines[i];
+          textComponent.setPosition(new Point(x, y));
+          textComponent.setText(leftText);
+          textComponent.setColor(leftColor);
+          textComponent.setFont(leftFont);
+          textComponent.render(graphics);
+        }
 
-				y += fmHeight;
-			}
+        if (i < rightSplitLines.length) {
+          final String rightText = rightSplitLines[i];
+          textComponent
+              .setPosition(new Point(x + preferredSize.width - getLineWidth(rightText, rfm), y));
+          textComponent.setText(rightText);
+          textComponent.setColor(rightColor);
+          textComponent.setFont(rightFont);
+          textComponent.render(graphics);
+        }
 
-			final Dimension dimension = new Dimension(preferredSize.width, y - baseY);
-			bounds.setLocation(preferredLocation);
-			bounds.setSize(dimension);
-			return dimension;
-		}
+        y += fmHeight;
+      }
 
-		if (!left.isEmpty())
-		{
-			textComponent.setPosition(new Point(x, y));
-			textComponent.setText(left);
-			textComponent.setColor(leftColor);
-			textComponent.setFont(leftFont);
-			textComponent.render(graphics);
-		}
+      final Dimension dimension = new Dimension(preferredSize.width, y - baseY);
+      bounds.setLocation(preferredLocation);
+      bounds.setSize(dimension);
+      return dimension;
+    }
 
-		if (!right.isEmpty())
-		{
-			textComponent.setPosition(new Point(x + preferredSize.width - rightFullWidth, y));
-			textComponent.setText(right);
-			textComponent.setColor(rightColor);
-			textComponent.setFont(rightFont);
-			textComponent.render(graphics);
-		}
+    if (!left.isEmpty()) {
+      textComponent.setPosition(new Point(x, y));
+      textComponent.setText(left);
+      textComponent.setColor(leftColor);
+      textComponent.setFont(leftFont);
+      textComponent.render(graphics);
+    }
 
-		y += fmHeight;
+    if (!right.isEmpty()) {
+      textComponent.setPosition(new Point(x + preferredSize.width - rightFullWidth, y));
+      textComponent.setText(right);
+      textComponent.setColor(rightColor);
+      textComponent.setFont(rightFont);
+      textComponent.render(graphics);
+    }
 
-		final Dimension dimension = new Dimension(preferredSize.width, y - baseY);
-		bounds.setLocation(preferredLocation);
-		bounds.setSize(dimension);
-		return dimension;
-	}
+    y += fmHeight;
 
-	private static int getLineWidth(final String line, final FontMetrics metrics)
-	{
-		return metrics.stringWidth(Text.removeTags(line));
-	}
-
-	private static String[] lineBreakText(String text, int maxWidth, FontMetrics metrics)
-	{
-		final String[] words = text.split(" ");
-
-		if (words.length == 0)
-		{
-			return new String[0];
-		}
-
-		final StringBuilder wrapped = new StringBuilder(words[0]);
-		int spaceLeft = maxWidth - metrics.stringWidth(wrapped.toString());
-
-		for (int i = 1; i < words.length; i++)
-		{
-			final String word = words[i];
-			final int wordLen = metrics.stringWidth(word);
-			final int spaceWidth = metrics.stringWidth(" ");
-
-			if (wordLen + spaceWidth > spaceLeft)
-			{
-				wrapped.append("\n").append(word);
-				spaceLeft = maxWidth - wordLen;
-			}
-			else
-			{
-				wrapped.append(" ").append(word);
-				spaceLeft -= spaceWidth + wordLen;
-			}
-		}
-
-		return wrapped.toString().split("\n");
-	}
+    final Dimension dimension = new Dimension(preferredSize.width, y - baseY);
+    bounds.setLocation(preferredLocation);
+    bounds.setSize(dimension);
+    return dimension;
+  }
 }
 

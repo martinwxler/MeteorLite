@@ -42,11 +42,13 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import meteor.MeteorLite;
+import meteor.chat.ChatMessageManager;
 import meteor.eventbus.DeferredEventBus;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.input.KeyManager;
 import meteor.input.MouseManager;
+import meteor.task.Scheduler;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayRenderer;
 import meteor.ui.overlay.infobox.InfoBoxManager;
@@ -80,7 +82,7 @@ public class Hooks implements Callbacks {
 
   private static final long CHECK = RSTimeUnit.GAME_TICKS.getDuration()
       .toNanos(); // ns - how often to run checks
-  private static final GameTick GAME_TICK = new GameTick();
+  private static final GameTick GAME_TICK = GameTick.INSTANCE;
   private static final BeforeRender BEFORE_RENDER = new BeforeRender();
   public static Logger log = new Logger("Hooks");
   private static Client client;
@@ -91,14 +93,16 @@ public class Hooks implements Callbacks {
   private final DeferredEventBus deferredEventBus;
   private final MouseManager mouseManager;
   private final ClientThread clientThread;
+  private final KeyManager keyManager;
+  private final InfoBoxManager infoBoxManager;
+  private final ChatMessageManager chatMessageManager;
+  private final Scheduler scheduler;
   private Dimension lastStretchedDimensions;
   private VolatileImage stretchedImage;
   private Graphics2D stretchedGraphics;
   private long lastCheck;
   private boolean ignoreNextNpcUpdate;
   private boolean shouldProcessGameTick;
-  private final KeyManager keyManager;
-  private final InfoBoxManager infoBoxManager;
 
   @Inject
   private Hooks(
@@ -109,9 +113,11 @@ public class Hooks implements Callbacks {
       EventBus eventBus,
       DeferredEventBus deferredEventBus,
       KeyManager keyManager,
-      InfoBoxManager infoBoxManager
+      InfoBoxManager infoBoxManager,
+      ChatMessageManager chatMessageManager,
+      Scheduler scheduler
   ) {
-    this.client = client;
+    Hooks.client = client;
     this.clientThread = clientThread;
     this.renderer = renderer;
     this.mouseManager = mouseManager;
@@ -119,6 +125,8 @@ public class Hooks implements Callbacks {
     this.deferredEventBus = deferredEventBus;
     this.keyManager = keyManager;
     this.infoBoxManager = infoBoxManager;
+    this.chatMessageManager = chatMessageManager;
+    this.scheduler = scheduler;
     eventBus.register(this);
   }
 
@@ -227,16 +235,16 @@ public class Hooks implements Callbacks {
 
     try {
       // tick pending scheduled tasks
-      //scheduler.tick();
+      scheduler.tick();
 
       // cull infoboxes
       infoBoxManager.cull();
 
-      //chatMessageManager.process();
+      chatMessageManager.process();
 
       checkWorldMap();
     } catch (Exception ex) {
-      log.warn("error during main loop tasks", ex);
+      ex.printStackTrace();
     }
   }
 
@@ -455,20 +463,17 @@ public class Hooks implements Callbacks {
   }
 
   @Override
-  public void keyPressed(KeyEvent keyEvent)
-  {
+  public void keyPressed(KeyEvent keyEvent) {
     keyManager.processKeyPressed(keyEvent);
   }
 
   @Override
-  public void keyReleased(KeyEvent keyEvent)
-  {
+  public void keyReleased(KeyEvent keyEvent) {
     keyManager.processKeyReleased(keyEvent);
   }
 
   @Override
-  public void keyTyped(KeyEvent keyEvent)
-  {
+  public void keyTyped(KeyEvent keyEvent) {
     keyManager.processKeyTyped(keyEvent);
   }
 

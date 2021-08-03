@@ -26,35 +26,32 @@ package meteor.game;
 
 import java.awt.image.BufferedImage;
 import javax.inject.Singleton;
-import net.runelite.api.Skill;
 import meteor.util.ImageUtil;
+import net.runelite.api.Skill;
 
 @Singleton
-public class SkillIconManager
-{
-	// * 2 to account for the small version of each icon
-	private final BufferedImage[] imgCache = new BufferedImage[Skill.values().length * 2];
+public class SkillIconManager {
 
-	public BufferedImage getSkillImage(Skill skill, boolean small)
-	{
-		int skillIdx = skill.ordinal() + (small ? Skill.values().length : 0);
+  // * 2 to account for the small version of each icon
+  private final BufferedImage[] imgCache = new BufferedImage[Skill.values().length * 2];
 
-		if (imgCache[skillIdx] != null)
-		{
-			return imgCache[skillIdx];
-		}
+  public BufferedImage getSkillImage(Skill skill, boolean small) {
+    int skillIdx = skill.ordinal() + (small ? Skill.values().length : 0);
 
-		String skillIconPath = (small ? "/skill_icons_small/" : "/skill_icons/")
-			+ skill.getName().toLowerCase() + ".png";
-		BufferedImage skillImage = ImageUtil.loadImageResource(getClass(), skillIconPath);
-		imgCache[skillIdx] = skillImage;
+    if (imgCache[skillIdx] != null) {
+      return imgCache[skillIdx];
+    }
 
-		return skillImage;
-	}
+    String skillIconPath = (small ? "/skill_icons_small/" : "/skill_icons/")
+        + skill.getName().toLowerCase() + ".png";
+    BufferedImage skillImage = ImageUtil.loadImageResource(getClass(), skillIconPath);
+    imgCache[skillIdx] = skillImage;
 
-	public BufferedImage getSkillImage(Skill skill)
-	{
-		return getSkillImage(skill, false);
-	}
+    return skillImage;
+  }
+
+  public BufferedImage getSkillImage(Skill skill) {
+    return getSkillImage(skill, false);
+  }
 
 }

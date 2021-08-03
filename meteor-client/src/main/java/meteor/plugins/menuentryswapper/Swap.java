@@ -29,11 +29,11 @@ import java.util.function.Supplier;
 import lombok.Value;
 
 @Value
-public class Swap
-{
-	private Predicate<String> optionPredicate;
-	private Predicate<String> targetPredicate;
-	private String swappedOption;
-	private Supplier<Boolean> enabled;
-	private boolean strict;
+public class Swap {
+
+  private Predicate<String> optionPredicate;
+  private Predicate<String> targetPredicate;
+  private String swappedOption;
+  private Supplier<Boolean> enabled;
+  private boolean strict;
 }

@@ -29,15 +29,14 @@ import meteor.config.ConfigGroup;
 import meteor.config.ConfigItem;
 
 @ConfigGroup("cluescroll")
-public interface ClueScrollConfig extends Config
-{
-	@ConfigItem(
-		keyName = "displayHintArrows",
-		name = "Display hint arrows",
-		description = "Configures whether or not to display hint arrows for clues"
-	)
-	default boolean displayHintArrows()
-	{
-		return true;
-	}
+public interface ClueScrollConfig extends Config {
+
+  @ConfigItem(
+      keyName = "displayHintArrows",
+      name = "Display hint arrows",
+      description = "Configures whether or not to display hint arrows for clues"
+  )
+  default boolean displayHintArrows() {
+    return true;
+  }
 }

@@ -28,52 +28,44 @@ import net.runelite.api.Client;
 import net.runelite.api.Item;
 import net.runelite.api.ItemComposition;
 
-public class MultipleOfItemRequirement implements ItemRequirement
-{
-	private final int itemId;
-	private final int quantity;
+public class MultipleOfItemRequirement implements ItemRequirement {
 
-	public MultipleOfItemRequirement(int itemId, int quantity)
-	{
-		this.itemId = itemId;
-		this.quantity = quantity;
-	}
+  private final int itemId;
+  private final int quantity;
 
-	@Override
-	public boolean fulfilledBy(int itemId)
-	{
-		return itemId == this.itemId && this.quantity == 1;
-	}
+  public MultipleOfItemRequirement(int itemId, int quantity) {
+    this.itemId = itemId;
+    this.quantity = quantity;
+  }
 
-	@Override
-	public boolean fulfilledBy(Item[] items)
-	{
-		int quantityFound = 0;
-		for (Item item : items)
-		{
-			if (item.getId() == itemId)
-			{
-				quantityFound += item.getQuantity();
-				if (quantityFound >= quantity)
-				{
-					return true;
-				}
-			}
-		}
+  @Override
+  public boolean fulfilledBy(int itemId) {
+    return itemId == this.itemId && this.quantity == 1;
+  }
 
-		return false;
-	}
+  @Override
+  public boolean fulfilledBy(Item[] items) {
+    int quantityFound = 0;
+    for (Item item : items) {
+      if (item.getId() == itemId) {
+        quantityFound += item.getQuantity();
+        if (quantityFound >= quantity) {
+          return true;
+        }
+      }
+    }
 
-	@Override
-	public String getCollectiveName(Client client)
-	{
-		ItemComposition definition = client.getItemComposition(itemId);
+    return false;
+  }
 
-		if (definition == null)
-		{
-			return "N/A";
-		}
+  @Override
+  public String getCollectiveName(Client client) {
+    ItemComposition definition = client.getItemComposition(itemId);
 
-		return definition.getName() + " x" + this.quantity;
-	}
+    if (definition == null) {
+      return "N/A";
+    }
+
+    return definition.getName() + " x" + this.quantity;
+  }
 }

@@ -33,51 +33,48 @@ import net.runelite.api.coords.WorldPoint;
 
 @Data
 @SuperBuilder
-public class WorldMapPoint
-{
-	private BufferedImage image;
+public class WorldMapPoint {
 
-	private WorldPoint worldPoint;
+  private BufferedImage image;
 
-	/**
-	 * The WorldPoint which the worldmap will jump to when clicked
-	 */
-	@Nullable
-	private WorldPoint target;
+  private WorldPoint worldPoint;
 
-	/**
-	 * The point on the image that will be drawn at WorldPoint
-	 * WorldMapPointManager will center the image if imagePoint is null
-	 */
-	private Point imagePoint;
+  /**
+   * The WorldPoint which the worldmap will jump to when clicked
+   */
+  @Nullable
+  private WorldPoint target;
 
-	private boolean snapToEdge;
+  /**
+   * The point on the image that will be drawn at WorldPoint WorldMapPointManager will center the
+   * image if imagePoint is null
+   */
+  private Point imagePoint;
 
-	private boolean currentlyEdgeSnapped;
+  private boolean snapToEdge;
 
-	/**
-	 * Whether or not the map jumps to target, or worldPoint when the overlay is clicked
-	 */
-	private boolean jumpOnClick;
+  private boolean currentlyEdgeSnapped;
 
-	/**
-	 * Name in menu option when {@link #jumpOnClick} is set
-	 */
-	private String name;
+  /**
+   * Whether or not the map jumps to target, or worldPoint when the overlay is clicked
+   */
+  private boolean jumpOnClick;
 
-	private String tooltip;
+  /**
+   * Name in menu option when {@link #jumpOnClick} is set
+   */
+  private String name;
 
-	public WorldMapPoint(WorldPoint worldPoint, BufferedImage image)
-	{
-		this.worldPoint = worldPoint;
-		this.image = image;
-	}
+  private String tooltip;
 
-	public void onEdgeSnap()
-	{
-	}
+  public WorldMapPoint(WorldPoint worldPoint, BufferedImage image) {
+    this.worldPoint = worldPoint;
+    this.image = image;
+  }
 
-	public void onEdgeUnsnap()
-	{
-	}
+  public void onEdgeSnap() {
+  }
+
+  public void onEdgeUnsnap() {
+  }
 }

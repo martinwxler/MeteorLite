@@ -28,5 +28,5 @@ public enum ColorBlindMode {
   NONE,
   PROTANOPE,
   DEUTERANOPE,
-  TRITANOPE;
+  TRITANOPE
 }

@@ -32,7 +32,6 @@ import com.google.inject.Provides;
 import com.google.inject.name.Names;
 import java.applet.Applet;
 import java.io.File;
-import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -42,10 +41,12 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import javax.inject.Singleton;
 import meteor.callback.Hooks;
+import meteor.config.ChatColorConfig;
 import meteor.config.ConfigManager;
 import meteor.config.RuneLiteConfig;
 import meteor.eventbus.DeferredEventBus;
 import meteor.eventbus.EventBus;
+import meteor.plugins.botutils.BotUtilsConfig;
 import meteor.plugins.itemstats.ItemStatChangesService;
 import meteor.plugins.itemstats.ItemStatChangesServiceImpl;
 import meteor.util.ExecutorServiceExceptionLogger;
@@ -126,5 +127,19 @@ public class MeteorLiteModule extends AbstractModule {
     executor.allowCoreThreadTimeOut(true);
 
     return new NonScheduledExecutorServiceExceptionLogger(executor);
+  }
+
+  @Provides
+  @Singleton
+  ChatColorConfig provideChatColorConfig(ConfigManager configManager)
+  {
+    return configManager.getConfig(ChatColorConfig.class);
+  }
+
+  @Provides
+  @Singleton
+  BotUtilsConfig provideBotUtilsConfig(ConfigManager configManager)
+  {
+    return configManager.getConfig(BotUtilsConfig.class);
   }
 }

@@ -33,36 +33,36 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-public @interface PluginDescriptor
-{
-	String name();
+public @interface PluginDescriptor {
 
-	/**
-	 * Internal name used in the config.
-	 */
-	String configName() default "";
+  String name();
 
-	/**
-	 * A short, one-line summary of the plugin.
-	 */
-	String description() default "";
+  /**
+   * Internal name used in the config.
+   */
+  String configName() default "";
 
-	/**
-	 * A list of plugin keywords, used (together with the name) when searching for plugins.
-	 * Each tag should not contain any spaces, and should be fully lowercase.
-	 */
-	String[] tags() default {};
+  /**
+   * A short, one-line summary of the plugin.
+   */
+  String description() default "";
 
-	boolean enabledByDefault() default true;
+  /**
+   * A list of plugin keywords, used (together with the name) when searching for plugins. Each tag
+   * should not contain any spaces, and should be fully lowercase.
+   */
+  String[] tags() default {};
 
-	/**
-	 * Whether or not plugin is hidden from configuration panel
-	 */
-	boolean hidden() default false;
+  boolean enabledByDefault() default true;
 
-	boolean developerPlugin() default false;
+  /**
+   * Whether or not plugin is hidden from configuration panel
+   */
+  boolean hidden() default false;
 
-	boolean loadWhenOutdated() default false;
+  boolean developerPlugin() default false;
 
-	boolean loadInSafeMode() default true;
+  boolean loadWhenOutdated() default false;
+
+  boolean loadInSafeMode() default true;
 }

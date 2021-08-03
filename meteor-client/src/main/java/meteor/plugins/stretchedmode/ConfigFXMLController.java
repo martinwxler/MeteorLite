@@ -5,7 +5,6 @@ import com.jfoenix.controls.JFXToggleButton;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.input.MouseEvent;
-import meteor.MeteorLite;
 import meteor.PluginManager;
 import meteor.plugins.Plugin;
 import org.sponge.util.Logger;

@@ -24,52 +24,76 @@
  */
 package meteor.plugins.cluescrolls.clues.emote;
 
+import static net.runelite.api.SpriteID.EMOTE_ANGRY;
+import static net.runelite.api.SpriteID.EMOTE_BECKON;
+import static net.runelite.api.SpriteID.EMOTE_BLOW_KISS;
+import static net.runelite.api.SpriteID.EMOTE_BOW;
+import static net.runelite.api.SpriteID.EMOTE_CHEER;
+import static net.runelite.api.SpriteID.EMOTE_CLAP;
+import static net.runelite.api.SpriteID.EMOTE_CRY;
+import static net.runelite.api.SpriteID.EMOTE_DANCE;
+import static net.runelite.api.SpriteID.EMOTE_FLAP;
+import static net.runelite.api.SpriteID.EMOTE_GOBLIN_SALUTE;
+import static net.runelite.api.SpriteID.EMOTE_HEADBANG;
+import static net.runelite.api.SpriteID.EMOTE_JIG;
+import static net.runelite.api.SpriteID.EMOTE_JUMP_FOR_JOY;
+import static net.runelite.api.SpriteID.EMOTE_LAUGH;
+import static net.runelite.api.SpriteID.EMOTE_NO;
+import static net.runelite.api.SpriteID.EMOTE_PANIC;
+import static net.runelite.api.SpriteID.EMOTE_PUSH_UP;
+import static net.runelite.api.SpriteID.EMOTE_RASPBERRY;
+import static net.runelite.api.SpriteID.EMOTE_SALUTE;
+import static net.runelite.api.SpriteID.EMOTE_SHRUG;
+import static net.runelite.api.SpriteID.EMOTE_SLAP_HEAD;
+import static net.runelite.api.SpriteID.EMOTE_SPIN;
+import static net.runelite.api.SpriteID.EMOTE_STAMP;
+import static net.runelite.api.SpriteID.EMOTE_THINK;
+import static net.runelite.api.SpriteID.EMOTE_WAVE;
+import static net.runelite.api.SpriteID.EMOTE_YAWN;
+import static net.runelite.api.SpriteID.EMOTE_YES;
+
 import lombok.Getter;
-import static net.runelite.api.SpriteID.*;
 
 @Getter
-public enum Emote
-{
-	BULL_ROARER("Bull Roarer", -1),
-	YES("Yes", EMOTE_YES),
-	NO("No", EMOTE_NO),
-	THINK("Think", EMOTE_THINK),
-	BOW("Bow", EMOTE_BOW),
-	ANGRY("Angry", EMOTE_ANGRY),
-	CRY("Cry", EMOTE_CRY),
-	LAUGH("Laugh", EMOTE_LAUGH),
-	CHEER("Cheer", EMOTE_CHEER),
-	WAVE("Wave", EMOTE_WAVE),
-	BECKON("Beckon", EMOTE_BECKON),
-	DANCE("Dance", EMOTE_DANCE),
-	CLAP("Clap", EMOTE_CLAP),
-	PANIC("Panic", EMOTE_PANIC),
-	JIG("Jig", EMOTE_JIG),
-	SPIN("Spin", EMOTE_SPIN),
-	HEADBANG("Headbang", EMOTE_HEADBANG),
-	JUMP_FOR_JOY("Jump for Joy", EMOTE_JUMP_FOR_JOY),
-	RASPBERRY("Raspberry", EMOTE_RASPBERRY),
-	YAWN("Yawn", EMOTE_YAWN),
-	SALUTE("Salute", EMOTE_SALUTE),
-	SHRUG("Shrug", EMOTE_SHRUG),
-	BLOW_KISS("Blow Kiss", EMOTE_BLOW_KISS),
-	GOBLIN_SALUTE("Goblin Salute", EMOTE_GOBLIN_SALUTE),
-	SLAP_HEAD("Slap Head", EMOTE_SLAP_HEAD),
-	STAMP("Stamp", EMOTE_STAMP),
-	FLAP("Flap", EMOTE_FLAP),
-	PUSH_UP("Push up", EMOTE_PUSH_UP);
+public enum Emote {
+  BULL_ROARER("Bull Roarer", -1),
+  YES("Yes", EMOTE_YES),
+  NO("No", EMOTE_NO),
+  THINK("Think", EMOTE_THINK),
+  BOW("Bow", EMOTE_BOW),
+  ANGRY("Angry", EMOTE_ANGRY),
+  CRY("Cry", EMOTE_CRY),
+  LAUGH("Laugh", EMOTE_LAUGH),
+  CHEER("Cheer", EMOTE_CHEER),
+  WAVE("Wave", EMOTE_WAVE),
+  BECKON("Beckon", EMOTE_BECKON),
+  DANCE("Dance", EMOTE_DANCE),
+  CLAP("Clap", EMOTE_CLAP),
+  PANIC("Panic", EMOTE_PANIC),
+  JIG("Jig", EMOTE_JIG),
+  SPIN("Spin", EMOTE_SPIN),
+  HEADBANG("Headbang", EMOTE_HEADBANG),
+  JUMP_FOR_JOY("Jump for Joy", EMOTE_JUMP_FOR_JOY),
+  RASPBERRY("Raspberry", EMOTE_RASPBERRY),
+  YAWN("Yawn", EMOTE_YAWN),
+  SALUTE("Salute", EMOTE_SALUTE),
+  SHRUG("Shrug", EMOTE_SHRUG),
+  BLOW_KISS("Blow Kiss", EMOTE_BLOW_KISS),
+  GOBLIN_SALUTE("Goblin Salute", EMOTE_GOBLIN_SALUTE),
+  SLAP_HEAD("Slap Head", EMOTE_SLAP_HEAD),
+  STAMP("Stamp", EMOTE_STAMP),
+  FLAP("Flap", EMOTE_FLAP),
+  PUSH_UP("Push up", EMOTE_PUSH_UP);
 
-	private String name;
-	private int spriteId;
+  private final String name;
+  private final int spriteId;
 
-	Emote(String name, int spriteId)
-	{
-		this.name = name;
-		this.spriteId = spriteId;
-	}
+  Emote(String name, int spriteId) {
+    this.name = name;
+    this.spriteId = spriteId;
+  }
 
-	public boolean hasSprite()
-	{
-		return spriteId != -1;
-	}
+  public boolean hasSprite() {
+    return spriteId != -1;
+  }
 }

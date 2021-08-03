@@ -29,17 +29,15 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum MenuHighlightMode
-{
-	OPTION("Menu option"),
-	NAME("Menu item name"),
-	BOTH("Both");
+public enum MenuHighlightMode {
+  OPTION("Menu option"),
+  NAME("Menu item name"),
+  BOTH("Both");
 
-	private final String name;
+  private final String name;
 
-	@Override
-	public String toString()
-	{
-		return name;
-	}
+  @Override
+  public String toString() {
+    return name;
+  }
 }

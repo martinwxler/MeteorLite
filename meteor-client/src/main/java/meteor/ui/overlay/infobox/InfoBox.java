@@ -35,57 +35,53 @@ import lombok.Setter;
 import meteor.plugins.Plugin;
 import meteor.ui.overlay.OverlayMenuEntry;
 
-public abstract class InfoBox
-{
-	@Nonnull
-	@Getter(AccessLevel.PACKAGE)
-	private final Plugin plugin;
+public abstract class InfoBox {
 
-	@Getter
-	@Setter
-	private BufferedImage image;
+  @Nonnull
+  @Getter(AccessLevel.PACKAGE)
+  private final Plugin plugin;
 
-	@Getter(AccessLevel.PACKAGE)
-	@Setter(AccessLevel.PACKAGE)
-	private BufferedImage scaledImage;
+  @Getter
+  @Setter
+  private BufferedImage image;
 
-	@Getter(AccessLevel.PACKAGE)
-	@Setter
-	private InfoBoxPriority priority;
+  @Getter(AccessLevel.PACKAGE)
+  @Setter(AccessLevel.PACKAGE)
+  private BufferedImage scaledImage;
 
-	@Getter
-	@Setter
-	private String tooltip;
+  @Getter(AccessLevel.PACKAGE)
+  @Setter
+  private InfoBoxPriority priority;
 
-	@Getter
-	@Setter
-	private List<OverlayMenuEntry> menuEntries = new ArrayList<>();
+  @Getter
+  @Setter
+  private String tooltip;
 
-	public InfoBox(BufferedImage image, @Nonnull Plugin plugin)
-	{
-		this.plugin = plugin;
-		setImage(image);
-		setPriority(InfoBoxPriority.NONE);
-	}
+  @Getter
+  @Setter
+  private List<OverlayMenuEntry> menuEntries = new ArrayList<>();
 
-	public abstract String getText();
+  public InfoBox(BufferedImage image, @Nonnull Plugin plugin) {
+    this.plugin = plugin;
+    setImage(image);
+    setPriority(InfoBoxPriority.NONE);
+  }
 
-	public abstract Color getTextColor();
+  public abstract String getText();
 
-	public boolean render()
-	{
-		return true;
-	}
+  public abstract Color getTextColor();
 
-	public boolean cull()
-	{
-		return false;
-	}
+  public boolean render() {
+    return true;
+  }
 
-	public String getName()
-	{
-		// Use a combination of plugin name and infobox implementation name to try and make each infobox as unique
-		// as possible by default
-		return plugin.getClass().getSimpleName() + "_" + getClass().getSimpleName();
-	}
+  public boolean cull() {
+    return false;
+  }
+
+  public String getName() {
+    // Use a combination of plugin name and infobox implementation name to try and make each infobox as unique
+    // as possible by default
+    return plugin.getClass().getSimpleName() + "_" + getClass().getSimpleName();
+  }
 }

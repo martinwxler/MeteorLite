@@ -28,45 +28,38 @@ import net.runelite.api.Client;
 import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.api.Item;
 
-public class SlotLimitationRequirement implements ItemRequirement
-{
-	private final String description;
-	private final EquipmentInventorySlot[] slots;
+public class SlotLimitationRequirement implements ItemRequirement {
 
-	public SlotLimitationRequirement(String description, EquipmentInventorySlot... slots)
-	{
-		this.description = description;
-		this.slots = slots;
-	}
+  private final String description;
+  private final EquipmentInventorySlot[] slots;
 
-	@Override
-	public boolean fulfilledBy(int itemId)
-	{
-		return false;
-	}
+  public SlotLimitationRequirement(String description, EquipmentInventorySlot... slots) {
+    this.description = description;
+    this.slots = slots;
+  }
 
-	@Override
-	public boolean fulfilledBy(Item[] items)
-	{
-		for (EquipmentInventorySlot slot : slots)
-		{
-			if (slot.getSlotIdx() >= items.length)
-			{
-				continue; //We can't check the slot, because there is nothing in it, the array hasn't been resized
-			}
+  @Override
+  public boolean fulfilledBy(int itemId) {
+    return false;
+  }
 
-			if (items[slot.getSlotIdx()].getId() != -1)
-			{
-				return false;
-			}
-		}
+  @Override
+  public boolean fulfilledBy(Item[] items) {
+    for (EquipmentInventorySlot slot : slots) {
+      if (slot.getSlotIdx() >= items.length) {
+        continue; //We can't check the slot, because there is nothing in it, the array hasn't been resized
+      }
 
-		return true;
-	}
+      if (items[slot.getSlotIdx()].getId() != -1) {
+        return false;
+      }
+    }
 
-	@Override
-	public String getCollectiveName(Client client)
-	{
-		return description;
-	}
+    return true;
+  }
+
+  @Override
+  public String getCollectiveName(Client client) {
+    return description;
+  }
 }

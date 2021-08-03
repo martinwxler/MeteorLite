@@ -33,13 +33,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-class ObjectPoint
-{
-	private int id = -1;
-	private String name;
-	private int regionId;
-	private int regionX;
-	private int regionY;
-	private int z;
-	private Color color;
+class ObjectPoint {
+
+  private int id = -1;
+  private String name;
+  private int regionId;
+  private int regionX;
+  private int regionY;
+  private int z;
+  private Color color;
 }
