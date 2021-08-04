@@ -23,7 +23,7 @@ public interface OneClickConfig extends Config
 	)
 	default Types getType()
 	{
-		return Types.COMPOST;
+		return Types.NONE;
 	}
 
 	@ConfigItem(
