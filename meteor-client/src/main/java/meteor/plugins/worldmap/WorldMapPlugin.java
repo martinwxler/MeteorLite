@@ -163,7 +163,7 @@ public class WorldMapPlugin extends Plugin {
   }
 
   @Provides
-  WorldMapConfig provideConfig(ConfigManager configManager) {
+  public WorldMapConfig getConfig(ConfigManager configManager) {
     //TODO: This is broken, likely to do with ConfigManager or Config instantiation
     return new WorldMapConfig() {
     };

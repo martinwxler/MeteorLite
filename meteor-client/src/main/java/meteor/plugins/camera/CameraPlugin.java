@@ -111,7 +111,8 @@ public class CameraPlugin extends Plugin implements KeyListener, MouseListener {
   private Tooltip sliderTooltip;
 
   @Provides
-  CameraConfig getConfig(ConfigManager configManager) {
+  @Override
+  public CameraConfig getConfig(ConfigManager configManager) {
     return configManager.getConfig(CameraConfig.class);
   }
 

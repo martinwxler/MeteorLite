@@ -203,7 +203,7 @@ public class NpcIndicatorsPlugin extends Plugin {
   }
 
   @Provides
-  NpcIndicatorsConfig provideConfig(ConfigManager configManager) {
+  public NpcIndicatorsConfig getConfig(ConfigManager configManager) {
     return configManager.getConfig(NpcIndicatorsConfig.class);
   }
 

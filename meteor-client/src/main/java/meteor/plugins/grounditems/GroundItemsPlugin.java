@@ -167,7 +167,7 @@ public class GroundItemsPlugin extends Plugin {
   private int lastUsedItem;
 
   @Provides
-  GroundItemsConfig provideConfig(ConfigManager configManager) {
+  public GroundItemsConfig getConfig(ConfigManager configManager) {
     return configManager.getConfig(GroundItemsConfig.class);
   }
 

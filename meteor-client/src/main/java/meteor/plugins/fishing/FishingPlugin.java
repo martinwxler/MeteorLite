@@ -109,7 +109,7 @@ public class FishingPlugin extends Plugin {
   private FishingSpotMinimapOverlay fishingSpotMinimapOverlay;
 
   @Provides
-  FishingConfig provideConfig(ConfigManager configManager) {
+  public FishingConfig getConfig(ConfigManager configManager) {
     return configManager.getConfig(FishingConfig.class);
   }
 

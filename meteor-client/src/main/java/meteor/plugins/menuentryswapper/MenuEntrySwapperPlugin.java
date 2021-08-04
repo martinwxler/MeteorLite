@@ -174,7 +174,7 @@ public class MenuEntrySwapperPlugin extends Plugin {
   }
 
   @Provides
-  MenuEntrySwapperConfig provideConfig(ConfigManager configManager) {
+  public MenuEntrySwapperConfig getConfig(ConfigManager configManager) {
     return configManager.getConfig(MenuEntrySwapperConfig.class);
   }
 

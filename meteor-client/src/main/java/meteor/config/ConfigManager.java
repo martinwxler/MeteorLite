@@ -142,6 +142,7 @@ public class ConfigManager {
     this.propertiesFile = getPropertiesFile();
 
     scheduledExecutorService.scheduleWithFixedDelay(this::sendConfig, 30, 30, TimeUnit.SECONDS);
+    this.eventBus.register(this);
   }
 
   public static String getWholeKey(String groupName, String profile, String key) {

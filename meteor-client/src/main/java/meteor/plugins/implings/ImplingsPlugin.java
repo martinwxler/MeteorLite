@@ -66,7 +66,8 @@ public class ImplingsPlugin extends Plugin {
   private ImplingsConfig config;
 
   @Provides
-  ImplingsConfig getConfig(ConfigManager configManager) {
+  @Override
+  public ImplingsConfig getConfig(ConfigManager configManager) {
     return configManager.getConfig(ImplingsConfig.class);
   }
 

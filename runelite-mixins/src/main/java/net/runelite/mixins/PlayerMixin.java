@@ -51,4 +51,13 @@ public abstract class PlayerMixin implements RSPlayer {
 
     return model.getConvexHull(getX(), getY(), getOrientation(), tileHeight);
   }
+
+  @Inject
+  private boolean friended;
+
+  @Inject
+  public boolean isFriended()
+  {
+    return isFriend$api() || friended;
+  }
 }

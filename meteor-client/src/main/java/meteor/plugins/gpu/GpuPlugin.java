@@ -423,7 +423,8 @@ public class GpuPlugin extends Plugin implements DrawCallbacks {
   }
 
   @Provides
-  GpuPluginConfig provideConfig(ConfigManager configManager) {
+  @Override
+  public GpuPluginConfig getConfig(ConfigManager configManager) {
     return configManager.getConfig(GpuPluginConfig.class);
   }
 

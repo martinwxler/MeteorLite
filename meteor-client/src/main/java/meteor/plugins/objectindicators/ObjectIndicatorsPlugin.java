@@ -109,7 +109,7 @@ public class ObjectIndicatorsPlugin extends Plugin {
   private Gson gson;
 
   @Provides
-  ObjectIndicatorsConfig provideConfig(ConfigManager configManager) {
+  public ObjectIndicatorsConfig getConfig(ConfigManager configManager) {
     return configManager.getConfig(ObjectIndicatorsConfig.class);
   }
 

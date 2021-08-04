@@ -157,7 +157,8 @@ public class ItemChargePlugin extends Plugin {
   private int lastCheckTick;
 
   @Provides
-  ItemChargeConfig getConfig(ConfigManager configManager) {
+  @Override
+  public ItemChargeConfig getConfig(ConfigManager configManager) {
     return configManager.getConfig(ItemChargeConfig.class);
   }
 

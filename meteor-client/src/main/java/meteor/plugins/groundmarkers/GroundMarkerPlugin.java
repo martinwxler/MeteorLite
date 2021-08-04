@@ -121,7 +121,7 @@ public class GroundMarkerPlugin extends Plugin {
   }
 
   @Provides
-  GroundMarkerConfig provideConfig(ConfigManager configManager) {
+  public GroundMarkerConfig getConfig(ConfigManager configManager) {
     return configManager.getConfig(GroundMarkerConfig.class);
   }
 

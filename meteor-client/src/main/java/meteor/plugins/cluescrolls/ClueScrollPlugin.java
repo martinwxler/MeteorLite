@@ -212,7 +212,8 @@ public class ClueScrollPlugin extends Plugin {
   }
 
   @Provides
-  ClueScrollConfig getConfig(ConfigManager configManager) {
+  @Override
+  public ClueScrollConfig getConfig(ConfigManager configManager) {
     return configManager.getConfig(ClueScrollConfig.class);
   }
 

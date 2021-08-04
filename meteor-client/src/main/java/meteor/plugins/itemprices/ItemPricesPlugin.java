@@ -45,7 +45,8 @@ public class ItemPricesPlugin extends Plugin {
   private ItemPricesOverlay overlay;
 
   @Provides
-  ItemPricesConfig getConfig(ConfigManager configManager) {
+  @Override
+  public ItemPricesConfig getConfig(ConfigManager configManager) {
     return configManager.getConfig(ItemPricesConfig.class);
   }
 

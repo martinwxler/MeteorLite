@@ -78,7 +78,7 @@ public class CombatLevelPlugin extends Plugin {
   }
 
   @Provides
-  CombatLevelConfig provideConfig(ConfigManager configManager) {
+  public CombatLevelConfig getConfig(ConfigManager configManager) {
     return configManager.getConfig(CombatLevelConfig.class);
   }
 

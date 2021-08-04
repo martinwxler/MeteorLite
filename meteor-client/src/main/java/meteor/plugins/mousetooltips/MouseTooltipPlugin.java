@@ -45,7 +45,7 @@ public class MouseTooltipPlugin extends Plugin {
   private MouseTooltipOverlay overlay;
 
   @Provides
-  MouseTooltipConfig provideConfig(ConfigManager configManager) {
+  public MouseTooltipConfig getConfig(ConfigManager configManager) {
     return configManager.getConfig(MouseTooltipConfig.class);
   }
 

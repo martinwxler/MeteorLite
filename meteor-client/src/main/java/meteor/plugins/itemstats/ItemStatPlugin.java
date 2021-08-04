@@ -116,7 +116,8 @@ public class ItemStatPlugin extends Plugin {
   }
 
   @Provides
-  ItemStatConfig getConfig(ConfigManager configManager) {
+  @Override
+  public ItemStatConfig getConfig(ConfigManager configManager) {
     return configManager.getConfig(ItemStatConfig.class);
   }
 

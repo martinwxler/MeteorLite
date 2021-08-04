@@ -3,8 +3,14 @@ package meteor.plugins;
 import com.google.inject.Binder;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import java.io.IOException;
+import java.util.Objects;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javax.inject.Inject;
+import meteor.MeteorLite;
 import meteor.config.Config;
+import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
 import net.runelite.api.Client;
 import org.sponge.util.Logger;
@@ -64,6 +70,14 @@ public class Plugin implements Module {
   }
 
   public void showConfig() {
+    Parent configRoot = null;
+    try {
+      configRoot = FXMLLoader.load(Objects.requireNonNull(ClassLoader.getSystemClassLoader()
+          .getResource("plugin-config.fxml")));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    MeteorLite.updateRightPanel(configRoot);
   }
 
   public boolean isEnabled()
@@ -76,7 +90,7 @@ public class Plugin implements Module {
     this.enabled = enabled;
   }
 
-  public Config getConfig()
+  public Config getConfig(ConfigManager configManager)
   {
     return config;
   }

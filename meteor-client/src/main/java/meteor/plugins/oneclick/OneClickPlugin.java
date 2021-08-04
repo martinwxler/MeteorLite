@@ -65,7 +65,7 @@ public class OneClickPlugin extends Plugin
 	private boolean tick;
 
 	@Provides
-	OneClickConfig provideConfig(ConfigManager configManager)
+	public OneClickConfig getConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(OneClickConfig.class);
 	}

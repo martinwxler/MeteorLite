@@ -93,7 +93,7 @@ public class BoostsPlugin extends Plugin {
   private long lastTickMillis;
 
   @Provides
-  BoostsConfig provideConfig(ConfigManager configManager) {
+  public BoostsConfig getConfig(ConfigManager configManager) {
     return configManager.getConfig(BoostsConfig.class);
   }
 

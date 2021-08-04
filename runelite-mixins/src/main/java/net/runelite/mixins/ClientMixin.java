@@ -71,6 +71,7 @@ import net.runelite.rs.api.RSPlayer;
 import net.runelite.rs.api.RSScriptEvent;
 import net.runelite.rs.api.RSSpritePixels;
 import net.runelite.rs.api.RSTileItem;
+import net.runelite.rs.api.RSUsername;
 import net.runelite.rs.api.RSWidget;
 import org.sponge.util.Logger;
 
@@ -1059,5 +1060,13 @@ public abstract class ClientMixin implements RSClient {
     final ChatMessageType chatMessageType = ChatMessageType.of(type);
     final ChatMessage chatMessage = new ChatMessage(messageNode, chatMessageType, name, message, sender, messageNode.getTimestamp());
     client.getCallbacks().post(chatMessage);
+  }
+
+  @Inject
+  @Override
+  public boolean isFriended(String name, boolean mustBeLoggedIn)
+  {
+    RSUsername rsName = createName(name, getLoginType());
+    return getFriendManager().isFriended(rsName, mustBeLoggedIn);
   }
 }

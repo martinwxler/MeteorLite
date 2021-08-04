@@ -71,7 +71,7 @@ public class HunterPlugin extends Plugin {
   private WorldPoint lastTickLocalPlayerLocation;
 
   @Provides
-  HunterConfig provideConfig(ConfigManager configManager) {
+  public HunterConfig getConfig(ConfigManager configManager) {
     return configManager.getConfig(HunterConfig.class);
   }
 

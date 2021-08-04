@@ -130,7 +130,8 @@ public class BankPlugin extends Plugin {
   private String searchString;
 
   @Provides
-  BankConfig getConfig(ConfigManager configManager) {
+  @Override
+  public BankConfig getConfig(ConfigManager configManager) {
     return configManager.getConfig(BankConfig.class);
   }
 

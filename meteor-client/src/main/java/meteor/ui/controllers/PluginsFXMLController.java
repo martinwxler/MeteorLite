@@ -1,6 +1,5 @@
 package meteor.ui.controllers;
 
-import com.jfoenix.controls.JFXScrollPane;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.fxml.FXML;
@@ -12,7 +11,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import meteor.MeteorLite;
 import meteor.PluginManager;
+import meteor.config.ConfigManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.ui.components.PluginConfigButton;
@@ -29,6 +30,8 @@ public class PluginsFXMLController {
   @FXML
   private VBox pluginList;
 
+  public static Plugin lastPluginInteracted;
+
   @FXML
   public void initialize() {
     ScrollPane scrollPane = new ScrollPane();
@@ -39,7 +42,7 @@ public class PluginsFXMLController {
     FontAwesomeIconView plug = new FontAwesomeIconView(FontAwesomeIcon.PLUG);
     plug.setFill(Paint.valueOf("CYAN"));
     plug.setLayoutY(25);
-    AnchorPane.setLeftAnchor(plug, 140.0);
+    AnchorPane.setLeftAnchor(plug, 130.0);
 
     pluginPanel.getChildren().add(plug);
 
@@ -49,7 +52,7 @@ public class PluginsFXMLController {
     pluginsString.setLayoutY(28);
     pluginsString.setWrappingWidth(300);
     pluginsString.setFont(Font.font(18));
-    AnchorPane.setLeftAnchor(pluginsString, 158.0);
+    AnchorPane.setLeftAnchor(pluginsString, 148.0);
 
     pluginPanel.getChildren().add(pluginsString);
     pluginList = new VBox();
@@ -67,11 +70,17 @@ public class PluginsFXMLController {
       configButton.setLayoutX(265);
       configButton.setPrefSize(40, 40);
 
-      FontAwesomeIconView cog = new FontAwesomeIconView(FontAwesomeIcon.COG);
-      cog.setFill(Paint.valueOf("CYAN"));
-      cog.setLayoutX(280);
-      configButton.setGraphic(cog);
-      configButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> p.showConfig());
+      if (p.getConfig(MeteorLite.injector.getInstance(ConfigManager.class)) != null)
+      {
+        FontAwesomeIconView cog = new FontAwesomeIconView(FontAwesomeIcon.COG);
+        cog.setFill(Paint.valueOf("CYAN"));
+        cog.setLayoutX(280);
+        configButton.setGraphic(cog);
+        configButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
+          lastPluginInteracted = p;
+          p.showConfig();
+        });
+      }
 
       PluginToggleButton toggleButton = null;
       if (!p.getClass().getAnnotation(PluginDescriptor.class).cantDisable())
