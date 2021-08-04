@@ -73,7 +73,7 @@ public class BetterAntiDragPlugin extends Plugin
 	private boolean toggleDrag;
 
 	@Provides
-	BetterAntiDragConfig getConfig(ConfigManager configManager)
+	public BetterAntiDragConfig getConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(BetterAntiDragConfig.class);
 	}

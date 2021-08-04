@@ -16,6 +16,7 @@ import meteor.plugins.actions.ActionPlugin;
 import meteor.plugins.agility.AgilityPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.bank.BankPlugin;
+import meteor.plugins.betterantidrag.BetterAntiDragPlugin;
 import meteor.plugins.boosts.BoostsPlugin;
 import meteor.plugins.botutils.BotUtils;
 import meteor.plugins.camera.CameraPlugin;
@@ -31,6 +32,7 @@ import meteor.plugins.itemcharges.ItemChargePlugin;
 import meteor.plugins.itemprices.ItemPricesPlugin;
 import meteor.plugins.itemstats.ItemStatPlugin;
 import meteor.plugins.menuentryswapper.MenuEntrySwapperPlugin;
+import meteor.plugins.menuentryswapperextended.MenuEntrySwapperExtendedPlugin;
 import meteor.plugins.mousetooltips.MouseTooltipPlugin;
 import meteor.plugins.neverlog.NeverLogoutPlugin;
 import meteor.plugins.npcindicators.NpcIndicatorsPlugin;
@@ -54,6 +56,7 @@ public class PluginManager {
     plugins.add(new ActionPlugin());
     plugins.add(new AgilityPlugin());
     plugins.add(new BankPlugin());
+    plugins.add(new BetterAntiDragPlugin());
     plugins.add(new BoostsPlugin());
     plugins.add(new CameraPlugin());
     plugins.add(new ClueScrollPlugin());
@@ -68,6 +71,7 @@ public class PluginManager {
     plugins.add(new ItemPricesPlugin());
     plugins.add(new ItemStatPlugin());
     plugins.add(new MenuEntrySwapperPlugin());
+    plugins.add(new MenuEntrySwapperExtendedPlugin());
     plugins.add(new MouseTooltipPlugin());
     plugins.add(new NeverLogoutPlugin());
     plugins.add(new NpcIndicatorsPlugin());
@@ -103,5 +107,17 @@ public class PluginManager {
       eventBus.register(plugin);
       plugin.startup();
     }
+  }
+
+  public static Plugin getInstance(Class<? extends Plugin> type)
+  {
+    for (Plugin p : PluginManager.plugins)
+    {
+      if (type.isInstance(p))
+      {
+        return p;
+      }
+    }
+    return null;
   }
 }

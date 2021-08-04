@@ -61,7 +61,7 @@ public class BaseComparableEntry extends AbstractComparableEntry
 
 		if (strictTarget || !Strings.isNullOrEmpty(target))
 		{
-			String tgt = Text.standardize(entry.getTarget(), true);
+			String tgt = Text.standardize(entry.getTarget());
 
 			if (strictTarget && !tgt.equals(target) || !strictTarget && !tgt.contains(target))
 			{

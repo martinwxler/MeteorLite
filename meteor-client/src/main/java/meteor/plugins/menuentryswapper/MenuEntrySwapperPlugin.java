@@ -51,6 +51,7 @@ import java.util.function.Supplier;
 import javax.inject.Inject;
 import lombok.Getter;
 import meteor.callback.ClientThread;
+import meteor.config.Config;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ConfigChanged;

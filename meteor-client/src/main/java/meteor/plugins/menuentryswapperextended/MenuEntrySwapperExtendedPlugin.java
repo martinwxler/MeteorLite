@@ -39,12 +39,15 @@ import java.util.stream.StreamSupport;
 import javax.inject.Inject;
 
 import lombok.var;
+import meteor.MeteorLite;
 import meteor.PluginManager;
 import meteor.callback.ClientThread;
+import meteor.config.Config;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
+import meteor.plugins.menuentryswapper.MenuEntrySwapperConfig;
 import meteor.plugins.menuentryswapper.MenuEntrySwapperPlugin;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -103,7 +106,6 @@ public class MenuEntrySwapperExtendedPlugin extends Plugin
 	@Inject
 	private ConfigManager configManager;
 
-	@Inject
 	private MenuEntrySwapperPlugin mesPlugin;
 
 	private boolean inTobRaid = false;
@@ -121,7 +123,7 @@ public class MenuEntrySwapperExtendedPlugin extends Plugin
 	private final List<Pair<AbstractComparableEntry, AbstractComparableEntry>> prioSwaps = new ArrayList<>();
 
 	@Provides
-	MenuEntrySwapperExtendedConfig provideConfig(ConfigManager configManager)
+	public MenuEntrySwapperExtendedConfig getConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(MenuEntrySwapperExtendedConfig.class);
 	}
@@ -402,6 +404,8 @@ public class MenuEntrySwapperExtendedPlugin extends Plugin
 
 	private void addSwaps()
 	{
+		mesPlugin = (MenuEntrySwapperPlugin) PluginManager.getInstance(MenuEntrySwapperPlugin.class);
+
 		for (String option : new String[]{"attack", "talk-to"})
 		{
 			mesPlugin.swapContains(option, (s) -> true, "pickpocket", config::swapPickpocket);
@@ -483,6 +487,7 @@ public class MenuEntrySwapperExtendedPlugin extends Plugin
 
 	private void setCastOptions(boolean force)
 	{
+		if (client.getGameState() == GameState.LOGGED_IN)
 		clientThread.invoke(() ->
 		{
 			boolean tmpInCoxRaid = client.getVar(Varbits.IN_RAID) == 1;
@@ -522,15 +527,8 @@ public class MenuEntrySwapperExtendedPlugin extends Plugin
 	{
 		clientThread.invoke(() ->
 		{
-			if (client.getVar(IN_WILDERNESS) == 1 || WorldType.isAllPvpWorld(client.getWorldType()) && pluginManager.isPluginEnabled(pvpTools) && pvpToolsConfig.hideCast())
-			{
-				pvpTools.setCastOptions();
-			}
-			else
-			{
-				client.setHideFriendCastOptions(false);
-				client.setHideClanmateCastOptions(false);
-			}
+			client.setHideFriendCastOptions(false);
+			client.setHideClanmateCastOptions(false);
 		});
 	}
 
