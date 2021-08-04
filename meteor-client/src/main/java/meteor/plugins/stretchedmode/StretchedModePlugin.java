@@ -26,7 +26,6 @@ public class StretchedModePlugin extends Plugin {
   public static boolean keepAspectRatio = false;
   public static boolean isStretchedFast = false;
   public static int scalingFactor = 100;
-  public static boolean enabled = true;
   public String name = ANSI_CYAN + "StretchedModePlugin" + ANSI_YELLOW;
 
   @Inject
@@ -42,9 +41,15 @@ public class StretchedModePlugin extends Plugin {
     logger.name = name;
   }
 
-  public static void showConfig() throws IOException {
-    Parent configRoot = FXMLLoader.load(Objects.requireNonNull(ClassLoader.getSystemClassLoader()
-        .getResource("meteor/plugins/stretchedmode/config.fxml")));
+  @Override
+  public void showConfig() {
+    Parent configRoot = null;
+    try {
+      configRoot = FXMLLoader.load(Objects.requireNonNull(ClassLoader.getSystemClassLoader()
+          .getResource("meteor/plugins/stretchedmode/config.fxml")));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     MeteorLite.updateRightPanel(configRoot);
   }
 
@@ -53,10 +58,8 @@ public class StretchedModePlugin extends Plugin {
     mouseManager.registerMouseListener(0, mouseListener);
     mouseManager.registerMouseWheelListener(0, mouseWheelListener);
     client.setGameDrawingMode(2);
-    if (enabled) {
-      client.setStretchedEnabled(true);
-      updateConfig();
-    }
+    client.setStretchedEnabled(true);
+    updateConfig();
   }
 
   @Override

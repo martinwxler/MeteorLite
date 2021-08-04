@@ -37,8 +37,9 @@ import java.util.EnumSet;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import meteor.config.Config;
 
-public interface AoeWarningConfig {
+public interface AoeWarningConfig extends Config {
 
   String notifyTitle = "Notify";
   String overlayTitle = "Overlay";
@@ -62,12 +63,6 @@ public interface AoeWarningConfig {
   String cerberusTitle = "Cerberus";
   String demonicGorillaTitle = "Demonic Gorilla";
   String verzikTitle = "Verzik";
-
-  static AoeWarningConfig getInstance() {
-    return new AoeWarningConfig() {
-
-    };
-  }
 
   default boolean aoeNotifyAll() {
     return false;

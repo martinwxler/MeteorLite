@@ -35,9 +35,11 @@ import java.util.Set;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
+import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
+import meteor.plugins.bank.BankConfig;
 import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
@@ -68,15 +70,15 @@ public class AoeWarningPlugin extends Plugin {
   @Getter(AccessLevel.PACKAGE)
   private final Set<ProjectileContainer> projectiles = new HashSet<>();
   @Inject
-  public AoeWarningConfig config = AoeWarningConfig.getInstance();
+  public AoeWarningConfig config;
   @Inject
   private AoeWarningOverlay coreOverlay;
   @Inject
   private BombOverlay bombOverlay;
   @Inject
-  private Client client;
-  @Inject
   private OverlayManager overlayManager;
+  @Inject
+  private ConfigManager configManager;
   @Getter(AccessLevel.PACKAGE)
   private final List<WorldPoint> lightningTrail = new ArrayList<>();
   @Getter(AccessLevel.PACKAGE)
@@ -90,8 +92,8 @@ public class AoeWarningPlugin extends Plugin {
   }
 
   @Provides
-  AoeWarningConfig getConfig() {
-    return config;
+  AoeWarningConfig getProvidedConfig() {
+    return configManager.getConfig(AoeWarningConfig.class);
   }
 
   @Override

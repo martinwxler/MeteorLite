@@ -46,35 +46,36 @@ public class PluginManager {
   @Inject
   private ConfigManager configManager;
 
-  public void startInternalPlugins() {
-    plugins.add(new EventTestPlugin());
+  static
+  {
+    //plugins.add(new EventTestPlugin());
     //MeteorLite.plugins.add(new DebugPlugin());
-
-    plugins.add(new StretchedModePlugin());
-    plugins.add(new GpuPlugin());
-    plugins.add(new AoeWarningPlugin());
-    plugins.add(new NeverLogoutPlugin());
-    plugins.add(new BankPlugin());
-    plugins.add(new AgilityPlugin());
-    plugins.add(new MouseTooltipPlugin());
-    plugins.add(new CombatLevelPlugin());
-    plugins.add(new GroundMarkerPlugin());
-    plugins.add(new ItemStatPlugin());
-    plugins.add(new ItemPricesPlugin());
-    plugins.add(new WorldMapPlugin());
-    plugins.add(new ClueScrollPlugin());
-    plugins.add(new GroundItemsPlugin());
-    plugins.add(new CameraPlugin());
-    plugins.add(new BoostsPlugin());
-    plugins.add(new FishingPlugin());
-    plugins.add(new HunterPlugin());
-    plugins.add(new ItemChargePlugin());
-    plugins.add(new ObjectIndicatorsPlugin());
-    plugins.add(new NpcIndicatorsPlugin());
-    plugins.add(new ImplingsPlugin());
-    plugins.add(new MenuEntrySwapperPlugin());
     plugins.add(new ActionPlugin());
+    plugins.add(new AgilityPlugin());
+    plugins.add(new BankPlugin());
+    plugins.add(new BoostsPlugin());
+    plugins.add(new CameraPlugin());
+    plugins.add(new ClueScrollPlugin());
+    plugins.add(new CombatLevelPlugin());
+    plugins.add(new FishingPlugin());
+    plugins.add(new GpuPlugin());
+    plugins.add(new GroundItemsPlugin());
+    plugins.add(new GroundMarkerPlugin());
+    plugins.add(new HunterPlugin());
+    plugins.add(new ImplingsPlugin());
+    plugins.add(new ItemChargePlugin());
+    plugins.add(new ItemPricesPlugin());
+    plugins.add(new ItemStatPlugin());
+    plugins.add(new MenuEntrySwapperPlugin());
+    plugins.add(new MouseTooltipPlugin());
+    plugins.add(new NeverLogoutPlugin());
+    plugins.add(new NpcIndicatorsPlugin());
+    plugins.add(new ObjectIndicatorsPlugin());
+    plugins.add(new StretchedModePlugin());
+    plugins.add(new WorldMapPlugin());
+  }
 
+  public void startInternalPlugins() {
     for (Plugin plugin : plugins) {
       Injector injector = plugin.getInjector();
       if (injector == null) {

@@ -107,7 +107,8 @@ import org.sponge.util.Logger;
     description = "Utilizes the GPU",
     enabledByDefault = false,
     tags = {"fog", "draw distance"},
-    loadInSafeMode = false
+    loadInSafeMode = false,
+    cantDisable = true
 )
 public class GpuPlugin extends Plugin implements DrawCallbacks {
 

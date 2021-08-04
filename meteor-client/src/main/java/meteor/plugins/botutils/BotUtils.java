@@ -44,7 +44,6 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-import org.sponge.util.Logger;
 
 import static java.awt.event.KeyEvent.VK_ENTER;
 import static meteor.plugins.botutils.Banks.ALL_BANKS;
