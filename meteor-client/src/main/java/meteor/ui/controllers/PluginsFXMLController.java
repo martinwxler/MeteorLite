@@ -5,6 +5,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.fxml.FXML;
 import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -30,10 +31,10 @@ public class PluginsFXMLController {
 
   @FXML
   public void initialize() {
-    JFXScrollPane scrollPane = new JFXScrollPane();
-    scrollPane.getTopBar().setDisable(true);
-    scrollPane.setLayoutY(45);
-    scrollPane.setMaxSize(350, 300);
+    ScrollPane scrollPane = new ScrollPane();
+    scrollPane.setMinSize(350, 600);
+    AnchorPane.setTopAnchor(scrollPane, 45.0);
+    AnchorPane.setBottomAnchor(scrollPane, 0.0);
 
     FontAwesomeIconView plug = new FontAwesomeIconView(FontAwesomeIcon.PLUG);
     plug.setFill(Paint.valueOf("CYAN"));
@@ -51,8 +52,8 @@ public class PluginsFXMLController {
     AnchorPane.setLeftAnchor(pluginsString, 158.0);
 
     pluginPanel.getChildren().add(pluginsString);
-
     pluginList = new VBox();
+    pluginList.setLayoutY(45);
 
     for (Plugin p : PluginManager.plugins)
     {
@@ -102,8 +103,7 @@ public class PluginsFXMLController {
       pluginList.getChildren().add(pluginPanel);
     }
 
-    scrollPane.setContent(pluginList);
-    pluginPanel.getChildren().add(scrollPane);
+    pluginPanel.getChildren().add(pluginList);
   }
 
 }
