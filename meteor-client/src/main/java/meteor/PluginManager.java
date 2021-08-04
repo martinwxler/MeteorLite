@@ -35,6 +35,7 @@ import meteor.plugins.mousetooltips.MouseTooltipPlugin;
 import meteor.plugins.neverlog.NeverLogoutPlugin;
 import meteor.plugins.npcindicators.NpcIndicatorsPlugin;
 import meteor.plugins.objectindicators.ObjectIndicatorsPlugin;
+import meteor.plugins.oneclick.OneClickPlugin;
 import meteor.plugins.stretchedmode.StretchedModePlugin;
 import meteor.plugins.worldmap.WorldMapPlugin;
 
@@ -71,6 +72,7 @@ public class PluginManager {
     plugins.add(new NeverLogoutPlugin());
     plugins.add(new NpcIndicatorsPlugin());
     plugins.add(new ObjectIndicatorsPlugin());
+    plugins.add(new OneClickPlugin());
     plugins.add(new StretchedModePlugin());
     plugins.add(new WorldMapPlugin());
   }
