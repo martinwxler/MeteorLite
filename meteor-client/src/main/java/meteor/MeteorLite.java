@@ -64,7 +64,8 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
   public static final File DEFAULT_SESSION_FILE = new File(METEOR_DIR, "session");
   public static final File DEFAULT_CONFIG_FILE = new File(METEOR_DIR, "settings.properties");
   public static Client clientInstance; // This is reserved for the Sponge Mixins Agent
-  public static Injector injector;
+  static MeteorLiteModule module = new MeteorLiteModule();
+  public static Injector injector = Guice.createInjector(module);
   public static boolean pluginsPanelVisible = false;
   public static JFXPanel toolbarJFXPanel = new JFXPanel();
   public static JFXPanel hudbarJFXPanel = new JFXPanel();
@@ -74,7 +75,6 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
   public static JPanel gamePanel = new JPanel();
   public static BorderLayout layout = new BorderLayout();
   public static JFrame frame;
-  static MeteorLiteModule module = new MeteorLiteModule();
   static Parent pluginsRoot;
   static Scene pluginsRootScene;
   private static boolean toolbarVisible = true;
@@ -85,7 +85,7 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
     try {
       pluginsRoot = FXMLLoader.load(
           Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("plugins.fxml")));
-      pluginsRootScene = new Scene(pluginsRoot, 275, 800);
+      pluginsRootScene = new Scene(pluginsRoot, 350, 800);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -124,7 +124,7 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
   }
 
   public static void updateRightPanel(Parent root) {
-    rightPanel.setScene(new Scene(root, 275, 800));
+    rightPanel.setScene(new Scene(root, 350, 800));
   }
 
   public static void loadJagexConfiguration() throws IOException {
@@ -186,7 +186,6 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
   @Override
   public void start(Stage primaryStage) throws IOException {
     System.setProperty("sun.awt.noerasebackground", "true"); // fixes resize flickering
-    injector = Guice.createInjector(module);
     injector.getInstance(MeteorLite.class).start();
   }
 
@@ -199,7 +198,7 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
     panel.setSize(1280, 720);
 
     toolbarJFXPanel.setSize(1280, 100);
-    rightPanel.setSize(475, 800);
+    rightPanel.setSize(550, 800);
     Parent toolbarRoot = FXMLLoader.load(
         Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("toolbar.fxml")));
     Parent hudbarRoot = FXMLLoader.load(
@@ -269,14 +268,6 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
         Integer.parseInt(properties.get("applet_maxwidth")),
         Integer.parseInt(properties.get("applet_maxheight"))
     );
-  }
-
-  private URL gamepackUrl() throws MalformedURLException {
-    return new URL(properties.get("codebase") + properties.get("initial_jar"));
-  }
-
-  private String initialClass() {
-    return "Client";
   }
 
   @Override

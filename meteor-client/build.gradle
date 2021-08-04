@@ -29,7 +29,7 @@ dependencies {
     implementation(project(":http-api"))
     implementation(project(":runelite-annotations"))
     compileOnly(project(":runescape-client"))
-    implementation group: 'de.jensd', name: 'fontawesomefx-fontawesome', version: '4.7.0-5'
+    implementation group: 'de.jensd', name: 'fontawesomefx', version: '8.9'
     implementation 'com.jfoenix:jfoenix:8.0.10'
     implementation group: 'org.jetbrains', name: 'annotations', version: '21.0.1'
     runtimeOnly(files("../openosrs-injector/build/injected/injected-client.jar"))

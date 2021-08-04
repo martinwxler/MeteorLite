@@ -1,36 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXButton?>
-<?import com.jfoenix.controls.JFXToggleButton?>
-<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Text?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" style="-fx-background-color: #1c313a; -fx-border-color: #102027; -fx-border-width: 3;" id="pluginPanel" maxHeight="-Infinity"
-  maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+  maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" fx:id="pluginPanel"
   prefHeight="781.0"
-  prefWidth="284.0" xmlns="http://javafx.com/javafx/8.0.171"
+  prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.171"
   fx:controller="meteor.ui.controllers.PluginsFXMLController">
-  <FontAwesomeIconView AnchorPane.leftAnchor="100.0" fill="AQUA" glyphName="PLUG" layoutX="8.0" layoutY="28.0"
-    text=""/>
-  <Text AnchorPane.leftAnchor="118.0" fill="WHITE" layoutX="118.0" layoutY="27.0" strokeType="OUTSIDE"
-    strokeWidth="0.0" text="Plugins"/>
-  <VBox layoutX="-2.0" layoutY="45.0" prefHeight="117.0" prefWidth="284.0">
-    <children>
-      <AnchorPane style="-fx-border-color: #102027;" prefHeight="25.0" prefWidth="281.0">
-        <JFXButton contentDisplay="RIGHT" layoutX="199.0" layoutY="12.0"
-          onAction="#configureStretchedMode" prefHeight="25.0" prefWidth="29.0">
-          <graphic>
-            <FontAwesomeIconView fill="AQUA" glyphName="COG" nodeOrientation="RIGHT_TO_LEFT"
-              wrappingWidth="11.99999986588955"/>
-          </graphic>
-        </JFXButton>
-        <JFXToggleButton style="-fx-text-fill: CYAN;" id="reflectionEnabled" layoutX="237.0"
-          layoutY="6.0" onAction="#toggleStretchedMode" prefHeight="38.0" prefWidth="38.0"
-          size="4.0" text=" " fx:id="reflectionEnabled"/>
-        <Text fill="WHITE" layoutX="14.0" layoutY="28.0" strokeType="OUTSIDE" strokeWidth="0.0"
-          text="Stretched Mode" wrappingWidth="169.11328125"/>
-      </AnchorPane>
-    </children>
-  </VBox>
 </AnchorPane>

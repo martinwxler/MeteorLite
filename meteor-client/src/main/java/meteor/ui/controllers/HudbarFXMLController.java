@@ -75,16 +75,6 @@ public class HudbarFXMLController {
   private ImageView currentSkillIcon;
 
   @FXML
-  protected void handlePluginsPressed(ActionEvent event) {
-    MeteorLite.togglePluginsPanel();
-  }
-
-  @FXML
-  protected void handleOptionsPressed(ActionEvent event) {
-
-  }
-
-  @FXML
   public void initialize() {
     injector.injectMembers(this);
     eventBus.register(this);

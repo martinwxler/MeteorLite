@@ -65,4 +65,6 @@ public @interface PluginDescriptor {
   boolean loadWhenOutdated() default false;
 
   boolean loadInSafeMode() default true;
+
+  boolean cantDisable() default false;
 }

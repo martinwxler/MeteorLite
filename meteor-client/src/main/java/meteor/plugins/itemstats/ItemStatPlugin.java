@@ -67,9 +67,9 @@ import net.runelite.http.api.item.ItemEquipmentStats;
 import net.runelite.http.api.item.ItemStats;
 
 @PluginDescriptor(
-    name = "Item Prices",
-    description = "Show prices on hover for items in your inventory and bank",
-    tags = {"bank", "inventory", "overlay", "high", "alchemy", "grand", "exchange", "tooltips"}
+    name = "Item Stats",
+    description = "Show information about food and potion effects",
+    tags = {"food", "inventory", "overlay", "potion"}
 )
 public class ItemStatPlugin extends Plugin {
 
