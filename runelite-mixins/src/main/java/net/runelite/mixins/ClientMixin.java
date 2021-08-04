@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.GameState;
 import net.runelite.api.GraphicsObject;
@@ -35,6 +37,7 @@ import net.runelite.api.Tile;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.WidgetNode;
 import net.runelite.api.WorldType;
+import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.CanvasSizeChanged;
 import net.runelite.api.events.ChatMessage;
@@ -166,6 +169,20 @@ public abstract class ClientMixin implements RSClient {
     if (player != null) {
       client.getCallbacks().postDeferred(new PlayerSpawned(player));
     }
+  }
+
+  @Inject
+  @Override
+  @Nullable
+  public LocalPoint getLocalDestinationLocation()
+  {
+    int sceneX = getDestinationX();
+    int sceneY = getDestinationY();
+    if (sceneX != 0 && sceneY != 0)
+    {
+      return LocalPoint.fromScene(sceneX, sceneY);
+    }
+    return null;
   }
 
   @MethodHook("drawInterface")

@@ -29,6 +29,7 @@ import meteor.plugins.grounditems.GroundItemsPlugin;
 import meteor.plugins.groundmarkers.GroundMarkerPlugin;
 import meteor.plugins.hunter.HunterPlugin;
 import meteor.plugins.implings.ImplingsPlugin;
+import meteor.plugins.interacthighlight.InteractHighlightPlugin;
 import meteor.plugins.itemcharges.ItemChargePlugin;
 import meteor.plugins.itemprices.ItemPricesPlugin;
 import meteor.plugins.itemstats.ItemStatPlugin;
@@ -71,6 +72,7 @@ public class PluginManager {
     plugins.add(new GroundMarkerPlugin());
     plugins.add(new HunterPlugin());
     plugins.add(new ImplingsPlugin());
+    plugins.add(new InteractHighlightPlugin());
     plugins.add(new ItemChargePlugin());
     plugins.add(new ItemPricesPlugin());
     plugins.add(new ItemStatPlugin());
