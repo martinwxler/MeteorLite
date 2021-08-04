@@ -33,13 +33,9 @@ public class Plugin implements Module {
   }
 
   public void startup() {
-
   }
-
   public void shutdown() {
-
   }
-
   public void toggle() {
     if (enabled)
     {
