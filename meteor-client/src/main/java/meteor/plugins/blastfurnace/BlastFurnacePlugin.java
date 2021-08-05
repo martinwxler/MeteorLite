@@ -112,7 +112,7 @@ public class BlastFurnacePlugin extends Plugin
 	}
 
 	@Provides
-	BlastFurnaceConfig provideConfig(ConfigManager configManager)
+	public BlastFurnaceConfig getConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(BlastFurnaceConfig.class);
 	}

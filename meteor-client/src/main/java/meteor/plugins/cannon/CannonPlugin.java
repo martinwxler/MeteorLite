@@ -120,7 +120,7 @@ public class CannonPlugin extends Plugin
 	private ClientThread clientThread;
 
 	@Provides
-	public CannonConfig provideConfig(ConfigManager configManager)
+	public CannonConfig getConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(CannonConfig.class);
 	}

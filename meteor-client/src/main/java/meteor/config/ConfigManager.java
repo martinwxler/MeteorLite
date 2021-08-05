@@ -368,12 +368,7 @@ public class ConfigManager {
       String groupName = split[KEY_SPLITTER_GROUP];
       String key = split[KEY_SPLITTER_KEY];
       String newValue = (String) newProperties.get(wholeKey);
-
-      ConfigChanged configChanged = new ConfigChanged();
-      configChanged.setGroup(groupName);
-      configChanged.setKey(key);
-      configChanged.setNewValue(newValue);
-      eventBus.post(configChanged);
+      setConfiguration(groupName, key, newValue);
     }
 
     migrateConfig();
@@ -497,7 +492,7 @@ public class ConfigManager {
         .changeColor(ANSI_GREEN)
         .addText("{" + wholeKey + "}{" + value + "}")
         .build();
-    log.debug(message);
+    //log.debug(message);
     handler.invalidate();
 
     ConfigChanged configChanged = new ConfigChanged();

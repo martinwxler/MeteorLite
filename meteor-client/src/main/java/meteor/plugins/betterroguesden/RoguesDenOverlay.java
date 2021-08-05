@@ -47,10 +47,10 @@ public class RoguesDenOverlay extends Overlay
 	private static final Color OBJECT_BORDER_HOVER_COLOR = OBJECT_BORDER_COLOR.darker();
 
 	private final Client client;
-	private final RoguesDenPlugin plugin;
+	private final BetterRougesDenPlugin plugin;
 
 	@Inject
-	public RoguesDenOverlay(Client client, RoguesDenPlugin plugin)
+	public RoguesDenOverlay(Client client, BetterRougesDenPlugin plugin)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);

@@ -78,7 +78,7 @@ public class InteractHighlightPlugin extends Plugin
 	private int gameCycle;
 
 	@Provides
-	InteractHighlightConfig provideConfig(ConfigManager configManager)
+	public InteractHighlightConfig getConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(InteractHighlightConfig.class);
 	}

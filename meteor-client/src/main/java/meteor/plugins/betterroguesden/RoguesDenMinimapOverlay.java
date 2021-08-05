@@ -41,10 +41,10 @@ import net.runelite.api.coords.LocalPoint;
 class RoguesDenMinimapOverlay extends Overlay
 {
 	private final Client client;
-	private final RoguesDenPlugin plugin;
+	private final BetterRougesDenPlugin plugin;
 
 	@Inject
-	public RoguesDenMinimapOverlay(Client client, RoguesDenPlugin plugin)
+	public RoguesDenMinimapOverlay(Client client, BetterRougesDenPlugin plugin)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_WIDGETS);

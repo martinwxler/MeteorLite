@@ -328,7 +328,6 @@ public class PluginConfig {
 
   private void setValue(ConfigDescriptor config, ConfigItemDescriptor descriptor, Object value)
   {
-    logger.debug("value set");
     configManager.setConfiguration(config.getGroup().value(), descriptor.key(), value);
   }
 }

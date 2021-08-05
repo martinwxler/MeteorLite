@@ -60,7 +60,7 @@ import net.runelite.api.events.WallObjectSpawned;
 	description = "Mark tiles and clickboxes to help traverse the maze",
 	tags = {"agility", "maze", "minigame", "overlay", "thieving"}
 )
-public class RoguesDenPlugin extends Plugin
+public class BetterRougesDenPlugin extends Plugin
 {
 	@Getter(AccessLevel.PACKAGE)
 	private final HashMap<TileObject, Tile> obstaclesHull = new HashMap<>();
