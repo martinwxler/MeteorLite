@@ -31,6 +31,7 @@ import meteor.config.Config;
 import meteor.config.ConfigGroup;
 import meteor.config.ConfigItem;
 import meteor.config.ConfigSection;
+import meteor.config.Range;
 
 @ConfigGroup(ItemChargeConfig.GROUP)
 public interface ItemChargeConfig extends Config {
@@ -81,6 +82,10 @@ public interface ItemChargeConfig extends Config {
     return Color.YELLOW;
   }
 
+  @Range(
+      min = 1,
+      max = 20
+  )
   @ConfigItem(
       keyName = "veryLowWarning",
       name = "Very Low Warning",
@@ -91,6 +96,10 @@ public interface ItemChargeConfig extends Config {
     return 1;
   }
 
+  @Range(
+      min = 1,
+      max = 20
+  )
   @ConfigItem(
       keyName = "lowWarning",
       name = "Low Warning",

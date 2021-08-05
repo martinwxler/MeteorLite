@@ -29,6 +29,7 @@ import meteor.config.Alpha;
 import meteor.config.Config;
 import meteor.config.ConfigGroup;
 import meteor.config.ConfigItem;
+import meteor.config.Range;
 import meteor.config.Units;
 
 @ConfigGroup("fishing")
@@ -118,6 +119,9 @@ public interface FishingConfig extends Config {
     return Color.GREEN;
   }
 
+  @Range(
+      max = 360
+  )
   @ConfigItem(
       position = 7,
       keyName = "statTimeout",

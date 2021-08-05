@@ -99,6 +99,9 @@ public interface CameraConfig extends Config {
     return 512;
   }
 
+  @Range(
+      max = 150
+  )
   @ConfigItem(
       keyName = "zoomIncrement",
       name = "Zoom Speed",

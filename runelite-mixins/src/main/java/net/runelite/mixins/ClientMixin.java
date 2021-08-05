@@ -1195,4 +1195,39 @@ public abstract class ClientMixin implements RSClient {
 
     return array;
   }
+
+  @Inject
+  private static int inventoryDragDelay;
+
+  @Inject
+  private static int itemPressedDurationBuffer;
+
+  @FieldHook("itemDragDuration")
+  @Inject
+  public static void itemPressedDurationChanged(int idx)
+  {
+    if (client.getItemPressedDuration() > 0)
+    {
+      itemPressedDurationBuffer++;
+      if (itemPressedDurationBuffer >= inventoryDragDelay)
+      {
+        client.setItemPressedDuration(itemPressedDurationBuffer);
+      }
+      else
+      {
+        client.setItemPressedDuration(0);
+      }
+    }
+    else
+    {
+      itemPressedDurationBuffer = 0;
+    }
+  }
+
+  @Inject
+  @Override
+  public void setInventoryDragDelay(int delay)
+  {
+    inventoryDragDelay = delay;
+  }
 }

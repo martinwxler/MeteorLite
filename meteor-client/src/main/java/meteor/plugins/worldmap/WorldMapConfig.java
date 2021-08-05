@@ -26,8 +26,10 @@
 package meteor.plugins.worldmap;
 
 import meteor.config.Config;
+import meteor.config.ConfigGroup;
 import meteor.config.ConfigItem;
 
+@ConfigGroup("worldmap")
 public interface WorldMapConfig extends Config {
 
   @ConfigItem(

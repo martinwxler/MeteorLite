@@ -129,12 +129,8 @@ public class ConfigManager {
     saveProperties(false);
   }
 
-  public static String getWholeKey(String groupName, String profile, String key) {
-    if (profile == null) {
-      return groupName + "." + key;
-    } else {
-      return groupName + "." + profile + "." + key;
-    }
+  public static String getWholeKey(String groupName, String key) {
+    return groupName + "." + key;
   }
 
   static Object stringToObject(String str, Class<?> type) {
@@ -359,11 +355,8 @@ public class ConfigManager {
   private void swapProperties(Properties newProperties, boolean saveToServer) {
     Set<Object> allKeys = new HashSet<>(newProperties.keySet());
 
-    Properties oldProperties;
     synchronized (this) {
       handler.invalidate();
-      oldProperties = properties;
-      this.properties = newProperties;
     }
 
     for (Object wholeKey : allKeys) {
@@ -374,17 +367,11 @@ public class ConfigManager {
 
       String groupName = split[KEY_SPLITTER_GROUP];
       String key = split[KEY_SPLITTER_KEY];
-      String oldValue = (String) oldProperties.get(wholeKey);
       String newValue = (String) newProperties.get(wholeKey);
-
-      if (Objects.equals(oldValue, newValue)) {
-        continue;
-      }
 
       ConfigChanged configChanged = new ConfigChanged();
       configChanged.setGroup(groupName);
       configChanged.setKey(key);
-      configChanged.setOldValue(oldValue);
       configChanged.setNewValue(newValue);
       eventBus.post(configChanged);
     }
@@ -400,17 +387,18 @@ public class ConfigManager {
     try (FileInputStream in = new FileInputStream(propertiesFile)) {
       newProperties.load(new InputStreamReader(in, StandardCharsets.UTF_8));
       loaded = true;
-    } catch (FileNotFoundException ex) {
-      log.debug("Unable to load settings - no such file");
-    } catch (IllegalArgumentException | IOException ex) {
-      log.warn("Unable to load settings", ex);
+    } catch (Exception e) {
+      e.printStackTrace();
+      loaded = false;
     }
 
-    log.debug("Configuration loaded");
     swapProperties(newProperties, false);
     if (!loaded) {
       saveProperties(true);
+      loaded = true;
     }
+
+    log.debug("Configuration loaded");
   }
 
   private void saveProperties(boolean forced) {
@@ -468,7 +456,7 @@ public class ConfigManager {
   }
 
   public String getConfiguration(String groupName, String profile, String key) {
-    return properties.getProperty(getWholeKey(groupName, profile, key));
+    return properties.getProperty(getWholeKey(groupName, key));
   }
 
   public <T> T getConfiguration(String groupName, String key, Class<T> clazz) {
@@ -498,15 +486,10 @@ public class ConfigManager {
       throw new IllegalArgumentException();
     }
 
-    assert !key.startsWith(RSPROFILE_GROUP + ".");
-    String wholeKey = getWholeKey(groupName, profile, key);
+    String wholeKey = getWholeKey(groupName, key);
     String oldValue;
     synchronized (this) {
       oldValue = (String) properties.setProperty(wholeKey, value);
-    }
-
-    if (Objects.equals(oldValue, value)) {
-      return;
     }
 
     String message = Message.buildMessage()
@@ -514,7 +497,7 @@ public class ConfigManager {
         .changeColor(ANSI_GREEN)
         .addText("{" + wholeKey + "}{" + value + "}")
         .build();
-    //log.debug(message);
+    log.debug(message);
     handler.invalidate();
 
     ConfigChanged configChanged = new ConfigChanged();
@@ -547,7 +530,7 @@ public class ConfigManager {
 
   public void unsetConfiguration(String groupName, String profile, String key) {
     assert !key.startsWith(RSPROFILE_GROUP + ".");
-    String wholeKey = getWholeKey(groupName, profile, key);
+    String wholeKey = getWholeKey(groupName, key);
     String oldValue;
     synchronized (this) {
       oldValue = (String) properties.remove(wholeKey);
@@ -785,11 +768,6 @@ public class ConfigManager {
         }
 
         String newKey = m.replaceFirst(replace);
-        String username = m.group("login").toLowerCase(Locale.US);
-
-        if (username.startsWith(RSPROFILE_GROUP + ".")) {
-          return false;
-        }
 
         String[] oldKeySplit = splitKey(oldkey);
         if (oldKeySplit == null) {
