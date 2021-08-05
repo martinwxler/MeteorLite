@@ -31,6 +31,7 @@ import meteor.config.Config;
 import meteor.config.ConfigGroup;
 import meteor.config.ConfigItem;
 import meteor.config.ConfigSection;
+import meteor.config.Range;
 import meteor.config.Units;
 import meteor.plugins.grounditems.config.DespawnTimerMode;
 import meteor.plugins.grounditems.config.HighlightTier;
@@ -196,6 +197,9 @@ public interface GroundItemsConfig extends Config {
     return ValueCalculationMode.HIGHEST;
   }
 
+  @Range(
+      textInput = true
+  )
   @ConfigItem(
       keyName = "hideUnderValue",
       name = "Hide under value",
@@ -250,6 +254,9 @@ public interface GroundItemsConfig extends Config {
     return Color.decode("#66B2FF");
   }
 
+  @Range(
+    textInput = true
+  )
   @ConfigItem(
       keyName = "lowValuePrice",
       name = "Low value price",
@@ -271,6 +278,9 @@ public interface GroundItemsConfig extends Config {
     return Color.decode("#99FF99");
   }
 
+  @Range(
+      textInput = true
+  )
   @ConfigItem(
       keyName = "mediumValuePrice",
       name = "Medium value price",
@@ -292,6 +302,9 @@ public interface GroundItemsConfig extends Config {
     return Color.decode("#FF9600");
   }
 
+  @Range(
+      textInput = true
+  )
   @ConfigItem(
       keyName = "highValuePrice",
       name = "High value price",
@@ -313,6 +326,9 @@ public interface GroundItemsConfig extends Config {
     return Color.decode("#FF66B2");
   }
 
+  @Range(
+      textInput = true
+  )
   @ConfigItem(
       keyName = "insaneValuePrice",
       name = "Insane value price",
@@ -333,6 +349,9 @@ public interface GroundItemsConfig extends Config {
     return false;
   }
 
+  @Range(
+      max = 750
+  )
   @ConfigItem(
       keyName = "doubleTapDelay",
       name = "Double-tap delay",

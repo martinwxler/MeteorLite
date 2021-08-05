@@ -1,11 +1,12 @@
 package meteor.ui.controllers;
 
 import com.jfoenix.controls.JFXSlider;
+import com.jfoenix.controls.JFXTextField;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import java.lang.reflect.Method;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -15,13 +16,10 @@ import javafx.scene.text.Text;
 import meteor.MeteorLite;
 import meteor.config.Config;
 import meteor.config.ConfigDescriptor;
-import meteor.config.ConfigGroup;
 import meteor.config.ConfigItem;
 import meteor.config.ConfigItemDescriptor;
 import meteor.config.ConfigManager;
-import meteor.eventbus.events.ConfigChanged;
 import meteor.plugins.Plugin;
-import meteor.plugins.PluginDescriptor;
 import meteor.ui.components.PluginToggleButton;
 import net.runelite.api.mixins.Inject;
 import org.sponge.util.Logger;
@@ -89,7 +87,16 @@ public class PluginConfig {
         AnchorPane nodePanel = createNode();
         if (configItemDescriptor.getType() == int.class)
         {
-          createIntegerNode(descriptor, nodePanel, configItemDescriptor);
+          if (configItemDescriptor.getRange() != null)
+          {
+            if (configItemDescriptor.getRange().textInput()) {
+              createIntegerTextNode(descriptor, nodePanel, configItemDescriptor);
+            } else {
+              createIntegerSliderNode(descriptor, nodePanel, configItemDescriptor);
+            }
+          }
+          else
+            createIntegerSliderNode(descriptor, nodePanel, configItemDescriptor);
         }
         if (configItemDescriptor.getType() == boolean.class)
         {
@@ -141,7 +148,7 @@ public class PluginConfig {
     root.getChildren().add(toggleButton);
   }
 
-  private void createIntegerNode(ConfigDescriptor config, AnchorPane root, ConfigItemDescriptor descriptor)
+  private void createIntegerSliderNode(ConfigDescriptor config, AnchorPane root, ConfigItemDescriptor descriptor)
   {
     Text name = new Text();
     name.setText(descriptor.name());
@@ -177,6 +184,71 @@ public class PluginConfig {
     slider.addEventHandler(MouseEvent.MOUSE_DRAGGED, (e) -> setValue(config, descriptor, (int)slider.getValue()));
 
     root.getChildren().add(slider);
+  }
+
+  private void createIntegerTextNode(ConfigDescriptor config, AnchorPane root, ConfigItemDescriptor descriptor)
+  {
+    Text name = new Text();
+    name.setText(descriptor.name());
+    name.setFill(Paint.valueOf("WHITE"));
+    name.setLayoutX(20);
+    name.setLayoutY(24);
+    name.setWrappingWidth(300);
+    name.setFont(Font.font(18));
+
+    root.getChildren().add(name);
+
+    JFXTextField textField = new JFXTextField();
+
+    AnchorPane.setLeftAnchor(textField, 200.0);
+    AnchorPane.setRightAnchor(textField, 10.0);
+    textField.setMinSize(150, 35);
+    textField.setFont(Font.font(18));
+    textField.setLayoutY(20);
+    textField.autosize();
+    textField.setText(configManager.getConfiguration(config.getGroup().value(), descriptor.key(), String.class));
+    textField.addEventHandler(KeyEvent.KEY_TYPED, (e) ->
+    {
+      int min = 0;
+      if (descriptor.getRange() != null)
+      {
+        min = descriptor.getRange().min();
+      }
+      if (isInputValid(descriptor, textField.getText()))
+        setValue(config, descriptor, Integer.parseInt(textField.getText()));
+      else
+      {
+        textField.setText("" + min);
+        setValue(config, descriptor, min);
+      }
+    });
+    textField.getStylesheets().add("css/plugins/jfx-textfield.css");
+
+    root.getChildren().add(textField);
+  }
+
+  private boolean isInputValid(ConfigItemDescriptor descriptor, String input)
+  {
+    int i;
+    try {
+      i = Integer.parseInt(input);
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+      return false;
+    }
+
+    if (descriptor.getRange() == null)
+    return true;
+
+    if (descriptor.getRange().max() < i)
+    return false;
+
+    if (descriptor.getRange().min() > i)
+    return false;
+
+    return true;
   }
 
   private void setValue(ConfigDescriptor config, ConfigItemDescriptor descriptor, Object value)
