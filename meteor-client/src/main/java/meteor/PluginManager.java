@@ -44,6 +44,7 @@ import meteor.plugins.npcindicators.NpcIndicatorsPlugin;
 import meteor.plugins.npcstatus.NpcStatusPlugin;
 import meteor.plugins.objectindicators.ObjectIndicatorsPlugin;
 import meteor.plugins.oneclick.OneClickPlugin;
+import meteor.plugins.playerindicators.PlayerIndicatorsPlugin;
 import meteor.plugins.smithing.SmithingPlugin;
 import meteor.plugins.stretchedmode.StretchedModePlugin;
 import meteor.plugins.ticktimers.TickTimersPlugin;
@@ -90,6 +91,7 @@ public class PluginManager {
     plugins.add(new NpcStatusPlugin());
     plugins.add(new ObjectIndicatorsPlugin());
     plugins.add(new OneClickPlugin());
+    plugins.add(new PlayerIndicatorsPlugin());
     plugins.add(new RoguesDenPlugin());
     plugins.add(new SmithingPlugin());
     plugins.add(new StretchedModePlugin());
