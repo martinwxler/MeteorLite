@@ -495,16 +495,16 @@ public class ItemChargePlugin extends Plugin {
     Integer i = configManager.getConfiguration(ItemChargeConfig.GROUP, key, Integer.class);
     if (i != null) {
       configManager.unsetConfiguration(ItemChargeConfig.GROUP, key);
-      configManager.setRSProfileConfiguration(ItemChargeConfig.GROUP, key, i);
+      configManager.setConfiguration(ItemChargeConfig.GROUP, key, i);
       return i;
     }
 
-    i = configManager.getRSProfileConfiguration(ItemChargeConfig.GROUP, key, Integer.class);
+    i = configManager.getConfiguration(ItemChargeConfig.GROUP, key, Integer.class);
     return i == null ? -1 : i;
   }
 
   private void setItemCharges(String key, int value) {
-    configManager.setRSProfileConfiguration(ItemChargeConfig.GROUP, key, value);
+    configManager.setConfiguration(ItemChargeConfig.GROUP, key, value);
   }
 
   Color getColor(int charges) {

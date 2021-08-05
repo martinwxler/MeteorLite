@@ -7,45 +7,45 @@ import net.runelite.rs.api.RSEnumComposition;
 @Mixin(RSEnumComposition.class)
 public abstract class EnumCompositionMixin implements RSEnumComposition
 {
-	@Inject
-	@Override
-	public int getIntValue(int key)
-	{
-		final int[] keys = getKeys();
-		if (keys == null)
-		{
-			return getDefaultInt();
-		}
+  @Inject
+  @Override
+  public int getIntValue(int key)
+  {
+    final int[] keys = getKeys();
+    if (keys == null)
+    {
+      return getDefaultInt();
+    }
 
-		for (int i = 0; i < keys.length; ++i)
-		{
-			if (keys[i] == key)
-			{
-				final int[] values = getIntVals();
-				return values[i];
-			}
-		}
-		return getDefaultInt();
-	}
+    for (int i = 0; i < keys.length; ++i)
+    {
+      if (keys[i] == key)
+      {
+        final int[] values = getIntVals();
+        return values[i];
+      }
+    }
+    return getDefaultInt();
+  }
 
-	@Inject
-	@Override
-	public String getStringValue(int key)
-	{
-		final int[] keys = getKeys();
-		if (keys == null)
-		{
-			return getDefaultString();
-		}
+  @Inject
+  @Override
+  public String getStringValue(int key)
+  {
+    final int[] keys = getKeys();
+    if (keys == null)
+    {
+      return getDefaultString();
+    }
 
-		for (int i = 0; i < keys.length; ++i)
-		{
-			if (keys[i] == key)
-			{
-				final String[] values = getStringVals();
-				return values[i];
-			}
-		}
-		return getDefaultString();
-	}
+    for (int i = 0; i < keys.length; ++i)
+    {
+      if (keys[i] == key)
+      {
+        final String[] values = getStringVals();
+        return values[i];
+      }
+    }
+    return getDefaultString();
+  }
 }

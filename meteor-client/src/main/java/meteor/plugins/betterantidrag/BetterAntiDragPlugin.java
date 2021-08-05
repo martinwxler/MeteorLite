@@ -209,7 +209,7 @@ public class BetterAntiDragPlugin extends Plugin
 	{
 		if (config.holdKeyBind())
 		{
-			keyManager.registerKeyListener(holdListener);
+			keyManager.registerKeyListener(holdListener, this.getClass());
 		}
 		else
 		{
@@ -218,7 +218,7 @@ public class BetterAntiDragPlugin extends Plugin
 
 		if (config.toggleKeyBind())
 		{
-			keyManager.registerKeyListener(toggleListener);
+			keyManager.registerKeyListener(toggleListener, this.getClass());
 		}
 		else
 		{

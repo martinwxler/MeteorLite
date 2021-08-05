@@ -68,6 +68,8 @@ public class LeftClickCast extends Plugin
 	private boolean isMage;
 	private Spells currentSpell = Spells.ICE_BARRAGE;
 
+	boolean registered = false;
+
 	private final HotkeyListener spellOneSwap = new HotkeyListener(() -> config.spellOneSwap())
 	{
 		@Override
@@ -133,12 +135,7 @@ public class LeftClickCast extends Plugin
 	{
 		if (client.getGameState() == GameState.LOGGED_IN)
 		{
-			keyManager.registerKeyListener(spellOneSwap);
-			keyManager.registerKeyListener(spellTwoSwap);
-			keyManager.registerKeyListener(spellThreeSwap);
-			keyManager.registerKeyListener(spellFourSwap);
-			keyManager.registerKeyListener(spellFiveSwap);
-			keyManager.registerKeyListener(spellSixSwap);
+			registerListeners();
 		}
 		updateConfig();
 	}
@@ -146,33 +143,27 @@ public class LeftClickCast extends Plugin
 	@Override
 	public void shutdown()
 	{
+		unregisterListeners();
+	}
+
+	private void registerListeners()
+	{
+		keyManager.registerKeyListener(spellOneSwap, this.getClass());
+		keyManager.registerKeyListener(spellTwoSwap, this.getClass());
+		keyManager.registerKeyListener(spellThreeSwap, this.getClass());
+		keyManager.registerKeyListener(spellFourSwap, this.getClass());
+		keyManager.registerKeyListener(spellFiveSwap, this.getClass());
+		keyManager.registerKeyListener(spellSixSwap, this.getClass());
+	}
+
+	private void unregisterListeners()
+	{
 		keyManager.unregisterKeyListener(spellOneSwap);
 		keyManager.unregisterKeyListener(spellTwoSwap);
 		keyManager.unregisterKeyListener(spellThreeSwap);
 		keyManager.unregisterKeyListener(spellFourSwap);
 		keyManager.unregisterKeyListener(spellFiveSwap);
 		keyManager.unregisterKeyListener(spellSixSwap);
-	}
-
-	@Subscribe
-	public void onGameStateChanged(GameStateChanged event)
-	{
-		if (event.getGameState() != GameState.LOGGED_IN)
-		{
-			keyManager.unregisterKeyListener(spellOneSwap);
-			keyManager.unregisterKeyListener(spellTwoSwap);
-			keyManager.unregisterKeyListener(spellThreeSwap);
-			keyManager.unregisterKeyListener(spellFourSwap);
-			keyManager.unregisterKeyListener(spellFiveSwap);
-			keyManager.unregisterKeyListener(spellSixSwap);
-			return;
-		}
-		keyManager.registerKeyListener(spellOneSwap);
-		keyManager.registerKeyListener(spellTwoSwap);
-		keyManager.registerKeyListener(spellThreeSwap);
-		keyManager.registerKeyListener(spellFourSwap);
-		keyManager.registerKeyListener(spellFiveSwap);
-		keyManager.registerKeyListener(spellSixSwap);
 	}
 
 	@Subscribe

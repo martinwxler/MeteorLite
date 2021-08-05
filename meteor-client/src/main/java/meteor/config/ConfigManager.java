@@ -30,9 +30,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.hash.Hasher;
-import com.google.common.hash.Hashing;
-import com.google.inject.Key;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -52,7 +49,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -90,15 +86,10 @@ import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ClientShutdown;
 import meteor.eventbus.events.ConfigChanged;
-import meteor.eventbus.events.RuneScapeProfileChanged;
 import meteor.plugins.Plugin;
 import meteor.util.ColorUtil;
 import net.runelite.api.Client;
-import net.runelite.api.Player;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.PlayerChanged;
-import net.runelite.api.events.UsernameChanged;
-import net.runelite.api.events.WorldChanged;
 import org.sponge.util.Logger;
 import org.sponge.util.Message;
 
@@ -107,46 +98,35 @@ public class ConfigManager {
 
   public static final String RSPROFILE_GROUP = "rsprofile";
 
-  private static final String RSPROFILE_DISPLAY_NAME = "displayName";
-  private static final String RSPROFILE_TYPE = "type";
-  private static final String RSPROFILE_LOGIN_HASH = "loginHash";
-  private static final String RSPROFILE_LOGIN_SALT = "loginSalt";
-
   private static final DateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 
   private static final int KEY_SPLITTER_GROUP = 0;
-  private static final int KEY_SPLITTER_PROFILE = 1;
-  private static final int KEY_SPLITTER_KEY = 2;
+  private static final int KEY_SPLITTER_KEY = 1;
 
   private final File settingsFileInput;
   private final EventBus eventBus;
-  @Nullable
-  private final Client client;
   private final ConfigInvocationHandler handler = new ConfigInvocationHandler(this);
-  private final Map<String, String> pendingChanges = new HashMap<>();
   private final Map<String, Consumer<? super Plugin>> consumers = new HashMap<>();
   private final File propertiesFile;
   private final Logger log = new Logger("ConfigManager");
   private Properties properties = new Properties();
-
-  // null => we need to make a new profile
-  @Nullable
-  private String rsProfileKey;
   private boolean loaded;
 
   @Inject
   public ConfigManager(
       @Named("config") File config,
       ScheduledExecutorService scheduledExecutorService,
-      EventBus eventBus,
-      @Nullable Client client) {
+      EventBus eventBus) {
     this.settingsFileInput = config;
     this.eventBus = eventBus;
-    this.client = client;
     this.propertiesFile = getPropertiesFile();
 
-    scheduledExecutorService.scheduleWithFixedDelay(this::sendConfig, 30, 30, TimeUnit.SECONDS);
+    scheduledExecutorService.scheduleWithFixedDelay(this::saveProperties, 30, 30, TimeUnit.SECONDS);
     this.eventBus.register(this);
+  }
+
+  private void saveProperties() {
+    saveProperties(false);
   }
 
   public static String getWholeKey(String groupName, String profile, String key) {
@@ -359,16 +339,9 @@ public class ConfigManager {
       // all keys must have a group and key
       return null;
     }
-
     String group = key.substring(0, i);
-    String profile = null;
     key = key.substring(i + 1);
-    if (key.startsWith(RSPROFILE_GROUP + ".")) {
-      i = key.indexOf('.', RSPROFILE_GROUP.length() + 2); // skip . after RSPROFILE_GROUP
-      profile = key.substring(0, i);
-      key = key.substring(i + 1);
-    }
-    return new String[]{group, profile, key};
+    return new String[]{group, key};
   }
 
   private File getLocalPropertiesFile() {
@@ -393,10 +366,6 @@ public class ConfigManager {
       this.properties = newProperties;
     }
 
-    updateRSProfile();
-
-    allKeys.addAll(oldProperties.keySet());
-
     for (Object wholeKey : allKeys) {
       String[] split = splitKey((String) wholeKey);
       if (split == null) {
@@ -404,7 +373,6 @@ public class ConfigManager {
       }
 
       String groupName = split[KEY_SPLITTER_GROUP];
-      String profile = split[KEY_SPLITTER_PROFILE];
       String key = split[KEY_SPLITTER_KEY];
       String oldValue = (String) oldProperties.get(wholeKey);
       String newValue = (String) newProperties.get(wholeKey);
@@ -415,33 +383,13 @@ public class ConfigManager {
 
       ConfigChanged configChanged = new ConfigChanged();
       configChanged.setGroup(groupName);
-      configChanged.setProfile(profile);
       configChanged.setKey(key);
       configChanged.setOldValue(oldValue);
       configChanged.setNewValue(newValue);
       eventBus.post(configChanged);
-
-      if (saveToServer) {
-        synchronized (pendingChanges) {
-          pendingChanges.put((String) wholeKey, newValue);
-        }
-      }
     }
 
     migrateConfig();
-  }
-
-  private void syncPropertiesFromFile(File propertiesFile) {
-    final Properties properties = new Properties();
-    try (FileInputStream in = new FileInputStream(propertiesFile)) {
-      properties.load(new InputStreamReader(in, StandardCharsets.UTF_8));
-    } catch (Exception e) {
-      log.warn("Malformed properties, skipping update");
-      return;
-    }
-
-    log.debug("Loading in config from disk for upload");
-    swapProperties(properties, true);
   }
 
   private synchronized void loadFromFile() {
@@ -461,11 +409,11 @@ public class ConfigManager {
     log.debug("Configuration loaded");
     swapProperties(newProperties, false);
     if (!loaded) {
-      saveToFile(true);
+      saveProperties(true);
     }
   }
 
-  private void saveToFile(boolean forced) {
+  private void saveProperties(boolean forced) {
     try {
       if (loaded || forced)
       {
@@ -519,30 +467,12 @@ public class ConfigManager {
     return getConfiguration(groupName, null, key);
   }
 
-  public String getRSProfileConfiguration(String groupName, String key) {
-    String rsProfileKey = this.rsProfileKey;
-    if (rsProfileKey == null) {
-      return null;
-    }
-
-    return getConfiguration(groupName, rsProfileKey, key);
-  }
-
   public String getConfiguration(String groupName, String profile, String key) {
     return properties.getProperty(getWholeKey(groupName, profile, key));
   }
 
   public <T> T getConfiguration(String groupName, String key, Class<T> clazz) {
     return getConfiguration(groupName, null, key, clazz);
-  }
-
-  public <T> T getRSProfileConfiguration(String groupName, String key, Class<T> clazz) {
-    String rsProfileKey = this.rsProfileKey;
-    if (rsProfileKey == null) {
-      return null;
-    }
-
-    return getConfiguration(groupName, rsProfileKey, key, clazz);
   }
 
   public <T> T getConfiguration(String groupName, String profile, String key, Class<T> clazz) {
@@ -584,12 +514,8 @@ public class ConfigManager {
         .changeColor(ANSI_GREEN)
         .addText("{" + wholeKey + "}{" + value + "}")
         .build();
-    log.debug(message);
+    //log.debug(message);
     handler.invalidate();
-
-    synchronized (pendingChanges) {
-      pendingChanges.put(wholeKey, value);
-    }
 
     ConfigChanged configChanged = new ConfigChanged();
     configChanged.setGroup(groupName);
@@ -612,32 +538,7 @@ public class ConfigManager {
     }
 
     setConfiguration(groupName, null, key, value);
-    saveToFile(false);
-  }
-
-  public void setRSProfileConfiguration(String groupName, String key, Object value) {
-    String rsProfileKey = this.rsProfileKey;
-    if (rsProfileKey == null) {
-      if (client == null) {
-        log.warn("trying to use profile without injected client");
-        return;
-      }
-
-      String displayName = null;
-      Player p = client.getLocalPlayer();
-      if (p == null) {
-        log.warn("trying to create profile without display name");
-      } else {
-        displayName = p.getName();
-      }
-
-      String username = client.getUsername();
-      if (Strings.isNullOrEmpty(username)) {
-        log.warn("trying to create profile without a set username");
-        return;
-      }
-    }
-    setConfiguration(groupName, rsProfileKey, key, value);
+    saveProperties(false);
   }
 
   public void unsetConfiguration(String groupName, String key) {
@@ -659,10 +560,6 @@ public class ConfigManager {
     //log.debug("Unsetting configuration value for {}", wholeKey);
     handler.invalidate();
 
-    synchronized (pendingChanges) {
-      pendingChanges.put(wholeKey, null);
-    }
-
     ConfigChanged configChanged = new ConfigChanged();
     configChanged.setGroup(groupName);
     configChanged.setProfile(profile);
@@ -670,15 +567,6 @@ public class ConfigManager {
     configChanged.setOldValue(oldValue);
 
     eventBus.post(configChanged);
-  }
-
-  public void unsetRSProfileConfiguration(String groupName, String key) {
-    String rsProfileKey = this.rsProfileKey;
-    if (rsProfileKey == null) {
-      return;
-    }
-
-    unsetConfiguration(groupName, rsProfileKey, key);
   }
 
   public ConfigDescriptor getConfigDescriptor(Config configurationProxy) {
@@ -747,35 +635,6 @@ public class ConfigManager {
         .collect(Collectors.toList());
 
     return new ConfigDescriptor(group, sections, titles, items);
-  }
-
-  public void loadDefaultPluginConfiguration(List<Plugin> plugins) {
-    try {
-      for (Object config : getPluginConfigProxies(plugins)) {
-        setDefaultConfiguration(config, false);
-      }
-    } catch (ThreadDeath e) {
-      throw e;
-    } catch (Throwable ex) {
-      log.warn("Unable to reset plugin configuration");
-      ex.printStackTrace();
-    }
-  }
-
-  public List<Config> getPluginConfigProxies(List<Plugin> plugins) {
-    List<Config> list = new ArrayList<>();
-    plugins.forEach(pl ->
-        {
-          for (Key<?> key : pl.getInjector().getBindings().keySet()) {
-            Class<?> type = key.getTypeLiteral().getRawType();
-            if (Config.class.isAssignableFrom(type)) {
-              Config config = (Config) pl.getInjector().getInstance(key);
-              list.add(config);
-            }
-          }
-        }
-    );
-    return list;
   }
 
   /**
@@ -892,132 +751,7 @@ public class ConfigManager {
 
   @Subscribe(priority = 100)
   private void onClientShutdown(ClientShutdown e) {
-    sendConfig();
-  }
-
-  @Nullable
-  private void sendConfig() {
-    saveToFile(false);
-  }
-
-  public List<RuneScapeProfile> getRSProfiles() {
-    String prefix = RSPROFILE_GROUP + "." + RSPROFILE_GROUP + ".";
-    Set<String> profileKeys = new HashSet<>();
-    for (Object oKey : properties.keySet()) {
-      String key = (String) oKey;
-      if (!key.startsWith(prefix)) {
-        continue;
-      }
-
-      String[] split = splitKey(key);
-      if (split == null) {
-        continue;
-      }
-
-      profileKeys.add(split[KEY_SPLITTER_PROFILE]);
-    }
-
-    return profileKeys.stream()
-        .map(key ->
-        {
-          RuneScapeProfile prof = new RuneScapeProfile(
-              getConfiguration(RSPROFILE_GROUP, key, RSPROFILE_DISPLAY_NAME),
-              getConfiguration(RSPROFILE_GROUP, key, RSPROFILE_TYPE, RuneScapeProfileType.class),
-              getConfiguration(RSPROFILE_GROUP, key, RSPROFILE_LOGIN_HASH, byte[].class),
-              key
-          );
-
-          return prof;
-        })
-        .collect(Collectors.toList());
-  }
-
-  private synchronized RuneScapeProfile findRSProfile(List<RuneScapeProfile> profiles,
-      String username, RuneScapeProfileType type, String displayName, boolean create) {
-    byte[] salt = getConfiguration(RSPROFILE_GROUP, RSPROFILE_LOGIN_SALT, byte[].class);
-    if (salt == null) {
-      salt = new byte[15];
-      new SecureRandom()
-          .nextBytes(salt);
-      //log.info("creating new salt as there is no existing one {}", Base64.getUrlEncoder().encodeToString(salt));
-      setConfiguration(RSPROFILE_GROUP, RSPROFILE_LOGIN_SALT, salt);
-    }
-
-    Hasher h = Hashing.sha512().newHasher();
-    h.putBytes(salt);
-    h.putString(username.toLowerCase(Locale.US), StandardCharsets.UTF_8);
-    byte[] loginHash = h.hash().asBytes();
-
-    Set<RuneScapeProfile> matches = profiles.stream()
-        .filter(p -> Arrays.equals(p.getLoginHash(), loginHash) && p.getType() == type)
-        .collect(Collectors.toSet());
-
-    if (matches.size() > 1) {
-      log.warn("multiple matching profiles");
-    }
-
-    if (matches.size() >= 1) {
-      return matches.iterator().next();
-    }
-
-    if (!create) {
-      return null;
-    }
-
-    // generate the new key deterministically so if you "create" the same profile on 2 different clients it doesn't duplicate
-    Set<String> keys = profiles.stream().map(RuneScapeProfile::getKey).collect(Collectors.toSet());
-    byte[] key = Arrays.copyOf(loginHash, 6);
-    key[0] += type.ordinal();
-    for (int i = 0; i < 0xFF; i++, key[1]++) {
-      String keyStr = RSPROFILE_GROUP + "." + Base64.getUrlEncoder().encodeToString(key);
-      if (!keys.contains(keyStr)) {
-        //log.info("creating new profile {} for user {} ({}) salt {}", keyStr, username, type, Base64.getUrlEncoder().encodeToString(salt));
-
-        setConfiguration(RSPROFILE_GROUP, keyStr, RSPROFILE_LOGIN_HASH, loginHash);
-        setConfiguration(RSPROFILE_GROUP, keyStr, RSPROFILE_TYPE, type);
-        if (displayName != null) {
-          setConfiguration(RSPROFILE_GROUP, keyStr, RSPROFILE_DISPLAY_NAME, displayName);
-        }
-        return new RuneScapeProfile(displayName, type, loginHash, keyStr);
-      }
-    }
-    throw new RuntimeException("too many rs profiles");
-  }
-
-  private void updateRSProfile() {
-    if (client == null) {
-      return;
-    }
-
-    List<RuneScapeProfile> profiles = getRSProfiles();
-    RuneScapeProfile prof = findRSProfile(profiles, client.getUsername(),
-        RuneScapeProfileType.getCurrent(client), null, false);
-
-    String key = prof == null ? null : prof.getKey();
-    if (Objects.equals(key, rsProfileKey)) {
-      return;
-    }
-    rsProfileKey = key;
-
-    eventBus.post(new RuneScapeProfileChanged());
-  }
-
-  @Subscribe
-  private void onUsernameChanged(UsernameChanged ev) {
-    updateRSProfile();
-  }
-
-  @Subscribe
-  private void onWorldChanged(WorldChanged ev) {
-    updateRSProfile();
-  }
-
-  @Subscribe
-  private void onPlayerChanged(PlayerChanged ev) {
-    if (ev.getPlayer() == client.getLocalPlayer()) {
-      String name = ev.getPlayer().getName();
-      setRSProfileConfiguration(RSPROFILE_GROUP, RSPROFILE_DISPLAY_NAME, name);
-    }
+    saveProperties(false);
   }
 
   private synchronized void migrateConfig() {
@@ -1025,8 +759,6 @@ public class ConfigManager {
     if (getConfiguration("runelite", migrationKey) != null) {
       return;
     }
-
-    Map<String, String> profiles = new HashMap<>();
 
     AtomicInteger changes = new AtomicInteger();
     List<Predicate<String>> migrators = new ArrayList<>();
@@ -1059,21 +791,14 @@ public class ConfigManager {
           return false;
         }
 
-        String profKey = profiles.computeIfAbsent(username, u ->
-            findRSProfile(getRSProfiles(), u, RuneScapeProfileType.STANDARD, u, true).getKey());
-
         String[] oldKeySplit = splitKey(oldkey);
         if (oldKeySplit == null) {
           //log.warn("skipping migration of invalid key \"{}\"", oldkey);
           return false;
         }
-        if (oldKeySplit[KEY_SPLITTER_PROFILE] != null) {
-          //log.debug("skipping migrated key \"{}\"", oldkey);
-          return false;
-        }
 
         String[] newKeySplit = splitKey(newKey);
-        if (newKeySplit == null || newKeySplit[KEY_SPLITTER_PROFILE] != null) {
+        if (newKeySplit == null) {
           //log.warn("migration produced a bad key: \"{}\" -> \"{}\"", oldkey, newKey);
           return false;
         }
@@ -1082,13 +807,13 @@ public class ConfigManager {
           File file = new File(propertiesFile.getParent(),
               propertiesFile.getName() + "." + TIME_FORMAT.format(new Date()));
           //log.info("backing up pre-migration config to {}", file);
-          saveToFile(false);
+          saveProperties(false);
         }
 
         String oldGroup = oldKeySplit[KEY_SPLITTER_GROUP];
         String oldKeyPart = oldKeySplit[KEY_SPLITTER_KEY];
         String value = getConfiguration(oldGroup, oldKeyPart);
-        setConfiguration(newKeySplit[KEY_SPLITTER_GROUP], profKey, newKeySplit[KEY_SPLITTER_KEY],
+        setConfiguration(newKeySplit[KEY_SPLITTER_GROUP], newKeySplit[KEY_SPLITTER_KEY],
             value);
         unsetConfiguration(oldGroup, oldKeyPart);
         return true;

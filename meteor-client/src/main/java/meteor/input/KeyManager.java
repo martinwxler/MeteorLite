@@ -41,32 +41,24 @@ public class KeyManager {
   private final Client client;
   private final List<meteor.input.KeyListener> keyListeners = new CopyOnWriteArrayList<>();
   public Logger log = new Logger("KeyManager");
-  public HashMap<KeyListener, Class<?>> keyListenerMap = new HashMap<>();
 
   @Inject
   private KeyManager(@Nullable final Client client) {
     this.client = client;
   }
 
-  public void registerKeyListener(meteor.input.KeyListener keyListener) {
-    if (keyListenerMap.get(keyListener) == null) {
-      log.error("[WARNING] Anonymous KeyListener has been added");
-    }
+  public void registerKeyListener(meteor.input.KeyListener keyListener, Class<?> source) {
+    log.warn("Registering key listener for " + source);
+
     if (!keyListeners.contains(keyListener)) {
       keyListeners.add(keyListener);
     }
   }
 
-  public void registerKeyListener(meteor.input.KeyListener keyListener, Class<?> source) {
-    keyListenerMap.put(keyListener, source);
-    log.debug("Registering key listener for " + source);
-    registerKeyListener(keyListener);
-  }
-
   public void unregisterKeyListener(meteor.input.KeyListener keyListener) {
     final boolean unregistered = keyListeners.remove(keyListener);
     if (unregistered) {
-      log.debug("Unregistered key listener: " + keyListener);
+      log.warn("Unregistered key listener: " + keyListener);
     }
   }
 

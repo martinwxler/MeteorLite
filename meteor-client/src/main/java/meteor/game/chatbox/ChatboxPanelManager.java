@@ -102,7 +102,7 @@ public class ChatboxPanelManager {
 
     eventBus.register(input);
     if (input instanceof KeyListener) {
-      keyManager.registerKeyListener((KeyListener) input);
+      keyManager.registerKeyListener((KeyListener) input, this.getClass());
     }
     if (input instanceof MouseListener) {
       mouseManager.registerMouseListener((MouseListener) input);

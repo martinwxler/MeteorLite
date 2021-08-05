@@ -12,9 +12,34 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import net.runelite.api.*;
+import net.runelite.api.ChatMessageType;
+import net.runelite.api.EnumComposition;
+import net.runelite.api.GameState;
+import net.runelite.api.GraphicsObject;
+import net.runelite.api.HashTable;
+import net.runelite.api.HintArrowType;
+import net.runelite.api.IndexDataBase;
+import net.runelite.api.IndexedSprite;
+import net.runelite.api.InventoryID;
+import net.runelite.api.ItemComposition;
+import net.runelite.api.MenuAction;
+import net.runelite.api.MenuEntry;
+import net.runelite.api.MessageNode;
+import net.runelite.api.NPC;
+import net.runelite.api.NPCComposition;
+import net.runelite.api.Node;
+import net.runelite.api.ObjectComposition;
+import net.runelite.api.Player;
+import net.runelite.api.Point;
+import net.runelite.api.Prayer;
+import net.runelite.api.Projectile;
+import net.runelite.api.ScriptEvent;
+import net.runelite.api.Skill;
+import net.runelite.api.SpritePixels;
+import net.runelite.api.Tile;
+import net.runelite.api.VarPlayer;
+import net.runelite.api.WidgetNode;
+import net.runelite.api.WorldType;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.CanvasSizeChanged;
@@ -40,9 +65,24 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.api.widgets.WidgetType;
-import net.runelite.rs.api.*;
+import net.runelite.rs.api.RSAbstractArchive;
+import net.runelite.rs.api.RSArchive;
+import net.runelite.rs.api.RSChatChannel;
+import net.runelite.rs.api.RSClient;
+import net.runelite.rs.api.RSEnumComposition;
+import net.runelite.rs.api.RSIndexedSprite;
+import net.runelite.rs.api.RSItemContainer;
+import net.runelite.rs.api.RSNPC;
+import net.runelite.rs.api.RSNodeDeque;
+import net.runelite.rs.api.RSNodeHashTable;
+import net.runelite.rs.api.RSPacketBuffer;
+import net.runelite.rs.api.RSPlayer;
+import net.runelite.rs.api.RSScriptEvent;
+import net.runelite.rs.api.RSSpritePixels;
+import net.runelite.rs.api.RSTileItem;
+import net.runelite.rs.api.RSUsername;
+import net.runelite.rs.api.RSWidget;
 import org.sponge.util.Logger;
-
 
 @Mixin(RSClient.class)
 public abstract class ClientMixin implements RSClient {
@@ -1053,9 +1093,7 @@ public abstract class ClientMixin implements RSClient {
   }
 
   @Inject
-  private final Cache<Integer, RSEnumComposition> enumCache = CacheBuilder.newBuilder()
-          .maximumSize(64)
-          .build();
+  private HashMap<Integer, RSEnumComposition> enumCache;
 
   @Inject
   @Override
@@ -1063,10 +1101,13 @@ public abstract class ClientMixin implements RSClient {
   {
     assert isClientThread() : "getEnum must be called on client thread";
 
-    RSEnumComposition rsEnumDefinition = enumCache.getIfPresent(id);
-    if (rsEnumDefinition != null)
+    if (enumCache == null)
+      enumCache = new HashMap<>();
+
+    RSEnumComposition rsEnumDefinition;
+    if (enumCache.containsKey(id))
     {
-      return rsEnumDefinition;
+      return enumCache.get(id);
     }
 
     rsEnumDefinition = getRsEnum(id);
@@ -1089,5 +1130,69 @@ public abstract class ClientMixin implements RSClient {
     }
 
     return players;
+  }
+
+  @Inject
+  @Override
+  public void setModIcons(IndexedSprite[] modIcons)
+  {
+    setRSModIcons((RSIndexedSprite[]) modIcons);
+  }
+
+  @Inject
+  @Override
+  public RSSpritePixels[] getSprites(IndexDataBase source, int archiveId, int fileId)
+  {
+    RSAbstractArchive rsSource = (RSAbstractArchive) source;
+    byte[] configData = rsSource.getConfigData(archiveId, fileId);
+    if (configData == null)
+    {
+      return null;
+    }
+
+    decodeSprite(configData);
+
+    int indexedSpriteCount = getIndexedSpriteCount();
+    int maxWidth = getIndexedSpriteWidth();
+    int maxHeight = getIndexedSpriteHeight();
+    int[] offsetX = getIndexedSpriteOffsetXs();
+    int[] offsetY = getIndexedSpriteOffsetYs();
+    int[] widths = getIndexedSpriteWidths();
+    int[] heights = getIndexedSpriteHeights();
+    byte[][] spritePixelsArray = getSpritePixels();
+    int[] indexedSpritePalette = getIndexedSpritePalette();
+
+    RSSpritePixels[] array = new RSSpritePixels[indexedSpriteCount];
+
+    for (int i = 0; i < indexedSpriteCount; ++i)
+    {
+      int width = widths[i];
+      int height = heights[i];
+
+      byte[] pixelArray = spritePixelsArray[i];
+      int[] pixels = new int[width * height];
+
+      RSSpritePixels spritePixels = createSpritePixels(pixels, width, height);
+      spritePixels.setMaxHeight(maxHeight);
+      spritePixels.setMaxWidth(maxWidth);
+      spritePixels.setOffsetX(offsetX[i]);
+      spritePixels.setOffsetY(offsetY[i]);
+
+      for (int j = 0; j < width * height; ++j)
+      {
+        pixels[j] = indexedSpritePalette[pixelArray[j] & 0xff];
+      }
+
+      array[i] = spritePixels;
+    }
+
+    setIndexedSpriteOffsetXs(null);
+    setIndexedSpriteOffsetYs(null);
+    setIndexedSpriteWidths(null);
+    setIndexedSpriteHeights(null);
+    setIndexedSpritePalette(null);
+    setSpritePixels(null);
+
+    return array;
   }
 }
