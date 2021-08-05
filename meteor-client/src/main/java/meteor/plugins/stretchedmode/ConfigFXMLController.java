@@ -31,35 +31,7 @@ public class ConfigFXMLController {
   }
 
   @FXML
-  protected void onKeepAspectRatioEnabled(ActionEvent event) {
-    StretchedModePlugin.keepAspectRatio = !StretchedModePlugin.keepAspectRatio;
-    plugin.updateConfig();
-  }
-
-  @FXML
-  protected void onIncreasedPerfEnabled(ActionEvent event) {
-    StretchedModePlugin.isStretchedFast = !StretchedModePlugin.isStretchedFast;
-    plugin.updateConfig();
-  }
-
-  @FXML
-  protected void onIntegerScalingEnabled(ActionEvent event) {
-    StretchedModePlugin.integerScalingEnabled = !StretchedModePlugin.integerScalingEnabled;
-    plugin.updateConfig();
-  }
-
-  @FXML
-  protected void onScalingFactorChanged(MouseEvent event) {
-    StretchedModePlugin.scalingFactor = (int) scalingFactorSlider.getValue();
-    plugin.updateConfig();
-  }
-
-  @FXML
   public void initialize() {
-    keepAspectRatioEnabled.setSelected(StretchedModePlugin.keepAspectRatio);
-    increasedPerfEnabled.setSelected(StretchedModePlugin.isStretchedFast);
-    integerScalingEnabled.setSelected(StretchedModePlugin.integerScalingEnabled);
-    scalingFactorSlider.setValue(StretchedModePlugin.scalingFactor);
   }
 
 }

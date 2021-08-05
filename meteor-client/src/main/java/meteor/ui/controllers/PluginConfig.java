@@ -1,5 +1,6 @@
 package meteor.ui.controllers;
 
+import com.jfoenix.controls.JFXSlider;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import java.lang.reflect.Method;
@@ -88,11 +89,11 @@ public class PluginConfig {
         AnchorPane nodePanel = createNode();
         if (configItemDescriptor.getType() == int.class)
         {
-          createIntegerNode(nodePanel, configItemDescriptor);
+          createIntegerNode(descriptor, nodePanel, configItemDescriptor);
         }
         if (configItemDescriptor.getType() == boolean.class)
         {
-          createBooleanNode(config, nodePanel, configItemDescriptor);
+          createBooleanNode(descriptor, nodePanel, configItemDescriptor);
         }
         if (nodePanel.getChildren().size() > 0)
         {
@@ -111,7 +112,7 @@ public class PluginConfig {
     return node;
   }
 
-  private void createBooleanNode(Config config, AnchorPane root, ConfigItemDescriptor descriptor) {
+  private void createBooleanNode(ConfigDescriptor config, AnchorPane root, ConfigItemDescriptor descriptor) {
     Text name = new Text();
     name.setText(descriptor.name());
     name.setFill(Paint.valueOf("WHITE"));
@@ -127,8 +128,7 @@ public class PluginConfig {
     toggleButton.setLayoutX(305);
     toggleButton.setLayoutY(8);
 
-    toggleButton.addEventHandler(MouseEvent.MOUSE_PRESSED, (e) -> toggleBooleanConfig(config, descriptor));
-    Object o = configManager.getConfiguration(configManager.getConfigDescriptor(config).getGroup().value(), descriptor.key(), descriptor.getType());
+    Object o = configManager.getConfiguration(config.getGroup().value(), descriptor.key(), descriptor.getType());
     boolean enabled = false;
     if (o instanceof Boolean)
     {
@@ -136,11 +136,12 @@ public class PluginConfig {
     }
     toggleButton.setSelected(enabled);
     toggleButton.setStyle("-fx-text-fill: CYAN;");
+    toggleButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> setValue(config, descriptor, toggleButton.isSelected()));
 
     root.getChildren().add(toggleButton);
   }
 
-  private void createIntegerNode(AnchorPane root, ConfigItemDescriptor descriptor)
+  private void createIntegerNode(ConfigDescriptor config, AnchorPane root, ConfigItemDescriptor descriptor)
   {
     Text name = new Text();
     name.setText(descriptor.name());
@@ -151,18 +152,36 @@ public class PluginConfig {
     name.setFont(Font.font(18));
 
     root.getChildren().add(name);
+
+    JFXSlider slider = new JFXSlider();
+    AnchorPane.setLeftAnchor(slider, 0.0);
+    AnchorPane.setRightAnchor(slider, 0.0);
+    slider.setMinSize(350, 35);
+    slider.setLayoutY(35);
+    slider.autosize();
+    int min = 0;
+    int max = Integer.MAX_VALUE;
+    if (descriptor.getRange() != null)
+    {
+      min = descriptor.getRange().min();
+      max = descriptor.getRange().max();
+    }
+    slider.setValue(configManager.getConfiguration(config.getGroup().value(), descriptor.key(), Double.class));
+    slider.setMax(max);
+    slider.setMin(min);
+    slider.setMajorTickUnit(max / 4.0);
+    slider.setMinorTickCount(2);
+    slider.getStylesheets().add("css/plugins/jfx-slider.css");
+    slider.setShowTickMarks(true);
+    slider.setShowTickLabels(true);
+    slider.addEventHandler(MouseEvent.MOUSE_DRAGGED, (e) -> setValue(config, descriptor, (int)slider.getValue()));
+
+    root.getChildren().add(slider);
   }
 
-  private void toggleBooleanConfig(Config config, ConfigItemDescriptor descriptor)
+  private void setValue(ConfigDescriptor config, ConfigItemDescriptor descriptor, Object value)
   {
-    Object o = configManager.getConfiguration(configManager.getConfigDescriptor(config).getGroup().value(), descriptor.key(), descriptor.getType());
-    boolean enabled = false;
-    if (o instanceof Boolean)
-    {
-      enabled = (Boolean) o;
-      enabled = !enabled;
-    }
-    configManager.setConfiguration(configManager.getConfigDescriptor(config).getGroup().value(), descriptor.key(), enabled);
-
+    logger.debug("value set");
+    configManager.setConfiguration(config.getGroup().value(), descriptor.key(), value);
   }
 }

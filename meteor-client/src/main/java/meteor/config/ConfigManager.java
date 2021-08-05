@@ -24,6 +24,8 @@
  */
 package meteor.config;
 
+import static org.sponge.util.Logger.ANSI_GREEN;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.collect.ComparisonChain;
@@ -98,6 +100,7 @@ import net.runelite.api.events.PlayerChanged;
 import net.runelite.api.events.UsernameChanged;
 import net.runelite.api.events.WorldChanged;
 import org.sponge.util.Logger;
+import org.sponge.util.Message;
 
 @Singleton
 public class ConfigManager {
@@ -129,6 +132,7 @@ public class ConfigManager {
   // null => we need to make a new profile
   @Nullable
   private String rsProfileKey;
+  private boolean loaded;
 
   @Inject
   public ConfigManager(
@@ -441,7 +445,7 @@ public class ConfigManager {
   }
 
   private synchronized void loadFromFile() {
-    boolean loaded = false;
+    loaded = false;
     consumers.clear();
 
     Properties newProperties = new Properties();
@@ -457,35 +461,38 @@ public class ConfigManager {
     log.debug("Configuration loaded");
     swapProperties(newProperties, false);
     if (!loaded) {
-      try {
-        saveToFile(propertiesFile);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      saveToFile(true);
     }
   }
 
-  private void saveToFile(final File propertiesFile) throws IOException {
-    File parent = propertiesFile.getParentFile();
-
-    parent.mkdirs();
-
-    File tempFile = File.createTempFile("runelite", null, parent);
-
-    try (FileOutputStream out = new FileOutputStream(tempFile)) {
-      out.getChannel().lock();
-      properties
-          .store(new OutputStreamWriter(out, StandardCharsets.UTF_8), "RuneLite configuration");
-      // FileOutputStream.close() closes the associated channel, which frees the lock
-    }
-
+  private void saveToFile(boolean forced) {
     try {
-      Files.move(tempFile.toPath(), propertiesFile.toPath(), StandardCopyOption.REPLACE_EXISTING,
-          StandardCopyOption.ATOMIC_MOVE);
-    } catch (AtomicMoveNotSupportedException ex) {
-      log.debug("atomic move not supported");
-      ex.printStackTrace();
-      Files.move(tempFile.toPath(), propertiesFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+      if (loaded || forced)
+      {
+        File parent = propertiesFile.getParentFile();
+
+        parent.mkdirs();
+
+        File tempFile = File.createTempFile("runelite", null, parent);
+
+        try (FileOutputStream out = new FileOutputStream(tempFile)) {
+          out.getChannel().lock();
+          properties
+              .store(new OutputStreamWriter(out, StandardCharsets.UTF_8), "RuneLite configuration");
+          // FileOutputStream.close() closes the associated channel, which frees the lock
+        }
+
+        try {
+          Files.move(tempFile.toPath(), propertiesFile.toPath(), StandardCopyOption.REPLACE_EXISTING,
+              StandardCopyOption.ATOMIC_MOVE);
+        } catch (AtomicMoveNotSupportedException ex) {
+          log.debug("atomic move not supported");
+          ex.printStackTrace();
+          Files.move(tempFile.toPath(), propertiesFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
   }
 
@@ -572,7 +579,12 @@ public class ConfigManager {
       return;
     }
 
-    //log.debug("Setting configuration value for {} to {}", wholeKey, value);
+    String message = Message.buildMessage()
+        .addText("set config - ")
+        .changeColor(ANSI_GREEN)
+        .addText("{" + wholeKey + "}{" + value + "}")
+        .build();
+    log.debug(message);
     handler.invalidate();
 
     synchronized (pendingChanges) {
@@ -600,6 +612,7 @@ public class ConfigManager {
     }
 
     setConfiguration(groupName, null, key, value);
+    saveToFile(false);
   }
 
   public void setRSProfileConfiguration(String groupName, String key, Object value) {
@@ -884,11 +897,7 @@ public class ConfigManager {
 
   @Nullable
   private void sendConfig() {
-    try {
-      saveToFile(propertiesFile);
-    } catch (IOException ex) {
-      log.warn("unable to save configuration file", ex);
-    }
+    saveToFile(false);
   }
 
   public List<RuneScapeProfile> getRSProfiles() {
@@ -1073,12 +1082,7 @@ public class ConfigManager {
           File file = new File(propertiesFile.getParent(),
               propertiesFile.getName() + "." + TIME_FORMAT.format(new Date()));
           //log.info("backing up pre-migration config to {}", file);
-          try {
-            saveToFile(file);
-          } catch (IOException e) {
-            //log.error("Backup failed", e);
-            throw new RuntimeException(e);
-          }
+          saveToFile(false);
         }
 
         String oldGroup = oldKeySplit[KEY_SPLITTER_GROUP];
