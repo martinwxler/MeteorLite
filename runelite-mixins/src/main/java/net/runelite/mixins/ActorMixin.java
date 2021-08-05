@@ -2,9 +2,10 @@ package net.runelite.mixins;
 
 import java.awt.Polygon;
 import java.awt.image.BufferedImage;
-import net.runelite.api.Perspective;
-import net.runelite.api.Point;
+
+import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.HealthBarUpdated;
@@ -33,6 +34,48 @@ public abstract class ActorMixin implements RSActor {
         this.getPathX()[0] * Perspective.LOCAL_TILE_SIZE + Perspective.LOCAL_TILE_SIZE / 2,
         this.getPathY()[0] * Perspective.LOCAL_TILE_SIZE + Perspective.LOCAL_TILE_SIZE / 2,
         client.getPlane());
+  }
+
+  @Inject
+  @Override
+  public WorldArea getWorldArea()
+  {
+    int size = 1;
+    if (this instanceof NPC)
+    {
+      NPCComposition composition = ((NPC)this).getComposition();
+      if (composition != null && composition.getConfigs() != null)
+      {
+        composition = composition.transform$api();
+      }
+      if (composition != null)
+      {
+        size = composition.getSize();
+      }
+    }
+
+    return new WorldArea(this.getWorldLocation(), size, size);
+  }
+
+  @Inject
+  @Override
+  public Actor getInteracting()
+  {
+    int index = getRSInteracting();
+    if (index == -1 || index == 65535)
+    {
+      return null;
+    }
+
+    if (index < 32768)
+    {
+      NPC[] npcs = client.getCachedNPCs();
+      return npcs[index];
+    }
+
+    index -= 32768;
+    Player[] players = client.getCachedPlayers();
+    return players[index];
   }
 
   @Inject

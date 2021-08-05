@@ -31,20 +31,25 @@ import net.runelite.api.MenuEntry;
 /**
  * An event where a menu option has been clicked.
  * <p>
- * This event does not only trigger when clicking an option in a right-clicked menu. The event will
- * trigger for any left click action performed (ie. clicking an item, walking to a tile, etc) as
+ * This event does not only trigger when clicking an option in a
+ * right-clicked menu. The event will trigger for any left click
+ * action performed (ie. clicking an item, walking to a tile, etc) as
  * well as any right-click menu option.
  * <p>
- * By default, when there is no action performed when left-clicking, it seems that this event still
- * triggers with the "Cancel" action.
+ * By default, when there is no action performed when left-clicking,
+ * it seems that this event still triggers with the "Cancel" action.
  */
 @Data
-public class MenuOptionClicked {
-
+public class MenuOptionClicked
+{
   /**
-   * The action parameter used in the click.
+   * Action parameter 0. Its value depends on the menuAction.
    */
-  private int actionParam;
+  private int param0;
+  /**
+   * Action parameter 1. Its value depends on the menuAction.
+   */
+  private int param1;
   /**
    * The option text added to the menu.
    */
@@ -62,12 +67,6 @@ public class MenuOptionClicked {
    */
   private int id;
   /**
-   * The ID of the widget where the menu was clicked.
-   *
-   * @see net.runelite.api.widgets.WidgetID
-   */
-  private int widgetId;
-  /**
    * The selected item index at the time of the option click.
    */
   private int selectedItemIndex;
@@ -79,19 +78,46 @@ public class MenuOptionClicked {
   /**
    * Marks the event as having been consumed.
    * <p>
-   * Setting this state indicates that a plugin has processed the menu option being clicked and that
-   * the event will not be passed on for handling by vanilla client code.
+   * Setting this state indicates that a plugin has processed the menu
+   * option being clicked and that the event will not be passed on
+   * for handling by vanilla client code.
    */
-  public void consume() {
+  public void consume()
+  {
     this.consumed = true;
   }
 
-  public void setMenuEntry(MenuEntry entry) {
+  public void setMenuEntry(MenuEntry entry)
+  {
     this.setMenuOption(entry.getOption());
     this.setMenuTarget(entry.getTarget());
     this.setId(entry.getId());
     this.setMenuAction(MenuAction.of(entry.getOpcode()));
-    this.setActionParam(entry.getActionParam());
-    this.setWidgetId(entry.getActionParam1());
+    this.setParam0(entry.getParam0());
+    this.setParam1(entry.getParam1());
+  }
+
+  @Deprecated
+  public int getActionParam()
+  {
+    return param0;
+  }
+
+  @Deprecated
+  public void setActionParam(int i)
+  {
+    param0 = i;
+  }
+
+  @Deprecated
+  public int getWidgetId()
+  {
+    return param1;
+  }
+
+  @Deprecated
+  public void setWidgetId(int i)
+  {
+    param1 = i;
   }
 }

@@ -17,6 +17,7 @@ import meteor.plugins.agility.AgilityPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.bank.BankPlugin;
 import meteor.plugins.betterantidrag.BetterAntiDragPlugin;
+import meteor.plugins.betterroguesden.RoguesDenPlugin;
 import meteor.plugins.boosts.BoostsPlugin;
 import meteor.plugins.botutils.BotUtils;
 import meteor.plugins.camera.CameraPlugin;
@@ -28,6 +29,7 @@ import meteor.plugins.grounditems.GroundItemsPlugin;
 import meteor.plugins.groundmarkers.GroundMarkerPlugin;
 import meteor.plugins.hunter.HunterPlugin;
 import meteor.plugins.implings.ImplingsPlugin;
+import meteor.plugins.interacthighlight.InteractHighlightPlugin;
 import meteor.plugins.itemcharges.ItemChargePlugin;
 import meteor.plugins.itemprices.ItemPricesPlugin;
 import meteor.plugins.itemstats.ItemStatPlugin;
@@ -36,9 +38,12 @@ import meteor.plugins.menuentryswapperextended.MenuEntrySwapperExtendedPlugin;
 import meteor.plugins.mousetooltips.MouseTooltipPlugin;
 import meteor.plugins.neverlog.NeverLogoutPlugin;
 import meteor.plugins.npcindicators.NpcIndicatorsPlugin;
+import meteor.plugins.npcstatus.NpcStatusPlugin;
 import meteor.plugins.objectindicators.ObjectIndicatorsPlugin;
 import meteor.plugins.oneclick.OneClickPlugin;
+import meteor.plugins.smithing.SmithingPlugin;
 import meteor.plugins.stretchedmode.StretchedModePlugin;
+import meteor.plugins.ticktimers.TickTimersPlugin;
 import meteor.plugins.worldmap.WorldMapPlugin;
 
 public class PluginManager {
@@ -67,6 +72,7 @@ public class PluginManager {
     plugins.add(new GroundMarkerPlugin());
     plugins.add(new HunterPlugin());
     plugins.add(new ImplingsPlugin());
+    plugins.add(new InteractHighlightPlugin());
     plugins.add(new ItemChargePlugin());
     plugins.add(new ItemPricesPlugin());
     plugins.add(new ItemStatPlugin());
@@ -75,9 +81,13 @@ public class PluginManager {
     plugins.add(new MouseTooltipPlugin());
     plugins.add(new NeverLogoutPlugin());
     plugins.add(new NpcIndicatorsPlugin());
+    plugins.add(new NpcStatusPlugin());
     plugins.add(new ObjectIndicatorsPlugin());
     plugins.add(new OneClickPlugin());
+    plugins.add(new RoguesDenPlugin());
+    plugins.add(new SmithingPlugin());
     plugins.add(new StretchedModePlugin());
+    plugins.add(new TickTimersPlugin());
     plugins.add(new WorldMapPlugin());
   }
 
