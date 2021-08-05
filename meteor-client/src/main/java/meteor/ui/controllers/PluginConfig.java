@@ -2,6 +2,7 @@ package meteor.ui.controllers;
 
 import com.jfoenix.controls.JFXColorPicker;
 import com.jfoenix.controls.JFXSlider;
+import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -105,6 +106,10 @@ public class PluginConfig {
         {
           createBooleanNode(descriptor, nodePanel, configItemDescriptor);
         }
+        if (configItemDescriptor.getType() == String.class)
+        {
+          createStringNode(descriptor, nodePanel, configItemDescriptor);
+        }
         if (configItemDescriptor.getType() == Color.class)
         {
           createColorPickerNode(descriptor, nodePanel, configItemDescriptor);
@@ -115,6 +120,33 @@ public class PluginConfig {
         }
       }
     }
+  }
+
+  private void createStringNode(ConfigDescriptor config, AnchorPane root, ConfigItemDescriptor descriptor) {
+    Text name = new Text();
+    name.setText(descriptor.name());
+    name.setFill(Paint.valueOf("WHITE"));
+    name.setLayoutX(20);
+    name.setLayoutY(25);
+    name.setWrappingWidth(300);
+    name.setFont(Font.font(18));
+
+    root.getChildren().add(name);
+
+    JFXTextArea textArea = new JFXTextArea();
+    textArea.setFont(Font.font(18));
+
+    textArea.setWrapText(true);
+    textArea.setText(configManager.getConfiguration(config.getGroup().value(), descriptor.key(), String.class));
+    textArea.setMinSize(350, 200);
+    textArea.setMaxSize(350, 200);
+    textArea.setLayoutY(25);
+    textArea.getStylesheets().add("css/plugins/jfx-textarea.css");
+    textArea.textProperty().addListener((observable, oldValue, newValue) -> {
+      setValue(config, descriptor, newValue);
+    });
+
+    root.getChildren().add(textArea);
   }
 
   private AnchorPane createNode()
