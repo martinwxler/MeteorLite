@@ -1,9 +1,12 @@
 package meteor.ui.controllers;
 
+import com.jfoenix.controls.JFXColorPicker;
 import com.jfoenix.controls.JFXSlider;
 import com.jfoenix.controls.JFXTextField;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import java.awt.Color;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyEvent;
@@ -101,6 +104,10 @@ public class PluginConfig {
         if (configItemDescriptor.getType() == boolean.class)
         {
           createBooleanNode(descriptor, nodePanel, configItemDescriptor);
+        }
+        if (configItemDescriptor.getType() == Color.class)
+        {
+          createColorPickerNode(descriptor, nodePanel, configItemDescriptor);
         }
         if (nodePanel.getChildren().size() > 0)
         {
@@ -225,6 +232,42 @@ public class PluginConfig {
     textField.getStylesheets().add("css/plugins/jfx-textfield.css");
 
     root.getChildren().add(textField);
+  }
+
+  private void createColorPickerNode(ConfigDescriptor config, AnchorPane root, ConfigItemDescriptor descriptor)
+  {
+    Text name = new Text();
+    name.setText(descriptor.name());
+    name.setFill(Paint.valueOf("WHITE"));
+    name.setLayoutX(20);
+    name.setLayoutY(24);
+    name.setWrappingWidth(300);
+    name.setFont(Font.font(18));
+
+    root.getChildren().add(name);
+
+    JFXColorPicker colorPicker = new JFXColorPicker();
+    AnchorPane.setLeftAnchor(colorPicker, 200.0);
+    AnchorPane.setRightAnchor(colorPicker, 10.0);
+    colorPicker.setMinSize(100, 35);
+    colorPicker.setLayoutY(5);
+    colorPicker.autosize();
+    Color c = configManager.getConfiguration(config.getGroup().value(), descriptor.key(), Color.class);
+    double r = c.getRed() / 255.0;
+    double g = c.getGreen() / 255.0;
+    double b = c.getBlue() / 255.0;
+    double a = c.getAlpha() / 255.0;
+    colorPicker.setValue(javafx.scene.paint.Color.color(r, g, b, a));
+    colorPicker.valueProperty().addListener((observable, oldValue, newValue) -> {
+      double nr = newValue.getRed() * 255.0;
+      double ng = newValue.getGreen() * 255.0;
+      double nb = newValue.getBlue() * 255.0;
+      double na = newValue.getOpacity() * 255.0;
+      Color colorToSet = new Color((int)nr, (int)ng, (int)nb, (int)na);
+      setValue(config, descriptor, colorToSet);
+    });
+
+    root.getChildren().add(colorPicker);
   }
 
   private boolean isInputValid(ConfigItemDescriptor descriptor, String input)
