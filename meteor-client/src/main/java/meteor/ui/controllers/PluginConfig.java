@@ -115,6 +115,10 @@ public class PluginConfig {
         {
           createColorPickerNode(descriptor, nodePanel, configItemDescriptor);
         }
+        if (configItemDescriptor.getType() == double.class)
+        {
+          createdDoubleTextNode(descriptor, nodePanel, configItemDescriptor);
+        }
         if (nodePanel.getChildren().size() > 0)
         {
           nodeList.getChildren().add(nodePanel);
@@ -123,12 +127,47 @@ public class PluginConfig {
     }
   }
 
+  private void createdDoubleTextNode(ConfigDescriptor config, AnchorPane root, ConfigItemDescriptor configItem) {
+    Text name = new Text();
+    name.setText(configItem.name());
+    name.setFill(Paint.valueOf("WHITE"));
+    name.setLayoutX(18);
+    name.setLayoutY(18);
+    name.setWrappingWidth(300);
+    name.setFont(Font.font(18));
+
+    root.getChildren().add(name);
+
+    JFXTextField textField = new JFXTextField();
+
+    AnchorPane.setLeftAnchor(textField, 200.0);
+    AnchorPane.setRightAnchor(textField, 10.0);
+    textField.setMinSize(150, 15);
+    textField.setFont(Font.font(18));
+    textField.autosize();
+    textField.setText(configManager.getConfiguration(config.getGroup().value(), configItem.key(), String.class));
+    textField.addEventHandler(KeyEvent.KEY_TYPED, (e) ->
+    {
+      if (isInputValidDouble(configItem, textField.getText()))
+        updateConfigItemValue(config, configItem, Double.parseDouble(textField.getText()));
+      else
+      {
+        textField.clear();
+        textField.setText("0.0");
+        updateConfigItemValue(config, configItem, 0.0);
+      }
+    });
+    textField.getStylesheets().add("css/plugins/jfx-textfield.css");
+
+    root.getChildren().add(textField);
+  }
+
   private void createStringNode(ConfigDescriptor config, AnchorPane root, ConfigItemDescriptor descriptor) {
     Text name = new Text();
     name.setText(descriptor.name());
     name.setFill(Paint.valueOf("WHITE"));
-    name.setLayoutX(20);
-    name.setLayoutY(25);
+    name.setLayoutX(18);
+    name.setLayoutY(18);
     name.setWrappingWidth(300);
     name.setFont(Font.font(18));
 
@@ -162,8 +201,8 @@ public class PluginConfig {
     Text name = new Text();
     name.setText(descriptor.name());
     name.setFill(Paint.valueOf("WHITE"));
-    name.setLayoutX(20);
-    name.setLayoutY(24);
+    name.setLayoutX(18);
+    name.setLayoutY(18);
     name.setWrappingWidth(300);
     name.setFont(Font.font(18));
 
@@ -320,6 +359,30 @@ public class PluginConfig {
 
     if (descriptor.getRange().min() > i)
     return false;
+
+    return true;
+  }
+
+  private boolean isInputValidDouble(ConfigItemDescriptor descriptor, String input)
+  {
+    double d;
+    try {
+      d = Double.parseDouble(input);
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+      return false;
+    }
+
+    if (descriptor.getRange() == null)
+      return true;
+
+    if (descriptor.getRange().max() < Double.MIN_VALUE)
+      return false;
+
+    if (descriptor.getRange().min() > Double.MAX_VALUE)
+      return false;
 
     return true;
   }
