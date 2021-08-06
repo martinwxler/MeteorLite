@@ -20,7 +20,7 @@
 .jfx-text-field {
   -fx-text-fill: CYAN;
   -jfx-focus-color: CYAN;
-  -jfx-unfocus-color: #4d4d4d;
+  -jfx-unfocus-color: #212121;
   -fx-padding: 0.333333em 0 0.333333em 0;
 }
 

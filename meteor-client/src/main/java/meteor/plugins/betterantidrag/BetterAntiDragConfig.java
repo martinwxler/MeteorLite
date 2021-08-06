@@ -84,6 +84,9 @@ public interface BetterAntiDragConfig extends Config
 		return Keybind.SHIFT;
 	}
 
+	@Range(
+			max = 500
+	)
 	@ConfigItem(
 		keyName = "dragDelay",
 		name = "Drag Delay",
@@ -95,6 +98,9 @@ public interface BetterAntiDragConfig extends Config
 		return Constants.GAME_TICK_LENGTH / Constants.CLIENT_TICK_LENGTH; // one game tick
 	}
 
+	@Range(
+			max = 500
+	)
 	@ConfigItem(
 		keyName = "bankDragDelay",
 		name = "Bank Drag Delay",

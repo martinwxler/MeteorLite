@@ -1,5 +1,7 @@
 package meteor.ui.controllers;
 
+import static meteor.MeteorLite.pluginsPanelVisible;
+
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.fxml.FXML;
@@ -79,6 +81,7 @@ public class PluginsFXMLController {
         configButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
           lastPluginInteracted = p;
           p.showConfig();
+          pluginsPanelVisible = !pluginsPanelVisible;
         });
       }
 

@@ -172,6 +172,10 @@ public interface InteractHighlightConfig extends Config
 		return new Color(0x90FF0000, true);
 	}
 
+	@Range(
+			min = 1,
+			max = 10
+	)
 	@ConfigItem(
 		keyName = "borderWidth",
 		name = "Border Width",

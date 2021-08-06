@@ -27,6 +27,7 @@ package meteor.plugins.boosts;
 import meteor.config.Config;
 import meteor.config.ConfigGroup;
 import meteor.config.ConfigItem;
+import meteor.config.Range;
 
 @ConfigGroup("boosts")
 public interface BoostsConfig extends Config {
@@ -81,6 +82,10 @@ public interface BoostsConfig extends Config {
     return DisplayChangeMode.NEVER;
   }
 
+  @Range(
+      min = 1,
+      max = 25
+  )
   @ConfigItem(
       keyName = "boostThreshold",
       name = "Boost threshold",

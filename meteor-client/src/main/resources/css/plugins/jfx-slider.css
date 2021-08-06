@@ -70,3 +70,7 @@
   -fx-background-radius: 50% 50% 50% 0%;
   -fx-background-insets: 0;
 }
+
+.slider .axis {
+  -fx-tick-label-fill: CYAN;
+}

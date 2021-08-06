@@ -41,7 +41,7 @@ public interface HunterConfig extends Config {
       description = "Color of open trap timer"
   )
   default Color getOpenTrapColor() {
-    return Color.YELLOW;
+    return Color.CYAN;
   }
 
   @Alpha

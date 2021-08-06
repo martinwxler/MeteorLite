@@ -7,7 +7,6 @@ import com.jfoenix.controls.JFXTextField;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import java.awt.Color;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyEvent;
@@ -53,10 +52,12 @@ public class PluginConfig {
     AnchorPane.setTopAnchor(scrollPane, 45.0);
     AnchorPane.setBottomAnchor(scrollPane, 5.0);
 
+
+
     FontAwesomeIconView plug = new FontAwesomeIconView(FontAwesomeIcon.PLUG);
     plug.setFill(Paint.valueOf("CYAN"));
     plug.setLayoutY(25);
-    AnchorPane.setLeftAnchor(plug, 0.0);
+    AnchorPane.setLeftAnchor(plug, 140.0);
 
     pluginConfigPanel.getChildren().add(plug);
 
@@ -66,7 +67,7 @@ public class PluginConfig {
     pluginsString.setLayoutY(28);
     pluginsString.setWrappingWidth(300);
     pluginsString.setFont(Font.font(18));
-    AnchorPane.setLeftAnchor(pluginsString, 25.0);
+    AnchorPane.setLeftAnchor(pluginsString, 165.0);
 
     pluginConfigPanel.getChildren().add(pluginsString);
     nodeList = new VBox();
@@ -134,17 +135,16 @@ public class PluginConfig {
     root.getChildren().add(name);
 
     JFXTextArea textArea = new JFXTextArea();
+    AnchorPane.setLeftAnchor(textArea, 15.0);
+    AnchorPane.setRightAnchor(textArea, 25.0);
     textArea.setFont(Font.font(18));
 
     textArea.setWrapText(true);
     textArea.setText(configManager.getConfiguration(config.getGroup().value(), descriptor.key(), String.class));
-    textArea.setMinSize(350, 200);
-    textArea.setMaxSize(350, 200);
+    textArea.setMinSize(305, 200);
     textArea.setLayoutY(25);
     textArea.getStylesheets().add("css/plugins/jfx-textarea.css");
-    textArea.textProperty().addListener((observable, oldValue, newValue) -> {
-      setValue(config, descriptor, newValue);
-    });
+    textArea.textProperty().addListener((observable, oldValue, newValue) -> updateConfigItemValue(config, descriptor, newValue));
 
     root.getChildren().add(textArea);
   }
@@ -182,7 +182,7 @@ public class PluginConfig {
     }
     toggleButton.setSelected(enabled);
     toggleButton.setStyle("-fx-text-fill: CYAN;");
-    toggleButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> setValue(config, descriptor, toggleButton.isSelected()));
+    toggleButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> updateConfigItemValue(config, descriptor, toggleButton.isSelected()));
 
     root.getChildren().add(toggleButton);
   }
@@ -192,17 +192,17 @@ public class PluginConfig {
     Text name = new Text();
     name.setText(descriptor.name());
     name.setFill(Paint.valueOf("WHITE"));
-    name.setLayoutX(20);
-    name.setLayoutY(24);
+    name.setLayoutX(18);
+    name.setLayoutY(18);
     name.setWrappingWidth(300);
     name.setFont(Font.font(18));
 
     root.getChildren().add(name);
 
     JFXSlider slider = new JFXSlider();
-    AnchorPane.setLeftAnchor(slider, 0.0);
-    AnchorPane.setRightAnchor(slider, 0.0);
-    slider.setMinSize(350, 35);
+    AnchorPane.setLeftAnchor(slider, 15.0);
+    AnchorPane.setRightAnchor(slider, 25.0);
+    slider.setMinSize(305, 35);
     slider.setLayoutY(35);
     slider.autosize();
     int min = 0;
@@ -220,7 +220,7 @@ public class PluginConfig {
     slider.getStylesheets().add("css/plugins/jfx-slider.css");
     slider.setShowTickMarks(true);
     slider.setShowTickLabels(true);
-    slider.addEventHandler(MouseEvent.MOUSE_DRAGGED, (e) -> setValue(config, descriptor, (int)slider.getValue()));
+    slider.addEventHandler(MouseEvent.MOUSE_DRAGGED, (e) -> updateConfigItemValue(config, descriptor, (int)slider.getValue()));
 
     root.getChildren().add(slider);
   }
@@ -230,8 +230,8 @@ public class PluginConfig {
     Text name = new Text();
     name.setText(descriptor.name());
     name.setFill(Paint.valueOf("WHITE"));
-    name.setLayoutX(20);
-    name.setLayoutY(24);
+    name.setLayoutX(18);
+    name.setLayoutY(18);
     name.setWrappingWidth(300);
     name.setFont(Font.font(18));
 
@@ -241,9 +241,8 @@ public class PluginConfig {
 
     AnchorPane.setLeftAnchor(textField, 200.0);
     AnchorPane.setRightAnchor(textField, 10.0);
-    textField.setMinSize(150, 35);
+    textField.setMinSize(150, 15);
     textField.setFont(Font.font(18));
-    textField.setLayoutY(20);
     textField.autosize();
     textField.setText(configManager.getConfiguration(config.getGroup().value(), descriptor.key(), String.class));
     textField.addEventHandler(KeyEvent.KEY_TYPED, (e) ->
@@ -253,12 +252,12 @@ public class PluginConfig {
       {
         min = descriptor.getRange().min();
       }
-      if (isInputValid(descriptor, textField.getText()))
-        setValue(config, descriptor, Integer.parseInt(textField.getText()));
+      if (isInputValidInteger(descriptor, textField.getText()))
+        updateConfigItemValue(config, descriptor, Integer.parseInt(textField.getText()));
       else
       {
         textField.setText("" + min);
-        setValue(config, descriptor, min);
+        updateConfigItemValue(config, descriptor, min);
       }
     });
     textField.getStylesheets().add("css/plugins/jfx-textfield.css");
@@ -266,13 +265,13 @@ public class PluginConfig {
     root.getChildren().add(textField);
   }
 
-  private void createColorPickerNode(ConfigDescriptor config, AnchorPane root, ConfigItemDescriptor descriptor)
+  private void createColorPickerNode(ConfigDescriptor config, AnchorPane root, ConfigItemDescriptor configItem)
   {
     Text name = new Text();
-    name.setText(descriptor.name());
+    name.setText(configItem.name());
     name.setFill(Paint.valueOf("WHITE"));
-    name.setLayoutX(20);
-    name.setLayoutY(24);
+    name.setLayoutX(18);
+    name.setLayoutY(18);
     name.setWrappingWidth(300);
     name.setFont(Font.font(18));
 
@@ -280,11 +279,10 @@ public class PluginConfig {
 
     JFXColorPicker colorPicker = new JFXColorPicker();
     AnchorPane.setLeftAnchor(colorPicker, 200.0);
-    AnchorPane.setRightAnchor(colorPicker, 10.0);
-    colorPicker.setMinSize(100, 35);
-    colorPicker.setLayoutY(5);
+    AnchorPane.setRightAnchor(colorPicker, 15.0);
+    colorPicker.setMinSize(50, 35);
     colorPicker.autosize();
-    Color c = configManager.getConfiguration(config.getGroup().value(), descriptor.key(), Color.class);
+    Color c = configManager.getConfiguration(config.getGroup().value(), configItem.key(), Color.class);
     double r = c.getRed() / 255.0;
     double g = c.getGreen() / 255.0;
     double b = c.getBlue() / 255.0;
@@ -296,13 +294,13 @@ public class PluginConfig {
       double nb = newValue.getBlue() * 255.0;
       double na = newValue.getOpacity() * 255.0;
       Color colorToSet = new Color((int)nr, (int)ng, (int)nb, (int)na);
-      setValue(config, descriptor, colorToSet);
+      updateConfigItemValue(config, configItem, colorToSet);
     });
 
     root.getChildren().add(colorPicker);
   }
 
-  private boolean isInputValid(ConfigItemDescriptor descriptor, String input)
+  private boolean isInputValidInteger(ConfigItemDescriptor descriptor, String input)
   {
     int i;
     try {
@@ -326,8 +324,8 @@ public class PluginConfig {
     return true;
   }
 
-  private void setValue(ConfigDescriptor config, ConfigItemDescriptor descriptor, Object value)
+  private void updateConfigItemValue(ConfigDescriptor config, ConfigItemDescriptor configItem, Object value)
   {
-    configManager.setConfiguration(config.getGroup().value(), descriptor.key(), value);
+    configManager.setConfiguration(config.getGroup().value(), configItem.key(), value);
   }
 }
