@@ -140,6 +140,7 @@ public abstract class ScriptVMMixin implements RSClient {
       try {
         ((JavaScriptCallback) arguments[0]).run(event);
       } catch (Exception e) {
+        //ignore
       }
     } else {
       try {

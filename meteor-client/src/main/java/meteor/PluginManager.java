@@ -15,6 +15,7 @@ import meteor.plugins.actions.ActionPlugin;
 import meteor.plugins.agility.AgilityPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.bank.BankPlugin;
+import meteor.plugins.banktags.BankTagsPlugin;
 import meteor.plugins.betterantidrag.BetterAntiDragPlugin;
 import meteor.plugins.betterroguesden.BetterRougesDenPlugin;
 import meteor.plugins.blastfurnace.BlastFurnacePlugin;
@@ -64,6 +65,7 @@ public class PluginManager {
     plugins.add(new AgilityPlugin());
     plugins.add(new AoeWarningPlugin());
     plugins.add(new BankPlugin());
+    plugins.add(new BankTagsPlugin());
     plugins.add(new BetterAntiDragPlugin());
     plugins.add(new BetterRougesDenPlugin());
     plugins.add(new BlastFurnacePlugin());
