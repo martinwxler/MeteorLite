@@ -55,6 +55,7 @@ public class PluginConfig {
 
   private double configItemViewOffset = 0;
   AnchorPane configPanel;
+  boolean fakeEvent = false;
 
   @FXML
   public void initialize() {
@@ -149,6 +150,11 @@ public class PluginConfig {
     scrollBar.setValue(0);
     scrollBar.getStylesheets().add("css/plugins/jfx-scrollbar.css");
     scrollBar.valueProperty().addListener((observable, oldValue, newValue) -> {
+      if (fakeEvent)
+      {
+        fakeEvent = false;
+        return;
+      }
       configItemViewOffset =  newValue.doubleValue();
       configItemViewOffset = (configItemViewOffset - (configItemViewOffset *= 45));
       nodeList.setLayoutY(configItemViewOffset + 45);
@@ -165,6 +171,9 @@ public class PluginConfig {
       nodeList.setLayoutY(configItemViewOffset + 45);
       pluginsString.setLayoutY(configItemViewOffset + 28);
       plug.setLayoutY(configItemViewOffset + 25);
+
+      fakeEvent = true;
+      scrollBar.setValue((configItemViewOffset * -1) / 200);
     });
   }
 
