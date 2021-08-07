@@ -44,9 +44,12 @@ import meteor.plugins.npcstatus.NpcStatusPlugin;
 import meteor.plugins.objectindicators.ObjectIndicatorsPlugin;
 import meteor.plugins.oneclick.OneClickPlugin;
 import meteor.plugins.playerindicators.PlayerIndicatorsPlugin;
+import meteor.plugins.slayer.SlayerPlugin;
 import meteor.plugins.smithing.SmithingPlugin;
 import meteor.plugins.stretchedmode.StretchedModePlugin;
+import meteor.plugins.tearsofguthix.TearsOfGuthixPlugin;
 import meteor.plugins.ticktimers.TickTimersPlugin;
+import meteor.plugins.timestamp.TimestampPlugin;
 import meteor.plugins.worldmap.WorldMapPlugin;
 
 public class PluginManager {
@@ -94,9 +97,12 @@ public class PluginManager {
     plugins.add(new ObjectIndicatorsPlugin());
     plugins.add(new OneClickPlugin());
     plugins.add(new PlayerIndicatorsPlugin());
+    plugins.add(new SlayerPlugin());
     plugins.add(new SmithingPlugin());
     plugins.add(new StretchedModePlugin());
+    plugins.add(new TearsOfGuthixPlugin());
     plugins.add(new TickTimersPlugin());
+    plugins.add(new TimestampPlugin());
     plugins.add(new WorldMapPlugin());
   }
 
