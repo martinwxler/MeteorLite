@@ -38,6 +38,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import meteor.PluginManager;
+import meteor.config.ConfigManager;
 import meteor.plugins.Plugin;
 import meteor.ui.overlay.Overlay;
 import meteor.ui.overlay.OverlayLayer;
@@ -60,10 +61,10 @@ public class AoeWarningOverlay extends Overlay {
   private AoeWarningPlugin plugin;
 
   @Inject
-  public AoeWarningOverlay(final Client client, final AoeWarningConfig config) {
+  public AoeWarningOverlay(final Client client, final ConfigManager configManager) {
     setLayer(OverlayLayer.ABOVE_SCENE);
     this.client = client;
-    this.config = config;
+    this.config = configManager.getConfig(AoeWarningConfig.class);
   }
 
   private Point centerPoint(Rectangle rect) {

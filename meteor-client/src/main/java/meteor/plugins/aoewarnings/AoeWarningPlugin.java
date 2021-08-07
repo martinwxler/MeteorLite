@@ -35,6 +35,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
+import meteor.config.Config;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
@@ -92,7 +93,7 @@ public class AoeWarningPlugin extends Plugin {
   }
 
   @Provides
-  AoeWarningConfig getProvidedConfig() {
+  public AoeWarningConfig getConfig(ConfigManager configManager) {
     return configManager.getConfig(AoeWarningConfig.class);
   }
 

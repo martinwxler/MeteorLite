@@ -36,6 +36,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import meteor.PluginManager;
+import meteor.config.ConfigManager;
 import meteor.plugins.Plugin;
 import meteor.ui.overlay.Overlay;
 import meteor.ui.overlay.OverlayLayer;
@@ -65,14 +66,15 @@ public class BombOverlay extends Overlay {
   }
 
   private final Client client;
+
   private final AoeWarningConfig config;
   private AoeWarningPlugin plugin;
 
   @Inject
-  public BombOverlay(final Client client, final AoeWarningConfig config) {
+  public BombOverlay(final Client client, final ConfigManager configManager) {
     setLayer(OverlayLayer.ABOVE_SCENE);
     this.client = client;
-    this.config = config;
+    this.config = configManager.getConfig(AoeWarningConfig.class);
   }
 
   private void drawDangerZone(Graphics2D graphics) {

@@ -1,13 +1,20 @@
 package meteor.ui.controllers;
 
 import com.jfoenix.controls.JFXColorPicker;
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXSlider;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
+import com.sun.javafx.collections.ObservableListWrapper;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -16,6 +23,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javax.swing.JComboBox;
 import meteor.MeteorLite;
 import meteor.config.Config;
 import meteor.config.ConfigDescriptor;
@@ -119,12 +127,52 @@ public class PluginConfig {
         {
           createdDoubleTextNode(descriptor, nodePanel, configItemDescriptor);
         }
+        if (configItemDescriptor.getType().isEnum())
+        {
+          createEnumNode(descriptor, nodePanel, configItemDescriptor);
+        }
         if (nodePanel.getChildren().size() > 0)
         {
           nodeList.getChildren().add(nodePanel);
         }
       }
     }
+  }
+
+  private void createEnumNode(ConfigDescriptor config, AnchorPane root, ConfigItemDescriptor configItem) {
+    Text name = new Text();
+    name.setText(configItem.name());
+    name.setFill(Paint.valueOf("WHITE"));
+    name.setLayoutX(18);
+    name.setLayoutY(18);
+    name.setWrappingWidth(300);
+    name.setFont(Font.font(18));
+
+    root.getChildren().add(name);
+
+    Class<? extends Enum> type = (Class<? extends Enum>) configItem.getType();
+    Enum<?> currentConfigEnum = Enum.valueOf(type, configManager.getConfiguration(config.getGroup().value(), configItem.key()));
+    List<Enum<?>> list = new ArrayList<>();
+    Enum<?> currentToSet = null;
+    for (Enum<?> o : type.getEnumConstants())
+    {
+      if (o.equals(currentConfigEnum))
+        currentToSet = o;
+      list.add(o);
+    }
+    ObservableList<Enum<?>> observableList = new ObservableListWrapper<>(list);
+    JFXComboBox<Enum<?>> comboBox =new JFXComboBox<>(observableList);
+    comboBox.setValue(currentToSet);
+    comboBox.setMinSize(150, 15);
+    AnchorPane.setLeftAnchor(comboBox, 200.0);
+    AnchorPane.setRightAnchor(comboBox, 10.0);
+    comboBox.autosize();
+    comboBox.getStylesheets().add("css/plugins/jfx-combobox.css");
+    comboBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
+      updateConfigItemValue(config, configItem, newValue.name());
+    });
+    
+    root.getChildren().add(comboBox);
   }
 
   private void createdDoubleTextNode(ConfigDescriptor config, AnchorPane root, ConfigItemDescriptor configItem) {

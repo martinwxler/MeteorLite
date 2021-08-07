@@ -79,6 +79,20 @@ tasks {
     tasks.getByPath(":meteor-client:run").dependsOn(":meteor-agent:jar")
 }
 
+applicationDefaultJvmArgs = [
+        "-javaagent:../meteor-agent/build/libs/meteor-agent-1.0-SNAPSHOT.jar=agent.MixinAgentBootstrap;",
+        "-noverify",
+        "-XX:+DisableAttachMechanism",
+        "-Xmx1G",
+        "-Xss2m",
+        "-XX:CompileThreshold=1500",
+        "-Xincgc",
+        "-XX:+UseConcMarkSweepGC",
+        "-XX:+UseParNewGC",
+        "-Djna.nosys=true",
+        "-Dsun.java2d.uiScale=1.0",
+        "-Dprism.allowhidpi=false"]
+
 application {
     mainClass.set("meteor.MeteorLite")
 }
@@ -94,14 +108,4 @@ test {
 
 mainClassName = 'meteor.MeteorLite'
 
-applicationDefaultJvmArgs = [
-        "-javaagent:../meteor-agent/build/libs/meteor-agent-1.0-SNAPSHOT.jar=agent.MixinAgentBootstrap;",
-        "-noverify",
-        "-XX:+DisableAttachMechanism",
-        "-Xmx1G",
-        "-Xss2m",
-        "-XX:CompileThreshold=1500",
-        "-Xincgc",
-        "-XX:+UseConcMarkSweepGC",
-        "-XX:+UseParNewGC",
-        "-Djna.nosys=true"]
+

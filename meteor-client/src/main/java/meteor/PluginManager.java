@@ -13,6 +13,7 @@ import meteor.eventbus.EventBus;
 import meteor.plugins.Plugin;
 import meteor.plugins.actions.ActionPlugin;
 import meteor.plugins.agility.AgilityPlugin;
+import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.bank.BankPlugin;
 import meteor.plugins.betterantidrag.BetterAntiDragPlugin;
 import meteor.plugins.betterroguesden.BetterRougesDenPlugin;
@@ -61,6 +62,7 @@ public class PluginManager {
     //MeteorLite.plugins.add(new DebugPlugin());
     plugins.add(new ActionPlugin());
     plugins.add(new AgilityPlugin());
+    plugins.add(new AoeWarningPlugin());
     plugins.add(new BankPlugin());
     plugins.add(new BetterAntiDragPlugin());
     plugins.add(new BetterRougesDenPlugin());

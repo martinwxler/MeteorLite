@@ -131,10 +131,32 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
     Map<String, String> properties = new HashMap<>();
     Map<String, String> parameters = new HashMap<>();
     URL url = new URL("http://oldschool.runescape.com/jav_config.ws");
-    try (BufferedReader reader = new BufferedReader(
-        new InputStreamReader(url.openStream(), StandardCharsets.ISO_8859_1))) {
+    BufferedReader br;
+    try
+    {
+      br = new BufferedReader(new InputStreamReader(url.openStream(), StandardCharsets.ISO_8859_1));
+
       String line;
-      while ((line = reader.readLine()) != null) {
+      while ((line = br.readLine()) != null) {
+        String[] split1 = line.split("=", 2);
+        switch (split1[0]) {
+          case "param":
+            String[] split2 = split1[1].split("=", 2);
+            parameters.put(split2[0], split2[1]);
+            break;
+          case "msg":
+            // ignore
+            break;
+          default:
+            properties.put(split1[0], split1[1]);
+        }
+      }
+    } catch (Exception e)
+    {
+      br = new BufferedReader(
+          new InputStreamReader(ClassLoader.getSystemClassLoader().getResourceAsStream("jav_config.ws"), StandardCharsets.ISO_8859_1));
+      String line;
+      while ((line = br.readLine()) != null) {
         String[] split1 = line.split("=", 2);
         switch (split1[0]) {
           case "param":
