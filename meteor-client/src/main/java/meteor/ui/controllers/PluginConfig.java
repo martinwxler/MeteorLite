@@ -14,10 +14,13 @@ import java.util.Arrays;
 import java.util.List;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Orientation;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
@@ -50,24 +53,24 @@ public class PluginConfig {
   @Inject
   ConfigManager configManager;
 
+  private double configItemViewOffset = 0;
+  AnchorPane configPanel;
+  boolean fakeEvent = false;
+
   @FXML
   public void initialize() {
     MeteorLite.injector.injectMembers(this);
     plugin = PluginsFXMLController.lastPluginInteracted;
-
-    ScrollPane scrollPane = new ScrollPane();
-    scrollPane.setMinSize(350, 600);
-    AnchorPane.setTopAnchor(scrollPane, 45.0);
-    AnchorPane.setBottomAnchor(scrollPane, 5.0);
 
 
 
     FontAwesomeIconView plug = new FontAwesomeIconView(FontAwesomeIcon.PLUG);
     plug.setFill(Paint.valueOf("CYAN"));
     plug.setLayoutY(25);
-    AnchorPane.setLeftAnchor(plug, 140.0);
+    AnchorPane.setLeftAnchor(plug, 120.0);
 
     pluginConfigPanel.getChildren().add(plug);
+    pluginConfigPanel.setMinHeight(8000);
 
     Text pluginsString = new Text();
     pluginsString.setText(plugin.getName());
@@ -75,15 +78,13 @@ public class PluginConfig {
     pluginsString.setLayoutY(28);
     pluginsString.setWrappingWidth(300);
     pluginsString.setFont(Font.font(18));
-    AnchorPane.setLeftAnchor(pluginsString, 165.0);
+    AnchorPane.setLeftAnchor(pluginsString, 145.0);
 
     pluginConfigPanel.getChildren().add(pluginsString);
     nodeList = new VBox();
     nodeList.setLayoutY(45);
 
-    pluginConfigPanel.getChildren().add(nodeList);
-
-    AnchorPane configPanel = new AnchorPane();
+    configPanel = new AnchorPane();
     configPanel.setStyle("-fx-border-color: #102027");
     configPanel.setPrefHeight(25);
     configPanel.setPrefWidth(280);
@@ -95,9 +96,10 @@ public class PluginConfig {
     {
       for (ConfigItemDescriptor configItemDescriptor : descriptor.getItems())
       {
-        ConfigItem configItem = configItemDescriptor.getItem();
-        logger.debug(configItem.name());
         AnchorPane nodePanel = createNode();
+        nodePanel.setStyle("-fx-background-color: #212121;");
+        AnchorPane.setRightAnchor(nodePanel, 2.0);
+        AnchorPane.setLeftAnchor(nodePanel, 2.0);
         if (configItemDescriptor.getType() == int.class)
         {
           if (configItemDescriptor.getRange() != null)
@@ -137,6 +139,42 @@ public class PluginConfig {
         }
       }
     }
+    pluginConfigPanel.getChildren().add(nodeList);
+
+    ScrollBar scrollBar = new ScrollBar();
+    scrollBar.setOrientation(Orientation.VERTICAL);
+    scrollBar.setMinSize(5, 4096);
+    AnchorPane.setRightAnchor(scrollBar, 0.0);
+    scrollBar.setMin(0);
+    scrollBar.setMax(100);
+    scrollBar.setValue(0);
+    scrollBar.getStylesheets().add("css/plugins/jfx-scrollbar.css");
+    scrollBar.valueProperty().addListener((observable, oldValue, newValue) -> {
+      if (fakeEvent)
+      {
+        fakeEvent = false;
+        return;
+      }
+      configItemViewOffset =  newValue.doubleValue();
+      configItemViewOffset = (configItemViewOffset - (configItemViewOffset *= 45));
+      nodeList.setLayoutY(configItemViewOffset + 45);
+      pluginsString.setLayoutY(configItemViewOffset + 28);
+      plug.setLayoutY(configItemViewOffset + 25);
+    });
+
+    pluginConfigPanel.getChildren().add(scrollBar);
+    pluginConfigPanel.addEventHandler(ScrollEvent.SCROLL, (e) -> {
+      configItemViewOffset = configItemViewOffset + e.getDeltaY();
+      if (configItemViewOffset > 0)
+        configItemViewOffset = 0;
+
+      nodeList.setLayoutY(configItemViewOffset + 45);
+      pluginsString.setLayoutY(configItemViewOffset + 28);
+      plug.setLayoutY(configItemViewOffset + 25);
+
+      fakeEvent = true;
+      scrollBar.setValue((configItemViewOffset * -1) / 200);
+    });
   }
 
   private void createEnumNode(ConfigDescriptor config, AnchorPane root, ConfigItemDescriptor configItem) {
@@ -171,7 +209,7 @@ public class PluginConfig {
     comboBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
       updateConfigItemValue(config, configItem, newValue.name());
     });
-    
+
     root.getChildren().add(comboBox);
   }
 
@@ -231,6 +269,7 @@ public class PluginConfig {
     textArea.setMinSize(305, 200);
     textArea.setLayoutY(25);
     textArea.getStylesheets().add("css/plugins/jfx-textarea.css");
+    textArea.setStyle("-jfx-focus-color: CYAN;");
     textArea.textProperty().addListener((observable, oldValue, newValue) -> updateConfigItemValue(config, descriptor, newValue));
 
     root.getChildren().add(textArea);
@@ -250,14 +289,14 @@ public class PluginConfig {
     name.setText(descriptor.name());
     name.setFill(Paint.valueOf("WHITE"));
     name.setLayoutX(18);
-    name.setLayoutY(18);
+    name.setLayoutY(30);
     name.setWrappingWidth(300);
     name.setFont(Font.font(18));
 
     root.getChildren().add(name);
 
     PluginToggleButton toggleButton = new PluginToggleButton(plugin);
-    toggleButton.setSize(4);
+    toggleButton.setSize(6);
     toggleButton.setLayoutX(305);
     toggleButton.setLayoutY(8);
 

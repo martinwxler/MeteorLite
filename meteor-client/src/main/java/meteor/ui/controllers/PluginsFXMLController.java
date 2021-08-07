@@ -5,9 +5,12 @@ import static meteor.MeteorLite.pluginsPanelVisible;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.fxml.FXML;
+import javafx.geometry.Orientation;
 import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
@@ -33,6 +36,10 @@ public class PluginsFXMLController {
   private VBox pluginList;
 
   public static Plugin lastPluginInteracted;
+
+  private double configItemViewOffset = 0;
+
+  boolean fakeEvent = false;
 
   @FXML
   public void initialize() {
@@ -63,20 +70,22 @@ public class PluginsFXMLController {
     for (Plugin p : PluginManager.plugins)
     {
       AnchorPane pluginPanel = new AnchorPane();
-      pluginPanel.setStyle("-fx-border-color: #102027");
+      pluginPanel.setStyle("-fx-border-color: transparent;");
+
       pluginPanel.setPrefHeight(25);
       pluginPanel.setPrefWidth(280);
 
       PluginConfigButton configButton = new PluginConfigButton(p);
-      configButton.setContentDisplay(ContentDisplay.RIGHT);
-      configButton.setLayoutX(265);
-      configButton.setPrefSize(40, 40);
-
       if (p.getConfig(MeteorLite.injector.getInstance(ConfigManager.class)) != null)
       {
+        configButton.setContentDisplay(ContentDisplay.RIGHT);
+        configButton.setLayoutX(260);
+        configButton.setPrefSize(40, 40);
+
         FontAwesomeIconView cog = new FontAwesomeIconView(FontAwesomeIcon.COG);
         cog.setFill(Paint.valueOf("CYAN"));
-        cog.setLayoutX(280);
+        cog.setLayoutX(265);
+        cog.setSize("18");
         configButton.setGraphic(cog);
         configButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
           lastPluginInteracted = p;
@@ -89,9 +98,8 @@ public class PluginsFXMLController {
       if (!p.getClass().getAnnotation(PluginDescriptor.class).cantDisable())
       {
         toggleButton = new PluginToggleButton(p);
-        toggleButton.setSize(4);
-        toggleButton.setLayoutX(305);
-        toggleButton.setLayoutY(8);
+        toggleButton.setSize(6);
+        toggleButton.setLayoutX(290);
 
         toggleButton.addEventHandler(MouseEvent.MOUSE_PRESSED, (e) -> p.toggle());
 
@@ -108,14 +116,47 @@ public class PluginsFXMLController {
       pluginName.setFont(Font.font(18));
 
       pluginPanel.getChildren().add(pluginName);
-      pluginPanel.getChildren().add(configButton);
+      pluginPanel.getChildren().add(configButton); //Order matters here! Very Important! uwu
       if (toggleButton != null)
       pluginPanel.getChildren().add(toggleButton);
 
       pluginList.getChildren().add(pluginPanel);
     }
 
+    ScrollBar scrollBar = new ScrollBar();
+    scrollBar.setOrientation(Orientation.VERTICAL);
+    scrollBar.setMinSize(5, 4096);
+    AnchorPane.setRightAnchor(scrollBar, 0.0);
+    scrollBar.setMin(0);
+    scrollBar.setMax(100);
+    scrollBar.setValue(0);
+    scrollBar.getStylesheets().add("css/plugins/jfx-scrollbar.css");
+    scrollBar.valueProperty().addListener((observable, oldValue, newValue) -> {
+      if (fakeEvent)
+      {
+        fakeEvent = false;
+        return;
+      }
+      configItemViewOffset =  newValue.doubleValue();
+      configItemViewOffset = (configItemViewOffset - (configItemViewOffset *= 45));
+      plug.setLayoutY(configItemViewOffset + 25);
+      pluginsString.setLayoutY(configItemViewOffset + 28);
+      pluginList.setLayoutY(configItemViewOffset + 45);
+    });
     pluginPanel.getChildren().add(pluginList);
-  }
+    pluginPanel.getChildren().add(scrollBar);
 
+    pluginPanel.addEventHandler(ScrollEvent.SCROLL, (e) -> {
+      configItemViewOffset = configItemViewOffset + e.getDeltaY();
+      if (configItemViewOffset > 0)
+        configItemViewOffset = 0;
+
+      pluginList.setLayoutY(configItemViewOffset + 45);
+      pluginsString.setLayoutY(configItemViewOffset + 28);
+      plug.setLayoutY(configItemViewOffset + 25);
+
+      fakeEvent = true;
+      scrollBar.setValue((configItemViewOffset * -1) / 200);
+    });
+  }
 }

@@ -23,6 +23,7 @@
   -fx-prompt-text-fill: #4d4d4d;
 }
 .jfx-combo-box .cell{
+  -jfx-focus-color: #4d4d4d;
   -fx-background-color: #121212;
   -fx-text-fill: CYAN;
 }

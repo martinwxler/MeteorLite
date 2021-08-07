@@ -127,6 +127,10 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
     rightPanel.setScene(new Scene(root, 350, 800));
   }
 
+  public static void updateRightPanel(Parent root, int width) {
+    rightPanel.setScene(new Scene(root, width, 800));
+  }
+
   public static void loadJagexConfiguration() throws IOException {
     Map<String, String> properties = new HashMap<>();
     Map<String, String> parameters = new HashMap<>();

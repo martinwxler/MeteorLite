@@ -20,12 +20,12 @@
 .jfx-text-area {
   -jfx-focus-color: CYAN;
   -fx-text-fill: CYAN;
-  -jfx-unfocus-color: #212121;
+  -jfx-unfocus-color: #121212;
   -fx-padding: 0.333333em 0 0 0 ;
 }
 
 .jfx-text-area > .input-line {
-  -fx-background-color: -jfx-unfocus-color;
+  -fx-background-color: #121212;
   -fx-pref-height: 1px;
   -fx-translate-y: 1px;
 }
@@ -37,7 +37,7 @@
 
 .jfx-text-area,
 .jfx-text-area:focused {
-  -fx-prompt-text-fill: #4D4D4D;
+  -fx-prompt-text-fill: #121212;
 }
 
 .jfx-text-area,
@@ -49,7 +49,7 @@
 
 .jfx-text-area .content,
 .jfx-text-area:focused .content{
-  -fx-background-color:TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
+  -fx-background-color: #121212;
   -fx-padding: 0 0 0 0;
 }
 

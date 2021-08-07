@@ -64,7 +64,7 @@ public class Plugin implements Module {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    MeteorLite.updateRightPanel(configRoot);
+    MeteorLite.updateRightPanel(configRoot, 370);
   }
 
   public void toggle() {
