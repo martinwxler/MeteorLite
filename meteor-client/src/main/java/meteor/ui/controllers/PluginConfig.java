@@ -204,7 +204,7 @@ public class PluginConfig {
     comboBox.setMinSize(150, 15);
     AnchorPane.setLeftAnchor(comboBox, 200.0);
     AnchorPane.setRightAnchor(comboBox, 10.0);
-    AnchorPane.setLeftAnchor(comboBox, 2.0);
+    AnchorPane.setBottomAnchor(comboBox, 2.0);
     comboBox.autosize();
     comboBox.getStylesheets().add("css/plugins/jfx-combobox.css");
     comboBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
