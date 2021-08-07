@@ -18,8 +18,9 @@
  */
 
 .jfx-slider {
+
   -jfx-default-thumb: CYAN;
-  -jfx-default-track: #bdbdbd;
+  -jfx-default-track: #121212;
 }
 
 .jfx-slider .track,
@@ -33,7 +34,7 @@
 
 .jfx-slider .thumb,
 .jfx-slider:focused .thumb {
-  -fx-text-fill: #102027;
+  -fx-text-fill: #212121;
   -fx-background-color: -jfx-default-thumb;
   -fx-background-radius: 20;
   -fx-background-insets: 0;
@@ -46,7 +47,7 @@
 }
 
 .jfx-slider .slider-value {
-  -fx-stroke: WHITE;
+  -fx-stroke: #212121;
   -fx-font-size: 10;
 }
 

@@ -67,7 +67,7 @@ public class PluginConfig {
     FontAwesomeIconView plug = new FontAwesomeIconView(FontAwesomeIcon.PLUG);
     plug.setFill(Paint.valueOf("CYAN"));
     plug.setLayoutY(25);
-    AnchorPane.setLeftAnchor(plug, 120.0);
+    AnchorPane.setLeftAnchor(plug, 10.0);
 
     pluginConfigPanel.getChildren().add(plug);
     pluginConfigPanel.setMinHeight(8000);
@@ -78,7 +78,7 @@ public class PluginConfig {
     pluginsString.setLayoutY(28);
     pluginsString.setWrappingWidth(300);
     pluginsString.setFont(Font.font(18));
-    AnchorPane.setLeftAnchor(pluginsString, 145.0);
+    AnchorPane.setLeftAnchor(pluginsString, 35.0);
 
     pluginConfigPanel.getChildren().add(pluginsString);
     nodeList = new VBox();
@@ -204,6 +204,7 @@ public class PluginConfig {
     comboBox.setMinSize(150, 15);
     AnchorPane.setLeftAnchor(comboBox, 200.0);
     AnchorPane.setRightAnchor(comboBox, 10.0);
+    AnchorPane.setBottomAnchor(comboBox, 2.0);
     comboBox.autosize();
     comboBox.getStylesheets().add("css/plugins/jfx-combobox.css");
     comboBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
@@ -256,18 +257,20 @@ public class PluginConfig {
     name.setLayoutY(18);
     name.setWrappingWidth(300);
     name.setFont(Font.font(18));
+    AnchorPane.setBottomAnchor(name, 150.0);
 
     root.getChildren().add(name);
 
     JFXTextArea textArea = new JFXTextArea();
     AnchorPane.setLeftAnchor(textArea, 15.0);
     AnchorPane.setRightAnchor(textArea, 25.0);
+    AnchorPane.setBottomAnchor(textArea, 2.0);
     textArea.setFont(Font.font(18));
 
     textArea.setWrapText(true);
     textArea.setText(configManager.getConfiguration(config.getGroup().value(), descriptor.key(), String.class));
-    textArea.setMinSize(305, 200);
-    textArea.setLayoutY(25);
+    textArea.setMaxSize(305, 150);
+    textArea.setLayoutY(45);
     textArea.getStylesheets().add("css/plugins/jfx-textarea.css");
     textArea.setStyle("-jfx-focus-color: CYAN;");
     textArea.textProperty().addListener((observable, oldValue, newValue) -> updateConfigItemValue(config, descriptor, newValue));
