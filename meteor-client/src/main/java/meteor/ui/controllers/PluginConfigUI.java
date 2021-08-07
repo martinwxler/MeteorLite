@@ -1,5 +1,7 @@
 package meteor.ui.controllers;
 
+import static meteor.ui.controllers.PluginListUI.lastPluginInteracted;
+
 import com.jfoenix.controls.JFXColorPicker;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXSlider;
@@ -10,14 +12,11 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollBar;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -26,19 +25,18 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javax.swing.JComboBox;
 import meteor.MeteorLite;
 import meteor.config.Config;
 import meteor.config.ConfigDescriptor;
-import meteor.config.ConfigItem;
 import meteor.config.ConfigItemDescriptor;
 import meteor.config.ConfigManager;
 import meteor.plugins.Plugin;
+import meteor.plugins.PluginDescriptor;
 import meteor.ui.components.PluginToggleButton;
 import net.runelite.api.mixins.Inject;
 import org.sponge.util.Logger;
 
-public class PluginConfig {
+public class PluginConfigUI {
 
   Logger logger = new Logger("PluginConfigController");
 
@@ -60,7 +58,7 @@ public class PluginConfig {
   @FXML
   public void initialize() {
     MeteorLite.injector.injectMembers(this);
-    plugin = PluginsFXMLController.lastPluginInteracted;
+    plugin = lastPluginInteracted;
 
 
 
@@ -80,6 +78,19 @@ public class PluginConfig {
     pluginsString.setFont(Font.font(18));
     AnchorPane.setLeftAnchor(pluginsString, 35.0);
 
+    PluginToggleButton toggleButton = null;
+    if (!lastPluginInteracted.getClass().getAnnotation(PluginDescriptor.class).cantDisable())
+    {
+      toggleButton = new PluginToggleButton(lastPluginInteracted);
+      toggleButton.setSize(6);
+      AnchorPane.setRightAnchor(toggleButton, 15.0);
+
+      toggleButton.addEventHandler(MouseEvent.MOUSE_PRESSED, (e) -> lastPluginInteracted.toggle());
+
+      toggleButton.setSelected(true);
+      toggleButton.setStyle("-fx-text-fill: CYAN;");
+    }
+
     pluginConfigPanel.getChildren().add(pluginsString);
     nodeList = new VBox();
     nodeList.setLayoutY(45);
@@ -97,7 +108,7 @@ public class PluginConfig {
       for (ConfigItemDescriptor configItemDescriptor : descriptor.getItems())
       {
         AnchorPane nodePanel = createNode();
-        nodePanel.setStyle("-fx-background-color: #212121;");
+        nodePanel.setStyle("-fx-background-color: #212121; -fx-border-style: solid;  -fx-border-color: #121212; -fx-border-width: 1;");
         AnchorPane.setRightAnchor(nodePanel, 2.0);
         AnchorPane.setLeftAnchor(nodePanel, 2.0);
         if (configItemDescriptor.getType() == int.class)
@@ -149,6 +160,7 @@ public class PluginConfig {
     scrollBar.setMax(100);
     scrollBar.setValue(0);
     scrollBar.getStylesheets().add("css/plugins/jfx-scrollbar.css");
+    PluginToggleButton finalToggleButton = toggleButton;
     scrollBar.valueProperty().addListener((observable, oldValue, newValue) -> {
       if (fakeEvent)
       {
@@ -160,6 +172,7 @@ public class PluginConfig {
       nodeList.setLayoutY(configItemViewOffset + 45);
       pluginsString.setLayoutY(configItemViewOffset + 28);
       plug.setLayoutY(configItemViewOffset + 25);
+      finalToggleButton.setLayoutY(configItemViewOffset);
     });
 
     pluginConfigPanel.getChildren().add(scrollBar);
@@ -171,10 +184,14 @@ public class PluginConfig {
       nodeList.setLayoutY(configItemViewOffset + 45);
       pluginsString.setLayoutY(configItemViewOffset + 28);
       plug.setLayoutY(configItemViewOffset + 25);
+      finalToggleButton.setLayoutY(configItemViewOffset);
 
       fakeEvent = true;
       scrollBar.setValue((configItemViewOffset * -1) / 200);
     });
+
+    if(toggleButton != null)
+      pluginConfigPanel.getChildren().add(toggleButton);
   }
 
   private void createEnumNode(ConfigDescriptor config, AnchorPane root, ConfigItemDescriptor configItem) {
@@ -321,6 +338,7 @@ public class PluginConfig {
     Text name = new Text();
     name.setText(descriptor.name());
     name.setFill(Paint.valueOf("WHITE"));
+    AnchorPane.setTopAnchor(name, 5.0);
     name.setLayoutX(18);
     name.setLayoutY(18);
     name.setWrappingWidth(300);
@@ -356,6 +374,8 @@ public class PluginConfig {
 
   private void createIntegerTextNode(ConfigDescriptor config, AnchorPane root, ConfigItemDescriptor descriptor)
   {
+    root.setMinSize(350, 25);
+    root.setMinSize(0, 35);
     Text name = new Text();
     name.setText(descriptor.name());
     name.setFill(Paint.valueOf("WHITE"));
@@ -367,12 +387,13 @@ public class PluginConfig {
     root.getChildren().add(name);
 
     JFXTextField textField = new JFXTextField();
-
+    AnchorPane.setTopAnchor(textField, 0.0);
+    AnchorPane.setBottomAnchor(textField, 0.0);
     AnchorPane.setLeftAnchor(textField, 200.0);
     AnchorPane.setRightAnchor(textField, 10.0);
-    textField.setMinSize(150, 15);
+    textField.setMaxSize(150, 15);
     textField.setFont(Font.font(18));
-    textField.autosize();
+    logger.debug(textField.getHeight() + "");
     textField.setText(configManager.getConfiguration(config.getGroup().value(), descriptor.key(), String.class));
     textField.addEventHandler(KeyEvent.KEY_TYPED, (e) ->
     {
@@ -389,6 +410,7 @@ public class PluginConfig {
         updateConfigItemValue(config, descriptor, min);
       }
     });
+    textField.setStyle("-jfx-focus-color: CYAN;");
     textField.getStylesheets().add("css/plugins/jfx-textfield.css");
 
     root.getChildren().add(textField);
@@ -480,5 +502,6 @@ public class PluginConfig {
   private void updateConfigItemValue(ConfigDescriptor config, ConfigItemDescriptor configItem, Object value)
   {
     configManager.setConfiguration(config.getGroup().value(), configItem.key(), value);
+    lastPluginInteracted.updateConfig();
   }
 }

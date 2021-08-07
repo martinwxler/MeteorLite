@@ -1,5 +1,6 @@
 package net.runelite.mixins;
 
+import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.image.BufferedImage;
 
@@ -114,6 +115,13 @@ public abstract class ActorMixin implements RSActor {
       }
     }
     return -1;
+  }
+
+  @Inject
+  @Override
+  public Point getCanvasTextLocation(Graphics2D graphics, String text, int zOffset)
+  {
+    return Perspective.getCanvasTextLocation(client, graphics, getLocalLocation(), text, zOffset);
   }
 
   @Inject

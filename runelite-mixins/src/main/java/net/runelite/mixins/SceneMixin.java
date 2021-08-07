@@ -360,7 +360,8 @@ public abstract class SceneMixin implements RSScene {
       try {
         copy$drawTileUnderlay(tile, z, pitchSin, pitchCos, yawSin, yawCos, x, y);
       } catch (Exception ex) {
-        client.getLogger().warn("error during tile underlay rendering", ex);
+        client.getLogger().warn("error during tile underlay rendering");
+        ex.printStackTrace();
       }
       return;
     }
@@ -457,7 +458,8 @@ public abstract class SceneMixin implements RSScene {
         }
       }
     } catch (Exception ex) {
-      client.getLogger().warn("error during underlay rendering", ex);
+      client.getLogger().warn("error during underlay rendering");
+      ex.printStackTrace();
     }
   }
 
@@ -552,7 +554,8 @@ public abstract class SceneMixin implements RSScene {
         }
       }
     } catch (Exception ex) {
-      client.getLogger().warn("error during overlay rendering", ex);
+      client.getLogger().warn("error during overlay rendering");
+      ex.printStackTrace();
     }
   }
 

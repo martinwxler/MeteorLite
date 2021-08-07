@@ -77,15 +77,12 @@ public class ActionListener extends MouseAdapter implements KeyListener {
   public void keyPressed(KeyEvent e) {
     if (e.getKeyCode() == ALT) {
       altPressed = true;
-      e.consume();
     }
     if (e.getKeyCode() == CTRL) {
       ctrlPressed = true;
-      e.consume();
     }
     if (e.getKeyCode() == ESC) {
       reset();
-      e.consume();
     }
   }
 

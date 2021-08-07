@@ -42,6 +42,8 @@ public class Plugin implements Module {
 
   public void startup() { }
   public void shutdown() { }
+  
+  public void updateConfig() { }
   public void resetConfiguration(){ }
 
   @Override

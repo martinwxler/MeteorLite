@@ -7,46 +7,26 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" style="-fx-background-color: #212121; -fx-border-style: solid; -fx-border-color: #121212; -fx-border-width: 3;" id="toolbarBackground" maxHeight="-Infinity"
-  maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-  prefHeight="44.0"
-  prefWidth="1203.0" xmlns="http://javafx.com/javafx/8.0.171"
-  fx:controller="meteor.ui.controllers.ToolbarFXMLController">
-  <ImageView AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="1.0" fitHeight="36.0" fitWidth="43.0" layoutX="7.0"
-    layoutY="4.0" pickOnBounds="true" preserveRatio="true">
+
+<AnchorPane id="toolbarBackground" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="33.0" prefWidth="1203.0" style="-fx-background-color: #212121; -fx-border-style: solid; -fx-border-color: #121212; -fx-border-width: 3;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="meteor.ui.controllers.ToolbarFXMLController">
+  <ImageView fitHeight="28.0" fitWidth="26.0" layoutX="7.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="3.0" AnchorPane.topAnchor="1.0">
     <image>
-      <Image url="@MeteorLite_icon.png"/>
+      <Image url="@MeteorLite_icon.png" />
     </image>
   </ImageView>
-  <JFXButton style="-fx-text-fill: CYAN; -jfx-button-type: RAISED;" AnchorPane.rightAnchor="14.0" alignment="CENTER" layoutX="1105.0"
-    layoutY="10.0" onAction="#handleOptionsPressed" prefHeight="25.0"
-    prefWidth="84.0" text="  Options" textAlignment="CENTER"
-    fx:id="optionsButton">
+  <JFXButton fx:id="pluginsButton" alignment="CENTER" layoutX="1028.0" layoutY="12.0" onAction="#handlePluginsPressed" prefHeight="25.0" prefWidth="82.0" style="-fx-text-fill: CYAN; -jfx-button-type: RAISED;" text=" Plugins " textAlignment="CENTER" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="2.0">
     <graphic>
-      <FontAwesomeIconView fill="AQUA" glyphName="COG" size="15"
-        wrappingWidth="11.523646354675293"/>
+      <FontAwesomeIconView fill="AQUA" glyphName="PLUG" size="11" wrappingWidth="11.523646354675293" />
     </graphic>
   </JFXButton>
-  <JFXButton style="-fx-text-fill: CYAN; -jfx-button-type: RAISED;" AnchorPane.rightAnchor="98.0" alignment="CENTER" layoutX="1028.0"
-    layoutY="10.0" onAction="#handlePluginsPressed" prefHeight="25.0"
-    prefWidth="77.0" text="  Plugins" textAlignment="CENTER"
-    fx:id="pluginsButton">
-    <graphic>
-      <FontAwesomeIconView fill="AQUA" glyphName="PLUG" size="15"
-        wrappingWidth="11.523646354675293"/>
-    </graphic>
-  </JFXButton>
-  <JFXTextArea AnchorPane.topAnchor="-18.0" layoutX="45.0" layoutY="-12.0" prefHeight="106.0"
-    prefWidth="199.0" stylesheets="@css/toolbar/meteortextarea.css" text="Meteor">
+  <JFXTextArea layoutX="45.0" layoutY="-12.0" prefHeight="106.0" prefWidth="199.0" stylesheets="@css/toolbar/meteortextarea.css" text="Meteor" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="-14.0">
     <font>
-      <Font name="Candara" size="39.0"/>
+      <Font name="Candara" size="28.0" />
     </font>
   </JFXTextArea>
-  <JFXTextArea AnchorPane.leftAnchor="167.0" AnchorPane.topAnchor="-17.0" layoutX="55.0" layoutY="-2.0"
-    prefHeight="106.0" prefWidth="199.0" stylesheets="@css/hudbar/xptextarea.css"
-    text="Lite">
+  <JFXTextArea layoutX="55.0" layoutY="-2.0" prefHeight="106.0" prefWidth="199.0" stylesheets="@css/hudbar/xptextarea.css" text="Lite" AnchorPane.leftAnchor="119.0" AnchorPane.topAnchor="-13.0">
     <font>
-      <Font name="Candara" size="39.0"/>
+      <Font name="Candara" size="28.0" />
     </font>
   </JFXTextArea>
 </AnchorPane>

@@ -35,7 +35,8 @@ public enum ItemType {
     try {
       return ItemType.valueOf(type.toUpperCase());
     } catch (IllegalArgumentException ex) {
-      logger.warn("unable to convert type", ex);
+      logger.warn("unable to convert type");
+      ex.printStackTrace();
       return DEFAULT;
     }
   }

@@ -175,6 +175,10 @@ public class LeftClickCast extends Plugin
 	@Subscribe
 	public void onMenuEntryAdded(MenuEntryAdded event)
 	{
+		if (!config.enableSwaps())
+		{
+			return;
+		}
 		if (event.isForceLeftClick())
 		{
 			return;
@@ -238,17 +242,20 @@ public class LeftClickCast extends Plugin
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
-		if (event.getMenuOption().contains("(P)"))
+		if (config.enableSwaps())
 		{
-			event.setMenuAction(SPELL_CAST_ON_PLAYER);
-			event.setActionParam(0);
-			event.setWidgetId(0);
-		}
-		else if (event.getMenuOption().contains("(N)"))
-		{
-			event.setMenuAction(SPELL_CAST_ON_NPC);
-			event.setActionParam(0);
-			event.setWidgetId(0);
+			if (event.getMenuOption().contains("(P)"))
+			{
+				event.setMenuAction(SPELL_CAST_ON_PLAYER);
+				event.setActionParam(0);
+				event.setWidgetId(0);
+			}
+			else if (event.getMenuOption().contains("(N)"))
+			{
+				event.setMenuAction(SPELL_CAST_ON_NPC);
+				event.setActionParam(0);
+				event.setWidgetId(0);
+			}
 		}
 	}
 
@@ -280,9 +287,10 @@ public class LeftClickCast extends Plugin
 		}
 	}
 
-	private void updateConfig()
+	public void updateConfig()
 	{
 		whitelist.clear();
+		if (config.enableSwaps())
 		if (config.disableStaffChecks())
 		{
 			List<String> string = Text.fromCSV(config.whitelist());

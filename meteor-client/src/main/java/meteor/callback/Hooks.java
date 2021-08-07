@@ -286,7 +286,8 @@ public class Hooks implements Callbacks {
     try {
       renderer.renderOverlayLayer(graphics2d, OverlayLayer.ALWAYS_ON_TOP);
     } catch (Exception ex) {
-      log.warn("Error during overlay rendering", ex);
+      log.warn("Error during overlay rendering");
+      ex.printStackTrace();
     }
 
     if (client.isGpu()) {
@@ -353,7 +354,8 @@ public class Hooks implements Callbacks {
     try {
       renderer.renderOverlayLayer(graphics2d, OverlayLayer.ABOVE_SCENE);
     } catch (Exception ex) {
-      log.warn("Error during overlay rendering", ex);
+      log.warn("Error during overlay rendering");
+      ex.printStackTrace();
     }
   }
 
@@ -365,7 +367,8 @@ public class Hooks implements Callbacks {
     try {
       renderer.renderOverlayLayer(graphics2d, OverlayLayer.UNDER_WIDGETS);
     } catch (Exception ex) {
-      log.warn("Error during overlay rendering", ex);
+      log.warn("Error during overlay rendering");
+      ex.printStackTrace();
     }
   }
 
@@ -406,7 +409,8 @@ public class Hooks implements Callbacks {
     try {
       renderer.renderAfterInterface(graphics2d, interfaceId, widgetItems);
     } catch (Exception ex) {
-      log.warn("Error during overlay rendering", ex);
+      log.warn("Error during overlay rendering");
+      ex.printStackTrace();
     }
   }
 
@@ -418,7 +422,8 @@ public class Hooks implements Callbacks {
     try {
       renderer.renderAfterLayer(graphics2d, layer, widgetItems);
     } catch (Exception ex) {
-      log.warn("Error during overlay rendering", ex);
+      log.warn("Error during overlay rendering");
+      ex.printStackTrace();
     }
   }
 

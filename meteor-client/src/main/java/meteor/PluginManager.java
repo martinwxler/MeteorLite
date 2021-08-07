@@ -62,8 +62,6 @@ public class PluginManager {
 
   static
   {
-    //plugins.add(new EventTestPlugin());
-    //MeteorLite.plugins.add(new DebugPlugin());
     plugins.add(new ActionPlugin());
     plugins.add(new AgilityPlugin());
     plugins.add(new AoeWarningPlugin());
