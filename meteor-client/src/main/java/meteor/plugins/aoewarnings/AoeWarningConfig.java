@@ -119,7 +119,7 @@ public interface AoeWarningConfig extends Config
   )
   default Color overlayColor()
   {
-    return new Color(0, 150, 200);
+    return Color.CYAN;
   }
 
   @ConfigItem(
