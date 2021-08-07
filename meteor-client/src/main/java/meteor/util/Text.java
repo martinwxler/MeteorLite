@@ -43,7 +43,7 @@ public class Text {
   public static final CharMatcher JAGEX_PRINTABLE_CHAR_MATCHER = new JagexPrintableCharMatcher();
   private static final JaroWinklerDistance DISTANCE = new JaroWinklerDistance();
   private static final Pattern TAG_REGEXP = Pattern.compile("<[^>]*>");
-  private static final Splitter COMMA_SPLITTER = Splitter
+  public static final Splitter COMMA_SPLITTER = Splitter
       .on(",")
       .omitEmptyStrings()
       .trimResults();

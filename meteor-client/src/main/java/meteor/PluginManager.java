@@ -15,6 +15,7 @@ import meteor.plugins.actions.ActionPlugin;
 import meteor.plugins.agility.AgilityPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.bank.BankPlugin;
+import meteor.plugins.banktags.BankTagsPlugin;
 import meteor.plugins.betterantidrag.BetterAntiDragPlugin;
 import meteor.plugins.betterroguesden.BetterRougesDenPlugin;
 import meteor.plugins.blastfurnace.BlastFurnacePlugin;
@@ -43,9 +44,12 @@ import meteor.plugins.npcstatus.NpcStatusPlugin;
 import meteor.plugins.objectindicators.ObjectIndicatorsPlugin;
 import meteor.plugins.oneclick.OneClickPlugin;
 import meteor.plugins.playerindicators.PlayerIndicatorsPlugin;
+import meteor.plugins.slayer.SlayerPlugin;
 import meteor.plugins.smithing.SmithingPlugin;
 import meteor.plugins.stretchedmode.StretchedModePlugin;
+import meteor.plugins.tearsofguthix.TearsOfGuthixPlugin;
 import meteor.plugins.ticktimers.TickTimersPlugin;
+import meteor.plugins.timestamp.TimestampPlugin;
 import meteor.plugins.worldmap.WorldMapPlugin;
 
 public class PluginManager {
@@ -64,6 +68,7 @@ public class PluginManager {
     plugins.add(new AgilityPlugin());
     plugins.add(new AoeWarningPlugin());
     plugins.add(new BankPlugin());
+    plugins.add(new BankTagsPlugin());
     plugins.add(new BetterAntiDragPlugin());
     plugins.add(new BetterRougesDenPlugin());
     plugins.add(new BlastFurnacePlugin());
@@ -92,9 +97,12 @@ public class PluginManager {
     plugins.add(new ObjectIndicatorsPlugin());
     plugins.add(new OneClickPlugin());
     plugins.add(new PlayerIndicatorsPlugin());
+    plugins.add(new SlayerPlugin());
     plugins.add(new SmithingPlugin());
     plugins.add(new StretchedModePlugin());
+    plugins.add(new TearsOfGuthixPlugin());
     plugins.add(new TickTimersPlugin());
+    plugins.add(new TimestampPlugin());
     plugins.add(new WorldMapPlugin());
   }
 

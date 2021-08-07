@@ -42,6 +42,7 @@ public class Plugin implements Module {
 
   public void startup() { }
   public void shutdown() { }
+  public void resetConfiguration(){ }
 
   @Override
   public void configure(Binder binder) { }
@@ -59,7 +60,7 @@ public class Plugin implements Module {
     Parent configRoot = null;
     try {
       configRoot = FXMLLoader.load(Objects.requireNonNull(ClassLoader.getSystemClassLoader()
-          .getResource("plugin-config.fxml")));
+              .getResource("plugin-config.fxml")));
     } catch (IOException e) {
       e.printStackTrace();
     }

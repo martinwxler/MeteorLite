@@ -43,7 +43,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -67,7 +66,6 @@ import meteor.input.KeyManager;
 import meteor.input.MouseManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
-import meteor.plugins.grounditems.config.HighlightTier;
 import meteor.plugins.grounditems.config.ItemHighlightMode;
 import meteor.plugins.grounditems.config.MenuHighlightMode;
 import meteor.ui.overlay.OverlayManager;
@@ -123,7 +121,6 @@ public class GroundItemsPlugin extends Plugin {
       .create();
   private final Queue<Integer> droppedItemQueue = EvictingQueue
       .create(16); // recently dropped items
-  private final Map<WorldPoint, Lootbeam> lootbeams = new HashMap<>();
   @Getter(AccessLevel.PACKAGE)
   @Setter(AccessLevel.PACKAGE)
   private Map.Entry<Rectangle, GroundItem> textBoxBounds;
@@ -192,7 +189,6 @@ public class GroundItemsPlugin extends Plugin {
     hiddenItemList = null;
     highlightedItemsList = null;
     collectedGroundItems.clear();
-    clientThread.invokeLater(this::removeAllLootbeams);
   }
 
   @Subscribe
@@ -206,7 +202,6 @@ public class GroundItemsPlugin extends Plugin {
   public void onGameStateChanged(final GameStateChanged event) {
     if (event.getGameState() == GameState.LOADING) {
       collectedGroundItems.clear();
-      lootbeams.clear();
     }
   }
 
@@ -223,8 +218,6 @@ public class GroundItemsPlugin extends Plugin {
     } else {
       collectedGroundItems.put(tile.getWorldLocation(), item.getId(), groundItem);
     }
-
-    handleLootbeam(tile.getWorldLocation());
   }
 
   @Subscribe
@@ -246,8 +239,6 @@ public class GroundItemsPlugin extends Plugin {
       // time
       groundItem.setSpawnTime(null);
     }
-
-    handleLootbeam(tile.getWorldLocation());
   }
 
   @Subscribe
@@ -262,8 +253,6 @@ public class GroundItemsPlugin extends Plugin {
     if (groundItem != null) {
       groundItem.setQuantity(groundItem.getQuantity() + diff);
     }
-
-    handleLootbeam(tile.getWorldLocation());
   }
 
   @Subscribe
@@ -405,8 +394,6 @@ public class GroundItemsPlugin extends Plugin {
     }
 
     priceChecks = priceCheckBuilder.build();
-
-    clientThread.invokeLater(this::handleLootbeams);
   }
 
   @Subscribe
@@ -582,88 +569,6 @@ public class GroundItemsPlugin extends Plugin {
       lastUsedItem = clickedItem.getId();
     }
   }
-
-  private void handleLootbeam(WorldPoint worldPoint) {
-    /*
-     * Return and remove the lootbeam from this location if lootbeam are disabled
-     * Lootbeam can be at this location if the config was just changed
-     */
-    if (!(config.showLootbeamForHighlighted() || config.showLootbeamTier() != HighlightTier.OFF)) {
-      removeLootbeam(worldPoint);
-      return;
-    }
-
-    int price = -1;
-    Collection<GroundItem> groundItems = collectedGroundItems.row(worldPoint).values();
-    for (GroundItem groundItem : groundItems) {
-      if ((config.onlyShowLoot() && !groundItem.isMine())) {
-        continue;
-      }
-
-      /*
-       * highlighted items have the highest priority so if an item is highlighted at this location
-       * we can early return
-       */
-      NamedQuantity item = new NamedQuantity(groundItem);
-      if (config.showLootbeamForHighlighted()
-          && TRUE.equals(highlightedItems.getUnchecked(item))) {
-        addLootbeam(worldPoint, config.highlightedColor());
-        return;
-      }
-
-      // Explicit hide takes priority over implicit highlight
-      if (TRUE.equals(hiddenItems.getUnchecked(item))) {
-        continue;
-      }
-
-      int itemPrice = getValueByMode(groundItem.getGePrice(), groundItem.getHaPrice());
-      price = Math.max(itemPrice, price);
-    }
-
-    if (config.showLootbeamTier() != HighlightTier.OFF) {
-      for (PriceHighlight highlight : priceChecks) {
-        if (price > highlight.getPrice() && price > config.showLootbeamTier()
-            .getValueFromTier(config)) {
-          addLootbeam(worldPoint, highlight.color);
-          return;
-        }
-      }
-    }
-
-    removeLootbeam(worldPoint);
-  }
-
-  private void handleLootbeams() {
-    for (WorldPoint worldPoint : collectedGroundItems.rowKeySet()) {
-      handleLootbeam(worldPoint);
-    }
-  }
-
-  private void removeAllLootbeams() {
-    for (Lootbeam lootbeam : lootbeams.values()) {
-      lootbeam.remove();
-    }
-
-    lootbeams.clear();
-  }
-
-  private void addLootbeam(WorldPoint worldPoint, Color color) {
-    Lootbeam lootbeam = lootbeams.get(worldPoint);
-    if (lootbeam == null) {
-      lootbeam = new Lootbeam(client, worldPoint, color);
-      lootbeams.put(worldPoint, lootbeam);
-    } else {
-      lootbeam.setColor(color);
-    }
-  }
-
-  private void removeLootbeam(WorldPoint worldPoint) {
-    Lootbeam lootbeam = lootbeams.remove(worldPoint);
-    if (lootbeam != null) {
-      lootbeam.remove();
-    }
-  }
-
   @Value
   static class PriceHighlight {
 
