@@ -34,7 +34,6 @@ import meteor.config.ConfigSection;
 import meteor.config.Range;
 import meteor.config.Units;
 import meteor.plugins.grounditems.config.DespawnTimerMode;
-import meteor.plugins.grounditems.config.HighlightTier;
 import meteor.plugins.grounditems.config.ItemHighlightMode;
 import meteor.plugins.grounditems.config.MenuHighlightMode;
 import meteor.plugins.grounditems.config.PriceDisplayMode;
@@ -135,26 +134,6 @@ public interface GroundItemsConfig extends Config {
   )
   default boolean highlightTiles() {
     return false;
-  }
-
-  @ConfigItem(
-      keyName = "notifyHighlightedDrops",
-      name = "Notify for Highlighted drops",
-      description = "Configures whether or not to notify for drops on your highlighted list",
-      position = 7
-  )
-  default boolean notifyHighlightedDrops() {
-    return false;
-  }
-
-  @ConfigItem(
-      keyName = "notifyTier",
-      name = "Notify tier",
-      description = "Configures which price tiers will trigger a notification on drop",
-      position = 8
-  )
-  default HighlightTier notifyTier() {
-    return HighlightTier.OFF;
   }
 
   @ConfigItem(

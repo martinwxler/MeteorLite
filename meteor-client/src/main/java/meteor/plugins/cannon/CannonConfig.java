@@ -33,31 +33,6 @@ import static meteor.plugins.cannon.CannonPlugin.MAX_CBALLS;
 public interface CannonConfig extends Config
 {
 	@ConfigItem(
-		keyName = "showEmptyCannonNotification",
-		name = "Enable cannon notifications",
-		description = "Configures whether to notify you when your cannon is low on cannonballs",
-		position = 1
-	)
-	default boolean showCannonNotifications()
-	{
-		return true;
-	}
-
-	@Range(
-		max = MAX_CBALLS
-	)
-	@ConfigItem(
-		keyName = "lowWarningThreshold",
-		name = "Low warning threshold",
-		description = "Configures the number of cannonballs remaining before a notification is sent. <br>Regardless of this value, a notification will still be sent when your cannon is empty.",
-		position = 2
-	)
-	default int lowWarningThreshold()
-	{
-		return 0;
-	}
-
-	@ConfigItem(
 		keyName = "showInfobox",
 		name = "Show cannonball infobox",
 		description = "Configures whether to show the cannonballs in an infobox",

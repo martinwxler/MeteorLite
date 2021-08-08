@@ -55,13 +55,6 @@ public interface ItemChargeConfig extends Config {
   )
   String chargesSection = "charges";
 
-  @ConfigSection(
-      name = "Notification Settings",
-      description = "Configuration for notifications",
-      position = 99
-  )
-  String notificationSection = "notifications";
-
   @ConfigItem(
       keyName = "veryLowWarningColor",
       name = "Very Low Warning",
@@ -129,17 +122,6 @@ public interface ItemChargeConfig extends Config {
       section = chargesSection
   )
   default boolean showDodgyCount() {
-    return true;
-  }
-
-  @ConfigItem(
-      keyName = "dodgyNotification",
-      name = "Dodgy Necklace Notification",
-      description = "Send a notification when a Dodgy necklace breaks",
-      position = 7,
-      section = notificationSection
-  )
-  default boolean dodgyNotification() {
     return true;
   }
 
@@ -254,17 +236,6 @@ public interface ItemChargeConfig extends Config {
   }
 
   @ConfigItem(
-      keyName = "recoilNotification",
-      name = "Ring of Recoil Notification",
-      description = "Send a notification when a Ring of recoil breaks",
-      position = 18,
-      section = notificationSection
-  )
-  default boolean recoilNotification() {
-    return false;
-  }
-
-  @ConfigItem(
       keyName = "showBindingNecklaceCharges",
       name = "Binding Necklace Charges",
       description = "Show Binding necklace item charges",
@@ -272,17 +243,6 @@ public interface ItemChargeConfig extends Config {
       section = chargesSection
   )
   default boolean showBindingNecklaceCharges() {
-    return true;
-  }
-
-  @ConfigItem(
-      keyName = "bindingNotification",
-      name = "Binding Necklace Notification",
-      description = "Send a notification when a Binding necklace breaks",
-      position = 20,
-      section = notificationSection
-  )
-  default boolean bindingNotification() {
     return true;
   }
 
@@ -305,17 +265,6 @@ public interface ItemChargeConfig extends Config {
       section = chargesSection
   )
   default boolean showRingOfForgingCount() {
-    return true;
-  }
-
-  @ConfigItem(
-      keyName = "ringOfForgingNotification",
-      name = "Ring of Forging Notification",
-      description = "Send a notification when a Ring of forging breaks",
-      position = 23,
-      section = notificationSection
-  )
-  default boolean ringOfForgingNotification() {
     return true;
   }
 
@@ -352,17 +301,6 @@ public interface ItemChargeConfig extends Config {
   }
 
   @ConfigItem(
-      keyName = "slaughterNotification",
-      name = "Bracelet of Slaughter Notification",
-      description = "Send a notification when a Bracelet of Slaughter breaks",
-      position = 27,
-      section = notificationSection
-  )
-  default boolean slaughterNotification() {
-    return true;
-  }
-
-  @ConfigItem(
       keyName = "showExpeditiousBraceletCharges",
       name = "Expeditious Bracelet Charges",
       description = "Show Expeditious Bracelet item charges",
@@ -370,17 +308,6 @@ public interface ItemChargeConfig extends Config {
       section = chargesSection
   )
   default boolean showExpeditiousBraceletCharges() {
-    return true;
-  }
-
-  @ConfigItem(
-      keyName = "expeditiousNotification",
-      name = "Expeditious Bracelet Notification",
-      description = "Send a notification when an Expeditious Bracelet breaks",
-      position = 29,
-      section = notificationSection
-  )
-  default boolean expeditiousNotification() {
     return true;
   }
 

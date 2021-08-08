@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Robin Weymans <Robin.weymans@gmail.com>
+ * Copyright (c) 2018, Sean Dewar <https://github.com/seandewar>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,59 +22,22 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.hunter;
+package meteor.plugins.runenergy;
 
-import java.awt.Color;
-import meteor.config.Alpha;
 import meteor.config.Config;
 import meteor.config.ConfigGroup;
 import meteor.config.ConfigItem;
 
-@ConfigGroup("hunterplugin")
-public interface HunterConfig extends Config {
-
-  @Alpha
-  @ConfigItem(
-      position = 1,
-      keyName = "hexColorOpenTrap",
-      name = "Open trap",
-      description = "Color of open trap timer"
-  )
-  default Color getOpenTrapColor() {
-    return Color.CYAN;
-  }
-
-  @Alpha
-  @ConfigItem(
-      position = 2,
-      keyName = "hexColorFullTrap",
-      name = "Full trap",
-      description = "Color of full trap timer"
-  )
-  default Color getFullTrapColor() {
-    return Color.GREEN;
-  }
-
-  @Alpha
-  @ConfigItem(
-      position = 3,
-      keyName = "hexColorEmptyTrap",
-      name = "Empty trap",
-      description = "Color of empty trap timer"
-  )
-  default Color getEmptyTrapColor() {
-    return Color.RED;
-  }
-
-  @Alpha
-  @ConfigItem(
-      position = 4,
-      keyName = "hexColorTransTrap",
-      name = "Transitioning trap",
-      description = "Color of transitioning trap timer"
-  )
-  default Color getTransTrapColor() {
-    return Color.ORANGE;
-  }
-
+@ConfigGroup("runenergy")
+public interface RunEnergyConfig extends Config
+{
+	@ConfigItem(
+		keyName = "replaceOrbText",
+		name = "Replace orb text with run time left",
+		description = "Show the remaining run time (in seconds) next in the energy orb."
+	)
+	default boolean replaceOrbText()
+	{
+		return false;
+	}
 }

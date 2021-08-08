@@ -66,7 +66,7 @@ import net.runelite.api.widgets.WidgetInfo;
 @PluginDescriptor(
     name = "Item Charges",
     description = "Show number of item charges remaining",
-    tags = {"inventory", "notifications", "overlay"}
+    tags = {"inventory", "overlay"}
 )
 public class ItemChargePlugin extends Plugin {
 
