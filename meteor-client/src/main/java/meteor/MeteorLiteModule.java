@@ -92,8 +92,7 @@ public class MeteorLiteModule extends AbstractModule {
   @Singleton
   Applet provideApplet() {
     try {
-      return (Applet) this.getClass().getClassLoader().loadClass("Client").getDeclaredConstructor()
-          .newInstance();
+      return (Applet) ClassLoader.getSystemClassLoader().loadClass("Client").newInstance();
     } catch (Exception e) {
       e.printStackTrace();
     }

@@ -1,13 +1,16 @@
 package meteor.ui.controllers;
 
-import static meteor.MeteorLite.injector;
-
+import com.google.inject.Injector;
 import com.jfoenix.controls.JFXButton;
+import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.text.Text;
 import javax.inject.Inject;
+import javax.inject.Named;
 import meteor.MeteorLite;
+import meteor.OSRSClient;
 import meteor.eventbus.EventBus;
 import net.runelite.api.Client;
 
@@ -26,9 +29,13 @@ public class ToolbarFXMLController {
   @FXML
   private Text title;
 
+  @Inject
+  @Named("rightPanelScene")
+  public Scene rightPanelScene;
+
   @FXML
   protected void handlePluginsPressed(ActionEvent event) {
-    MeteorLite.togglePluginsPanel();
+    OSRSClient.togglePluginsPanel(rightPanelScene);
   }
 
   @FXML
@@ -37,7 +44,8 @@ public class ToolbarFXMLController {
 
   @FXML
   public void initialize() {
-    injector.injectMembers(this);
+    for (OSRSClient clientInstance : OSRSClient.clientInstances)
+      clientInstance.instanceInjector.injectMembers(this);
     eventBus.register(this);
   }
 }
