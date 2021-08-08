@@ -1,6 +1,6 @@
 package org.sponge.util;
 
-import java.util.concurrent.Callable;
+import java.util.Arrays;
 
 public class Logger {
 
@@ -39,6 +39,22 @@ public class Logger {
     printColorMessage(ANSI_RED, message);
   }
 
+  public void info(Object message, Object... replacers) {
+    printColorMessageReplacers(ANSI_WHITE, message, replacers);
+  }
+
+  public void warn(Object message, Object... replacers) {
+    printColorMessageReplacers(ANSI_YELLOW, message, replacers);
+  }
+
+  public void debug(Object message, Object... replacers) {
+    printColorMessageReplacers(ANSI_GREEN, message, replacers);
+  }
+
+  public void error(Object message, Object... replacers) {
+    printColorMessageReplacers(ANSI_RED, message, replacers);
+  }
+
   private void printColorMessage(String ansiColor, Object message)
   {
     String tempName;
@@ -53,5 +69,26 @@ public class Logger {
         .build();
     System.out.format(format, header, ansiColor + message);
     System.out.print(ANSI_RESET);
+  }
+
+  private void printColorMessageReplacers(String ansiColor, Object message, Object... replacers)
+  {
+    String sRef = (String)message;
+    if (!sRef.contains("{}"))
+      return;
+    StringBuilder finalMessage = new StringBuilder();
+    Object[] replacersArray = Arrays.stream(replacers).toArray();
+    int i = 0;
+
+    for (String s : sRef.split("\\{}"))
+    {
+      if (i != replacersArray.length)
+        finalMessage.append(s).append(replacersArray[i]);
+      else
+        finalMessage.append(s);
+      i++;
+    }
+
+    printColorMessage(ansiColor, finalMessage);
   }
 }

@@ -155,7 +155,7 @@ public class EntityHiderExtendedPlugin extends Plugin
 		updateConfig();
 	}
 
-	private void updateConfig()
+	public void updateConfig()
 	{
 		hideNPCsOnDeathName = new HashSet<>();
 		hideNPCsOnDeathID = new HashSet<>();

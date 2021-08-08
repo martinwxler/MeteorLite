@@ -111,7 +111,7 @@ public class PluginListUI {
       Text pluginName = new Text();
       pluginName.setText(p.getClass().getAnnotation(PluginDescriptor.class).name());
       pluginName.setFill(Paint.valueOf("WHITE"));
-      AnchorPane.setLeftAnchor(pluginName, 5.0);
+      AnchorPane.setLeftAnchor(pluginName, 10.0);
       AnchorPane.setTopAnchor(pluginName, 7.0);
       pluginName.setWrappingWidth(300);
       pluginName.setFont(Font.font(18));

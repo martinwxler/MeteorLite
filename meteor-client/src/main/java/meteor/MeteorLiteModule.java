@@ -41,6 +41,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import javax.inject.Singleton;
 import meteor.callback.Hooks;
+import meteor.chat.ChatMessageManager;
 import meteor.config.ChatColorConfig;
 import meteor.config.ConfigManager;
 import meteor.config.RuneLiteConfig;
@@ -49,10 +50,13 @@ import meteor.eventbus.EventBus;
 import meteor.plugins.botutils.BotUtilsConfig;
 import meteor.plugins.itemstats.ItemStatChangesService;
 import meteor.plugins.itemstats.ItemStatChangesServiceImpl;
+import meteor.plugins.iutils.iUtilsConfig;
 import meteor.util.ExecutorServiceExceptionLogger;
 import meteor.util.NonScheduledExecutorServiceExceptionLogger;
 import net.runelite.api.Client;
 import net.runelite.api.hooks.Callbacks;
+import net.runelite.http.api.chat.ChatClient;
+import okhttp3.OkHttpClient;
 import org.sponge.util.Logger;
 
 public class MeteorLiteModule extends AbstractModule {
@@ -62,6 +66,7 @@ public class MeteorLiteModule extends AbstractModule {
   @Override
   protected void configure() {
     bind(Callbacks.class).to(Hooks.class);
+    bind(ChatMessageManager.class);
     bind(ScheduledExecutorService.class).toInstance(
         new ExecutorServiceExceptionLogger(Executors.newSingleThreadScheduledExecutor()));
 
@@ -138,8 +143,8 @@ public class MeteorLiteModule extends AbstractModule {
 
   @Provides
   @Singleton
-  BotUtilsConfig provideBotUtilsConfig(ConfigManager configManager)
+  ChatClient provideChatClient(OkHttpClient okHttpClient)
   {
-    return configManager.getConfig(BotUtilsConfig.class);
+    return new ChatClient(okHttpClient);
   }
 }

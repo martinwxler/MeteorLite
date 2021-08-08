@@ -14,6 +14,8 @@ import meteor.MeteorLite;
 import meteor.config.Config;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
+import meteor.plugins.botutils.BotUtils;
+import meteor.plugins.iutils.iUtils;
 import net.runelite.api.Client;
 import org.sponge.util.Logger;
 

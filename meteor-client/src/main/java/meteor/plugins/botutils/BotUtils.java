@@ -52,9 +52,8 @@ import static meteor.plugins.botutils.Banks.ALL_BANKS;
  *
  */
 @PluginDescriptor(
-        name = "BotUtils",
-        description = "Illumine bot utilities",
-        hidden = false
+        name = "Illumine BotUtils",
+        description = "Illumine bot utilities"
 )
 @SuppressWarnings("unused")
 @Singleton
@@ -100,7 +99,7 @@ public class BotUtils extends Plugin {
     private final String DAX_API_URL = "https://api.dax.cloud/walker/generatePath";
 
     @Provides
-    BotUtilsConfig provideConfig(ConfigManager configManager) {
+    public BotUtilsConfig getConfig(ConfigManager configManager) {
         return configManager.getConfig(BotUtilsConfig.class);
     }
 

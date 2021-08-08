@@ -51,26 +51,13 @@ public class ActionListener extends MouseAdapter implements KeyListener {
   @Inject
   private Client client;
 
-  @Inject
-  private BotUtils botUtils;
 
   private boolean altPressed = false;
   private boolean ctrlPressed = false;
 
-  private boolean enabled = false;
-
   @Override
   public void keyTyped(KeyEvent e) {
 
-  }
-
-  @Subscribe
-  public void onGameTick(GameTick event) {
-    Widget tele = (client.getWidget(WidgetInfo.SPELL_CAMELOT_TELEPORT));
-    if (enabled)
-      if (tele != null)
-        if (!tele.isHidden())
-          botUtils.click(botUtils.getSpellWidget(Spells.CAMELOT_TELEPORT.getName()).getBounds());
   }
 
   @Override
@@ -87,7 +74,7 @@ public class ActionListener extends MouseAdapter implements KeyListener {
   }
 
   public void reset() {
-    enabled = false;
+    ActionPlugin.enabled = false;
   }
 
   @Override
@@ -104,7 +91,7 @@ public class ActionListener extends MouseAdapter implements KeyListener {
   public MouseEvent mousePressed(MouseEvent e) {
     if (ctrlPressed && altPressed) {
       if (SwingUtilities.isLeftMouseButton(e)) {
-        enabled = true;
+        ActionPlugin.enabled = true;
       } else if (SwingUtilities.isRightMouseButton(e)) {
         //ignore
       }

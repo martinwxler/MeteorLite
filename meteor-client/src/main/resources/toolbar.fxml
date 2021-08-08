@@ -14,7 +14,7 @@
       <Image url="@MeteorLite_icon.png" />
     </image>
   </ImageView>
-  <JFXButton fx:id="pluginsButton" alignment="CENTER" layoutX="1028.0" layoutY="12.0" onAction="#handlePluginsPressed" prefHeight="25.0" prefWidth="82.0" style="-fx-text-fill: CYAN; -jfx-button-type: RAISED;" text=" Plugins " textAlignment="CENTER" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="2.0">
+  <JFXButton fx:id="pluginsButton" alignment="CENTER" layoutX="1028.0" onAction="#handlePluginsPressed" prefHeight="25.0" prefWidth="82.0" style="-fx-background-color: #252525; -fx-text-fill: CYAN; -jfx-button-type: RAISED;" text=" Plugins " textAlignment="CENTER" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="1.0">
     <graphic>
       <FontAwesomeIconView fill="AQUA" glyphName="PLUG" size="11" wrappingWidth="11.523646354675293" />
     </graphic>
