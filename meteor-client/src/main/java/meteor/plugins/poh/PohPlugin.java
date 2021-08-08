@@ -29,6 +29,7 @@ import com.google.inject.Provides;
 import lombok.AccessLevel;
 import lombok.Getter;
 import meteor.eventbus.events.ConfigChanged;
+import meteor.game.HiscoreManager;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.*;
