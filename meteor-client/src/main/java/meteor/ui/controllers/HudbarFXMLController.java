@@ -1,6 +1,5 @@
 package meteor.ui.controllers;
 
-import static meteor.MeteorLite.injector;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXProgressBar;
@@ -18,6 +17,7 @@ import javafx.scene.text.Text;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import meteor.MeteorLite;
+import meteor.OSRSClient;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.itemstats.Effect;
@@ -76,7 +76,8 @@ public class HudbarFXMLController {
 
   @FXML
   public void initialize() {
-    injector.injectMembers(this);
+    for (OSRSClient clientInstance : OSRSClient.clientInstances)
+      clientInstance.instanceInjector.injectMembers(this);
     eventBus.register(this);
     healthText.editableProperty().setValue(false);
     prayerText.editableProperty().setValue(false);
