@@ -26,7 +26,7 @@ package meteor.plugins.poh;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
-import net.runelite.client.util.ImageUtil;
+import meteor.util.ImageUtil;
 
 import java.awt.image.BufferedImage;
 import java.util.Map;
