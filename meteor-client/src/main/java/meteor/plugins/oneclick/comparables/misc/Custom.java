@@ -101,6 +101,15 @@ public class Custom extends ClickCompare
 
 			try
 			{
+				try
+				{
+					Integer.parseInt(split[0]);
+					Integer.parseInt(split[1]);
+				}
+				catch (Exception e)
+				{
+					return;
+				}
 				int oneClickThat = Integer.parseInt(split[0]);
 				int withThis = Integer.parseInt(split[1]);
 				if (customClickMap.containsKey(oneClickThat))
@@ -112,7 +121,6 @@ public class Custom extends ClickCompare
 			}
 			catch (Exception e)
 			{
-				new Logger("Custom OneClick").error("Error: ");
 				e.printStackTrace();
 				return;
 			}

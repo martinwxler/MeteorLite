@@ -1230,4 +1230,11 @@ public abstract class ClientMixin implements RSClient {
   {
     inventoryDragDelay = delay;
   }
+
+  @Inject
+  @Override
+  public void refreshChat()
+  {
+    setChatCycle(getCycleCntr());
+  }
 }

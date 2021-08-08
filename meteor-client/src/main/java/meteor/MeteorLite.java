@@ -230,7 +230,7 @@ public class MeteorLite extends Application implements AppletStub, AppletContext
     Parent hudbarRoot = FXMLLoader.load(
         Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("hudbar.fxml")));
 
-    toolbarJFXPanel.setScene(new Scene(toolbarRoot, 300, 45));
+    toolbarJFXPanel.setScene(new Scene(toolbarRoot, 300, 33));
     toolbarJFXPanel.setVisible(true);
     hudbarJFXPanel.setScene(new Scene(hudbarRoot, 300, 75));
     hudbarJFXPanel.setVisible(true);

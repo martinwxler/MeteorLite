@@ -20,6 +20,17 @@ public interface LeftClickConfig extends Config
 	String preset = "Preset";
 
 	@ConfigItem(
+			position = 0,
+			keyName = "enableSwaps",
+			name = "Enable Swaps",
+			description = "This will make it so the plugin isnt dumb"
+	)
+	default boolean enableSwaps()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		position = 1,
 		keyName = "disableFriendlyRegionChecks",
 		name = "Disable Friend/Clan/Lvl Checks",

@@ -363,7 +363,8 @@ public class ItemManager {
 
       log.debug("Loaded " + itemStats.size() + " stats");
     } catch (Exception e) {
-      log.warn("error loading stats!", e);
+      log.warn("error loading stats!");
+      e.printStackTrace();
     }
   }
 

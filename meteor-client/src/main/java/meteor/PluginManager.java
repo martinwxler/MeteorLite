@@ -20,8 +20,10 @@ import meteor.plugins.betterantidrag.BetterAntiDragPlugin;
 import meteor.plugins.betterroguesden.BetterRougesDenPlugin;
 import meteor.plugins.blastfurnace.BlastFurnacePlugin;
 import meteor.plugins.boosts.BoostsPlugin;
+import meteor.plugins.botutils.BotUtils;
 import meteor.plugins.camera.CameraPlugin;
 import meteor.plugins.cannon.CannonPlugin;
+import meteor.plugins.chatcommands.ChatCommandsPlugin;
 import meteor.plugins.cluescrolls.ClueScrollPlugin;
 import meteor.plugins.combatlevel.CombatLevelPlugin;
 import meteor.plugins.fishing.FishingPlugin;
@@ -34,6 +36,7 @@ import meteor.plugins.interacthighlight.InteractHighlightPlugin;
 import meteor.plugins.itemcharges.ItemChargePlugin;
 import meteor.plugins.itemprices.ItemPricesPlugin;
 import meteor.plugins.itemstats.ItemStatPlugin;
+import meteor.plugins.iutils.iUtils;
 import meteor.plugins.leftclickcast.LeftClickCast;
 import meteor.plugins.menuentryswapper.MenuEntrySwapperPlugin;
 import meteor.plugins.menuentryswapperextended.MenuEntrySwapperExtendedPlugin;
@@ -62,9 +65,6 @@ public class PluginManager {
 
   static
   {
-    //plugins.add(new EventTestPlugin());
-    //MeteorLite.plugins.add(new DebugPlugin());
-    plugins.add(new ActionPlugin());
     plugins.add(new AgilityPlugin());
     plugins.add(new AoeWarningPlugin());
     plugins.add(new BankPlugin());
@@ -75,6 +75,7 @@ public class PluginManager {
     plugins.add(new BoostsPlugin());
     plugins.add(new CameraPlugin());
     plugins.add(new CannonPlugin());
+    plugins.add(new ChatCommandsPlugin());
     plugins.add(new ClueScrollPlugin());
     plugins.add(new CombatLevelPlugin());
     plugins.add(new FishingPlugin());
@@ -104,6 +105,11 @@ public class PluginManager {
     plugins.add(new TickTimersPlugin());
     plugins.add(new TimestampPlugin());
     plugins.add(new WorldMapPlugin());
+
+    plugins.add(new BotUtils());
+    plugins.add(new iUtils());
+
+    plugins.add(new ActionPlugin());
   }
 
   public void startInternalPlugins() {

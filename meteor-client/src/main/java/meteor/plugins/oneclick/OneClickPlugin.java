@@ -229,7 +229,7 @@ public class OneClickPlugin extends Plugin
 		}
 	}
 
-	private void updateConfig()
+	public void updateConfig()
 	{
 		enableImbue = config.isUsingImbue();
 		Types type = config.getType();

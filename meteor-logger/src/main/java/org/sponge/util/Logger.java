@@ -1,6 +1,6 @@
 package org.sponge.util;
 
-import java.util.concurrent.Callable;
+import java.util.Arrays;
 
 public class Logger {
 
@@ -13,16 +13,50 @@ public class Logger {
   public static final String ANSI_PURPLE = "\u001B[35m";
   public static final String ANSI_CYAN = "\u001B[36m";
   public static final String ANSI_WHITE = "\u001B[37m";
+
+  public static String DEFAULT_CONTROLLER_COLOR = ANSI_CYAN;
   public String name;
   public String plugin;
-  public String cachedMessage;
   String format = "%-35s%s%n";
 
   public Logger(String name) {
     this.name = name;
   }
 
-  public void info(String message) {
+  public void info(Object message) {
+    printColorMessage(ANSI_WHITE, message);
+  }
+
+  public void warn(Object message) {
+    printColorMessage(ANSI_YELLOW, message);
+  }
+
+  public void debug(Object message) {
+    printColorMessage(ANSI_GREEN, message);
+  }
+
+  public void error(Object message) {
+    printColorMessage(ANSI_RED, message);
+  }
+
+  public void info(Object message, Object... replacers) {
+    printColorMessageReplacers(ANSI_WHITE, message, replacers);
+  }
+
+  public void warn(Object message, Object... replacers) {
+    printColorMessageReplacers(ANSI_YELLOW, message, replacers);
+  }
+
+  public void debug(Object message, Object... replacers) {
+    printColorMessageReplacers(ANSI_GREEN, message, replacers);
+  }
+
+  public void error(Object message, Object... replacers) {
+    printColorMessageReplacers(ANSI_RED, message, replacers);
+  }
+
+  private void printColorMessage(String ansiColor, Object message)
+  {
     String tempName;
     if (plugin != null) {
       tempName = plugin;
@@ -30,82 +64,31 @@ public class Logger {
       tempName = name;
     }
     String header = Message.buildMessage()
-        .changeColor(ANSI_YELLOW)
+        .changeColor(DEFAULT_CONTROLLER_COLOR)
         .addText("[" + tempName + "] ")
         .build();
-    System.out.format(format, header, message);
+    System.out.format(format, header, ansiColor + message);
     System.out.print(ANSI_RESET);
   }
 
-  public void warn(String message) {
-    String tempName;
-    if (plugin != null) {
-      tempName = plugin;
-    } else {
-      tempName = name;
+  private void printColorMessageReplacers(String ansiColor, Object message, Object... replacers)
+  {
+    String sRef = (String)message;
+    if (!sRef.contains("{}"))
+      return;
+    StringBuilder finalMessage = new StringBuilder();
+    Object[] replacersArray = Arrays.stream(replacers).toArray();
+    int i = 0;
+
+    for (String s : sRef.split("\\{}"))
+    {
+      if (i != replacersArray.length)
+        finalMessage.append(s).append(replacersArray[i]);
+      else
+        finalMessage.append(s);
+      i++;
     }
-    String header = Message.buildMessage()
-        .changeColor(ANSI_YELLOW)
-        .addText("[" + tempName + "] ")
-        .build();
-    System.out.format(format, header, ANSI_BLUE + message);
-    System.out.print(ANSI_RESET);
-  }
 
-  public void debug(String message) {
-    String tempName;
-    if (plugin != null) {
-      tempName = plugin;
-    } else {
-      tempName = name;
-    }
-    String header = Message.buildMessage()
-        .changeColor(ANSI_YELLOW)
-        .addText("[" + tempName + "] ")
-        .build();
-    System.out.format(format, header, ANSI_GREEN + message);
-    System.out.print(ANSI_RESET);
-  }
-
-  public void error(String message) {
-    String tempName;
-    if (plugin != null) {
-      tempName = plugin;
-    } else {
-      tempName = name;
-    }
-    String header = Message.buildMessage()
-        .changeColor(ANSI_YELLOW)
-        .addText("[" + tempName + "] ")
-        .build();
-    System.out.format(format, header, ANSI_RED + message);
-    System.out.print(ANSI_RESET);
-  }
-
-  public void warn(String message, Exception ex) {
-    warn(message);
-  }
-
-  public <V> void warn(String s, Callable<V> callable, Throwable ex) {
-    warn(s + ":" + callable.toString());
-  }
-
-  public <V> void warn(String s, Runnable runnable, Throwable ex) {
-    warn(s + ":" + runnable.toString());
-  }
-
-  public void event(String event, String message) {
-    String tempName;
-    if (plugin != null) {
-      tempName = plugin;
-    } else {
-      tempName = name;
-    }
-    String header = Message.buildMessage()
-        .changeColor(ANSI_YELLOW)
-        .addText("[" + tempName + "] ")
-        .build();
-    System.out.format(format, header, ANSI_CYAN + "[" + event + "] " + ANSI_RESET + message);
-    System.out.print(ANSI_RESET);
+    printColorMessage(ansiColor, finalMessage);
   }
 }

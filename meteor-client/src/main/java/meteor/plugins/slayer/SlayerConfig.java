@@ -77,6 +77,9 @@ public interface SlayerConfig extends Config
 		return true;
 	}
 
+	@Range(
+			max = 120
+	)
 	@ConfigItem(
 		position = 4,
 		keyName = "statTimeout",

@@ -25,7 +25,7 @@ import meteor.ui.components.PluginConfigButton;
 import meteor.ui.components.PluginToggleButton;
 import org.sponge.util.Logger;
 
-public class PluginsFXMLController {
+public class PluginListUI {
 
   Logger logger = new Logger("PluginsFXMLController");
 
@@ -74,6 +74,7 @@ public class PluginsFXMLController {
 
       pluginPanel.setPrefHeight(25);
       pluginPanel.setPrefWidth(280);
+      pluginPanel.setStyle("-fx-background-color: #212121; -fx-border-style: solid;  -fx-border-color: #121212; -fx-border-width: 1;");
 
       PluginConfigButton configButton = new PluginConfigButton(p);
       if (p.getConfig(MeteorLite.injector.getInstance(ConfigManager.class)) != null)
@@ -110,8 +111,8 @@ public class PluginsFXMLController {
       Text pluginName = new Text();
       pluginName.setText(p.getClass().getAnnotation(PluginDescriptor.class).name());
       pluginName.setFill(Paint.valueOf("WHITE"));
-      pluginName.setLayoutX(20);
-      pluginName.setLayoutY(24);
+      AnchorPane.setLeftAnchor(pluginName, 10.0);
+      AnchorPane.setTopAnchor(pluginName, 7.0);
       pluginName.setWrappingWidth(300);
       pluginName.setFont(Font.font(18));
 

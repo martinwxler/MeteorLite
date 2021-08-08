@@ -2,10 +2,16 @@ package meteor.plugins.actions;
 
 import javax.inject.Inject;
 import meteor.MeteorLite;
+import meteor.eventbus.Subscribe;
 import meteor.input.KeyManager;
 import meteor.input.MouseManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
+import meteor.plugins.botutils.BotUtils;
+import meteor.plugins.botutils.Spells;
+import net.runelite.api.events.GameTick;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 
 @PluginDescriptor(
     name = "Actions",
@@ -21,6 +27,13 @@ public class ActionPlugin extends Plugin {
 
   @Inject
   private KeyManager keyManager;
+
+  public static boolean enabled;
+
+  @Subscribe
+  public void onGameTick(GameTick event) {
+
+  }
 
   @Override
   public void startup() {
