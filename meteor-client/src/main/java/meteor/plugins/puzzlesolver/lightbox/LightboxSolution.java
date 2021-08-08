@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Tomas Slusny <slusnucky@gmail.com>
+ * Copyright (c) 2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,49 +22,47 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.timestamp;
+package meteor.plugins.puzzlesolver.lightbox;
 
-import meteor.config.Config;
-import meteor.config.ConfigGroup;
-import meteor.config.ConfigItem;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-import java.awt.Color;
-
-@ConfigGroup("timestamp")
-public interface TimestampConfig extends Config
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
+public class LightboxSolution
 {
-	@ConfigItem(
-		keyName = "opaqueTimestamp",
-		name = "Timestamps (opaque)",
-		position = 1,
-		description = "Colour of Timestamps from the Timestamps plugin (opaque)"
-	)
-	default Color opaqueTimestamp() {return Color.BLACK;}
+	private int solution;
 
-	@ConfigItem(
-		keyName = "transparentTimestamp",
-		name = "Timestamps (transparent)",
-		position = 2,
-		description = "Colour of Timestamps from the Timestamps plugin (transparent)"
-	)
-	default Color transparentTimestamp() {return Color.BLACK;}
-
-	@ConfigItem(
-		keyName = "format",
-		name = "Timestamp Format",
-		position = 3,
-		description = "Customize your timestamp format by using the following characters<br>" +
-			"'yyyy' : year<br>" +
-			"'MM' : month<br>" +
-			"'dd' : day<br>" +
-			"'HH' : hour in 24 hour format<br>" +
-			"'hh' : hour in 12 hour format<br>" +
-			"'mm' : minute<br>" +
-			"'ss' : second<br>" +
-			"'a'  : AM/PM"
-	)
-	default String timestampFormat()
+	public void flip(Combination c)
 	{
-		return "[HH:mm]";
+		solution ^= (1 << c.ordinal());
+	}
+
+	public int numMoves()
+	{
+		int count = 0;
+		int cur = solution;
+		for (int i = 0; i < Combination.values().length; ++i)
+		{
+			count += cur & 1;
+			cur >>= 1;
+		}
+		return count;
+	}
+
+	@Override
+	public String toString()
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+		for (Combination combination : Combination.values())
+		{
+			if (((solution >>> combination.ordinal()) & 1) != 0)
+			{
+				stringBuilder.append(combination.name());
+			}
+		}
+		return stringBuilder.toString();
 	}
 }

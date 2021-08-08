@@ -469,7 +469,6 @@ public abstract class WidgetMixin implements RSWidget
     }
 
     rl$widgetLastPosChanged = tick;
-
     WidgetPositioned widgetPositioned = WidgetPositioned.INSTANCE;
     client.getCallbacks().postDeferred(widgetPositioned);
   }
@@ -573,7 +572,7 @@ public abstract class WidgetMixin implements RSWidget
   public boolean isWidgetItemDragged(int index)
   {
     return client.getIf1DraggedWidget() == this && client.getItemPressedDuration() >= 5 &&
-        client.getIf1DraggedItemIndex() == index;
+            client.getIf1DraggedItemIndex() == index;
   }
 
   @Inject

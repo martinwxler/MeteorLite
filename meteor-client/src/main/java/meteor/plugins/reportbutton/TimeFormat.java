@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Tomas Slusny <slusnucky@gmail.com>
+ * Copyright (c) 2020, melky <https://github.com/melkypie>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,49 +22,22 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.timestamp;
+package meteor.plugins.reportbutton;
 
-import meteor.config.Config;
-import meteor.config.ConfigGroup;
-import meteor.config.ConfigItem;
+import lombok.RequiredArgsConstructor;
 
-import java.awt.Color;
-
-@ConfigGroup("timestamp")
-public interface TimestampConfig extends Config
+@RequiredArgsConstructor
+public enum TimeFormat
 {
-	@ConfigItem(
-		keyName = "opaqueTimestamp",
-		name = "Timestamps (opaque)",
-		position = 1,
-		description = "Colour of Timestamps from the Timestamps plugin (opaque)"
-	)
-	default Color opaqueTimestamp() {return Color.BLACK;}
+	TIME_12H("12-hour"),
+	TIME_24H("24-hour");
 
-	@ConfigItem(
-		keyName = "transparentTimestamp",
-		name = "Timestamps (transparent)",
-		position = 2,
-		description = "Colour of Timestamps from the Timestamps plugin (transparent)"
-	)
-	default Color transparentTimestamp() {return Color.BLACK;}
+	private final String name;
 
-	@ConfigItem(
-		keyName = "format",
-		name = "Timestamp Format",
-		position = 3,
-		description = "Customize your timestamp format by using the following characters<br>" +
-			"'yyyy' : year<br>" +
-			"'MM' : month<br>" +
-			"'dd' : day<br>" +
-			"'HH' : hour in 24 hour format<br>" +
-			"'hh' : hour in 12 hour format<br>" +
-			"'mm' : minute<br>" +
-			"'ss' : second<br>" +
-			"'a'  : AM/PM"
-	)
-	default String timestampFormat()
+	@Override
+	public String toString()
 	{
-		return "[HH:mm]";
+		return this.name;
 	}
 }
+

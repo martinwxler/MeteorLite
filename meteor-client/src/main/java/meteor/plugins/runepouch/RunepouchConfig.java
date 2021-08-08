@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Tomas Slusny <slusnucky@gmail.com>
+ * Copyright (c) 2017, Tyler <https://github.com/tylerthardy>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,49 +22,46 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.timestamp;
+package meteor.plugins.runepouch;
 
-import meteor.config.Config;
-import meteor.config.ConfigGroup;
-import meteor.config.ConfigItem;
+import meteor.config.*;
+import meteor.plugins.runepouch.config.RunePouchOverlayMode;
 
-import java.awt.Color;
+import java.awt.*;
 
-@ConfigGroup("timestamp")
-public interface TimestampConfig extends Config
+@ConfigGroup("runepouch")
+public interface RunepouchConfig extends Config
 {
 	@ConfigItem(
-		keyName = "opaqueTimestamp",
-		name = "Timestamps (opaque)",
-		position = 1,
-		description = "Colour of Timestamps from the Timestamps plugin (opaque)"
+		keyName = "fontcolor",
+		name = "Font Color",
+		description = "Color of the font for the number of runes in pouch",
+		position = 1
 	)
-	default Color opaqueTimestamp() {return Color.BLACK;}
-
-	@ConfigItem(
-		keyName = "transparentTimestamp",
-		name = "Timestamps (transparent)",
-		position = 2,
-		description = "Colour of Timestamps from the Timestamps plugin (transparent)"
-	)
-	default Color transparentTimestamp() {return Color.BLACK;}
-
-	@ConfigItem(
-		keyName = "format",
-		name = "Timestamp Format",
-		position = 3,
-		description = "Customize your timestamp format by using the following characters<br>" +
-			"'yyyy' : year<br>" +
-			"'MM' : month<br>" +
-			"'dd' : day<br>" +
-			"'HH' : hour in 24 hour format<br>" +
-			"'hh' : hour in 12 hour format<br>" +
-			"'mm' : minute<br>" +
-			"'ss' : second<br>" +
-			"'a'  : AM/PM"
-	)
-	default String timestampFormat()
+	default Color fontColor()
 	{
-		return "[HH:mm]";
+		return Color.yellow;
+	}
+
+	@ConfigItem(
+		keyName = "runeicons",
+		name = "Show Rune Icons",
+		description = "Show the rune icons next to the number of runes in pouch",
+		position = 2
+	)
+	default boolean showIcons()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "runePouchOverlayMode",
+		name = "Display mode",
+		description = "Configures where rune pouch overlay is displayed",
+		position = 3
+	)
+	default RunePouchOverlayMode runePouchOverlayMode()
+	{
+		return RunePouchOverlayMode.BOTH;
 	}
 }

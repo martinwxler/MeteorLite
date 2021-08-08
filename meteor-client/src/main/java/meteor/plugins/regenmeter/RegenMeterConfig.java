@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Tomas Slusny <slusnucky@gmail.com>
+ * Copyright (c) 2018 Abex
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,49 +22,38 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.timestamp;
+package meteor.plugins.regenmeter;
 
-import meteor.config.Config;
-import meteor.config.ConfigGroup;
-import meteor.config.ConfigItem;
+import meteor.config.*;
 
-import java.awt.Color;
 
-@ConfigGroup("timestamp")
-public interface TimestampConfig extends Config
+@ConfigGroup("regenmeter")
+public interface RegenMeterConfig extends Config
 {
 	@ConfigItem(
-		keyName = "opaqueTimestamp",
-		name = "Timestamps (opaque)",
-		position = 1,
-		description = "Colour of Timestamps from the Timestamps plugin (opaque)"
-	)
-	default Color opaqueTimestamp() {return Color.BLACK;}
-
-	@ConfigItem(
-		keyName = "transparentTimestamp",
-		name = "Timestamps (transparent)",
-		position = 2,
-		description = "Colour of Timestamps from the Timestamps plugin (transparent)"
-	)
-	default Color transparentTimestamp() {return Color.BLACK;}
-
-	@ConfigItem(
-		keyName = "format",
-		name = "Timestamp Format",
-		position = 3,
-		description = "Customize your timestamp format by using the following characters<br>" +
-			"'yyyy' : year<br>" +
-			"'MM' : month<br>" +
-			"'dd' : day<br>" +
-			"'HH' : hour in 24 hour format<br>" +
-			"'hh' : hour in 12 hour format<br>" +
-			"'mm' : minute<br>" +
-			"'ss' : second<br>" +
-			"'a'  : AM/PM"
-	)
-	default String timestampFormat()
+		keyName = "showHitpoints",
+		name = "Show hitpoints regen",
+		description = "Show a ring around the hitpoints orb")
+	default boolean showHitpoints()
 	{
-		return "[HH:mm]";
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "showSpecial",
+		name = "Show Spec. Attack regen",
+		description = "Show a ring around the Special Attack orb")
+	default boolean showSpecial()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "showWhenNoChange",
+		name = "Show at full hitpoints",
+		description = "Always show the hitpoints regen orb, even if there will be no stat change")
+	default boolean showWhenNoChange()
+	{
+		return false;
 	}
 }

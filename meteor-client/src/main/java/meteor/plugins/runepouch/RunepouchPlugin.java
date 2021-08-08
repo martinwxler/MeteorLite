@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Tomas Slusny <slusnucky@gmail.com>
+ * Copyright (c) 2017, Tyler <http://github.com/tylerthardy>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,49 +22,44 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.timestamp;
+package meteor.plugins.runepouch;
 
-import meteor.config.Config;
-import meteor.config.ConfigGroup;
-import meteor.config.ConfigItem;
+import com.google.inject.Provides;
+import meteor.config.ConfigManager;
+import meteor.plugins.Plugin;
+import meteor.plugins.PluginDescriptor;
+import meteor.ui.overlay.OverlayManager;
 
-import java.awt.Color;
+import javax.inject.Inject;
 
-@ConfigGroup("timestamp")
-public interface TimestampConfig extends Config
+@PluginDescriptor(
+	name = "Rune Pouch",
+	description = "Show the contents of your rune pouch",
+	tags = {"combat", "magic", "overlay"}
+)
+public class RunepouchPlugin extends Plugin
 {
-	@ConfigItem(
-		keyName = "opaqueTimestamp",
-		name = "Timestamps (opaque)",
-		position = 1,
-		description = "Colour of Timestamps from the Timestamps plugin (opaque)"
-	)
-	default Color opaqueTimestamp() {return Color.BLACK;}
+	@Inject
+	private OverlayManager overlayManager;
 
-	@ConfigItem(
-		keyName = "transparentTimestamp",
-		name = "Timestamps (transparent)",
-		position = 2,
-		description = "Colour of Timestamps from the Timestamps plugin (transparent)"
-	)
-	default Color transparentTimestamp() {return Color.BLACK;}
+	@Inject
+	private RunepouchOverlay overlay;
 
-	@ConfigItem(
-		keyName = "format",
-		name = "Timestamp Format",
-		position = 3,
-		description = "Customize your timestamp format by using the following characters<br>" +
-			"'yyyy' : year<br>" +
-			"'MM' : month<br>" +
-			"'dd' : day<br>" +
-			"'HH' : hour in 24 hour format<br>" +
-			"'hh' : hour in 12 hour format<br>" +
-			"'mm' : minute<br>" +
-			"'ss' : second<br>" +
-			"'a'  : AM/PM"
-	)
-	default String timestampFormat()
+	@Provides
+	public RunepouchConfig getConfig(ConfigManager configManager)
 	{
-		return "[HH:mm]";
+		return configManager.getConfig(RunepouchConfig.class);
+	}
+
+	@Override
+	public void startup()
+	{
+		overlayManager.add(overlay);
+	}
+
+	@Override
+	public void shutdown()
+	{
+		overlayManager.remove(overlay);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Tomas Slusny <slusnucky@gmail.com>
+ * Copyright (c) 2018, Steffen Hauge <steffen.oerum.hauge@hotmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,49 +22,45 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.timestamp;
+package meteor.plugins.puzzlesolver.solver;
 
-import meteor.config.Config;
-import meteor.config.ConfigGroup;
-import meteor.config.ConfigItem;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.awt.Color;
-
-@ConfigGroup("timestamp")
-public interface TimestampConfig extends Config
+@RequiredArgsConstructor
+@Getter
+public enum PuzzleSwapPattern
 {
-	@ConfigItem(
-		keyName = "opaqueTimestamp",
-		name = "Timestamps (opaque)",
-		position = 1,
-		description = "Colour of Timestamps from the Timestamps plugin (opaque)"
-	)
-	default Color opaqueTimestamp() {return Color.BLACK;}
+	ROTATE_LEFT_UP(new int[]{1, -1, 0, -1, -1, -1, -1, 0}, 1, 1), //Reference point
+	ROTATE_LEFT_DOWN(1, -1),
+	ROTATE_RIGHT_UP(-1, 1),
+	ROTATE_RIGHT_DOWN(-1, -1),
+	ROTATE_UP_LEFT(new int[]{-1, 1, -1, 0, -1, -1, 0, -1}, 1 , 1), //Reference point
+	ROTATE_UP_RIGHT(-1, 1),
+	ROTATE_DOWN_LEFT(1, -1),
+	ROTATE_DOWN_RIGHT(-1, -1),
+	LAST_PIECE_ROW(new int[]{-1, -1, 0, -1, -1, 0, -1, 1}, 1, 1),
+	LAST_PIECE_COLUMN(new int[]{-1, -1, -1, 0, 0, -1, 1, -1}, 1, 1),
+	SHUFFLE_UP_RIGHT(new int[]{1, -1, 0, -1}, 1, 1),
+	SHUFFLE_UP_LEFT(new int[]{-1, -1, 0, -1}, 1, 1),
+	SHUFFLE_UP_BELOW(new int[]{-1, 1, -1, 0}, 1, 1),
+	SHUFFLE_UP_ABOVE(new int[]{-1, -1, -1, 0}, 1, 1);
 
-	@ConfigItem(
-		keyName = "transparentTimestamp",
-		name = "Timestamps (transparent)",
-		position = 2,
-		description = "Colour of Timestamps from the Timestamps plugin (transparent)"
-	)
-	default Color transparentTimestamp() {return Color.BLACK;}
+	/**
+	 * Points used for swaps relative to locVal
+	 */
+	private final int[] points;
+	/**
+	 * Modifier for X coordinate
+	 */
+	private final int modX;
+	/**
+	 * Modifier for Y coordinate
+	 */
+	private final int modY;
 
-	@ConfigItem(
-		keyName = "format",
-		name = "Timestamp Format",
-		position = 3,
-		description = "Customize your timestamp format by using the following characters<br>" +
-			"'yyyy' : year<br>" +
-			"'MM' : month<br>" +
-			"'dd' : day<br>" +
-			"'HH' : hour in 24 hour format<br>" +
-			"'hh' : hour in 12 hour format<br>" +
-			"'mm' : minute<br>" +
-			"'ss' : second<br>" +
-			"'a'  : AM/PM"
-	)
-	default String timestampFormat()
+	PuzzleSwapPattern(int modX, int modY)
 	{
-		return "[HH:mm]";
+		this(null, modX, modY);
 	}
 }

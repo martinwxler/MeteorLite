@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Tomas Slusny <slusnucky@gmail.com>
+ * Copyright (c) 2019, Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,49 +22,46 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.timestamp;
 
-import meteor.config.Config;
-import meteor.config.ConfigGroup;
-import meteor.config.ConfigItem;
+package meteor.plugins.playerattacktimer;
 
-import java.awt.Color;
+import com.google.common.base.Splitter;
 
-@ConfigGroup("timestamp")
-public interface TimestampConfig extends Config
+import java.util.Map;
+
+public final class ConfigParser
 {
-	@ConfigItem(
-		keyName = "opaqueTimestamp",
-		name = "Timestamps (opaque)",
-		position = 1,
-		description = "Colour of Timestamps from the Timestamps plugin (opaque)"
-	)
-	default Color opaqueTimestamp() {return Color.BLACK;}
-
-	@ConfigItem(
-		keyName = "transparentTimestamp",
-		name = "Timestamps (transparent)",
-		position = 2,
-		description = "Colour of Timestamps from the Timestamps plugin (transparent)"
-	)
-	default Color transparentTimestamp() {return Color.BLACK;}
-
-	@ConfigItem(
-		keyName = "format",
-		name = "Timestamp Format",
-		position = 3,
-		description = "Customize your timestamp format by using the following characters<br>" +
-			"'yyyy' : year<br>" +
-			"'MM' : month<br>" +
-			"'dd' : day<br>" +
-			"'HH' : hour in 24 hour format<br>" +
-			"'hh' : hour in 12 hour format<br>" +
-			"'mm' : minute<br>" +
-			"'ss' : second<br>" +
-			"'a'  : AM/PM"
-	)
-	default String timestampFormat()
+	private ConfigParser()
 	{
-		return "[HH:mm]";
+	}
+
+	public static boolean parse(final String value)
+	{
+		if (value.isEmpty() || value.matches("/\\A\\s*\\z/")) //regex matches whitespace
+		{
+			return true;
+		}
+
+		try
+		{
+			final Splitter NEWLINE_SPLITTER = Splitter
+				.on("\n")
+				.omitEmptyStrings()
+				.trimResults();
+
+			final Map<String, String> tmp = NEWLINE_SPLITTER.withKeyValueSeparator(':').split(value);
+
+			for (final Map.Entry<String, String> entry : tmp.entrySet())
+			{
+				Integer.parseInt(entry.getKey());
+				Integer.parseInt(entry.getValue());
+			}
+
+			return true;
+		}
+		catch (final Exception ex)
+		{
+			return false;
+		}
 	}
 }
