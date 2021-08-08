@@ -16,6 +16,7 @@ import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
 import meteor.plugins.botutils.BotUtils;
 import meteor.plugins.iutils.iUtils;
+import meteor.task.Scheduler;
 import net.runelite.api.Client;
 import org.sponge.util.Logger;
 
@@ -32,8 +33,11 @@ public class Plugin implements Module {
   @Getter @Setter
   private Injector injector;
 
+  @Inject
+  public Scheduler scheduler;
+
   @Getter @Setter
-  private boolean enabled = true;
+  private boolean enabled = false;
 
   @Setter
   private Config config;
@@ -76,10 +80,26 @@ public class Plugin implements Module {
     {
       shutdown();
       setEnabled(false);
+      unschedule(this);
+      eventBus.unregister(this);
     }
     else {
       startup();
       setEnabled(true);
+      schedule(this);
+      eventBus.register(this);
     }
+  }
+
+  private void schedule(Plugin plugin)
+  {
+    // note to devs: this method will almost certainly merge conflict in the future, just apply the changes in the scheduler instead
+    scheduler.registerObject(plugin);
+  }
+
+  private void unschedule(Plugin plugin)
+  {
+    // note to devs: this method will almost certainly merge conflict in the future, just apply the changes in the scheduler instead
+    scheduler.unregisterObject(plugin);
   }
 }

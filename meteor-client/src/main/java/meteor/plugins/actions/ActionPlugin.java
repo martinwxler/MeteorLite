@@ -29,12 +29,6 @@ public class ActionPlugin extends Plugin {
   @Inject
   private KeyManager keyManager;
 
-  @Inject
-  private BotUtils botUtils;
-
-  @Inject
-  private iUtils iUtils;
-
   public static boolean enabled;
 
   int i = 0;

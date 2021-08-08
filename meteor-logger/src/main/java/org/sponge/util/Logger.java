@@ -23,22 +23,6 @@ public class Logger {
     this.name = name;
   }
 
-  public void info(Object message) {
-    printColorMessage(ANSI_WHITE, message);
-  }
-
-  public void warn(Object message) {
-    printColorMessage(ANSI_YELLOW, message);
-  }
-
-  public void debug(Object message) {
-    printColorMessage(ANSI_GREEN, message);
-  }
-
-  public void error(Object message) {
-    printColorMessage(ANSI_RED, message);
-  }
-
   public void info(Object message, Object... replacers) {
     printColorMessageReplacers(ANSI_WHITE, message, replacers);
   }
@@ -73,9 +57,22 @@ public class Logger {
 
   private void printColorMessageReplacers(String ansiColor, Object message, Object... replacers)
   {
-    String sRef = (String)message;
-    if (!sRef.contains("{}"))
+    String sRef;
+    try {
+      sRef = (String)message;
+    }
+    catch (Exception e)
+    {
+      printColorMessage(ansiColor, message);
       return;
+    }
+
+    if (!sRef.contains("{}"))
+    {
+      printColorMessage(ansiColor, sRef);
+      return;
+    }
+
     StringBuilder finalMessage = new StringBuilder();
     Object[] replacersArray = Arrays.stream(replacers).toArray();
     int i = 0;

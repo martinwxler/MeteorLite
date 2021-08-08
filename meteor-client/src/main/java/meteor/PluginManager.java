@@ -55,6 +55,7 @@ import meteor.plugins.tearsofguthix.TearsOfGuthixPlugin;
 import meteor.plugins.ticktimers.TickTimersPlugin;
 import meteor.plugins.timestamp.TimestampPlugin;
 import meteor.plugins.worldmap.WorldMapPlugin;
+import meteor.task.Scheduler;
 
 public class PluginManager {
 
@@ -165,8 +166,7 @@ public class PluginManager {
         }
       }
 
-      eventBus.register(plugin);
-      plugin.startup();
+      plugin.toggle();
     }
   }
 
@@ -181,4 +181,6 @@ public class PluginManager {
     }
     return null;
   }
+
+
 }

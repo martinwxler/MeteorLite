@@ -501,8 +501,6 @@ public class ConfigManager {
     configChanged.setKey(key);
     configChanged.setOldValue(oldValue);
     configChanged.setNewValue(value);
-
-    eventBus.post(configChanged);
   }
 
   public void setConfiguration(String groupName, String profile, String key, Object value) {
