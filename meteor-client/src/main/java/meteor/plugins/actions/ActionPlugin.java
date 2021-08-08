@@ -9,6 +9,7 @@ import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.plugins.botutils.BotUtils;
 import meteor.plugins.botutils.Spells;
+import meteor.plugins.iutils.iUtils;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -28,11 +29,18 @@ public class ActionPlugin extends Plugin {
   @Inject
   private KeyManager keyManager;
 
+  @Inject
+  private BotUtils botUtils;
+
+  @Inject
+  private iUtils iUtils;
+
   public static boolean enabled;
+
+  int i = 0;
 
   @Subscribe
   public void onGameTick(GameTick event) {
-
   }
 
   @Override
