@@ -36,6 +36,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Set;
+import org.sponge.util.Logger;
 
 @AllArgsConstructor
 public class ChatClient
@@ -365,6 +366,7 @@ public class ChatClient
 
 	public boolean submitPetList(String username, Collection<Integer> petList) throws IOException
 	{
+		new Logger("petSubmit").warn("pet submit");
 		HttpUrl url = RuneLiteAPI.getApiBase().newBuilder()
 			.addPathSegment("chat")
 			.addPathSegment("pets")
@@ -390,6 +392,7 @@ public class ChatClient
 			.addQueryParameter("name", username)
 			.build();
 
+		new Logger("ChatClient").debug(url);
 		Request request = new Request.Builder()
 			.url(url)
 			.build();

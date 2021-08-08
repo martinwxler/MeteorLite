@@ -1232,6 +1232,7 @@ public class ChatCommandsPlugin extends Plugin
 	 */
 	private boolean petListSubmit(ChatInput chatInput, String value)
 	{
+		logger.warn("submitted pet list");
 		final String playerName = client.getLocalPlayer().getName();
 
 		executor.execute(() ->

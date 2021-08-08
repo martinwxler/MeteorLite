@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Module;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import meteor.config.Config;
@@ -54,6 +55,7 @@ import meteor.plugins.tearsofguthix.TearsOfGuthixPlugin;
 import meteor.plugins.ticktimers.TickTimersPlugin;
 import meteor.plugins.timestamp.TimestampPlugin;
 import meteor.plugins.worldmap.WorldMapPlugin;
+import meteor.task.Scheduler;
 
 public class PluginManager {
 
@@ -62,6 +64,9 @@ public class PluginManager {
   private EventBus eventBus;
   @Inject
   private ConfigManager configManager;
+
+  private static BotUtils botUtils = new BotUtils();
+  private static iUtils iUtils = new iUtils();
 
   static
   {
@@ -106,37 +111,62 @@ public class PluginManager {
     plugins.add(new TimestampPlugin());
     plugins.add(new WorldMapPlugin());
 
-    plugins.add(new BotUtils());
-    plugins.add(new iUtils());
+    plugins.add(botUtils);
+    plugins.add(iUtils);
 
     plugins.add(new ActionPlugin());
   }
 
   public void startInternalPlugins() {
     for (Plugin plugin : plugins) {
-      Injector injector = plugin.getInjector();
-      if (injector == null) {
-        // Create injector for the module
-        Module pluginModule = (Binder binder) ->
+      Injector parent = MeteorLite.injector;
+
+      List<Module> depModules = new ArrayList<>();
+      if (!plugin.getClass().isInstance(iUtils) && !plugin.getClass().isInstance(botUtils))
+      {
+        Module botUtilsModule = (Binder binder) ->
         {
-          // Since the plugin itself is a module, it won't bind itself, so we'll bind it here
-          binder.bind((Class<Plugin>) plugin.getClass()).toInstance(plugin);
-          binder.install(plugin);
-        };
-        Injector pluginInjector = MeteorLite.injector.createChildInjector(pluginModule);
-        pluginInjector.injectMembers(plugin);
-        plugin.setInjector(pluginInjector);
-        for (Key<?> key : pluginInjector.getBindings().keySet()) {
-          Class<?> type = key.getTypeLiteral().getRawType();
-          if (Config.class.isAssignableFrom(type)) {
-            Config config = (Config) pluginInjector.getInstance(key);
-            configManager.setDefaultConfiguration(config, false);
+          try {
+            Plugin botUtilsInstance = botUtils.getClass().getDeclaredConstructor().newInstance();
+            binder.bind((Class<Plugin>) botUtilsInstance.getClass()).toInstance(botUtilsInstance);
+            binder.install(botUtilsInstance);
+          } catch (Exception e) {
+            e.printStackTrace();
           }
+        };
+        depModules.add(botUtilsModule);
+        Module iUtilsModule = (Binder binder) ->
+        {
+          try {
+            Plugin iUtilsInstance = iUtils.getClass().getDeclaredConstructor().newInstance();
+            binder.bind((Class<Plugin>) iUtilsInstance.getClass()).toInstance(iUtilsInstance);
+            binder.install(iUtilsInstance);
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        };
+        depModules.add(iUtilsModule);
+        parent = parent.createChildInjector(depModules);
+      }
+
+      Module pluginModule = (Binder binder) ->
+      {
+        // Since the plugin itself is a module, it won't bind itself, so we'll bind it here
+        binder.bind((Class<Plugin>) plugin.getClass()).toInstance(plugin);
+        binder.install(plugin);
+      };
+      Injector pluginInjector = parent.createChildInjector(pluginModule);
+      pluginInjector.injectMembers(plugin);
+      plugin.setInjector(pluginInjector);
+      for (Key<?> key : pluginInjector.getBindings().keySet()) {
+        Class<?> type = key.getTypeLiteral().getRawType();
+        if (Config.class.isAssignableFrom(type)) {
+          Config config = (Config) pluginInjector.getInstance(key);
+          configManager.setDefaultConfiguration(config, false);
         }
       }
 
-      eventBus.register(plugin);
-      plugin.startup();
+      plugin.toggle();
     }
   }
 
@@ -151,4 +181,6 @@ public class PluginManager {
     }
     return null;
   }
+
+
 }
