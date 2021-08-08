@@ -38,6 +38,7 @@ import net.runelite.api.Skill;
 import net.runelite.api.SpritePixels;
 import net.runelite.api.Tile;
 import net.runelite.api.VarPlayer;
+import net.runelite.api.Varbits;
 import net.runelite.api.WidgetNode;
 import net.runelite.api.WorldType;
 import net.runelite.api.coords.LocalPoint;
@@ -52,6 +53,7 @@ import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.PlayerDespawned;
 import net.runelite.api.events.PlayerSpawned;
 import net.runelite.api.events.StatChanged;
+import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.hooks.Callbacks;
 import net.runelite.api.hooks.DrawCallbacks;
 import net.runelite.api.mixins.Copy;
@@ -61,6 +63,7 @@ import net.runelite.api.mixins.MethodHook;
 import net.runelite.api.mixins.Mixin;
 import net.runelite.api.mixins.Replace;
 import net.runelite.api.mixins.Shadow;
+import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
@@ -1236,5 +1239,33 @@ public abstract class ClientMixin implements RSClient {
   public void refreshChat()
   {
     setChatCycle(getCycleCntr());
+  }
+
+  @FieldHook("Varps_main")
+  @Inject
+  public static void settingsChanged(int idx)
+  {
+    VarbitChanged varbitChanged = new VarbitChanged();
+    varbitChanged.setIndex(idx);
+    client.getCallbacks().post(varbitChanged);
+  }
+
+  @Inject
+  @Override
+  public AccountType getAccountType()
+  {
+    int varbit = getVar(Varbits.ACCOUNT_TYPE);
+
+    switch (varbit)
+    {
+      case 1:
+        return AccountType.IRONMAN;
+      case 2:
+        return AccountType.ULTIMATE_IRONMAN;
+      case 3:
+        return AccountType.HARDCORE_IRONMAN;
+    }
+
+    return AccountType.NORMAL;
   }
 }
