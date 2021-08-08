@@ -1719,6 +1719,8 @@ public class ChatCommandsPlugin extends Plugin
 		Player localPlayer = client.getLocalPlayer();
 		final String player = Text.sanitize(chatMessage.getName());
 
+		logger.debug(player + " - " + localPlayer.getName() + hiscoreEndpoint);
+		logger.debug("{} works now, {}", "this", "so get off my back!");
 		// If we are sending the message then just use the local hiscore endpoint for the world
 		if (chatMessage.getType().equals(ChatMessageType.PRIVATECHATOUT)
 			|| player.equals(localPlayer.getName()))
