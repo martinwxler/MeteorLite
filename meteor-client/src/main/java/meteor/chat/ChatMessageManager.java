@@ -264,15 +264,15 @@ public class ChatMessageManager
 			{
 				case PUBLICCHAT:
 				case MODCHAT:
-					return JagexColors.CHAT_PUBLIC_TEXT_OPAQUE_BACKGROUND;
+					return JagexColors.CHAT_PUBLIC_TEXT_TRANSPARENT_BACKGROUND;
 				case PRIVATECHATOUT:
 				case MODPRIVATECHAT:
 				case PRIVATECHAT:
-					return JagexColors.CHAT_PRIVATE_MESSAGE_TEXT_OPAQUE_BACKGROUND;
+					return JagexColors.CHAT_PRIVATE_MESSAGE_TEXT_TRANSPARENT_BACKGROUND;
 				case FRIENDSCHAT:
 				case CLAN_CHAT:
 				case CLAN_GUEST_CHAT:
-					return JagexColors.CHAT_FC_TEXT_OPAQUE_BACKGROUND;
+					return JagexColors.CHAT_FC_TEXT_TRANSPARENT_BACKGROUND;
 				case ITEM_EXAMINE:
 				case OBJECT_EXAMINE:
 				case NPC_EXAMINE:
@@ -280,7 +280,7 @@ public class ChatMessageManager
 				case FRIENDSCHATNOTIFICATION:
 				case CLAN_MESSAGE:
 				case CLAN_GUEST_MESSAGE:
-					return JagexColors.CHAT_GAME_EXAMINE_TEXT_OPAQUE_BACKGROUND;
+					return JagexColors.CHAT_GAME_EXAMINE_TEXT_TRANSPARENT_BACKGROUND;
 			}
 		}
 
@@ -292,6 +292,8 @@ public class ChatMessageManager
 	 */
 	private void loadColors()
 	{
+		ClassLoader.getSystemClassLoader().getResource("css/plugins/blah.css");
+		ChatMessageManager.class.getResource("chat_icon.png");
 		colorCache.clear();
 
 		// Apply defaults

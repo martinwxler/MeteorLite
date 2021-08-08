@@ -49,7 +49,7 @@ import org.sponge.util.Logger;
 @ThreadSafe
 public class EventBus {
 
-  private static final Logger log = MeteorLite.logger = new Logger("EventBus");
+  private static final Logger log = new Logger("EventBus");
   private final Consumer<Throwable> exceptionHandler;
   @Nonnull
   private ImmutableMultimap<Class<?>, Subscriber> subscribers = ImmutableMultimap.of();

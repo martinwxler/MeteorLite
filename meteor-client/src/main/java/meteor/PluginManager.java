@@ -70,14 +70,22 @@ import meteor.task.Scheduler;
 
 public class PluginManager {
 
-  public static List<Plugin> plugins = new ArrayList<>();
   @Inject
   private EventBus eventBus;
+
   @Inject
   private ConfigManager configManager;
 
+  public static List<Plugin> plugins = new ArrayList<>();
   private static BotUtils botUtils = new BotUtils();
   private static iUtils iUtils = new iUtils();
+
+  private OSRSClient client;
+
+  @Inject
+  PluginManager(OSRSClient client) {
+    this.client = client;
+  }
 
   static
   {
@@ -141,7 +149,7 @@ public class PluginManager {
 
   public void startInternalPlugins() {
     for (Plugin plugin : plugins) {
-      Injector parent = MeteorLite.injector;
+      Injector parent = client.instanceInjector;
 
       List<Module> depModules = new ArrayList<>();
       if (!plugin.getClass().isInstance(iUtils) && !plugin.getClass().isInstance(botUtils))

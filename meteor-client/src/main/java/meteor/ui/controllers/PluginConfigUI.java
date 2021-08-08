@@ -26,6 +26,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import meteor.MeteorLite;
+import meteor.OSRSClient;
 import meteor.config.Config;
 import meteor.config.ConfigDescriptor;
 import meteor.config.ConfigItemDescriptor;
@@ -57,7 +58,8 @@ public class PluginConfigUI {
 
   @FXML
   public void initialize() {
-    MeteorLite.injector.injectMembers(this);
+    for (OSRSClient clientInstance : OSRSClient.clientInstances)
+      clientInstance.instanceInjector.injectMembers(this);
     plugin = lastPluginInteracted;
 
 
@@ -100,7 +102,7 @@ public class PluginConfigUI {
     configPanel.setPrefHeight(25);
     configPanel.setPrefWidth(280);
 
-    configManager = MeteorLite.injector.getInstance(ConfigManager.class);
+    configManager = MeteorLite.mainInstance.instanceInjector.getInstance(ConfigManager.class);
     Config config = plugin.getConfig(configManager);
     ConfigDescriptor descriptor = configManager.getConfigDescriptor(config);
     if (descriptor != null)

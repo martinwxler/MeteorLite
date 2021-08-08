@@ -2,6 +2,7 @@ package meteor.plugins.actions;
 
 import javax.inject.Inject;
 import meteor.MeteorLite;
+import meteor.OSRSClient;
 import meteor.eventbus.Subscribe;
 import meteor.input.KeyManager;
 import meteor.input.MouseManager;
@@ -39,7 +40,8 @@ public class ActionPlugin extends Plugin {
 
   @Override
   public void startup() {
-    MeteorLite.injector.injectMembers(inputListener);
+    for (OSRSClient clientInstance : OSRSClient.clientInstances)
+      clientInstance.instanceInjector.injectMembers(inputListener);
     eventBus.register(inputListener);
     mouseManager.registerMouseListener(inputListener);
     keyManager.registerKeyListener(inputListener, this.getClass());
