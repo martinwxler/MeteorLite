@@ -44,7 +44,7 @@ import javax.inject.Inject;
 @PluginDescriptor(
 	name = "Regeneration Meter",
 	description = "Track and show the hitpoints and special attack regeneration timers",
-	tags = {"combat", "health", "hitpoints", "special", "attack", "overlay", "notifications"}
+	tags = {"combat", "health", "hitpoints", "special", "attack", "overlay",}
 )
 public class RegenMeterPlugin extends Plugin
 {

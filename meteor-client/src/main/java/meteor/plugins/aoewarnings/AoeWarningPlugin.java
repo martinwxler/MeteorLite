@@ -35,14 +35,11 @@ import java.util.Set;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
-import meteor.config.Config;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
-import meteor.plugins.bank.BankConfig;
 import meteor.ui.overlay.OverlayManager;
-import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.GraphicID;
@@ -126,7 +123,7 @@ public class AoeWarningPlugin extends Plugin {
       ticksRemaining = 0;
     }
     final int tickCycle = client.getTickCount() + ticksRemaining;
-    if (isConfigEnabledForProjectileId(id, false)) {
+    if (isConfigEnabledForProjectileId(id)) {
       projectiles.add(new ProjectileContainer(projectile, Instant.now(), lifetime, tickCycle));
 
     }
@@ -237,72 +234,67 @@ public class AoeWarningPlugin extends Plugin {
     return true;
   }
 
-  private boolean isConfigEnabledForProjectileId(int projectileId, boolean notify) {
+  private boolean isConfigEnabledForProjectileId(int projectileId) {
     AoeProjectileInfo projectileInfo = AoeProjectileInfo.getById(projectileId);
     if (projectileInfo == null) {
       return false;
     }
 
-    if (notify && config.aoeNotifyAll()) {
-      return true;
-    }
-
     switch (projectileInfo) {
       case LIZARDMAN_SHAMAN_AOE:
-        return notify ? config.isShamansNotifyEnabled() : config.isShamansEnabled();
+        return config.isShamansEnabled();
       case CRAZY_ARCHAEOLOGIST_AOE:
-        return notify ? config.isArchaeologistNotifyEnabled() : config.isArchaeologistEnabled();
+        return config.isArchaeologistEnabled();
       case ICE_DEMON_RANGED_AOE:
       case ICE_DEMON_ICE_BARRAGE_AOE:
-        return notify ? config.isIceDemonNotifyEnabled() : config.isIceDemonEnabled();
+        return config.isIceDemonEnabled();
       case VASA_AWAKEN_AOE:
       case VASA_RANGED_AOE:
-        return notify ? config.isVasaNotifyEnabled() : config.isVasaEnabled();
+        return config.isVasaEnabled();
       case TEKTON_METEOR_AOE:
-        return notify ? config.isTektonNotifyEnabled() : config.isTektonEnabled();
+        return config.isTektonEnabled();
       case VORKATH_BOMB:
       case VORKATH_POISON_POOL:
       case VORKATH_SPAWN:
       case VORKATH_TICK_FIRE:
-        return notify ? config.isVorkathNotifyEnabled()
-            : config.vorkathModes().contains(AoeWarningConfig.VorkathMode.of(projectileInfo));
+        return  config.vorkathModes().contains(AoeWarningConfig.VorkathMode.of(projectileInfo));
       case VETION_LIGHTNING:
-        return notify ? config.isVetionNotifyEnabled() : config.isVetionEnabled();
+        return config.isVetionEnabled();
       case CHAOS_FANATIC:
-        return notify ? config.isChaosFanaticNotifyEnabled() : config.isChaosFanaticEnabled();
+        return config.isChaosFanaticEnabled();
       case GALVEK_BOMB:
       case GALVEK_MINE:
-        return notify ? config.isGalvekNotifyEnabled() : config.isGalvekEnabled();
+        return config.isGalvekEnabled();
       case DAWN_FREEZE:
       case DUSK_CEILING:
         if (regionCheck(GROTESQUE_GUARDIANS_REGION)) {
-          return notify ? config.isGargBossNotifyEnabled() : config.isGargBossEnabled();
+          return config.isGargBossEnabled();
         }
       case VERZIK_P1_ROCKS:
         if (regionCheck(VERZIK_REGION)) {
-          return notify ? config.isVerzikNotifyEnabled() : config.isVerzikEnabled();
+          return config.isVerzikEnabled();
         }
       case OLM_FALLING_CRYSTAL:
       case OLM_BURNING:
       case OLM_FALLING_CRYSTAL_TRAIL:
       case OLM_ACID_TRAIL:
       case OLM_FIRE_LINE:
-        return notify ? config.isOlmNotifyEnabled() : config.isOlmEnabled();
+        return config.isOlmEnabled();
       case CORPOREAL_BEAST:
       case CORPOREAL_BEAST_DARK_CORE:
-        return notify ? config.isCorpNotifyEnabled() : config.isCorpEnabled();
+        return config.isCorpEnabled();
       case XARPUS_POISON_AOE:
-        return notify ? config.isXarpusNotifyEnabled() : config.isXarpusEnabled();
+        return config.isXarpusEnabled();
       case ADDY_DRAG_POISON:
-        return notify ? config.addyDragsNotifyEnabled() : config.addyDrags();
+        return config.addyDrags();
       case DRAKE_BREATH:
-        return notify ? config.isDrakeNotifyEnabled() : config.isDrakeEnabled();
+        return config.isDrakeEnabled();
       case CERB_FIRE:
-        return notify ? config.isCerbFireNotifyEnabled() : config.isCerbFireEnabled();
+        return config.isCerbFireEnabled();
       case DEMONIC_GORILLA_BOULDER:
-        return notify ? config.isDemonicGorillaNotifyEnabled() : config.isDemonicGorillaEnabled();
+        return config.isDemonicGorillaEnabled();
       case VERZIK_PURPLE_SPAWN:
-        return notify ? config.isVerzikNotifyEnabled() : config.isVerzikEnabled();
+        return config.isVerzikEnabled();
     }
 
     return false;

@@ -96,16 +96,6 @@ public interface BoostsConfig extends Config {
     return 0;
   }
 
-  @ConfigItem(
-      keyName = "notifyOnBoost",
-      name = "Notify on boost threshold",
-      description = "Configures whether or not a notification will be sent for boosted stats.",
-      position = 7
-  )
-  default boolean notifyOnBoost() {
-    return true;
-  }
-
   enum DisplayChangeMode {
     ALWAYS,
     BOOSTED,

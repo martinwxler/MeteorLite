@@ -46,7 +46,7 @@ import net.runelite.api.Skill;
 @PluginDescriptor(
     name = "Boosts Information",
     description = "Show combat and/or skill boost information",
-    tags = {"combat", "notifications", "skilling", "overlay"}
+    tags = {"combat", "skilling", "overlay"}
 )
 class BoostsOverlay extends OverlayPanel {
 
