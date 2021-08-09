@@ -464,6 +464,15 @@ public abstract class ClientMixin implements RSClient {
         canvasX, canvasY);
   }
 
+  @Override
+  @Inject
+  public void invokeMenuAction(String option, String target, int identifier, int opcode, int param0, int param1)
+  {
+    assert isClientThread() : "invokeMenuAction must be called on client thread";
+
+    client.sendMenuAction(param0, param1, opcode, identifier, option, target, 658, 384);
+  }
+
   @Inject
   @FieldHook("cycleCntr")
   public static void onCycleCntrChanged(int idx) {

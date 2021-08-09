@@ -79,7 +79,7 @@ public class NpcStatusPlugin extends Plugin
 	private WorldArea lastPlayerLocation;
 
 	@Provides
-	NpcStatusConfig provideConfig(ConfigManager configManager)
+	public NpcStatusConfig getConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(NpcStatusConfig.class);
 	}
