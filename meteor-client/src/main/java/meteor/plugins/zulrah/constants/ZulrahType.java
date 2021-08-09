@@ -47,7 +47,7 @@ public enum ZulrahType {
       return this.name;
    }
 
-   private ZulrahType(String name, int npcId, Skill skill, Color color) {
+   ZulrahType(String name, int npcId, Skill skill, Color color) {
       this.name = name;
       this.npcId = npcId;
       this.skill = skill;

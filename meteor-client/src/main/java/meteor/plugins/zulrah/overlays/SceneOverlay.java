@@ -52,6 +52,7 @@ public class SceneOverlay extends Overlay {
       this.setLayer(OverlayLayer.ABOVE_SCENE);
    }
 
+   @Override
    public Dimension render(Graphics2D graphics) {
       Font prevFont = graphics.getFont();
       graphics.setFont(this.config.fontType().getFont());

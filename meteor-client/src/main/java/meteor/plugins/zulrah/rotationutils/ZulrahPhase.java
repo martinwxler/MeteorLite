@@ -10,11 +10,11 @@ public final class ZulrahPhase {
    }
 
    public ZulrahNpc getZulrahNpc() {
-      return this.zulrahNpc;
+      return zulrahNpc;
    }
 
    public ZulrahAttributes getAttributes() {
-      return this.attributes;
+      return attributes;
    }
 
    public boolean equals(Object o) {
@@ -24,7 +24,7 @@ public final class ZulrahPhase {
          return false;
       } else {
          ZulrahPhase other = (ZulrahPhase)o;
-         Object this$zulrahNpc = this.getZulrahNpc();
+         Object this$zulrahNpc = getZulrahNpc();
          Object other$zulrahNpc = other.getZulrahNpc();
          if (this$zulrahNpc == null) {
             if (other$zulrahNpc != null) {
@@ -34,7 +34,7 @@ public final class ZulrahPhase {
             return false;
          }
 
-         Object this$attributes = this.getAttributes();
+         Object this$attributes = getAttributes();
          Object other$attributes = other.getAttributes();
          if (this$attributes == null) {
             if (other$attributes != null) {
@@ -51,15 +51,15 @@ public final class ZulrahPhase {
    public int hashCode() {
       int PRIME = 59;
       int result = 1;
-      ZulrahNpc $zulrahNpc = this.getZulrahNpc();
+      ZulrahNpc $zulrahNpc = getZulrahNpc();
       result = result * PRIME + ($zulrahNpc == null ? 43 : ((Object)$zulrahNpc).hashCode());
-      ZulrahAttributes $attributes = this.getAttributes();
+      ZulrahAttributes $attributes = getAttributes();
       result = result * PRIME + ($attributes == null ? 43 : ((Object)$attributes).hashCode());
       return result;
    }
 
    public String toString() {
-      ZulrahNpc var10000 = this.getZulrahNpc();
-      return "ZulrahPhase(zulrahNpc=" + var10000 + ", attributes=" + this.getAttributes() + ")";
+      ZulrahNpc var10000 = getZulrahNpc();
+      return "ZulrahPhase(zulrahNpc=" + var10000 + ", attributes=" + getAttributes() + ")";
    }
 }

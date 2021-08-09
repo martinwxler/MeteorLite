@@ -52,23 +52,23 @@ public class PhaseOverlay
 
    @Override
    public Dimension render(Graphics2D graphics) {
-      if (this.config.phaseDisplayType() == ZulrahConfig.DisplayType.OFF || this.config.phaseDisplayType() == ZulrahConfig.DisplayType.TILE || this.plugin.getZulrahNpc() == null || this.plugin.getZulrahNpc().isDead()) {
+      if (config.phaseDisplayType() == ZulrahConfig.DisplayType.OFF || config.phaseDisplayType() == ZulrahConfig.DisplayType.TILE || plugin.getZulrahNpc() == null || plugin.getZulrahNpc().isDead()) {
          return null;
       }
       LinkedHashMultimap<ZulrahType, MutablePair<String, Boolean>> zulrahPhases = LinkedHashMultimap.create();
-      this.plugin.getZulrahData().forEach(data -> {
-         switch (this.config.phaseDisplayMode()) {
+      plugin.getZulrahData().forEach(data -> {
+         switch (config.phaseDisplayMode()) {
             case CURRENT: {
                data.getCurrentPhase().ifPresent(phase -> zulrahPhases.put(phase.getZulrahNpc().getType(), new MutablePair<String, Boolean>("Current", false)));
                break;
             }
             case NEXT: {
-               data.getNextPhase().ifPresent(phase -> zulrahPhases.put(phase.getZulrahNpc().getType(), new MutablePair<String, Boolean>(this.getNextString(), true)));
+               data.getNextPhase().ifPresent(phase -> zulrahPhases.put(phase.getZulrahNpc().getType(), new MutablePair<String, Boolean>(getNextString(), true)));
                break;
             }
             case BOTH: {
                data.getCurrentPhase().ifPresent(phase -> zulrahPhases.put(phase.getZulrahNpc().getType(), new MutablePair<String, Boolean>("Current", false)));
-               data.getNextPhase().ifPresent(phase -> zulrahPhases.put(phase.getZulrahNpc().getType(), new MutablePair<String, Boolean>(this.getNextString(), true)));
+               data.getNextPhase().ifPresent(phase -> zulrahPhases.put(phase.getZulrahNpc().getType(), new MutablePair<String, Boolean>(getNextString(), true)));
                break;
             }
             default: {
@@ -81,21 +81,21 @@ public class PhaseOverlay
       }
 
       List<InfoBoxComponent> components = zulrahPhases.entries().stream().map(this::infoBoxComponent).collect(Collectors.toList());
-      IntStream.iterate(components.size() - 1, i -> i - 1).forEach(i -> this.panelComponent.getChildren().add(components.get(i)));
-      if (this.config.phaseRotationName()) {
-         this.displayRotationName(graphics);
+      components.forEach(i -> panelComponent.getChildren().add(i));
+      if (config.phaseRotationName()) {
+         displayRotationName(graphics);
       }
       return super.render(graphics);
    }
 
    private String getNextString() {
-      return this.plugin.getCurrentRotation() != null ? "Next" : "P. Next";
+      return plugin.getCurrentRotation() != null ? "Next" : "P. Next";
    }
 
    private InfoBoxComponent infoBoxComponent(Map.Entry<ZulrahType, MutablePair<String, Boolean>> entry) {
       InfoBoxComponent infoBox = new InfoBoxComponent();
       infoBox.setText(entry.getValue().getLeft());
-      infoBox.setOutline(this.config.textOutline());
+      infoBox.setOutline(config.textOutline());
       infoBox.setColor(entry.getValue().getRight() == false ? Color.GREEN : Color.RED);
       infoBox.setImage(entry.getKey().getImage());
       infoBox.setBackgroundColor(entry.getKey().getColorWithAlpha(50));
@@ -103,13 +103,13 @@ public class PhaseOverlay
    }
 
    private void displayRotationName(Graphics2D graphics) {
-      Rectangle bounds = this.panelComponent.getBounds();
-      String text = this.plugin.getCurrentRotation() != null ? this.plugin.getCurrentRotation().getRotationName() : "Unidentified";
+      Rectangle bounds = panelComponent.getBounds();
+      String text = plugin.getCurrentRotation() != null ? plugin.getCurrentRotation().getRotationName() : "Unidentified";
       TextComponent textComponent = new TextComponent();
       textComponent.setPosition(new Point(bounds.x + (bounds.width - graphics.getFontMetrics().stringWidth(text)) / 2, bounds.y + 1));
       textComponent.setText(text);
-      textComponent.setColor(this.plugin.getCurrentRotation() != null ? Color.GREEN : Color.YELLOW);
-      textComponent.setOutline(this.config.textOutline());
+      textComponent.setColor(plugin.getCurrentRotation() != null ? Color.GREEN : Color.YELLOW);
+      textComponent.setOutline(config.textOutline());
       textComponent.render(graphics);
    }
 }

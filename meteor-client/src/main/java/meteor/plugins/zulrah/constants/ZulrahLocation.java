@@ -29,7 +29,7 @@ public enum ZulrahLocation {
       return null;
    }
 
-   private ZulrahLocation(int localX, int localY) {
+   ZulrahLocation(int localX, int localY) {
       this.localX = localX;
       this.localY = localY;
    }

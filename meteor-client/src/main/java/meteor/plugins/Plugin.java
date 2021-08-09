@@ -78,26 +78,25 @@ public class Plugin implements Module {
     {
       shutdown();
       setEnabled(false);
-      unschedule(this);
+      scheduler.unregister(this);
       eventBus.unregister(this);
     }
     else {
       startup();
       setEnabled(true);
-      schedule(this);
+      scheduler.register(this);
       eventBus.register(this);
     }
   }
 
-  private void schedule(Plugin plugin)
-  {
-    // note to devs: this method will almost certainly merge conflict in the future, just apply the changes in the scheduler instead
-    scheduler.registerObject(plugin);
+
+  // These should NOT be used as they are not called
+  // This will create errors in plugins that try to use the protected variant
+  public void startUp() {
+
   }
 
-  private void unschedule(Plugin plugin)
-  {
-    // note to devs: this method will almost certainly merge conflict in the future, just apply the changes in the scheduler instead
-    scheduler.unregisterObject(plugin);
+  public void shutDown() {
+
   }
 }

@@ -65,7 +65,7 @@ public class Scheduler
 		return Collections.unmodifiableList(scheduledMethods);
 	}
 
-	public void registerObject(Object obj)
+	public void register(Object obj)
 	{
 		for (Method method : obj.getClass().getMethods())
 		{
@@ -105,7 +105,7 @@ public class Scheduler
 		}
 	}
 
-	public void unregisterObject(Object obj)
+	public void unregister(Object obj)
 	{
 		List<ScheduledMethod> methods = new ArrayList<>(getScheduledMethods());
 
