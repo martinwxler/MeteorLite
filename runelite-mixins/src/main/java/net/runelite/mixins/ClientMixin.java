@@ -1291,4 +1291,18 @@ public abstract class ClientMixin implements RSClient {
 
     return AccountType.NORMAL;
   }
+
+  @Inject
+  @Override
+  public RSWidget[] getGroup(int groupId)
+  {
+    RSWidget[][] widgets = getWidgets();
+
+    if (widgets == null || groupId < 0 || groupId >= widgets.length || widgets[groupId] == null)
+    {
+      return null;
+    }
+
+    return widgets[groupId];
+  }
 }

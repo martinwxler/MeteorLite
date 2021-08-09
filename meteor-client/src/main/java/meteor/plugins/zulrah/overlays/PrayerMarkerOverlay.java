@@ -31,13 +31,14 @@ public class PrayerMarkerOverlay extends Overlay {
       this.setPriority(OverlayPriority.HIGH);
    }
 
+   @Override
    public Dimension render(Graphics2D graphics) {
-      if (this.config.prayerMarker() && this.plugin.getZulrahNpc() != null && !this.plugin.getZulrahNpc().isDead()) {
-         this.plugin.getZulrahData().forEach((data) -> {
+      if (config.prayerMarker() && plugin.getZulrahNpc() != null && !plugin.getZulrahNpc().isDead()) {
+         plugin.getZulrahData().forEach((data) -> {
             data.getCurrentPhasePrayer().ifPresent((prayer) -> {
-               if (this.client.getVar(VarClientInt.INVENTORY_TAB) == 5) {
-                  Widget widget = this.client.getWidget(541, this.prayerToChildId(prayer));
-                  Color color = !this.client.isPrayerActive(prayer) ? Color.RED : Color.GREEN;
+               if (client.getVar(VarClientInt.INVENTORY_TAB) == 5) {
+                  Widget widget = client.getWidget(541, prayerToChildId(prayer));
+                  Color color = !client.isPrayerActive(prayer) ? Color.RED : Color.GREEN;
                   OverlayUtils.renderWidgetPolygon(graphics, widget, color, true, false);
                }
 

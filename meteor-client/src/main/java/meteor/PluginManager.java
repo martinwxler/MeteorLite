@@ -209,14 +209,6 @@ public class PluginManager {
       Injector pluginInjector = parent.createChildInjector(pluginModule);
       pluginInjector.injectMembers(plugin);
       plugin.setInjector(pluginInjector);
-      for (Key<?> key : pluginInjector.getBindings().keySet()) {
-        Class<?> type = key.getTypeLiteral().getRawType();
-        if (Config.class.isAssignableFrom(type)) {
-          Config config = (Config) pluginInjector.getInstance(key);
-          configManager.setDefaultConfiguration(config, false);
-        }
-      }
-
       plugin.toggle();
     }
   }

@@ -97,7 +97,7 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
   @Inject
   private Provider<TooltipOverlay> tooltipOverlay;
 
-  @com.google.inject.Inject
+  @Inject
   private MeteorLiteClientModule meteorLiteClientModule;
 
   private Logger logger = new Logger("MeteorLiteClient");
@@ -147,8 +147,8 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
 
     overlayManager.add(worldMapOverlay.get());
 
-    pluginManager.startInternalPlugins();
     configManager.load();
+    pluginManager.startInternalPlugins();
 
     overlayManager.add(tooltipOverlay.get());
 

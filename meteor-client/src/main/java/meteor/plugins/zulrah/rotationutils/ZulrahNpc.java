@@ -30,21 +30,21 @@ public final class ZulrahNpc {
 
    @Nonnull
    public ZulrahType getType() {
-      return this.type;
+      return type;
    }
 
    @Nonnull
    public ZulrahLocation getZulrahLocation() {
-      return this.zulrahLocation;
+      return zulrahLocation;
    }
 
    public boolean isJad() {
-      return this.jad;
+      return jad;
    }
 
    public String toString() {
-      ZulrahType var10000 = this.getType();
-      return "ZulrahNpc(type=" + var10000 + ", zulrahLocation=" + this.getZulrahLocation() + ", jad=" + this.isJad() + ")";
+      ZulrahType var10000 = getType();
+      return "ZulrahNpc(type=" + var10000 + ", zulrahLocation=" + getZulrahLocation() + ", jad=" + isJad() + ")";
    }
 
    public boolean equals(Object o) {
@@ -54,7 +54,7 @@ public final class ZulrahNpc {
          return false;
       } else {
          ZulrahNpc other = (ZulrahNpc)o;
-         Object this$type = this.getType();
+         Object this$type = getType();
          Object other$type = other.getType();
          if (this$type == null) {
             if (other$type != null) {
@@ -65,7 +65,7 @@ public final class ZulrahNpc {
          }
 
          label29: {
-            Object this$zulrahLocation = this.getZulrahLocation();
+            Object this$zulrahLocation = getZulrahLocation();
             Object other$zulrahLocation = other.getZulrahLocation();
             if (this$zulrahLocation == null) {
                if (other$zulrahLocation == null) {
@@ -78,7 +78,7 @@ public final class ZulrahNpc {
             return false;
          }
 
-         if (this.isJad() != other.isJad()) {
+         if (isJad() != other.isJad()) {
             return false;
          } else {
             return true;
@@ -89,11 +89,11 @@ public final class ZulrahNpc {
    public int hashCode() {
       int PRIME = 59;
       int result = 1;
-      Object $type = this.getType();
+      Object $type = getType();
       result = result * PRIME + ($type == null ? 43 : $type.hashCode());
-      Object $zulrahLocation = this.getZulrahLocation();
+      Object $zulrahLocation = getZulrahLocation();
       result = result * PRIME + ($zulrahLocation == null ? 43 : $zulrahLocation.hashCode());
-      result = result * PRIME + (this.isJad() ? 79 : 97);
+      result = result * PRIME + (isJad() ? 79 : 97);
       return result;
    }
 }

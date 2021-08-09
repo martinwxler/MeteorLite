@@ -88,4 +88,15 @@ public class Plugin implements Module {
       eventBus.register(this);
     }
   }
+
+
+  // These should NOT be used as they are not called
+  // This will create errors in plugins that try to use the protected variant
+  public void startUp() {
+
+  }
+
+  public void shutDown() {
+
+  }
 }

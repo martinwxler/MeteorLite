@@ -51,7 +51,7 @@ public final class ZulrahAttributes {
          return false;
       } else {
          ZulrahAttributes other = (ZulrahAttributes)o;
-         Object this$standLocation = this.getStandLocation();
+         Object this$standLocation = getStandLocation();
          Object other$standLocation = other.getStandLocation();
          if (this$standLocation == null) {
             if (other$standLocation != null) {
@@ -62,7 +62,7 @@ public final class ZulrahAttributes {
          }
 
          label41: {
-            Object this$stallLocation = this.getStallLocation();
+            Object this$stallLocation = getStallLocation();
             Object other$stallLocation = other.getStallLocation();
             if (this$stallLocation == null) {
                if (other$stallLocation == null) {
@@ -75,7 +75,7 @@ public final class ZulrahAttributes {
             return false;
          }
 
-         Object this$prayer = this.getPrayer();
+         Object this$prayer = getPrayer();
          Object other$prayer = other.getPrayer();
          if (this$prayer == null) {
             if (other$prayer != null) {
@@ -85,7 +85,7 @@ public final class ZulrahAttributes {
             return false;
          }
 
-         if (this.getPhaseTicks() != other.getPhaseTicks()) {
+         if (getPhaseTicks() != other.getPhaseTicks()) {
             return false;
          } else {
             return true;
@@ -96,18 +96,18 @@ public final class ZulrahAttributes {
    public int hashCode() {
       byte PRIME = 59;
       int result = 1;
-      Object $standLocation = this.getStandLocation();
-      result = result * PRIME + ($standLocation == null ? 43 : $standLocation.hashCode());
-      Object $stallLocation = this.getStallLocation();
+      Object $standLocation = getStandLocation();
+      result = result * PRIME + $standLocation.hashCode();
+      Object $stallLocation = getStallLocation();
       result = result * PRIME + ($stallLocation == null ? 43 : $stallLocation.hashCode());
-      Object $prayer = this.getPrayer();
+      Object $prayer = getPrayer();
       result = result * PRIME + ($prayer == null ? 43 : $prayer.hashCode());
-      result = result * PRIME + this.getPhaseTicks();
+      result = result * PRIME + getPhaseTicks();
       return result;
    }
 
    public String toString() {
-      StandLocation var10000 = this.getStandLocation();
-      return "ZulrahAttributes(standLocation=" + var10000 + ", stallLocation=" + this.getStallLocation() + ", prayer=" + this.getPrayer() + ", phaseTicks=" + this.getPhaseTicks() + ")";
+      StandLocation var10000 = getStandLocation();
+      return "ZulrahAttributes(standLocation=" + var10000 + ", stallLocation=" + getStallLocation() + ", prayer=" + getPrayer() + ", phaseTicks=" + getPhaseTicks() + ")";
    }
 }

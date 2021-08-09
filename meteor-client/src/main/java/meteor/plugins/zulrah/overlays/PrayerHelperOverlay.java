@@ -36,10 +36,11 @@ public class PrayerHelperOverlay extends OverlayPanel {
       this.setPosition(OverlayPosition.ABOVE_CHATBOX_RIGHT);
    }
 
+   @Override
    public Dimension render(Graphics2D graphics) {
-      if (this.config.prayerHelper() && this.plugin.getZulrahNpc() != null && !this.plugin.getZulrahNpc().isDead()) {
+      if (config.prayerHelper() && plugin.getZulrahNpc() != null && !plugin.getZulrahNpc().isDead()) {
          Prayer prayer = null;
-         Iterator var3 = this.plugin.getZulrahData().iterator();
+         Iterator var3 = plugin.getZulrahData().iterator();
 
          while(var3.hasNext()) {
             ZulrahData data = (ZulrahData)var3.next();
@@ -52,12 +53,12 @@ public class PrayerHelperOverlay extends OverlayPanel {
             return null;
          } else {
             InfoBoxComponent prayComponent = new InfoBoxComponent();
-            prayComponent.setImage(this.spriteManager.getSprite(this.prayerToSpriteId(prayer), 0));
-            prayComponent.setBackgroundColor(!this.client.isPrayerActive(prayer) ? this.RED : this.GREEN);
+            prayComponent.setImage(spriteManager.getSprite(prayerToSpriteId(prayer), 0));
+            prayComponent.setBackgroundColor(!client.isPrayerActive(prayer) ? RED : GREEN);
             prayComponent.setPreferredSize(new Dimension(40, 40));
-            this.panelComponent.getChildren().add(prayComponent);
-            this.panelComponent.setPreferredSize(new Dimension(40, 0));
-            this.panelComponent.setBorder(new Rectangle(0, 0, 0, 0));
+            panelComponent.getChildren().add(prayComponent);
+            panelComponent.setPreferredSize(new Dimension(40, 0));
+            panelComponent.setBorder(new Rectangle(0, 0, 0, 0));
             return super.render(graphics);
          }
       } else {

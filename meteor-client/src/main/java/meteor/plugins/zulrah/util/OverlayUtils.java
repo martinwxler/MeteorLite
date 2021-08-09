@@ -23,7 +23,7 @@ public class OverlayUtils {
       if (imgLoc != null && image != null) {
          int x = imgLoc.getX();
          int y = imgLoc.getY();
-         graphics.drawImage(image, x, y, (ImageObserver)null);
+         graphics.drawImage(image, x, y, null);
       }
    }
 
