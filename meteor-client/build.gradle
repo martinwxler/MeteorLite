@@ -91,10 +91,11 @@ applicationDefaultJvmArgs = [
         "-XX:+UseParNewGC",
         "-Djna.nosys=true",
         "-Dsun.java2d.uiScale=1.0",
-        "-Dprism.allowhidpi=false"]
+        "-Dprism.allowhidpi=false",
+        "-Dsun.awt.noerasebackground=true"]
 
 application {
-    mainClass.set("meteor.MeteorLite")
+    mainClass.set("meteor.MeteorLiteClientLauncher")
 }
 
 processResources {
@@ -106,6 +107,6 @@ test {
     useJUnitPlatform()
 }
 
-mainClassName = 'meteor.MeteorLite'
+mainClassName = 'meteor.MeteorLiteClientLauncher'
 
 

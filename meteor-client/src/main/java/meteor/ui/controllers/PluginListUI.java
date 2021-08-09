@@ -1,6 +1,6 @@
 package meteor.ui.controllers;
 
-import static meteor.MeteorLite.pluginsPanelVisible;
+import static meteor.MeteorLiteClientModule.pluginsPanelVisible;
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -16,7 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import meteor.MeteorLite;
+import meteor.MeteorLiteClientLauncher;
 import meteor.PluginManager;
 import meteor.config.ConfigManager;
 import meteor.plugins.Plugin;
@@ -77,7 +77,7 @@ public class PluginListUI {
       pluginPanel.setStyle("-fx-background-color: #212121; -fx-border-style: solid;  -fx-border-color: #121212; -fx-border-width: 1;");
 
       PluginConfigButton configButton = new PluginConfigButton(p);
-      if (p.getConfig(MeteorLite.injector.getInstance(ConfigManager.class)) != null)
+      if (p.getConfig(MeteorLiteClientLauncher.mainClientInstance.instanceInjector.getInstance(ConfigManager.class)) != null)
       {
         configButton.setContentDisplay(ContentDisplay.RIGHT);
         configButton.setLayoutX(260);

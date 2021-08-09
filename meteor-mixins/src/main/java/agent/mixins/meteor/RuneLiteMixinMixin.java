@@ -1,6 +1,6 @@
 package agent.mixins.meteor;
 
-import meteor.MeteorLite;
+import meteor.MeteorLiteClientLauncher;
 import net.runelite.api.Client;
 import net.runelite.rs.api.RSClient;
 import org.sponge.util.Logger;
@@ -25,7 +25,7 @@ public abstract class RuneLiteMixinMixin implements RSClient {
   @Inject(method = "onGameStateChanged", at = @At("RETURN"), require = 1)
   private static void onOnGameStateChanged(int gamestate, CallbackInfo callbackInfo) {
     if (client == null) {
-      client = MeteorLite.clientInstance = clientInstance;
+      client = MeteorLiteClientLauncher.clientInstance = clientInstance;
     }
   }
 }

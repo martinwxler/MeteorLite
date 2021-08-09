@@ -5,7 +5,6 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Module;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import meteor.config.Config;
@@ -66,22 +65,26 @@ import meteor.plugins.ticktimers.TickTimersPlugin;
 import meteor.plugins.tileindicators.TileIndicatorsPlugin;
 import meteor.plugins.timestamp.TimestampPlugin;
 import meteor.plugins.worldmap.WorldMapPlugin;
-import meteor.task.Scheduler;
 
 public class PluginManager {
 
-  public static List<Plugin> plugins = new ArrayList<>();
   @Inject
   private EventBus eventBus;
+
   @Inject
   private ConfigManager configManager;
 
+  @Inject
+  private MeteorLiteClientModule meteorLiteClientModule;
+
+  PluginManager() {
+  }
+
+  public static List<Plugin> plugins = new ArrayList<>();
   private static BotUtils botUtils = new BotUtils();
   private static iUtils iUtils = new iUtils();
 
-  static
-  {
-    plugins.add(new AgilityPlugin());
+  private void initPlugins() {
     plugins.add(new AoeWarningPlugin());
     plugins.add(new BankPlugin());
     plugins.add(new BankTagsPlugin());
@@ -140,8 +143,9 @@ public class PluginManager {
   }
 
   public void startInternalPlugins() {
+    initPlugins();
     for (Plugin plugin : plugins) {
-      Injector parent = MeteorLite.injector;
+      Injector parent = meteorLiteClientModule.instanceInjector;
 
       List<Module> depModules = new ArrayList<>();
       if (!plugin.getClass().isInstance(iUtils) && !plugin.getClass().isInstance(botUtils))
@@ -192,13 +196,13 @@ public class PluginManager {
     }
   }
 
-  public static Plugin getInstance(Class<? extends Plugin> type)
+  public static<T extends Plugin> T getInstance(Class<? extends Plugin> type)
   {
     for (Plugin p : PluginManager.plugins)
     {
       if (type.isInstance(p))
       {
-        return p;
+        return (T) p;
       }
     }
     return null;

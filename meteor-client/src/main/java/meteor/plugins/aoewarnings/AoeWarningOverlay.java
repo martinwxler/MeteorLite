@@ -58,7 +58,8 @@ public class AoeWarningOverlay extends Overlay {
 
   private final Client client;
   private final AoeWarningConfig config;
-  private AoeWarningPlugin plugin;
+
+  private AoeWarningPlugin plugin = PluginManager.getInstance(AoeWarningPlugin.class);
 
   @Inject
   public AoeWarningOverlay(final Client client, final ConfigManager configManager) {
@@ -75,17 +76,6 @@ public class AoeWarningOverlay extends Overlay {
 
   @Override
   public Dimension render(Graphics2D graphics) {
-    if (plugin == null) {
-      for (Plugin p : PluginManager.plugins) {
-        if (p instanceof AoeWarningPlugin) {
-          plugin = (AoeWarningPlugin) p;
-        }
-      }
-    }
-    if (plugin == null) {
-      return null;
-    }
-
     WorldPoint lp = client.getLocalPlayer().getWorldLocation();
 
     plugin.getLightningTrail().forEach(o ->

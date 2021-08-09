@@ -68,6 +68,7 @@ public class AoeWarningPlugin extends Plugin {
   @Getter(AccessLevel.PACKAGE)
   private final Set<ProjectileContainer> projectiles = new HashSet<>();
   @Inject
+  @com.google.inject.Inject
   public AoeWarningConfig config;
   @Inject
   private AoeWarningOverlay coreOverlay;
@@ -85,9 +86,6 @@ public class AoeWarningPlugin extends Plugin {
   private final List<GameObject> crystalSpike = new ArrayList<>();
   @Getter(AccessLevel.PACKAGE)
   private final List<GameObject> wintertodtSnowFall = new ArrayList<>();
-
-  public AoeWarningPlugin() {
-  }
 
   @Provides
   public AoeWarningConfig getConfig(ConfigManager configManager) {

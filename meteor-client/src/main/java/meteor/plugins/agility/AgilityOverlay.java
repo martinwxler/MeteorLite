@@ -1,5 +1,6 @@
 package meteor.plugins.agility;
 
+import com.google.inject.Inject;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -15,18 +16,20 @@ import net.runelite.api.TileObject;
 
 public class AgilityOverlay extends Overlay {
 
+
+  AgilityPlugin plugin;
+
   private final String MARK_OF_GRACE = "Mark of Grace";
   private final int OFFSET_Z = 20;
-  AgilityPlugin plugin;
   private Color overlayFillColor;
   private Color activeColor;
   private Color prevColor;
   private Color prevOverlayFillColor;
   private AgilityShortcut agilityShortcut;
 
-  public AgilityOverlay(AgilityPlugin agilityPlugin) {
-    super(agilityPlugin);
-    plugin = agilityPlugin;
+  @Inject
+  public AgilityOverlay(AgilityPlugin plugin) {
+    this.plugin = plugin;
     setPosition(OverlayPosition.DYNAMIC);
     setLayer(OverlayLayer.ABOVE_SCENE);
   }
