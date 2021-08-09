@@ -563,4 +563,20 @@ public class MenuEntrySwapperExtendedPlugin extends Plugin
 
 		client.setMenuEntries(newEntries);
 	}
+
+	public void updateConfig()
+	{
+		loadCustomSwaps("", customSwaps); // Removes all custom swaps
+		loadPrioSwaps("", prioSwaps); // Removes all priority swaps
+
+		loadCustomSwaps(config.customSwaps(), customSwaps);
+		loadPrioSwaps(config.prioEntry(), prioSwaps);
+
+		if (client.getGameState() != GameState.LOGGED_IN)
+		{
+			return;
+		}
+		setCastOptions(true);
+		loadSwaps();
+	}
 }

@@ -417,8 +417,6 @@ public class ConfigManager {
           Files.move(tempFile.toPath(), propertiesFile.toPath(), StandardCopyOption.REPLACE_EXISTING,
               StandardCopyOption.ATOMIC_MOVE);
         } catch (AtomicMoveNotSupportedException ex) {
-          log.debug("atomic move not supported");
-          ex.printStackTrace();
           Files.move(tempFile.toPath(), propertiesFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
       }

@@ -23,6 +23,10 @@ public class Logger {
     this.name = name;
   }
 
+  public static Logger getLogger(Class<?> loggedClass) {
+    return new Logger(loggedClass.getSimpleName());
+  }
+
   public void info(Object message, Object... replacers) {
     printColorMessageReplacers(ANSI_WHITE, message, replacers);
   }

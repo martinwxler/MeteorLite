@@ -1,7 +1,6 @@
 package meteor.plugins.itemdropper;
 
 import com.google.inject.Provides;
-import meteor.plugins.botutils.*;
 import net.runelite.api.Client;
 import net.runelite.api.events.GameTick;
 import meteor.config.ConfigManager;
@@ -33,9 +32,6 @@ public class ItemDropperPlugin extends Plugin {
 
     @Inject
     iUtils iUtils;
-
-    @Inject
-    BotUtils botUtils;
 
     public List<String> itemList;
 
