@@ -193,6 +193,20 @@ public abstract class ClientMixin implements RSClient {
     return null;
   }
 
+  @Inject
+  @Override
+  public void changeMemoryMode(boolean lowMemory)
+  {
+    setLowMemory(lowMemory);
+    setSceneLowMemory(lowMemory);
+    setAudioHighMemory(true);
+    setObjectDefinitionLowDetail(lowMemory);
+    if (getGameState() == GameState.LOGGED_IN)
+    {
+      setGameState(GameState.LOADING);
+    }
+  }
+
   @MethodHook("drawInterface")
   @Inject
   public static void preRenderWidgetLayer(Widget[] widgets, int parentId, int minX, int minY,
