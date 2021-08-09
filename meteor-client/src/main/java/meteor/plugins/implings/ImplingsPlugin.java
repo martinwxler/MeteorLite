@@ -131,8 +131,7 @@ public class ImplingsPlugin extends Plugin {
     }
 
     ImplingsConfig.ImplingMode impMode = showImplingType(impling.getImplingType());
-    return impMode == ImplingsConfig.ImplingMode.HIGHLIGHT
-        || impMode == ImplingsConfig.ImplingMode.NOTIFY;
+    return impMode == ImplingsConfig.ImplingMode.HIGHLIGHT;
   }
 
   ImplingsConfig.ImplingMode showImplingType(ImplingType implingType) {

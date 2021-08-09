@@ -154,16 +154,6 @@ public interface FishingConfig extends Config {
   }
 
   @ConfigItem(
-      position = 10,
-      keyName = "flyingFishNotification",
-      name = "Flying fish notification",
-      description = "Send a notification when a flying fish spawns on your fishing spot."
-  )
-  default boolean flyingFishNotification() {
-    return true;
-  }
-
-  @ConfigItem(
       position = 11,
       keyName = "trawlerTimer",
       name = "Trawler timer in M:SS",

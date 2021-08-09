@@ -354,6 +354,5 @@ public interface ImplingsConfig extends Config {
   enum ImplingMode {
     NONE,
     HIGHLIGHT,
-    NOTIFY
   }
 }

@@ -39,7 +39,7 @@ public interface TimestampConfig extends Config
 		position = 1,
 		description = "Colour of Timestamps from the Timestamps plugin (opaque)"
 	)
-	Color opaqueTimestamp();
+	default Color opaqueTimestamp() {return Color.BLACK;}
 
 	@ConfigItem(
 		keyName = "transparentTimestamp",
@@ -47,7 +47,7 @@ public interface TimestampConfig extends Config
 		position = 2,
 		description = "Colour of Timestamps from the Timestamps plugin (transparent)"
 	)
-	Color transparentTimestamp();
+	default Color transparentTimestamp() {return Color.BLACK;}
 
 	@ConfigItem(
 		keyName = "format",

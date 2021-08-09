@@ -66,7 +66,7 @@ import net.runelite.api.events.ProjectileMoved;
 @PluginDescriptor(
 	name = "Cannon",
 	description = "Show information about cannon placement and/or amount of cannonballs",
-	tags = {"combat", "notifications", "ranged", "overlay"}
+	tags = {"combat", "ranged", "overlay"}
 )
 public class CannonPlugin extends Plugin
 {
@@ -75,7 +75,6 @@ public class CannonPlugin extends Plugin
 
 	private CannonCounter counter;
 	private boolean skipProjectileCheckThisTick;
-	private boolean cannonBallNotificationSent;
 
 	@Getter
 	private int cballsLeft;
@@ -141,7 +140,6 @@ public class CannonPlugin extends Plugin
 		cannonPlaced = false;
 		cannonWorld = -1;
 		cannonPosition = null;
-		cannonBallNotificationSent = false;
 		cballsLeft = 0;
 		removeCounter();
 		skipProjectileCheckThisTick = false;
@@ -355,8 +353,6 @@ public class CannonPlugin extends Plugin
 					cballsLeft++;
 				}
 			}
-
-			cannonBallNotificationSent = false;
 		}
 
 		if (event.getMessage().contains("Your cannon is out of ammo!"))

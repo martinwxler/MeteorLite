@@ -52,7 +52,7 @@ import net.runelite.api.events.StatChanged;
 @PluginDescriptor(
     name = "Boosts Information",
     description = "Show combat and/or skill boost information",
-    tags = {"combat", "notifications", "skilling", "overlay"}
+    tags = {"combat", "skilling", "overlay"}
 )
 @Singleton
 public class BoostsPlugin extends Plugin {

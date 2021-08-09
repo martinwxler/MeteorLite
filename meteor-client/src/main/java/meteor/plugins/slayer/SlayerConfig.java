@@ -66,17 +66,6 @@ public interface SlayerConfig extends Config
 		return true;
 	}
 
-	@ConfigItem(
-		position = 3,
-		keyName = "superiornotification",
-		name = "Superior foe notification",
-		description = "Toggles notifications on superior foe encounters"
-	)
-	default boolean showSuperiorNotification()
-	{
-		return true;
-	}
-
 	@Range(
 			max = 120
 	)

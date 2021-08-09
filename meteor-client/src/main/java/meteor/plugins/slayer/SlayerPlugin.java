@@ -74,7 +74,7 @@ import static net.runelite.api.Skill.SLAYER;
 @PluginDescriptor(
 	name = "Slayer",
 	description = "Show additional slayer task related information",
-	tags = {"combat", "notifications", "overlay", "tasks"}
+	tags = {"combat", "overlay", "tasks"}
 )
 public class SlayerPlugin extends Plugin
 {
@@ -126,9 +126,6 @@ public class SlayerPlugin extends Plugin
 
 	@Inject
 	private ItemManager itemManager;
-
-	/*@Inject
-	private Notifier notifier;*/
 
 	@Inject
 	private ClientThread clientThread;
@@ -444,12 +441,6 @@ public class SlayerPlugin extends Plugin
 			setTask("", 0, 0);
 			return;
 		}
-
-		/*if (config.showSuperiorNotification() && chatMsg.equals(CHAT_SUPERIOR_MESSAGE))
-		{
-			notifier.notify(CHAT_SUPERIOR_MESSAGE);
-			return;
-		}*/
 
 		Matcher mProgress = CHAT_GEM_PROGRESS_MESSAGE.matcher(chatMsg);
 
