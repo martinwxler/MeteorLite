@@ -64,6 +64,7 @@ import meteor.plugins.ticktimers.TickTimersPlugin;
 import meteor.plugins.tileindicators.TileIndicatorsPlugin;
 import meteor.plugins.timestamp.TimestampPlugin;
 import meteor.plugins.worldmap.WorldMapPlugin;
+import meteor.plugins.zulrah.ZulrahPlugin;
 
 public class PluginManager {
 
@@ -134,6 +135,7 @@ public class PluginManager {
     plugins.add(new TileIndicatorsPlugin());
     plugins.add(new TearsOfGuthixPlugin());
     plugins.add(new WorldMapPlugin());
+    plugins.add(new ZulrahPlugin());
 
     plugins.add(iUtils);
 
