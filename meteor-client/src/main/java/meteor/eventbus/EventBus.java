@@ -42,7 +42,6 @@ import javax.annotation.concurrent.ThreadSafe;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
-import meteor.MeteorLite;
 import org.sponge.util.Logger;
 
 @RequiredArgsConstructor

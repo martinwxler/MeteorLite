@@ -77,8 +77,7 @@ public class WorldMapOverlay extends Overlay {
   private final List<MenuEntry> mapMenuEntries = new ArrayList<>();
 
   @Inject
-  private WorldMapOverlay(
-      Client client,
+  private WorldMapOverlay(Client client,
       WorldMapPointManager worldMapPointManager) {
     this.client = client;
     this.worldMapPointManager = worldMapPointManager;

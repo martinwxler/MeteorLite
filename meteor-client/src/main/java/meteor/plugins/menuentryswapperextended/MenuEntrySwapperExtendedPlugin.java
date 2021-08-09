@@ -39,15 +39,12 @@ import java.util.stream.StreamSupport;
 import javax.inject.Inject;
 
 import lombok.var;
-import meteor.MeteorLite;
 import meteor.PluginManager;
 import meteor.callback.ClientThread;
-import meteor.config.Config;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
-import meteor.plugins.menuentryswapper.MenuEntrySwapperConfig;
 import meteor.plugins.menuentryswapper.MenuEntrySwapperPlugin;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -55,14 +52,12 @@ import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.Player;
 import net.runelite.api.Varbits;
-import net.runelite.api.WorldType;
 import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.VarbitChanged;
 import meteor.util.Text;
 import meteor.config.ConfigManager;
-import meteor.plugins.menuentryswapper.MenuEntrySwapperPlugin;
 import meteor.plugins.menuentryswapperextended.util.BurningAmuletMode;
 import meteor.plugins.menuentryswapperextended.util.CombatBraceletMode;
 import meteor.plugins.menuentryswapperextended.util.ConstructionCapeMode;
@@ -80,7 +75,7 @@ import meteor.plugins.menuentryswapperextended.util.XericsTalismanMode;
 import meteor.plugins.menuentryswapperextended.util.comparableentry.AbstractComparableEntry;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import static net.runelite.api.Varbits.IN_WILDERNESS;
+
 import static meteor.plugins.menuentryswapperextended.util.comparableentry.ComparableEntries.newBaseComparableEntry;
 
 @PluginDescriptor(

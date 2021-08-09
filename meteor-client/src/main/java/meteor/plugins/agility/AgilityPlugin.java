@@ -43,7 +43,8 @@ public class AgilityPlugin extends Plugin {
   @Inject
   OverlayManager overlayManager;
 
-  AgilityOverlay overlay = new AgilityOverlay(this);
+  @Inject
+  AgilityOverlay overlay;
 
   @Override
   public void startup() {

@@ -1,6 +1,8 @@
 package meteor.ui.controllers;
 
 
+import static meteor.MeteorLiteClientModule.instanceInjectorStatic;
+
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXProgressBar;
 import com.jfoenix.controls.JFXTextArea;
@@ -9,15 +11,13 @@ import java.util.HashMap;
 import java.util.Objects;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
-import meteor.MeteorLite;
-import meteor.OSRSClient;
+import meteor.MeteorLiteClientModule;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.itemstats.Effect;
@@ -46,6 +46,9 @@ public class HudbarFXMLController {
 
   Player p;
   HashMap<String, Image> skillIconMap = new HashMap<>();
+
+  public HudbarFXMLController() {
+  }
 
   boolean updatingHud = false;
 
@@ -76,8 +79,7 @@ public class HudbarFXMLController {
 
   @FXML
   public void initialize() {
-    for (OSRSClient clientInstance : OSRSClient.clientInstances)
-      clientInstance.instanceInjector.injectMembers(this);
+    instanceInjectorStatic.injectMembers(this);
     eventBus.register(this);
     healthText.editableProperty().setValue(false);
     prayerText.editableProperty().setValue(false);
