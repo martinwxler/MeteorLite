@@ -9,11 +9,9 @@ import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ActorDeath;
+import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.HealthBarUpdated;
-import net.runelite.api.mixins.Inject;
-import net.runelite.api.mixins.MethodHook;
-import net.runelite.api.mixins.Mixin;
-import net.runelite.api.mixins.Shadow;
+import net.runelite.api.mixins.*;
 import net.runelite.rs.api.RSActor;
 import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSHealthBar;
@@ -116,6 +114,16 @@ public abstract class ActorMixin implements RSActor {
     }
     return -1;
   }
+
+  @FieldHook("sequence")
+  @Inject
+  public void animationChanged(int idx)
+  {
+    AnimationChanged animationChange = new AnimationChanged();
+    animationChange.setActor(this);
+    client.getCallbacks().post(animationChange);
+  }
+
 
   @Inject
   @Override
