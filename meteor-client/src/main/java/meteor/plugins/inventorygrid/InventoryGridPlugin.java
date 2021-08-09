@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2019, GeChallengeM <https://github.com/GeChallengeM>
+ * Copyright (c) 2018, Jeremy Plsek <https://github.com/jplsek>
+ * Copyright (c) 2019, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,72 +23,44 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.npcstatus;
+package meteor.plugins.inventorygrid;
 
-import meteor.config.*;
+import com.google.inject.Inject;
+import com.google.inject.Provides;
+import meteor.config.ConfigManager;
+import meteor.plugins.Plugin;
+import meteor.plugins.PluginDescriptor;
+import meteor.ui.overlay.OverlayManager;
 
-@ConfigGroup("npcstatus")
-public interface NpcStatusConfig extends Config
+@PluginDescriptor(
+	name = "Inventory Grid",
+	description = "Shows a grid over the inventory and a preview of where items will be dragged",
+	tags = {"items", "overlay"},
+	enabledByDefault = false
+)
+public class InventoryGridPlugin extends Plugin
 {
-	@ConfigSection(
-		keyName = "rangeTitle",
-		position = 1,
-		name = "Attack range",
-		description = ""
-	)
-	String rangeTitle = "Attack range";
+	@Inject
+	private InventoryGridOverlay overlay;
 
-	@Range(
-		min = 1,
-		max = 20
-	)
-	@ConfigItem(
-		keyName = "AttackRange",
-		name = "NPC attack range",
-		description = "The attack range of the NPC.",
-		position = 2,
-		section = rangeTitle
-	)
-	default int getRange()
+	@Inject
+	private OverlayManager overlayManager;
+
+	@Override
+	public void startup()
 	{
-		return 1;
+		overlayManager.add(overlay);
 	}
 
-	@ConfigSection(
-		keyName = "speedTitle",
-		position = 3,
-		name = "Attack speed",
-		description = ""
-	)
-	String speedTitle = "Attack speed";
-
-	@ConfigItem(
-		keyName = "CustomAttSpeedEnabled",
-		name = "Custom attack speed",
-		description = "Use this if the timer is wrong.",
-		position = 4,
-		section = speedTitle
-	)
-	default boolean isCustomAttSpeed()
+	@Override
+	public void shutdown()
 	{
-		return false;
+		overlayManager.remove(overlay);
 	}
 
-	@Range(
-		min = 1,
-		max = 9
-	)
-	@ConfigItem(
-		keyName = "CustomAttSpeed",
-		name = "Custom NPC att speed",
-		description = "The attack speed of the NPC (amount of ticks between their attacks).",
-		position = 5,
-		hidden = true,
-		unhide = "CustomAttSpeedEnabled",
-		section = speedTitle
-	)
-	default int getCustomAttSpeed()
+	@Provides
+	public InventoryGridConfig getConfig(ConfigManager configManager)
 	{
-		return 4;
+		return configManager.getConfig(InventoryGridConfig.class);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, GeChallengeM <https://github.com/GeChallengeM>
+ * Copyright (c) 2018 Abex
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,72 +22,22 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.npcstatus;
+package meteor.plugins.fairyring;
 
-import meteor.config.*;
+import meteor.config.Config;
+import meteor.config.ConfigGroup;
+import meteor.config.ConfigItem;
 
-@ConfigGroup("npcstatus")
-public interface NpcStatusConfig extends Config
+@ConfigGroup("fairyrings")
+public interface FairyRingConfig extends Config
 {
-	@ConfigSection(
-		keyName = "rangeTitle",
-		position = 1,
-		name = "Attack range",
-		description = ""
-	)
-	String rangeTitle = "Attack range";
-
-	@Range(
-		min = 1,
-		max = 20
-	)
 	@ConfigItem(
-		keyName = "AttackRange",
-		name = "NPC attack range",
-		description = "The attack range of the NPC.",
-		position = 2,
-		section = rangeTitle
+		keyName = "autoOpen",
+		name = "Open search automatically",
+		description = "Open the search widget every time you enter a fairy ring"
 	)
-	default int getRange()
+	default boolean autoOpen()
 	{
-		return 1;
-	}
-
-	@ConfigSection(
-		keyName = "speedTitle",
-		position = 3,
-		name = "Attack speed",
-		description = ""
-	)
-	String speedTitle = "Attack speed";
-
-	@ConfigItem(
-		keyName = "CustomAttSpeedEnabled",
-		name = "Custom attack speed",
-		description = "Use this if the timer is wrong.",
-		position = 4,
-		section = speedTitle
-	)
-	default boolean isCustomAttSpeed()
-	{
-		return false;
-	}
-
-	@Range(
-		min = 1,
-		max = 9
-	)
-	@ConfigItem(
-		keyName = "CustomAttSpeed",
-		name = "Custom NPC att speed",
-		description = "The attack speed of the NPC (amount of ticks between their attacks).",
-		position = 5,
-		hidden = true,
-		unhide = "CustomAttSpeedEnabled",
-		section = speedTitle
-	)
-	default int getCustomAttSpeed()
-	{
-		return 4;
+		return true;
 	}
 }

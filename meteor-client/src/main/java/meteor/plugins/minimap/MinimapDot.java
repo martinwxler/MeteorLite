@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, GeChallengeM <https://github.com/GeChallengeM>
+ * Copyright (c) 2018, Dreyri <https://github.com/Dreyri>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,72 +22,55 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.npcstatus;
+package meteor.plugins.minimap;
 
-import meteor.config.*;
+import net.runelite.api.Client;
+import net.runelite.api.SpritePixels;
 
-@ConfigGroup("npcstatus")
-public interface NpcStatusConfig extends Config
+import java.awt.*;
+
+class MinimapDot
 {
-	@ConfigSection(
-		keyName = "rangeTitle",
-		position = 1,
-		name = "Attack range",
-		description = ""
-	)
-	String rangeTitle = "Attack range";
+	private static final int MAP_DOT_WIDTH = 4;
+	private static final int MAP_DOT_HEIGHT = 5;
 
-	@Range(
-		min = 1,
-		max = 20
-	)
-	@ConfigItem(
-		keyName = "AttackRange",
-		name = "NPC attack range",
-		description = "The attack range of the NPC.",
-		position = 2,
-		section = rangeTitle
-	)
-	default int getRange()
+	private static int[] createPixels(Color color)
 	{
-		return 1;
+		int rgb = color.getRGB();
+
+		int[] pixels = new int[MAP_DOT_HEIGHT * MAP_DOT_WIDTH];
+
+		pixels[0] = 0;
+		pixels[1] = rgb;
+		pixels[2] = rgb;
+		pixels[3] = 0;
+
+		pixels[4] = rgb;
+		pixels[5] = rgb;
+		pixels[6] = rgb;
+		pixels[7] = rgb;
+
+		pixels[8] = rgb;
+		pixels[9] = rgb;
+		pixels[10] = rgb;
+		pixels[11] = rgb;
+
+		pixels[12] = 1;
+		pixels[13] = rgb;
+		pixels[14] = rgb;
+		pixels[15] = 1;
+
+		pixels[16] = 0;
+		pixels[17] = 1;
+		pixels[18] = 1;
+		pixels[19] = 0;
+
+		return pixels;
 	}
 
-	@ConfigSection(
-		keyName = "speedTitle",
-		position = 3,
-		name = "Attack speed",
-		description = ""
-	)
-	String speedTitle = "Attack speed";
-
-	@ConfigItem(
-		keyName = "CustomAttSpeedEnabled",
-		name = "Custom attack speed",
-		description = "Use this if the timer is wrong.",
-		position = 4,
-		section = speedTitle
-	)
-	default boolean isCustomAttSpeed()
+	static SpritePixels create(Client client, Color color)
 	{
-		return false;
-	}
-
-	@Range(
-		min = 1,
-		max = 9
-	)
-	@ConfigItem(
-		keyName = "CustomAttSpeed",
-		name = "Custom NPC att speed",
-		description = "The attack speed of the NPC (amount of ticks between their attacks).",
-		position = 5,
-		hidden = true,
-		unhide = "CustomAttSpeedEnabled",
-		section = speedTitle
-	)
-	default int getCustomAttSpeed()
-	{
-		return 4;
+		int[] pixels = createPixels(color);
+		return client.createSpritePixels(pixels, MAP_DOT_WIDTH, MAP_DOT_HEIGHT);
 	}
 }

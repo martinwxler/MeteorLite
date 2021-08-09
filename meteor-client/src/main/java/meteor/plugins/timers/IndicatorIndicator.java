@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, GeChallengeM <https://github.com/GeChallengeM>
+ * Copyright (c) 2018, Tyler <https://github.com/tylerthardy>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,72 +22,36 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.npcstatus;
+package meteor.plugins.timers;
 
-import meteor.config.*;
+import lombok.Getter;
+import meteor.plugins.Plugin;
+import meteor.ui.overlay.infobox.InfoBox;
+import meteor.ui.overlay.infobox.InfoBoxPriority;
 
-@ConfigGroup("npcstatus")
-public interface NpcStatusConfig extends Config
+import java.awt.*;
+
+public class IndicatorIndicator extends InfoBox
 {
-	@ConfigSection(
-		keyName = "rangeTitle",
-		position = 1,
-		name = "Attack range",
-		description = ""
-	)
-	String rangeTitle = "Attack range";
+	@Getter
+	private final GameIndicator indicator;
 
-	@Range(
-		min = 1,
-		max = 20
-	)
-	@ConfigItem(
-		keyName = "AttackRange",
-		name = "NPC attack range",
-		description = "The attack range of the NPC.",
-		position = 2,
-		section = rangeTitle
-	)
-	default int getRange()
+	IndicatorIndicator(GameIndicator indicator, Plugin plugin)
 	{
-		return 1;
+		super(null, plugin);
+		this.indicator = indicator;
+		setPriority(InfoBoxPriority.MED);
 	}
 
-	@ConfigSection(
-		keyName = "speedTitle",
-		position = 3,
-		name = "Attack speed",
-		description = ""
-	)
-	String speedTitle = "Attack speed";
-
-	@ConfigItem(
-		keyName = "CustomAttSpeedEnabled",
-		name = "Custom attack speed",
-		description = "Use this if the timer is wrong.",
-		position = 4,
-		section = speedTitle
-	)
-	default boolean isCustomAttSpeed()
+	@Override
+	public String getText()
 	{
-		return false;
+		return indicator.getText();
 	}
 
-	@Range(
-		min = 1,
-		max = 9
-	)
-	@ConfigItem(
-		keyName = "CustomAttSpeed",
-		name = "Custom NPC att speed",
-		description = "The attack speed of the NPC (amount of ticks between their attacks).",
-		position = 5,
-		hidden = true,
-		unhide = "CustomAttSpeedEnabled",
-		section = speedTitle
-	)
-	default int getCustomAttSpeed()
+	@Override
+	public Color getTextColor()
 	{
-		return 4;
+		return indicator.getTextColor();
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, GeChallengeM <https://github.com/GeChallengeM>
+ * Copyright (c) 2017, Seth <Sethtroll3@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,72 +22,58 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.npcstatus;
+package meteor.plugins.woodcutting;
 
-import meteor.config.*;
+import meteor.config.Config;
+import meteor.config.ConfigGroup;
+import meteor.config.ConfigItem;
+import meteor.config.Units;
 
-@ConfigGroup("npcstatus")
-public interface NpcStatusConfig extends Config
+@ConfigGroup("woodcutting")
+public interface WoodcuttingConfig extends Config
 {
-	@ConfigSection(
-		keyName = "rangeTitle",
+	@ConfigItem(
 		position = 1,
-		name = "Attack range",
-		description = ""
+		keyName = "statTimeout",
+		name = "Reset stats",
+		description = "Configures the time until statistic is reset. Also configures when tree indicator is hidden"
 	)
-	String rangeTitle = "Attack range";
-
-	@Range(
-		min = 1,
-		max = 20
-	)
-	@ConfigItem(
-		keyName = "AttackRange",
-		name = "NPC attack range",
-		description = "The attack range of the NPC.",
-		position = 2,
-		section = rangeTitle
-	)
-	default int getRange()
+	@Units(Units.MINUTES)
+	default int statTimeout()
 	{
-		return 1;
+		return 5;
 	}
 
-	@ConfigSection(
-		keyName = "speedTitle",
+	@ConfigItem(
 		position = 3,
-		name = "Attack speed",
-		description = ""
+		keyName = "showWoodcuttingStats",
+		name = "Show session stats",
+		description = "Configures whether to display woodcutting session stats"
 	)
-	String speedTitle = "Attack speed";
-
-	@ConfigItem(
-		keyName = "CustomAttSpeedEnabled",
-		name = "Custom attack speed",
-		description = "Use this if the timer is wrong.",
-		position = 4,
-		section = speedTitle
-	)
-	default boolean isCustomAttSpeed()
+	default boolean showWoodcuttingStats()
 	{
-		return false;
+		return true;
 	}
 
-	@Range(
-		min = 1,
-		max = 9
-	)
 	@ConfigItem(
-		keyName = "CustomAttSpeed",
-		name = "Custom NPC att speed",
-		description = "The attack speed of the NPC (amount of ticks between their attacks).",
-		position = 5,
-		hidden = true,
-		unhide = "CustomAttSpeedEnabled",
-		section = speedTitle
+		position = 4,
+		keyName = "showRedwoods",
+		name = "Show Redwood trees",
+		description = "Configures whether to show a indicator for redwood trees"
 	)
-	default int getCustomAttSpeed()
+	default boolean showRedwoodTrees()
 	{
-		return 4;
+		return true;
+	}
+
+	@ConfigItem(
+		position = 5,
+		keyName = "showRespawnTimers",
+		name = "Show respawn timers",
+		description = "Configures whether to display the respawn timer overlay"
+	)
+	default boolean showRespawnTimers()
+	{
+		return true;
 	}
 }

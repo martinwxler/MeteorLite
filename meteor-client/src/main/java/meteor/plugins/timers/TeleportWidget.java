@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, GeChallengeM <https://github.com/GeChallengeM>
+ * Copyright (c) 2018, Jordan Atwood <jordan.atwood423@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,72 +22,47 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.npcstatus;
+package meteor.plugins.timers;
 
-import meteor.config.*;
+import com.google.common.collect.ImmutableList;
+import net.runelite.api.widgets.WidgetInfo;
 
-@ConfigGroup("npcstatus")
-public interface NpcStatusConfig extends Config
+import javax.annotation.Nullable;
+import java.util.Collection;
+
+enum TeleportWidget
 {
-	@ConfigSection(
-		keyName = "rangeTitle",
-		position = 1,
-		name = "Attack range",
-		description = ""
-	)
-	String rangeTitle = "Attack range";
+	HOME_TELEPORT,
+	MINIGAME_TELEPORT,
+	TRAILBLAZER_AREA_TELEPORT,
+	;
 
-	@Range(
-		min = 1,
-		max = 20
-	)
-	@ConfigItem(
-		keyName = "AttackRange",
-		name = "NPC attack range",
-		description = "The attack range of the NPC.",
-		position = 2,
-		section = rangeTitle
-	)
-	default int getRange()
+	private static final Collection HOME_TELEPORT_IDS = ImmutableList.of(
+		WidgetInfo.SPELL_LUMBRIDGE_HOME_TELEPORT.getId(),
+		WidgetInfo.SPELL_EDGEVILLE_HOME_TELEPORT.getId(),
+		WidgetInfo.SPELL_LUNAR_HOME_TELEPORT.getId(),
+		WidgetInfo.SPELL_ARCEUUS_HOME_TELEPORT.getId(),
+		WidgetInfo.SPELL_KOUREND_HOME_TELEPORT.getId()
+	);
+	private static final Collection MINIGAME_TELEPORT_IDS = ImmutableList.of(
+		WidgetInfo.MINIGAME_TELEPORT_BUTTON.getId()
+	);
+
+	@Nullable
+	static TeleportWidget of(int widgetId)
 	{
-		return 1;
-	}
-
-	@ConfigSection(
-		keyName = "speedTitle",
-		position = 3,
-		name = "Attack speed",
-		description = ""
-	)
-	String speedTitle = "Attack speed";
-
-	@ConfigItem(
-		keyName = "CustomAttSpeedEnabled",
-		name = "Custom attack speed",
-		description = "Use this if the timer is wrong.",
-		position = 4,
-		section = speedTitle
-	)
-	default boolean isCustomAttSpeed()
-	{
-		return false;
-	}
-
-	@Range(
-		min = 1,
-		max = 9
-	)
-	@ConfigItem(
-		keyName = "CustomAttSpeed",
-		name = "Custom NPC att speed",
-		description = "The attack speed of the NPC (amount of ticks between their attacks).",
-		position = 5,
-		hidden = true,
-		unhide = "CustomAttSpeedEnabled",
-		section = speedTitle
-	)
-	default int getCustomAttSpeed()
-	{
-		return 4;
+		if (HOME_TELEPORT_IDS.contains(widgetId))
+		{
+			return HOME_TELEPORT;
+		}
+		else if (MINIGAME_TELEPORT_IDS.contains(widgetId))
+		{
+			return MINIGAME_TELEPORT;
+		}
+		else if (widgetId == WidgetInfo.TRAILBLAZER_AREA_TELEPORT.getId())
+		{
+			return TRAILBLAZER_AREA_TELEPORT;
+		}
+		return null;
 	}
 }

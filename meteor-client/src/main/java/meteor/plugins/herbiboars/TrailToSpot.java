@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2019, GeChallengeM <https://github.com/GeChallengeM>
+ * Copyright (c) 2020, dekvall <https://github.com/dekvall>
+ * Copyright (c) 2020, Jordan <nightfirecat@protonmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,72 +23,39 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.npcstatus;
+package meteor.plugins.herbiboars;
 
-import meteor.config.*;
+import com.google.common.collect.ImmutableSet;
+import lombok.Value;
+import net.runelite.api.Varbits;
 
-@ConfigGroup("npcstatus")
-public interface NpcStatusConfig extends Config
+import java.util.Set;
+
+/**
+ * A representation of a trail of footsteps which appears when hunting for the Herbiboar.
+ */
+@Value
+class TrailToSpot
 {
-	@ConfigSection(
-		keyName = "rangeTitle",
-		position = 1,
-		name = "Attack range",
-		description = ""
-	)
-	String rangeTitle = "Attack range";
+	/**
+	 * The Varbit associated with the trail. When inactive, this Varbit's value should be less than
+	 * {@link TrailToSpot#getValue()}. When this trail appears after searching a spot, this Varbit's value should be
+	 * equal to that of {@link TrailToSpot#getValue()}. Once the next object along the trail has been searched, this
+	 * Varbit's value will be greater than that of {@link TrailToSpot#getValue()}.
+	 */
+	private final Varbits varbit;
+	/**
+	 * The cutoff reference value to compare against the value of {@link TrailToSpot#getVarbit()} to determine its state
+	 * along the current trail.
+	 */
+	private final int value;
+	/**
+	 * The object ID of the footprints which appear when the trail is made visible.
+	 */
+	private final int footprint;
 
-	@Range(
-		min = 1,
-		max = 20
-	)
-	@ConfigItem(
-		keyName = "AttackRange",
-		name = "NPC attack range",
-		description = "The attack range of the NPC.",
-		position = 2,
-		section = rangeTitle
-	)
-	default int getRange()
+	Set<Integer> getFootprintIds()
 	{
-		return 1;
-	}
-
-	@ConfigSection(
-		keyName = "speedTitle",
-		position = 3,
-		name = "Attack speed",
-		description = ""
-	)
-	String speedTitle = "Attack speed";
-
-	@ConfigItem(
-		keyName = "CustomAttSpeedEnabled",
-		name = "Custom attack speed",
-		description = "Use this if the timer is wrong.",
-		position = 4,
-		section = speedTitle
-	)
-	default boolean isCustomAttSpeed()
-	{
-		return false;
-	}
-
-	@Range(
-		min = 1,
-		max = 9
-	)
-	@ConfigItem(
-		keyName = "CustomAttSpeed",
-		name = "Custom NPC att speed",
-		description = "The attack speed of the NPC (amount of ticks between their attacks).",
-		position = 5,
-		hidden = true,
-		unhide = "CustomAttSpeedEnabled",
-		section = speedTitle
-	)
-	default int getCustomAttSpeed()
-	{
-		return 4;
+		return ImmutableSet.of(footprint, footprint + 1);
 	}
 }

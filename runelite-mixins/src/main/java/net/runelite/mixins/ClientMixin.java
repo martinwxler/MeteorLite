@@ -193,6 +193,20 @@ public abstract class ClientMixin implements RSClient {
     return null;
   }
 
+  @Inject
+  @Override
+  public void changeMemoryMode(boolean lowMemory)
+  {
+    setLowMemory(lowMemory);
+    setSceneLowMemory(lowMemory);
+    setAudioHighMemory(true);
+    setObjectDefinitionLowDetail(lowMemory);
+    if (getGameState() == GameState.LOGGED_IN)
+    {
+      setGameState(GameState.LOADING);
+    }
+  }
+
   @MethodHook("drawInterface")
   @Inject
   public static void preRenderWidgetLayer(Widget[] widgets, int parentId, int minX, int minY,
@@ -462,6 +476,15 @@ public abstract class ClientMixin implements RSClient {
         menuOptionClicked.getId(), menuOptionClicked.getMenuOption(),
         menuOptionClicked.getMenuTarget(),
         canvasX, canvasY);
+  }
+
+  @Override
+  @Inject
+  public void invokeMenuAction(String option, String target, int identifier, int opcode, int param0, int param1)
+  {
+    assert isClientThread() : "invokeMenuAction must be called on client thread";
+
+    client.sendMenuAction(param0, param1, opcode, identifier, option, target, 658, 384);
   }
 
   @Inject

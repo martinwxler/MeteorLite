@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, GeChallengeM <https://github.com/GeChallengeM>
+ * Copyright (c) 2018, Jeremy Plsek <https://github.com/jplsek>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,72 +22,81 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.npcstatus;
+package meteor.plugins.inventorygrid;
 
 import meteor.config.*;
 
-@ConfigGroup("npcstatus")
-public interface NpcStatusConfig extends Config
+import java.awt.*;
+
+@ConfigGroup("inventorygrid")
+public interface InventoryGridConfig extends Config
 {
-	@ConfigSection(
-		keyName = "rangeTitle",
-		position = 1,
-		name = "Attack range",
-		description = ""
-	)
-	String rangeTitle = "Attack range";
-
-	@Range(
-		min = 1,
-		max = 20
-	)
 	@ConfigItem(
-		keyName = "AttackRange",
-		name = "NPC attack range",
-		description = "The attack range of the NPC.",
-		position = 2,
-		section = rangeTitle
+		keyName = "showItem",
+		name = "Show item",
+		description = "Show a preview of the item in the new slot",
+		position = 6
 	)
-	default int getRange()
+	default boolean showItem()
 	{
-		return 1;
+		return true;
 	}
 
-	@ConfigSection(
-		keyName = "speedTitle",
-		position = 3,
-		name = "Attack speed",
-		description = ""
-	)
-	String speedTitle = "Attack speed";
-
 	@ConfigItem(
-		keyName = "CustomAttSpeedEnabled",
-		name = "Custom attack speed",
-		description = "Use this if the timer is wrong.",
-		position = 4,
-		section = speedTitle
+		keyName = "showGrid",
+		name = "Show grid",
+		description = "Show a grid on the inventory while dragging",
+		position = 3
 	)
-	default boolean isCustomAttSpeed()
+	default boolean showGrid()
 	{
-		return false;
+		return true;
 	}
 
-	@Range(
-		min = 1,
-		max = 9
-	)
 	@ConfigItem(
-		keyName = "CustomAttSpeed",
-		name = "Custom NPC att speed",
-		description = "The attack speed of the NPC (amount of ticks between their attacks).",
-		position = 5,
-		hidden = true,
-		unhide = "CustomAttSpeedEnabled",
-		section = speedTitle
+		keyName = "showHighlight",
+		name = "Highlight background",
+		description = "Show a background highlight on the new slot",
+		position = 2
 	)
-	default int getCustomAttSpeed()
+	default boolean showHighlight()
 	{
-		return 4;
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "dragDelay",
+		name = "Drag delay",
+		description = "Time to wait after an item press before the overlay is enabled",
+		position = 1
+	)
+	@Units(Units.MILLISECONDS)
+	default int dragDelay()
+	{
+		return 0;
+	}
+
+	@Alpha
+	@ConfigItem(
+		keyName = "gridColor",
+		name = "Grid color",
+		description = "The color of the grid",
+		position = 4
+	)
+	default Color gridColor()
+	{
+		return new Color(255, 255, 255, 45);
+	}
+
+	@Alpha
+	@ConfigItem(
+		keyName = "highlightColor",
+		name = "Highlight color",
+		description = "The color of the new inventory slot highlight",
+		position = 5
+	)
+	default Color highlightColor()
+	{
+		return new Color(0, 255, 0, 45);
 	}
 }

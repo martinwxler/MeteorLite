@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, GeChallengeM <https://github.com/GeChallengeM>
+ * Copyright (c) 2018, Unmoon <https://github.com/Unmoon>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,72 +22,48 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.npcstatus;
+package meteor.plugins.tithefarm;
 
-import meteor.config.*;
+import lombok.Getter;
+import lombok.Setter;
+import net.runelite.api.GameObject;
+import net.runelite.api.coords.WorldPoint;
 
-@ConfigGroup("npcstatus")
-public interface NpcStatusConfig extends Config
+import java.time.Duration;
+import java.time.Instant;
+
+class TitheFarmPlant
 {
-	@ConfigSection(
-		keyName = "rangeTitle",
-		position = 1,
-		name = "Attack range",
-		description = ""
-	)
-	String rangeTitle = "Attack range";
+	private static final Duration PLANT_TIME = Duration.ofMinutes(1);
 
-	@Range(
-		min = 1,
-		max = 20
-	)
-	@ConfigItem(
-		keyName = "AttackRange",
-		name = "NPC attack range",
-		description = "The attack range of the NPC.",
-		position = 2,
-		section = rangeTitle
-	)
-	default int getRange()
+	@Getter
+	@Setter
+	private Instant planted;
+
+	@Getter
+	private final TitheFarmPlantState state;
+
+	@Getter
+	private final TitheFarmPlantType type;
+
+	@Getter
+	private final GameObject gameObject;
+
+	@Getter
+	private final WorldPoint worldLocation;
+
+	TitheFarmPlant(TitheFarmPlantState state, TitheFarmPlantType type, GameObject gameObject)
 	{
-		return 1;
+		this.planted = Instant.now();
+		this.state = state;
+		this.type = type;
+		this.gameObject = gameObject;
+		this.worldLocation = gameObject.getWorldLocation();
 	}
 
-	@ConfigSection(
-		keyName = "speedTitle",
-		position = 3,
-		name = "Attack speed",
-		description = ""
-	)
-	String speedTitle = "Attack speed";
-
-	@ConfigItem(
-		keyName = "CustomAttSpeedEnabled",
-		name = "Custom attack speed",
-		description = "Use this if the timer is wrong.",
-		position = 4,
-		section = speedTitle
-	)
-	default boolean isCustomAttSpeed()
+	public double getPlantTimeRelative()
 	{
-		return false;
-	}
-
-	@Range(
-		min = 1,
-		max = 9
-	)
-	@ConfigItem(
-		keyName = "CustomAttSpeed",
-		name = "Custom NPC att speed",
-		description = "The attack speed of the NPC (amount of ticks between their attacks).",
-		position = 5,
-		hidden = true,
-		unhide = "CustomAttSpeedEnabled",
-		section = speedTitle
-	)
-	default int getCustomAttSpeed()
-	{
-		return 4;
+		Duration duration = Duration.between(planted, Instant.now());
+		return duration.compareTo(PLANT_TIME) < 0 ? (double) duration.toMillis() / PLANT_TIME.toMillis() : 1;
 	}
 }

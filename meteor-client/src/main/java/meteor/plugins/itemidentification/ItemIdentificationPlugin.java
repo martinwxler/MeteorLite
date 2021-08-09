@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, GeChallengeM <https://github.com/GeChallengeM>
+ * Copyright (c) 2019, Hydrox6 <ikada@protonmail.ch>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,72 +22,45 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.npcstatus;
+package meteor.plugins.itemidentification;
 
-import meteor.config.*;
+import com.google.inject.Provides;
+import meteor.config.ConfigManager;
+import meteor.plugins.Plugin;
+import meteor.plugins.PluginDescriptor;
+import meteor.ui.overlay.OverlayManager;
 
-@ConfigGroup("npcstatus")
-public interface NpcStatusConfig extends Config
+import javax.inject.Inject;
+
+@PluginDescriptor(
+	name = "Item Identification",
+	description = "Show identifying text over items with difficult to distinguish sprites",
+	tags = {"abbreviations", "labels", "seeds", "herbs", "saplings", "seedlings"},
+	enabledByDefault = false
+)
+public class ItemIdentificationPlugin extends Plugin
 {
-	@ConfigSection(
-		keyName = "rangeTitle",
-		position = 1,
-		name = "Attack range",
-		description = ""
-	)
-	String rangeTitle = "Attack range";
+	@Inject
+	private OverlayManager overlayManager;
 
-	@Range(
-		min = 1,
-		max = 20
-	)
-	@ConfigItem(
-		keyName = "AttackRange",
-		name = "NPC attack range",
-		description = "The attack range of the NPC.",
-		position = 2,
-		section = rangeTitle
-	)
-	default int getRange()
+	@Inject
+	private ItemIdentificationOverlay overlay;
+
+	@Provides
+	public ItemIdentificationConfig getConfig(ConfigManager configManager)
 	{
-		return 1;
+		return configManager.getConfig(ItemIdentificationConfig.class);
 	}
 
-	@ConfigSection(
-		keyName = "speedTitle",
-		position = 3,
-		name = "Attack speed",
-		description = ""
-	)
-	String speedTitle = "Attack speed";
-
-	@ConfigItem(
-		keyName = "CustomAttSpeedEnabled",
-		name = "Custom attack speed",
-		description = "Use this if the timer is wrong.",
-		position = 4,
-		section = speedTitle
-	)
-	default boolean isCustomAttSpeed()
+	@Override
+	public void startup()
 	{
-		return false;
+		overlayManager.add(overlay);
 	}
 
-	@Range(
-		min = 1,
-		max = 9
-	)
-	@ConfigItem(
-		keyName = "CustomAttSpeed",
-		name = "Custom NPC att speed",
-		description = "The attack speed of the NPC (amount of ticks between their attacks).",
-		position = 5,
-		hidden = true,
-		unhide = "CustomAttSpeedEnabled",
-		section = speedTitle
-	)
-	default int getCustomAttSpeed()
+	@Override
+	public void shutdown()
 	{
-		return 4;
+		overlayManager.remove(overlay);
 	}
 }

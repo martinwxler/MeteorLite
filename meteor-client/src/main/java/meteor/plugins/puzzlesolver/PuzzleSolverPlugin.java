@@ -84,7 +84,7 @@ public class PuzzleSolverPlugin extends Plugin
 	}
 
 	@Provides
-	PuzzleSolverConfig provideConfig(ConfigManager configManager)
+	public PuzzleSolverConfig getConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(PuzzleSolverConfig.class);
 	}

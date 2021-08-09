@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, GeChallengeM <https://github.com/GeChallengeM>
+ * Copyright (c) 2018, Unmoon <https://github.com/Unmoon>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,72 +22,51 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.npcstatus;
+package meteor.plugins.tithefarm;
 
-import meteor.config.*;
+import meteor.config.Alpha;
+import meteor.config.Config;
+import meteor.config.ConfigGroup;
+import meteor.config.ConfigItem;
 
-@ConfigGroup("npcstatus")
-public interface NpcStatusConfig extends Config
+import java.awt.*;
+
+@ConfigGroup("tithefarmplugin")
+public interface TitheFarmPluginConfig extends Config
 {
-	@ConfigSection(
-		keyName = "rangeTitle",
+	@Alpha
+	@ConfigItem(
 		position = 1,
-		name = "Attack range",
-		description = ""
+		keyName = "hexColorUnwatered",
+		name = "Unwatered plant",
+		description = "Color of unwatered plant timer"
 	)
-	String rangeTitle = "Attack range";
+	default Color getColorUnwatered()
+	{
+		return new Color(255, 187, 0);
+	}
 
-	@Range(
-		min = 1,
-		max = 20
-	)
+	@Alpha
 	@ConfigItem(
-		keyName = "AttackRange",
-		name = "NPC attack range",
-		description = "The attack range of the NPC.",
 		position = 2,
-		section = rangeTitle
+		keyName = "hexColorWatered",
+		name = "Watered plant",
+		description = "Color of watered plant timer"
 	)
-	default int getRange()
+	default Color getColorWatered()
 	{
-		return 1;
+		return new Color(0, 153, 255);
 	}
 
-	@ConfigSection(
-		keyName = "speedTitle",
+	@Alpha
+	@ConfigItem(
 		position = 3,
-		name = "Attack speed",
-		description = ""
+		keyName = "hexColorGrown",
+		name = "Grown plant",
+		description = "Color of grown plant timer"
 	)
-	String speedTitle = "Attack speed";
-
-	@ConfigItem(
-		keyName = "CustomAttSpeedEnabled",
-		name = "Custom attack speed",
-		description = "Use this if the timer is wrong.",
-		position = 4,
-		section = speedTitle
-	)
-	default boolean isCustomAttSpeed()
+	default Color getColorGrown()
 	{
-		return false;
-	}
-
-	@Range(
-		min = 1,
-		max = 9
-	)
-	@ConfigItem(
-		keyName = "CustomAttSpeed",
-		name = "Custom NPC att speed",
-		description = "The attack speed of the NPC (amount of ticks between their attacks).",
-		position = 5,
-		hidden = true,
-		unhide = "CustomAttSpeedEnabled",
-		section = speedTitle
-	)
-	default int getCustomAttSpeed()
-	{
-		return 4;
+		return new Color(0, 217, 0);
 	}
 }
