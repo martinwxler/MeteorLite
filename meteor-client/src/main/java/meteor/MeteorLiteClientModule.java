@@ -1,14 +1,16 @@
 package meteor;
 
+import static meteor.MeteorLiteClientLauncher.DEFAULT_CONFIG_FILE;
 import static org.sponge.util.Logger.ANSI_RESET;
 import static org.sponge.util.Logger.ANSI_YELLOW;
 
-import com.google.inject.Binder;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.Module;
 import com.google.inject.Provides;
+import com.google.inject.name.Names;
 import java.applet.Applet;
 import java.applet.AppletContext;
 import java.applet.AppletStub;
@@ -20,6 +22,7 @@ import java.awt.Image;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -27,35 +30,52 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidParameterException;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
+import meteor.callback.Hooks;
+import meteor.chat.ChatMessageManager;
+import meteor.config.ChatColorConfig;
 import meteor.config.ConfigManager;
+import meteor.config.RuneLiteConfig;
+import meteor.eventbus.DeferredEventBus;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.events.ClientShutdown;
+import meteor.plugins.itemstats.ItemStatChangesService;
+import meteor.plugins.itemstats.ItemStatChangesServiceImpl;
 import meteor.ui.overlay.OverlayManager;
 import meteor.ui.overlay.WidgetOverlay;
 import meteor.ui.overlay.tooltip.TooltipOverlay;
 import meteor.ui.overlay.worldmap.WorldMapOverlay;
+import meteor.util.ExecutorServiceExceptionLogger;
+import meteor.util.NonScheduledExecutorServiceExceptionLogger;
 import net.runelite.api.Client;
+import net.runelite.api.hooks.Callbacks;
+import net.runelite.http.api.chat.ChatClient;
+import okhttp3.OkHttpClient;
 import org.sponge.util.Logger;
 
-public class OSRSClient  implements Module, AppletStub, AppletContext {
-
-  public static List<OSRSClient> clientInstances = new ArrayList<>();
+public class MeteorLiteClientModule extends AbstractModule implements AppletStub, AppletContext {
 
   public static JFrame mainInstanceFrame = new JFrame();
 
@@ -77,8 +97,10 @@ public class OSRSClient  implements Module, AppletStub, AppletContext {
   @Inject
   private Provider<TooltipOverlay> tooltipOverlay;
 
-  @Inject
-  private Logger logger;
+  @com.google.inject.Inject
+  private MeteorLiteClientModule meteorLiteClientModule;
+
+  private Logger logger = new Logger("MeteorLiteClient");
 
   @Inject
   private Client client;
@@ -89,14 +111,16 @@ public class OSRSClient  implements Module, AppletStub, AppletContext {
   private static Map<String, String> properties;
   private static Map<String, String> parameters;
 
-  static MeteorLiteModule meteorLiteModule = new MeteorLiteModule();
-  public Injector instanceInjector = Guice.createInjector(meteorLiteModule);
-  private static Injector staticInjectorInstance;
+  public Injector instanceInjector;
+  public static Injector instanceInjectorStatic; //this is so bad
   public static BorderLayout borderLayout = new BorderLayout();
   private static boolean toolbarVisible = true;
   private static JFXPanel rightPanel = new JFXPanel();
   private static Scene pluginsRootScene;
   public static boolean pluginsPanelVisible = false;
+  static Parent pluginsRoot;
+  static Parent toolbarRoot;
+  static Parent hudbarRoot;
 
   @Provides
   @Named("rightPanelScene")
@@ -104,34 +128,23 @@ public class OSRSClient  implements Module, AppletStub, AppletContext {
     return pluginsRootScene;
   }
 
-  OSRSClient() {
-    try {
-      clientInstances.add(this);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
   public void start() throws IOException {
-    staticInjectorInstance = instanceInjector;
     long startTime = System.currentTimeMillis();
     loadJagexConfiguration();
 
-    Module osrsClientModule = (Binder binder) ->
-    {
-      // Since the plugin itself is a module, it won't bind itself, so we'll bind it here
-      binder.bind((Class<OSRSClient>) this.getClass()).toInstance(this);
-      binder.install(this);
-    };
-    Injector osrsClientModuleInjector = instanceInjector.createChildInjector(osrsClientModule);
-    instanceInjector = osrsClientModuleInjector;
-    instanceInjector.injectMembers(client);
-    instanceInjector.injectMembers(pluginManager);
+    instanceInjector = Guice.createInjector(this);
+    instanceInjectorStatic = instanceInjector;
     instanceInjector.injectMembers(this);
+    instanceInjector.injectMembers(pluginManager);
+    instanceInjector.injectMembers(client);
     eventBus.register(this);
 
-    // Add core overlays
-    WidgetOverlay.createOverlays(client).forEach(overlayManager::add);
+    Collection<WidgetOverlay> overlays = WidgetOverlay.createOverlays(client);
+    overlays.forEach((overlay) -> {
+      instanceInjector.injectMembers(overlay);
+      overlayManager.add(overlay);
+    });
+
     overlayManager.add(worldMapOverlay.get());
 
     pluginManager.startInternalPlugins();
@@ -151,11 +164,13 @@ public class OSRSClient  implements Module, AppletStub, AppletContext {
             + ANSI_RESET);
   }
 
-  public static void togglePluginsPanel(Scene pluginsScene) {
+  public static void togglePluginsPanel() throws IOException {
     if (pluginsPanelVisible) {
       rightPanel.setVisible(false);
     } else {
-      rightPanel.setScene(pluginsScene);
+      pluginsRootScene = new Scene(FXMLLoader.load(
+          Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("plugins.fxml"))), 350, 800);
+      rightPanel.setScene(pluginsRootScene);
       rightPanel.setVisible(true);
     }
 
@@ -180,16 +195,13 @@ public class OSRSClient  implements Module, AppletStub, AppletContext {
     JFXPanel toolbarPanel = new JFXPanel();
     toolbarPanel.setSize(1280, 100);
     rightPanel.setSize(550, 800);
-    Parent pluginsRoot = FXMLLoader.load(
-        Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("plugins.fxml")));
-    pluginsRootScene = new Scene(pluginsRoot, 350, 800);
-    Parent toolbarRoot = FXMLLoader.load(
-        Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("toolbar.fxml")));
-    Parent hudbarRoot = FXMLLoader.load(
-        Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("hudbar.fxml")));
 
     JPanel gamePanel = new JPanel();
     JFXPanel hudbarPanel = new JFXPanel();
+    toolbarRoot = FXMLLoader.load(
+        Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("toolbar.fxml")));
+    hudbarRoot = FXMLLoader.load(
+        Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("hudbar.fxml")));
 
     toolbarPanel.setScene(new Scene(toolbarRoot, 300, 33));
     toolbarPanel.setVisible(true);
@@ -211,7 +223,7 @@ public class OSRSClient  implements Module, AppletStub, AppletContext {
       @Override
       public void windowClosing(WindowEvent event) {
         ClientShutdown shutdown = new ClientShutdown();
-        staticInjectorInstance.getInstance(EventBus.class).post(shutdown);
+        MeteorLiteClientLauncher.mainInjectorInstance.getInstance(EventBus.class).post(shutdown);
       }
     });
     applet.init();
@@ -262,8 +274,8 @@ public class OSRSClient  implements Module, AppletStub, AppletContext {
         }
       }
     }
-    OSRSClient.properties = properties;
-    OSRSClient.parameters = parameters;
+    MeteorLiteClientModule.properties = properties;
+    MeteorLiteClientModule.parameters = parameters;
   }
 
   public Applet setAppletConfiguration(Applet applet) {
@@ -380,7 +392,83 @@ public class OSRSClient  implements Module, AppletStub, AppletContext {
   }
 
   @Override
-  public void configure(Binder binder) {
+  protected void configure() {
+    bind(MeteorLiteClientModule.class).toInstance(this);
+    bind(Callbacks.class).to(Hooks.class);
+    bind(ChatMessageManager.class);
+    bind(ScheduledExecutorService.class).toInstance(
+        new ExecutorServiceExceptionLogger(Executors.newSingleThreadScheduledExecutor()));
 
+    bind(EventBus.class)
+        .toInstance(new EventBus());
+
+    bind(EventBus.class)
+        .annotatedWith(Names.named("Deferred EventBus"))
+        .to(DeferredEventBus.class);
+
+    bind(ItemStatChangesService.class).to(ItemStatChangesServiceImpl.class);
+    bind(Logger.class).toInstance(logger);
+  }
+
+
+  @com.google.inject.name.Named("config")
+  @Provides
+  @javax.inject.Singleton
+  File provideMeteorLiteConfig() {
+    return DEFAULT_CONFIG_FILE;
+  }
+
+
+  @Provides
+  @Singleton
+  Applet provideApplet() {
+    try {
+      return (Applet) ClassLoader.getSystemClassLoader().loadClass("Client").newInstance();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  @Provides
+  @Singleton
+  Client provideClient(@Nullable Applet applet) {
+    return applet instanceof Client ? (Client) applet : null;
+  }
+
+  @Provides
+  @Singleton
+  RuneLiteConfig provideConfig(ConfigManager configManager) {
+    return configManager.getConfig(RuneLiteConfig.class);
+  }
+
+  @Provides
+  @Singleton
+  ExecutorService provideExecutorService() {
+    int poolSize = 2 * Runtime.getRuntime().availableProcessors();
+
+    // Will start up to poolSize threads (because of allowCoreThreadTimeOut) as necessary, and times out
+    // unused threads after 1 minute
+    ThreadPoolExecutor executor = new ThreadPoolExecutor(poolSize, poolSize,
+        60L, TimeUnit.SECONDS,
+        new LinkedBlockingQueue<>(),
+        new ThreadFactoryBuilder().setNameFormat("worker-%d").build());
+    executor.allowCoreThreadTimeOut(true);
+
+    return new NonScheduledExecutorServiceExceptionLogger(executor);
+  }
+
+  @Provides
+  @Singleton
+  ChatColorConfig provideChatColorConfig(ConfigManager configManager)
+  {
+    return configManager.getConfig(ChatColorConfig.class);
+  }
+
+  @Provides
+  @Singleton
+  ChatClient provideChatClient(OkHttpClient okHttpClient)
+  {
+    return new ChatClient(okHttpClient);
   }
 }

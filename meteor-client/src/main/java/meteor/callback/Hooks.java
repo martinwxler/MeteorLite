@@ -41,7 +41,7 @@ import java.awt.image.VolatileImage;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import meteor.OSRSClient;
+import meteor.MeteorLiteClientModule;
 import meteor.chat.ChatMessageManager;
 import meteor.eventbus.DeferredEventBus;
 import meteor.eventbus.EventBus;
@@ -223,7 +223,7 @@ public class Hooks implements Callbacks {
 
     eventBus.post(BEFORE_RENDER);
 
-    //clientThread.invoke();
+    clientThread.invoke();
 
     long now = System.nanoTime();
 
@@ -300,7 +300,7 @@ public class Hooks implements Callbacks {
     Image image = mainBufferProvider.getImage();
     final Image finalImage;
     if (client.isStretchedEnabled()) {
-      GraphicsConfiguration gc = OSRSClient.mainInstanceFrame.getGraphicsConfiguration();
+      GraphicsConfiguration gc = MeteorLiteClientModule.mainInstanceFrame.getGraphicsConfiguration();
       Dimension stretchedDimensions = client.getStretchedDimensions();
 
       if (lastStretchedDimensions == null || !lastStretchedDimensions.equals(stretchedDimensions)

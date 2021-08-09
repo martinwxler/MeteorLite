@@ -1,19 +1,15 @@
 package meteor.plugins.actions;
 
 import javax.inject.Inject;
-import meteor.MeteorLite;
-import meteor.OSRSClient;
+import meteor.MeteorLiteClientModule;
 import meteor.eventbus.Subscribe;
 import meteor.input.KeyManager;
 import meteor.input.MouseManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.plugins.botutils.BotUtils;
-import meteor.plugins.botutils.Spells;
 import meteor.plugins.iutils.iUtils;
 import net.runelite.api.events.GameTick;
-import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 
 @PluginDescriptor(
     name = "Actions",
@@ -30,6 +26,15 @@ public class ActionPlugin extends Plugin {
   @Inject
   private KeyManager keyManager;
 
+  @Inject
+  MeteorLiteClientModule clientInstance;
+
+  @Inject
+  private meteor.plugins.iutils.iUtils iUtils;
+
+  @Inject
+  private BotUtils botUtils;
+
   public static boolean enabled;
 
   int i = 0;
@@ -40,8 +45,7 @@ public class ActionPlugin extends Plugin {
 
   @Override
   public void startup() {
-    for (OSRSClient clientInstance : OSRSClient.clientInstances)
-      clientInstance.instanceInjector.injectMembers(inputListener);
+    clientInstance.instanceInjector.injectMembers(inputListener);
     eventBus.register(inputListener);
     mouseManager.registerMouseListener(inputListener);
     keyManager.registerKeyListener(inputListener, this.getClass());

@@ -10,13 +10,10 @@ import javafx.scene.Parent;
 import javax.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
-import meteor.MeteorLite;
-import meteor.OSRSClient;
+import meteor.MeteorLiteClientModule;
 import meteor.config.Config;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
-import meteor.plugins.botutils.BotUtils;
-import meteor.plugins.iutils.iUtils;
 import meteor.task.Scheduler;
 import net.runelite.api.Client;
 import org.sponge.util.Logger;
@@ -73,7 +70,7 @@ public class Plugin implements Module {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    OSRSClient.updateRightPanel(configRoot, 370);
+    MeteorLiteClientModule.updateRightPanel(configRoot, 370);
   }
 
   public void toggle() {

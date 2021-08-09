@@ -25,8 +25,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import meteor.MeteorLite;
-import meteor.OSRSClient;
+import meteor.MeteorLiteClientLauncher;
+import meteor.MeteorLiteClientModule;
 import meteor.config.Config;
 import meteor.config.ConfigDescriptor;
 import meteor.config.ConfigItemDescriptor;
@@ -58,11 +58,8 @@ public class PluginConfigUI {
 
   @FXML
   public void initialize() {
-    for (OSRSClient clientInstance : OSRSClient.clientInstances)
-      clientInstance.instanceInjector.injectMembers(this);
+    MeteorLiteClientModule.instanceInjectorStatic.injectMembers(this);
     plugin = lastPluginInteracted;
-
-
 
     FontAwesomeIconView plug = new FontAwesomeIconView(FontAwesomeIcon.PLUG);
     plug.setFill(Paint.valueOf("CYAN"));
@@ -102,7 +99,7 @@ public class PluginConfigUI {
     configPanel.setPrefHeight(25);
     configPanel.setPrefWidth(280);
 
-    configManager = MeteorLite.mainInstance.instanceInjector.getInstance(ConfigManager.class);
+    configManager = MeteorLiteClientLauncher.mainClientInstance.instanceInjector.getInstance(ConfigManager.class);
     Config config = plugin.getConfig(configManager);
     ConfigDescriptor descriptor = configManager.getConfigDescriptor(config);
     if (descriptor != null)

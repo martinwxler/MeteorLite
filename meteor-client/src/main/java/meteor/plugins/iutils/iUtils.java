@@ -6,9 +6,6 @@
 package meteor.plugins.iutils;
 
 import com.google.inject.Provides;
-import lombok.extern.slf4j.Slf4j;
-import meteor.MeteorLite;
-import meteor.plugins.botutils.BotUtilsConfig;
 import net.runelite.api.Point;
 import net.runelite.api.*;
 import net.runelite.api.events.*;

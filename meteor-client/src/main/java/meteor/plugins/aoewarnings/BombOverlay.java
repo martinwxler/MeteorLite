@@ -38,6 +38,7 @@ import javax.inject.Singleton;
 import meteor.PluginManager;
 import meteor.config.ConfigManager;
 import meteor.plugins.Plugin;
+import meteor.plugins.iutils.iUtils;
 import meteor.ui.overlay.Overlay;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayUtil;
@@ -68,7 +69,8 @@ public class BombOverlay extends Overlay {
   private final Client client;
 
   private final AoeWarningConfig config;
-  private AoeWarningPlugin plugin;
+
+  private AoeWarningPlugin plugin = PluginManager.getInstance(AoeWarningPlugin.class);
 
   @Inject
   public BombOverlay(final Client client, final ConfigManager configManager) {
@@ -78,17 +80,6 @@ public class BombOverlay extends Overlay {
   }
 
   private void drawDangerZone(Graphics2D graphics) {
-    if (plugin == null) {
-      for (Plugin p : PluginManager.plugins) {
-        if (p instanceof AoeWarningPlugin) {
-          plugin = (AoeWarningPlugin) p;
-        }
-      }
-    }
-    if (plugin == null) {
-      return;
-    }
-
     final WorldPoint loc = client.getLocalPlayer().getWorldLocation();
     plugin.getBombs().forEach(bomb ->
     {

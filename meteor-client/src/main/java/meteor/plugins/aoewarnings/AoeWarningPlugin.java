@@ -41,6 +41,8 @@ import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.plugins.bank.BankConfig;
+import meteor.plugins.botutils.BotUtils;
+import meteor.plugins.iutils.iUtils;
 import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
@@ -71,6 +73,7 @@ public class AoeWarningPlugin extends Plugin {
   @Getter(AccessLevel.PACKAGE)
   private final Set<ProjectileContainer> projectiles = new HashSet<>();
   @Inject
+  @com.google.inject.Inject
   public AoeWarningConfig config;
   @Inject
   private AoeWarningOverlay coreOverlay;
@@ -88,9 +91,6 @@ public class AoeWarningPlugin extends Plugin {
   private final List<GameObject> crystalSpike = new ArrayList<>();
   @Getter(AccessLevel.PACKAGE)
   private final List<GameObject> wintertodtSnowFall = new ArrayList<>();
-
-  public AoeWarningPlugin() {
-  }
 
   @Provides
   public AoeWarningConfig getConfig(ConfigManager configManager) {

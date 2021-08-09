@@ -34,8 +34,7 @@ import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import meteor.MeteorLite;
-import meteor.OSRSClient;
+import meteor.MeteorLiteClientModule;
 import meteor.plugins.Plugin;
 import meteor.ui.overlay.components.LayoutableRenderableEntity;
 import net.runelite.api.Client;
@@ -71,14 +70,10 @@ public abstract class Overlay implements LayoutableRenderableEntity {
 
   protected Overlay() {
     plugin = null;
-    for (OSRSClient clientInstance : OSRSClient.clientInstances)
-      clientInstance.instanceInjector.injectMembers(this);
   }
 
   protected Overlay(Plugin plugin) {
     this.plugin = plugin;
-    for (OSRSClient clientInstance : OSRSClient.clientInstances)
-      clientInstance.instanceInjector.injectMembers(this);
   }
 
   /**
