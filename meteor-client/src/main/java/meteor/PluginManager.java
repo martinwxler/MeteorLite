@@ -12,6 +12,7 @@ import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
 import meteor.plugins.Plugin;
 import meteor.plugins.actions.ActionPlugin;
+import meteor.plugins.agility.AgilityPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.bank.BankPlugin;
 import meteor.plugins.banktags.BankTagsPlugin;
@@ -102,6 +103,7 @@ public class PluginManager {
   private static iUtils iUtils = new iUtils();
 
   private void initPlugins() {
+    plugins.add(new AgilityPlugin());
     plugins.add(new AoeWarningPlugin());
     plugins.add(new BankPlugin());
     plugins.add(new BankTagsPlugin());
