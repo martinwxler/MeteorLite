@@ -33,8 +33,6 @@ import javax.swing.SwingUtilities;
 import meteor.eventbus.Subscribe;
 import meteor.input.KeyListener;
 import meteor.input.MouseAdapter;
-import meteor.plugins.botutils.BotUtils;
-import meteor.plugins.botutils.Spells;
 import net.runelite.api.Client;
 import net.runelite.api.events.CanvasSizeChanged;
 import net.runelite.api.events.GameTick;

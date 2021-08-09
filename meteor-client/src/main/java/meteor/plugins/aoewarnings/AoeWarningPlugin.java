@@ -67,7 +67,6 @@ public class AoeWarningPlugin extends Plugin {
   private final Set<CrystalBomb> bombs = new HashSet<>();
   @Getter(AccessLevel.PACKAGE)
   private final Set<ProjectileContainer> projectiles = new HashSet<>();
-  @Inject
   @com.google.inject.Inject
   public AoeWarningConfig config;
   @Inject
