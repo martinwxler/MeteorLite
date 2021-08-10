@@ -1305,4 +1305,18 @@ public abstract class ClientMixin implements RSClient {
 
     return widgets[groupId];
   }
+
+  @Inject
+  @Override
+  public int getVarpValue(int[] varps, int varpId)
+  {
+    return varps[varpId];
+  }
+
+  @Inject
+  @Override
+  public int getVarpValue(int varpId)
+  {
+    return getVarpValue(getVarps(), varpId);
+  }
 }

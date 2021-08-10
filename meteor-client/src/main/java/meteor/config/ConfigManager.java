@@ -416,12 +416,12 @@ public class ConfigManager {
         try {
           Files.move(tempFile.toPath(), propertiesFile.toPath(), StandardCopyOption.REPLACE_EXISTING,
               StandardCopyOption.ATOMIC_MOVE);
-        } catch (AtomicMoveNotSupportedException ex) {
+        } catch (Exception ex) {
           Files.move(tempFile.toPath(), propertiesFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      //ignore
     }
   }
 
@@ -600,7 +600,8 @@ public class ConfigManager {
             m.getReturnType(),
             m.getDeclaredAnnotation(Range.class),
             m.getDeclaredAnnotation(Alpha.class),
-            m.getDeclaredAnnotation(Units.class)
+            m.getDeclaredAnnotation(Units.class),
+            m.getDeclaredAnnotation(Icon.class)
         ))
         .sorted((a, b) -> ComparisonChain.start()
             .compare(a.getItem().position(), b.getItem().position())

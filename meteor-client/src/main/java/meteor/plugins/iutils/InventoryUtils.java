@@ -395,7 +395,6 @@ public class InventoryUtils {
                 iterating = true;
                 for (WidgetItem item : inventoryItems) {
                     if (ids.contains(item.getId())) {
-                        log.info("not dropping item: " + item.getId());
                         continue;
                     }
                     sleep(minDelayBetween, maxDelayBetween);

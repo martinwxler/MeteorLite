@@ -2,6 +2,7 @@ package meteor.ui.controllers;
 
 import static meteor.ui.controllers.PluginListUI.lastPluginInteracted;
 
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXColorPicker;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXSlider;
@@ -25,8 +26,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javax.inject.Inject;
 import meteor.MeteorLiteClientLauncher;
 import meteor.MeteorLiteClientModule;
+import meteor.config.Button;
 import meteor.config.Config;
 import meteor.config.ConfigDescriptor;
 import meteor.config.ConfigItemDescriptor;
@@ -34,7 +37,8 @@ import meteor.config.ConfigManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.ui.components.PluginToggleButton;
-import net.runelite.api.mixins.Inject;
+import net.runelite.api.Client;
+import net.runelite.api.events.ConfigButtonClicked;
 import org.sponge.util.Logger;
 
 public class PluginConfigUI {
@@ -48,6 +52,9 @@ public class PluginConfigUI {
   private VBox nodeList;
 
   private Plugin plugin;
+
+  @Inject
+  Client client;
 
   @Inject
   ConfigManager configManager;
@@ -139,6 +146,10 @@ public class PluginConfigUI {
         {
           createdDoubleTextNode(descriptor, nodePanel, configItemDescriptor);
         }
+        if (configItemDescriptor.getType() == Button.class)
+        {
+          createButtonNode(descriptor, nodePanel, configItemDescriptor);
+        }
         if (configItemDescriptor.getType().isEnum())
         {
           createEnumNode(descriptor, nodePanel, configItemDescriptor);
@@ -191,6 +202,30 @@ public class PluginConfigUI {
 
     if(toggleButton != null)
       pluginConfigPanel.getChildren().add(toggleButton);
+  }
+
+  private void createButtonNode(ConfigDescriptor config, AnchorPane root, ConfigItemDescriptor configItem) {
+    root.setMinSize(350, 56);
+    FontAwesomeIconView buttonIcon = new FontAwesomeIconView(configItem.getIcon().icon());
+    buttonIcon.setSize("11");
+    buttonIcon.setFill(javafx.scene.paint.Color.valueOf("CYAN"));
+
+    JFXButton button = new JFXButton();
+    button.setMinSize(100, 50);
+    AnchorPane.setTopAnchor(button, 2.0);
+    AnchorPane.setRightAnchor(button, 125.0);
+    AnchorPane.setLeftAnchor(button, 125.0);
+    button.setGraphic(buttonIcon);
+    button.autosize();
+    button.setStyle("-fx-background-color: #252525; -fx-text-fill: CYAN; -jfx-button-type: RAISED;");
+
+    button.setText(configItem.name());
+
+    button.pressedProperty().addListener((options, oldValue, pressed) -> {
+    if (pressed)
+      client.getCallbacks().post(new ConfigButtonClicked(config.getGroup().value(), configItem.key()));
+    });
+    root.getChildren().add(button);
   }
 
   private void createEnumNode(ConfigDescriptor config, AnchorPane root, ConfigItemDescriptor configItem) {

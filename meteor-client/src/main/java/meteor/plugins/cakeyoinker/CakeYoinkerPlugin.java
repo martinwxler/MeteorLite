@@ -8,6 +8,8 @@ import meteor.eventbus.events.ConfigChanged;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.plugins.iutils.*;
+import meteor.plugins.iutils.game.Game;
+import meteor.plugins.iutils.game.iObject;
 import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
@@ -84,6 +86,9 @@ public class CakeYoinkerPlugin extends Plugin {
 
 	@Inject
 	public CakeYoinkerOverlay overlay;
+
+	@Inject
+	public Game game;
 
 
 	CakeYoinkerState state;
@@ -210,17 +215,15 @@ public class CakeYoinkerPlugin extends Plugin {
 
 	private
 	void openBank() {
-		GameObject bankTarget = object.findNearestGameObject(10355);
-		if (bankTarget != null) {
+		iObject gameObject = game.objects().withId(10355).nearest();
+		if (gameObject != null) {
 			targetMenu = new MenuEntry("", "",
-					bankTarget.getId(),
-					bank.getBankMenuOpcode(bankTarget.getId()),
-					bankTarget.getSceneMinLocation().getX(),
-					bankTarget.getSceneMinLocation().getY(), false);
+					gameObject.id(),
+					bank.getBankMenuOpcode(gameObject.id()),
+					gameObject.localPoint().getSceneX(),
+					gameObject.localPoint().getSceneY(), false);
 			menu.setEntry(targetMenu);
-			mouse.delayMouseClick(bankTarget.getConvexHull()
-											.getBounds(),
-											sleepDelay());
+			gameObject.interact("Bank");
 			utils.sendGameMessage("bank clicked");
 		}
 	}

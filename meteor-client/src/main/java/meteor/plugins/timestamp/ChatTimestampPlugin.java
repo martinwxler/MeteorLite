@@ -53,7 +53,7 @@ import net.runelite.api.events.ScriptCallbackEvent;
 	tags = {"timestamp"},
 	enabledByDefault = false
 )
-public class TimestampPlugin extends Plugin
+public class ChatTimestampPlugin extends Plugin
 {
 	@Inject
 	private Client client;

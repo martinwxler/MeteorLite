@@ -25,6 +25,7 @@
  */
 package meteor.plugins.cakeyoinker;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import meteor.config.*;
 
 
@@ -243,6 +244,7 @@ public interface CakeYoinkerConfiguration extends Config
 		return true;
 	}
 
+	@Icon(icon = FontAwesomeIcon.BIRTHDAY_CAKE)
 	@ConfigItem(
 		keyName = "startButton",
 		name = "Start/Stop",
