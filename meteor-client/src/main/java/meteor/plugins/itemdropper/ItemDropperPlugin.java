@@ -1,14 +1,14 @@
 package meteor.plugins.itemdropper;
 
 import com.google.inject.Provides;
+import meteor.plugins.illutils.IllUtils;
 import net.runelite.api.Client;
 import net.runelite.api.events.GameTick;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
-import meteor.plugins.iutils.InventoryUtils;
-import meteor.plugins.iutils.*;
+import meteor.plugins.illutils.osrs.InventoryUtils;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -31,7 +31,7 @@ public class ItemDropperPlugin extends Plugin {
     private InventoryUtils inventory;
 
     @Inject
-    iUtils iUtils;
+    IllUtils iUtils;
 
     public List<String> itemList;
 

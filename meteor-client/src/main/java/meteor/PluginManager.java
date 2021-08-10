@@ -44,7 +44,7 @@ import meteor.plugins.itemidentification.ItemIdentificationPlugin;
 import meteor.plugins.itemprices.ItemPricesPlugin;
 import meteor.plugins.itemstats.ItemStatPlugin;
 import meteor.plugins.itemuser.ItemUserPlugin;
-import meteor.plugins.iutils.iUtils;
+import meteor.plugins.illutils.IllUtils;
 import meteor.plugins.kourendlibrary.KourendLibraryPlugin;
 import meteor.plugins.leftclickcast.LeftClickCast;
 import meteor.plugins.lowdetail.LowDetailPlugin;
@@ -99,7 +99,7 @@ public class PluginManager {
   }
 
   public static List<Plugin> plugins = new ArrayList<>();
-  private static iUtils iUtils = new iUtils();
+  private static IllUtils iUtils = new IllUtils();
 
   private void initPlugins() {
     plugins.add(new AgilityPlugin());

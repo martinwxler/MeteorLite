@@ -7,7 +7,7 @@ import meteor.input.KeyManager;
 import meteor.input.MouseManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
-import meteor.plugins.iutils.iUtils;
+import meteor.plugins.illutils.IllUtils;
 import net.runelite.api.events.GameTick;
 
 @PluginDescriptor(
@@ -29,7 +29,7 @@ public class ActionPlugin extends Plugin {
   MeteorLiteClientModule clientInstance;
 
   @Inject
-  private iUtils iUtils;
+  private IllUtils iUtils;
 
   public static boolean enabled;
 

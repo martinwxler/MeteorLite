@@ -7,9 +7,20 @@ import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
-import meteor.plugins.iutils.*;
-import meteor.plugins.iutils.game.Game;
-import meteor.plugins.iutils.game.iObject;
+import meteor.plugins.illutils.osrs.BankUtils;
+import meteor.plugins.illutils.osrs.CalculationUtils;
+import meteor.plugins.illutils.IllUtils;
+import meteor.plugins.illutils.osrs.InterfaceUtils;
+import meteor.plugins.illutils.osrs.InventoryUtils;
+import meteor.plugins.illutils.osrs.KeyboardUtils;
+import meteor.plugins.illutils.osrs.MenuUtils;
+import meteor.plugins.illutils.osrs.MouseUtils;
+import meteor.plugins.illutils.osrs.NPCUtils;
+import meteor.plugins.illutils.osrs.OSRSUtils;
+import meteor.plugins.illutils.osrs.ObjectUtils;
+import meteor.plugins.illutils.osrs.PlayerUtils;
+import meteor.plugins.illutils.osrs.WalkUtils;
+import meteor.plugins.illutils.osrs.wrappers.IllObject;
 import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
@@ -40,7 +51,7 @@ public class CakeYoinkerPlugin extends Plugin {
 	public CakeYoinkerConfiguration config;
 
 	@Inject
-	public iUtils utils;
+	public IllUtils utils;
 
 	@Inject
 	public MouseUtils mouse;
@@ -67,7 +78,7 @@ public class CakeYoinkerPlugin extends Plugin {
 	public BankUtils bank;
 
 	@Inject
-	 public  NPCUtils npc;
+	 public NPCUtils npc;
 
 	@Inject
 	public KeyboardUtils key;
@@ -88,7 +99,7 @@ public class CakeYoinkerPlugin extends Plugin {
 	public CakeYoinkerOverlay overlay;
 
 	@Inject
-	public Game game;
+	public OSRSUtils game;
 
 
 	CakeYoinkerState state;
@@ -215,7 +226,7 @@ public class CakeYoinkerPlugin extends Plugin {
 
 	private
 	void openBank() {
-		iObject gameObject = game.objects().withId(10355).nearest();
+		IllObject gameObject = game.objects().withId(10355).nearest();
 		if (gameObject != null) {
 			targetMenu = new MenuEntry("", "",
 					gameObject.id(),

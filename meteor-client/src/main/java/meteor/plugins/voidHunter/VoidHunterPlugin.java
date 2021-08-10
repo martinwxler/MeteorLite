@@ -8,12 +8,14 @@ import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
-import meteor.plugins.iutils.game.Game;
-import meteor.plugins.iutils.game.InventoryItem;
-import meteor.plugins.iutils.game.iGroundItem;
-import meteor.plugins.iutils.game.iObject;
+import meteor.plugins.illutils.IllUtils;
+import meteor.plugins.illutils.osrs.OSRSUtils;
+import meteor.plugins.illutils.osrs.wrappers.IllInventoryItem;
+import meteor.plugins.illutils.osrs.wrappers.IllGroundItem;
+import meteor.plugins.illutils.osrs.wrappers.IllObject;
 import net.runelite.api.GameObject;
 import net.runelite.api.ItemID;
+import net.runelite.api.MenuAction;
 import net.runelite.api.ObjectID;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameTick;
@@ -24,7 +26,10 @@ import net.runelite.api.events.GameTick;
 public class VoidHunterPlugin extends Plugin {
 
   @Inject
-  Game game;
+  IllUtils illUtils;
+
+  @Inject
+  OSRSUtils osrs;
 
   public static List<GameObject> gameObjects = new ArrayList<>();
 
@@ -43,17 +48,17 @@ public class VoidHunterPlugin extends Plugin {
     if (!enabled)
       return;
 
-    if (!game.localPlayer().isIdle())
+    if (!osrs.localPlayer().isIdle())
       return;
 
-    iGroundItem nearestItemToPickup = nearestItemToPickup();
+    IllGroundItem nearestItemToPickup = nearestItemToPickup();
     if (nearestItemToPickup != null) {
       nearestItemToPickup.pickup();
       return;
     }
 
     int BLACK_SALAMANDER = ItemID.BLACK_SALAMANDER;
-    InventoryItem salamanderToDrop = game.inventory().withId(BLACK_SALAMANDER).first();
+    IllInventoryItem salamanderToDrop = osrs.inventory().withId(BLACK_SALAMANDER).first();
     if (salamanderToDrop != null) {
       salamanderToDrop.interact("Release");
       return;
@@ -62,7 +67,7 @@ public class VoidHunterPlugin extends Plugin {
     if ((System.currentTimeMillis() - lastDelayedAction) < 600)
       return;
 
-    iObject nearestCaughtTrap = nearestCaughtTrap();
+    IllObject nearestCaughtTrap = nearestCaughtTrap();
     if (nearestCaughtTrap != null) {
       nearestCaughtTrap.interact("Check");
       lastDelayedAction = System.currentTimeMillis();
@@ -72,7 +77,7 @@ public class VoidHunterPlugin extends Plugin {
     if (countActiveTraps() >= 5)
       return;
 
-    iObject nearestEmptyTrap = nearestEmptyTrap();
+    IllObject nearestEmptyTrap = nearestEmptyTrap();
     if (nearestEmptyTrap() != null) {
       nearestEmptyTrap.interact("Set-trap");
       lastDelayedAction = System.currentTimeMillis();
@@ -81,23 +86,23 @@ public class VoidHunterPlugin extends Plugin {
 
   public int countActiveTraps() {
     int TRAP_SET = ObjectID.YOUNG_TREE_8999;
-    return (int) game.objects().withId(TRAP_SET).count();
+    return (int) osrs.objects().withId(TRAP_SET).count();
   }
 
-  public iObject nearestCaughtTrap() {
+  public IllObject nearestCaughtTrap() {
     int TRAP_CAUGHT = ObjectID.NET_TRAP_8996;
-    return game.objects().withId(TRAP_CAUGHT).nearest();
+    return osrs.objects().withId(TRAP_CAUGHT).nearest();
   }
 
-  public iObject nearestEmptyTrap() {
+  public IllObject nearestEmptyTrap() {
     int TRAP_EMPTY = ObjectID.YOUNG_TREE_9000;
-    return game.objects().withId(TRAP_EMPTY).nearest();
+    return osrs.objects().withId(TRAP_EMPTY).nearest();
   }
 
-  public iGroundItem nearestItemToPickup() {
+  public IllGroundItem nearestItemToPickup() {
     int ROPE = ItemID.ROPE;
     int NET = ItemID.SMALL_FISHING_NET;
-    return game.groundItems().withId(NET, ROPE).nearest();
+    return osrs.groundItems().withId(NET, ROPE).nearest();
   }
 
   @Subscribe

@@ -22,20 +22,47 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.rs.api;
+package net.runelite.mixins;
 
-import net.runelite.api.clan.ClanChannelMember;
-import net.runelite.mapping.Import;
+import net.runelite.api.clan.ClanRank;
+import net.runelite.api.mixins.Inject;
+import net.runelite.api.mixins.Mixin;
+import net.runelite.api.mixins.Shadow;
+import net.runelite.rs.api.RSClanChannelMember;
+import net.runelite.rs.api.RSClient;
 
-public interface RSClanChannelMember extends ClanChannelMember
+@Mixin(RSClanChannelMember.class)
+public abstract class ClanChannelMemberMixin implements RSClanChannelMember
 {
-  @Import("rank")
-  byte getRSRank();
+	@Shadow("client")
+	private static RSClient client;
 
-  @Import("world")
-  @Override
-  int getWorld$api();
+	@Inject
+	@Override
+	public int compareTo(Object other)
+	{
+		return getName$api().compareTo(((RSClanChannelMember) other).getName$api());
+	}
 
-  @Import("username")
-  RSUsername getUsername();
+	@Inject
+	@Override
+	public String getPrevName()
+	{
+		return null;
+	}
+
+	@Inject
+
+	@Override
+	public ClanRank getRank()
+	{
+		return client.getClanRankFromRs(getRSRank());
+	}
+
+	@Override
+	@Inject
+	public String getName$api()
+	{
+		return getUsername().getName$api();
+	}
 }
