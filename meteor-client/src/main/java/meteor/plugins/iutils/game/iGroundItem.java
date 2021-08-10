@@ -87,9 +87,18 @@ public class iGroundItem implements Locatable, Interactable {
     public void interact(int action) {
         game.interactionManager().interact(
                 id(),
-                MenuAction.GROUND_ITEM_THIRD_OPTION.getId(), //TODO configure for other menu actions for ground items
+                action,
                 tileItem.getTile().getSceneLocation().getX(),
                 tileItem.getTile().getSceneLocation().getY()
+        );
+    }
+
+    public void pickup() {
+        game.interactionManager().interact(
+            id(),
+            MenuAction.GROUND_ITEM_THIRD_OPTION.getId(),
+            tileItem.getTile().getSceneLocation().getX(),
+            tileItem.getTile().getSceneLocation().getY()
         );
     }
 

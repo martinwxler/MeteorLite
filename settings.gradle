@@ -1,6 +1,5 @@
 rootProject.name = 'MeteorLite'
 include 'meteor-client'
-include 'meteor-agent'
 include 'runelite-annotations'
 include 'runelite-api'
 include 'runescape-api'
@@ -13,5 +12,4 @@ include 'injected-client'
 include 'meteor-logger'
 include 'runelite-script-assembler'
 include 'http-api'
-include 'meteor-mixins'
 

@@ -54,15 +54,15 @@ public class Position implements Area {
             return Integer.MAX_VALUE;
         }
 
-        return Math.max(Math.abs(other.x - x), Math.abs(other.y - y));
+        return Math.abs(x-other.x) + Math.abs(y-other.y);
     }
 
+    //TODO: fix this, but its better than it was
     public int distanceTo(WorldPoint other) {
         if (z != other.getPlane()) {
             return Integer.MAX_VALUE;
         }
-
-        return Math.max(Math.abs(other.getX() - x), Math.abs(other.getY() - y));
+        return Math.abs(x-other.getX()) + Math.abs(y-other.getY());
     }
 
     public int distanceTo(Area other) {
