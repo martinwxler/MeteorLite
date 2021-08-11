@@ -68,4 +68,6 @@ public interface NPC extends Actor {
   NPCComposition getTransformedComposition();
 
   void onDefinitionChanged(NPCComposition composition);
+
+  int getDistanceFromLocalPlayer();
 }

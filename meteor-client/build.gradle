@@ -2,6 +2,11 @@ plugins {
     id 'java'
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.10'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+}
+
+shadowJar {
+    zip64 true
 }
 
 group 'org.meteorlite'
@@ -79,12 +84,7 @@ tasks {
     compileJava.dependsOn(":runelite-mixins:compileJava")
 }
 
-applicationDefaultJvmArgs = [
-        "-noverify",
-        "-Dprism.allowhidpi=false",
-        "-Dsun.awt.noerasebackground=true",
-        "--add-exports=javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED",
-        "-Dsun.java2d.uiScale=1.0"]
+
 
 application {
     mainClass.set("meteor.MeteorLiteClientLauncher")
@@ -99,10 +99,43 @@ test {
     useJUnitPlatform()
 }
 
-javafx {
-    modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.swing', 'javafx.graphics' ]
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'meteor.MeteorLiteClientLauncher'
+        )
+    }
 }
 
 mainClassName = 'meteor.MeteorLiteClientLauncher'
+
+javafx {
+    modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.swing', 'javafx.graphics', 'javafx.media']
+    applicationDefaultJvmArgs = [
+            "-noverify",
+            "-Dprism.allowhidpi=false",
+            "-Dsun.awt.noerasebackground=true",
+            "--module-path=C:/Program Files/Java/javafx-sdk-11.0.2/lib",
+            "--add-modules=javafx.media",
+            "--add-modules=javafx.fxml",
+            "--add-modules=javafx.swing",
+            "--add-modules=javafx.graphics",
+            "--add-exports=javafx.base/com.sun.javafx=ALL-UNNAMED",
+            "--add-exports=javafx.base/com.sun.javafx.binding=ALL-UNNAMED",
+            "--add-exports=javafx.base/com.sun.javafx.collections=ALL-UNNAMED",
+            "--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED",
+            "--add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED",
+            "--add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED",
+            "--add-exports=javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED",
+            "--add-exports=javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED",
+            "--add-exports=javafx.graphics/com.sun.javafx.scene.layout=ALL-UNNAMED",
+            "--add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED",
+            "--add-exports=javafx.graphics/com.sun.javafx.scene.text=ALL-UNNAMED",
+            "--add-exports=javafx.graphics/com.sun.javafx.scene.traversal=ALL-UNNAMED",
+            "--add-exports=javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED",
+            "--add-exports=javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED",
+            "--add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED",
+            "-Dsun.java2d.uiScale=1.0"]
+}
 
 

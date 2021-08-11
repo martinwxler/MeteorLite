@@ -92,4 +92,6 @@ public interface GameObject extends TileObject {
    * 6 & 3 the bitfield may contain other flags in addition to those mentioned above
    */
   int getFlags();
+
+  int getDistanceFromLocalPlayer();
 }

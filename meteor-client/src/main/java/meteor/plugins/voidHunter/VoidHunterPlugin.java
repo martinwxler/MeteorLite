@@ -3,22 +3,21 @@ package meteor.plugins.voidHunter;
 import com.google.inject.Provides;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.inject.Inject;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
-import meteor.plugins.illutils.IllUtils;
-import meteor.plugins.illutils.osrs.OSRSUtils;
-import meteor.plugins.illutils.osrs.wrappers.IllInventoryItem;
-import meteor.plugins.illutils.osrs.wrappers.IllGroundItem;
-import meteor.plugins.illutils.osrs.wrappers.IllObject;
+import meteor.plugins.voidutils.OSRSUtils;
+import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.GameObject;
 import net.runelite.api.ItemID;
-import net.runelite.api.MenuAction;
 import net.runelite.api.ObjectID;
+import net.runelite.api.TileItem;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.widgets.WidgetItem;
 
 @PluginDescriptor(
     name = "Void Hunter"
@@ -26,16 +25,20 @@ import net.runelite.api.events.GameTick;
 public class VoidHunterPlugin extends Plugin {
 
   @Inject
-  IllUtils illUtils;
+  OSRSUtils osrs;
 
   @Inject
-  OSRSUtils osrs;
+  VoidHunterOverlay overlay;
+
+  @Inject
+  OverlayManager overlayManager;
 
   public static List<GameObject> gameObjects = new ArrayList<>();
 
   public static boolean enabled = false;
 
   private long lastDelayedAction;
+  private List<GameObject> emptyTraps = new ArrayList<>();
 
   @Provides
   public VoidHunterConfig getConfig(ConfigManager configManager) {
@@ -48,18 +51,22 @@ public class VoidHunterPlugin extends Plugin {
     if (!enabled)
       return;
 
-    if (!osrs.localPlayer().isIdle())
+    if (client.getLocalPlayer() == null)
       return;
 
-    IllGroundItem nearestItemToPickup = nearestItemToPickup();
+    if (!client.getLocalPlayer().isIdle())
+      return;
+
+    TileItem nearestItemToPickup = nearestItemToPickup();
     if (nearestItemToPickup != null) {
       nearestItemToPickup.pickup();
       return;
     }
 
     int BLACK_SALAMANDER = ItemID.BLACK_SALAMANDER;
-    IllInventoryItem salamanderToDrop = osrs.inventory().withId(BLACK_SALAMANDER).first();
-    if (salamanderToDrop != null) {
+    List<WidgetItem> items = osrs.items(BLACK_SALAMANDER);
+    if (items.size() > 0) {
+      WidgetItem salamanderToDrop = items.get(0);
       salamanderToDrop.interact("Release");
       return;
     }
@@ -67,42 +74,60 @@ public class VoidHunterPlugin extends Plugin {
     if ((System.currentTimeMillis() - lastDelayedAction) < 600)
       return;
 
-    IllObject nearestCaughtTrap = nearestCaughtTrap();
-    if (nearestCaughtTrap != null) {
-      nearestCaughtTrap.interact("Check");
+    GameObject nearestCaughtTrap = nearestCaughtTrap();
+
+    if (countActiveTraps() >= 3)
+      if (nearestCaughtTrap != null)
+      {
+        nearestCaughtTrap.interact("Check");
+        lastDelayedAction = System.currentTimeMillis();
+        return;
+      }
+
+    GameObject nearestEmptyTrap = nearestEmptyTrap();
+    if (nearestEmptyTrap() != null) {
+      nearestEmptyTrap.interact("Set-trap");
       lastDelayedAction = System.currentTimeMillis();
       return;
     }
 
-    if (countActiveTraps() >= 5)
-      return;
-
-    IllObject nearestEmptyTrap = nearestEmptyTrap();
-    if (nearestEmptyTrap() != null) {
-      nearestEmptyTrap.interact("Set-trap");
+    if (nearestCaughtTrap != null) {
+      nearestCaughtTrap.interact("Check");
       lastDelayedAction = System.currentTimeMillis();
     }
   }
 
   public int countActiveTraps() {
-    int TRAP_SET = ObjectID.YOUNG_TREE_8999;
-    return (int) osrs.objects().withId(TRAP_SET).count();
-  }
-
-  public IllObject nearestCaughtTrap() {
+    int TRAP_SET = ObjectID.NET_TRAP_9002;
     int TRAP_CAUGHT = ObjectID.NET_TRAP_8996;
-    return osrs.objects().withId(TRAP_CAUGHT).nearest();
+    return osrs.objects(TRAP_SET, TRAP_CAUGHT).size();
   }
 
-  public IllObject nearestEmptyTrap() {
+  public List<GameObject> activeTraps() {
+    int TRAP_SET = ObjectID.NET_TRAP_9002;
+    int TRAP_CAUGHT = ObjectID.NET_TRAP_8996;
+    return osrs.objects(TRAP_SET, TRAP_CAUGHT);
+  }
+
+  public List<GameObject> emptyTraps() {
     int TRAP_EMPTY = ObjectID.YOUNG_TREE_9000;
-    return osrs.objects().withId(TRAP_EMPTY).nearest();
+    return osrs.objects(TRAP_EMPTY);
   }
 
-  public IllGroundItem nearestItemToPickup() {
+  public GameObject nearestCaughtTrap() {
+    int TRAP_CAUGHT = ObjectID.NET_TRAP_8996;
+    return osrs.objects(TRAP_CAUGHT).get(0);
+  }
+
+  public GameObject nearestEmptyTrap() {
+    int TRAP_EMPTY = ObjectID.YOUNG_TREE_9000;
+    return osrs.objects(TRAP_EMPTY).get(0);
+  }
+
+  public TileItem nearestItemToPickup() {
     int ROPE = ItemID.ROPE;
     int NET = ItemID.SMALL_FISHING_NET;
-    return osrs.groundItems().withId(NET, ROPE).nearest();
+    return osrs.loot(ROPE, NET).get(0);
   }
 
   @Subscribe
@@ -113,11 +138,11 @@ public class VoidHunterPlugin extends Plugin {
   }
 
   public void startup() {
-
+    overlayManager.add(overlay);
   }
 
   public void shutdown() {
-
+    overlayManager.remove(overlay);
   }
 
   public void updateConfig() {

@@ -293,7 +293,7 @@ public class HerbiboarPlugin extends Plugin
 	@Subscribe
 	public void onGameObjectChanged(GameObjectChanged event)
 	{
-		onTileObject(event.getPrevious(), event.getGameObject());
+		onTileObject(event.getOldObject(), event.getNewObject());
 	}
 
 	@Subscribe

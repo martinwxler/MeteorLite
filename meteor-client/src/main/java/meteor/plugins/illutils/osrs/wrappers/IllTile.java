@@ -37,7 +37,7 @@ public class IllTile implements Locatable {
 
     @Override
     public Position position() {
-        return new Position(tile.getSceneLocation().getX(), tile.getSceneLocation().getY(), tile.getPlane());
+        return new Position(tile.getWorldLocation().getX(), tile.getWorldLocation().getY(), tile.getPlane());
     }
 
     public Position templatePosition() {

@@ -104,4 +104,11 @@ public abstract class NPCMixin implements RSNPC {
     }
     return composition;
   }
+
+  @Inject
+  @Override
+  public int getDistanceFromLocalPlayer() {
+    //Manhatten
+    return Math.max((client.getLocalPlayer().getLocalLocation().getX() - getX()),(client.getLocalPlayer().getLocalLocation().getY() - getY()));
+  }
 }

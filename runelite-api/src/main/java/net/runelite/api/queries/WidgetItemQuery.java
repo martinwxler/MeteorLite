@@ -55,7 +55,7 @@ public abstract class WidgetItemQuery extends
     predicate = and(item ->
     {
       for (int index : indexes) {
-        if (item.getIndex() == index) {
+        if (item.getSlot() == index) {
           return true;
         }
       }

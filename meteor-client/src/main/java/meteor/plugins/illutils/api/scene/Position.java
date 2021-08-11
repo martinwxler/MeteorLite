@@ -53,8 +53,7 @@ public class Position implements Area {
         if (z != other.z) {
             return Integer.MAX_VALUE;
         }
-
-        return Math.abs(x-other.x) + Math.abs(y-other.y);
+        return Math.max((other.x - x),(other.y - y));
     }
 
     //TODO: fix this, but its better than it was
@@ -62,7 +61,7 @@ public class Position implements Area {
         if (z != other.getPlane()) {
             return Integer.MAX_VALUE;
         }
-        return Math.abs(x-other.getX()) + Math.abs(y-other.getY());
+        return Math.max((other.getX() - x),(other.getY() - y));
     }
 
     public int distanceTo(Area other) {

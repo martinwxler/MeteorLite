@@ -387,7 +387,7 @@ public class ClueScrollPlugin extends Plugin {
 
   @Subscribe
   public void onGameObjectChanged(final GameObjectChanged event) {
-    tileObjectChangedHandler(event.getPrevious(), event.getGameObject());
+    tileObjectChangedHandler(event.getOldObject(), event.getNewObject());
   }
 
   @Subscribe

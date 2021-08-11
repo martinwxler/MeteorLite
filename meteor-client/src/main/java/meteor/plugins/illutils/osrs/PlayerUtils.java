@@ -142,7 +142,7 @@ public class PlayerUtils {
         if (staminaPotion != null) {
             log.info("using stamina potion");
             menu.setEntry(new MenuEntry("", "", staminaPotion.getId(), MenuAction.ITEM_FIRST_OPTION.getId(),
-                    staminaPotion.getIndex(), 9764864, false));
+                    staminaPotion.getSlot(), 9764864, false));
             mouse.delayMouseClick(staminaPotion.getCanvasBounds(), calc.getRandomIntBetweenRange(5, 200));
             return true;
         }

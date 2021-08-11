@@ -351,7 +351,7 @@ public abstract class WidgetMixin implements RSWidget
 
     Rectangle bounds = new Rectangle(itemX - 1, itemY - 1, ITEM_SLOT_SIZE, ITEM_SLOT_SIZE);
     Rectangle draggedBounds = new Rectangle(itemX + dragOffsetX, itemY + dragOffsetY, ITEM_SLOT_SIZE, ITEM_SLOT_SIZE);
-    return new WidgetItem(itemId - 1, itemQuantity, index, bounds, this, draggedBounds);
+    return new WidgetItem(client, itemId - 1, itemQuantity, index, bounds, this, draggedBounds);
   }
 
   @Inject

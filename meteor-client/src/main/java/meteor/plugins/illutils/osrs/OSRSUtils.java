@@ -37,6 +37,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.runelite.api.widgets.WidgetItem;
 import org.sponge.util.Logger;
 
 import static java.awt.event.KeyEvent.VK_ENTER;
@@ -295,12 +296,12 @@ public class OSRSUtils {
         return new IllWidget(this, widget);
     }
 
-    public InventoryItemStream inventory() {
-        return getFromClientThread(() -> new InventoryItemStream(widget(WidgetInfo.INVENTORY).getWidgetItems().stream()
-                .map(wi -> new IllInventoryItem(this, wi, client().getItemDefinition(wi.getId())))
-                .collect(Collectors.toList())
-                .stream())
-        );
+    public InventoryItemStream inventory(int... ids) {
+        List<Integer> idsList = new ArrayList<>();
+        for (int i : ids) {
+            idsList.add(i);
+        }
+        return null;
     }
 
     public EquipmentSlot equipmentSlot(int index) {

@@ -108,9 +108,9 @@ public class IllUtils extends Plugin {
 
     private final Logger log = new Logger("iUtils");
 
-    public final static Set<TileObject> objects = new HashSet<>();
-    public final static Set<TileItem> tileItems = new HashSet<>();
-    public final static Set<NPC> npcs = new HashSet<>();
+    public final static List<TileObject> objects = new ArrayList<>();
+    public final static List<TileItem> tileItems = new ArrayList<>();
+    public final static List<NPC> npcs = new ArrayList<>();
     public final static List<IllWidget> bankitems = new ArrayList<>();
     public final static List<IllWidget> bankInventoryitems = new ArrayList<>();
 
@@ -342,7 +342,7 @@ public class IllUtils extends Plugin {
             return;
         }
         MenuEntry entry = new MenuEntry("", "", item.getId(), menuOpcodeID,
-                item.getIndex(), menuParam1ID, true);
+                item.getSlot(), menuParam1ID, true);
         doActionClientTick(entry, item.getCanvasBounds().getBounds(), ticksToDelay);
     }
 
@@ -405,7 +405,7 @@ public class IllUtils extends Plugin {
             return;
         }
         MenuEntry entry = new MenuEntry("", "", item.getId(), menuOpcodeID,
-                item.getIndex(), menuParam1ID, true);
+                item.getSlot(), menuParam1ID, true);
         doActionGameTick(entry, item.getCanvasBounds().getBounds(), ticksToDelay);
     }
 
@@ -467,7 +467,7 @@ public class IllUtils extends Plugin {
             return;
         }
         MenuEntry entry = new MenuEntry("", "", item.getId(), menuOpcodeID,
-                item.getIndex(), menuParam1ID, true);
+                item.getSlot(), menuParam1ID, true);
         doActionMsTime(entry, item.getCanvasBounds().getBounds(), timeToDelay);
     }
 

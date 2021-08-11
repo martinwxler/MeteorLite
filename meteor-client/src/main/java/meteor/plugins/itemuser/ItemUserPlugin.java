@@ -92,7 +92,7 @@ public class ItemUserPlugin extends Plugin {
             }
 
             client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
-            client.setSelectedItemSlot(firstItem.getIndex());
+            client.setSelectedItemSlot(firstItem.getSlot());
             client.setSelectedItemID(firstItem.getId());
             client.invokeMenuAction(
                     "Use",

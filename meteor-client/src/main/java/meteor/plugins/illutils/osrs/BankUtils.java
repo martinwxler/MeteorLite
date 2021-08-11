@@ -241,7 +241,7 @@ public class BankUtils {
             return;
         }
         boolean depositBox = isDepositBoxOpen();
-        menu.setEntry(new MenuEntry("", "", (depositBox) ? 1 : 8, MenuAction.CC_OP.getId(), item.getIndex(),
+        menu.setEntry(new MenuEntry("", "", (depositBox) ? 1 : 8, MenuAction.CC_OP.getId(), item.getSlot(),
                 (depositBox) ? 12582914 : 983043, false));
         mouse.handleMouseClick(item.getCanvasBounds());
     }
@@ -287,7 +287,7 @@ public class BankUtils {
         }
         boolean depositBox = isDepositBoxOpen();
 
-        menu.setEntry(new MenuEntry("", "", (client.getVarbitValue(6590) == 0) ? 2 : 3, MenuAction.CC_OP.getId(), item.getIndex(),
+        menu.setEntry(new MenuEntry("", "", (client.getVarbitValue(6590) == 0) ? 2 : 3, MenuAction.CC_OP.getId(), item.getSlot(),
                 (depositBox) ? 12582914 : 983043, false));
         mouse.delayMouseClick(item.getCanvasBounds(), calc.getRandomIntBetweenRange(0, 50));
     }

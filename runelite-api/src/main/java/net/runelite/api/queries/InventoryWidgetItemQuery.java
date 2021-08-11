@@ -87,7 +87,7 @@ public class InventoryWidgetItemQuery extends WidgetItemQuery {
           Rectangle dragBounds = child.getBounds();
           dragBounds.setBounds(bounds.x + dragOffsetX, bounds.y + dragOffsetY, 32, 32);
           widgetItems.add(
-              new WidgetItem(child.getItemId(), child.getItemQuantity(), i, bounds, child,
+              new WidgetItem(client, child.getItemId(), child.getItemQuantity(), i, bounds, child,
                   dragBounds));
         }
         break;

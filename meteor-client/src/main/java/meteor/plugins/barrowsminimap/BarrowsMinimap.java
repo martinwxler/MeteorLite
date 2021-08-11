@@ -106,8 +106,8 @@ public class BarrowsMinimap extends Plugin
     @Subscribe
     private void onGameObjectChanged(GameObjectChanged event)
     {
-        GameObject previous = event.getPrevious();
-        GameObject gameObject = event.getGameObject();
+        GameObject previous = event.getOldObject();
+        GameObject gameObject = event.getNewObject();
 
         ladders.remove(previous);
         if (BARROWS_LADDERS.contains(gameObject.getId()))

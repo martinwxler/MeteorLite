@@ -210,7 +210,7 @@ public class WoodcuttingPlugin extends Plugin
 	@Subscribe
 	public void onGameObjectChanged(final GameObjectChanged event)
 	{
-		treeObjects.remove(event.getGameObject());
+		treeObjects.remove(event.getNewObject());
 	}
 
 	@Subscribe

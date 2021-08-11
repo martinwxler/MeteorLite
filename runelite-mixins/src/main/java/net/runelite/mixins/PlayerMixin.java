@@ -60,4 +60,10 @@ public abstract class PlayerMixin implements RSPlayer {
   {
     return isFriend$api() || friended;
   }
+
+  @Inject
+  @Override
+  public boolean isIdle() {
+    return getIdlePoseAnimation() == getPoseAnimation() && getAnimation() == -1;
+  }
 }

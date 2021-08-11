@@ -45,7 +45,7 @@ class InventoryGridOverlay extends Overlay
 	private static final int DISTANCE_TO_ACTIVATE_HOVER = 5;
 
 	private final InventoryGridConfig config;
-	private final Client client;
+	private static Client client;
 	private final ItemManager itemManager;
 
 	private Point initialMousePoint;
@@ -55,7 +55,7 @@ class InventoryGridOverlay extends Overlay
 	private InventoryGridOverlay(InventoryGridConfig config, Client client, ItemManager itemManager)
 	{
 		this.itemManager = itemManager;
-		this.client = client;
+		InventoryGridOverlay.client = client;
 		this.config = config;
 
 		setPosition(OverlayPosition.DYNAMIC);
@@ -147,7 +147,7 @@ class InventoryGridOverlay extends Overlay
 		if (parentWidget.isIf3())
 		{
 			Widget wi = parentWidget.getChild(idx);
-			return new WidgetItem(wi.getItemId(), wi.getItemQuantity(), -1, wi.getBounds(), parentWidget, wi.getBounds());
+			return new WidgetItem(client, wi.getItemId(), wi.getItemQuantity(), -1, wi.getBounds(), parentWidget, wi.getBounds());
 		}
 		else
 		{

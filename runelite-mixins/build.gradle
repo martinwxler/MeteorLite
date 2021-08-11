@@ -5,8 +5,8 @@ plugins {
 group 'org.meteorlite'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
 disableAutoTargetJvm()
 
 repositories {

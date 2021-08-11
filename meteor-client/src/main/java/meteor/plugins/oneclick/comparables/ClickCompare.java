@@ -109,7 +109,7 @@ public abstract class ClickCompare
 			final WidgetItem item = itemList.get(i);
 			if (item.getId() == id)
 			{
-				return Pair.of(item.getId(), item.getIndex());
+				return Pair.of(item.getId(), item.getSlot());
 			}
 		}
 
@@ -131,7 +131,7 @@ public abstract class ClickCompare
 			final WidgetItem item = itemList.get(i);
 			if (ids.contains(item.getId()))
 			{
-				return Pair.of(item.getId(), item.getIndex());
+				return Pair.of(item.getId(), item.getSlot());
 			}
 		}
 

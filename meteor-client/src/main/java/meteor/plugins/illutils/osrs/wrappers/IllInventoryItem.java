@@ -45,7 +45,7 @@ public class IllInventoryItem implements Interactable, Useable {
     }
 
     public int slot() {
-        return widgetItem.getIndex();
+        return widgetItem.getSlot();
     }
 
     public ItemComposition definition() {

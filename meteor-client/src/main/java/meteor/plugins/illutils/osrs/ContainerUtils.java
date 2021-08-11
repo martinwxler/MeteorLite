@@ -90,7 +90,7 @@ public class ContainerUtils {
 
         for (WidgetItem inventoryItem : inventoryItems) {
             if (itemIds.contains(inventoryItem.getId())) {
-                items.put(inventoryItem.getId(), inventoryItem.getIndex());
+                items.put(inventoryItem.getId(), inventoryItem.getSlot());
             }
         }
 
@@ -189,7 +189,7 @@ public class ContainerUtils {
 
         for (WidgetItem bankInventoryItem : bankInventoryItems) {
             if (itemIds.contains(bankInventoryItem.getId())) {
-                items.put(bankInventoryItem.getId(), bankInventoryItem.getIndex());
+                items.put(bankInventoryItem.getId(), bankInventoryItem.getSlot());
             }
         }
 
@@ -226,7 +226,7 @@ public class ContainerUtils {
             bounds.setBounds(bounds.x - 1, bounds.y - 1, 32, 32);
             Rectangle dragBounds = child.getBounds();
             dragBounds.setBounds(bounds.x + dragOffsetX, bounds.y + dragOffsetY, 32, 32);
-            widgetItems.add(new WidgetItem(child.getItemId(), child.getItemQuantity(), i, bounds, child, dragBounds));
+            widgetItems.add(new WidgetItem(client, child.getItemId(), child.getItemQuantity(), i, bounds, child, dragBounds));
         }
 
         return widgetItems;

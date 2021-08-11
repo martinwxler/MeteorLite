@@ -2249,4 +2249,6 @@ public interface Client extends GameEngine {
    * should be defined in {@link AnimationID}
    */
   Sequence loadAnimation(int id);
+
+  void interact(final int identifier, final int opcode, final int param0, final int param1);
 }
