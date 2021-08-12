@@ -68,8 +68,8 @@ import net.runelite.api.widgets.WidgetItem;
 @Singleton
 public class OverlayRenderer extends MouseAdapter implements KeyListener {
 
-  private static final int BORDER = 5;
-  private static final int BORDER_TOP = BORDER + 15;
+  private static final int BORDER = 0;
+  private static final int BORDER_TOP = 0;
   private static final int PADDING = 2;
   private static final int OVERLAY_RESIZE_TOLERANCE = 5;
   private static final Dimension SNAP_CORNER_SIZE = new Dimension(80, 80);

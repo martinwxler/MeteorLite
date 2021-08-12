@@ -105,7 +105,21 @@ public abstract class GameObjectMixin implements RSGameObject {
   @Override
   @Inject
   public int getDistanceFromLocalPlayer() {
-    //Manhatten
-    return Math.max((client.getLocalPlayer().getLocalLocation().getX() - getX()),(client.getLocalPlayer().getLocalLocation().getY() - getY()));
+    //Mancrappen :tm:
+    int distanceX;
+    int distanceY;
+    LocalPoint localPlayerPosition = client.getLocalPlayer().getLocalLocation();
+
+    if (getX() > localPlayerPosition.getX())
+      distanceX = getX() - localPlayerPosition.getX();
+    else
+      distanceX = localPlayerPosition.getX() - getX();
+
+    if (getY() > localPlayerPosition.getY())
+      distanceY = getY() - localPlayerPosition.getY();
+    else
+      distanceY = localPlayerPosition.getY() - getY();
+
+    return (distanceX + distanceY) / 2;
   }
 }

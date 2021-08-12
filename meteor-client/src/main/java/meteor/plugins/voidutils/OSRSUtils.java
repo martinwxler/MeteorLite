@@ -1,13 +1,8 @@
 package meteor.plugins.voidutils;
 
-import java.awt.Color;
-import java.awt.FontMetrics;
-import java.awt.Rectangle;
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -17,6 +12,7 @@ import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.NPC;
+import net.runelite.api.Tile;
 import net.runelite.api.TileItem;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.GameObjectChanged;
@@ -42,10 +38,12 @@ public class OSRSUtils {
     eventBus.register(this);
   }
 
+  // These represent various entities. Stored via ID / WorldPoint for easy access
   public static HashMap<Integer, HashMap<WorldPoint, GameObject>> gameObjects = new HashMap<>();
   public static HashMap<Integer, List<TileItem>> loot = new HashMap<>();
   public static HashMap<Integer, List<NPC>> npcs = new HashMap<>();
 
+  // Loads GameObjects from the map via Item IDs - Sorted by distance from local player ascending
   public List<GameObject> objects(int... ids) {
     List<GameObject> mergedGameObjects = new ArrayList<>();
     for (int id : ids) {
@@ -54,17 +52,20 @@ public class OSRSUtils {
         mergedGameObjects.addAll(gameObjectsMap.values());
       }
     }
+    if (mergedGameObjects.size() == 0)
+      return null;
     mergedGameObjects.sort(Comparator.comparing(GameObject::getDistanceFromLocalPlayer));
-    try
-    {
-      mergedGameObjects.get(0);
-    }
-    catch (Exception e) {
-      mergedGameObjects.add(null);
-    }
     return mergedGameObjects;
   }
 
+  public GameObject nearestObject(int... ids) {
+    List<GameObject> objects = objects(ids);
+    if (objects == null)
+      return null;
+    return objects.get(0);
+  }
+
+  // Loads NPCs from the map via IDs - Sorted by distance from local player ascending
   public List<NPC> npcs(int... ids) {
     List<NPC> mergedNPCs = new ArrayList<>();
     for (int id : ids) {
@@ -72,35 +73,41 @@ public class OSRSUtils {
       if (npcs != null)
         mergedNPCs.addAll(npcs);
     }
+    if (mergedNPCs.size() == 0)
+      return null;
     mergedNPCs.sort(Comparator.comparing(NPC::getDistanceFromLocalPlayer));
-    try
-    {
-      mergedNPCs.get(0);
-    }
-    catch (Exception e) {
-      mergedNPCs.add(null);
-    }
     return mergedNPCs;
   }
 
-  public List<TileItem> loot(int... ids) {
+  public NPC nearestNPC(int... ids) {
+    List<NPC> npcs = npcs(ids);
+    if (npcs == null)
+      return null;
+    return npcs.get(0);
+  }
+
+  // Loads GroundItems from the map via IDs - Sorted by distance from local player ascending
+  public List<TileItem> loots(int... ids) {
     List<TileItem> mergedLoot = new ArrayList<>();
     for (int id : ids) {
       List<TileItem> loot = OSRSUtils.loot.get(id);
       if (loot != null)
         mergedLoot.addAll(loot);
     }
+    if (mergedLoot.size() == 0)
+      return null;
     mergedLoot.sort(Comparator.comparing(TileItem::getDistanceFromLocalPlayer));
-    try
-    {
-      mergedLoot.get(0);
-    }
-    catch (Exception e) {
-      mergedLoot.add(null);
-    }
     return mergedLoot;
   }
 
+  public TileItem nearestLoot(int... ids) {
+    List<TileItem> loots = loots(ids);
+    if (loots == null)
+      return null;
+    return loots.get(0);
+  }
+
+  // Loads Inventory items from the map via IDs
   public List<WidgetItem> items(int... ids) {
     Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
     if (inventoryWidget == null || inventoryWidget.isHidden())
@@ -115,79 +122,45 @@ public class OSRSUtils {
           items.add(item);
       }
     }
+    if (items.size() == 0)
+      return null;
     return items;
   }
 
+  public WidgetItem firstItem(int... ids) {
+    List<WidgetItem> items = items(ids);
+    if (items == null)
+      return null;
+    return items.get(0);
+  }
+
+  //ALWAYS clear maps on GameState unless LOGGED_IN
   @Subscribe
-  public void onGameStateChanged(GameStateChanged event) {
+  private void onGameStateChanged(GameStateChanged event) {
     if (event.getGameState() != GameState.LOGGED_IN) {
-      gameObjects.clear();
+      resetGameObjects();
       loot.clear();
       npcs.clear();
     }
   }
 
   @Subscribe
-  public void onGameObjectSpawned(GameObjectSpawned event) {
-    HashMap<WorldPoint, GameObject> knownSpawnsMap = gameObjects.get(event.getGameObject().getId());
-    if (knownSpawnsMap == null)
-      knownSpawnsMap = new HashMap<>();
-
-    knownSpawnsMap.put(event.getTile().getWorldLocation(), event.getGameObject());
-    gameObjects.put(event.getGameObject().getId(), knownSpawnsMap);
+  private void onGameObjectSpawned(GameObjectSpawned event) {
+    resetGameObjects();
   }
 
   @Subscribe
-  public void onGameObjectChanged(GameObjectChanged event) {
-    HashMap<WorldPoint, GameObject> knownOldSpawnsMap = gameObjects.get(event.getOldObject().getId());
-    if (knownOldSpawnsMap == null)
-      knownOldSpawnsMap = new HashMap<>();
-
-    WorldPoint toRemove = null;
-    for (WorldPoint wp : knownOldSpawnsMap.keySet()) {
-      if (wp.getX() == event.getTile().getWorldLocation().getX())
-        if (wp.getY() == event.getTile().getWorldLocation().getY())
-          if (wp.getPlane() == event.getTile().getWorldLocation().getPlane())
-          {
-            toRemove = wp;
-            break;
-          }
-    }
-
-    knownOldSpawnsMap.remove(toRemove);
-    gameObjects.put(event.getOldObject().getId(), knownOldSpawnsMap);
-
-    HashMap<WorldPoint, GameObject> knownNewSpawnsMap = gameObjects.get(event.getNewObject().getId());
-    if (knownNewSpawnsMap == null)
-      knownNewSpawnsMap = new HashMap<>();
-
-    knownNewSpawnsMap.put(event.getTile().getWorldLocation(), event.getNewObject());
-    gameObjects.put(event.getNewObject().getId(), knownNewSpawnsMap);
+  private void onGameObjectChanged(GameObjectChanged event) {
+    resetGameObjects();
   }
 
   @Subscribe
-  public void onGameObjectDespawned(GameObjectDespawned event) {
-    HashMap<WorldPoint, GameObject> knownSpawnsMap = gameObjects.get(event.getGameObject().getId());
-    if (knownSpawnsMap == null)
-      knownSpawnsMap = new HashMap<>();
-
-    WorldPoint toRemove = null;
-    for (WorldPoint wp : knownSpawnsMap.keySet()) {
-      if (wp.getX() == event.getTile().getWorldLocation().getX())
-        if (wp.getY() == event.getTile().getWorldLocation().getY())
-          if (wp.getPlane() == event.getTile().getWorldLocation().getPlane())
-          {
-            toRemove = wp;
-            break;
-          }
-    }
-
-    knownSpawnsMap.remove(toRemove);
-    gameObjects.put(event.getGameObject().getId(), knownSpawnsMap);
+  private void onGameObjectDespawned(GameObjectDespawned event) {
+    resetGameObjects();
   }
 
   @Subscribe
-  public void onNPCSpawned(NpcSpawned event) {
+  private void onNPCSpawned(NpcSpawned event) {
     List<NPC> knownSpawns = npcs.get(event.getNpc().getId());
     if (knownSpawns == null)
       knownSpawns = new ArrayList<>();
@@ -197,7 +170,7 @@ public class OSRSUtils {
   }
 
   @Subscribe
-  public void onNPCDespawned(NpcDespawned event) {
+  private void onNPCDespawned(NpcDespawned event) {
     List<NPC> knownSpawns = npcs.get(event.getNpc().getId());
     if (knownSpawns == null)
       knownSpawns = new ArrayList<>();
@@ -224,5 +197,24 @@ public class OSRSUtils {
 
     knownSpawns.remove(event.getItem());
     loot.put(event.getItem().getId(), knownSpawns);
+  }
+
+  // This is done to ensure a solid GameObject map
+  private void resetGameObjects() {
+    gameObjects.clear();
+    for (Tile[][] ttt : client.getScene().getTiles())
+      for (Tile[] tt : ttt)
+        for (Tile t : tt)
+          if (t != null)
+            if (t.getGameObjects() != null)
+              for (GameObject gameObject : t.getGameObjects())
+                if (gameObject != null) {
+                  HashMap<WorldPoint, GameObject> knownSpawnsMap = gameObjects.get(gameObject.getId());
+                  if (knownSpawnsMap == null)
+                    knownSpawnsMap = new HashMap<>();
+
+                  knownSpawnsMap.put(t.getWorldLocation(), gameObject);
+                  gameObjects.put(gameObject.getId(), knownSpawnsMap);
+                }
   }
 }

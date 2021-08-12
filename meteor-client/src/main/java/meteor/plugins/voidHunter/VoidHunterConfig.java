@@ -17,8 +17,7 @@ public interface VoidHunterConfig extends Config {
       description = "",
       position = 150
   )
-  default Button startButton()
-  {
+  default Button startButton() {
     return new Button();
   }
 }

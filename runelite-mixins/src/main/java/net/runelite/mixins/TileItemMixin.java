@@ -1,12 +1,12 @@
 package net.runelite.mixins;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import net.runelite.api.MenuAction;
+import net.runelite.api.Point;
 import net.runelite.api.Tile;
+import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ItemQuantityChanged;
 import net.runelite.api.mixins.FieldHook;
 import net.runelite.api.mixins.Inject;
@@ -94,8 +94,24 @@ public abstract class TileItemMixin implements RSTileItem {
   @Inject
   @Override
   public int getDistanceFromLocalPlayer() {
-    //Manhatten
-    return Math.max((client.getLocalPlayer().getLocalLocation().getX() - getX()),(client.getLocalPlayer().getLocalLocation().getY() - getY()));
+    //Mancrappen :tm:
+    int distanceX;
+    int distanceY;
+    Tile localTile = client.getScene().getTiles()[client.getPlane()][rl$sceneX][rl$sceneY];
+    LocalPoint tileLocalLocation = localTile.getLocalLocation();
+    LocalPoint localPlayerPosition = client.getLocalPlayer().getLocalLocation();
+
+    if (tileLocalLocation.getX() > localPlayerPosition.getX())
+      distanceX = tileLocalLocation.getX() - localPlayerPosition.getX();
+    else
+      distanceX = localPlayerPosition.getX() - tileLocalLocation.getX();
+
+    if (tileLocalLocation.getY() > localPlayerPosition.getY())
+      distanceY = tileLocalLocation.getY() - localPlayerPosition.getY();
+    else
+      distanceY = localPlayerPosition.getY() - tileLocalLocation.getY();
+
+    return (distanceX + distanceY) / 2;
   }
 
   @Override
