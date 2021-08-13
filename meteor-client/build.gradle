@@ -1,7 +1,12 @@
 plugins {
     id 'java'
     id 'application'
-    id "com.github.johnrengelman.shadow" version "5.2.0"
+    id 'org.openjfx.javafxplugin' version '0.0.10'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+}
+
+shadowJar {
+    zip64 true
 }
 
 group 'org.meteorlite'
@@ -29,8 +34,9 @@ dependencies {
     implementation(project(":http-api"))
     implementation(project(":runelite-annotations"))
     compileOnly(project(":runescape-client"))
-    implementation group: 'de.jensd', name: 'fontawesomefx', version: '8.9'
-    implementation 'com.jfoenix:jfoenix:8.0.10'
+    implementation group: 'de.jensd', name: 'fontawesomefx-commons', version: '9.1.2'
+    implementation group: 'de.jensd', name: 'fontawesomefx-fontawesome', version: '4.7.0-9.1.2'
+    implementation 'com.jfoenix:jfoenix:9.0.10'
     implementation group: 'org.jetbrains', name: 'annotations', version: '21.0.1'
     runtimeOnly(files("../openosrs-injector/build/injected/injected-client.jar"))
     compileOnly 'org.projectlombok:lombok:1.18.20'
@@ -58,7 +64,6 @@ dependencies {
     runtimeOnly(group: "net.runelite.jogl", name: "jogl-all-natives-macosx", version: "2.4.0-rc-20210117")
     runtimeOnly(group: "net.runelite.jocl", name: "jocl", version: "1.0", classifier: "macos-x64")
     runtimeOnly(group: "net.runelite.jocl", name: "jocl", version: "1.0", classifier: "macos-arm64")
-    runtimeOnly(project(":meteor-mixins"))
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     implementation group: 'com.google.guava', name: 'guava', version: '23.2-jre'
@@ -77,23 +82,9 @@ tasks.withType(JavaCompile) {
 tasks {
     compileJava.dependsOn project(":fernflower").tasks.getByName("decompileInjected")
     compileJava.dependsOn(":runelite-mixins:compileJava")
-    tasks.getByPath(":meteor-client:run").dependsOn(":meteor-agent:jar")
 }
 
-applicationDefaultJvmArgs = [
-        "-javaagent:../meteor-agent/build/libs/meteor-agent-1.0-SNAPSHOT.jar=agent.MixinAgentBootstrap;",
-        "-noverify",
-        "-XX:+DisableAttachMechanism",
-        "-Xmx1G",
-        "-Xss2m",
-        "-XX:CompileThreshold=1500",
-        "-Xincgc",
-        "-XX:+UseConcMarkSweepGC",
-        "-XX:+UseParNewGC",
-        "-Djna.nosys=true",
-        "-Dsun.java2d.uiScale=1.0",
-        "-Dprism.allowhidpi=false",
-        "-Dsun.awt.noerasebackground=true"]
+
 
 application {
     mainClass.set("meteor.MeteorLiteClientLauncher")
@@ -108,6 +99,44 @@ test {
     useJUnitPlatform()
 }
 
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'meteor.MeteorLiteClientLauncher'
+        )
+    }
+}
+
 mainClassName = 'meteor.MeteorLiteClientLauncher'
+
+javafx {
+    modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.swing', 'javafx.graphics', 'javafx.media']
+    applicationDefaultJvmArgs = [
+            "-noverify",
+            "-Dprism.allowhidpi=false",
+            "-Dsun.awt.noerasebackground=true",
+            "--module-path=C:/Program Files/Java/javafx-sdk-11.0.2/lib",
+            "--add-modules=javafx.media",
+            "--add-modules=javafx.fxml",
+            "--add-modules=javafx.swing",
+            "--add-modules=javafx.graphics",
+            "--add-exports=javafx.base/com.sun.javafx=ALL-UNNAMED",
+            "--add-exports=javafx.base/com.sun.javafx.binding=ALL-UNNAMED",
+            "--add-exports=javafx.base/com.sun.javafx.collections=ALL-UNNAMED",
+            "--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED",
+            "--add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED",
+            "--add-exports=javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED",
+            "--add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED",
+            "--add-exports=javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED",
+            "--add-exports=javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED",
+            "--add-exports=javafx.graphics/com.sun.javafx.scene.layout=ALL-UNNAMED",
+            "--add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED",
+            "--add-exports=javafx.graphics/com.sun.javafx.scene.text=ALL-UNNAMED",
+            "--add-exports=javafx.graphics/com.sun.javafx.scene.traversal=ALL-UNNAMED",
+            "--add-exports=javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED",
+            "--add-exports=javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED",
+            "--add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED",
+            "-Dsun.java2d.uiScale=1.0"]
+}
 
 

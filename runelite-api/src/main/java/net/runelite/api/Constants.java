@@ -82,6 +82,7 @@ public class Constants {
   public static final int MAX_Z = 4;
 
   public static final int TILE_FLAG_BRIDGE = 2;
+  public static final int TILE_FLAG_UNDER_ROOF = 4;
 
   /**
    * The height of the overworld, in tiles. Coordinates above this are in caves and other such

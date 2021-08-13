@@ -67,7 +67,7 @@ public class AgilityPlugin extends Plugin {
 
   @Subscribe
   public void onGameObjectChanged(GameObjectChanged event) {
-    onTileObject(event.getTile(), event.getPrevious(), event.getGameObject());
+    onTileObject(event.getTile(), event.getOldObject(), event.getNewObject());
   }
 
   @Subscribe

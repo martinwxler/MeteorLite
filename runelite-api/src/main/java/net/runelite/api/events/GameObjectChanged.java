@@ -41,9 +41,9 @@ public class GameObjectChanged {
   /**
    * The game object that has been replaced.
    */
-  private GameObject previous;
+  private GameObject oldObject;
   /**
    * The new game object on the tile.
    */
-  private GameObject gameObject;
+  private GameObject newObject;
 }

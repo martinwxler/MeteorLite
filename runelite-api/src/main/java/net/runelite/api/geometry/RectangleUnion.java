@@ -33,9 +33,11 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.sponge.util.Logger;
 
-@Slf4j
 public class RectangleUnion {
+
+  static Logger log = new Logger("api-geom");
 
   private RectangleUnion() {
   }
@@ -50,8 +52,6 @@ public class RectangleUnion {
     if (lefts.size() == 0) {
       return null;
     }
-
-    boolean trace = log.isTraceEnabled();
 
     // Sort all of the rectangles so they are ordered by their left edge
     lefts.sort(Comparator.comparing(Rectangle::getX1));
@@ -94,9 +94,6 @@ public class RectangleUnion {
         l++;
         rect = lr;
       }
-      if (trace) {
-        log.trace("{}{}", remove ? "-" : "+", rect);
-      }
 
       int y1 = rect.y1;
       int y2 = rect.y2;
@@ -120,18 +117,6 @@ public class RectangleUnion {
         n = n.next;
         if (n.y == y2) {
           cs.finish(n);
-
-          if (trace) {
-            for (Segment s = segments.first; s != null; s = s.next) {
-              String chunk = "";
-              if (s.chunk != null) {
-                chunk =
-                    (s.left ? ">" : "[") + System.identityHashCode(s.chunk) + (s.left ? "]" : "<");
-              }
-              log.trace("{} = {} {}", s.y, s.value, chunk);
-            }
-            log.trace("");
-          }
           break;
         }
       }
@@ -198,17 +183,13 @@ public class RectangleUnion {
             rightChunk = s.chunk;
           }
 
-          log.trace("Joining {} onto {}", System.identityHashCode(rightChunk),
-              System.identityHashCode(leftChunk));
           if (first.left == s.left) {
-            log.trace("reverse");
             if (first.left) {
               leftChunk.reverse();
             } else {
               rightChunk.reverse();
             }
           }
-          log.trace("{} {}", first.y, s.y);
           rightChunk.appendTo(leftChunk);
 
           first.chunk = null;

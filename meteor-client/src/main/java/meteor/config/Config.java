@@ -26,4 +26,5 @@ package meteor.config;
 
 public interface Config {
 
+  default void test() { }
 }

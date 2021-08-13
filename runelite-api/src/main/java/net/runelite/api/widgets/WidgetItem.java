@@ -25,11 +25,20 @@
 package net.runelite.api.widgets;
 
 import java.awt.Rectangle;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
+import net.runelite.api.Client;
+import net.runelite.api.GameObject;
+import net.runelite.api.MenuAction;
+import net.runelite.api.NPC;
 import net.runelite.api.Point;
+import net.runelite.api.events.InvokeMenuActionEvent;
 
 /**
  * An item that is being represented in a {@link Widget}.
@@ -38,6 +47,8 @@ import net.runelite.api.Point;
 @ToString
 @Getter
 public class WidgetItem {
+
+  private final Client client;
 
   /**
    * The ID of the item represented.
@@ -54,7 +65,7 @@ public class WidgetItem {
    *
    * @see Widget#getWidgetItems()
    */
-  private final int index;
+  private final int slot;
   /**
    * The area where the widget is drawn on the canvas.
    */
@@ -99,4 +110,71 @@ public class WidgetItem {
     return new Point((int) bounds.getX(), (int) bounds.getY());
   }
 
+  public List<String> actions() {
+    return Arrays
+        .stream(client.getItemComposition(getId()).getInventoryActions()).filter(Objects::nonNull).collect(Collectors.toList());
+  }
+
+  public void interact(String action) {
+    String[] actions = client.getItemComposition(getId()).getInventoryActions();
+
+    for (int i = 0; i < actions.length; i++) {
+      if (action.equalsIgnoreCase(actions[i])) {
+        interact(i);
+        return;
+      }
+    }
+
+    throw new IllegalArgumentException("no action \"" + action + "\" on item " + getId());
+  }
+
+  private int getActionId(int action) {
+    switch (action) {
+      case 0:
+        return MenuAction.ITEM_FIRST_OPTION.getId();
+      case 1:
+        return MenuAction.ITEM_SECOND_OPTION.getId();
+      case 2:
+        return MenuAction.ITEM_THIRD_OPTION.getId();
+      case 3:
+        return MenuAction.ITEM_FOURTH_OPTION.getId();
+      case 4:
+        return MenuAction.ITEM_FIFTH_OPTION.getId();
+      default:
+        throw new IllegalArgumentException("action = " + action);
+    }
+  }
+
+  public void interact(int action) {
+    client.interact(
+        getId(),
+        getActionId(action),
+        getSlot(),
+        WidgetInfo.INVENTORY.getId()
+    );
+  }
+
+  public void useOn(WidgetItem item) {
+    client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+    client.setSelectedItemSlot(getSlot());
+    client.setSelectedItemID(getId());
+    client.invokeMenuAction("", "", getId(),
+        MenuAction.ITEM_USE_ON_WIDGET_ITEM.getId(), getSlot(), WidgetInfo.INVENTORY.getId());
+  }
+
+  public void useOn(GameObject object) {
+    client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+    client.setSelectedItemSlot(getSlot());
+    client.setSelectedItemID(getId());
+    client.invokeMenuAction("", "", object.getId(),
+        MenuAction.ITEM_USE_ON_GAME_OBJECT.getId(), object.menuPoint().getX(), object.menuPoint().getY());
+  }
+
+  public void useOn(NPC npc) {
+    client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+    client.setSelectedItemSlot(getSlot());
+    client.setSelectedItemID(getId());
+    client.invokeMenuAction("", "", npc.getIndex(),
+        MenuAction.ITEM_USE_ON_NPC.getId(), 0, 0);
+  }
 }

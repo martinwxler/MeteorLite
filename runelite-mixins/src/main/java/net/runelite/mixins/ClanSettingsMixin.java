@@ -49,7 +49,7 @@ public abstract class ClanSettingsMixin implements RSClanSettings
 		int memberCount = getMemberCount();
 		String[] memberNames = getMemberNames();
 		byte[] memberRanks = getMemberRanks();
-		List<ClanMember> memberList = new ArrayList<>(memberCount);
+		List<ClanMember> memberList = new ArrayList<ClanMember>(memberCount);
 
 		for (int i = 0; i < memberCount; i++)
 		{

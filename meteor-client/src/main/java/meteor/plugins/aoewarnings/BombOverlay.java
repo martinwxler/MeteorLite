@@ -37,8 +37,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import meteor.PluginManager;
 import meteor.config.ConfigManager;
-import meteor.plugins.Plugin;
-import meteor.plugins.iutils.iUtils;
 import meteor.ui.overlay.Overlay;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayUtil;

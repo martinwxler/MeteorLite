@@ -60,9 +60,11 @@ import meteor.config.ConfigManager;
 import meteor.config.RuneLiteConfig;
 import meteor.eventbus.DeferredEventBus;
 import meteor.eventbus.EventBus;
+import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ClientShutdown;
 import meteor.plugins.itemstats.ItemStatChangesService;
 import meteor.plugins.itemstats.ItemStatChangesServiceImpl;
+import meteor.ui.controllers.ToolbarFXMLController;
 import meteor.ui.overlay.OverlayManager;
 import meteor.ui.overlay.WidgetOverlay;
 import meteor.ui.overlay.tooltip.TooltipOverlay;
@@ -70,6 +72,7 @@ import meteor.ui.overlay.worldmap.WorldMapOverlay;
 import meteor.util.ExecutorServiceExceptionLogger;
 import meteor.util.NonScheduledExecutorServiceExceptionLogger;
 import net.runelite.api.Client;
+import net.runelite.api.events.GameTick;
 import net.runelite.api.hooks.Callbacks;
 import net.runelite.http.api.chat.ChatClient;
 import okhttp3.OkHttpClient;
@@ -120,7 +123,14 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
   public static boolean pluginsPanelVisible = false;
   static Parent pluginsRoot;
   static Parent toolbarRoot;
-  static Parent hudbarRoot;
+
+  @Subscribe
+  public void onGameTick(GameTick event) {
+    if (client.getLocalPlayer().isIdle())
+      ToolbarFXMLController.idleButtonInstance.setVisible(true);
+    else
+      ToolbarFXMLController.idleButtonInstance.setVisible(false);
+  }
 
   @Provides
   @Named("rightPanelScene")
@@ -149,6 +159,7 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
 
     configManager.load();
     pluginManager.startInternalPlugins();
+
 
     overlayManager.add(tooltipOverlay.get());
 
@@ -197,22 +208,16 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
     rightPanel.setSize(550, 800);
 
     JPanel gamePanel = new JPanel();
-    JFXPanel hudbarPanel = new JFXPanel();
     toolbarRoot = FXMLLoader.load(
         Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("toolbar.fxml")));
-    hudbarRoot = FXMLLoader.load(
-        Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("hudbar.fxml")));
 
     toolbarPanel.setScene(new Scene(toolbarRoot, 300, 33));
     toolbarPanel.setVisible(true);
-    hudbarPanel.setScene(new Scene(hudbarRoot, 300, 75));
-    hudbarPanel.setVisible(true);
     rightPanel.setVisible(false);
     gamePanel.setLayout(new BorderLayout());
     gamePanel.add(applet, BorderLayout.CENTER);
     rootPanel.add(gamePanel, BorderLayout.CENTER);
     rootPanel.add(toolbarPanel, BorderLayout.NORTH);
-    rootPanel.add(hudbarPanel, BorderLayout.SOUTH);
     rootPanel.add(rightPanel, BorderLayout.EAST);
     instanceFrame.add(rootPanel);
     rootPanel.setVisible(true);
@@ -409,7 +414,6 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
     bind(ItemStatChangesService.class).to(ItemStatChangesServiceImpl.class);
     bind(Logger.class).toInstance(logger);
   }
-
 
   @com.google.inject.name.Named("config")
   @Provides

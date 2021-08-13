@@ -129,7 +129,7 @@ public abstract class ModelMixin implements RSModel {
     int[] trianglesZ = getTrianglesZ();
 
     List<Vertex> vertices = getVertices();
-    List<Triangle> triangles = new ArrayList<>(getTrianglesCount());
+    List<Triangle> triangles = new ArrayList<Triangle>(getTrianglesCount());
 
     for (int i = 0; i < getTrianglesCount(); ++i) {
       int triangleX = trianglesX[i];

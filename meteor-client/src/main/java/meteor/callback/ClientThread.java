@@ -32,6 +32,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 import java.util.function.BooleanSupplier;
 import javax.inject.Singleton;
+import meteor.eventbus.EventBus;
+import meteor.eventbus.Subscribe;
+import net.runelite.api.events.InvokeMenuActionEvent;
 import net.runelite.api.Client;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,10 +46,17 @@ public class ClientThread implements Executor {
   private final Client client;
 
   @Inject
-  private ClientThread(Client client) {
+  private ClientThread(Client client, EventBus eventBus) {
     this.client = client;
+    eventBus.register(this);
 
     RxJavaPlugins.setSingleSchedulerHandler(old -> Schedulers.from(this));
+  }
+
+  @Subscribe
+  public void onInvokeMenuAction(InvokeMenuActionEvent event) {
+    invoke(() -> client.invokeMenuAction(event.getOption(), event.getTarget(), event.getId(),
+        event.getOpcode(), event.getParam0(), event.getParam1()));
   }
 
   @Override

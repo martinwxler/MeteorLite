@@ -27,6 +27,7 @@ package net.runelite.api;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Shape;
+import java.util.List;
 import javax.annotation.Nullable;
 import net.runelite.api.coords.LocalPoint;
 
@@ -112,4 +113,16 @@ public interface TileObject extends Locatable {
    * Gets the menu actions of the object
    */
   String[] getActions();
+
+
+
+  int getActionID(int action);
+
+  List<String> actions();
+
+  Point menuPoint();
+
+  void interact(String action);
+  void interact(int action);
+  void interact(final int identifier, final int opcode, final int param0, final int param1);
 }

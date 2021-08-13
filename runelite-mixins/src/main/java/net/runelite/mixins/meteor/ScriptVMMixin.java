@@ -169,7 +169,7 @@ public abstract class ScriptVMMixin implements RSClient {
 
     Object[] args = event.getArguments();
     if (assertionsEnabled && args[0] instanceof Integer) {
-      int scriptId = (int) args[0];
+      int scriptId = (Integer) args[0];
       RSScript script = (RSScript) client.getScriptCache().get$api(scriptId);
 
       if (script != null) {

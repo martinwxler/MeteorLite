@@ -56,7 +56,7 @@ public class ShopItemQuery extends WidgetItemQuery {
         Rectangle bounds = child.getBounds();
         bounds.setBounds(bounds.x - 1, bounds.y - 1, 32, 32);
         widgetItems.add(
-            new WidgetItem(child.getItemId(), child.getItemQuantity(), i - 1, bounds, child,
+            new WidgetItem(client, child.getItemId(), child.getItemQuantity(), i - 1, bounds, child,
                 null)); // todo: maybe this shouldnt just be "false"
       }
     }

@@ -41,12 +41,17 @@ import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
 import net.runelite.api.WidgetNode;
 import net.runelite.api.WorldType;
+import net.runelite.api.clan.ClanChannel;
+import net.runelite.api.clan.ClanRank;
+import net.runelite.api.clan.ClanSettings;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.CanvasSizeChanged;
 import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.ClanChannelChanged;
 import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.InvokeMenuActionEvent;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.NpcSpawned;
@@ -109,15 +114,15 @@ public abstract class ClientMixin implements RSClient {
   @Inject
   private static boolean hdMinimapEnabled = false;
   @Inject
-  private static ArrayList<WidgetItem> widgetItems = new ArrayList<>();
+  private static ArrayList<WidgetItem> widgetItems = new ArrayList<WidgetItem>();
   @Inject
-  private static ArrayList<Widget> hiddenWidgets = new ArrayList<>();
+  private static ArrayList<Widget> hiddenWidgets = new ArrayList<Widget>();
   @Inject
   private static boolean interpolateWidgetAnimations;
   @Inject
   private static int oldMenuEntryCount;
   @Inject
-  private final ArrayList<String> outdatedScripts = new ArrayList<>();
+  private final ArrayList<String> outdatedScripts = new ArrayList<String>();
   @Inject
   boolean occluderEnabled = false;
   @Inject
@@ -283,7 +288,7 @@ public abstract class ClientMixin implements RSClient {
         final int renderX = x + widget.getRelativeX();
         final int renderY = y + widget.getRelativeY();
         if (renderX >= minX && renderX <= maxX && renderY >= minY && renderY <= maxY) {
-          WidgetItem widgetItem = new WidgetItem(widget.getItemId(), widget.getItemQuantity(), -1,
+          WidgetItem widgetItem = new WidgetItem(client, widget.getItemId(), widget.getItemQuantity(), -1,
               widget.getBounds(), widget, null);
           widgetItems.add(widgetItem);
         }
@@ -335,7 +340,7 @@ public abstract class ClientMixin implements RSClient {
   }
 
   @Inject
-  public static HashMap<Skill, Integer> oldXpMap = new HashMap<>();
+  public static HashMap<Skill, Integer> oldXpMap = new HashMap<Skill, Integer>();
 
   @FieldHook("experience")
   @Inject
@@ -603,7 +608,7 @@ public abstract class ClientMixin implements RSClient {
   @Inject
   @Override
   public List<Projectile> getProjectiles() {
-    List<Projectile> projectiles = new ArrayList<>();
+    List<Projectile> projectiles = new ArrayList<Projectile>();
     RSNodeDeque projectileDeque = this.getProjectilesDeque();
     net.runelite.api.Node head = projectileDeque.getSentinel();
 
@@ -617,7 +622,7 @@ public abstract class ClientMixin implements RSClient {
   @Inject
   @Override
   public List<GraphicsObject> getGraphicsObjects() {
-    List<GraphicsObject> graphicsObjects = new ArrayList<>();
+    List<GraphicsObject> graphicsObjects = new ArrayList<GraphicsObject>();
     RSNodeDeque graphicsObjectDeque = this.getGraphicsObjectDeque();
     net.runelite.api.Node head = graphicsObjectDeque.getSentinel();
 
@@ -1128,7 +1133,7 @@ public abstract class ClientMixin implements RSClient {
     assert isClientThread() : "getEnum must be called on client thread";
 
     if (enumCache == null)
-      enumCache = new HashMap<>();
+      enumCache = new HashMap<Integer, RSEnumComposition>();
 
     RSEnumComposition rsEnumDefinition;
     if (enumCache.containsKey(id))
@@ -1304,5 +1309,122 @@ public abstract class ClientMixin implements RSClient {
     }
 
     return widgets[groupId];
+  }
+
+  @Inject
+  @Override
+  public int getVarpValue(int[] varps, int varpId)
+  {
+    return varps[varpId];
+  }
+
+  @Inject
+  @Override
+  public int getVarpValue(int varpId)
+  {
+    return getVarpValue(getVarps(), varpId);
+  }
+
+  @Inject
+  @Override
+  public ClanChannel getClanChannel()
+  {
+    return getCurrentClanChannels()[0];
+  }
+
+  @Inject
+  @Override
+  public ClanSettings getClanSettings()
+  {
+    return getCurrentClanSettingsAry()[0];
+  }
+
+  @Inject
+  @Override
+  public ClanRank getClanRankFromRs(int rank)
+  {
+    switch (rank)
+    {
+      case -1:
+        return ClanRank.GUEST;
+      case 10:
+        return ClanRank.CLAN_RANK_2;
+      case 20:
+        return ClanRank.CLAN_RANK_3;
+      case 30:
+        return ClanRank.CLAN_RANK_4;
+      case 40:
+        return ClanRank.CLAN_RANK_5;
+      case 50:
+        return ClanRank.CLAN_RANK_6;
+      case 60:
+        return ClanRank.CLAN_RANK_7;
+      case 70:
+        return ClanRank.CLAN_RANK_8;
+      case 80:
+        return ClanRank.CLAN_RANK_9;
+      case 90:
+        return ClanRank.CLAN_RANK_10;
+      case 100:
+        return ClanRank.ADMINISTRATOR;
+      case 105:
+        return ClanRank.CLAN_RANK_11;
+      case 110:
+        return ClanRank.CLAN_RANK_12;
+      case 115:
+        return ClanRank.CLAN_RANK_13;
+      case 120:
+        return ClanRank.CLAN_RANK_14;
+      case 125:
+        return ClanRank.DEPUTY_OWNER;
+      case 126:
+        return ClanRank.OWNER;
+      case 127:
+        return ClanRank.JMOD;
+      default:
+        return ClanRank.CLAN_RANK_1;
+    }
+  }
+
+  @Inject
+  @FieldHook("guestClanChannel")
+  public static void onGuestClanChannelChanged(int idx)
+  {
+    client.getCallbacks().post(new ClanChannelChanged(client.getGuestClanChannel(), true));
+  }
+
+  @Inject
+  @FieldHook("currentClanChannels")
+  public static void onCurrentClanChannelsChanged(int idx)
+  {
+    if (idx == -1)
+    {
+      return;
+    }
+
+    client.getCallbacks().post(new ClanChannelChanged(client.getClanChannel(), false));
+  }
+
+  @Inject
+  @Override
+  public void interact(final int identifier, final int opcode, final int param0, final int param1) {
+    client.getCallbacks()
+        .post(new InvokeMenuActionEvent("", "", identifier, opcode, param0, param1));
+  }
+
+  @Inject
+  @Override
+  public long getOverallExperience()
+  {
+    int[] experiences = getSkillExperiences();
+
+    long totalExperience = 0L;
+
+    for (int experience : experiences)
+    {
+      totalExperience += experience;
+    }
+
+    return totalExperience;
   }
 }

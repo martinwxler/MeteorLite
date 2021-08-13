@@ -37,8 +37,6 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
 import javax.inject.Inject;
-
-import lombok.var;
 import meteor.PluginManager;
 import meteor.callback.ClientThread;
 import meteor.eventbus.Subscribe;

@@ -292,6 +292,8 @@ public class HunterPlugin extends Plugin {
       }
 
       Tile tile = tiles[world.getPlane()][local.getSceneX()][local.getSceneY()];
+      if (tile == null)
+        return;
       GameObject[] objects = tile.getGameObjects();
 
       boolean containsBoulder = false;

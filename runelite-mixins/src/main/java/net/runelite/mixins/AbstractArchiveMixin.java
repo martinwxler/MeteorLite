@@ -59,7 +59,7 @@ public abstract class AbstractArchiveMixin implements RSAbstractArchive {
 
     if (scriptNames == null) {
       try {
-        scriptNames = new HashMap<>();
+        scriptNames = new HashMap<String, String>();
         InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("scripts/");
         if (is != null) {
           List<String> files = IOUtils.readLines(is, Charsets.UTF_8);
@@ -90,9 +90,12 @@ public abstract class AbstractArchiveMixin implements RSAbstractArchive {
     if (rsData != null) {
       String overlayHash, originalHash;
 
-      try (final InputStream hashIn = getClass().getResourceAsStream(path + ".hash")) {
+
+      try {
+        InputStream hashIn = getClass().getResourceAsStream(path + ".hash");
         overlayHash = CharStreams.toString(new InputStreamReader(hashIn));
         originalHash = Hashing.sha256().hashBytes(rsData).toString();
+        hashIn.close();
       } catch (IOException e) {
         log.warn("Missing overlay hash for " + archiveId + "/" + groupId);
         return rsData;
@@ -108,7 +111,8 @@ public abstract class AbstractArchiveMixin implements RSAbstractArchive {
       }
     }
 
-    try (final InputStream ovlIn = getClass().getResourceAsStream(path)) {
+    try {
+      final InputStream ovlIn = getClass().getResourceAsStream(path);
       return ByteStreams.toByteArray(ovlIn);
     } catch (IOException e) {
       log.warn("Missing overlay data for " + archiveId + "/" + groupId);

@@ -101,7 +101,7 @@ public class PrayerPotDrinkerPlugin extends Plugin
                                 "<col=ff9040>Potion",
                                 restoreItem.getId(),
                                 MenuAction.ITEM_FIRST_OPTION.getId(),
-                                restoreItem.getIndex(),
+                                restoreItem.getSlot(),
                                 WidgetInfo.INVENTORY.getId()
                         )
                 );

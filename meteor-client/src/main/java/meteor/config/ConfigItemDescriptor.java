@@ -34,6 +34,7 @@ public class ConfigItemDescriptor implements ConfigObject {
   private final Range range;
   private final Alpha alpha;
   private final Units units;
+  private final Icon icon;
 
   @Override
   public String key() {

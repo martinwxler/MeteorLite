@@ -11,6 +11,8 @@ import meteor.config.Config;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
 import meteor.plugins.Plugin;
+import meteor.plugins.PluginDependency;
+import meteor.plugins.PluginDescriptor;
 import meteor.plugins.actions.ActionPlugin;
 import meteor.plugins.agility.AgilityPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
@@ -21,13 +23,13 @@ import meteor.plugins.betterantidrag.BetterAntiDragPlugin;
 import meteor.plugins.betterroguesden.BetterRougesDenPlugin;
 import meteor.plugins.blastfurnace.BlastFurnacePlugin;
 import meteor.plugins.boosts.BoostsPlugin;
-import meteor.plugins.cakeyoinker.CakeYoinkerPlugin;
 import meteor.plugins.camera.CameraPlugin;
 import meteor.plugins.cannon.CannonPlugin;
 import meteor.plugins.cannonreloader.CannonReloaderPlugin;
 import meteor.plugins.chatcommands.ChatCommandsPlugin;
 import meteor.plugins.cluescrolls.ClueScrollPlugin;
 import meteor.plugins.combatlevel.CombatLevelPlugin;
+import meteor.plugins.devtools.DevToolsPlugin;
 import meteor.plugins.fairyring.FairyRingPlugin;
 import meteor.plugins.fishing.FishingPlugin;
 import meteor.plugins.fps.FpsPlugin;
@@ -40,12 +42,10 @@ import meteor.plugins.implings.ImplingsPlugin;
 import meteor.plugins.interacthighlight.InteractHighlightPlugin;
 import meteor.plugins.inventorygrid.InventoryGridPlugin;
 import meteor.plugins.itemcharges.ItemChargePlugin;
-import meteor.plugins.itemdropper.ItemDropperPlugin;
 import meteor.plugins.itemidentification.ItemIdentificationPlugin;
 import meteor.plugins.itemprices.ItemPricesPlugin;
 import meteor.plugins.itemstats.ItemStatPlugin;
 import meteor.plugins.itemuser.ItemUserPlugin;
-import meteor.plugins.iutils.iUtils;
 import meteor.plugins.kourendlibrary.KourendLibraryPlugin;
 import meteor.plugins.leftclickcast.LeftClickCast;
 import meteor.plugins.lowdetail.LowDetailPlugin;
@@ -73,15 +73,19 @@ import meteor.plugins.runenergy.RunEnergyPlugin;
 import meteor.plugins.runepouch.RunepouchPlugin;
 import meteor.plugins.slayer.SlayerPlugin;
 import meteor.plugins.smithing.SmithingPlugin;
+import meteor.plugins.statusbars.StatusBarsPlugin;
 import meteor.plugins.stretchedmode.StretchedModePlugin;
 import meteor.plugins.tearsofguthix.TearsOfGuthixPlugin;
 import meteor.plugins.ticktimers.TickTimersPlugin;
 import meteor.plugins.tileindicators.TileIndicatorsPlugin;
 import meteor.plugins.timers.TimersPlugin;
-import meteor.plugins.timestamp.TimestampPlugin;
+import meteor.plugins.timestamp.ChatTimestampPlugin;
 import meteor.plugins.tithefarm.TitheFarmPlugin;
+import meteor.plugins.voidHunter.VoidHunterPlugin;
 import meteor.plugins.woodcutting.WoodcuttingPlugin;
 import meteor.plugins.worldmap.WorldMapPlugin;
+import meteor.plugins.xpglobes.XpGlobesPlugin;
+import meteor.plugins.xptracker.XpTrackerPlugin;
 import meteor.plugins.zulrah.ZulrahPlugin;
 
 public class PluginManager {
@@ -99,7 +103,6 @@ public class PluginManager {
   }
 
   public static List<Plugin> plugins = new ArrayList<>();
-  private static iUtils iUtils = new iUtils();
 
   private void initPlugins() {
     plugins.add(new AgilityPlugin());
@@ -112,14 +115,14 @@ public class PluginManager {
     plugins.add(new BlastFurnacePlugin());
     plugins.add(new BoostsPlugin());
     plugins.add(new TickTimersPlugin());
-    plugins.add(new CakeYoinkerPlugin());
     plugins.add(new CameraPlugin());
     plugins.add(new CannonPlugin());
     plugins.add(new CannonReloaderPlugin());
     plugins.add(new ChatCommandsPlugin());
-    plugins.add(new TimestampPlugin());
+    plugins.add(new ChatTimestampPlugin());
     plugins.add(new ClueScrollPlugin());
     plugins.add(new CombatLevelPlugin());
+    plugins.add(new DevToolsPlugin());
     plugins.add(new FairyRingPlugin());
     plugins.add(new FishingPlugin());
     plugins.add(new FpsPlugin());
@@ -132,7 +135,6 @@ public class PluginManager {
     plugins.add(new InteractHighlightPlugin());
     plugins.add(new InventoryGridPlugin());
     plugins.add(new ItemChargePlugin());
-    plugins.add(new ItemDropperPlugin());
     plugins.add(new ItemPricesPlugin());
     plugins.add(new ItemStatPlugin());
     plugins.add(new ItemIdentificationPlugin());
@@ -164,16 +166,18 @@ public class PluginManager {
     plugins.add(new RunecraftPlugin());
     plugins.add(new SlayerPlugin());
     plugins.add(new SmithingPlugin());
+    plugins.add(new StatusBarsPlugin());
     plugins.add(new StretchedModePlugin());
     plugins.add(new TileIndicatorsPlugin());
     plugins.add(new TimersPlugin());
     plugins.add(new TitheFarmPlugin());
     plugins.add(new TearsOfGuthixPlugin());
+    plugins.add(new VoidHunterPlugin());
     plugins.add(new WoodcuttingPlugin());
     plugins.add(new WorldMapPlugin());
+    plugins.add(new XpTrackerPlugin());
+    plugins.add(new XpGlobesPlugin());
     plugins.add(new ZulrahPlugin());
-
-    plugins.add(iUtils);
 
     plugins.add(new ActionPlugin());
   }
@@ -182,21 +186,20 @@ public class PluginManager {
     initPlugins();
     for (Plugin plugin : plugins) {
       Injector parent = meteorLiteClientModule.instanceInjector;
-
       List<Module> depModules = new ArrayList<>();
-      if (!plugin.getClass().isInstance(iUtils))
-      {
-        Module iUtilsModule = (Binder binder) ->
+      if (plugin.getClass().getAnnotation(PluginDependency.class) != null) {
+        Class<? extends Plugin> depClass = plugin.getClass().getAnnotation(PluginDependency.class).value();
+        Module depModule = (Binder binder) ->
         {
           try {
-            Plugin iUtilsInstance = iUtils.getClass().getDeclaredConstructor().newInstance();
-            binder.bind((Class<Plugin>) iUtilsInstance.getClass()).toInstance(iUtilsInstance);
-            binder.install(iUtilsInstance);
+            Plugin depInstance = depClass.getDeclaredConstructor().newInstance();
+            binder.bind((Class<Plugin>) depInstance.getClass()).toInstance(depInstance);
+            binder.install(depInstance);
           } catch (Exception e) {
             e.printStackTrace();
           }
         };
-        depModules.add(iUtilsModule);
+        depModules.add(depModule);
         parent = parent.createChildInjector(depModules);
       }
 
@@ -209,6 +212,15 @@ public class PluginManager {
       Injector pluginInjector = parent.createChildInjector(pluginModule);
       pluginInjector.injectMembers(plugin);
       plugin.setInjector(pluginInjector);
+      for (Key<?> key : plugin.getInjector().getBindings().keySet())
+      {
+        Class<?> type = key.getTypeLiteral().getRawType();
+        if (Config.class.isAssignableFrom(type))
+        {
+          Config config = (Config) plugin.getInjector().getInstance(key);
+          configManager.setDefaultConfiguration(config, false);
+        }
+      }
       plugin.toggle();
     }
   }

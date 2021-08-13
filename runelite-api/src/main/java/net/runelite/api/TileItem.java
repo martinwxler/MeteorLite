@@ -24,6 +24,8 @@
  */
 package net.runelite.api;
 
+import java.util.List;
+
 /**
  * Represents an item inside an {@link ItemLayer}.
  */
@@ -48,4 +50,16 @@ public interface TileItem extends Renderable {
    * @return the tile this item is on
    */
   Tile getTile();
+
+  int getDistanceFromLocalPlayer();
+
+  List<String> actions();
+
+  void interact(String action);
+
+  int getActionId(int action);
+
+  void interact(int action);
+
+  void pickup();
 }
