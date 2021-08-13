@@ -14,6 +14,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
@@ -206,15 +207,30 @@ public class PluginConfigUI {
 
   private void createButtonNode(ConfigDescriptor config, AnchorPane root, ConfigItemDescriptor configItem) {
     root.setMinSize(350, 56);
-    FontAwesomeIconView buttonIcon = new FontAwesomeIconView(configItem.getIcon().icon());
-    buttonIcon.setSize("11");
-    buttonIcon.setFill(javafx.scene.paint.Color.valueOf("CYAN"));
 
     JFXButton button = new JFXButton();
     button.setMinSize(100, 50);
     AnchorPane.setTopAnchor(button, 2.0);
     AnchorPane.setRightAnchor(button, 125.0);
     AnchorPane.setLeftAnchor(button, 125.0);
+    AtomicReference<FontAwesomeIcon> icon = new AtomicReference<>();
+
+    if (configItem.getIcon().canToggle())
+      if (plugin.isEnabled()) {
+        icon.set(configItem.getIcon().enabled());
+        button.setText("Stop");
+      }
+      else {
+        icon.set(configItem.getIcon().disabled());
+        button.setText("Start");
+      }
+    else
+      icon.set(configItem.getIcon().value());
+    FontAwesomeIconView buttonIcon = new FontAwesomeIconView(icon.get());
+
+    buttonIcon.setSize("11");
+    buttonIcon.setFill(javafx.scene.paint.Color.valueOf("CYAN"));
+
     button.setGraphic(buttonIcon);
     button.autosize();
     button.setStyle("-fx-background-color: #252525; -fx-text-fill: CYAN; -jfx-button-type: RAISED;");
@@ -222,8 +238,18 @@ public class PluginConfigUI {
     button.setText(configItem.name());
 
     button.pressedProperty().addListener((options, oldValue, pressed) -> {
-    if (pressed)
       client.getCallbacks().post(new ConfigButtonClicked(config.getGroup().value(), configItem.key()));
+      if (configItem.getIcon().canToggle())
+        if (plugin.isEnabled()) {
+          icon.set(configItem.getIcon().enabled());
+          button.setText("Stop");
+        }
+        else {
+          icon.set(configItem.getIcon().disabled());
+          button.setText("Start");
+        }
+      else
+        icon.set(configItem.getIcon().value());
     });
     root.getChildren().add(button);
   }
@@ -468,6 +494,10 @@ public class PluginConfigUI {
     colorPicker.setMinSize(50, 35);
     colorPicker.autosize();
     Color c = configManager.getConfiguration(config.getGroup().value(), configItem.key(), Color.class);
+    if (c == null) {
+      logger.debug(config.getGroup().value() + ":" + configItem.key() + " color can't be null");
+      c = Color.WHITE;
+    }
     double r = c.getRed() / 255.0;
     double g = c.getGreen() / 255.0;
     double b = c.getBlue() / 255.0;

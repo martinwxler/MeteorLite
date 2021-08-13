@@ -353,13 +353,25 @@ public class ConfigManager {
   }
 
   private void swapProperties(Properties newProperties, boolean saveToServer) {
-    Set<Object> allKeys = new HashSet<>(newProperties.keySet());
-
+    Set<Object> newKeys = new HashSet<>(newProperties.keySet());
+    Set<Object> oldKeys = new HashSet<>(properties.keySet());
     synchronized (this) {
       handler.invalidate();
     }
 
-    for (Object wholeKey : allKeys) {
+    for (Object wholeKey : oldKeys) {
+      String[] split = splitKey((String) wholeKey);
+      if (split == null) {
+        continue;
+      }
+
+      String groupName = split[KEY_SPLITTER_GROUP];
+      String key = split[KEY_SPLITTER_KEY];
+      String newValue = (String) properties.get(wholeKey);
+      setConfiguration(groupName, key, newValue);
+    }
+
+    for (Object wholeKey : newKeys) {
       String[] split = splitKey((String) wholeKey);
       if (split == null) {
         continue;
@@ -383,7 +395,7 @@ public class ConfigManager {
       newProperties.load(new InputStreamReader(in, StandardCharsets.UTF_8));
       loaded = true;
     } catch (Exception e) {
-      e.printStackTrace();
+      log.warn("No properties file found - Starting fresh config");
       loaded = false;
     }
 
@@ -512,7 +524,6 @@ public class ConfigManager {
     }
 
     setConfiguration(groupName, null, key, value);
-    saveProperties(false);
   }
 
   public void unsetConfiguration(String groupName, String key) {

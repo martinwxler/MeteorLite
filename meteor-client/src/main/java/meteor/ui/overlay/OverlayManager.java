@@ -180,6 +180,12 @@ public class OverlayManager {
     return true;
   }
 
+  public synchronized void add(final Overlay... overlays) {
+    for (Overlay overlay : overlays)
+      add(overlay);
+  }
+
+
   /**
    * Remove overlay.
    *
@@ -194,6 +200,11 @@ public class OverlayManager {
     }
 
     return remove;
+  }
+
+  public synchronized void remove(final Overlay... overlays) {
+    for (Overlay overlay : overlays)
+      remove(overlay);
   }
 
   /**

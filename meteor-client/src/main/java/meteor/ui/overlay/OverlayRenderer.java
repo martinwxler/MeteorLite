@@ -68,8 +68,8 @@ import net.runelite.api.widgets.WidgetItem;
 @Singleton
 public class OverlayRenderer extends MouseAdapter implements KeyListener {
 
-  private static final int BORDER = 0;
-  private static final int BORDER_TOP = 0;
+  private static final int BORDER = 5;
+  private static final int BORDER_TOP = 5;
   private static final int PADDING = 2;
   private static final int OVERLAY_RESIZE_TOLERANCE = 5;
   private static final Dimension SNAP_CORNER_SIZE = new Dimension(80, 80);
@@ -710,7 +710,7 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
   private OverlayBounds buildSnapCorners() {
     final Point topLeftPoint = new Point(
         viewportBounds.x + BORDER,
-        viewportBounds.y + BORDER_TOP);
+        viewportBounds.y + BORDER_TOP + 20);
 
     final Point topCenterPoint = new Point(
         viewportBounds.x + viewportBounds.width / 2,

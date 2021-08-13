@@ -38,5 +38,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Documented
 public @interface Icon {
-  FontAwesomeIcon icon() default FontAwesomeIcon.PLUG;
+  FontAwesomeIcon value() default FontAwesomeIcon.PLUG;
+  FontAwesomeIcon enabled() default FontAwesomeIcon.STOP;
+  FontAwesomeIcon disabled() default FontAwesomeIcon.PLAY;
+  boolean canToggle() default false;
 }

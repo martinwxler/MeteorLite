@@ -105,5 +105,5 @@ public interface Player extends Actor {
 
   String[] getActions();
 
-  boolean idle();
+  boolean isIdle();
 }

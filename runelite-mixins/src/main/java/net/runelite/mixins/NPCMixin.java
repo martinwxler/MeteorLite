@@ -125,4 +125,16 @@ public abstract class NPCMixin implements RSNPC {
 
     return (distanceX + distanceY) / 2;
   }
+
+  @Inject
+  @Override
+  public int getCombatLevel()
+  {
+    RSNPCComposition composition = getComposition();
+    if (composition != null && composition.getConfigs() != null)
+    {
+      composition = composition.transform$api();
+    }
+    return composition == null ? -1 : composition.getCombatLevel();
+  }
 }

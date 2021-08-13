@@ -14,8 +14,7 @@ import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
-import meteor.plugins.voidutils.OSRSUtils;
-import meteor.ui.overlay.OverlayManager;
+import meteor.util.Timer;
 import net.runelite.api.GameObject;
 import net.runelite.api.Item;
 import net.runelite.api.Skill;
@@ -31,13 +30,13 @@ import net.runelite.api.widgets.WidgetItem;
 )
 public class VoidHunterPlugin extends Plugin {
 
-  public static boolean enabled = false;
-  @Inject
-  OSRSUtils osrs;
   @Inject
   VoidHunterOverlay overlay;
+
   @Inject
-  OverlayManager overlayManager;
+  VoidHunterInfoOverlay infoOverlay;
+
+  public static boolean enabled = false;
   private long lastDelayedAction;
   private String lastStateExecuted;
   private int prevSalamanderCount = 0;
@@ -60,7 +59,7 @@ public class VoidHunterPlugin extends Plugin {
       return;
     }
 
-    if (!client.getLocalPlayer().idle()) {
+    if (!client.getLocalPlayer().isIdle()) {
       return;
     }
 
@@ -130,24 +129,21 @@ public class VoidHunterPlugin extends Plugin {
     return false;
   }
 
-  private boolean checkCaughtTrapLowPriorityExecute() {
+  private void checkCaughtTrapLowPriorityExecute() {
     lastStateExecuted = "Check Trap";
     GameObject nearestCaughtTrap = nearestCaughtTrap();
 
     if (nearestCaughtTrap != null) {
       nearestCaughtTrap.interact("Check");
       lastDelayedAction = System.currentTimeMillis();
-      return true;
     }
-    return false;
   }
 
   private boolean checkCaughtTrapHighPriorityExecute() {
     lastStateExecuted = "Check Trap";
     if (activeTraps() != null) {
-      if (activeTraps().size() >= 3) {
+      if (activeTraps().size() >= 3)
         checkCaughtTrapLowPriorityExecute();
-      }
     }
     return false;
   }
@@ -202,17 +198,17 @@ public class VoidHunterPlugin extends Plugin {
     }
 
     if (enabled) {
-      overlay.instanceTimer.reset();
+      infoOverlay.instanceTimer = new Timer();
       startXP = client.getSkillExperience(Skill.HUNTER);
     }
   }
 
   public void startup() {
-    overlayManager.add(overlay);
+    overlayManager.add(overlay, infoOverlay);
   }
 
   public void shutdown() {
-    overlayManager.remove(overlay);
+    overlayManager.remove(overlay, infoOverlay);
   }
 
   public void updateConfig() {

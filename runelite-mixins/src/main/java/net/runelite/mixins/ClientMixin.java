@@ -1411,4 +1411,20 @@ public abstract class ClientMixin implements RSClient {
     client.getCallbacks()
         .post(new InvokeMenuActionEvent("", "", identifier, opcode, param0, param1));
   }
+
+  @Inject
+  @Override
+  public long getOverallExperience()
+  {
+    int[] experiences = getSkillExperiences();
+
+    long totalExperience = 0L;
+
+    for (int experience : experiences)
+    {
+      totalExperience += experience;
+    }
+
+    return totalExperience;
+  }
 }

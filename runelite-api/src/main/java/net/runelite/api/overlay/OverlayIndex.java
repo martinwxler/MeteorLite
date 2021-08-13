@@ -30,11 +30,13 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
+import org.sponge.util.Logger;
 
-@Slf4j
 public class OverlayIndex {
 
   private static final Set<Integer> overlays = new HashSet<>();
+
+  static Logger log = new Logger("IndexLoader");
 
   static {
     InputStream indexStream = OverlayIndex.class.getResourceAsStream("/runelite/index");
@@ -45,7 +47,7 @@ public class OverlayIndex {
         overlays.add(id);
       }
     } catch (IOException ex) {
-      log.warn("unable to load overlay index", ex);
+      log.error("unable to load overlay index", ex);
     }
   }
 

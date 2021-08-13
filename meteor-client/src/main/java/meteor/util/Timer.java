@@ -4,11 +4,8 @@ public class Timer {
 
   public long start;
 
-  public Timer(long currentTimeMillis) {
-    start = currentTimeMillis;
-  }
-
   public Timer() {
+    reset();
   }
 
   public int getSecondsFromStart() {

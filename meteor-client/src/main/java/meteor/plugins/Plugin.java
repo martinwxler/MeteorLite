@@ -14,7 +14,9 @@ import meteor.MeteorLiteClientModule;
 import meteor.config.Config;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
+import meteor.plugins.voidutils.OSRSUtils;
 import meteor.task.Scheduler;
+import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.Client;
 import org.sponge.util.Logger;
 
@@ -24,6 +26,9 @@ public class Plugin implements Module {
 
   @Inject
   public Client client;
+
+  @Inject
+  public OSRSUtils osrs;
 
   @Inject
   public EventBus eventBus;
@@ -39,6 +44,9 @@ public class Plugin implements Module {
 
   @Setter
   private Config config;
+
+  @Inject
+  public OverlayManager overlayManager;
 
   public Plugin() {
     logger.name = this.getClass().getAnnotation(PluginDescriptor.class).name();
