@@ -238,15 +238,17 @@ public class PluginConfigUI {
     button.setText(configItem.name());
 
     button.pressedProperty().addListener((options, oldValue, pressed) -> {
-      client.getCallbacks().post(new ConfigButtonClicked(config.getGroup().value(), configItem.key()));
+      if (pressed)
       if (configItem.getIcon().canToggle())
         if (plugin.isEnabled()) {
           icon.set(configItem.getIcon().enabled());
           button.setText("Stop");
+          client.getCallbacks().post(new ConfigButtonClicked(config.getGroup().value(), configItem.key()));
         }
         else {
           icon.set(configItem.getIcon().disabled());
           button.setText("Start");
+          client.getCallbacks().post(new ConfigButtonClicked(config.getGroup().value(), configItem.key()));
         }
       else
         icon.set(configItem.getIcon().value());

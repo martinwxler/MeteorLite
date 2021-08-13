@@ -65,6 +65,6 @@ public abstract class PlayerMixin implements RSPlayer {
   @Override
   public boolean isIdle() {
     return (getIdlePoseAnimation() == getPoseAnimation() && getAnimation() == -1)
-        && (getInteracting() == null || !getInteracting().isDead());
+        && (getInteracting() == null || getInteracting().isDead());
   }
 }

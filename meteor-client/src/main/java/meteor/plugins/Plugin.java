@@ -88,12 +88,14 @@ public class Plugin implements Module {
       setEnabled(false);
       scheduler.unregister(this);
       eventBus.unregister(this);
+      updateConfig();
     }
     else {
       startup();
       setEnabled(true);
       scheduler.register(this);
       eventBus.register(this);
+      updateConfig();
     }
   }
 
