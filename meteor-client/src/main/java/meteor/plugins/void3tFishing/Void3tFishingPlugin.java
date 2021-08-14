@@ -1,14 +1,20 @@
 package meteor.plugins.void3tFishing;
 
+import static net.runelite.api.ItemID.BARBARIAN_ROD;
+import static net.runelite.api.ItemID.GUAM_LEAF;
 import static net.runelite.api.ItemID.LEAPING_SALMON;
 import static net.runelite.api.ItemID.LEAPING_STURGEON;
 import static net.runelite.api.ItemID.LEAPING_TROUT;
+import static net.runelite.api.ItemID.PESTLE_AND_MORTAR;
+import static net.runelite.api.ItemID.SWAMP_TAR;
 import static net.runelite.api.NpcID.FISHING_SPOT_1542;
+import static net.runelite.api.Skill.FISHING;
 
 import com.google.inject.Provides;
 import java.util.List;
 import java.util.Random;
 import javax.inject.Inject;
+import meteor.callback.ClientThread;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
@@ -29,6 +35,9 @@ public class Void3tFishingPlugin extends Plugin {
   @Inject
   Void3tFishingInfoOverlay infoOverlay;
 
+  @Inject
+  ClientThread clientThread;
+
   public static boolean enabled = false;
   private int startXP = 0;
   private int delayedTicks = -111;
@@ -36,6 +45,7 @@ public class Void3tFishingPlugin extends Plugin {
   private int caught;
   private int lastCaught = 0;
   private Random random = new Random();
+  private final int ONE_TILE = 64;
 
   @Provides
   public Void3tFishingConfig getConfig(ConfigManager configManager) {
@@ -45,7 +55,7 @@ public class Void3tFishingPlugin extends Plugin {
   @Override
   public void startup() {
     overlayManager.add(infoOverlay);
-    startXP = client.getSkillExperience(Skill.FISHING);
+    startXP = client.getSkillExperience(FISHING);
   }
 
   @Override
@@ -63,6 +73,24 @@ public class Void3tFishingPlugin extends Plugin {
       return;
     }
 
+    if (osrs.nearestNPC(FISHING_SPOT_1542) == null)
+      return;
+
+    if (osrs.items(GUAM_LEAF) == null)
+      return;
+
+    if (osrs.items(BARBARIAN_ROD) == null)
+      return;
+
+    if (osrs.items(PESTLE_AND_MORTAR) == null)
+      return;
+
+    if (osrs.items(SWAMP_TAR) == null || osrs.items(SWAMP_TAR).get(0).getQuantity() < 15)
+      return;
+
+    if (osrs.nearestNPC(FISHING_SPOT_1542).getDistanceFromLocalPlayer() > ONE_TILE)
+      delayedTicks = -2;
+
     List<WidgetItem> catches = osrs.items(LEAPING_TROUT, LEAPING_SALMON, LEAPING_STURGEON);
     if (catches != null) {
       caught++;
@@ -70,7 +98,7 @@ public class Void3tFishingPlugin extends Plugin {
       dropCatch();
     }
 
-    if (delayedTicks == -111 || delayedTicks == -3) {
+    if (delayedTicks == -3) {
       useGuamOnSwampTar();
       delayedTicks = -2;
       return;
@@ -88,16 +116,9 @@ public class Void3tFishingPlugin extends Plugin {
   }
 
   private void dropCatch() {
-    List<WidgetItem> catches = osrs.items(LEAPING_TROUT, LEAPING_SALMON, LEAPING_STURGEON);
-    for (WidgetItem c : catches)
-      if (c != null) {
-        c.interact("drop");
-        try {
-          Thread.sleep(70 + random.nextInt(120));
-        } catch (InterruptedException e) {
-          e.printStackTrace();
-        }
-      }
+    WidgetItem caughtFish = osrs.firstItem(LEAPING_TROUT, LEAPING_SALMON, LEAPING_STURGEON);
+    if (caughtFish != null)
+      caughtFish.interact("drop");
   }
 
   private void clickFishingSpot() {
@@ -109,10 +130,10 @@ public class Void3tFishingPlugin extends Plugin {
   }
 
   private void useGuamOnSwampTar() {
-    if (osrs.nearestNPC(FISHING_SPOT_1542).getDistanceFromLocalPlayer() > 64)
+    if (osrs.nearestNPC(FISHING_SPOT_1542).getDistanceFromLocalPlayer() > ONE_TILE)
       return;
-    WidgetItem cleanGuam = osrs.firstItem(ItemID.GUAM_LEAF);
-    WidgetItem swampTar = osrs.firstItem(ItemID.SWAMP_TAR);
+    WidgetItem cleanGuam = osrs.firstItem(GUAM_LEAF);
+    WidgetItem swampTar = osrs.firstItem(SWAMP_TAR);
     if (cleanGuam != null && swampTar != null)
       cleanGuam.useOn(swampTar);
   }
@@ -120,7 +141,7 @@ public class Void3tFishingPlugin extends Plugin {
   @Subscribe
   private void onStatChanged(StatChanged event) {
     if (enabled) {
-      if (event.getSkill() == Skill.FISHING) {
+      if (event.getSkill() == FISHING) {
         gainedXP = event.getXp() - startXP;
       }
     }
@@ -142,7 +163,7 @@ public class Void3tFishingPlugin extends Plugin {
     delayedTicks = -111;
     caught = 0;
     gainedXP = 0;
-    startXP = client.getSkillExperience(Skill.FISHING);
+    startXP = client.getSkillExperience(FISHING);
     infoOverlay.instanceTimer.reset();
   }
 
