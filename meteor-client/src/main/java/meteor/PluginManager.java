@@ -83,6 +83,7 @@ import meteor.plugins.tileindicators.TileIndicatorsPlugin;
 import meteor.plugins.timers.TimersPlugin;
 import meteor.plugins.timestamp.ChatTimestampPlugin;
 import meteor.plugins.tithefarm.TitheFarmPlugin;
+import meteor.plugins.void3tFishing.Void3tFishingPlugin;
 import meteor.plugins.voidHunter.VoidHunterPlugin;
 import meteor.plugins.woodcutting.WoodcuttingPlugin;
 import meteor.plugins.worldmap.WorldMapPlugin;
@@ -176,6 +177,7 @@ public class PluginManager {
     plugins.add(new TimersPlugin());
     plugins.add(new TitheFarmPlugin());
     plugins.add(new TearsOfGuthixPlugin());
+    plugins.add(new Void3tFishingPlugin());
     plugins.add(new VoidHunterPlugin());
     plugins.add(new WoodcuttingPlugin());
     plugins.add(new WorldMapPlugin());

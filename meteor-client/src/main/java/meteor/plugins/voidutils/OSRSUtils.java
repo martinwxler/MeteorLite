@@ -183,7 +183,7 @@ public class OSRSUtils {
     if (knownSpawns == null)
       knownSpawns = new ArrayList<>();
 
-    knownSpawns.remove(event.getNpc());
+    knownSpawns.add(event.getNpc());
     npcs.put(event.getNpc().getId(), knownSpawns);
   }
 
