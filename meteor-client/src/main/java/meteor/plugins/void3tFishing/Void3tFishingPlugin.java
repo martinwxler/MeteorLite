@@ -101,12 +101,16 @@ public class Void3tFishingPlugin extends Plugin {
   }
 
   private void clickFishingSpot() {
+    if (client.getLocalPlayer().isMoving())
+      return;
     NPC nearestFishingSpot = osrs.nearestNPC(FISHING_SPOT_1542);
     if (nearestFishingSpot != null)
       nearestFishingSpot.interact(0);
   }
 
   private void useGuamOnSwampTar() {
+    if (osrs.nearestNPC(FISHING_SPOT_1542).getDistanceFromLocalPlayer() > 64)
+      return;
     WidgetItem cleanGuam = osrs.firstItem(ItemID.GUAM_LEAF);
     WidgetItem swampTar = osrs.firstItem(ItemID.SWAMP_TAR);
     if (cleanGuam != null && swampTar != null)
@@ -127,11 +131,21 @@ public class Void3tFishingPlugin extends Plugin {
     if (event.getGroup().equals("void3tFishing")) {
       if (event.getKey().equals("startStop")) {
         enabled = !enabled;
-        if (enabled)
-          delayedTicks = -111;
+        if (enabled) {
+          reset();
+        }
       }
     }
   }
+
+  private void reset() {
+    delayedTicks = -111;
+    caught = 0;
+    gainedXP = 0;
+    startXP = client.getSkillExperience(Skill.FISHING);
+    infoOverlay.instanceTimer.reset();
+  }
+
 
   public int getGainedXP() {
     return gainedXP;

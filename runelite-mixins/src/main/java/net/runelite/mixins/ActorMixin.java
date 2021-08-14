@@ -192,4 +192,11 @@ public abstract class ActorMixin implements RSActor {
     final HealthBarUpdated event = new HealthBarUpdated(this, healthRatio);
     client.getCallbacks().post(event);
   }
+
+  @Inject
+  @Override
+  public boolean isMoving()
+  {
+    return getPathLength() > 0;
+  }
 }
