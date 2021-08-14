@@ -11,6 +11,7 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.HealthBarUpdated;
+import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.mixins.*;
 import net.runelite.rs.api.RSActor;
 import net.runelite.rs.api.RSClient;
@@ -198,5 +199,13 @@ public abstract class ActorMixin implements RSActor {
   public boolean isMoving()
   {
     return getPathLength() > 0;
+  }
+
+  @FieldHook("targetIndex")
+  @Inject
+  public void interactingChanged(int idx)
+  {
+    InteractingChanged interactingChanged = new InteractingChanged(this, getInteracting());
+    client.getCallbacks().post(interactingChanged);
   }
 }
