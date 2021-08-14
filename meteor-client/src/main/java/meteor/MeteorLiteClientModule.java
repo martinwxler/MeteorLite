@@ -134,6 +134,11 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
 
   @Subscribe
   public void onGameTick(GameTick event) {
+    //This fixes bad drawing
+    if (client.getGameDrawingMode() != 2) {
+      client.setGameDrawingMode(2);
+    }
+
     if (client.getLocalPlayer().isIdle())
       ToolbarFXMLController.idleButtonInstance.setVisible(true);
     else
