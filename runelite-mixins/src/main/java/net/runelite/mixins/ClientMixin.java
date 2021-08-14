@@ -1427,4 +1427,14 @@ public abstract class ClientMixin implements RSClient {
 
     return totalExperience;
   }
+
+  @Inject
+  private static boolean hideDisconnect = false;
+
+  @Inject
+  @Override
+  public void setHideDisconnect(boolean dontShow)
+  {
+    hideDisconnect = dontShow;
+  }
 }

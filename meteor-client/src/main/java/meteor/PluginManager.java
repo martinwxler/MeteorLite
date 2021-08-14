@@ -5,6 +5,8 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Module;
+import com.owain.chinLogin.ChinLoginPlugin;
+import com.owain.chinmanager.ChinManagerPlugin;
 import java.util.ArrayList;
 import java.util.List;
 import meteor.config.Config;
@@ -114,6 +116,8 @@ public class PluginManager {
     plugins.add(new BetterRougesDenPlugin());
     plugins.add(new BlastFurnacePlugin());
     plugins.add(new BoostsPlugin());
+    plugins.add(new ChinManagerPlugin());
+    plugins.add(new ChinLoginPlugin());
     plugins.add(new TickTimersPlugin());
     plugins.add(new CameraPlugin());
     plugins.add(new CannonPlugin());

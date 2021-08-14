@@ -9,11 +9,13 @@ import static net.runelite.api.ObjectID.YOUNG_TREE_9000;
 
 import com.google.inject.Provides;
 import java.util.List;
+import java.util.Random;
 import javax.inject.Inject;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
+import meteor.plugins.voidutils.events.LocalPlayerIdleEvent;
 import meteor.util.Timer;
 import net.runelite.api.GameObject;
 import net.runelite.api.Item;
@@ -43,6 +45,9 @@ public class VoidHunterPlugin extends Plugin {
   private int caught = 0;
   private int startXP = 0;
   private int gainedXP = 0;
+  private long nextDelay = 0;
+  private long nextLongDelay = 0;
+  private Random random = new Random();
 
   @Provides
   public VoidHunterConfig getConfig(ConfigManager configManager) {
@@ -51,6 +56,20 @@ public class VoidHunterPlugin extends Plugin {
 
   @Subscribe
   public void onGameTick(GameTick event) {
+
+  }
+
+  @Subscribe
+  private void onStatChanged(StatChanged event) {
+    if (enabled) {
+      if (event.getSkill() == Skill.HUNTER) {
+        gainedXP = event.getXp() - startXP;
+      }
+    }
+  }
+
+  @Subscribe
+  private void onLocalPlayerIdle(LocalPlayerIdleEvent event) {
     if (!enabled) {
       return;
     }
@@ -89,15 +108,6 @@ public class VoidHunterPlugin extends Plugin {
   }
 
   @Subscribe
-  private void onStatChanged(StatChanged event) {
-    if (enabled) {
-      if (event.getSkill() == Skill.HUNTER) {
-        gainedXP = event.getXp() - startXP;
-      }
-    }
-  }
-
-  @Subscribe
   private void onItemContainerChanged(ItemContainerChanged event) {
     int salamanderCount = 0;
     for (Item item : event.getItemContainer().getItems()) {
@@ -122,6 +132,7 @@ public class VoidHunterPlugin extends Plugin {
     lastStateExecuted = "Setup Trap";
     GameObject nearestEmptyTrap = nearestEmptyTrap();
     if (nearestEmptyTrap != null) {
+      nextLongDelay = 0;
       nearestEmptyTrap.interact("Set-trap");
       lastDelayedAction = System.currentTimeMillis();
       return true;
@@ -134,6 +145,7 @@ public class VoidHunterPlugin extends Plugin {
     GameObject nearestCaughtTrap = nearestCaughtTrap();
 
     if (nearestCaughtTrap != null) {
+      nextLongDelay = 0;
       nearestCaughtTrap.interact("Check");
       lastDelayedAction = System.currentTimeMillis();
     }
@@ -152,6 +164,7 @@ public class VoidHunterPlugin extends Plugin {
     lastStateExecuted = "Release";
     List<WidgetItem> items = osrs.items(BLACK_SALAMANDER);
     if (items != null) {
+      nextDelay = 0;
       WidgetItem salamanderToDrop = items.get(0);
       salamanderToDrop.interact("Release");
       return true;
@@ -163,6 +176,7 @@ public class VoidHunterPlugin extends Plugin {
     lastStateExecuted = "Pickup";
     TileItem nearestItemToPickup = nearestItemToPickup();
     if (nearestItemToPickup != null) {
+      nextDelay = 0;
       nearestItemToPickup.pickup();
       return true;
     }
