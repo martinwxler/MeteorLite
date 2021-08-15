@@ -31,7 +31,6 @@ import java.util.EnumMap;
 import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Experience;
 import net.runelite.api.Skill;
 import org.sponge.util.Logger;
