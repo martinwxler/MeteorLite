@@ -34,13 +34,16 @@ public class Plugin implements Module {
   public EventBus eventBus;
 
   @Getter @Setter
-  private Injector injector;
+  public Injector injector;
 
   @Inject
   public Scheduler scheduler;
 
   @Getter @Setter
   private boolean enabled = false;
+
+  @Getter @Setter
+  private boolean running = false;
 
   @Setter
   private Config config;
@@ -88,12 +91,14 @@ public class Plugin implements Module {
       setEnabled(false);
       scheduler.unregister(this);
       eventBus.unregister(this);
+      updateConfig();
     }
     else {
       startup();
       setEnabled(true);
       scheduler.register(this);
       eventBus.register(this);
+      updateConfig();
     }
   }
 

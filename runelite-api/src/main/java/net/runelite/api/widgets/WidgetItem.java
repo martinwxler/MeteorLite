@@ -156,8 +156,8 @@ public class WidgetItem {
 
   public void useOn(WidgetItem item) {
     client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
-    client.setSelectedItemSlot(getSlot());
-    client.setSelectedItemID(getId());
+    client.setSelectedItemSlot(item.getSlot());
+    client.setSelectedItemID(item.getId());
     client.invokeMenuAction("", "", getId(),
         MenuAction.ITEM_USE_ON_WIDGET_ITEM.getId(), getSlot(), WidgetInfo.INVENTORY.getId());
   }

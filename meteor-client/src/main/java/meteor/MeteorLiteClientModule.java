@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -62,6 +63,7 @@ import meteor.eventbus.DeferredEventBus;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ClientShutdown;
+import meteor.game.WorldService;
 import meteor.plugins.itemstats.ItemStatChangesService;
 import meteor.plugins.itemstats.ItemStatChangesServiceImpl;
 import meteor.ui.controllers.ToolbarFXMLController;
@@ -71,17 +73,20 @@ import meteor.ui.overlay.tooltip.TooltipOverlay;
 import meteor.ui.overlay.worldmap.WorldMapOverlay;
 import meteor.util.ExecutorServiceExceptionLogger;
 import meteor.util.NonScheduledExecutorServiceExceptionLogger;
+import meteor.util.WorldUtil;
 import net.runelite.api.Client;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.hooks.Callbacks;
 import net.runelite.http.api.chat.ChatClient;
+import net.runelite.http.api.worlds.World;
+import net.runelite.http.api.worlds.WorldResult;
 import okhttp3.OkHttpClient;
 import org.sponge.util.Logger;
 
 public class MeteorLiteClientModule extends AbstractModule implements AppletStub, AppletContext {
 
   public static JFrame mainInstanceFrame = new JFrame();
-
+  public static String uuid = UUID.randomUUID().toString();
   @Inject
   private EventBus eventBus;
 
@@ -103,13 +108,16 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
   @Inject
   private MeteorLiteClientModule meteorLiteClientModule;
 
-  private Logger logger = new Logger("MeteorLiteClient");
+  private Logger log = new Logger("MeteorLiteClient");
 
   @Inject
   private Client client;
 
   @Inject
   private Applet applet;
+
+  @Inject
+  private WorldService worldService;
 
   private static Map<String, String> properties;
   private static Map<String, String> parameters;
@@ -126,10 +134,53 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
 
   @Subscribe
   public void onGameTick(GameTick event) {
+    //This fixes bad drawing
+    if (client.getGameDrawingMode() != 2) {
+      client.setGameDrawingMode(2);
+    }
+
     if (client.getLocalPlayer().isIdle())
       ToolbarFXMLController.idleButtonInstance.setVisible(true);
     else
       ToolbarFXMLController.idleButtonInstance.setVisible(false);
+  }
+
+  private void setWorld(int cliWorld)
+  {
+    int correctedWorld = cliWorld < 300 ? cliWorld + 300 : cliWorld;
+
+    if (correctedWorld <= 300 || client.getWorld() == correctedWorld)
+    {
+      return;
+    }
+
+    final WorldResult worldResult = worldService.getWorlds();
+
+    if (worldResult == null)
+    {
+      log.warn("Failed to lookup worlds.");
+      return;
+    }
+
+    final World world = worldResult.findWorld(correctedWorld);
+
+    if (world != null)
+    {
+      final net.runelite.api.World rsWorld = client.createWorld();
+      rsWorld.setActivity(world.getActivity());
+      rsWorld.setAddress(world.getAddress());
+      rsWorld.setId(world.getId());
+      rsWorld.setPlayerCount(world.getPlayers());
+      rsWorld.setLocation(world.getLocation());
+      rsWorld.setTypes(WorldUtil.toWorldTypes(world.getTypes()));
+
+      client.changeWorld(rsWorld);
+      log.debug("Applied new world {}", correctedWorld);
+    }
+    else
+    {
+      log.warn("World {} not found.", correctedWorld);
+    }
   }
 
   @Provides
@@ -170,7 +221,7 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
 
     setupInstanceFrame(applet);
 
-    logger.info(
+    log.info(
         ANSI_YELLOW + "OSRS instance started in " + (System.currentTimeMillis() - startTime) + " ms"
             + ANSI_RESET);
   }
@@ -412,7 +463,7 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
         .to(DeferredEventBus.class);
 
     bind(ItemStatChangesService.class).to(ItemStatChangesServiceImpl.class);
-    bind(Logger.class).toInstance(logger);
+    bind(Logger.class).toInstance(log);
   }
 
   @com.google.inject.name.Named("config")

@@ -39,7 +39,7 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Icon {
   FontAwesomeIcon value() default FontAwesomeIcon.PLUG;
-  FontAwesomeIcon enabled() default FontAwesomeIcon.STOP;
-  FontAwesomeIcon disabled() default FontAwesomeIcon.PLAY;
+  FontAwesomeIcon stop() default FontAwesomeIcon.STOP;
+  FontAwesomeIcon start() default FontAwesomeIcon.PLAY;
   boolean canToggle() default false;
 }

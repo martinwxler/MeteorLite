@@ -60,6 +60,7 @@ import net.runelite.api.Player;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+import org.sponge.util.Logger;
 
 public class GroundItemsOverlay extends Overlay {
 

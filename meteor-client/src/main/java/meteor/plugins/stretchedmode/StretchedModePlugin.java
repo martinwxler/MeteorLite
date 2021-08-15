@@ -104,6 +104,7 @@ public class StretchedModePlugin extends Plugin
     updateConfig();
   }
 
+  @Override
   public void updateConfig()
   {
     client.setStretchedIntegerScaling(config.integerScaling());

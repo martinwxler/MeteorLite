@@ -216,37 +216,41 @@ public class PluginConfigUI {
     AtomicReference<FontAwesomeIcon> icon = new AtomicReference<>();
 
     if (configItem.getIcon().canToggle())
-      if (plugin.isEnabled()) {
-        icon.set(configItem.getIcon().enabled());
+      if (plugin.isRunning()) {
+        icon.set(configItem.getIcon().stop());
         button.setText("Stop");
       }
       else {
-        icon.set(configItem.getIcon().disabled());
+        icon.set(configItem.getIcon().start());
         button.setText("Start");
       }
-    else
+    else {
       icon.set(configItem.getIcon().value());
-    FontAwesomeIconView buttonIcon = new FontAwesomeIconView(icon.get());
+      button.setText(configItem.name());
+    }
 
+    FontAwesomeIconView buttonIcon = new FontAwesomeIconView(icon.get());
     buttonIcon.setSize("11");
     buttonIcon.setFill(javafx.scene.paint.Color.valueOf("CYAN"));
-
     button.setGraphic(buttonIcon);
     button.autosize();
     button.setStyle("-fx-background-color: #252525; -fx-text-fill: CYAN; -jfx-button-type: RAISED;");
 
-    button.setText(configItem.name());
 
     button.pressedProperty().addListener((options, oldValue, pressed) -> {
-      client.getCallbacks().post(new ConfigButtonClicked(config.getGroup().value(), configItem.key()));
+      if (pressed)
       if (configItem.getIcon().canToggle())
-        if (plugin.isEnabled()) {
-          icon.set(configItem.getIcon().enabled());
-          button.setText("Stop");
+        if (plugin.isRunning()) {
+          icon.set(configItem.getIcon().start());
+          button.setText("Start");
+          client.getCallbacks().post(new ConfigButtonClicked(config.getGroup().value(), configItem.key()));
+          plugin.setRunning(false);
         }
         else {
-          icon.set(configItem.getIcon().disabled());
-          button.setText("Start");
+          icon.set(configItem.getIcon().stop());
+          button.setText("Stop");
+          client.getCallbacks().post(new ConfigButtonClicked(config.getGroup().value(), configItem.key()));
+          plugin.setRunning(true);
         }
       else
         icon.set(configItem.getIcon().value());

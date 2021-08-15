@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
+import meteor.plugins.voidutils.events.LocalPlayerIdleEvent;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
@@ -19,6 +20,7 @@ import net.runelite.api.events.GameObjectChanged;
 import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemDespawned;
 import net.runelite.api.events.ItemSpawned;
 import net.runelite.api.events.NpcDespawned;
@@ -32,6 +34,8 @@ public class OSRSUtils {
 
   @Inject
   Client client;
+  private boolean lastLocalPlayerIdleState = true;
+  private long lastLocalPlayerIdleEventTime = System.currentTimeMillis();
 
   @Inject
   OSRSUtils(EventBus eventBus) {
@@ -145,6 +149,20 @@ public class OSRSUtils {
   }
 
   @Subscribe
+  private void onGameTick(GameTick event) {
+    if (client.getLocalPlayer().isIdle() && (System.currentTimeMillis() > lastLocalPlayerIdleEventTime + 600)) {
+      client.getCallbacks().post(LocalPlayerIdleEvent.INSTANCE);
+      lastLocalPlayerIdleEventTime = System.currentTimeMillis();
+    }
+    if (client.getLocalPlayer().isIdle())
+      if (!lastLocalPlayerIdleState) {
+        client.getCallbacks().post(LocalPlayerIdleEvent.INSTANCE);
+        lastLocalPlayerIdleEventTime = System.currentTimeMillis();
+      }
+    lastLocalPlayerIdleState = client.getLocalPlayer().isIdle();
+  }
+
+  @Subscribe
   private void onGameObjectSpawned(GameObjectSpawned event) {
     resetGameObjects();
   }
@@ -165,7 +183,7 @@ public class OSRSUtils {
     if (knownSpawns == null)
       knownSpawns = new ArrayList<>();
 
-    knownSpawns.remove(event.getNpc());
+    knownSpawns.add(event.getNpc());
     npcs.put(event.getNpc().getId(), knownSpawns);
   }
 

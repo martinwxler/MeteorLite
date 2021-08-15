@@ -33,6 +33,7 @@ import javax.inject.Inject;
 import javax.swing.SwingUtilities;
 import meteor.input.KeyListener;
 import meteor.input.MouseAdapter;
+import org.sponge.util.Logger;
 
 public class GroundItemInputListener extends MouseAdapter implements KeyListener {
 
@@ -86,9 +87,11 @@ public class GroundItemInputListener extends MouseAdapter implements KeyListener
 
     if (plugin.isHotKeyPressed()) {
       if (SwingUtilities.isLeftMouseButton(e)) {
+        if (plugin.getHiddenBoxBounds() != null)
         // Process both click boxes for hidden and highlighted items
         if (plugin.getHiddenBoxBounds() != null && plugin.getHiddenBoxBounds().getKey()
             .contains(mousePos)) {
+          new Logger("gitems").warn("set hidden");
           plugin.updateList(plugin.getHiddenBoxBounds().getValue().getName(), true);
           e.consume();
           return e;
