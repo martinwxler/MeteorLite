@@ -9,6 +9,8 @@ import com.owain.chinLogin.ChinLoginPlugin;
 import com.owain.chinmanager.ChinManagerPlugin;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.questhelper.QuestHelperPlugin;
 import meteor.config.Config;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
@@ -169,6 +171,7 @@ public class PluginManager {
     plugins.add(new PrayerPotDrinkerPlugin());
     plugins.add(new PuzzleSolverPlugin());
     plugins.add(new QuestListPlugin());
+    plugins.add(new QuestHelperPlugin());
     plugins.add(new RandomEventPlugin());
     plugins.add(new RegenMeterPlugin());
     plugins.add(new ReportButtonPlugin());

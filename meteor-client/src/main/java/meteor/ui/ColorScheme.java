@@ -10,4 +10,7 @@ public class ColorScheme {
 
   public static final Color DARKER_GRAY_HOVER_COLOR = new Color(60, 60, 60);
   public static final Color DARK_GRAY_HOVER_COLOR = new Color(35, 35, 35);
+
+  public static final Color CYAN = Color.CYAN;
+  public static final Color DARK_CYAN = Color.CYAN.darker();
 }

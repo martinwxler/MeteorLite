@@ -54,6 +54,8 @@ import javax.inject.Singleton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
+
+import lombok.Getter;
 import meteor.callback.Hooks;
 import meteor.chat.ChatMessageManager;
 import meteor.config.ChatColorConfig;
@@ -131,6 +133,12 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
   public static boolean pluginsPanelVisible = false;
   static Parent pluginsRoot;
   static Parent toolbarRoot;
+
+  @Provides
+  @Named("developerMode")
+  private boolean getDeveloperMode() {
+    return false;
+  }
 
   @Subscribe
   public void onGameTick(GameTick event) {

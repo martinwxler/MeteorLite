@@ -116,7 +116,7 @@ public class VoidHunterPlugin extends Plugin {
     if (checkCaughtTrapHighPriorityExecute()) {
       return;
     }
-    
+
     if (setupEmptyTrapExecute()) {
       return;
     }
