@@ -464,16 +464,12 @@ public abstract class ClientMixin implements RSClient {
       return;
     }
 
-    if (false) {
-            /*
-            client.getLogger().info(
-                    "|MenuAction|: MenuOption={} MenuTarget={} Id={} Opcode={}/{} Param0={} Param1={} CanvasX={} CanvasY={}",
-                    menuOptionClicked.getMenuOption(), menuOptionClicked.getMenuTarget(), menuOptionClicked.getId(),
-                    menuOptionClicked.getMenuAction(), opcode + (decremented ? 2000 : 0),
-                    menuOptionClicked.getActionParam(), menuOptionClicked.getWidgetId(), canvasX, canvasY
-            );
-            */
-    }
+    client.getLogger().info(
+            "|MenuAction|: MenuOption={} MenuTarget={} Id={} Opcode={}/{} Param0={} Param1={} CanvasX={} CanvasY={}",
+            menuOptionClicked.getMenuOption(), menuOptionClicked.getMenuTarget(), menuOptionClicked.getId(),
+            menuOptionClicked.getMenuAction(), opcode + (decremented ? 2000 : 0),
+            menuOptionClicked.getActionParam(), menuOptionClicked.getWidgetId(), canvasX, canvasY
+    );
 
     copy$menuAction(menuOptionClicked.getActionParam(), menuOptionClicked.getWidgetId(),
         menuOptionClicked.getMenuAction() == UNKNOWN ? opcode

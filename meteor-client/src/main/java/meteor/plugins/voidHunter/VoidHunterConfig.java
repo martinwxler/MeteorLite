@@ -1,10 +1,10 @@
 package meteor.plugins.voidHunter;
 
-import meteor.config.Button;
-import meteor.config.Config;
-import meteor.config.ConfigGroup;
-import meteor.config.ConfigItem;
-import meteor.config.Icon;
+import meteor.config.*;
+
+import java.awt.event.InputEvent;
+
+import static java.awt.event.KeyEvent.VK_H;
 
 @ConfigGroup("voidHunter")
 public interface VoidHunterConfig extends Config {
@@ -18,5 +18,27 @@ public interface VoidHunterConfig extends Config {
   )
   default Button startButton() {
     return new Button();
+  }
+
+  @ConfigItem(
+          keyName = "keybind",
+          name = "Toggle Key",
+          description = "Toggles the plugin",
+          position = 1
+  )
+  default Keybind keybind()
+  {
+    return new Keybind(VK_H, InputEvent.CTRL_DOWN_MASK, false);
+  }
+
+  @ConfigItem(
+          keyName = "hide", //disables the widget
+          name = "Privacy",
+          description = "Toggles the overlay",
+          position = 2
+  )
+  default boolean hide()
+  {
+    return false;
   }
 }

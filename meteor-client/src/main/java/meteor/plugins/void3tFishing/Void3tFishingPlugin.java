@@ -88,7 +88,8 @@ public class Void3tFishingPlugin extends Plugin {
     if (osrs.items(SWAMP_TAR) == null || osrs.items(SWAMP_TAR).get(0).getQuantity() < 15)
       return;
 
-    if (osrs.nearestNPC(FISHING_SPOT_1542).getDistanceFromLocalPlayer() > ONE_TILE)
+    if (osrs.nearestNPC(FISHING_SPOT_1542).getDistanceFromLocalPlayer() > ONE_TILE ||
+            (osrs.nearestNPC(FISHING_SPOT_1542).getDistanceFromLocalPlayer() == ONE_TILE && client.getLocalPlayer().isIdle()))
       delayedTicks = -2;
 
     List<WidgetItem> catches = osrs.items(LEAPING_TROUT, LEAPING_SALMON, LEAPING_STURGEON);

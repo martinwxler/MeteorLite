@@ -13,9 +13,11 @@ import java.util.Random;
 import javax.inject.Inject;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
+import meteor.input.KeyManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.plugins.voidutils.events.LocalPlayerIdleEvent;
+import meteor.util.HotkeyListener;
 import meteor.util.Timer;
 import net.runelite.api.GameObject;
 import net.runelite.api.Item;
@@ -38,6 +40,12 @@ public class VoidHunterPlugin extends Plugin {
   @Inject
   VoidHunterInfoOverlay infoOverlay;
 
+  @Inject
+  VoidHunterConfig config;
+
+  @Inject
+  private KeyManager keyManager;
+
   public static boolean enabled = false;
   private long lastDelayedAction;
   private String lastStateExecuted;
@@ -53,6 +61,15 @@ public class VoidHunterPlugin extends Plugin {
   public VoidHunterConfig getConfig(ConfigManager configManager) {
     return configManager.getConfig(VoidHunterConfig.class);
   }
+
+  private HotkeyListener toggleListener = new HotkeyListener(() -> config.keybind()) {
+    @Override
+    public void hotkeyPressed() {
+      enabled = !enabled;
+      reset();
+    }
+  };
+
 
   @Subscribe
   public void onGameTick(GameTick event) {
@@ -99,7 +116,7 @@ public class VoidHunterPlugin extends Plugin {
     if (checkCaughtTrapHighPriorityExecute()) {
       return;
     }
-
+    
     if (setupEmptyTrapExecute()) {
       return;
     }
@@ -208,21 +225,24 @@ public class VoidHunterPlugin extends Plugin {
     if (event.getGroup().equals("voidHunter")) {
       if (event.getKey().equals("startStop")) {
         enabled = !enabled;
+        reset();
       }
     }
+  }
 
-    if (enabled) {
-      infoOverlay.instanceTimer = new Timer();
-      startXP = client.getSkillExperience(Skill.HUNTER);
-    }
+  private void reset() {
+    infoOverlay.instanceTimer = new Timer();
+    startXP = client.getSkillExperience(Skill.HUNTER);
   }
 
   public void startup() {
     overlayManager.add(overlay, infoOverlay);
+    keyManager.registerKeyListener(toggleListener, getClass());
   }
 
   public void shutdown() {
     overlayManager.remove(overlay, infoOverlay);
+    keyManager.unregisterKeyListener(toggleListener);
   }
 
   public void updateConfig() {

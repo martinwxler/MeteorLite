@@ -56,7 +56,7 @@ public class Keybind {
   private int keyCode;
   private int modifiers;
 
-  protected Keybind(int keyCode, int modifiers, boolean ignoreModifiers) {
+  public Keybind(int keyCode, int modifiers, boolean ignoreModifiers) {
     try {
       modifiers &= KEYBOARD_MODIFIER_MASK;
 
