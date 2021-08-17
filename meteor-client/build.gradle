@@ -1,8 +1,9 @@
 plugins {
     id 'java'
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.0.10'
-    id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id 'org.openjfx.javafxplugin'
+    id 'com.github.johnrengelman.shadow'
+    id 'org.beryx.runtime'
 }
 
 shadowJar {
@@ -20,9 +21,42 @@ repositories {
     maven { url = 'https://raw.githubusercontent.com/open-osrs/hosting/master/' }
 }
 
+runtime {
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.swing', 'javafx.graphics', 'javafx.media']
+    launcher {
+        jvmArgs = [
+                "-noverify",
+                "-Dprism.allowhidpi=false",
+                "-Dsun.awt.noerasebackground=true",
+                "--module-path=C:/Program Files/Java/javafx-sdk-11.0.2/lib",
+                "--add-modules=javafx.media",
+                "--add-modules=javafx.fxml",
+                "--add-modules=javafx.swing",
+                "--add-modules=javafx.graphics",
+                "--add-exports=javafx.base/com.sun.javafx=ALL-UNNAMED",
+                "--add-exports=javafx.base/com.sun.javafx.binding=ALL-UNNAMED",
+                "--add-exports=javafx.base/com.sun.javafx.collections=ALL-UNNAMED",
+                "--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED",
+                "--add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED",
+                "--add-exports=javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED",
+                "--add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED",
+                "--add-exports=javafx.graphics/com.sun.javafx.geom=ALL-UNNAMED",
+                "--add-exports=javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED",
+                "--add-exports=javafx.graphics/com.sun.javafx.scene.layout=ALL-UNNAMED",
+                "--add-exports=javafx.graphics/com.sun.javafx.scene.input=ALL-UNNAMED",
+                "--add-exports=javafx.graphics/com.sun.javafx.scene.text=ALL-UNNAMED",
+                "--add-exports=javafx.graphics/com.sun.javafx.scene.traversal=ALL-UNNAMED",
+                "--add-exports=javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED",
+                "--add-exports=javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED",
+                "--add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED",
+                "-Dsun.java2d.uiScale=1.0"
+        ]
+    }
+}
+
 dependencies {
-    implementation 'org.apache.logging.log4j:log4j-core:2.5'
-    implementation 'org.spongepowered:mixin-bare:0.7.11-SNAPSHOT'
+    implementation 'org.apache.logging.log4j:log4j-core:_'
+    implementation 'org.spongepowered:mixin-bare:_'
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
 
@@ -34,20 +68,20 @@ dependencies {
     implementation(project(":http-api"))
     implementation(project(":runelite-annotations"))
     compileOnly(project(":runescape-client"))
-    implementation group: 'de.jensd', name: 'fontawesomefx-commons', version: '9.1.2'
-    implementation group: 'de.jensd', name: 'fontawesomefx-fontawesome', version: '4.7.0-9.1.2'
-    implementation 'com.jfoenix:jfoenix:9.0.10'
+    implementation group: 'de.jensd', name: 'fontawesomefx-commons', version: '_'
+    implementation group: 'de.jensd', name: 'fontawesomefx-fontawesome', version: '_'
+    implementation 'com.jfoenix:jfoenix:_'
     implementation group: 'org.jetbrains', name: 'annotations', version: '21.0.1'
     runtimeOnly(files("../openosrs-injector/build/injected/injected-client.jar"))
-    compileOnly 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor group: 'org.jetbrains', name: 'annotations', version: '21.0.1'
+    compileOnly 'org.projectlombok:lombok:_'
+    annotationProcessor 'org.projectlombok:lombok:_'
+    annotationProcessor group: 'org.jetbrains', name: 'annotations', version: '_'
     implementation(group: "net.runelite.gluegen", name: "gluegen-rt", version: "2.4.0-rc-20200429")
     implementation(group: "net.runelite.jogl", name: "jogl-all", version: "2.4.0-rc-20200429")
     implementation(group: "net.runelite.jocl", name: "jocl", version: "1.0")
-    implementation(group: "io.reactivex.rxjava3", name: "rxjava", version: "3.0.10")
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
-    implementation(group: "com.squareup.okhttp3", name: "okhttp", version: "3.7.0")
+    implementation(group: "io.reactivex.rxjava3", name: "rxjava", version: "_")
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '_'
+    implementation(group: "com.squareup.okhttp3", name: "okhttp", version: "_")
 
     implementation(group: "net.runelite.gluegen", name: "gluegen-rt", version: "2.4.0-rc-20200429")
     implementation(group: "net.runelite.jogl", name: "jogl-all", version: "2.4.0-rc-20200429")
@@ -64,14 +98,13 @@ dependencies {
     runtimeOnly(group: "net.runelite.jogl", name: "jogl-all-natives-macosx", version: "2.4.0-rc-20210117")
     runtimeOnly(group: "net.runelite.jocl", name: "jocl", version: "1.0", classifier: "macos-x64")
     runtimeOnly(group: "net.runelite.jocl", name: "jocl", version: "1.0", classifier: "macos-arm64")
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-    implementation group: 'com.google.guava', name: 'guava', version: '23.2-jre'
-    implementation(group : "org.apache.commons", name : "commons-text", version : "1.2")
-    implementation(group : "commons-io", name : "commons-io", version : "2.8.0")
-    implementation(group : "net.sf.jopt-simple", name : "jopt-simple", version : "5.0.1")
+    implementation group: 'com.google.guava', name: 'guava', version: '_'
+    implementation(group : "org.apache.commons", name : "commons-text", version : "_")
+    implementation(group : "commons-io", name : "commons-io", version : "_")
+    implementation(group : "net.sf.jopt-simple", name : "jopt-simple", version : "_")
     annotationProcessor group: 'javax.inject', name: 'javax.inject', version: '1'
-    implementation(group : "io.reactivex.rxjava3", name : "rxjava", version : "3.0.10")
+    implementation(group : "io.reactivex.rxjava3", name : "rxjava", version : "_")
+    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '_'
 }
 
 compileJava.options.encoding = 'UTF-8'
@@ -138,6 +171,7 @@ javafx {
             "--add-exports=javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED",
             "--add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED",
             "-Dsun.java2d.uiScale=1.0"]
+    configuration = "compileOnly"
 }
 
 

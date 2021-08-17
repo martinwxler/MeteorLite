@@ -12,8 +12,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    compileOnly 'org.projectlombok:lombok:_'
+    annotationProcessor 'org.projectlombok:lombok:_'
 
     implementation(gradleApi())
 
@@ -28,7 +28,7 @@ dependencies {
     implementation(group: "org.jetbrains", name: "annotations", version: "19.0.0")
     implementation(group: "com.google.guava", name: "guava", version: "23.2-jre")
     implementation(group: "net.sf.jopt-simple", name: "jopt-simple", version: "5.0.1")
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:_'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 

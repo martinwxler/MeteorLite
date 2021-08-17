@@ -41,20 +41,7 @@ import net.runelite.api.TileItem;
 import net.runelite.api.WallObject;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.DecorativeObjectChanged;
-import net.runelite.api.events.DecorativeObjectDespawned;
-import net.runelite.api.events.DecorativeObjectSpawned;
-import net.runelite.api.events.GameObjectChanged;
-import net.runelite.api.events.GameObjectDespawned;
-import net.runelite.api.events.GameObjectSpawned;
-import net.runelite.api.events.GroundObjectChanged;
-import net.runelite.api.events.GroundObjectDespawned;
-import net.runelite.api.events.GroundObjectSpawned;
-import net.runelite.api.events.ItemDespawned;
-import net.runelite.api.events.ItemSpawned;
-import net.runelite.api.events.WallObjectChanged;
-import net.runelite.api.events.WallObjectDespawned;
-import net.runelite.api.events.WallObjectSpawned;
+import net.runelite.api.events.*;
 import net.runelite.api.mixins.FieldHook;
 import net.runelite.api.mixins.Inject;
 import net.runelite.api.mixins.Mixin;
@@ -74,6 +61,8 @@ import net.runelite.rs.api.RSTile;
 import net.runelite.rs.api.RSTileItem;
 import net.runelite.rs.api.RSWallDecoration;
 import org.sponge.util.Logger;
+
+import static net.runelite.api.MenuAction.WALK;
 
 @Mixin(RSTile.class)
 public abstract class TileMixin implements RSTile
@@ -592,5 +581,11 @@ public abstract class TileMixin implements RSTile
       ItemSpawned event = new ItemSpawned(this, current);
       client.getCallbacks().post(event);
     }
+  }
+
+  @Override
+  @Inject
+  public void walkHere() {
+    client.invokeMenuAction("Walk here", "", 0, WALK.getId(), getLocalLocation().getSceneX(), getLocalLocation().getSceneY());
   }
 }

@@ -1,30 +1,17 @@
 package meteor.plugins.voidutils;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import meteor.callback.ClientThread;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.voidutils.events.LocalPlayerIdleEvent;
-import net.runelite.api.Client;
-import net.runelite.api.GameObject;
-import net.runelite.api.GameState;
-import net.runelite.api.NPC;
-import net.runelite.api.Tile;
-import net.runelite.api.TileItem;
+import net.runelite.api.*;
+import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameObjectChanged;
-import net.runelite.api.events.GameObjectDespawned;
-import net.runelite.api.events.GameObjectSpawned;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.ItemDespawned;
-import net.runelite.api.events.ItemSpawned;
-import net.runelite.api.events.NpcDespawned;
-import net.runelite.api.events.NpcSpawned;
+import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
@@ -34,6 +21,10 @@ public class OSRSUtils {
 
   @Inject
   Client client;
+
+  @Inject
+  ClientThread clientThread;
+
   private boolean lastLocalPlayerIdleState = true;
   private long lastLocalPlayerIdleEventTime = System.currentTimeMillis();
 
@@ -216,6 +207,46 @@ public class OSRSUtils {
     knownSpawns.remove(event.getItem());
     loot.put(event.getItem().getId(), knownSpawns);
   }
+
+  public Tile tileAt(WorldPoint worldPoint) {
+    LocalPoint localPoint = LocalPoint.fromWorld(client, worldPoint);
+    if (localPoint != null)
+      return client.getScene().getTiles()[client.getPlane()][localPoint.getSceneX()][localPoint
+            .getSceneY()];
+    return null;
+  }
+
+  public Tile tileRandom(WorldPoint minXY, WorldPoint maxXY) {
+    Random random = new Random();
+    int randomX = minXY.getX() + random.nextInt(maxXY.getX() - minXY.getX());
+    int randomY = minXY.getY() + random.nextInt(maxXY.getY() - minXY.getY());
+    Tile[][][] tiles = client.getScene().getTiles();
+    if (tiles[minXY.getPlane()][randomX][randomY] != null)
+      return tiles[minXY.getPlane()][randomX][randomY];
+    else
+      return null;
+  }
+
+  public List<Tile> tiles(WorldPoint minXY, WorldPoint maxXY) {
+    List<Tile> tiles = new ArrayList<>();
+    for (Tile[][] ttt : client.getScene().getTiles())
+      for (Tile[] tt : ttt)
+        for (Tile t : tt)
+          if (t != null) {
+            WorldPoint location = t.getWorldLocation();
+            if (t.getPlane() == minXY.getPlane())
+              if (location.getPlane() == maxXY.getPlane() &&
+                      (location.getX() >= minXY.getX()) &&
+                      (location.getX() <= maxXY.getX()) &&
+                      (location.getY() >= minXY.getY()) &&
+                      (location.getY() <= maxXY.getY())) {
+                tiles.add(t);
+              }
+          }
+    return tiles;
+  }
+
+
 
   // This is done to ensure a solid GameObject map
   private void resetGameObjects() {
