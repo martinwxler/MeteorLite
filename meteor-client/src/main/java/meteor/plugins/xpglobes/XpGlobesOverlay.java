@@ -316,7 +316,7 @@ public class XpGlobesOverlay extends Overlay
 
 			if (config.showActionsLeft())
 			{
-				int actionsLeft = xpTrackerService.getSkillSnapshot(mouseOverSkill.getSkill()).getActionsInSession();
+				int actionsLeft = xpTrackerService.getSkillSnapshot(mouseOverSkill.getSkill()).getActionsRemainingToGoal();
 				if (actionsLeft != Integer.MAX_VALUE)
 				{
 					String actionsLeftString = decimalFormat.format(actionsLeft);
