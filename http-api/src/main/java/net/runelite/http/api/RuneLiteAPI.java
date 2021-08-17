@@ -55,7 +55,7 @@ public class RuneLiteAPI {
   private static String version;
 
   static {
-    version = "1.7.18";
+    version = "1.7.19";
     userAgent = "RuneLite/" + version + "-";
 
     CLIENT = new OkHttpClient.Builder()
