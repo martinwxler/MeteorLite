@@ -11,7 +11,7 @@ shadowJar {
 }
 
 group 'org.meteorlite'
-version '1.0.0'
+version '1.0.1'
 
 repositories {
     mavenCentral()
@@ -32,6 +32,7 @@ runtime {
                 "--description", "Open source OSRS toolkit",
                 "--copyright", "2021 MeteorLite",
                 "--vendor", "Null",
+                '--win-upgrade-uuid', 'aaffbbff-ffaa-0420-4200-867530986753',
                 "--win-per-user-install",
                 "--win-dir-chooser",
                 "--win-menu",
@@ -116,10 +117,6 @@ tasks {
 processResources {
     dependsOn(":runelite-script-assembler:assembleScripts")
     from("${buildDir}/scripts")
-}
-
-test {
-    useJUnitPlatform()
 }
 
 jar {
