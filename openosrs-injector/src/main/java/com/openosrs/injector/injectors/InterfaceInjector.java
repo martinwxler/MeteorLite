@@ -8,12 +8,15 @@
 package com.openosrs.injector.injectors;
 
 import static com.openosrs.injector.rsapi.RSApi.API_BASE;
+import static org.sponge.util.Logger.*;
 
 import com.openosrs.injector.injection.InjectData;
 import net.runelite.asm.ClassFile;
 import net.runelite.asm.Interfaces;
 import net.runelite.asm.pool.Class;
 import net.runelite.deob.DeobAnnotations;
+import org.sponge.util.Logger;
+import org.sponge.util.Message;
 
 public class InterfaceInjector extends AbstractInjector {
 
@@ -22,6 +25,7 @@ public class InterfaceInjector extends AbstractInjector {
   public InterfaceInjector(InjectData inject) {
     super(inject);
   }
+  private Logger log = new Logger("Interfaces");
 
   public void inject() {
     // forEachPair performs actions on a deob-vanilla pair, which is what's needed here
@@ -31,19 +35,27 @@ public class InterfaceInjector extends AbstractInjector {
   }
 
   private void injectInterface(final ClassFile deobCf, final ClassFile vanillaCf) {
-    final String impls = DeobAnnotations.getImplements(deobCf);
+    String impls = DeobAnnotations.getImplements(deobCf);
 
     if (impls == null) {
       return;
     }
 
-    final String fullName = API_BASE + impls;
-    if (!inject.getRsApi().hasClass(fullName)) {
-      //	log.trace("[DEBUG] Class {} implements nonexistent interface {}, skipping interface injection",
-      //deobCf.getName(),
-      //	fullName
-      //	);
+    impls = impls.replace("osrs/", "");
 
+    final String fullName = API_BASE + impls;
+    if (fullName.contains("class"))
+      return;
+    String message = Message.newMessage()
+            .add(ANSI_PURPLE, "[WARNING]")
+            .addDefault(" Class ")
+            .add(ANSI_CYAN, deobCf.getName())
+            .addDefault(" implements nonexistent interface: ")
+            .add(ANSI_BLUE, fullName + ", ")
+            .addDefault("skipping interface injection...")
+            .build();
+    if (!inject.getRsApi().hasClass(fullName)) {
+      	log.debug(message);
       return;
     }
 

@@ -175,12 +175,10 @@ public class Injector extends InjectData implements InjectTaskHandler {
 
     injector.inject();
 
-    log.info(Message.buildMessage()
-        .changeColor(ANSI_YELLOW)
-        .addText(name + " ")
-        .changeColor(ANSI_GREEN)
-        .addText(injector.getCompletionMsg())
-        .build());
+    log.info(Message.newMessage()
+                    .add(ANSI_YELLOW, name + " ")
+                    .add(ANSI_GREEN, injector.getCompletionMsg())
+                    .build());
 
     if (injector instanceof Validator) {
       validate((Validator) injector);
@@ -202,8 +200,9 @@ public class Injector extends InjectData implements InjectTaskHandler {
 
     transformer.transform();
 
-    log.info(Message.buildMessage()
-        .addText(ANSI_YELLOW + name + " " + ANSI_GREEN + transformer.getCompletionMsg())
+    log.info(Message.newMessage()
+                    .add(ANSI_YELLOW, name + " ")
+                    .addDefault(transformer.getCompletionMsg())
         .build());
   }
 

@@ -29,12 +29,9 @@ import net.runelite.asm.ClassGroup;
 import net.runelite.asm.Method;
 import net.runelite.asm.Type;
 import net.runelite.asm.signature.Signature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ConstructorMapper {
 
-  private static final Logger logger = LoggerFactory.getLogger(ConstructorMapper.class);
 
   private final ClassGroup source, target;
   private final ParallelExecutorMapping mapping;
@@ -57,7 +54,6 @@ public class ConstructorMapper {
 
     ClassFile other = (ClassFile) mapping.get(cf);
     if (other == null) {
-      logger.debug("Unable to map other type due to no class mapping for {}", cf);
       return null;
     }
 
@@ -98,13 +94,10 @@ public class ConstructorMapper {
           continue;
         }
 
-        logger.debug("Converted signature {} -> {}", m.getDescriptor(), otherSig);
 
         Method m2 = other.findMethod(m.getName(), otherSig);
         if (m2 == null) {
-          logger
-              .warn("Unable to find other constructor for {}, looking for signature {} on class {}",
-                  m, otherSig, other);
+
           continue;
         }
 

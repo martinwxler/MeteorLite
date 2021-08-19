@@ -28,12 +28,8 @@ import java.util.ArrayList;
 import net.runelite.asm.ClassFile;
 import net.runelite.asm.ClassGroup;
 import net.runelite.deob.Deobfuscator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class UnusedClass implements Deobfuscator {
-
-  private static final Logger logger = LoggerFactory.getLogger(UnusedClass.class);
 
   @Override
   public void run(ClassGroup group) {
@@ -54,8 +50,6 @@ public class UnusedClass implements Deobfuscator {
       group.removeClass(cf);
       ++count;
     }
-
-    logger.info("Removed {} classes", count);
   }
 
   private boolean isImplemented(ClassGroup group, ClassFile iface) {

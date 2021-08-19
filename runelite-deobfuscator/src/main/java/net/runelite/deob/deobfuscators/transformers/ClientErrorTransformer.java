@@ -38,12 +38,8 @@ import net.runelite.asm.attributes.code.instructions.InvokeVirtual;
 import net.runelite.asm.attributes.code.instructions.VReturn;
 import net.runelite.asm.signature.Signature;
 import net.runelite.deob.Transformer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ClientErrorTransformer implements Transformer {
-
-  private static final Logger logger = LoggerFactory.getLogger(ClientErrorTransformer.class);
 
   private boolean done = false;
 
@@ -54,8 +50,6 @@ public class ClientErrorTransformer implements Transformer {
         transform(m);
       }
     }
-
-    logger.info("Transformed: " + done);
   }
 
   private void transform(Method m) {

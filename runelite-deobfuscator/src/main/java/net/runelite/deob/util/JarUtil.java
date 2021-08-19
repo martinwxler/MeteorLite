@@ -42,12 +42,8 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.util.CheckClassAdapter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class JarUtil {
-
-  private static final Logger logger = LoggerFactory.getLogger(JarUtil.class);
 
   public static ClassGroup load(File jarfile) {
     ClassGroup group = new ClassGroup();
@@ -174,7 +170,6 @@ public class JarUtil {
       ClassVisitor cv = new CheckClassAdapter(cw, true);
       cr.accept(cv, 0);
     } catch (Exception ex) {
-      logger.warn("Class {} failed validation", name, ex);
     }
   }
 }

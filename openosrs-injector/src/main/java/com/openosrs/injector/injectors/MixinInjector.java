@@ -129,33 +129,33 @@ public class MixinInjector extends AbstractInjector {
       injectInterfaces(entry.getKey(), entry.getValue());
     }
 
-    log.info(Message.buildMessage()
-        .addText(ANSI_GREEN + "Injected " + injectedInterfaces + " interfaces")
+    log.info(Message.newMessage()
+        .addDefault("Injected " + injectedInterfaces + " interfaces")
         .build());
 
     for (Map.Entry<Provider<ClassFile>, List<ClassFile>> entry : mixinTargets.entrySet()) {
       injectFields(entry.getKey(), entry.getValue());
     }
 
-    log.info(Message.buildMessage()
-        .addText(ANSI_GREEN + "Injected " + injectedFields.size() + " fields")
+    log.info(Message.newMessage()
+        .addDefault("Injected " + injectedFields.size() + " fields")
         .build());
 
     for (Map.Entry<Provider<ClassFile>, List<ClassFile>> entry : mixinTargets.entrySet()) {
       findShadowFields(entry.getKey());
     }
 
-    log.info(Message.buildMessage()
-        .addText(ANSI_GREEN + "Shadowed " + shadowFields.size() + " fields")
+    log.info(Message.newMessage()
+        .addDefault("Shadowed " + shadowFields.size() + " fields")
         .build());
 
     for (Map.Entry<Provider<ClassFile>, List<ClassFile>> entry : mixinTargets.entrySet()) {
       injectMethods(entry.getKey(), entry.getValue());
     }
 
-    log.info(Message.buildMessage()
-        .addText(
-            ANSI_GREEN + "Injected " + injected + ", copied " + copied + ", replaced " + replaced
+    log.info(Message.newMessage()
+            .addDefault(
+            "Injected " + injected + ", copied " + copied + ", replaced " + replaced
                 + " methods")
         .build());
 

@@ -36,12 +36,8 @@ import net.runelite.asm.attributes.code.Instruction;
 import net.runelite.asm.attributes.code.instruction.types.LVTInstruction;
 import net.runelite.asm.execution.Frame;
 import net.runelite.deob.deobfuscators.packethandler.PacketRead;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PacketHandler implements Cloneable {
-
-  private static final Logger logger = LoggerFactory.getLogger(PacketHandler.class);
 
   private final Method method;
   private final Instruction jump; // jump for the packet handler
@@ -146,7 +142,6 @@ public class PacketHandler implements Cloneable {
       if (next instanceof LVTInstruction) {
         LVTInstruction lvt = (LVTInstruction) next;
         if (lvt.store()) {
-          logger.info("Found lvt store {} for {}", next, pr.getInvoke());
           pr.setStore(next);
         }
       }

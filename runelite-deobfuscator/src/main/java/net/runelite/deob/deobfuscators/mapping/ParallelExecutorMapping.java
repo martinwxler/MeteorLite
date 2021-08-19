@@ -39,12 +39,9 @@ import net.runelite.asm.ClassGroup;
 import net.runelite.asm.Field;
 import net.runelite.asm.Method;
 import net.runelite.asm.attributes.code.Instruction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ParallelExecutorMapping {
 
-  private static final Logger logger = LoggerFactory.getLogger(ParallelExecutorMapping.class);
   public Method m1, m2;
   public boolean crashed;
   public int same;
@@ -140,7 +137,6 @@ public class ParallelExecutorMapping {
       assert f1.isStatic() == f2.isStatic();
 
       if (staticIndexer1.isStatic(f1) && staticIndexer2.isStatic(f2)) {
-        logger.debug("Mapping class of {} -> {} due to static initializer", f1, f2);
       } else if (f1.isStatic() || f2.isStatic()) {
         return;
       }
@@ -198,8 +194,6 @@ public class ParallelExecutorMapping {
         return Integer.compare(m1.weight, m2.weight);
       }
 
-      logger.debug("Count and weight for {} <-> {} are the same! Sorting from name", m1, m2);
-
       return getName(m1.getFrom()).compareTo(getName(m2.getFrom()));
     });
 
@@ -211,14 +205,10 @@ public class ParallelExecutorMapping {
 
     for (Mapping m : sorted) {
       if (reducedMap.containsKey(m.getFrom())) {
-        logger.debug("Reduced out mapping {} because of {}", m,
-            reducedMap.get(m.getFrom()).iterator().next());
         continue;
       }
 
       if (reverse.containsKey(m.getObject())) {
-        logger.debug("Redudced out mapping {} because of {}", m,
-            reducedMap.get(reverse.get(m.getObject())).iterator().next());
         continue;
       }
 
@@ -263,15 +253,10 @@ public class ParallelExecutorMapping {
       if (!map.containsKey(cf)) {
         ClassFile other = m.get(cf);
         if (other == null) {
-          logger.info("Unable to map class {}", cf);
         } else {
           // these are both probably very small
           long nonStaticFields = cf.getFields().stream().filter(f -> !f.isStatic()).count(),
               nonStaticMethods = cf.getMethods().stream().filter(m2 -> !m2.isStatic()).count();
-
-          logger.info(
-              "Build classes fallback {} -> {}, non static fields: {}, non static methods: {}",
-              cf, other, nonStaticFields, nonStaticMethods);
 
           Mapping ma = getMapping(cf, other);
           ma.inc();

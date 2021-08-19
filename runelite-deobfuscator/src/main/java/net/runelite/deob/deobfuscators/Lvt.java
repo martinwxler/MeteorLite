@@ -32,8 +32,6 @@ import net.runelite.asm.attributes.code.Instruction;
 import net.runelite.asm.attributes.code.instruction.types.LVTInstruction;
 import net.runelite.deob.Deobfuscator;
 import net.runelite.deob.deobfuscators.lvt.Mappings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This deobfuscator is only required for fernflower which has a difficult time when the same lvt
@@ -43,7 +41,6 @@ import org.slf4j.LoggerFactory;
  */
 public class Lvt implements Deobfuscator {
 
-  private static final Logger logger = LoggerFactory.getLogger(Lvt.class);
 
   private int count = 0;
 
@@ -83,8 +80,6 @@ public class Lvt implements Deobfuscator {
         process(m);
       }
     }
-
-    logger.info("Remapped {} lvt indexes", count);
   }
 
 }

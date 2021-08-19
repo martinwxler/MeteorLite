@@ -29,16 +29,13 @@ import com.google.gson.GsonBuilder;
 import java.awt.Color;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import net.runelite.http.api.gson.ColorTypeAdapter;
 import net.runelite.http.api.gson.IllegalReflectionExclusion;
 import net.runelite.http.api.gson.InstantTypeAdapter;
-import okhttp3.HttpUrl;
-import okhttp3.Interceptor;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 import org.sponge.util.Logger;
 
 public class RuneLiteAPI {
@@ -47,18 +44,22 @@ public class RuneLiteAPI {
   public static final Gson GSON;
   public static final MediaType JSON = MediaType.parse("application/json");
   private static final Logger logger = new Logger("");
-  private static final String BASE = "https://api.runelite.net";
-  private static final String WSBASE = "https://api.runelite.net/ws";
-  private static final String STATICBASE = "https://static.runelite.net";
-  private static final String METEOR_SESSION = "https://session.openosrs.dev";
+  private static final String BASE = "http://api.runelite.net";
+  private static final String WSBASE = "http://api.runelite.net/ws";
+  private static final String STATICBASE = "http://static.runelite.net";
+  private static final String METEOR_SESSION = "http://session.openosrs.dev";
   public static String userAgent;
   private static String version;
 
   static {
     version = "1.7.19";
     userAgent = "RuneLite/" + version + "-";
+      OkHttpClient.Builder builder = new OkHttpClient.Builder();
+      List<ConnectionSpec> specs = new ArrayList<>();
+      specs.add(ConnectionSpec.CLEARTEXT);
+    builder.connectionSpecs(specs);
 
-    CLIENT = new OkHttpClient.Builder()
+    CLIENT = builder
         .pingInterval(30, TimeUnit.SECONDS)
         .addNetworkInterceptor(new Interceptor() {
 

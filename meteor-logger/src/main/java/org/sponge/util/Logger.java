@@ -35,6 +35,11 @@ public class Logger {
     printColorMessageReplacers(ANSI_YELLOW, message, replacers);
   }
 
+  public void warn(String message, Exception e) {
+    printColorMessage(ANSI_RED, message);
+    e.printStackTrace();
+  }
+
   public void debug(Object message, Object... replacers) {
     printColorMessageReplacers(ANSI_GREEN, message, replacers);
   }
@@ -51,10 +56,9 @@ public class Logger {
     } else {
       tempName = name;
     }
-    String header = Message.buildMessage()
-        .changeColor(DEFAULT_CONTROLLER_COLOR)
-        .addText("[" + tempName + "] ")
-        .build();
+    String header = Message.newMessage()
+            .add(DEFAULT_CONTROLLER_COLOR, "[" + tempName + "] ")
+            .build();
     System.out.format(format, header, ansiColor + message);
     System.out.print(ANSI_RESET);
   }

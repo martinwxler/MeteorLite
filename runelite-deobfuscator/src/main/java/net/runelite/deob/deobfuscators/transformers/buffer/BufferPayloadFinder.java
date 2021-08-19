@@ -27,12 +27,7 @@ package net.runelite.deob.deobfuscators.transformers.buffer;
 import net.runelite.asm.ClassFile;
 import net.runelite.asm.Field;
 import net.runelite.asm.Type;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class BufferPayloadFinder {
-
-  private static final Logger logger = LoggerFactory.getLogger(BufferPayloadFinder.class);
 
   private final ClassFile bufferClass;
 
@@ -51,8 +46,6 @@ public class BufferPayloadFinder {
         buffer = field;
       }
     }
-
-    logger.info("Found offset {} buffer {}", offset, buffer);
   }
 
   public Field getOffset() {

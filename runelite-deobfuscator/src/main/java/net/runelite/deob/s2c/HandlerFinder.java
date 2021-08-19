@@ -46,12 +46,8 @@ import net.runelite.asm.attributes.code.instructions.VReturn;
 import net.runelite.asm.execution.Execution;
 import net.runelite.asm.execution.Frame;
 import net.runelite.asm.execution.InstructionContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class HandlerFinder {
-
-  private static final Logger logger = LoggerFactory.getLogger(HandlerFinder.class);
 
   private final ClassGroup group;
   private final Field packetType;
@@ -151,8 +147,6 @@ public class HandlerFinder {
         // Anything else which jumps to here instead needs to return.
         insertReturn(ins, jump, end);
       }
-
-      logger.info("Found packet handler {} opcode {}", handler, handler.getOpcode());
     }
 
     return handlers;
@@ -176,7 +170,6 @@ public class HandlerFinder {
       // this is part of if (opcode == 1 || opcode == 2 || ...) func();
       for (PacketHandler ph : i2h.get(i)) {
         handlers.getHandlers().remove(ph);
-        logger.debug("Removed duplicate handler {}", ph);
       }
     }
   }
@@ -224,13 +217,11 @@ public class HandlerFinder {
           // frame is stopped at jump prior to handler
           handler.frame = f.dup();
           e.frames.remove(handler.frame);
-          logger.info("Found frame for {}: {}", handler, handler.frame);
         }
         if (handler.getJump() == ctx.getInstruction()) {
           handler.jumpFrame = f.dup();
           e.frames.remove(handler.jumpFrame);
           assert handler.jumpFrame.isExecuting();
-          logger.info("Found jump frame for {}: {}", handler, handler.jumpFrame);
         }
       }
     }
@@ -248,7 +239,6 @@ public class HandlerFinder {
     }
 
     // insert return before end
-    logger.info("Inserting return before {}", end);
 
     Instruction ret = new VReturn(ins);
     ins.addInstruction(idx, ret);

@@ -34,12 +34,8 @@ import net.runelite.asm.attributes.code.Instructions;
 import net.runelite.asm.attributes.code.Label;
 import net.runelite.asm.attributes.code.instructions.Goto;
 import net.runelite.deob.Deobfuscator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ControlFlowDeobfuscator implements Deobfuscator {
-
-  private static final Logger logger = LoggerFactory.getLogger(ControlFlowDeobfuscator.class);
 
   private int insertedJump;
   private int placedBlocks;
@@ -60,19 +56,13 @@ public class ControlFlowDeobfuscator implements Deobfuscator {
       }
     }
 
-    logger.info("Inserted {} jumps, reordered {} blocks, and removed {} jumps. jump delta {}",
-        insertedJump, placedBlocks, removedJumps, insertedJump - removedJumps);
+
   }
 
   private void run(Code code) {
     Instructions ins = code.getInstructions();
 
     ControlFlowGraph graph = new ControlFlowGraph(code);
-
-    if (logger.isDebugEnabled()) // graph.toString() is expensive
-    {
-      logger.debug(graph.toString());
-    }
 
     // Clear existing instructions as we are going to rebuild them
     ins.clear();

@@ -99,14 +99,14 @@ public class ScriptVM extends AbstractInjector {
 			if_icmpge L52
 
 		 */
-    final ClassFile deobScript = inject.getDeobfuscated().findClass("Script");
+    final ClassFile deobScript = inject.getDeobfuscated().findClass("osrs/Script");
 
     final String scriptObName = InjectUtil.getObfuscatedName(deobScript);
 
     final Field scriptInstructions = InjectUtil.findField(inject, "opcodes", "Script");
     final Field scriptStatePC = InjectUtil.findField(inject, "pc", "ScriptFrame");
 
-    final ClassFile vanillaClient = vanilla.findClass("Client");
+    final ClassFile vanillaClient = vanilla.findClass("osrs/Client");
 
     // Next 4 should be injected by mixins, so don't need fail fast
     final Method runScript = vanillaClient.findStaticMethod("copy$runScript");

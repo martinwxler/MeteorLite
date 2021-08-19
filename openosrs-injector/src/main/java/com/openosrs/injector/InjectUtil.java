@@ -45,6 +45,7 @@ import net.runelite.asm.signature.Signature;
 import net.runelite.deob.DeobAnnotations;
 import net.runelite.deob.deobfuscators.arithmetic.DMath;
 import org.jetbrains.annotations.Nullable;
+import org.sponge.util.Logger;
 
 public interface InjectUtil {
 
@@ -141,7 +142,8 @@ public interface InjectUtil {
       for (Method m : cf.getMethods()) {
         if (m.getName().equals(name)) {
           if (!notStatic || !m.isStatic()) {
-            if (sig == null || sig.test(m.getDescriptor())) {
+            Signature s = new Signature(m.getDescriptor().toString().replace("osrs/", ""));
+            if (sig == null || sig.test(s)) {
               return returnDeob ? m : data.toVanilla(m);
             }
           }
@@ -153,9 +155,12 @@ public interface InjectUtil {
   }
 
   static ClassFile findClassOrThrow(ClassGroup group, String name) {
-    ClassFile clazz = group.findClass(name);
+    ClassFile clazz = group.findClass("osrs/" + name);
     if (clazz == null) {
-      throw new InjectException("Hint class " + name + " doesn't exist");
+      clazz = group.findClass(name);
+      if (clazz == null) {
+        throw new InjectException("Hint class " + name + " doesn't exist");
+      }
     }
 
     return clazz;
@@ -168,7 +173,8 @@ public interface InjectUtil {
     do {
       for (Method method : clazz.getMethods()) {
         if (method.getName().equals(name)) {
-          if (type.test(method.getDescriptor())) {
+          Signature s = new Signature(method.getDescriptor().toString().replace("osrs/", ""));
+          if (type.test(s)) {
             return method;
           }
         }
@@ -233,6 +239,33 @@ public interface InjectUtil {
         return field;
       }
     }
+    String s = type.toString().replaceFirst("L", "Losrs/");
+    type = Type.getType(s, 0);
+    if (classHint != null) {
+      ClassFile clazz = findClassOrThrow(deob, classHint);
+
+      if (type == null) {
+        field = clazz.findField(name);
+      } else {
+        field = clazz.findField(name, type);
+      }
+
+      if (field != null) {
+        return field;
+      }
+    }
+
+    for (ClassFile clazz : deob) {
+      if (type == null) {
+        field = clazz.findField(name);
+      } else {
+        field = clazz.findField(name, type);
+      }
+
+      if (field != null) {
+        return field;
+      }
+    }
 
     throw new InjectException(
         String.format("Static field %s doesn't exist", (type != null ? type + " " : "") + name));
@@ -255,7 +288,11 @@ public interface InjectUtil {
   }
 
   static Field findField(InjectData data, String name, String hintClass) {
-    return data.getVanilla().findClass(hintClass).findField(name);
+    try {
+      return data.getVanilla().findClass(hintClass).findField(name);
+    } catch (Exception e) {
+      return data.getVanilla().findClass("osrs/" + hintClass).findField(name);
+    }
   }
 
   static Field findField(ClassGroup group, String name, String hintClass) {
@@ -332,7 +369,12 @@ public interface InjectUtil {
     return api;
   }
 
-  static Type deobToVanilla(InjectData data, Type deobT) {
+  static Type deobToVanilla(InjectData data, Type deob) {
+    Type deobT;
+    if (!deob.toString().contains("/"))
+      deobT = new Type(deob.toString().replaceFirst("L", "Losrs/"));
+    else
+      deobT = deob;
     if (deobT.isPrimitive()) {
       return deobT;
     }
@@ -346,7 +388,7 @@ public interface InjectUtil {
   }
 
   static boolean apiToDeobSigEquals(InjectData data, Signature deobSig, Signature apiSig) {
-    return deobSig.equals(apiToDeob(data, apiSig));
+    return deobSig.toString().replace("osrs/", "").equals(apiToDeob(data, apiSig).toString());
   }
 
   static boolean argsMatch(Signature a, Signature b) {

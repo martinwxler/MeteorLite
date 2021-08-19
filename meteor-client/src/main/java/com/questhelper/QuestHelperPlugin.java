@@ -818,7 +818,6 @@ public class QuestHelperPlugin extends Plugin
 			throw new QuestInstantiationException(ex);
 		}
 
-		log.debug("Loaded quest helper {}", clazz.getSimpleName());
 		return questHelper;
 	}
 }

@@ -9,13 +9,10 @@ import net.runelite.asm.Named;
 import net.runelite.asm.attributes.Annotated;
 import net.runelite.deob.Deob;
 import net.runelite.deob.DeobAnnotations;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class AnnotationAdder {
 
   private final ClassGroup group;
-  private final Logger log = LoggerFactory.getLogger(AnnotationAdder.class);
   AnnotationAdder(ClassGroup group) {
     this.group = group;
   }
@@ -29,8 +26,6 @@ public class AnnotationAdder {
       if (c.getName().contains("runelite")) {
         continue;
       }
-
-      log.debug("Checking {}", c.toString());
 
       String implementingName = DeobAnnotations.getImplements(c);
       if (!Strings.isNullOrEmpty(implementingName)) {
@@ -54,8 +49,6 @@ public class AnnotationAdder {
         }
       }
     }
-
-    log.info("Changed {} classes, {} methods, {} fields", impl, meth, field);
   }
 
   private <T extends Annotated & Named> boolean addExport(T m) {
@@ -69,7 +62,6 @@ public class AnnotationAdder {
       return false;
     }
 
-    log.info("Changed export from {} to {}", exportedName, methodName);
     m.findAnnotation(DeobAnnotations.EXPORT, true).setElement(methodName);
     return true;
   }

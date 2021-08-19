@@ -37,12 +37,9 @@ import net.runelite.asm.attributes.code.InstructionType;
 import net.runelite.asm.attributes.code.Instructions;
 import net.runelite.asm.attributes.code.instruction.types.PushConstantInstruction;
 import net.runelite.asm.attributes.code.instruction.types.SetFieldInstruction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PacketTypeFinder {
 
-  private static final Logger logger = LoggerFactory.getLogger(PacketTypeFinder.class);
 
   private final ClassGroup group;
 
@@ -68,8 +65,6 @@ public class PacketTypeFinder {
         .max((entry1, entry2) -> Integer.compare(entry1.getValue(), entry2.getValue()))
         .get()
         .getKey();
-
-    logger.info("Identified {} as packetType", packetType);
   }
 
   private void run(Code code) {

@@ -131,10 +131,7 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
 
     decompiler.decompileContext();
 
-    logger.info(Message.buildMessage()
-        .changeColor(ANSI_YELLOW)
-        .addText("[Extracting injected-client]")
-        .build());
+    logger.info(Message.newMessage().add(ANSI_YELLOW, "[Extracting injected-client]").build());
     File jarFile = new File("./build/decompiled/injected-client.jar");
     String srcDest = "../injected-client/src/main/java/";
     File rsDir = new File("../injected-client/src/main/java/net/runelite/rs/");
@@ -187,9 +184,8 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
       while ((st = br.readLine()) != null) {
         if (st.contains("final void resizeCanvas() {")) {
           engineLines.add("public void resizeCanvas() {");
-          logger.info(Message.buildMessage()
-              .changeColor(ANSI_YELLOW)
-              .addText("[Patched GameEngine resizeCanvas() access]")
+          logger.info(Message.newMessage()
+                          .add(ANSI_YELLOW, "[Patched GameEngine resizeCanvas() access]")
               .build());
         } else {
           engineLines.add(st);
@@ -219,9 +215,8 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
       while ((st = br.readLine()) != null) {
         if (st.contains("} catch (InterruptedException var18) {")) {
           bufferedSinkLines.add("} catch (Exception var18) {");
-          logger.info(Message.buildMessage()
-              .changeColor(ANSI_YELLOW)
-              .addText("[Patched BufferedSink run() Exception runtime crash]")
+          logger.info(Message.newMessage()
+                          .add(ANSI_YELLOW, "[Patched BufferedSink run() Exception runtime crash]")
               .build());
         } else if (st.contains("this.wait();")) {
           bufferedSinkLines.add("wait();");

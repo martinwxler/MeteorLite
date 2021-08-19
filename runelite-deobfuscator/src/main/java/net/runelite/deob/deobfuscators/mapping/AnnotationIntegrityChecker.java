@@ -33,14 +33,11 @@ import net.runelite.asm.Method;
 import net.runelite.deob.DeobAnnotations;
 import net.runelite.mapping.Import;
 import net.runelite.rs.api.RSClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class AnnotationIntegrityChecker {
 
   public static final Class<?> CLIENT_CLASS = RSClient.class;
   public static final String API_PACKAGE_BASE = "net.runelite.rs.api.RS";
-  private static final Logger logger = LoggerFactory.getLogger(AnnotationIntegrityChecker.class);
   private final ClassGroup one;
   private final ClassGroup two;
   private final ParallelExecutorMapping mapping;
@@ -73,7 +70,6 @@ public class AnnotationIntegrityChecker {
         if (other == null) {
           if (!f1.isStatic() && isImported) {
             ++errors;
-            logger.error("No other class for {} which contains imported field {}", cf, f1);
           }
 
           continue;
@@ -87,15 +83,10 @@ public class AnnotationIntegrityChecker {
 
         if (f2 == null) {
           if (isImported) {
-            logger.error("Missing IMPORTED field on {} named {}",
-                other,
-                DeobAnnotations.getExportedName(f1));
 
             ++errors;
           } else {
-            logger.warn("Missing exported field on {} named {}",
-                other,
-                DeobAnnotations.getExportedName(f1));
+
 
             ++warnings;
           }
@@ -109,7 +100,6 @@ public class AnnotationIntegrityChecker {
         if (other == null) {
           if (!m1.isStatic() && isImported) {
             ++errors;
-            logger.error("No other class for {} which contains imported method {}", cf, m1);
           }
 
           continue;
@@ -123,17 +113,11 @@ public class AnnotationIntegrityChecker {
 
         if (m2 == null) {
           if (isImported) {
-            logger.error("Missing IMPORTED method on {} named {} ({})",
-                other,
-                DeobAnnotations.getExportedName(m1),
-                m1);
+
 
             ++errors;
           } else {
-            logger.warn("Missing exported method on {} named {} ({})",
-                other,
-                DeobAnnotations.getExportedName(m1),
-                m1);
+
 
             ++warnings;
           }
@@ -171,7 +155,6 @@ public class AnnotationIntegrityChecker {
     for (java.lang.reflect.Method method : clazz.getDeclaredMethods()) {
       Import im = method.getAnnotation(Import.class);
       if (im != null && im.value().equals(name)) {
-        logger.debug(name);
         return false;
       }
     }

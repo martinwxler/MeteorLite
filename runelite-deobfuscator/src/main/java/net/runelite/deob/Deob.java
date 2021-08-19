@@ -55,13 +55,9 @@ import net.runelite.deob.deobfuscators.transformers.GetPathTransformer;
 import net.runelite.deob.deobfuscators.transformers.OpcodesTransformer;
 import net.runelite.deob.deobfuscators.transformers.ReflectionTransformer;
 import net.runelite.deob.util.JarUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class Deob {
 
   public static final int OBFUSCATED_NAME_MAX_LEN = 3;
-  private static final Logger logger = LoggerFactory.getLogger(Deob.class);
   private static final boolean CHECK_EXEC = false;
 
   public static void main(String[] args) throws IOException {
@@ -70,7 +66,6 @@ public class Deob {
       System.exit(-1);
     }
 
-    logger.info("Deobfuscator revision {}", DeobProperties.getRevision());
 
     Stopwatch stopwatch = Stopwatch.createStarted();
 
@@ -137,7 +132,6 @@ public class Deob {
     JarUtil.save(group, new File(args[1]));
 
     stopwatch.stop();
-    logger.info("Done in {}", stopwatch);
   }
 
   public static boolean isObfuscated(String name) {
@@ -182,9 +176,6 @@ public class Deob {
     Stopwatch stopwatch = Stopwatch.createStarted();
     deob.run(group);
     stopwatch.stop();
-
-    logger.info("{} took {}", deob.getClass().getSimpleName(), stopwatch);
-
     // check code is still correct
     if (CHECK_EXEC) {
       Execution execution = new Execution(group);

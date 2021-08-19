@@ -40,12 +40,7 @@ import net.runelite.asm.attributes.code.instruction.types.PushConstantInstructio
 import net.runelite.asm.attributes.code.instructions.GetStatic;
 import net.runelite.asm.attributes.code.instructions.LDC;
 import net.runelite.asm.attributes.code.instructions.PutStatic;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 class OpcodeReplacer {
-
-  private static final Logger logger = LoggerFactory.getLogger(OpcodeReplacer.class);
 
   public void run(ClassGroup group, Collection<PacketWrite> writes) {
     int count = 0;
@@ -90,7 +85,5 @@ class OpcodeReplacer {
 
       ++count;
     }
-
-    logger.info("Injected {} packet writes", count);
   }
 }

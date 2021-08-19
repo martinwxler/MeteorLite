@@ -19,8 +19,6 @@ dependencies {
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
     compileOnly 'org.projectlombok:lombok:_'
     annotationProcessor 'org.projectlombok:lombok:_'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:_'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 
 test {

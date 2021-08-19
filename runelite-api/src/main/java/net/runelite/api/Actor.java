@@ -362,6 +362,7 @@ public interface Actor extends Renderable, Locatable {
    * @param frame the animation frame
    * @deprecated use setAnimationFrame
    */
+  @Deprecated
   void setActionFrame(int frame);
 
   int getActionFrameCycle();

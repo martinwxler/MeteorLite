@@ -69,12 +69,9 @@ import net.runelite.asm.execution.MethodContext;
 import net.runelite.asm.execution.StackContext;
 import net.runelite.deob.DeobAnnotations;
 import net.runelite.deob.Deobfuscator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ModArith implements Deobfuscator {
 
-  private static final Logger logger = LoggerFactory.getLogger(ModArith.class);
   private final Map<Field, FieldInfo> fieldInfo = new HashMap<>();
   private ClassGroup group;
   private Execution execution;
@@ -620,15 +617,12 @@ public class ModArith implements Deobfuscator {
     int i = 0;
     Encryption encr = new Encryption();
     for (Pair pair : pairs) {
-      logger.debug("Processing {} getter {} setter {}", pair.field.getName(), pair.getter,
-          pair.setter);
 
       encr.addPair(pair);
       encryption.addPair(pair); // sum total
       ++i;
     }
 
-    logger.info("Done processing {}", i);
 
     if (i > 0) {
       insertGetterSetterMuls(encr);

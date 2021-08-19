@@ -32,12 +32,8 @@ import net.runelite.asm.Field;
 import net.runelite.asm.Method;
 import net.runelite.asm.attributes.Annotated;
 import net.runelite.deob.DeobAnnotations;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class AnnotationMapper {
-
-  private static final Logger logger = LoggerFactory.getLogger(AnnotationMapper.class);
 
   private final ClassGroup source, target;
   private final ParallelExecutorMapping mapping;
@@ -57,7 +53,6 @@ public class AnnotationMapper {
       count += run(c, other);
     }
 
-    logger.info("Copied {} annotations", count);
   }
 
   private int run(ClassFile from, ClassFile to) {
@@ -67,7 +62,6 @@ public class AnnotationMapper {
       if (to != null) {
         count += copyAnnotations(from, to);
       } else {
-        logger.warn("Class {} has copyable annotations but there is no mapped class", from);
       }
     }
 
@@ -78,8 +72,6 @@ public class AnnotationMapper {
 
       Field other = (Field) mapping.get(f);
       if (other == null) {
-        logger.warn("Unable to map annotated field {} named {}", f,
-            DeobAnnotations.getExportedName(f));
         continue;
       }
 
@@ -93,8 +85,6 @@ public class AnnotationMapper {
 
       Method other = (Method) mapping.get(m);
       if (other == null) {
-        logger.warn("Unable to map annotated method {} named {}", m,
-            DeobAnnotations.getExportedName(m));
         continue;
       }
 

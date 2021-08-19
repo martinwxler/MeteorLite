@@ -30,12 +30,7 @@ import net.runelite.asm.Method;
 import net.runelite.asm.attributes.Code;
 import net.runelite.asm.attributes.code.Instruction;
 import net.runelite.asm.attributes.code.instruction.types.InvokeInstruction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class RWOpcodeFinder {
-
-  private static final Logger logger = LoggerFactory.getLogger(RWOpcodeFinder.class);
 
   private final ClassGroup group;
 
@@ -74,8 +69,6 @@ public class RWOpcodeFinder {
         find(ic, m, code);
       }
     }
-
-    logger.debug("Found readOpcode {}, writeOpcode {}", readOpcode, writeOpcode);
   }
 
   private void find(IsaacCipherFinder ic, Method method, Code code) {

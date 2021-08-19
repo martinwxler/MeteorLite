@@ -35,12 +35,8 @@ import net.runelite.asm.attributes.code.instructions.InvokeStatic;
 import net.runelite.asm.attributes.code.instructions.InvokeVirtual;
 import net.runelite.asm.signature.Signature;
 import net.runelite.deob.Transformer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ReflectionTransformer implements Transformer {
-
-  private static final Logger logger = LoggerFactory.getLogger(ReflectionTransformer.class);
 
   @Override
   public void transform(ClassGroup group) {
@@ -89,8 +85,6 @@ public class ReflectionTransformer implements Transformer {
               new Signature("(Ljava/lang/String;)Ljava/lang/Class;")
           )
       );
-
-      logger.info("Transformed Class.forName call");
     }
   }
 
@@ -113,8 +107,6 @@ public class ReflectionTransformer implements Transformer {
           )
       );
       instructions.replace(iv, is);
-
-      logger.info("Transformed Method.getName call");
     }
   }
 
@@ -137,8 +129,6 @@ public class ReflectionTransformer implements Transformer {
           )
       );
       instructions.replace(iv, is);
-
-      logger.info("Transformed Method.getParameterTypes call");
     }
   }
 
@@ -161,8 +151,6 @@ public class ReflectionTransformer implements Transformer {
           )
       );
       instructions.replace(iv, is);
-
-      logger.info("Transformed Class.getDeclaredField call");
     }
   }
 
@@ -183,8 +171,6 @@ public class ReflectionTransformer implements Transformer {
           )
       );
       instructions.replace(iv, is);
-
-      logger.info("Transformed Field.setInt call");
     }
   }
 
@@ -205,8 +191,6 @@ public class ReflectionTransformer implements Transformer {
           )
       );
       instructions.replace(iv, is);
-
-      logger.info("Transformed Field.getInt call");
     }
   }
 
@@ -228,8 +212,6 @@ public class ReflectionTransformer implements Transformer {
           )
       );
       instructions.replace(iv, is);
-
-      logger.info("Transformed Method.invoke call");
     }
   }
 }

@@ -14,8 +14,6 @@ repositories {
 dependencies {
     implementation(project(":openosrs-injector"))
     implementation(project(":meteor-logger"))
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:_'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 
 test {

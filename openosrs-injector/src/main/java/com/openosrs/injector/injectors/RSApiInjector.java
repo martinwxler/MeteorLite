@@ -52,6 +52,7 @@ import net.runelite.asm.Type;
 import net.runelite.asm.attributes.Annotated;
 import net.runelite.asm.signature.Signature;
 import net.runelite.deob.DeobAnnotations;
+import org.sponge.util.Logger;
 
 public class RSApiInjector extends AbstractInjector {
 
@@ -65,7 +66,7 @@ public class RSApiInjector extends AbstractInjector {
   public void inject() {
     for (final ClassFile deobClass : inject.getDeobfuscated()) {
       final RSApiClass implementingClass = inject.getRsApi()
-          .findClass(API_BASE + deobClass.getName());
+          .findClass(API_BASE + deobClass.getName().replace("osrs/", ""));
 
       injectFields(deobClass, implementingClass);
       injectMethods(deobClass, implementingClass);
@@ -73,7 +74,7 @@ public class RSApiInjector extends AbstractInjector {
 
     retryFailures();
 
-    //log.info("[INFO] Injected {} getters, {} setters, and {} invokers", get, set, voke);
+    log.info("[INFO] Injected {} getters, {} setters, and {} invokers", get, set, voke);
   }
 
   private void injectFields(ClassFile deobClass, RSApiClass implementingClass) {
@@ -91,7 +92,6 @@ public class RSApiInjector extends AbstractInjector {
       ListIterator<RSApiMethod> it = matching.listIterator();
       while (it.hasNext()) {
         RSApiMethod apiMethod = it.next();
-
         if (apiMethod.isInjected()) {
           it.remove();
           continue;
@@ -110,7 +110,6 @@ public class RSApiInjector extends AbstractInjector {
         }
 
         final Signature sig = apiMethod.getSignature();
-
         if (sig.size() == 1) {
           if (sig.isVoid() || sig.getReturnValue()
               .equals(Type.fromAsmString(apiMethod.getClazz().getName()))) {
@@ -126,7 +125,7 @@ public class RSApiInjector extends AbstractInjector {
           }
         }
 
-        it.remove();
+        //it.remove();
       }
 
       if (matching.size() == 0) {
@@ -230,7 +229,9 @@ public class RSApiInjector extends AbstractInjector {
     final List<RSApiMethod> matching = new ArrayList<>();
 
     if (statik) {
+
       for (RSApiClass api : inject.getRsApi()) {
+
         api.fetchImported(matching, exportedName);
       }
     } else if (implemented != null) {

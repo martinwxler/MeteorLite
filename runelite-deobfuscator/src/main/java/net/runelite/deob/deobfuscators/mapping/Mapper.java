@@ -31,12 +31,9 @@ import java.util.stream.Collectors;
 import net.runelite.asm.ClassFile;
 import net.runelite.asm.ClassGroup;
 import net.runelite.asm.Method;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Mapper {
 
-  private static final Logger logger = LoggerFactory.getLogger(Mapper.class);
 
   private final ClassGroup source, target;
   private ParallelExecutorMapping mapping;
@@ -92,7 +89,6 @@ public class Mapper {
 
       mapping.map(null, mapping.m1, mapping.m2).wasExecuted = true;
 
-      logger.debug("map methods mapped {} -> {}", mapping.m1, mapping.m2);
 
       pmes.add(mapping);
     }
@@ -125,7 +121,6 @@ public class Mapper {
       map.wasExecuted = true;
       map.setWeight(mapping.same);
 
-      logger.debug("map static methods mapped {} -> {}", mapping.m1, mapping.m2);
 
       pmes.add(mapping);
     }
@@ -187,9 +182,6 @@ public class Mapper {
 
         map.map(null, map.m1, map.m2);
 
-        logger.debug("Mapped {} -> {} based on exiting class mapping and method signatures", map.m1,
-            map.m2);
-
         mapping.merge(map);
       }
     }
@@ -220,7 +212,6 @@ public class Mapper {
 
       // m was picked up as an invoke instruction when mapping
       // something else, but wasn't executed itself
-      logger.debug("Wasn't executed {}", m);
 
       ParallelExecutorMapping ma = MappingExecutorUtil.map(m1, m2);
       m.wasExecuted = true;

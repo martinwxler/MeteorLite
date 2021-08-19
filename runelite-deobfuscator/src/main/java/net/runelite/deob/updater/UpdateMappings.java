@@ -33,12 +33,8 @@ import net.runelite.deob.deobfuscators.mapping.Mapper;
 import net.runelite.deob.deobfuscators.mapping.ParallelExecutorMapping;
 import net.runelite.deob.deobfuscators.transformers.ScriptOpcodesTransformer;
 import net.runelite.deob.util.JarUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class UpdateMappings {
 
-  private static final Logger logger = LoggerFactory.getLogger(UpdateMappings.class);
 
   private final ClassGroup group1, group2;
 
@@ -74,7 +70,6 @@ public class UpdateMappings {
     int errors = aic.getErrors();
 
     if (errors > 0) {
-      logger.warn("Errors in annotation checker, exiting");
       System.exit(-1);
     }
 

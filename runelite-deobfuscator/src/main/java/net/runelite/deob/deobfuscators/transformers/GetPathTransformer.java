@@ -33,12 +33,8 @@ import net.runelite.asm.attributes.code.instruction.types.InvokeInstruction;
 import net.runelite.asm.attributes.code.instructions.LDC;
 import net.runelite.asm.attributes.code.instructions.Pop;
 import net.runelite.deob.Transformer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GetPathTransformer implements Transformer {
-
-  private static final Logger logger = LoggerFactory.getLogger(GetPathTransformer.class);
 
   private boolean done = false;
 
@@ -49,8 +45,6 @@ public class GetPathTransformer implements Transformer {
         transform(m);
       }
     }
-
-    logger.info("Transformed: " + done);
   }
 
   private void transform(Method m) {

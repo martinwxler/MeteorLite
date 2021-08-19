@@ -31,12 +31,8 @@ import net.runelite.asm.Method;
 import net.runelite.asm.attributes.code.instruction.types.ReturnInstruction;
 import net.runelite.asm.attributes.code.instructions.InvokeStatic;
 import net.runelite.asm.attributes.code.instructions.Return;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class StaticStep {
-
-  private static final Logger logger = LoggerFactory.getLogger(StaticStep.class);
 
   private static boolean isLoop(Frame f) {
     Set<Method> set = new HashSet<>();
@@ -102,8 +98,6 @@ public class StaticStep {
     //assert f.getInstructions().isEmpty() == false; // this is wrong?
     f2.returnTo.getInstructions().addAll(f.getInstructions()); // also wrong?
 
-    logger.trace("Stepping into {} from {}", f2, f);
-
     return f2;
   }
 
@@ -143,8 +137,6 @@ public class StaticStep {
       // set the return value of the invokestatic ins
       invokePushed.returnSource = returnValue;
     }
-
-    logger.trace("Stepping out of {} into {}", f, r);
 
     return r;
   }

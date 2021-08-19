@@ -43,12 +43,7 @@ import net.runelite.asm.attributes.code.instructions.LDC;
 import net.runelite.asm.attributes.code.instructions.PutStatic;
 import net.runelite.asm.signature.Signature;
 import net.runelite.deob.Deobfuscator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class EnumDeobfuscator implements Deobfuscator {
-
-  private static final Logger logger = LoggerFactory.getLogger(EnumDeobfuscator.class);
 
   private static final net.runelite.asm.pool.Method ENUM_INIT = new net.runelite.asm.pool.Method(
       new net.runelite.asm.pool.Class("java/lang/Enum"),
@@ -62,8 +57,6 @@ public class EnumDeobfuscator implements Deobfuscator {
       if (!isEnum(cf) || cf.isEnum()) {
         continue;
       }
-
-      logger.info("Converting {} to an enum", cf.getName());
       makeEnum(cf);
     }
   }

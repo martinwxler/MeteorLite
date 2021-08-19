@@ -52,12 +52,9 @@ import net.runelite.asm.execution.MethodContext;
 import net.runelite.asm.execution.StackContext;
 import net.runelite.deob.DeobAnnotations;
 import net.runelite.deob.Deobfuscator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ConstantParameter implements Deobfuscator {
 
-  private static final Logger logger = LoggerFactory.getLogger(ConstantParameter.class);
 
   private final Map<ConstantMethodParameter, ConstantMethodParameter> parameters = new HashMap<>();
   private final Multimap<Method, ConstantMethodParameter> mparams = HashMultimap.create();
@@ -407,8 +404,6 @@ public class ConstantParameter implements Deobfuscator {
     execution.addMethodContextVisitor(m -> count += removeDeadOperations(m));
     execution.populateInitialMethods();
     execution.run();
-
-    logger.info("Removed {} logically dead conditional jumps", count);
   }
 
 }

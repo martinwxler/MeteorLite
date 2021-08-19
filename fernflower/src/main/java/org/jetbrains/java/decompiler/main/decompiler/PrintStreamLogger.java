@@ -16,6 +16,7 @@
 package org.jetbrains.java.decompiler.main.decompiler;
 
 import static org.sponge.util.Logger.ANSI_CYAN;
+import static org.sponge.util.Logger.ANSI_YELLOW;
 
 import java.io.PrintStream;
 import org.jetbrains.java.decompiler.main.extern.IFernflowerLogger;
@@ -52,11 +53,10 @@ public class PrintStreamLogger extends IFernflowerLogger {
   @Override
   public void startReadingClass(String className) {
     if (accepts(Severity.INFO)) {
-      logger.info(Message.buildMessage()
-          .addText("Decompiling class ")
-          .changeColor(ANSI_CYAN)
-          .addText(className)
-          .build());
+      logger.info(Message.newMessage()
+                      .add(ANSI_YELLOW, "Decompiling class ")
+                      .add(ANSI_CYAN, className)
+                      .build());
       ++indent;
     }
   }

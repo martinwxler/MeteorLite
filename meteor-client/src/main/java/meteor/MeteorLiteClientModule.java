@@ -55,7 +55,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import lombok.Getter;
 import meteor.callback.Hooks;
 import meteor.chat.ChatMessageManager;
 import meteor.config.ChatColorConfig;
@@ -120,6 +119,8 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
 
   @Inject
   private WorldService worldService;
+
+
 
   private static Map<String, String> properties;
   private static Map<String, String> parameters;
@@ -486,7 +487,7 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
   @Singleton
   Applet provideApplet() {
     try {
-      return (Applet) ClassLoader.getSystemClassLoader().loadClass("Client").newInstance();
+      return (Applet) ClassLoader.getSystemClassLoader().loadClass("osrs.Client").newInstance();
     } catch (Exception e) {
       e.printStackTrace();
     }

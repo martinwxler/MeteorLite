@@ -50,12 +50,8 @@ import net.runelite.deob.deobfuscators.transformers.buffer.BufferMethodInjector;
 import net.runelite.deob.deobfuscators.transformers.buffer.BufferPayloadFinder;
 import net.runelite.deob.deobfuscators.transformers.buffer.PacketFlushFinder;
 import org.objectweb.asm.Opcodes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class RuneliteBufferTransformer implements Transformer {
-
-  private static final Logger logger = LoggerFactory.getLogger(RuneliteBufferTransformer.class);
 
   private static final String RUNELITE_PACKET = "RUNELITE_PACKET";
   private static final String RUNELITE_INIT_PACKET = "runeliteInitPacket";
@@ -109,7 +105,6 @@ public class RuneliteBufferTransformer implements Transformer {
     try {
       bmi.inject();
     } catch (IOException ex) {
-      logger.warn("unable to inject buffer methods", ex);
     }
   }
 
@@ -164,8 +159,6 @@ public class RuneliteBufferTransformer implements Transformer {
     );
     instructions.addInstruction(idx++, new ALoad(instructions, 0));
     instructions.addInstruction(idx++, new InvokeVirtual(instructions, method));
-
-    logger.info("Injected finish/init packet calls into {}", writeOpcode);
   }
 
   private void injectPacketFinish(ClassGroup group) {

@@ -47,12 +47,8 @@ import net.runelite.asm.signature.util.VirtualMethods;
 import net.runelite.deob.DeobAnnotations;
 import net.runelite.deob.Deobfuscator;
 import net.runelite.deob.util.NameMappings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Renamer implements Deobfuscator {
-
-  private static final Logger logger = LoggerFactory.getLogger(Renamer.class);
 
   private final NameMappings mappings;
 
@@ -254,8 +250,5 @@ public class Renamer implements Deobfuscator {
     }
 
     this.regeneratePool(group);
-
-    logger.info("Renamed {} classes, {} fields, {} methods, and {} parameters", classes, fields,
-        methods, parameters);
   }
 }

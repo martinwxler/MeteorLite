@@ -20,8 +20,6 @@ import net.runelite.deob.updater.mappingdumper.MappedClass;
 import net.runelite.deob.updater.mappingdumper.MappedField;
 import net.runelite.deob.updater.mappingdumper.MappedMethod;
 import net.runelite.deob.updater.mappingdumper.MappingDump;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MappingDumper {
 
@@ -29,7 +27,6 @@ public class MappingDumper {
   private static final Map<Field, MappedField> fieldMap = new HashMap<>();
   private static final Map<Method, MappedMethod> methodMap = new HashMap<>();
   private static ClassGroup group;
-  private final Logger log = LoggerFactory.getLogger(MappingDumper.class);
 
   public MappingDumper(ClassGroup group) {
     MappingDumper.group = group;
@@ -71,19 +68,6 @@ public class MappingDumper {
     final MappingDump dump = new MappingDump().visitGroup(group);
     dump.revision = Integer.parseInt(DeobProperties.getRevision());
 
-    log.info("RS version {}. Dump took {}", dump.revision, st.toString());
-    log.info("Total classes: {}. Total mapped classes: {}. ({}%)", dump.totalClasses,
-        dump.totalNamedClasses, dump.totalNamedClasses * 100 / dump.totalClasses);
-    log.info("Total non static methods: {}. Total mapped non static methods: {}. ({}%)",
-        dump.totalNonStaticMethods, dump.totalNamedNonStaticMethods,
-        dump.totalNamedNonStaticMethods * 100 / dump.totalNamedMethods);
-    log.info("Total methods: {}. Total mapped methods: {}. ({}%)", dump.totalMethods,
-        dump.totalNamedMethods, dump.totalNamedMethods * 100 / dump.totalMethods);
-    log.info("Total fields: {}. Total mapped fields: {}. ({}%)", dump.totalFields,
-        dump.totalNamedFields, dump.totalNamedFields * 100 / dump.totalFields);
-    log.info("Total non static fields: {}. Total mapped non static fields: {}. ({}%)",
-        dump.totalNonStaticFields, dump.totalNamedNonStaticFields,
-        dump.totalNamedNonStaticFields * 100 / dump.totalNamedFields);
     writeJson(dump, outputFile);
   }
 
@@ -117,7 +101,6 @@ public class MappingDumper {
       writer.endArray();
       writer.endObject();
     } catch (IOException e) {
-      log.error("Error saving json: ", e);
     }
   }
 

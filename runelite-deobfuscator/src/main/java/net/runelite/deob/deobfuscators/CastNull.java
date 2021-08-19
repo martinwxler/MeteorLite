@@ -37,12 +37,9 @@ import net.runelite.asm.execution.InstructionContext;
 import net.runelite.asm.execution.MethodContext;
 import net.runelite.asm.execution.StackContext;
 import net.runelite.deob.Deobfuscator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CastNull implements Deobfuscator {
 
-  private static final Logger logger = LoggerFactory.getLogger(CastNull.class);
   private final List<Instruction> interesting = new ArrayList<>();
   private final List<Instruction> notInteresting = new ArrayList<>();
   private int removed;
@@ -81,8 +78,6 @@ public class CastNull implements Deobfuscator {
     execution.addMethodContextVisitor(i -> visit(i));
     execution.populateInitialMethods();
     execution.run();
-
-    logger.info("Removed {} casts on null", removed);
   }
 
 }

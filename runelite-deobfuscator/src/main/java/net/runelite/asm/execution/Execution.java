@@ -42,12 +42,9 @@ import net.runelite.asm.Field;
 import net.runelite.asm.Method;
 import net.runelite.asm.attributes.code.Instruction;
 import net.runelite.deob.Deob;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Execution {
 
-  private static final Logger logger = LoggerFactory.getLogger(Execution.class);
 
   private final ClassGroup group;
   private final Map<Object, Integer> order = new HashMap<>(); // field,method -> order encountered
@@ -94,7 +91,6 @@ public class Execution {
           }
 
           methods.add(m); // I guess this method name is overriding a jre interface (init, run, ?).
-          logger.debug("Adding initial method {}", m);
         }
 
         if (m.getName().equals("<init>") && extendsApplet) {
@@ -232,8 +228,6 @@ public class Execution {
         framesOther.removeAll(toMove);
       }
     }
-
-    logger.debug("Processed {} frames", fcount);
   }
 
   public void addExecutionVisitor(ExecutionVisitor ev) {

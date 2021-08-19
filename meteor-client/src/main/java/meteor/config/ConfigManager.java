@@ -25,6 +25,7 @@
 package meteor.config;
 
 import static org.sponge.util.Logger.ANSI_GREEN;
+import static org.sponge.util.Logger.ANSI_YELLOW;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
@@ -36,9 +37,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
@@ -46,7 +45,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
@@ -63,7 +61,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
@@ -88,7 +85,6 @@ import meteor.eventbus.events.ClientShutdown;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.plugins.Plugin;
 import meteor.util.ColorUtil;
-import net.runelite.api.Client;
 import net.runelite.api.coords.WorldPoint;
 import org.sponge.util.Logger;
 import org.sponge.util.Message;
@@ -497,10 +493,9 @@ public class ConfigManager {
       oldValue = (String) properties.setProperty(wholeKey, value);
     }
 
-    String message = Message.buildMessage()
-        .addText("set config - ")
-        .changeColor(ANSI_GREEN)
-        .addText("{" + wholeKey + "}{" + value + "}")
+    String message = Message.newMessage()
+            .add(ANSI_YELLOW, "set config - ")
+            .addDefault("{" + wholeKey + "}{" + value + "}")
         .build();
     //log.debug(message);
     handler.invalidate();

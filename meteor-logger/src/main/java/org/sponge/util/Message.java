@@ -1,5 +1,6 @@
 package org.sponge.util;
 
+import static org.sponge.util.Logger.ANSI_GREEN;
 import static org.sponge.util.Logger.ANSI_RESET;
 
 public class Message {
@@ -10,16 +11,18 @@ public class Message {
     this.message = message;
   }
 
-  public static Message buildMessage() {
+  public static Message newMessage() {
     return new Message("");
   }
 
-  public Message changeColor(String ansiColor) {
-    return new Message(message + ansiColor);
+  public Message add(String ansiColor, String text) {
+    if (ansiColor == null || ansiColor.equals(""))
+      return addDefault(text);
+    return new Message(message + ansiColor + text);
   }
 
-  public Message addText(String text) {
-    return new Message(message + text);
+  public Message addDefault(String text) {
+    return new Message(message + ANSI_GREEN + text);
   }
 
   public String build() {

@@ -27,12 +27,8 @@ package net.runelite.deob.deobfuscators.lvt;
 import java.util.HashMap;
 import java.util.Map;
 import net.runelite.asm.attributes.code.instruction.types.LVTInstructionType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Mappings {
-
-  private static final Logger logger = LoggerFactory.getLogger(Mappings.class);
 
   private final int maxVariables;
   private int offset;
@@ -70,8 +66,6 @@ public class Mappings {
       if (newIdx == null) {
         newIdx = maxVariables + offset;
         newIdxMap.put(key, newIdx);
-
-        logger.debug("Mapping {} -> {}", idx, newIdx);
 
         offset += type.getSlots();
       }
