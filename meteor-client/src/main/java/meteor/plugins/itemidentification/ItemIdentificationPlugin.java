@@ -35,8 +35,7 @@ import javax.inject.Inject;
 @PluginDescriptor(
 	name = "Item Identification",
 	description = "Show identifying text over items with difficult to distinguish sprites",
-	tags = {"abbreviations", "labels", "seeds", "herbs", "saplings", "seedlings"},
-	enabledByDefault = false
+	tags = {"abbreviations", "labels", "seeds", "herbs", "saplings", "seedlings"}
 )
 public class ItemIdentificationPlugin extends Plugin
 {

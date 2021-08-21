@@ -23,7 +23,8 @@ import java.util.concurrent.ExecutorService;
 
 @PluginDescriptor(
 	name = "AutoRunEnabler",
-	description = "Automatically enables run."
+	description = "Automatically enables run.",
+	enabledByDefault = false
 )
 
 @SuppressWarnings("unused")

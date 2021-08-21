@@ -23,7 +23,8 @@ import net.runelite.api.events.*;
 
 @Singleton
 @PluginDescriptor(
-    name = "Void Tempoross"
+    name = "Void Tempoross",
+        enabledByDefault = false
 )
 public class VoidTemporossPlugin extends Plugin {
 

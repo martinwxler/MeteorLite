@@ -41,8 +41,7 @@ import meteor.plugins.PluginDescriptor;
 @PluginDescriptor(
     name = "Stretched Mode",
     description = "Stretches the game in fixed and resizable modes.",
-    tags = {"resize", "ui", "interface", "stretch", "scaling", "fixed"},
-    enabledByDefault = false
+    tags = {"resize", "ui", "interface", "stretch", "scaling", "fixed"}
 )
 public class StretchedModePlugin extends Plugin
 {

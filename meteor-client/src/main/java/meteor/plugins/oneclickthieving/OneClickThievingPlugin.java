@@ -28,7 +28,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @PluginDescriptor(
       name = "One Click Pickpocket",
-      description = "QOL for pickpocketing"
+      description = "QOL for pickpocketing",
+      enabledByDefault = false
 )
 
 public class OneClickThievingPlugin extends Plugin
@@ -46,13 +47,10 @@ public class OneClickThievingPlugin extends Plugin
    private ChatMessageManager chatMessageManager;
 
    @Inject
-   private ConfigManager configManager;
-
-   @Inject
    private OverlayManager overlayManager;
 
    @Provides
-   OneClickThievingConfig provideConfig(ConfigManager configManager)
+   public OneClickThievingConfig getConfig(ConfigManager configManager)
    {
       return configManager.getConfig(OneClickThievingConfig.class);
    }

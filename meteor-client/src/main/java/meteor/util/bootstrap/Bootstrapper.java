@@ -22,7 +22,7 @@ public class Bootstrapper {
     private static MessageDigest md5Digest;
 
     public static void main(String[] args) throws NoSuchAlgorithmException {
-        update.version = "1.0.2";
+        update.version = "1.0.4";
         md5Digest = MessageDigest.getInstance("MD5");
         processFile(shadowJar);
         saveBootstrap();
@@ -33,7 +33,7 @@ public class Bootstrapper {
         try {
             if (boostrapShadowJar.exists())
                 boostrapShadowJar.delete();
-            Files.copy(shadowJar.toPath(), new File("./meteor-client/build/bootstrap/meteor-client.jar").toPath());
+            Files.copy(shadowJar.toPath(), new File("./meteor-client/build/bootstrap/meteorlite.jar").toPath());
         } catch (IOException e) {
             e.printStackTrace();
         }

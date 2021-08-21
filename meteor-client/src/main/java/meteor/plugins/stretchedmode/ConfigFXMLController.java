@@ -11,7 +11,6 @@ import org.sponge.util.Logger;
 
 public class ConfigFXMLController {
 
-  Logger logger = new Logger("PluginsFXMLController");
   StretchedModePlugin plugin;
   @FXML
   private JFXToggleButton keepAspectRatioEnabled;

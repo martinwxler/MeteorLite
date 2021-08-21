@@ -217,10 +217,6 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
 
     overlayManager.add(worldMapOverlay.get());
 
-    configManager.load();
-    pluginManager.startInternalPlugins();
-
-
     overlayManager.add(tooltipOverlay.get());
 
     applet = (Applet) client;
@@ -229,10 +225,11 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
     setAppletConfiguration(applet);
 
     setupInstanceFrame(applet);
-
+    configManager.load();
+    pluginManager.startInternalPlugins();
     log.info(
-        ANSI_YELLOW + "OSRS instance started in " + (System.currentTimeMillis() - startTime) + " ms"
-            + ANSI_RESET);
+            ANSI_YELLOW + "OSRS instance started in " + (System.currentTimeMillis() - startTime) + " ms"
+                    + ANSI_RESET);
   }
 
   public static void togglePluginsPanel() throws IOException {
@@ -240,7 +237,7 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
       rightPanel.setVisible(false);
     } else {
       pluginsRootScene = new Scene(FXMLLoader.load(
-          Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("plugins.fxml"))), 350, 800);
+              Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("plugins.fxml"))), 350, 800);
       rightPanel.setScene(pluginsRootScene);
       rightPanel.setVisible(true);
     }
@@ -269,7 +266,7 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
 
     JPanel gamePanel = new JPanel();
     toolbarRoot = FXMLLoader.load(
-        Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("toolbar.fxml")));
+            Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("toolbar.fxml")));
 
     toolbarPanel.setScene(new Scene(toolbarRoot, 300, 33));
     toolbarPanel.setVisible(true);
@@ -322,7 +319,7 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
     } catch (Exception e)
     {
       br = new BufferedReader(
-          new InputStreamReader(ClassLoader.getSystemClassLoader().getResourceAsStream("jav_config.ws"), StandardCharsets.ISO_8859_1));
+              new InputStreamReader(ClassLoader.getSystemClassLoader().getResourceAsStream("jav_config.ws"), StandardCharsets.ISO_8859_1));
       String line;
       while ((line = br.readLine()) != null) {
         String[] split1 = line.split("=", 2);
@@ -357,15 +354,15 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
 
   private Dimension appletMinSize() {
     return new Dimension(
-        Integer.parseInt(properties.get("applet_minwidth")),
-        Integer.parseInt(properties.get("applet_minheight"))
+            Integer.parseInt(properties.get("applet_minwidth")),
+            Integer.parseInt(properties.get("applet_minheight"))
     );
   }
 
   private Dimension appletMaxSize() {
     return new Dimension(
-        Integer.parseInt(properties.get("applet_maxwidth")),
-        Integer.parseInt(properties.get("applet_maxheight"))
+            Integer.parseInt(properties.get("applet_maxwidth")),
+            Integer.parseInt(properties.get("applet_maxheight"))
     );
   }
 
@@ -462,14 +459,14 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
     bind(Callbacks.class).to(Hooks.class);
     bind(ChatMessageManager.class);
     bind(ScheduledExecutorService.class).toInstance(
-        new ExecutorServiceExceptionLogger(Executors.newSingleThreadScheduledExecutor()));
+            new ExecutorServiceExceptionLogger(Executors.newSingleThreadScheduledExecutor()));
 
     bind(EventBus.class)
-        .toInstance(new EventBus());
+            .toInstance(new EventBus());
 
     bind(EventBus.class)
-        .annotatedWith(Names.named("Deferred EventBus"))
-        .to(DeferredEventBus.class);
+            .annotatedWith(Names.named("Deferred EventBus"))
+            .to(DeferredEventBus.class);
 
     bind(ItemStatChangesService.class).to(ItemStatChangesServiceImpl.class);
     bind(Logger.class).toInstance(log);
@@ -514,9 +511,9 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
     // Will start up to poolSize threads (because of allowCoreThreadTimeOut) as necessary, and times out
     // unused threads after 1 minute
     ThreadPoolExecutor executor = new ThreadPoolExecutor(poolSize, poolSize,
-        60L, TimeUnit.SECONDS,
-        new LinkedBlockingQueue<>(),
-        new ThreadFactoryBuilder().setNameFormat("worker-%d").build());
+            60L, TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>(),
+            new ThreadFactoryBuilder().setNameFormat("worker-%d").build());
     executor.allowCoreThreadTimeOut(true);
 
     return new NonScheduledExecutorServiceExceptionLogger(executor);

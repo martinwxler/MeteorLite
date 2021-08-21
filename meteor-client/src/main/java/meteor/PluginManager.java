@@ -12,16 +12,14 @@ import java.util.List;
 
 import com.questhelper.QuestHelperPlugin;
 import meteor.config.Config;
+import meteor.config.ConfigGroup;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDependency;
 import meteor.plugins.achievementdiary.DiaryRequirementsPlugin;
-import meteor.plugins.actions.ActionPlugin;
 import meteor.plugins.agility.AgilityPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
-import meteor.plugins.autoclicker.AutoClickerPlugin;
-import meteor.plugins.autologhop.AutoLogHop;
 import meteor.plugins.autorun.AutoRun;
 import meteor.plugins.bank.BankPlugin;
 import meteor.plugins.banktags.BankTagsPlugin;
@@ -54,7 +52,7 @@ import meteor.plugins.itemidentification.ItemIdentificationPlugin;
 import meteor.plugins.itemprices.ItemPricesPlugin;
 import meteor.plugins.itemstats.ItemStatPlugin;
 import meteor.plugins.kourendlibrary.KourendLibraryPlugin;
-import meteor.plugins.leftclickcast.LeftClickCast;
+import meteor.plugins.leftclickcast.LeftClickCastPlugin;
 import meteor.plugins.lowdetail.LowDetailPlugin;
 import meteor.plugins.menuentryswapper.MenuEntrySwapperPlugin;
 import meteor.plugins.menuentryswapperextended.MenuEntrySwapperExtendedPlugin;
@@ -148,7 +146,6 @@ public class PluginManager {
     plugins.add(new FairyRingPlugin());
     plugins.add(new FishingPlugin());
     plugins.add(new FpsPlugin());
-    plugins.add(new GpuPlugin());
     plugins.add(new GroundItemsPlugin());
     plugins.add(new GroundMarkerPlugin());
     plugins.add(new HerbiboarPlugin());
@@ -161,7 +158,7 @@ public class PluginManager {
     plugins.add(new ItemStatPlugin());
     plugins.add(new ItemIdentificationPlugin());
     plugins.add(new KourendLibraryPlugin());
-    plugins.add(new LeftClickCast());
+    plugins.add(new LeftClickCastPlugin());
     plugins.add(new LowDetailPlugin());
     plugins.add(new MenuEntrySwapperPlugin());
     plugins.add(new MenuEntrySwapperExtendedPlugin());
@@ -208,8 +205,7 @@ public class PluginManager {
     plugins.add(new XpTrackerPlugin());
     plugins.add(new XpGlobesPlugin());
     plugins.add(new ZulrahPlugin());
-
-    plugins.add(new ActionPlugin());
+    plugins.add(new GpuPlugin());
   }
 
   public void startInternalPlugins() {
@@ -242,16 +238,20 @@ public class PluginManager {
       Injector pluginInjector = parent.createChildInjector(pluginModule);
       pluginInjector.injectMembers(plugin);
       plugin.setInjector(pluginInjector);
+      Config finalConfig = null;
       for (Key<?> key : plugin.getInjector().getBindings().keySet())
       {
         Class<?> type = key.getTypeLiteral().getRawType();
         if (Config.class.isAssignableFrom(type))
         {
           Config config = (Config) plugin.getInjector().getInstance(key);
-          configManager.setDefaultConfiguration(config, false);
+          finalConfig = config;
+          configManager.setDefaultConfiguration(plugin, config, false);
         }
       }
-      plugin.toggle();
+      if (finalConfig != null)
+      if (Boolean.parseBoolean(configManager.getConfiguration(finalConfig.getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class).value(), "pluginEnabled")))
+        plugin.toggle();
     }
   }
 

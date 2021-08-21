@@ -46,8 +46,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 @PluginDescriptor(
 	name = "Status Bars",
-	description = "Draws status bars next to players inventory showing current HP & Prayer and healing amounts",
-	enabledByDefault = false
+	description = "Draws status bars next to players inventory showing current HP & Prayer and healing amounts"
 )
 public class StatusBarsPlugin extends Plugin
 {

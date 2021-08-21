@@ -42,11 +42,12 @@ import net.runelite.api.widgets.WidgetInfo;
 @PluginDescriptor(
 	name = "Left Click Cast",
 	description = "Casting made even easier.",
-	tags = "ganom"
+	tags = "ganom",
+	enabledByDefault = false
 )
 
 @SuppressWarnings("unused")
-public class LeftClickCast extends Plugin
+public class LeftClickCastPlugin extends Plugin
 {
 	@Inject
 	private Client client;

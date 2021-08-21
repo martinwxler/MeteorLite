@@ -82,8 +82,7 @@ import org.apache.commons.lang3.ArrayUtils;
 @PluginDescriptor(
     name = "Menu Entry Swapper",
     description = "Change the default option that is displayed when hovering over objects",
-    tags = {"npcs", "inventory", "items", "objects"},
-    enabledByDefault = false
+    tags = {"npcs", "inventory", "items", "objects"}
 )
 public class MenuEntrySwapperPlugin extends Plugin {
 

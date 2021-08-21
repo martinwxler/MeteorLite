@@ -5,7 +5,7 @@ import meteor.plugins.Plugin;
 
 public class PluginToggleButton extends JFXToggleButton {
 
-  private Plugin plugin;
+  public Plugin plugin;
 
   public PluginToggleButton(Plugin plugin)
   {

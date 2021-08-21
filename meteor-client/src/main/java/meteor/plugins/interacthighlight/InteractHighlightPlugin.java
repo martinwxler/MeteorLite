@@ -54,8 +54,7 @@ import net.runelite.api.events.InteractingChanged;
 
 @PluginDescriptor(
 	name = "Interact Highlight",
-	description = "Outlines npcs and objects you interact with or hover over",
-	enabledByDefault = false
+	description = "Outlines npcs and objects you interact with or hover over"
 )
 public class InteractHighlightPlugin extends Plugin
 {

@@ -25,6 +25,9 @@
  */
 package meteor.plugins.achievementdiary;
 
+import com.google.inject.Provides;
+import meteor.config.ConfigManager;
+import meteor.plugins.questlist.QuestListConfig;
 import net.runelite.api.Client;
 import net.runelite.api.FontTypeFace;
 import net.runelite.api.ScriptID;
@@ -58,6 +61,11 @@ public class DiaryRequirementsPlugin extends Plugin
 
 	@Inject
 	private ClientThread clientThread;
+
+	@Provides
+	public DiaryRequirementsConfig getConfig(ConfigManager configManager) {
+		return configManager.getConfig(DiaryRequirementsConfig.class);
+	}
 
 	@Subscribe
 	public void onWidgetLoaded(final WidgetLoaded event)

@@ -123,7 +123,7 @@ public class XpTrackerPlugin extends Plugin
 	@Provides
 	public XpTrackerConfig getConfig(ConfigManager configManager)
 	{
-		configManager.setDefaultConfiguration(XpTrackerConfig.class, false);
+		configManager.setDefaultConfiguration(this, XpTrackerConfig.class, false);
 		return new XpTrackerConfig() {
 		};
 	}

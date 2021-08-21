@@ -38,7 +38,8 @@ import meteor.plugins.oneclick.comparables.skilling.Spell;
 @PluginDescriptor(
 		name = "One Click",
 		description = "OP One Click methods.",
-		tags = "ganom"
+		tags = "ganom",
+		enabledByDefault = false
 )
 @Getter
 public class OneClickPlugin extends Plugin

@@ -25,10 +25,12 @@
 package meteor.plugins.questlist;
 
 import com.google.common.collect.ImmutableList;
+import com.google.inject.Provides;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import meteor.callback.ClientThread;
+import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.game.chatbox.ChatboxPanelManager;
 import meteor.game.chatbox.ChatboxTextInput;
@@ -64,6 +66,9 @@ public class QuestListPlugin extends Plugin
 	private static final String MENU_SHOW = "Show";
 
 	@Inject
+	private QuestListConfig config;
+
+	@Inject
 	private Client client;
 
 	@Inject
@@ -79,6 +84,11 @@ public class QuestListPlugin extends Plugin
 	private EnumMap<QuestContainer, Collection<QuestWidget>> questSet;
 
 	private QuestState currentFilterState;
+
+	@Provides
+	public QuestListConfig getConfig(ConfigManager configManager) {
+		return configManager.getConfig(QuestListConfig.class);
+	}
 
 	@Override
 	public void startup()
