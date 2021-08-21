@@ -21181,6 +21181,8 @@ public final class ObjectID
     public static final int FISHING_ROD_41330 = 41330;
     public static final int CRATES_41332 = 41332;
     public static final int WATER_41333 = 41333;
+    public static final int TOTEM_POLE_41354 = 41354;
+    public static final int TOTEM_POLE_41355 = 41355;
     public static final int BROKEN_RAIL = 41398;
     public static final int BROKEN_RAIL_41399 = 41399;
     public static final int RAIL = 41400;

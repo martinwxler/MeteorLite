@@ -27,6 +27,8 @@ package net.runelite.mixins;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import meteor.events.AutomationMouseMoveEvent;
 import net.runelite.api.CollisionData;
 import net.runelite.api.CollisionDataFlag;
 import net.runelite.api.Constants;
@@ -586,6 +588,13 @@ public abstract class TileMixin implements RSTile
   @Override
   @Inject
   public void walkHere() {
-    client.invokeMenuAction("Walk here", "", 0, WALK.getId(), getLocalLocation().getSceneX(), getLocalLocation().getSceneY());
+    Point p = new Point(getSceneLocation().getX(), getSceneLocation().getY());
+    client.getCallbacks().post(new AutomationMouseMoveEvent(p));
+    client.setSelectedSceneTileX(getX());
+    client.setSelectedSceneTileY(getY());
+    client.setViewportWalking(true);
+    client.setMouseLastPressedX(getSceneLocation().getX());
+    client.setMouseLastPressedY(getSceneLocation().getX());
+    client.invokeMenuAction("Walk here", "", 0, WALK.getId(), getX(), getY());
   }
 }

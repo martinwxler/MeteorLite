@@ -1,5 +1,6 @@
 package meteor.util;
 
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
 import kotlin.ExceptionsKt;
@@ -18,4 +19,5 @@ public class ShadowJarRefs {
     private final ExceptionsKt aaaa = null;
     private final ToggleButton aaaaa = new ToggleButton();
     private final Slider s = new Slider();
+    ColorPicker hkjhdsfj = null;
 }

@@ -44,6 +44,7 @@ import net.runelite.api.hooks.DrawCallbacks;
 import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.mapping.Import;
 import org.sponge.util.Logger;
 
 /**
@@ -2251,4 +2252,12 @@ public interface Client extends GameEngine {
   Sequence loadAnimation(int id);
 
   void interact(final int identifier, final int opcode, final int param0, final int param1);
+
+  int getMouseLastPressedX();
+
+  void setMouseLastPressedX(int x);
+
+  int getMouseLastPressedY();
+
+  void setMouseLastPressedY(int y);
 }

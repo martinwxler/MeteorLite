@@ -2547,7 +2547,8 @@ public class Scene {
 	}
 
 	@ObfuscatedName("aj")
-	public static void method4014() {
+	@Export("resetWalking")
+	public static void resetWalking() {
 		Scene_selectedX = -1;
 		viewportWalking = false;
 	}

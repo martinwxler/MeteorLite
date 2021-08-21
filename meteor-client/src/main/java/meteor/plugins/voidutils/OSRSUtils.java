@@ -4,9 +4,12 @@ import java.util.*;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.owain.automation.Automation;
 import meteor.callback.ClientThread;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
+import meteor.events.AutomationClickEvent;
+import meteor.events.AutomationMouseMoveEvent;
 import meteor.plugins.voidutils.events.LocalPlayerIdleEvent;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
@@ -15,6 +18,7 @@ import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
+import org.sponge.util.Logger;
 
 @Singleton
 public class OSRSUtils {
@@ -60,6 +64,13 @@ public class OSRSUtils {
     return objects.get(0);
   }
 
+  public GameObject nearestObject(List<GameObject> objects) {
+    if (objects.size() == 0)
+      return null;
+    objects.sort(Comparator.comparing(GameObject::getDistanceFromLocalPlayer));
+    return objects.get(0);
+  }
+
   // Loads NPCs from the map via IDs - Sorted by distance from local player ascending
   public List<NPC> npcs(int... ids) {
     List<NPC> mergedNPCs = new ArrayList<>();
@@ -78,6 +89,13 @@ public class OSRSUtils {
     List<NPC> npcs = npcs(ids);
     if (npcs == null)
       return null;
+    return npcs.get(0);
+  }
+
+  public NPC nearestNPC(List<NPC> npcs) {
+    if (npcs.size() == 0)
+      return null;
+    npcs.sort(Comparator.comparing(NPC::getDistanceFromLocalPlayer));
     return npcs.get(0);
   }
 
@@ -102,6 +120,13 @@ public class OSRSUtils {
     return loots.get(0);
   }
 
+  public TileItem nearestLoot(List<TileItem> loots) {
+    if (loots.size() == 0)
+      return null;
+    loots.sort(Comparator.comparing(TileItem::getDistanceFromLocalPlayer));
+    return loots.get(0);
+  }
+
   // Loads Inventory items from the map via IDs
   public List<WidgetItem> items(int... ids) {
     Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
@@ -120,6 +145,36 @@ public class OSRSUtils {
     if (items.size() == 0)
       return null;
     return items;
+  }
+
+  public int inventorySize() {
+    Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+    if (inventoryWidget == null || inventoryWidget.isHidden())
+      return 0;
+    ArrayList<WidgetItem> items = new ArrayList<>(inventoryWidget.getWidgetItems());
+    if (items.size() == 0)
+      return 0;
+    return items.size();
+  }
+
+  public int inventoryFreeSlots() {
+    Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+    if (inventoryWidget == null || inventoryWidget.isHidden())
+      return 0;
+    ArrayList<WidgetItem> items = new ArrayList<>(inventoryWidget.getWidgetItems());
+    if (items.size() == 0)
+      return 0;
+    return 28 - items.size();
+  }
+
+  public boolean inventoryFull() {
+    Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+    if (inventoryWidget == null || inventoryWidget.isHidden())
+      return false;
+    ArrayList<WidgetItem> items = new ArrayList<>(inventoryWidget.getWidgetItems());
+    if (items.size() == 0)
+      return false;
+    return 28 == items.size();
   }
 
   public WidgetItem firstItem(int... ids) {
@@ -220,11 +275,22 @@ public class OSRSUtils {
     Random random = new Random();
     int randomX = minXY.getX() + random.nextInt(maxXY.getX() - minXY.getX());
     int randomY = minXY.getY() + random.nextInt(maxXY.getY() - minXY.getY());
-    Tile[][][] tiles = client.getScene().getTiles();
-    if (tiles[minXY.getPlane()][randomX][randomY] != null)
-      return tiles[minXY.getPlane()][randomX][randomY];
-    else
-      return null;
+    WorldPoint randomPoint = new WorldPoint(randomX, randomY, minXY.getPlane());
+    return findTile(randomPoint);
+  }
+
+  private Tile findTile(WorldPoint wp) {
+    for (Tile[][] ttt : client.getScene().getTiles())
+      for (Tile[] tt : ttt)
+        for (Tile t : tt)
+          if (t != null) {
+            WorldPoint location = t.getWorldLocation();
+            if (location.getPlane() == wp.getPlane())
+              if (location.getY() == wp.getY())
+                if (location.getX() == wp.getX())
+                  return t;
+          }
+    return null;
   }
 
   public List<Tile> tiles(WorldPoint minXY, WorldPoint maxXY) {
@@ -246,8 +312,6 @@ public class OSRSUtils {
     return tiles;
   }
 
-
-
   // This is done to ensure a solid GameObject map
   private void resetGameObjects() {
     gameObjects.clear();
@@ -265,5 +329,18 @@ public class OSRSUtils {
                   knownSpawnsMap.put(t.getWorldLocation(), gameObject);
                   gameObjects.put(gameObject.getId(), knownSpawnsMap);
                 }
+  }
+
+  @Subscribe
+  private void onAutomationClickEvent(AutomationClickEvent event) {
+    new Logger("asd").debug("Processing click");
+    Point p = Automation.getClickPoint(event.bounds);
+    Automation.move(p, client);
+    Automation.click(p, client);
+  }
+
+  @Subscribe
+  private void onAutomationMouseMoveEvent(AutomationMouseMoveEvent event) {
+    Automation.move(event.point, client);
   }
 }

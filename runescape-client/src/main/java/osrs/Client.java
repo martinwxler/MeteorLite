@@ -4334,7 +4334,7 @@ public class Client extends GameEngine implements Usernamed {
 																var44.packetBuffer.writeShort(var4 + NPC.baseY);
 																var44.packetBuffer.writeByte(KeyHandler.KeyHandler_pressedKeys[82] ? (KeyHandler.KeyHandler_pressedKeys[81] ? 2 : 1) : 0);
 																packetWriter.addNode(var44);
-																Scene.method4014();
+																Scene.resetWalking();
 																mouseCrossX = MouseHandler.MouseHandler_lastPressedX;
 																mouseCrossY = MouseHandler.MouseHandler_lastPressedY;
 																mouseCrossColor = 1;

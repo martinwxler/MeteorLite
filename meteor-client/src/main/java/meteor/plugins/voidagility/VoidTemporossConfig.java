@@ -4,11 +4,10 @@ import meteor.config.*;
 
 import java.awt.event.InputEvent;
 
-import static java.awt.event.KeyEvent.VK_A;
-import static java.awt.event.KeyEvent.VK_H;
+import static java.awt.event.KeyEvent.*;
 
-@ConfigGroup("voidAgility")
-public interface VoidHunterConfig extends Config {
+@ConfigGroup("voidTempoross")
+public interface VoidTemporossConfig extends Config {
 
   @Icon(canToggle = true)
   @ConfigItem(
@@ -29,7 +28,7 @@ public interface VoidHunterConfig extends Config {
   )
   default Keybind keybind()
   {
-    return new Keybind(VK_A, InputEvent.CTRL_DOWN_MASK, false);
+    return new Keybind(VK_T, InputEvent.CTRL_DOWN_MASK, false);
   }
 
   @ConfigItem(
