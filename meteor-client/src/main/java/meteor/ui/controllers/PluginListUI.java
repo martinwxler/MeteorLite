@@ -2,6 +2,7 @@ package meteor.ui.controllers;
 
 import static meteor.MeteorLiteClientModule.pluginsPanelVisible;
 
+import com.jfoenix.controls.JFXTooltip;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.fxml.FXML;
@@ -151,6 +152,18 @@ public class PluginListUI {
       AnchorPane.setTopAnchor(pluginName, 7.0);
       pluginName.setWrappingWidth(300);
       pluginName.setFont(Font.font(18));
+
+      JFXTooltip tooltip = new JFXTooltip();
+      tooltip.setText(p.getClass().getAnnotation(PluginDescriptor.class).description());
+
+      pluginName.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
+        if (!tooltip.isShowing())
+          tooltip.showOnAnchors(pluginName, 0, -50);
+      });
+
+      pluginName.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
+        tooltip.hide();
+      });
 
       pluginPanel.getChildren().add(pluginName);
       pluginPanel.getChildren().add(configButton); //Order matters here! Very Important! uwu
