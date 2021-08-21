@@ -76,6 +76,7 @@ dependencies {
     implementation(files("./lib/javafx.swt.jar"))
     implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.9.0'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.21'
+    implementation(group : "net.runelite", name : "discord", version : "1.4")
 }
 
 runtime {

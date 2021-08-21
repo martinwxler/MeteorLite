@@ -60,6 +60,7 @@ import meteor.chat.ChatMessageManager;
 import meteor.config.ChatColorConfig;
 import meteor.config.ConfigManager;
 import meteor.config.RuneLiteConfig;
+import meteor.discord.DiscordService;
 import meteor.eventbus.DeferredEventBus;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
@@ -119,6 +120,9 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
 
   @Inject
   private WorldService worldService;
+
+  @Inject
+  private DiscordService discordService;
 
 
 
@@ -200,6 +204,7 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
 
   public void start() throws IOException {
     long startTime = System.currentTimeMillis();
+
     loadJagexConfiguration();
 
     instanceInjector = Guice.createInjector(this);
@@ -208,6 +213,8 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
     instanceInjector.injectMembers(pluginManager);
     instanceInjector.injectMembers(client);
     eventBus.register(this);
+
+    discordService.init();
 
     Collection<WidgetOverlay> overlays = WidgetOverlay.createOverlays(client);
     overlays.forEach((overlay) -> {
