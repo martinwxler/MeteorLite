@@ -28,7 +28,8 @@ import net.runelite.api.events.StatChanged;
 import net.runelite.api.widgets.WidgetItem;
 
 @PluginDescriptor(
-    name = "Void 3t Fishing"
+    name = "Void 3t Fishing",
+        enabledByDefault = false
 )
 public class Void3tFishingPlugin extends Plugin {
 

@@ -30,7 +30,8 @@ import net.runelite.api.events.StatChanged;
 import net.runelite.api.widgets.WidgetItem;
 
 @PluginDescriptor(
-    name = "Void Hunter"
+    name = "Void Hunter",
+        enabledByDefault = false
 )
 public class VoidHunterPlugin extends Plugin {
 

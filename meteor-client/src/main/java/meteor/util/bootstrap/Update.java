@@ -1,7 +1,7 @@
 package meteor.util.bootstrap;
 
-public class UpdateFile {
-    public String relativeName;
+public class Update {
+    public String version;
     public long size;
     public String hash;
 }

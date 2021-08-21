@@ -22,7 +22,8 @@ import java.util.*;
 
 @PluginDescriptor(
       name = "One Click Dropper",
-      description = "Drop items without having to click on them"
+      description = "Drop items without having to click on them",
+        enabledByDefault = false
 )
 
 public class OneClickDropperPlugin extends Plugin
@@ -37,11 +38,8 @@ public class OneClickDropperPlugin extends Plugin
    @Inject
    private OneClickDropperConfig config;
 
-   @Inject
-   private ConfigManager configManager;
-
    @Provides
-   OneClickDropperConfig provideConfig(ConfigManager configManager)
+   public OneClickDropperConfig getConfig(ConfigManager configManager)
    {
       return configManager.getConfig(OneClickDropperConfig.class);
    }

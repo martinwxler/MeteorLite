@@ -59,8 +59,7 @@ import org.sponge.util.Logger;
 @PluginDescriptor(
    name = "Zulrah",
    description = "All-in-One tool to help during the Zulrah fight",
-   tags = {"zulrah", "zul", "andra", "snakeling", "zhuri/nicole", "girls rule boys drool"}, //cringe
-   enabledByDefault = false
+   tags = {"zulrah", "zul", "andra", "snakeling", "zhuri/nicole", "girls rule boys drool"} //cringe
 )
 public class ZulrahPlugin extends Plugin implements KeyListener {
    private static final Logger log = Logger.getLogger(ZulrahPlugin.class);

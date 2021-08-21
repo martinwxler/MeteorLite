@@ -105,7 +105,6 @@ import org.sponge.util.Logger;
 @PluginDescriptor(
     name = "GPU",
     description = "Utilizes the GPU",
-    enabledByDefault = false,
     tags = {"fog", "draw distance"},
     loadInSafeMode = false,
     cantDisable = true

@@ -2,6 +2,7 @@ package meteor.ui.controllers;
 
 import static meteor.MeteorLiteClientModule.pluginsPanelVisible;
 
+import com.jfoenix.controls.JFXTooltip;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.fxml.FXML;
@@ -17,17 +18,24 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import meteor.MeteorLiteClientLauncher;
+import meteor.MeteorLiteClientModule;
 import meteor.PluginManager;
+import meteor.config.ConfigGroup;
 import meteor.config.ConfigManager;
+import meteor.eventbus.EventBus;
+import meteor.eventbus.Subscribe;
+import meteor.eventbus.events.ConfigChanged;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.ui.components.PluginConfigButton;
 import meteor.ui.components.PluginToggleButton;
 import org.sponge.util.Logger;
 
-public class PluginListUI {
+import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
 
-  Logger logger = new Logger("PluginsFXMLController");
+public class PluginListUI {
 
   @FXML
   private AnchorPane pluginPanel;
@@ -41,8 +49,18 @@ public class PluginListUI {
 
   boolean fakeEvent = false;
 
+  public Map<String, PluginToggleButton> configGroupPluginMap = new HashMap<>();
+
+  @Inject
+  ConfigManager configManager;
+
+  @Inject
+  EventBus eventBus;
+
   @FXML
   public void initialize() {
+    MeteorLiteClientModule.instanceInjectorStatic.injectMembers(this);
+    eventBus.register(this);
     ScrollPane scrollPane = new ScrollPane();
     scrollPane.setMinSize(350, 600);
     AnchorPane.setTopAnchor(scrollPane, 45.0);
@@ -79,20 +97,22 @@ public class PluginListUI {
       PluginConfigButton configButton = new PluginConfigButton(p);
       if (p.getConfig(MeteorLiteClientLauncher.mainClientInstance.instanceInjector.getInstance(ConfigManager.class)) != null)
       {
-        configButton.setContentDisplay(ContentDisplay.RIGHT);
-        configButton.setLayoutX(260);
-        configButton.setPrefSize(40, 40);
+        if (p.getConfig(MeteorLiteClientLauncher.mainClientInstance.instanceInjector.getInstance(ConfigManager.class)).getClass().getDeclaredMethods().length > 4) {
+          configButton.setContentDisplay(ContentDisplay.RIGHT);
+          configButton.setLayoutX(260);
+          configButton.setPrefSize(40, 40);
 
-        FontAwesomeIconView cog = new FontAwesomeIconView(FontAwesomeIcon.COG);
-        cog.setFill(Paint.valueOf("CYAN"));
-        cog.setLayoutX(265);
-        cog.setSize("18");
-        configButton.setGraphic(cog);
-        configButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-          lastPluginInteracted = p;
-          p.showConfig();
-          pluginsPanelVisible = !pluginsPanelVisible;
-        });
+          FontAwesomeIconView cog = new FontAwesomeIconView(FontAwesomeIcon.COG);
+          cog.setFill(Paint.valueOf("CYAN"));
+          cog.setLayoutX(265);
+          cog.setSize("18");
+          configButton.setGraphic(cog);
+          configButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
+            lastPluginInteracted = p;
+            p.showConfig();
+            pluginsPanelVisible = !pluginsPanelVisible;
+          });
+        }
       }
 
       PluginToggleButton toggleButton = null;
@@ -101,12 +121,35 @@ public class PluginListUI {
         toggleButton = new PluginToggleButton(p);
         toggleButton.setSize(6);
         toggleButton.setLayoutX(290);
-
+        PluginToggleButton finalToggleButton = toggleButton;
+        toggleButton.selectedProperty().addListener((options, oldValue, newValue) -> {
+          if (newValue && finalToggleButton.plugin.isEnabled())
+            return;
+          if (!newValue && !finalToggleButton.plugin.isEnabled())
+            return;
+          p.toggle();
+        });
         toggleButton.addEventHandler(MouseEvent.MOUSE_PRESSED, (e) -> p.toggle());
 
-        toggleButton.setSelected(true);
         toggleButton.setStyle("-fx-text-fill: CYAN;");
+        try {
+          if (p.getConfig(configManager).getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class) != null) {
+            configGroupPluginMap.put(p.getConfig(configManager).getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class).value(), toggleButton);
+            toggleButton.setSelected(Boolean.parseBoolean(configManager.getConfiguration(p.getConfig(configManager)
+                    .getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class).value(), "pluginEnabled")));
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
+          new Logger("PluginListUI").error(p.getName() + " has an incorrect getConfig(). Fix it.");
+        }
       }
+
+      if (toggleButton != null)
+      toggleButton.selectedProperty().addListener((options, oldValue, newValue) -> {
+        if (p.getConfig(configManager).getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class) != null) {
+          configManager.setConfiguration(p.getConfig(configManager).getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class).value(), "pluginEnabled", newValue);
+        }
+      });
 
       Text pluginName = new Text();
       pluginName.setText(p.getClass().getAnnotation(PluginDescriptor.class).name());
@@ -115,6 +158,18 @@ public class PluginListUI {
       AnchorPane.setTopAnchor(pluginName, 7.0);
       pluginName.setWrappingWidth(300);
       pluginName.setFont(Font.font(18));
+
+      JFXTooltip tooltip = new JFXTooltip();
+      tooltip.setText(p.getClass().getAnnotation(PluginDescriptor.class).description());
+
+      pluginName.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
+        if (!tooltip.isShowing())
+          tooltip.showOnAnchors(pluginName, 0, -50);
+      });
+
+      pluginName.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
+        tooltip.hide();
+      });
 
       pluginPanel.getChildren().add(pluginName);
       pluginPanel.getChildren().add(configButton); //Order matters here! Very Important! uwu

@@ -84,6 +84,7 @@ import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ClientShutdown;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.plugins.Plugin;
+import meteor.plugins.PluginDescriptor;
 import meteor.util.ColorUtil;
 import net.runelite.api.coords.WorldPoint;
 import org.sponge.util.Logger;
@@ -506,6 +507,8 @@ public class ConfigManager {
     configChanged.setKey(key);
     configChanged.setOldValue(oldValue);
     configChanged.setNewValue(value);
+
+    eventBus.post(configChanged);
   }
 
   public void setConfiguration(String groupName, String profile, String key, Object value) {
@@ -621,14 +624,20 @@ public class ConfigManager {
   /**
    * Initialize the configuration from the default settings
    *
-   * @param proxy
+   * @param config
    */
-  public void setDefaultConfiguration(Object proxy, boolean override) {
-    Class<?> clazz = proxy.getClass().getInterfaces()[0];
+  public void setDefaultConfiguration(Plugin plugin, Object config, boolean override) {
+    Class<?> clazz = config.getClass().getInterfaces()[0];
     ConfigGroup group = clazz.getAnnotation(ConfigGroup.class);
 
     if (group == null) {
       return;
+    }
+    if (getConfiguration(group.value(), "pluginEnabled") == null) {
+      if (plugin.getClass().getAnnotation(PluginDescriptor.class) != null) {
+        log.debug("should have set default");
+        setConfiguration(group.value(), "pluginEnabled", plugin.getClass().getAnnotation(PluginDescriptor.class).enabledByDefault());
+      }
     }
 
     for (Method method : getAllDeclaredInterfaceMethods(clazz)) {
@@ -642,7 +651,7 @@ public class ConfigManager {
       if (method.getReturnType().isAssignableFrom(Consumer.class)) {
         Object defaultValue;
         try {
-          defaultValue = ConfigInvocationHandler.callDefaultMethod(proxy, method, null);
+          defaultValue = ConfigInvocationHandler.callDefaultMethod(config, method, null);
         } catch (Throwable ex) {
           //log.warn(null, ex);
           continue;
@@ -673,7 +682,7 @@ public class ConfigManager {
 
         Object defaultValue;
         try {
-          defaultValue = ConfigInvocationHandler.callDefaultMethod(proxy, method, null);
+          defaultValue = ConfigInvocationHandler.callDefaultMethod(config, method, null);
         } catch (Throwable ex) {
           //log.warn(null, ex);
           continue;

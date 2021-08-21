@@ -12,13 +12,13 @@ import meteor.ui.overlay.components.LineComponent;
 import meteor.ui.overlay.components.TitleComponent;
 import meteor.util.Timer;
 
-public class VoidHunterInfoOverlay extends OverlayPanel {
+public class VoidTemporossInfoOverlay extends OverlayPanel {
   public Timer instanceTimer = new Timer();
   DecimalFormat formatter = new DecimalFormat("#,###");
-  VoidHunterPlugin plugin;
+  VoidTemporossPlugin plugin;
 
   @Inject
-  public VoidHunterInfoOverlay(VoidHunterPlugin plugin) {
+  public VoidTemporossInfoOverlay(VoidTemporossPlugin plugin) {
     setPosition(OverlayPosition.TOP_CENTER);
     setLayer(OverlayLayer.ABOVE_SCENE);
     setResizable(false);
@@ -27,12 +27,12 @@ public class VoidHunterInfoOverlay extends OverlayPanel {
 
   @Override
   public Dimension render(Graphics2D graphics2D) {
-    if (!VoidHunterPlugin.enabled) {
+    if (!VoidTemporossPlugin.enabled) {
       return null;
     }
 
     panelComponent.getChildren().add(TitleComponent.builder()
-        .text("Void Hunter")
+        .text("Void Tempoross")
         .color(Color.CYAN)
         .build());
 
@@ -48,6 +48,10 @@ public class VoidHunterInfoOverlay extends OverlayPanel {
         .right(formatter.format(plugin.getCaught())).rightColor(Color.GREEN).build());
     panelComponent.getChildren().add(LineComponent.builder().left("XP:").leftColor(Color.WHITE)
         .right(formatter.format(plugin.getGainedXP())).rightColor(Color.GREEN).build());
+    panelComponent.getChildren().add(LineComponent.builder().left("Side:").leftColor(Color.WHITE)
+            .right(plugin.side).rightColor(Color.GREEN).build());
+    panelComponent.getChildren().add(LineComponent.builder().left("Location:").leftColor(Color.WHITE)
+            .right(plugin.location).rightColor(Color.GREEN).build());
     return super.render(graphics2D);
   }
 }

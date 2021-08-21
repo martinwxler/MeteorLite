@@ -12,16 +12,14 @@ import java.util.List;
 
 import com.questhelper.QuestHelperPlugin;
 import meteor.config.Config;
+import meteor.config.ConfigGroup;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDependency;
 import meteor.plugins.achievementdiary.DiaryRequirementsPlugin;
-import meteor.plugins.actions.ActionPlugin;
 import meteor.plugins.agility.AgilityPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
-import meteor.plugins.autoclicker.AutoClickerPlugin;
-import meteor.plugins.autologhop.AutoLogHop;
 import meteor.plugins.autorun.AutoRun;
 import meteor.plugins.bank.BankPlugin;
 import meteor.plugins.banktags.BankTagsPlugin;
@@ -37,6 +35,7 @@ import meteor.plugins.cluescrolls.ClueScrollPlugin;
 import meteor.plugins.combatlevel.CombatLevelPlugin;
 import meteor.plugins.defaultworld.DefaultWorldPlugin;
 import meteor.plugins.devtools.DevToolsPlugin;
+import meteor.plugins.discord.DiscordPlugin;
 import meteor.plugins.environmentaid.EnvironmentAidPlugin;
 import meteor.plugins.fairyring.FairyRingPlugin;
 import meteor.plugins.fishing.FishingPlugin;
@@ -54,7 +53,7 @@ import meteor.plugins.itemidentification.ItemIdentificationPlugin;
 import meteor.plugins.itemprices.ItemPricesPlugin;
 import meteor.plugins.itemstats.ItemStatPlugin;
 import meteor.plugins.kourendlibrary.KourendLibraryPlugin;
-import meteor.plugins.leftclickcast.LeftClickCast;
+import meteor.plugins.leftclickcast.LeftClickCastPlugin;
 import meteor.plugins.lowdetail.LowDetailPlugin;
 import meteor.plugins.menuentryswapper.MenuEntrySwapperPlugin;
 import meteor.plugins.menuentryswapperextended.MenuEntrySwapperExtendedPlugin;
@@ -96,6 +95,7 @@ import meteor.plugins.tithefarm.TitheFarmPlugin;
 import meteor.plugins.void3tFishing.Void3tFishingPlugin;
 import meteor.plugins.void3tteaks.Void3tTeaksPlugin;
 import meteor.plugins.voidHunter.VoidHunterPlugin;
+import meteor.plugins.voidagility.VoidTemporossPlugin;
 import meteor.plugins.woodcutting.WoodcuttingPlugin;
 import meteor.plugins.worldmap.WorldMapPlugin;
 import meteor.plugins.xpglobes.XpGlobesPlugin;
@@ -143,11 +143,11 @@ public class PluginManager {
     plugins.add(new DefaultWorldPlugin());
     plugins.add(new DevToolsPlugin());
     plugins.add(new DiaryRequirementsPlugin());
+    plugins.add(new DiscordPlugin());
     plugins.add(new EnvironmentAidPlugin());
     plugins.add(new FairyRingPlugin());
     plugins.add(new FishingPlugin());
     plugins.add(new FpsPlugin());
-    plugins.add(new GpuPlugin());
     plugins.add(new GroundItemsPlugin());
     plugins.add(new GroundMarkerPlugin());
     plugins.add(new HerbiboarPlugin());
@@ -160,7 +160,7 @@ public class PluginManager {
     plugins.add(new ItemStatPlugin());
     plugins.add(new ItemIdentificationPlugin());
     plugins.add(new KourendLibraryPlugin());
-    plugins.add(new LeftClickCast());
+    plugins.add(new LeftClickCastPlugin());
     plugins.add(new LowDetailPlugin());
     plugins.add(new MenuEntrySwapperPlugin());
     plugins.add(new MenuEntrySwapperExtendedPlugin());
@@ -201,13 +201,13 @@ public class PluginManager {
     plugins.add(new Void3tFishingPlugin());
     plugins.add(new Void3tTeaksPlugin());
     plugins.add(new VoidHunterPlugin());
+    plugins.add(new VoidTemporossPlugin());
     plugins.add(new WoodcuttingPlugin());
     plugins.add(new WorldMapPlugin());
     plugins.add(new XpTrackerPlugin());
     plugins.add(new XpGlobesPlugin());
     plugins.add(new ZulrahPlugin());
-
-    plugins.add(new ActionPlugin());
+    plugins.add(new GpuPlugin());
   }
 
   public void startInternalPlugins() {
@@ -240,16 +240,20 @@ public class PluginManager {
       Injector pluginInjector = parent.createChildInjector(pluginModule);
       pluginInjector.injectMembers(plugin);
       plugin.setInjector(pluginInjector);
+      Config finalConfig = null;
       for (Key<?> key : plugin.getInjector().getBindings().keySet())
       {
         Class<?> type = key.getTypeLiteral().getRawType();
         if (Config.class.isAssignableFrom(type))
         {
           Config config = (Config) plugin.getInjector().getInstance(key);
-          configManager.setDefaultConfiguration(config, false);
+          finalConfig = config;
+          configManager.setDefaultConfiguration(plugin, config, false);
         }
       }
-      plugin.toggle();
+      if (finalConfig != null)
+      if (Boolean.parseBoolean(configManager.getConfiguration(finalConfig.getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class).value(), "pluginEnabled")))
+        plugin.toggle();
     }
   }
 

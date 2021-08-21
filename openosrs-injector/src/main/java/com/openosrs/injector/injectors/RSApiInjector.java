@@ -74,7 +74,7 @@ public class RSApiInjector extends AbstractInjector {
 
     retryFailures();
 
-    log.info("[INFO] Injected {} getters, {} setters, and {} invokers", get, set, voke);
+    log.debug("Injected {} getters, {} setters, and {} invokers", get, set, voke);
   }
 
   private void injectFields(ClassFile deobClass, RSApiClass implementingClass) {

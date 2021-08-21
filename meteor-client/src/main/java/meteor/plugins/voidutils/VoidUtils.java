@@ -3,6 +3,8 @@ package meteor.plugins.voidutils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
@@ -20,4 +22,8 @@ import net.runelite.api.events.NpcSpawned;
     description = "Void Framework"
 )
 public class VoidUtils extends Plugin {
+
+    public VoidUtilsConfig getConfig(ConfigManager configManager) {
+        return configManager.getConfig(VoidUtilsConfig.class);
+    }
 }

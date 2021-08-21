@@ -85,19 +85,6 @@ public class PluginConfigUI {
     pluginsString.setFont(Font.font(18));
     AnchorPane.setLeftAnchor(pluginsString, 35.0);
 
-    PluginToggleButton toggleButton = null;
-    if (!lastPluginInteracted.getClass().getAnnotation(PluginDescriptor.class).cantDisable())
-    {
-      toggleButton = new PluginToggleButton(lastPluginInteracted);
-      toggleButton.setSize(6);
-      AnchorPane.setRightAnchor(toggleButton, 15.0);
-
-      toggleButton.addEventHandler(MouseEvent.MOUSE_PRESSED, (e) -> lastPluginInteracted.toggle());
-
-      toggleButton.setSelected(true);
-      toggleButton.setStyle("-fx-text-fill: CYAN;");
-    }
-
     pluginConfigPanel.getChildren().add(pluginsString);
     nodeList = new VBox();
     nodeList.setLayoutY(45);
@@ -171,7 +158,7 @@ public class PluginConfigUI {
     scrollBar.setMax(100);
     scrollBar.setValue(0);
     scrollBar.getStylesheets().add("css/plugins/jfx-scrollbar.css");
-    PluginToggleButton finalToggleButton = toggleButton;
+
     scrollBar.valueProperty().addListener((observable, oldValue, newValue) -> {
       if (fakeEvent)
       {
@@ -183,7 +170,6 @@ public class PluginConfigUI {
       nodeList.setLayoutY(configItemViewOffset + 45);
       pluginsString.setLayoutY(configItemViewOffset + 28);
       plug.setLayoutY(configItemViewOffset + 25);
-      finalToggleButton.setLayoutY(configItemViewOffset);
     });
 
     pluginConfigPanel.getChildren().add(scrollBar);
@@ -195,14 +181,10 @@ public class PluginConfigUI {
       nodeList.setLayoutY(configItemViewOffset + 45);
       pluginsString.setLayoutY(configItemViewOffset + 28);
       plug.setLayoutY(configItemViewOffset + 25);
-      finalToggleButton.setLayoutY(configItemViewOffset);
 
       fakeEvent = true;
       scrollBar.setValue((configItemViewOffset * -1) / 200);
     });
-
-    if(toggleButton != null)
-      pluginConfigPanel.getChildren().add(toggleButton);
   }
 
   private void createButtonNode(ConfigDescriptor config, AnchorPane root, ConfigItemDescriptor configItem) {
@@ -457,7 +439,6 @@ public class PluginConfigUI {
     AnchorPane.setRightAnchor(textField, 10.0);
     textField.setMaxSize(150, 15);
     textField.setFont(Font.font(18));
-    logger.debug(textField.getHeight() + "");
     textField.setText(configManager.getConfiguration(config.getGroup().value(), descriptor.key(), String.class));
     textField.addEventHandler(KeyEvent.KEY_TYPED, (e) ->
     {
@@ -499,7 +480,7 @@ public class PluginConfigUI {
     colorPicker.autosize();
     Color c = configManager.getConfiguration(config.getGroup().value(), configItem.key(), Color.class);
     if (c == null) {
-      logger.debug(config.getGroup().value() + ":" + configItem.key() + " color can't be null");
+      logger.warn(config.getGroup().value() + ":" + configItem.key() + " color can't be null");
       c = Color.WHITE;
     }
     double r = c.getRed() / 255.0;

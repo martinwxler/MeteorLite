@@ -43,9 +43,9 @@ import java.util.Set;
 
 @PluginDescriptor(
         name = "One Click Agility",
-        description = "Reclined gaming"
+        description = "Reclined gaming",
+        enabledByDefault = false
 )
-
 public class OneClickAgilityPlugin extends Plugin
 {
 

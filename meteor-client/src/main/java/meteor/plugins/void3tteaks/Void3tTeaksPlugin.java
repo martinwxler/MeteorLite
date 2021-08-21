@@ -21,7 +21,8 @@ import static net.runelite.api.ObjectID.*;
 import static net.runelite.api.Skill.WOODCUTTING;
 
 @PluginDescriptor(
-    name = "Void 3t Teaks"
+    name = "Void 3t Teaks",
+        enabledByDefault = false
 )
 public class Void3tTeaksPlugin extends Plugin {
 

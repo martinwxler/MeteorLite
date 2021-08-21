@@ -5,94 +5,68 @@ import com.google.gson.GsonBuilder;
 import org.sponge.util.Logger;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Bootstrapper {
 
-    private static File jpackageDir = new File("./meteor-client/build/jpackage/meteor-client/");
+    private static File shadowJar = new File("./meteor-client/build/libs/meteor-client-1.0.2-all.jar");
     private static File outputDir = new File("./meteor-client/build/bootstrap/");
-    private static File filesOutput = new File("./meteor-client/build/bootstrap/bootstrap.json");
-    private static File headerOutput = new File("./meteor-client/build/bootstrap/header.json");
-    private static List<UpdateFile> clientFiles = new ArrayList<>();
-    private static UpdateHeader header = new UpdateHeader();
+    private static File updateOutput = new File("./meteor-client/build/bootstrap/bootstrap.json");
+    private static File boostrapShadowJar = new File("./meteor-client/build/bootstrap/meteor-client.jar");
+    private static Update update = new Update();
 
     private static Logger log = new Logger("Bootstrapper");
 
     private static MessageDigest md5Digest;
 
     public static void main(String[] args) throws NoSuchAlgorithmException {
-        header.versionMajor = 1;
-        header.versionMinor = 0;
-        header.versionPatch = 1;
+        update.version = "1.0.4";
         md5Digest = MessageDigest.getInstance("MD5");
-        populateClientFiles();
+        processFile(shadowJar);
         saveBootstrap();
+        copyShadowJar();
+    }
+
+    private static void copyShadowJar() {
+        try {
+            if (boostrapShadowJar.exists())
+                boostrapShadowJar.delete();
+            Files.copy(shadowJar.toPath(), new File("./meteor-client/build/bootstrap/meteorlite.jar").toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void saveBootstrap() {
         outputDir.mkdirs();
-        if (!filesOutput.exists()) {
+        if (!updateOutput.exists()) {
             try {
-                filesOutput.createNewFile();
+                updateOutput.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        if (!headerOutput.exists()) {
+        if (!updateOutput.exists()) {
             try {
-                headerOutput.createNewFile();
+                updateOutput.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        try (Writer writer = new FileWriter(headerOutput)) {
+        try (Writer writer = new FileWriter(updateOutput)) {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            gson.toJson(header, writer);
+            gson.toJson(update, writer);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        try (Writer writer = new FileWriter(filesOutput)) {
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            gson.toJson(clientFiles, writer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    private static void populateClientFiles() {
-        if (jpackageDir != null) {
-            if (!jpackageDir.exists())
-                jpackageDir.mkdirs();
-            if (jpackageDir.listFiles() != null)
-                for (File f : jpackageDir.listFiles()) {
-                    if (f.isDirectory())
-                        scanDirectory(f);
-                    else
-                        processFile(f);
-                }
-        }
-    }
-
-    private static void scanDirectory(File f) {
-        if (f.listFiles() != null)
-            for (File f1 : f.listFiles())
-                if (f1.isDirectory())
-                    scanDirectory(f1);
-                else
-                    processFile(f1);
-
     }
 
     private static void processFile(File f) {
         if (!f.getName().endsWith(".msi")) {
-            UpdateFile file = new UpdateFile();
-            file.relativeName = f.getPath().replace(".\\meteor-client\\build\\jpackage\\meteor-client\\", "");
-            file.size = f.length();
-            file.hash = getFileChecksum(md5Digest, f);
-            //log.debug(f.getPath());
-            clientFiles.add(file);
+            update.size = f.length();
+            update.hash = getFileChecksum(md5Digest, f);
         }
     }
 

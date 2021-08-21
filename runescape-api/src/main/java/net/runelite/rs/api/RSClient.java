@@ -32,6 +32,7 @@ import net.runelite.api.World;
 import net.runelite.api.clan.ClanRank;
 import net.runelite.api.widgets.Widget;
 import net.runelite.mapping.Construct;
+import net.runelite.mapping.Export;
 import net.runelite.mapping.Import;
 
 public interface RSClient extends RSGameEngine, Client {
@@ -1439,4 +1440,21 @@ public interface RSClient extends RSGameEngine, Client {
   RSClanSettings getGuestClanSettings();
 
   ClanRank getClanRankFromRs(int rank);
+
+  @Import("MouseHandler_lastPressedX")
+  @Override
+  int getMouseLastPressedX();
+
+  @Import("MouseHandler_lastPressedX")
+  @Override
+  void setMouseLastPressedX(int x);
+
+  @Import("MouseHandler_lastPressedY")
+  @Override
+  int getMouseLastPressedY();
+
+  @Import("MouseHandler_lastPressedY")
+  @Override
+  void setMouseLastPressedY(int y);
+
 }

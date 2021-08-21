@@ -5,13 +5,13 @@
  */
 package com.owain.automation;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.Random;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.Perspective;
 import net.runelite.api.Point;
 
 public final class Automation
@@ -128,7 +128,6 @@ public final class Automation
 		{
 			return;
 		}
-
 		client.getCanvas().dispatchEvent(e);
 	}
 

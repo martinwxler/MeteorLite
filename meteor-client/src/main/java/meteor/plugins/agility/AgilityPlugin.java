@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
+
+import com.google.inject.Provides;
+import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
@@ -33,7 +36,7 @@ import net.runelite.api.events.WallObjectSpawned;
 @PluginDescriptor(
     name = "Agility",
     description = "Show helpful information about agility courses and obstacles",
-    tags = {"grace", "marks", "overlay", "shortcuts", "skilling", "traps", "sepulchre"}
+    tags = {"grace", "marks", "overlay", "shortcuts", "skilling", "traps", "sepulchre",}
 )
 public class AgilityPlugin extends Plugin {
 
@@ -45,6 +48,11 @@ public class AgilityPlugin extends Plugin {
 
   @Inject
   AgilityOverlay overlay;
+
+  @Provides
+  public AgilityConfig getConfig(ConfigManager configManager) {
+    return configManager.getConfig(AgilityConfig.class);
+  }
 
   @Override
   public void startup() {
