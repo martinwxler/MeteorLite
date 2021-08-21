@@ -76,7 +76,7 @@ public class DiscordPlugin extends Plugin
 	private boolean loginFlag;
 
 	@Provides
-	private DiscordConfig provideConfig(ConfigManager configManager)
+	public DiscordConfig getConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(DiscordConfig.class);
 	}

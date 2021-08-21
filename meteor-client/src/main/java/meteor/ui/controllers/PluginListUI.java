@@ -29,6 +29,7 @@ import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.ui.components.PluginConfigButton;
 import meteor.ui.components.PluginToggleButton;
+import org.sponge.util.Logger;
 
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -131,10 +132,15 @@ public class PluginListUI {
         toggleButton.addEventHandler(MouseEvent.MOUSE_PRESSED, (e) -> p.toggle());
 
         toggleButton.setStyle("-fx-text-fill: CYAN;");
-        if (p.getConfig(configManager).getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class) != null) {
-          configGroupPluginMap.put(p.getConfig(configManager).getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class).value(), toggleButton);
-          toggleButton.setSelected(Boolean.parseBoolean(configManager.getConfiguration(p.getConfig(configManager)
-                  .getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class).value(), "pluginEnabled")));
+        try {
+          if (p.getConfig(configManager).getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class) != null) {
+            configGroupPluginMap.put(p.getConfig(configManager).getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class).value(), toggleButton);
+            toggleButton.setSelected(Boolean.parseBoolean(configManager.getConfiguration(p.getConfig(configManager)
+                    .getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class).value(), "pluginEnabled")));
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
+          new Logger("PluginListUI").error(p.getName() + " has an incorrect getConfig(). Fix it.");
         }
       }
 
