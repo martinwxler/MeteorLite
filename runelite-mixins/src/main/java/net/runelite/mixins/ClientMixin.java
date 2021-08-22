@@ -1425,6 +1425,26 @@ public abstract class ClientMixin implements RSClient {
   }
 
   @Inject
+  @Override
+  public Widget[] getWidgetRoots()
+  {
+    int topGroup = getTopLevelInterfaceId();
+    if (topGroup == -1)
+    {
+      return new Widget[]{};
+    }
+    List<Widget> widgets = new ArrayList<Widget>();
+    for (RSWidget widget : getWidgets()[topGroup])
+    {
+      if (widget != null && widget.getRSParentId() == -1)
+      {
+        widgets.add(widget);
+      }
+    }
+    return widgets.toArray(new Widget[widgets.size()]);
+  }
+
+  @Inject
   private static boolean hideDisconnect = false;
 
   @Inject
