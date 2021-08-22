@@ -330,6 +330,7 @@ public interface RSClient extends RSGameEngine, Client {
   boolean isCheckClick();
 
   @Import("checkClick")
+  @Override
   void setCheckClick(boolean checkClick);
 
   @Import("menuOptionsCount")
@@ -1131,6 +1132,7 @@ public interface RSClient extends RSGameEngine, Client {
   void setMusicTrackVolume(int volume);
 
   @Import("viewportWalking")
+  @Override
   void setViewportWalking(boolean viewportWalking);
 
   void playMusicTrack(int var0, RSAbstractArchive var1, int var2, int var3, int var4, boolean var5);

@@ -593,8 +593,8 @@ public abstract class TileMixin implements RSTile
     client.setSelectedSceneTileX(getX());
     client.setSelectedSceneTileY(getY());
     client.setViewportWalking(true);
-    client.setMouseLastPressedX(getSceneLocation().getX());
-    client.setMouseLastPressedY(getSceneLocation().getX());
-    client.invokeMenuAction("Walk here", "", 0, WALK.getId(), getX(), getY());
+//    client.setMouseLastPressedX(getSceneLocation().getX());
+//    client.setMouseLastPressedY(getSceneLocation().getX());
+//    client.invokeMenuAction("Walk here", "", 0, WALK.getId(), getX(), getY());
   }
 }
