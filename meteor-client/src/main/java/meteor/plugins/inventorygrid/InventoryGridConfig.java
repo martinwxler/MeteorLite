@@ -64,6 +64,7 @@ public interface InventoryGridConfig extends Config
 		return true;
 	}
 
+	@Range(textInput = true)
 	@ConfigItem(
 		keyName = "dragDelay",
 		name = "Drag delay",
