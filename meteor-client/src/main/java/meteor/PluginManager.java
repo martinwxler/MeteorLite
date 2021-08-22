@@ -54,6 +54,7 @@ import meteor.plugins.itemcharges.ItemChargePlugin;
 import meteor.plugins.itemidentification.ItemIdentificationPlugin;
 import meteor.plugins.itemprices.ItemPricesPlugin;
 import meteor.plugins.itemstats.ItemStatPlugin;
+import meteor.plugins.keyremapping.KeyRemappingPlugin;
 import meteor.plugins.kourendlibrary.KourendLibraryPlugin;
 import meteor.plugins.leftclickcast.LeftClickCastPlugin;
 import meteor.plugins.lowdetail.LowDetailPlugin;
@@ -124,9 +125,6 @@ public class PluginManager {
   private void initPlugins() {
     plugins.add(new AgilityPlugin());
     plugins.add(new AoeWarningPlugin());
-    plugins.add(new AutoClickerPlugin());
-    plugins.add(new AutoLogHop());
-    plugins.add(new AutoRun());
     plugins.add(new BankPlugin());
     plugins.add(new BankTagsPlugin());
     plugins.add(new BetterAntiDragPlugin());
@@ -162,6 +160,7 @@ public class PluginManager {
     plugins.add(new ItemPricesPlugin());
     plugins.add(new ItemStatPlugin());
     plugins.add(new ItemIdentificationPlugin());
+    plugins.add(new KeyRemappingPlugin());
     plugins.add(new KourendLibraryPlugin());
     plugins.add(new LeftClickCastPlugin());
     plugins.add(new LowDetailPlugin());
@@ -196,6 +195,9 @@ public class PluginManager {
     plugins.add(new RunecraftPlugin());
     plugins.add(new SlayerPlugin());
     plugins.add(new SmithingPlugin());
+    plugins.add(new AutoClickerPlugin());
+    plugins.add(new AutoLogHop());
+    plugins.add(new AutoRun());
     plugins.add(new StatusBarsPlugin());
     plugins.add(new StretchedModePlugin());
     plugins.add(new TileIndicatorsPlugin());

@@ -33,7 +33,7 @@ public interface AutoClickerConfig extends Config
             position = 5
     )
     String clickerConfig = "Clicker Config";
-
+    @Range(min = 1, max = 10000)
     @ConfigItem(
             keyName = "minDelay",
             name = "Minimum Delay (ms)",
@@ -46,6 +46,7 @@ public interface AutoClickerConfig extends Config
         return 1000;
     }
 
+    @Range(min = 1, max = 10000)
     @ConfigItem(
             keyName = "maxDelay",
             name = "Maximum Delay (ms)",
@@ -58,6 +59,7 @@ public interface AutoClickerConfig extends Config
         return 2000;
     }
 
+    @Range(min = 1, max = 10000)
     @ConfigItem(
             keyName = "target",
             name = "Delay Target",
@@ -70,6 +72,7 @@ public interface AutoClickerConfig extends Config
         return 1500;
     }
 
+    @Range(min = 1, max = 10000)
     @ConfigItem(
             keyName = "deviation",
             name = "Delay Deviation",

@@ -34,7 +34,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static java.awt.event.KeyEvent.VK_ENTER;
 
 @PluginDescriptor(
-        name = "AutoLogHop",
+        name = "Soxs' AutoLogHop",
         description = "Auto hops/logs out when another player is seen.",
         enabledByDefault = false
 )
