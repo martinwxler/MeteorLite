@@ -118,7 +118,7 @@ public class WidgetItem implements Interactable {
 
   @Override
   public void interact(String action) {
-    String[] actions = client.getItemComposition(getId()).getInventoryActions();
+    String[] actions = getActions();
 
     for (int i = 0; i < actions.length; i++) {
       if (action.equalsIgnoreCase(actions[i])) {
@@ -132,14 +132,24 @@ public class WidgetItem implements Interactable {
 
   @Override
   public int getActionId(int action) {
-    return switch (action) {
-      case 0 -> MenuAction.ITEM_FIRST_OPTION.getId();
-      case 1 -> MenuAction.ITEM_SECOND_OPTION.getId();
-      case 2 -> MenuAction.ITEM_THIRD_OPTION.getId();
-      case 3 -> MenuAction.ITEM_FOURTH_OPTION.getId();
-      case 4 -> MenuAction.ITEM_FIFTH_OPTION.getId();
-      default -> throw new IllegalArgumentException("action = " + action);
-    };
+    switch (action) {
+      case 0:
+        if (getActions()[0] == null) {
+          return MenuAction.ITEM_USE.getId();
+        }
+
+        return MenuAction.ITEM_FIRST_OPTION.getId();
+      case 1:
+        return MenuAction.ITEM_SECOND_OPTION.getId();
+      case 2:
+        return MenuAction.ITEM_THIRD_OPTION.getId();
+      case 3:
+        return MenuAction.ITEM_FOURTH_OPTION.getId();
+      case 4:
+        return MenuAction.ITEM_FIFTH_OPTION.getId();
+      default:
+        throw new IllegalArgumentException("action = " + action);
+    }
   }
 
   @Override
@@ -179,5 +189,9 @@ public class WidgetItem implements Interactable {
     client.setSelectedItemID(getId());
     client.invokeMenuAction("", "", npc.getIndex(),
         MenuAction.ITEM_USE_ON_NPC.getId(), 0, 0);
+  }
+
+  public String getName() {
+    return client.getItemComposition(getId()).getName();
   }
 }

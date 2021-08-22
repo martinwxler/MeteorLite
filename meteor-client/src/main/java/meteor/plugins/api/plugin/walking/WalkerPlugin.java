@@ -16,7 +16,6 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
-import org.sponge.util.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -28,8 +27,6 @@ import java.util.concurrent.ScheduledExecutorService;
 )
 @Singleton
 public class WalkerPlugin extends Plugin {
-    private final Logger logger = new Logger("WalkerDebugPlugin");
-
     @Inject
     private ScheduledExecutorService executorService;
 

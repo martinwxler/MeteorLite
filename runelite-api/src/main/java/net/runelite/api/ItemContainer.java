@@ -31,7 +31,6 @@ import javax.annotation.Nullable;
  * Represents an inventory that contains items.
  */
 public interface ItemContainer extends Node {
-
   /**
    * Gets an array of all items in the container.
    *
