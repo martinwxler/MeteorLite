@@ -109,16 +109,5 @@ public interface TileObject extends Locatable, Interactable {
    */
   String getName();
 
-  /**
-   * Gets the menu actions of the object
-   */
-  String[] getActions();
-
-
-
-  int getActionID(int action);
-
-  List<String> actions();
-
   Point menuPoint();
 }

@@ -33,12 +33,7 @@ import javax.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
-import net.runelite.api.Client;
-import net.runelite.api.GameObject;
-import net.runelite.api.MenuAction;
-import net.runelite.api.NPC;
-import net.runelite.api.Point;
-import net.runelite.api.events.InvokeMenuActionEvent;
+import net.runelite.api.*;
 
 /**
  * An item that is being represented in a {@link Widget}.
@@ -46,7 +41,7 @@ import net.runelite.api.events.InvokeMenuActionEvent;
 @AllArgsConstructor
 @ToString
 @Getter
-public class WidgetItem {
+public class WidgetItem implements Interactable {
 
   private final Client client;
 
@@ -110,11 +105,18 @@ public class WidgetItem {
     return new Point((int) bounds.getX(), (int) bounds.getY());
   }
 
-  public List<String> actions() {
-    return Arrays
-        .stream(client.getItemComposition(getId()).getInventoryActions()).filter(Objects::nonNull).collect(Collectors.toList());
+  @Override
+  public String[] getActions() {
+    return client.getItemComposition(getId()).getInventoryActions();
   }
 
+  @Override
+  public List<String> actions() {
+    return Arrays
+        .stream(getActions()).filter(Objects::nonNull).collect(Collectors.toList());
+  }
+
+  @Override
   public void interact(String action) {
     String[] actions = client.getItemComposition(getId()).getInventoryActions();
 
@@ -128,23 +130,19 @@ public class WidgetItem {
     throw new IllegalArgumentException("no action \"" + action + "\" on item " + getId());
   }
 
-  private int getActionId(int action) {
-    switch (action) {
-      case 0:
-        return MenuAction.ITEM_FIRST_OPTION.getId();
-      case 1:
-        return MenuAction.ITEM_SECOND_OPTION.getId();
-      case 2:
-        return MenuAction.ITEM_THIRD_OPTION.getId();
-      case 3:
-        return MenuAction.ITEM_FOURTH_OPTION.getId();
-      case 4:
-        return MenuAction.ITEM_FIFTH_OPTION.getId();
-      default:
-        throw new IllegalArgumentException("action = " + action);
-    }
+  @Override
+  public int getActionId(int action) {
+    return switch (action) {
+      case 0 -> MenuAction.ITEM_FIRST_OPTION.getId();
+      case 1 -> MenuAction.ITEM_SECOND_OPTION.getId();
+      case 2 -> MenuAction.ITEM_THIRD_OPTION.getId();
+      case 3 -> MenuAction.ITEM_FOURTH_OPTION.getId();
+      case 4 -> MenuAction.ITEM_FIFTH_OPTION.getId();
+      default -> throw new IllegalArgumentException("action = " + action);
+    };
   }
 
+  @Override
   public void interact(int action) {
     client.interact(
         getId(),
@@ -152,6 +150,11 @@ public class WidgetItem {
         getSlot(),
         WidgetInfo.INVENTORY.getId()
     );
+  }
+
+  @Override
+  public void interact(int identifier, int opcode, int param0, int param1) {
+    client.interact(identifier, opcode, param0, param1);
   }
 
   public void useOn(WidgetItem item) {

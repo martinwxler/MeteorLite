@@ -103,7 +103,5 @@ public interface Player extends Actor {
    */
   int getRSSkillLevel();
 
-  String[] getActions();
-
   boolean isIdle();
 }

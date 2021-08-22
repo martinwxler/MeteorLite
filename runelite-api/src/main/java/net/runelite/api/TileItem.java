@@ -53,9 +53,5 @@ public interface TileItem extends Renderable, Interactable {
 
   int getDistanceFromLocalPlayer();
 
-  List<String> actions();
-
-  int getActionId(int action);
-
   void pickup();
 }
