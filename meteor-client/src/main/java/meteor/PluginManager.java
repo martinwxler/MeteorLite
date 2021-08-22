@@ -20,7 +20,7 @@ import meteor.plugins.PluginDependency;
 import meteor.plugins.achievementdiary.DiaryRequirementsPlugin;
 import meteor.plugins.agility.AgilityPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
-import meteor.plugins.api.debug.walking.WalkerDebugPlugin;
+import meteor.plugins.api.plugin.walking.WalkerPlugin;
 import meteor.plugins.autoclicker.AutoClickerPlugin;
 import meteor.plugins.autologhop.AutoLogHop;
 import meteor.plugins.autorun.AutoRun;
@@ -123,7 +123,7 @@ public class PluginManager {
   public static List<Plugin> plugins = new ArrayList<>();
 
   private void initPlugins() {
-    plugins.add(new WalkerDebugPlugin());
+    plugins.add(new WalkerPlugin());
     plugins.add(new AgilityPlugin());
     plugins.add(new AoeWarningPlugin());
     plugins.add(new AutoClickerPlugin());

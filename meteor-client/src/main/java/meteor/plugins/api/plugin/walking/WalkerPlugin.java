@@ -1,4 +1,4 @@
-package meteor.plugins.api.debug.walking;
+package meteor.plugins.api.plugin.walking;
 
 import com.google.inject.Provides;
 import meteor.config.ConfigManager;
@@ -27,7 +27,7 @@ import java.util.concurrent.ScheduledExecutorService;
         description = "Weed"
 )
 @Singleton
-public class WalkerDebugPlugin extends Plugin {
+public class WalkerPlugin extends Plugin {
     private final Logger logger = new Logger("WalkerDebugPlugin");
 
     @Inject
@@ -37,14 +37,14 @@ public class WalkerDebugPlugin extends Plugin {
     private OverlayManager overlayManager;
 
     @Inject
-    private WalkerDebugOverlay overlay;
+    private WalkerOverlay overlay;
 
     @Inject
-    private WalkerDebugConfig config;
+    private WalkerConfig config;
 
     @Provides
-    public WalkerDebugConfig getConfig(ConfigManager configManager) {
-        return configManager.getConfig(WalkerDebugConfig.class);
+    public WalkerConfig getConfig(ConfigManager configManager) {
+        return configManager.getConfig(WalkerConfig.class);
     }
 
     @Override

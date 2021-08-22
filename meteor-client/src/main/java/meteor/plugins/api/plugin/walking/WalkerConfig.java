@@ -1,13 +1,9 @@
-package meteor.plugins.api.debug.walking;
+package meteor.plugins.api.plugin.walking;
 
 import meteor.config.*;
 
-import java.awt.event.InputEvent;
-
-import static java.awt.event.KeyEvent.*;
-
 @ConfigGroup("walkerdebug")
-public interface WalkerDebugConfig extends Config {
+public interface WalkerConfig extends Config {
     @Range(textInput = true)
     @ConfigItem(
             keyName = "x",

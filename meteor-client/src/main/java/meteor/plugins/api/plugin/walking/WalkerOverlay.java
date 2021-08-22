@@ -1,16 +1,13 @@
-package meteor.plugins.api.debug.walking;
+package meteor.plugins.api.plugin.walking;
 
 import lombok.Setter;
 import meteor.plugins.api.movement.Movement;
-import meteor.plugins.api.scene.Tiles;
 import meteor.ui.overlay.Overlay;
-import net.runelite.api.Tile;
 import net.runelite.api.coords.WorldPoint;
 
-import javax.inject.Inject;
 import java.awt.*;
 
-public class WalkerDebugOverlay extends Overlay {
+public class WalkerOverlay extends Overlay {
     @Setter
     private WorldPoint tile;
 
