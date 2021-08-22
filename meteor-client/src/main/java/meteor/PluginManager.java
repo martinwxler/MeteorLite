@@ -1,15 +1,9 @@
 package meteor;
 
-import com.google.inject.Binder;
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.Key;
 import com.google.inject.Module;
+import com.google.inject.*;
 import com.owain.chinLogin.ChinLoginPlugin;
 import com.owain.chinmanager.ChinManagerPlugin;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.questhelper.QuestHelperPlugin;
 import meteor.config.Config;
 import meteor.config.ConfigGroup;
@@ -87,6 +81,8 @@ import meteor.plugins.runenergy.RunEnergyPlugin;
 import meteor.plugins.runepouch.RunepouchPlugin;
 import meteor.plugins.slayer.SlayerPlugin;
 import meteor.plugins.smithing.SmithingPlugin;
+import meteor.plugins.socket.SocketPlugin;
+import meteor.plugins.sockethealing.SocketHealingPlugin;
 import meteor.plugins.statusbars.StatusBarsPlugin;
 import meteor.plugins.stretchedmode.StretchedModePlugin;
 import meteor.plugins.tearsofguthix.TearsOfGuthixPlugin;
@@ -104,6 +100,9 @@ import meteor.plugins.worldmap.WorldMapPlugin;
 import meteor.plugins.xpglobes.XpGlobesPlugin;
 import meteor.plugins.xptracker.XpTrackerPlugin;
 import meteor.plugins.zulrah.ZulrahPlugin;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PluginManager {
 
@@ -196,6 +195,8 @@ public class PluginManager {
     plugins.add(new RunecraftPlugin());
     plugins.add(new SlayerPlugin());
     plugins.add(new SmithingPlugin());
+    plugins.add(new SocketPlugin());
+    plugins.add(new SocketHealingPlugin());
     plugins.add(new StatusBarsPlugin());
     plugins.add(new StretchedModePlugin());
     plugins.add(new TileIndicatorsPlugin());
