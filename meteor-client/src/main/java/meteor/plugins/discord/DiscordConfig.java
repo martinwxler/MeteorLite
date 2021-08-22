@@ -25,10 +25,7 @@
 package meteor.plugins.discord;
 
 import lombok.AllArgsConstructor;
-import meteor.config.Config;
-import meteor.config.ConfigGroup;
-import meteor.config.ConfigItem;
-import meteor.config.Units;
+import meteor.config.*;
 
 @ConfigGroup("discord")
 public interface DiscordConfig extends Config
@@ -60,6 +57,7 @@ public interface DiscordConfig extends Config
 		return ElapsedTimeType.ACTIVITY;
 	}
 
+	@Range(min = 1, max = 60)
 	@ConfigItem(
 		keyName = "actionTimeout",
 		name = "Activity timeout",

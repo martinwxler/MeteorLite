@@ -24,11 +24,71 @@
  */
 package net.runelite.api;
 
-import lombok.Value;
+import lombok.Data;
+import net.runelite.api.widgets.WidgetInfo;
 
-@Value
-public class Item {
+import java.util.Arrays;
+import java.util.List;
+
+@Data
+public class Item implements Interactable {
 
   private final int id;
   private final int quantity;
+
+  private String name;
+  private int index;
+  private String[] actions;
+
+  // Interaction
+  private WidgetInfo widgetInfo;
+  private int actionParam;
+  private int widgetId;
+
+  @Override
+  public String[] getActions() {
+    return actions;
+  }
+
+  @Override
+  public int getActionId(int action) {
+    switch (action) {
+      case 0:
+        if (getActions()[0] == null) {
+          return MenuAction.ITEM_USE.getId();
+        }
+
+        return MenuAction.ITEM_FIRST_OPTION.getId();
+      case 1:
+        return MenuAction.ITEM_SECOND_OPTION.getId();
+      case 2:
+        return MenuAction.ITEM_THIRD_OPTION.getId();
+      case 3:
+        return MenuAction.ITEM_FOURTH_OPTION.getId();
+      case 4:
+        return MenuAction.ITEM_FIFTH_OPTION.getId();
+      default:
+        throw new IllegalArgumentException("action = " + action);
+    }
+  }
+
+  @Override
+  public List<String> actions() {
+    return Arrays.asList(actions);
+  }
+
+  @Override
+  public void interact(String action) {
+
+  }
+
+  @Override
+  public void interact(int index) {
+
+  }
+
+  @Override
+  public void interact(int identifier, int opcode, int param0, int param1) {
+
+  }
 }

@@ -25,10 +25,7 @@
  */
 package meteor.plugins.motherlode;
 
-import meteor.config.Config;
-import meteor.config.ConfigGroup;
-import meteor.config.ConfigItem;
-import meteor.config.Units;
+import meteor.config.*;
 
 @ConfigGroup("motherlode")
 public interface MotherlodeConfig extends Config
@@ -53,6 +50,7 @@ public interface MotherlodeConfig extends Config
 		return true;
 	}
 
+	@Range(min = 1, max = 60)
 	@ConfigItem(
 		keyName = "statTimeout",
 		name = "Reset stats",

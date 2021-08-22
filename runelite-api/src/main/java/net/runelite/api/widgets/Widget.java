@@ -28,6 +28,7 @@ import java.awt.Rectangle;
 import java.util.Collection;
 import javax.annotation.Nullable;
 import net.runelite.api.FontTypeFace;
+import net.runelite.api.Interactable;
 import net.runelite.api.Point;
 import net.runelite.api.SpritePixels;
 
@@ -46,7 +47,7 @@ import net.runelite.api.SpritePixels;
  * <p>
  * For a more complete idea of what is classified as a widget, see {@link WidgetID}.
  */
-public interface Widget {
+public interface Widget extends Interactable {
 
   /**
    * Gets the widgets ID.

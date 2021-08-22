@@ -71,14 +71,4 @@ public interface NPC extends Actor {
   void onDefinitionChanged(NPCComposition composition);
 
   int getDistanceFromLocalPlayer();
-
-  List<String> actions();
-
-  void interact(String action);
-
-  int getActionId(int action);
-
-  void interact(int action);
-
-
 }

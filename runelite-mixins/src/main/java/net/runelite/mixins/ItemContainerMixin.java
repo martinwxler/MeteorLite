@@ -25,6 +25,7 @@
  */
 package net.runelite.mixins;
 
+import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.api.Item;
 import net.runelite.api.events.InventoryChanged;
 import net.runelite.api.events.ItemContainerChanged;
@@ -33,6 +34,8 @@ import net.runelite.api.mixins.FieldHook;
 import net.runelite.api.mixins.Inject;
 import net.runelite.api.mixins.Mixin;
 import net.runelite.api.mixins.Shadow;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSItemContainer;
 import net.runelite.rs.api.RSNodeHashTable;
@@ -128,6 +131,8 @@ public abstract class ItemContainerMixin implements RSItemContainer {
           itemIds[i],
           stackSizes[i]
       );
+
+      item.setIndex(i);
       items[i] = item;
     }
 
@@ -140,7 +145,13 @@ public abstract class ItemContainerMixin implements RSItemContainer {
     int[] itemIds = getItemIds();
     int[] stackSizes = getStackSizes();
     if (slot >= 0 && slot < itemIds.length && itemIds[slot] != -1) {
-      return new Item(itemIds[slot], stackSizes[slot]);
+      Item item = new Item(
+              itemIds[slot],
+              stackSizes[slot]
+      );
+
+      item.setIndex(slot);
+      return item;
     }
 
     return null;
