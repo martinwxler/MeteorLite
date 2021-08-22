@@ -1,22 +1,25 @@
-package meteor.plugins.voidagility.tasks;
+package meteor.plugins.voidtempoross.tasks.low;
 
-import meteor.plugins.voidagility.VoidTemporossPlugin;
+import meteor.plugins.voidtempoross.VoidTemporossPlugin;
 import meteor.plugins.voidutils.OSRSUtils;
 import meteor.plugins.voidutils.tasks.Task;
-import net.runelite.api.GameObject;
 import net.runelite.api.NPC;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CollectFish extends Task {
 
     @Inject
-    VoidTemporossPlugin plugin;
+    OSRSUtils osrs;
 
     @Inject
-    OSRSUtils osrs;
+    VoidTemporossPlugin plugin;
+
+    public CollectFish(VoidTemporossPlugin plugin) {
+        super();
+        this.plugin = plugin;
+    }
 
     @Override
     public String name() {

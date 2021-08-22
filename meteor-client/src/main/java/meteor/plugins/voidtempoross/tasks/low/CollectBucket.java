@@ -1,6 +1,6 @@
-package meteor.plugins.voidagility.tasks;
+package meteor.plugins.voidtempoross.tasks.low;
 
-import meteor.plugins.voidagility.VoidTemporossPlugin;
+import meteor.plugins.voidtempoross.VoidTemporossPlugin;
 import meteor.plugins.voidutils.OSRSUtils;
 import meteor.plugins.voidutils.tasks.Task;
 import net.runelite.api.GameObject;
@@ -10,10 +10,15 @@ import javax.inject.Inject;
 public class CollectBucket extends Task {
 
     @Inject
-    VoidTemporossPlugin plugin;
+    OSRSUtils osrs;
 
     @Inject
-    OSRSUtils osrs;
+    VoidTemporossPlugin plugin;
+
+    public CollectBucket(VoidTemporossPlugin plugin) {
+        super();
+        this.plugin = plugin;
+    }
 
     @Override
     public String name() {
@@ -22,9 +27,7 @@ public class CollectBucket extends Task {
 
     @Override
     public boolean shouldExecute() {
-        if (getActiveBucketsCount() < 5)
-            return true;
-        return false;
+        return getActiveBucketsCount() < 5;
     }
 
     @Override

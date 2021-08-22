@@ -1,4 +1,4 @@
-package meteor.plugins.voidagility;
+package meteor.plugins.voidtempoross;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -24,17 +24,14 @@ public class VoidTemporossOverlay extends OverlayPanel {
 
   @Override
   public Dimension render(Graphics2D graphics) {
-    if (!VoidTemporossPlugin.enabled) {
+    if (!plugin.enabled) {
       return null;
     }
     GameObject[] objects = new GameObject[] {
 
     };
     NPC[] npcs = new NPC[] {
-            plugin.getFishCrate(),
-            plugin.getNearestFishingSpot(),
-            plugin.getNearestDoubleFishingSpot(),
-            plugin.getSpiritPool(),
+
     };
     graphics.setColor(Color.CYAN);
     for (GameObject o : objects) {

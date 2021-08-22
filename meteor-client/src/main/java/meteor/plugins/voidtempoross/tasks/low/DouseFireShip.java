@@ -1,9 +1,8 @@
-package meteor.plugins.voidagility.tasks;
+package meteor.plugins.voidtempoross.tasks.low;
 
-import meteor.plugins.voidagility.VoidTemporossPlugin;
+import meteor.plugins.voidtempoross.VoidTemporossPlugin;
 import meteor.plugins.voidutils.OSRSUtils;
 import meteor.plugins.voidutils.tasks.PriorityTask;
-import meteor.plugins.voidutils.tasks.Task;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 
@@ -14,13 +13,18 @@ import java.util.List;
 public class DouseFireShip extends PriorityTask {
 
     @Inject
-    VoidTemporossPlugin plugin;
-
-    @Inject
     OSRSUtils osrs;
 
     @Inject
     Client client;
+
+    @Inject
+    VoidTemporossPlugin plugin;
+
+    public DouseFireShip(VoidTemporossPlugin plugin) {
+        super();
+        this.plugin = plugin;
+    }
 
     @Override
     public String name() {

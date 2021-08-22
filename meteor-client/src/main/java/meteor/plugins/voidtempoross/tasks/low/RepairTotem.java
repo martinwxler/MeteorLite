@@ -1,30 +1,35 @@
-package meteor.plugins.voidagility.tasks;
+package meteor.plugins.voidtempoross.tasks.low;
 
-import meteor.plugins.voidagility.VoidTemporossPlugin;
+import meteor.plugins.voidtempoross.VoidTemporossPlugin;
 import meteor.plugins.voidutils.OSRSUtils;
 import meteor.plugins.voidutils.tasks.Task;
 import net.runelite.api.GameObject;
 
 import javax.inject.Inject;
 
-public class RepairMast extends Task {
-
-    @Inject
-    VoidTemporossPlugin plugin;
+public class RepairTotem extends Task {
 
     @Inject
     OSRSUtils osrs;
 
+    @Inject
+    VoidTemporossPlugin plugin;
+
+    public RepairTotem(VoidTemporossPlugin plugin) {
+        super();
+        this.plugin = plugin;
+    }
+
     @Override
     public String name() {
-        return "Repair Mast";
+        return "Repair Totem";
     }
 
     @Override
     public boolean shouldExecute() {
-        if (plugin.location.equals("SHIP"))
+        if (plugin.location.equals("ISLAND"))
             if (!plugin.shouldTether)
-                if (getBrokenMast() != null)
+                if (getBrokenTotem() != null)
                     return true;
         return false;
     }
@@ -34,12 +39,12 @@ public class RepairMast extends Task {
         fixBrokenTotem();
     }
 
-    public GameObject getBrokenMast() {
-        return plugin.getSidesObjectNS(10571);
+    public GameObject getBrokenTotem() {
+        return plugin.getSidesObjectNS(41011);
     }
 
     public void fixBrokenTotem() {
-        GameObject brokenTotem = getBrokenMast();
+        GameObject brokenTotem = getBrokenTotem();
         if (brokenTotem != null)
             brokenTotem.interact(0);
     }

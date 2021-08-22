@@ -1,4 +1,4 @@
-package meteor.plugins.voidagility;
+package meteor.plugins.voidtempoross;
 
 import meteor.config.*;
 

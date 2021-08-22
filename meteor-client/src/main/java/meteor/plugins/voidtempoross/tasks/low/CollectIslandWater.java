@@ -1,6 +1,6 @@
-package meteor.plugins.voidagility.tasks;
+package meteor.plugins.voidtempoross.tasks.low;
 
-import meteor.plugins.voidagility.VoidTemporossPlugin;
+import meteor.plugins.voidtempoross.VoidTemporossPlugin;
 import meteor.plugins.voidutils.OSRSUtils;
 import meteor.plugins.voidutils.tasks.Task;
 import net.runelite.api.GameObject;
@@ -10,14 +10,19 @@ import javax.inject.Inject;
 public class CollectIslandWater extends Task {
 
     @Inject
-    VoidTemporossPlugin plugin;
-
-    @Inject
     OSRSUtils osrs;
 
     @Override
     public String name() {
         return "Water (Island)";
+    }
+
+    @Inject
+    VoidTemporossPlugin plugin;
+
+    public CollectIslandWater(VoidTemporossPlugin plugin) {
+        super();
+        this.plugin = plugin;
     }
 
     @Override

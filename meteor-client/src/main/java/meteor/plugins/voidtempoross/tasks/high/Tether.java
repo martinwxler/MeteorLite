@@ -1,8 +1,9 @@
-package meteor.plugins.voidagility.tasks;
+package meteor.plugins.voidtempoross.tasks.high;
 
 import meteor.eventbus.Subscribe;
-import meteor.plugins.voidagility.VoidTemporossPlugin;
+import meteor.plugins.voidtempoross.VoidTemporossPlugin;
 import meteor.plugins.voidutils.OSRSUtils;
+import meteor.plugins.voidutils.tasks.PriorityTask;
 import meteor.plugins.voidutils.tasks.Task;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.GameObject;
@@ -10,13 +11,18 @@ import net.runelite.api.events.ChatMessage;
 
 import javax.inject.Inject;
 
-public class Tether extends Task {
+public class Tether extends PriorityTask {
+
+    @Inject
+    OSRSUtils osrs;
 
     @Inject
     VoidTemporossPlugin plugin;
 
-    @Inject
-    OSRSUtils osrs;
+    public Tether(VoidTemporossPlugin plugin) {
+        super();
+        this.plugin = plugin;
+    }
 
     @Override
     public String name() {

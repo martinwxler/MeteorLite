@@ -40,7 +40,7 @@ public class Plugin implements Module {
   public Scheduler scheduler;
 
   @Getter @Setter
-  private boolean enabled = false;
+  public boolean enabled = false;
 
   @Getter @Setter
   private boolean running = false;

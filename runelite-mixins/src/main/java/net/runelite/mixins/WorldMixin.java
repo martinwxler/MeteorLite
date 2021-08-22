@@ -22,55 +22,49 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.defaultworld;
+package net.runelite.mixins;
 
-import meteor.config.Config;
-import meteor.config.ConfigGroup;
-import meteor.config.ConfigItem;
-import meteor.config.Range;
+import net.runelite.api.WorldType;
+import net.runelite.api.events.WorldListLoad;
+import net.runelite.api.mixins.FieldHook;
+import net.runelite.api.mixins.Inject;
+import net.runelite.api.mixins.Mixin;
+import net.runelite.api.mixins.Shadow;
+import net.runelite.rs.api.RSClient;
+import net.runelite.rs.api.RSWorld;
 
-@ConfigGroup(DefaultWorldConfig.GROUP)
-public interface DefaultWorldConfig extends Config
+import java.util.EnumSet;
+
+@Mixin(RSWorld.class)
+public abstract class WorldMixin implements RSWorld
 {
-	String GROUP = "defaultworld";
+	@Shadow("client")
+	private static RSClient client;
 
-	@Range(min = 1, max = 600, textInput = true)
-	@ConfigItem(
-		keyName = "defaultWorld",
-		name = "Default world",
-		description = "World to use as default one"
-	)
-	default int getWorld()
+	@Inject
+	@Override
+	public EnumSet<WorldType> getTypes()
 	{
-		return 0;
+		return WorldType.fromMask(getMask());
 	}
 
-	@ConfigItem(
-		keyName = "useLastWorld",
-		name = "Use Last World",
-		description = "Use the last world you used as the default"
-	)
-	default boolean useLastWorld()
+	@Inject
+	@Override
+	public void setTypes(final EnumSet<WorldType> types)
 	{
-		return false;
+		setMask(WorldType.toMask(types));
 	}
 
-	@Range(min = 1, max = 600, textInput = true)
-	@ConfigItem(
-		keyName = "lastWorld",
-		name = "",
-		description = "",
-		hidden = true
-	)
-	default int lastWorld()
+	@Inject
+	@FieldHook("population")
+	public void playerCountChanged(int idx)
 	{
-		return 0;
+		RSWorld[] worlds = client.getWorldList();
+		if (worlds != null && worlds.length > 0 && worlds[worlds.length - 1] == this)
+		{
+			// this is the last world in the list.
+			WorldListLoad worldLoad = new WorldListLoad(worlds);
+			client.getCallbacks().post(worldLoad);
+		}
 	}
-
-	@ConfigItem(
-		keyName = "lastWorld",
-		name = "",
-		description = ""
-	)
-	void lastWorld(int lastWorld);
 }
