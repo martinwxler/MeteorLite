@@ -126,7 +126,6 @@ public abstract class GameObjectMixin implements RSGameObject {
   }
 
   @Inject
-
   @Override
   public WorldArea getWorldArea() {
     if (!getLocalLocation().isInScene()) {
