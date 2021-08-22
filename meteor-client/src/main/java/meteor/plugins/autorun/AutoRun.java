@@ -22,7 +22,7 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 
 @PluginDescriptor(
-	name = "AutoRunEnabler",
+	name = "Soxs' AutoRunEnabler",
 	description = "Automatically enables run.",
 	enabledByDefault = false
 )

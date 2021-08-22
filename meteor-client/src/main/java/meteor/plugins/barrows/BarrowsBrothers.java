@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Seth <Sethtroll3@gmail.com>
+ * Copyright (c) 2018, Seth <Sethtroll3@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,56 +22,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.woodcutting;
+package meteor.plugins.barrows;
 
-import meteor.config.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.runelite.api.Varbits;
+import net.runelite.api.coords.WorldPoint;
 
-@ConfigGroup("woodcutting")
-public interface WoodcuttingConfig extends Config
+@RequiredArgsConstructor
+public enum BarrowsBrothers
 {
-	@Range(min = 1, max = 60)
-	@ConfigItem(
-		position = 1,
-		keyName = "statTimeout",
-		name = "Reset stats",
-		description = "Configures the time until statistic is reset. Also configures when tree indicator is hidden"
-	)
-	@Units(Units.MINUTES)
-	default int statTimeout()
-	{
-		return 5;
-	}
+	AHRIM("Ahrim", new WorldPoint(3566, 3289, 0), Varbits.BARROWS_KILLED_AHRIM),
+	DHAROK("Dharok", new WorldPoint(3575, 3298, 0), Varbits.BARROWS_KILLED_DHAROK),
+	GUTHAN("Guthan", new WorldPoint(3577, 3283, 0), Varbits.BARROWS_KILLED_GUTHAN),
+	KARIL("Karil", new WorldPoint(3566, 3275, 0), Varbits.BARROWS_KILLED_KARIL),
+	TORAG("Torag", new WorldPoint(3553, 3283, 0), Varbits.BARROWS_KILLED_TORAG),
+	VERAC("Verac", new WorldPoint(3557, 3298, 0), Varbits.BARROWS_KILLED_VERAC);
 
-	@ConfigItem(
-		position = 3,
-		keyName = "showWoodcuttingStats",
-		name = "Show session stats",
-		description = "Configures whether to display woodcutting session stats"
-	)
-	default boolean showWoodcuttingStats()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		position = 4,
-		keyName = "showRedwoods",
-		name = "Show Redwood trees",
-		description = "Configures whether to show a indicator for redwood trees"
-	)
-	default boolean showRedwoodTrees()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		position = 5,
-		keyName = "showRespawnTimers",
-		name = "Show respawn timers",
-		description = "Configures whether to display the respawn timer overlay"
-	)
-	default boolean showRespawnTimers()
-	{
-		return true;
-	}
+	@Getter
+	private final String name;
+	@Getter
+	private final WorldPoint location;
+	@Getter
+	private final Varbits killedVarbit;
 }

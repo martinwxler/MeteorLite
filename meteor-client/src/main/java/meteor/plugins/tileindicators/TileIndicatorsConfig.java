@@ -55,13 +55,14 @@ public interface TileIndicatorsConfig extends Config
 		return true;
 	}
 
+	@Range(min = 1, max = 10)
 	@ConfigItem(
 		keyName = "destinationTileBorderWidth",
 		name = "Destination border width",
 		description = "Width of the destination tile marker border",
 		position = 3
 	)
-	default double destinationTileBorderWidth()
+	default int destinationTileBorderWidth()
 	{
 		return 2;
 	}
@@ -89,13 +90,14 @@ public interface TileIndicatorsConfig extends Config
 		return false;
 	}
 
+	@Range(min = 1, max = 10)
 	@ConfigItem(
 		keyName = "hoveredTileBorderWidth",
 		name = "Hovered tile border width",
 		description = "Width of the hovered tile marker border",
 		position = 6
 	)
-	default double hoveredTileBorderWidth()
+	default int hoveredTileBorderWidth()
 	{
 		return 2;
 	}
@@ -123,13 +125,14 @@ public interface TileIndicatorsConfig extends Config
 		return false;
 	}
 
+	@Range(min = 1, max = 10)
 	@ConfigItem(
 		keyName = "currentTileBorderWidth",
 		name = "True tile border width",
 		description = "Width of the true tile marker border",
 		position = 9
 	)
-	default double currentTileBorderWidth()
+	default int currentTileBorderWidth()
 	{
 		return 2;
 	}

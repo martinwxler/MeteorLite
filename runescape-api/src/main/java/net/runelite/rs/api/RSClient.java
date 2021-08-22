@@ -1492,6 +1492,5 @@ public interface RSClient extends RSGameEngine, Client {
   RSClientPacket getTextInputPacket();
 
   @Import("Packet_sendReport")
-  @Override
   RSClientPacket getReportPacket();
 }

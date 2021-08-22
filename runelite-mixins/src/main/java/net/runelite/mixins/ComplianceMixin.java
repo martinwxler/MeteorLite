@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Seth <Sethtroll3@gmail.com>
+ * Copyright (c) 2020 ThatGamerBlue
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,56 +22,45 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.woodcutting;
+package net.runelite.mixins;
 
-import meteor.config.*;
+import net.runelite.api.mixins.Inject;
+import net.runelite.api.mixins.Mixin;
+import net.runelite.api.mixins.Shadow;
+import net.runelite.rs.api.RSClient;
 
-@ConfigGroup("woodcutting")
-public interface WoodcuttingConfig extends Config
+import java.util.HashMap;
+import java.util.Map;
+
+@Mixin(RSClient.class)
+public abstract class ComplianceMixin implements RSClient
 {
-	@Range(min = 1, max = 60)
-	@ConfigItem(
-		position = 1,
-		keyName = "statTimeout",
-		name = "Reset stats",
-		description = "Configures the time until statistic is reset. Also configures when tree indicator is hidden"
-	)
-	@Units(Units.MINUTES)
-	default int statTimeout()
+	@Shadow("client")
+	private static RSClient client;
+	@Inject
+	private static Map<String, Boolean> complianceMap = new HashMap<>();
+
+	@Inject
+	@Override
+	public boolean getComplianceValue(String key)
 	{
-		return 5;
+		if (key == null)
+		{
+			return false;
+		}
+		return complianceMap.containsKey(key) ? complianceMap.get(
+			key) : false; // false ensures we are compliant by default, note: java 7 does not have Map#getOrDefault(String, Object)
 	}
 
-	@ConfigItem(
-		position = 3,
-		keyName = "showWoodcuttingStats",
-		name = "Show session stats",
-		description = "Configures whether to display woodcutting session stats"
-	)
-	default boolean showWoodcuttingStats()
+	@Inject
+	@Override
+	public void setComplianceValue(String key, boolean value)
 	{
-		return true;
-	}
-
-	@ConfigItem(
-		position = 4,
-		keyName = "showRedwoods",
-		name = "Show Redwood trees",
-		description = "Configures whether to show a indicator for redwood trees"
-	)
-	default boolean showRedwoodTrees()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		position = 5,
-		keyName = "showRespawnTimers",
-		name = "Show respawn timers",
-		description = "Configures whether to display the respawn timer overlay"
-	)
-	default boolean showRespawnTimers()
-	{
-		return true;
+		if (key == null)
+		{
+			return;
+		}
+		client.getLogger().debug("Compliance: {} being set to {}", key, value);
+		complianceMap.put(key, value);
 	}
 }

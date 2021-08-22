@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Seth <Sethtroll3@gmail.com>
+ * Copyright (c) 2018, trimbe <github.com/trimbe>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,56 +22,25 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.woodcutting;
+package meteor.plugins.chatchannel;
 
-import meteor.config.*;
+import lombok.AllArgsConstructor;
+import lombok.Value;
+import net.runelite.api.ChatPlayer;
 
-@ConfigGroup("woodcutting")
-public interface WoodcuttingConfig extends Config
+@Value
+@AllArgsConstructor
+class MemberActivity
 {
-	@Range(min = 1, max = 60)
-	@ConfigItem(
-		position = 1,
-		keyName = "statTimeout",
-		name = "Reset stats",
-		description = "Configures the time until statistic is reset. Also configures when tree indicator is hidden"
-	)
-	@Units(Units.MINUTES)
-	default int statTimeout()
+	enum ChatType
 	{
-		return 5;
+		FRIENDS_CHAT,
+		CLAN_CHAT,
+		GUEST_CHAT
 	}
 
-	@ConfigItem(
-		position = 3,
-		keyName = "showWoodcuttingStats",
-		name = "Show session stats",
-		description = "Configures whether to display woodcutting session stats"
-	)
-	default boolean showWoodcuttingStats()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		position = 4,
-		keyName = "showRedwoods",
-		name = "Show Redwood trees",
-		description = "Configures whether to show a indicator for redwood trees"
-	)
-	default boolean showRedwoodTrees()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		position = 5,
-		keyName = "showRespawnTimers",
-		name = "Show respawn timers",
-		description = "Configures whether to display the respawn timer overlay"
-	)
-	default boolean showRespawnTimers()
-	{
-		return true;
-	}
+	private ActivityType activityType;
+	private ChatType chatType;
+	private ChatPlayer member;
+	private Integer tick;
 }

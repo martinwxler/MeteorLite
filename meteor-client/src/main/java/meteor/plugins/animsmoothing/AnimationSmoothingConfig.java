@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Jeremy Plsek <https://github.com/jplsek>
+ * Copyright (c) 2018, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,82 +22,47 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.inventorygrid;
+package meteor.plugins.animsmoothing;
 
-import meteor.config.*;
+import meteor.config.Config;
+import meteor.config.ConfigGroup;
+import meteor.config.ConfigItem;
 
-import java.awt.*;
-
-@ConfigGroup("inventorygrid")
-public interface InventoryGridConfig extends Config
+@ConfigGroup(AnimationSmoothingPlugin.CONFIG_GROUP)
+public interface AnimationSmoothingConfig extends Config
 {
-	@ConfigItem(
-		keyName = "showItem",
-		name = "Show item",
-		description = "Show a preview of the item in the new slot",
-		position = 6
-	)
-	default boolean showItem()
-	{
-		return true;
-	}
 
 	@ConfigItem(
-		keyName = "showGrid",
-		name = "Show grid",
-		description = "Show a grid on the inventory while dragging",
-		position = 3
-	)
-	default boolean showGrid()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		keyName = "showHighlight",
-		name = "Highlight background",
-		description = "Show a background highlight on the new slot",
-		position = 2
-	)
-	default boolean showHighlight()
-	{
-		return true;
-	}
-
-	@Range(textInput = true)
-	@ConfigItem(
-		keyName = "dragDelay",
-		name = "Drag delay",
-		description = "Time to wait after an item press before the overlay is enabled",
+		keyName = "smoothPlayerAnimations",
+		name = "Smooth Player Animations",
+		description = "Configures whether the player animations are smooth or not",
 		position = 1
 	)
-	@Units(Units.MILLISECONDS)
-	default int dragDelay()
+	default boolean smoothPlayerAnimations()
 	{
-		return 0;
+		return true;
 	}
 
-	@Alpha
 	@ConfigItem(
-		keyName = "gridColor",
-		name = "Grid color",
-		description = "The color of the grid",
-		position = 4
+		keyName = "smoothNpcAnimations",
+		name = "Smooth NPC Animations",
+		description = "Configures whether the npc animations are smooth or not",
+		position = 2
 	)
-	default Color gridColor()
+	default boolean smoothNpcAnimations()
 	{
-		return new Color(255, 255, 255, 45);
+		return true;
 	}
 
-	@Alpha
 	@ConfigItem(
-		keyName = "highlightColor",
-		name = "Highlight color",
-		description = "The color of the new inventory slot highlight",
-		position = 5
+		keyName = "smoothObjectAnimations",
+		name = "Smooth Object Animations",
+		description = "Configures whether the object animations are smooth or not",
+		position = 3
 	)
-	default Color highlightColor()
+	default boolean smoothObjectAnimations()
 	{
-		return new Color(0, 255, 0, 45);
+		return true;
 	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Jeremy Plsek <https://github.com/jplsek>
+ * Copyright (c) 2018, Seth <Sethtroll3@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,82 +22,80 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.inventorygrid;
+package meteor.plugins.barrows;
 
-import meteor.config.*;
+import meteor.config.Config;
+import meteor.config.ConfigGroup;
+import meteor.config.ConfigItem;
 
 import java.awt.*;
 
-@ConfigGroup("inventorygrid")
-public interface InventoryGridConfig extends Config
+@ConfigGroup("barrows")
+public interface BarrowsConfig extends Config
 {
 	@ConfigItem(
-		keyName = "showItem",
-		name = "Show item",
-		description = "Show a preview of the item in the new slot",
-		position = 6
-	)
-	default boolean showItem()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		keyName = "showGrid",
-		name = "Show grid",
-		description = "Show a grid on the inventory while dragging",
-		position = 3
-	)
-	default boolean showGrid()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		keyName = "showHighlight",
-		name = "Highlight background",
-		description = "Show a background highlight on the new slot",
-		position = 2
-	)
-	default boolean showHighlight()
-	{
-		return true;
-	}
-
-	@Range(textInput = true)
-	@ConfigItem(
-		keyName = "dragDelay",
-		name = "Drag delay",
-		description = "Time to wait after an item press before the overlay is enabled",
+		keyName = "showBrotherLoc",
+		name = "Show Brothers location",
+		description = "Configures whether or not the brothers location is displayed",
 		position = 1
 	)
-	@Units(Units.MILLISECONDS)
-	default int dragDelay()
+	default boolean showBrotherLoc()
 	{
-		return 0;
+		return true;
 	}
 
-	@Alpha
 	@ConfigItem(
-		keyName = "gridColor",
-		name = "Grid color",
-		description = "The color of the grid",
+		keyName = "showChestValue",
+		name = "Show Value of Chests",
+		description = "Configure whether to show total exchange value of chest when opened",
+		position = 2
+	)
+	default boolean showChestValue()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "brotherLocColor",
+		name = "Brother location color",
+		description = "Change the color of the name displayed on the minimap",
+		position = 3
+	)
+	default Color brotherLocColor()
+	{
+		return Color.CYAN;
+	}
+
+	@ConfigItem(
+		keyName = "deadBrotherLocColor",
+		name = "Dead Brother loc. color",
+		description = "Change the color of the name displayed on the minimap for a dead brother",
 		position = 4
 	)
-	default Color gridColor()
+	default Color deadBrotherLocColor()
 	{
-		return new Color(255, 255, 255, 45);
+		return Color.RED;
 	}
 
-	@Alpha
 	@ConfigItem(
-		keyName = "highlightColor",
-		name = "Highlight color",
-		description = "The color of the new inventory slot highlight",
+		keyName = "showPuzzleAnswer",
+		name = "Show Puzzle Answer",
+		description = "Configures if the puzzle answer should be shown.",
 		position = 5
 	)
-	default Color highlightColor()
+	default boolean showPuzzleAnswer()
 	{
-		return new Color(0, 255, 0, 45);
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "showPrayerDrainTimer",
+		name = "Show Prayer Drain Timer",
+		description = "Configure whether or not a countdown until the next prayer drain is displayed",
+		position = 6
+	)
+	default boolean showPrayerDrainTimer()
+	{
+		return true;
 	}
 }
