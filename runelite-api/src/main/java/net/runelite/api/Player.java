@@ -104,4 +104,6 @@ public interface Player extends Actor {
   int getRSSkillLevel();
 
   boolean isIdle();
+
+  int getIndex();
 }
