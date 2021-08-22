@@ -2260,4 +2260,6 @@ public interface Client extends GameEngine {
   int getMouseLastPressedY();
 
   void setMouseLastPressedY(int y);
+
+  String getLoginMessage();
 }

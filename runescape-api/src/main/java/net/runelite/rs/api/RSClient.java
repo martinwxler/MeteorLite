@@ -271,6 +271,21 @@ public interface RSClient extends RSGameEngine, Client {
   @Override
   void setPassword(String password);
 
+  @Import("Login_response0")
+  String getLoginResponse0();
+
+  @Import("Login_response1")
+  String getLoginResponse1();
+
+  @Import("Login_response2")
+  String getLoginResponse2();
+
+  @Import("Login_response3")
+  String getLoginResponse3();
+
+  @Import("Login_banType")
+  int getBanType();
+
   @Import("otp")
   @Override
   void setOtp(String otp);
