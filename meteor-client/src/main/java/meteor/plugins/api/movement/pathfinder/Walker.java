@@ -12,13 +12,16 @@ import net.runelite.api.WallObject;
 import net.runelite.api.coords.WorldPoint;
 import org.sponge.util.Logger;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
 
+@Singleton
 public class Walker {
-    private Logger logger = new Logger("Walker");
+    private static final Logger logger = new Logger("Walker");
     private static final int MAX_INTERACT_DISTANCE = 20;
     private static final int MIN_TILES_WALKED_IN_STEP = 10;
     private static final int MIN_TILES_WALKED_BEFORE_RECHOOSE = 10;
@@ -26,27 +29,33 @@ public class Walker {
     private static final int MAX_MIN_ENERGY = 50;
     private static final int MIN_ENERGY = 5;
 
-    private List<Transport> transports = TransportLoader.buildTransports();
-    private List<Teleport> teleports = TeleportLoader.buildTeleports();
+    private static List<Transport> transports = TransportLoader.buildTransports();
+    private static List<Teleport> teleports = TeleportLoader.buildTeleports();
 
+    @Inject
+    private static Client client;
 
-    private final Client client;
-    private final Reachable reachable;
-    private final Tiles tiles;
-    private final Rand rand;
-    private final Movement movement;
-    private final CollisionMap collisionMap;
+    private static final CollisionMap collisionMap;
 
-    public Walker(Client client, Reachable reachable, Tiles tiles, Rand rand, Movement movement, CollisionMap collisionMap) {
-        this.client = client;
-        this.reachable = reachable;
-        this.tiles = tiles;
-        this.rand = rand;
-        this.movement = movement;
-        this.collisionMap = collisionMap;
+    static {
+        CollisionMap loaded;
+        try {
+            loaded = new CollisionMap(
+                    new GZIPInputStream(
+                            new ByteArrayInputStream(
+                                    Walker.class.getResourceAsStream("/collision-map").readAllBytes()
+                            )
+                    ).readAllBytes()
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+            loaded = null;
+        }
+
+        collisionMap = loaded;
     }
 
-    public boolean walkTo(WorldPoint destination) {
+    public static boolean walkTo(WorldPoint destination) {
         Player local = client.getLocalPlayer();
         if (local == null) {
             return false;
@@ -75,7 +84,7 @@ public class Walker {
         return walkAlong(path, transports);
     }
 
-    public boolean walkAlong(List<WorldPoint> path, Map<WorldPoint, List<Transport>> transports) {
+    public static boolean walkAlong(List<WorldPoint> path, Map<WorldPoint, List<Transport>> transports) {
         Player local = client.getLocalPlayer();
         if (local == null) {
             return false;
@@ -96,7 +105,7 @@ public class Walker {
         return false;
     }
 
-    public boolean stepAlong(List<WorldPoint> path) {
+    public static boolean stepAlong(List<WorldPoint> path) {
         List<WorldPoint> reachablePath = reachablePath(path);
         if (reachablePath.isEmpty()) {
             return false;
@@ -106,13 +115,13 @@ public class Walker {
             return step(reachablePath.get(reachablePath.size() - 1), Integer.MAX_VALUE);
         }
 
-        int targetDistance = MIN_TILES_WALKED_IN_STEP + rand.nextInt(0, reachablePath.size() - MIN_TILES_WALKED_IN_STEP);
+        int targetDistance = MIN_TILES_WALKED_IN_STEP + Rand.nextInt(0, reachablePath.size() - MIN_TILES_WALKED_IN_STEP);
         int rechooseDistance = recalculateDistance(targetDistance);
 
         return step(reachablePath.get(targetDistance), rechooseDistance);
     }
 
-    public List<WorldPoint> reachablePath(List<WorldPoint> remainingPath) {
+    public static List<WorldPoint> reachablePath(List<WorldPoint> remainingPath) {
         Player local = client.getLocalPlayer();
         if (local == null) {
             return Collections.emptyList();
@@ -120,7 +129,7 @@ public class Walker {
 
         List<WorldPoint> out = new ArrayList<>();
         for (WorldPoint p : remainingPath) {
-            Tile tile = tiles.getTiles(x -> x.getWorldLocation().equals(p)).stream().findFirst().orElse(null);
+            Tile tile = Tiles.getTiles(x -> x.getWorldLocation().equals(p)).stream().findFirst().orElse(null);
             if (tile == null) {
                 break;
             }
@@ -135,18 +144,18 @@ public class Walker {
         return out;
     }
 
-    public boolean step(WorldPoint destination, int tiles) {
+    public static boolean step(WorldPoint destination, int tiles) {
         Player local = client.getLocalPlayer();
         if (local == null) {
             return false;
         }
 
         logger.debug("Stepping towards " + destination);
-        movement.walk(destination);
+        Movement.walk(destination);
         int tilesWalked = 0;
 
         while (tilesWalked < tiles) {
-            if (movement.isRunEnabled()) {
+            if (Movement.isRunEnabled()) {
                 tilesWalked += 2;
             } else {
                 tilesWalked++;
@@ -156,7 +165,7 @@ public class Walker {
                 return false;
             }
 
-            if (!movement.isRunEnabled() && (client.getEnergy() >= rand.nextInt(MIN_ENERGY, MAX_MIN_ENERGY) || (local.getHealthScale() > -1 && client.getEnergy() > 0))) {
+            if (!Movement.isRunEnabled() && (client.getEnergy() >= Rand.nextInt(MIN_ENERGY, MAX_MIN_ENERGY) || (local.getHealthScale() > -1 && client.getEnergy() > 0))) {
                 // TODO: toggle run and sleep
             }
 
@@ -166,13 +175,13 @@ public class Walker {
         return true;
     }
 
-    public int recalculateDistance(int targetDistance) {
-        int rechoose = MIN_TILES_WALKED_BEFORE_RECHOOSE + rand.nextInt(0, targetDistance - MIN_TILES_WALKED_BEFORE_RECHOOSE + 1);
+    public static int recalculateDistance(int targetDistance) {
+        int rechoose = MIN_TILES_WALKED_BEFORE_RECHOOSE + Rand.nextInt(0, targetDistance - MIN_TILES_WALKED_BEFORE_RECHOOSE + 1);
         rechoose = Math.min(rechoose, targetDistance - MIN_TILES_LEFT_BEFORE_RECHOOSE);
         return rechoose;
     }
 
-    public boolean handleTransports(List<WorldPoint> path, Map<WorldPoint, List<Transport>> transports) {
+    public static boolean handleTransports(List<WorldPoint> path, Map<WorldPoint, List<Transport>> transports) {
         Player local = client.getLocalPlayer();
         if (local == null) {
             return false;
@@ -185,7 +194,7 @@ public class Walker {
 
             WorldPoint a = path.get(i);
             WorldPoint b = path.get(i + 1);
-            Tile tileA = tiles.getTiles(x -> x.getWorldLocation().equals(a)).stream().findFirst().orElse(null);
+            Tile tileA = Tiles.getTiles(x -> x.getWorldLocation().equals(a)).stream().findFirst().orElse(null);
             if (tileA == null) {
                 return false;
             }
@@ -201,7 +210,7 @@ public class Walker {
                 }
             }
 
-            Tile tileB = tiles.getTiles(x -> x.getWorldLocation().equals(b)).stream().findFirst().orElse(null);
+            Tile tileB = Tiles.getTiles(x -> x.getWorldLocation().equals(b)).stream().findFirst().orElse(null);
             if (tileB == null) {
                 return false;
             }
@@ -222,7 +231,7 @@ public class Walker {
         return false;
     }
 
-    public boolean isDoored(Tile source, Tile destination) {
+    public static boolean isDoored(Tile source, Tile destination) {
         WallObject wall = source.getWallObject();
         if (wall == null) {
             return false;
@@ -231,7 +240,7 @@ public class Walker {
         return isWalled(source, destination) && wall.hasAction("Open");
     }
 
-    public boolean isWalled(Tile source, Tile destination) {
+    public static boolean isWalled(Tile source, Tile destination) {
         WallObject wall = source.getWallObject();
         if (wall == null) {
             return false;
@@ -249,7 +258,7 @@ public class Walker {
         };
     }
 
-    public List<WorldPoint> remainingPath(List<WorldPoint> path) {
+    public static List<WorldPoint> remainingPath(List<WorldPoint> path) {
         Player local = client.getLocalPlayer();
         if (local == null) {
             return Collections.emptyList();
@@ -264,7 +273,7 @@ public class Walker {
         return path.subList(path.indexOf(nearest), path.size());
     }
 
-    public List<WorldPoint> calculatePath(
+    public static List<WorldPoint> calculatePath(
             List<WorldPoint> startPoints,
             WorldPoint destination,
             Map<WorldPoint, List<Transport>> transports
@@ -274,10 +283,10 @@ public class Walker {
         }
 
         return new Pathfinder(collisionMap, transports, startPoints,
-                destination, reachable, client).find();
+                destination, client).find();
     }
 
-    public Map<WorldPoint, List<Transport>> buildTransportLinks() {
+    public static Map<WorldPoint, List<Transport>> buildTransportLinks() {
         Map<WorldPoint, List<Transport>> out = new HashMap<>();
         for (Transport transport : transports) {
             out.computeIfAbsent(transport.getSource(), x -> new ArrayList<>()).add(transport);
@@ -286,7 +295,7 @@ public class Walker {
         return out;
     }
 
-    public List<WorldPoint> buildPath(WorldPoint destination) {
+    public static List<WorldPoint> buildPath(WorldPoint destination) {
         Player local = client.getLocalPlayer();
 
         if (local == null) {
@@ -301,7 +310,7 @@ public class Walker {
         return calculatePath(startPoints, destination, transports);
     }
 
-    public LinkedHashMap<WorldPoint, Teleport> buildTeleportLinks(WorldPoint destination) {
+    public static LinkedHashMap<WorldPoint, Teleport> buildTeleportLinks(WorldPoint destination) {
         LinkedHashMap<WorldPoint, Teleport> out = new LinkedHashMap<>();
         Player local = client.getLocalPlayer();
 

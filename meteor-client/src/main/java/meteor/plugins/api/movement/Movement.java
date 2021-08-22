@@ -1,12 +1,9 @@
 package meteor.plugins.api.movement;
 
-import lombok.extern.slf4j.Slf4j;
-import meteor.plugins.api.commons.Rand;
-import meteor.plugins.api.movement.pathfinder.CollisionMap;
 import meteor.plugins.api.movement.pathfinder.Walker;
 import meteor.plugins.api.scene.Tiles;
-import net.runelite.api.*;
 import net.runelite.api.Point;
+import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import org.sponge.util.Logger;
@@ -14,48 +11,16 @@ import org.sponge.util.Logger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.*;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.Comparator;
-import java.util.zip.GZIPInputStream;
 
 @Singleton
 public class Movement {
-    private Logger logger = new Logger("Movement");
+    private static final Logger logger = new Logger("Movement");
 
     @Inject
-    private Client client;
+    private static Client client;
 
-    @Inject
-    private Reachable reachable;
-
-    @Inject
-    private Tiles tiles;
-
-    @Inject
-    private Rand rand;
-
-    private final CollisionMap collisionMap;
-
-    public Movement() {
-        CollisionMap loaded;
-        try {
-            loaded = new CollisionMap(
-                    new GZIPInputStream(
-                            new ByteArrayInputStream(
-                                    Walker.class.getResourceAsStream("/collision-map").readAllBytes()
-                            )
-                    ).readAllBytes()
-            );
-        } catch (IOException e) {
-            e.printStackTrace();
-            loaded = null;
-        }
-
-        collisionMap = loaded;
-    }
-
-    public void setDestination(int sceneX, int sceneY) {
+    public static void setDestination(int sceneX, int sceneY) {
         client.setSelectedSceneTileX(sceneX);
         client.setSelectedSceneTileY(sceneY);
         client.setViewportWalking(true);
@@ -63,7 +28,7 @@ public class Movement {
 //        client.setCheckClick(true);
     }
 
-    public boolean isWalking() {
+    public static boolean isWalking() {
         Player local = client.getLocalPlayer();
         LocalPoint destination = client.getLocalDestinationLocation();
         return local != null
@@ -72,11 +37,11 @@ public class Movement {
                 && destination.distanceTo(local.getLocalLocation()) > 4;
     }
 
-    public void walk(Point point) {
+    public static void walk(Point point) {
         setDestination(point.getX(), point.getY());
     }
 
-    public void walk(int worldX, int worldY) {
+    public static void walk(int worldX, int worldY) {
         int sceneX = worldX - client.getBaseX();
         int sceneY = worldY - client.getBaseY();
 
@@ -99,21 +64,21 @@ public class Movement {
         walk(new Point(sceneX, sceneY));
     }
 
-    public void walk(WorldPoint worldPoint) {
+    public static void walk(WorldPoint worldPoint) {
         Player local = client.getLocalPlayer();
         if (local == null) {
             return;
         }
 
         WorldPoint walkPoint = worldPoint;
-        Tile destinationTile = tiles.getTiles(t -> t.getWorldLocation().equals(worldPoint))
+        Tile destinationTile = Tiles.getTiles(t -> t.getWorldLocation().equals(worldPoint))
                 .stream()
                 .findFirst()
                 .orElse(null);
         // Check if tile is in loaded client scene
         if (destinationTile == null) {
             logger.debug("Destination {} is not in scene", worldPoint);
-            Tile nearestInScene = tiles.getTiles()
+            Tile nearestInScene = Tiles.getTiles()
                     .stream()
                     .min(Comparator.comparingInt(x -> x.getWorldLocation().distanceTo(local.getWorldLocation())))
                     .orElse(null);
@@ -134,22 +99,20 @@ public class Movement {
         setDestination(localPoint.getSceneX(), localPoint.getSceneY());
     }
 
-    public void walk(Locatable locatable) {
+    public static void walk(Locatable locatable) {
         walk(locatable.getWorldLocation());
     }
 
-    public void walkTo(WorldPoint worldPoint) {
-        new Walker(client, reachable, tiles, rand, this, collisionMap)
-                .walkTo(worldPoint);
+    public static void walkTo(WorldPoint worldPoint) {
+        Walker.walkTo(worldPoint);
     }
 
-    public boolean isRunEnabled() {
+    public static boolean isRunEnabled() {
         return client.getVarpValue(173) == 1;
     }
 
-    public void drawPath(Graphics2D graphics2D, WorldPoint destination) {
-        new Walker(client, reachable, tiles, rand, this, collisionMap)
-                .buildPath(destination)
+    public static void drawPath(Graphics2D graphics2D, WorldPoint destination) {
+        Walker.buildPath(destination)
                 .forEach(tile -> tile.outline(client, graphics2D, Color.RED, null));
         destination.outline(client, graphics2D, Color.GREEN, "Destination");
     }

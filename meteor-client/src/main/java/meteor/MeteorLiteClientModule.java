@@ -66,6 +66,12 @@ import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ClientShutdown;
 import meteor.game.WorldService;
+import meteor.plugins.api.commons.Rand;
+import meteor.plugins.api.commons.Time;
+import meteor.plugins.api.movement.Movement;
+import meteor.plugins.api.movement.Reachable;
+import meteor.plugins.api.movement.pathfinder.Walker;
+import meteor.plugins.api.scene.Tiles;
 import meteor.plugins.itemstats.ItemStatChangesService;
 import meteor.plugins.itemstats.ItemStatChangesServiceImpl;
 import meteor.ui.controllers.ToolbarFXMLController;
@@ -477,6 +483,14 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
 
     bind(ItemStatChangesService.class).to(ItemStatChangesServiceImpl.class);
     bind(Logger.class).toInstance(log);
+
+    requestStaticInjection(
+            Reachable.class,
+            Movement.class,
+            Time.class,
+            Tiles.class,
+            Walker.class
+    );
   }
 
   @com.google.inject.name.Named("config")

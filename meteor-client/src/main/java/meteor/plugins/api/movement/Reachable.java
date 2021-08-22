@@ -16,21 +16,21 @@ import java.util.stream.Collectors;
 @Singleton
 public class Reachable {
     @Inject
-    private Client client;
+    private static Client client;
 
-    public boolean check(int flag, int checkFlag) {
+    public static boolean check(int flag, int checkFlag) {
         return (flag & checkFlag) != 0;
     }
 
-    public boolean isObstacle(int endFlag) {
+    public static boolean isObstacle(int endFlag) {
         return check(endFlag, 0x100 | 0x20000 | 0x200000 | 0x1000000);
     }
 
-    public boolean isObstacle(WorldPoint worldPoint) {
+    public static boolean isObstacle(WorldPoint worldPoint) {
         return isObstacle(getCollisionFlag(worldPoint));
     }
 
-    public int getCollisionFlag(WorldPoint point) {
+    public static int getCollisionFlag(WorldPoint point) {
         CollisionData[] collisionMaps = client.getCollisionMaps();
         if (collisionMaps == null) {
             return -1;
@@ -49,7 +49,7 @@ public class Reachable {
         return collisionData.getFlags()[localPoint.getSceneX()][localPoint.getSceneY()];
     }
 
-    public boolean isWalled(Direction direction, int startFlag) {
+    public static boolean isWalled(Direction direction, int startFlag) {
         return switch (direction) {
             case NORTH -> check(startFlag, 0x2);
             case SOUTH -> check(startFlag, 0x20);
@@ -58,7 +58,7 @@ public class Reachable {
         };
     }
 
-    public boolean canWalk(Direction direction, int startFlag, int endFlag) {
+    public static boolean canWalk(Direction direction, int startFlag, int endFlag) {
         if (isObstacle(endFlag)) {
             return false;
         }
@@ -66,7 +66,7 @@ public class Reachable {
         return !isWalled(direction, endFlag);
     }
 
-    public WorldPoint getNeighbour(Direction direction, WorldPoint source) {
+    public static WorldPoint getNeighbour(Direction direction, WorldPoint source) {
         return switch (direction) {
             case NORTH -> source.dy(1);
             case SOUTH -> source.dy(-1);
@@ -75,7 +75,7 @@ public class Reachable {
         };
     }
 
-    public List<WorldPoint> getNeighbours(WorldPoint current, Locatable targetObject) {
+    public static List<WorldPoint> getNeighbours(WorldPoint current, Locatable targetObject) {
         List<WorldPoint> out = new ArrayList<>();
         for (Direction dir : Direction.values()) {
             WorldPoint neighbour = getNeighbour(dir, current);
@@ -100,7 +100,7 @@ public class Reachable {
         return out;
     }
 
-    public List<WorldPoint> getVisitedTiles(WorldPoint destination, Locatable targetObject) {
+    public static List<WorldPoint> getVisitedTiles(WorldPoint destination, Locatable targetObject) {
         Player local = client.getLocalPlayer();
         // Don't check if too far away
         if (local == null || destination.distanceTo(local.getWorldLocation()) > 35) {
@@ -138,11 +138,11 @@ public class Reachable {
         return visitedTiles;
     }
 
-    public boolean isInteractable(Locatable locatable) {
+    public static boolean isInteractable(Locatable locatable) {
         return getVisitedTiles(locatable.getWorldLocation(), locatable).contains(locatable.getWorldLocation());
     }
 
-    public boolean isWalkable(WorldPoint worldPoint) {
+    public static boolean isWalkable(WorldPoint worldPoint) {
         return getVisitedTiles(worldPoint, null).contains(worldPoint);
     }
 }

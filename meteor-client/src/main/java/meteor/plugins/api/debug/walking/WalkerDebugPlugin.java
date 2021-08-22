@@ -31,16 +31,13 @@ public class WalkerDebugPlugin extends Plugin {
     private final Logger logger = new Logger("WalkerDebugPlugin");
 
     @Inject
-    ScheduledExecutorService executorService;
+    private ScheduledExecutorService executorService;
 
     @Inject
-    Movement movement;
+    private OverlayManager overlayManager;
 
     @Inject
-    OverlayManager overlayManager;
-
-    @Inject
-    WalkerDebugOverlay overlay;
+    private WalkerDebugOverlay overlay;
 
     @Inject
     private WalkerDebugConfig config;
@@ -65,7 +62,7 @@ public class WalkerDebugPlugin extends Plugin {
 
     @Subscribe
     public void onGameTick(GameTick e) {
-        if (movement.isWalking()) {
+        if (Movement.isWalking()) {
             return;
         }
 
@@ -73,7 +70,7 @@ public class WalkerDebugPlugin extends Plugin {
             WorldPoint walkPoint = new WorldPoint(config.x(), config.y(), client.getPlane());
             logger.debug("Destination is {} {}", walkPoint.getX(), walkPoint.getY());
             overlay.setTile(walkPoint);
-            executorService.execute(() -> movement.walkTo(walkPoint));
+            executorService.execute(() -> Movement.walkTo(walkPoint));
         }
     }
 

@@ -13,11 +13,6 @@ import java.awt.*;
 public class WalkerDebugOverlay extends Overlay {
     @Setter
     private WorldPoint tile;
-    private final Movement movement;
-    @Inject
-    public WalkerDebugOverlay(final Movement movement) {
-        this.movement = movement;
-    }
 
     @Override
     public Dimension render(Graphics2D graphics) {
@@ -26,7 +21,7 @@ public class WalkerDebugOverlay extends Overlay {
         }
 
         graphics.setColor(Color.RED);
-        movement.drawPath(graphics, tile);
+        Movement.drawPath(graphics, tile);
         return null;
     }
 }

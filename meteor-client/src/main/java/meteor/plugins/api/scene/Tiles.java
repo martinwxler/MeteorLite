@@ -13,9 +13,9 @@ import java.util.function.Predicate;
 @Singleton
 public class Tiles {
     @Inject
-    private Client client;
+    private static Client client;
 
-    public List<Tile> getTiles(Predicate<Tile> filter) {
+    public static List<Tile> getTiles(Predicate<Tile> filter) {
         List<Tile> out = new ArrayList<>();
         Player local = client.getLocalPlayer();
         if (local == null) {
@@ -36,11 +36,11 @@ public class Tiles {
         return out;
     }
 
-    public List<Tile> getTiles() {
+    public static List<Tile> getTiles() {
         return getTiles(x -> true);
     }
 
-    public Tile getHoveredTile() {
+    public static Tile getHoveredTile() {
         return getTiles(x -> {
             LocalPoint localPoint = LocalPoint.fromWorld(client, x.getWorldLocation());
             if (localPoint == null) {
