@@ -98,7 +98,7 @@ import meteor.plugins.tithefarm.TitheFarmPlugin;
 import meteor.plugins.void3tFishing.Void3tFishingPlugin;
 import meteor.plugins.void3tteaks.Void3tTeaksPlugin;
 import meteor.plugins.voidHunter.VoidHunterPlugin;
-import meteor.plugins.voidagility.VoidTemporossPlugin;
+import meteor.plugins.voidtempoross.VoidTemporossPlugin;
 import meteor.plugins.woodcutting.WoodcuttingPlugin;
 import meteor.plugins.worldmap.WorldMapPlugin;
 import meteor.plugins.xpglobes.XpGlobesPlugin;

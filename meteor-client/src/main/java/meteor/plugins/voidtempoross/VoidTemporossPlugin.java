@@ -1,10 +1,9 @@
-package meteor.plugins.voidagility;
+package meteor.plugins.voidtempoross;
 
 import static net.runelite.api.ObjectID.*;
 
 import com.google.inject.Provides;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import javax.inject.Inject;
@@ -15,7 +14,13 @@ import meteor.eventbus.Subscribe;
 import meteor.input.KeyManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
+import meteor.plugins.voidtempoross.tasks.high.AttackTempoross;
+import meteor.plugins.voidtempoross.tasks.high.Tether;
+import meteor.plugins.voidtempoross.tasks.low.*;
 import meteor.plugins.voidutils.events.LocalPlayerIdleEvent;
+import meteor.plugins.voidutils.tasks.PriorityTask;
+import meteor.plugins.voidutils.tasks.Task;
+import meteor.plugins.voidutils.tasks.TaskSet;
 import meteor.util.HotkeyListener;
 import meteor.util.Timer;
 import net.runelite.api.*;
@@ -42,7 +47,8 @@ public class VoidTemporossPlugin extends Plugin {
   @Inject
   private KeyManager keyManager;
 
-  public static boolean enabled = false;
+  TaskSet taskSet = new TaskSet(this);
+
   private long lastDelayedAction;
   private String lastStateExecuted;
   private int prevSalamanderCount = 0;
@@ -60,6 +66,77 @@ public class VoidTemporossPlugin extends Plugin {
 
   public boolean canInterrupt;
   private NPC lastInteracting;
+  public String state;
+
+  //Handle high priority interactions here
+  @Subscribe
+  public void onGameTick(GameTick event) {
+    if (side == null || side.equals("") || getInstanceAnchor() == null)
+      location = "GAME_WAITING";
+    else if (side.equals("WEST")) {
+      if (client.getLocalPlayer().getLocalLocation().getY() >= getInstanceAnchor().getLocalLocation().getY())
+        location = "ISLAND";
+      else
+        location = "SHIP";
+    } else {
+      if (client.getLocalPlayer().getLocalLocation().getY() <= getInstanceAnchor().getLocalLocation().getY())
+        location = "ISLAND";
+      else
+        location = "SHIP";
+    }
+
+    if (!canInterrupt) {
+      return;
+    }
+
+    if (client.getLocalPlayer() == null)
+      return;
+
+    if (!client.getLocalPlayer().isIdle())
+      return;
+
+    for (Task task: taskSet.tasks) {
+      if (task instanceof PriorityTask)
+      if (task.shouldExecute()) {
+        logger.debug(task.name());
+        state = task.name();
+        task.execute();
+      }
+    }
+  }
+
+  //Handle low priority interactions here
+  @Subscribe
+  private void onLocalPlayerIdle(LocalPlayerIdleEvent event) {
+    if (!enabled) {
+      return;
+    }
+
+    if (client.getLocalPlayer() == null) {
+      return;
+    }
+
+    if (!client.isInInstancedRegion())
+      return;
+
+    if (!determinedSide) {
+      determineSide();
+    }
+
+    if (!client.getLocalPlayer().isIdle()) {
+      return;
+    }
+
+    for (Task task: taskSet.tasks) {
+      if (task instanceof PriorityTask)
+        continue;
+      if (task.shouldExecute()) {
+        logger.debug(task.name());
+        state = task.name();
+        task.execute();
+      }
+    }
+  }
 
   @Provides
   public VoidTemporossConfig getConfig(ConfigManager configManager) {
@@ -82,42 +159,7 @@ public class VoidTemporossPlugin extends Plugin {
     }
   }
 
-  @Subscribe
-  public void onGameTick(GameTick event) {
-    if (side == null || side.equals("") || getInstanceAnchor() == null)
-      location = "GAME_WAITING";
-    else if (side.equals("WEST")) {
-      if (client.getLocalPlayer().getLocalLocation().getY() >= getInstanceAnchor().getLocalLocation().getY())
-        location = "ISLAND";
-      else
-        location = "SHIP";
-    } else {
-      if (client.getLocalPlayer().getLocalLocation().getY() <= getInstanceAnchor().getLocalLocation().getY())
-        location = "ISLAND";
-      else
-        location = "SHIP";
-    }
 
-    if (lastInteracting != null)
-    if (lastInteracting.getLocalLocation().getX() != lastSpotX
-    || lastInteracting.getLocalLocation().getY() != lastSpotY)
-      canInterrupt = true;
-
-    if (lastInteracting != null)
-      if (lastInteracting.getId() != 10569)
-        if (getNearestDoubleFishingSpot() != null)
-          canInterrupt = true;
-
-    if (!canInterrupt) {
-      return;
-    }
-
-    if (client.getLocalPlayer() == null)
-      return;
-
-    if (!client.getLocalPlayer().isIdle())
-      return;
-  }
 
   public GameObject getInstanceAnchor() {
     return getSidesObjectNS(41004);
@@ -126,39 +168,13 @@ public class VoidTemporossPlugin extends Plugin {
   @Subscribe
   private void onStatChanged(StatChanged event) {
     if (enabled) {
-      if (event.getSkill() == Skill.HUNTER) {
+      if (event.getSkill() == Skill.FISHING) {
         gainedXP = event.getXp() - startXP;
       }
     }
   }
 
-  @Subscribe
-  private void onLocalPlayerIdle(LocalPlayerIdleEvent event) {
-    if (!enabled) {
-      return;
-    }
 
-    if (client.getLocalPlayer() == null) {
-      return;
-    }
-
-    if (!client.isInInstancedRegion())
-      return;
-
-    if (!determinedSide) {
-      determineSide();
-    }
-
-    if (getSpiritPool() != null) {
-      getSpiritPool().interact(0);
-      return;
-    }
-
-    if (!client.getLocalPlayer().isIdle()) {
-      return;
-    }
-
-  }
 
   private void determineSide() {
     GameObject nearestRightCannon = osrs.nearestObject(HARPOONFISH_CANNON_41240);
@@ -169,7 +185,7 @@ public class VoidTemporossPlugin extends Plugin {
     } else if (nearestLeftCannon != null && nearestRightCannon == null){
       determinedSide = true;
       side = "WEST";
-    } else {
+    } else if (nearestLeftCannon != null){
       if (nearestLeftCannon.getDistanceFromLocalPlayer() > nearestRightCannon.getDistanceFromLocalPlayer()) {
         determinedSide = true;
         side = "EAST";
@@ -179,19 +195,6 @@ public class VoidTemporossPlugin extends Plugin {
         side = "WEST";
       }
     }
-  }
-
-  public NPC getFishCrate() {
-    if (side == null)
-      return null;
-    if (side.equals("EAST"))
-      return osrs.nearestNPC(10579);
-    else
-      return osrs.nearestNPC(10576);
-  }
-
-  public NPC getSpiritPool() {
-    return osrs.nearestNPC(10571);
   }
 
   public GameObject getSidesObjectEW(int... ids) {
@@ -259,58 +262,6 @@ public class VoidTemporossPlugin extends Plugin {
     return npc;
   }
 
-  public NPC getNearestFishingSpot() {
-    return osrs.nearestNPC(getFishingSpots());
-  }
-
-  public NPC getNearestDoubleFishingSpot() {
-    return osrs.nearestNPC(getDoubleFishingSpots());
-  }
-
-  public List<NPC> getDoubleFishingSpots() {
-    List<NPC> finalNPCs = new ArrayList<>();
-    List<NPC> npcs = osrs.npcs(10569);
-    GameObject islandWater = getInstanceAnchor();
-    if (npcs != null)
-      for (NPC n : npcs) {
-        if (n != null) {
-          if (side.equals("WEST")) {
-            if (n.getLocalLocation().getY() > islandWater.getLocalLocation().getY())
-              finalNPCs.add(n);
-          } else {
-            if (n.getLocalLocation().getY() < islandWater.getLocalLocation().getY())
-              finalNPCs.add(n);
-          }
-        }
-      }
-    return finalNPCs;
-  }
-
-  public List<NPC> getFishingSpots() {
-    List<NPC> finalNPCs = new ArrayList<>();
-    List<NPC> npcs = osrs.npcs(10568, 10565);
-    GameObject islandWater = getInstanceAnchor();
-    if (npcs != null)
-      for (NPC n : npcs) {
-        if (n != null) {
-          if (side.equals("WEST")) {
-            if (n.getLocalLocation().getY() > islandWater.getLocalLocation().getY())
-              finalNPCs.add(n);
-          } else {
-            if (n.getLocalLocation().getY() < islandWater.getLocalLocation().getY())
-              finalNPCs.add(n);
-          }
-        }
-      }
-    return finalNPCs;
-  }
-
-  public int getRopeCount() {
-    if (osrs.items(954) != null)
-      return osrs.items(954).size();
-    return 0;
-  }
-
   @Subscribe
   public void onConfigButtonClicked(ConfigButtonClicked event) {
     if (event.getGroup().equals("voidTempoross")) {
@@ -323,15 +274,32 @@ public class VoidTemporossPlugin extends Plugin {
 
   private void reset() {
     infoOverlay.instanceTimer = new Timer();
-    startXP = client.getSkillExperience(Skill.HUNTER);
+    startXP = client.getSkillExperience(Skill.FISHING);
   }
 
   public void startup() {
     overlayManager.add(overlay, infoOverlay);
     keyManager.registerKeyListener(toggleListener, getClass());
+    taskSet.add(new AttackTempoross(this));
+    taskSet.add(new CollectBucket(this));
+    taskSet.add(new CollectFish(this));
+    taskSet.add(new CollectHammer(this));
+    taskSet.add(new CollectHarpoon(this));
+    taskSet.add(new CollectIslandWater(this));
+    taskSet.add(new CollectRope(this));
+    taskSet.add(new CollectShipWater(this));
+    taskSet.add(new CookFish(this));
+    taskSet.add(new DouseFireIsland(this));
+    taskSet.add(new DouseFireShip(this));
+    taskSet.add(new RepairMast(this));
+    taskSet.add(new RepairTotem(this));
+    taskSet.add(new Tether(this));
+    taskSet.add(new WalkToShip(this));
+    taskSet.add(new WalkToShore(this));
   }
 
   public void shutdown() {
+    taskSet.tasks.clear();
     overlayManager.remove(overlay, infoOverlay);
     keyManager.unregisterKeyListener(toggleListener);
   }

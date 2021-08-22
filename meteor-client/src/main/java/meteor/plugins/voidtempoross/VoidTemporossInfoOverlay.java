@@ -1,4 +1,4 @@
-package meteor.plugins.voidagility;
+package meteor.plugins.voidtempoross;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -27,7 +27,7 @@ public class VoidTemporossInfoOverlay extends OverlayPanel {
 
   @Override
   public Dimension render(Graphics2D graphics2D) {
-    if (!VoidTemporossPlugin.enabled) {
+    if (!plugin.enabled) {
       return null;
     }
 
@@ -48,10 +48,12 @@ public class VoidTemporossInfoOverlay extends OverlayPanel {
         .right(formatter.format(plugin.getCaught())).rightColor(Color.GREEN).build());
     panelComponent.getChildren().add(LineComponent.builder().left("XP:").leftColor(Color.WHITE)
         .right(formatter.format(plugin.getGainedXP())).rightColor(Color.GREEN).build());
-    panelComponent.getChildren().add(LineComponent.builder().left("Side:").leftColor(Color.WHITE)
+    panelComponent.getChildren().add(LineComponent.builder()
             .right(plugin.side).rightColor(Color.GREEN).build());
-    panelComponent.getChildren().add(LineComponent.builder().left("Location:").leftColor(Color.WHITE)
+    panelComponent.getChildren().add(LineComponent.builder()
             .right(plugin.location).rightColor(Color.GREEN).build());
+    panelComponent.getChildren().add(LineComponent.builder()
+            .right(plugin.state).rightColor(Color.GREEN).build());
     return super.render(graphics2D);
   }
 }
