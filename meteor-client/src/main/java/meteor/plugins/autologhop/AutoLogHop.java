@@ -25,6 +25,7 @@ import net.runelite.http.api.worlds.WorldResult;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.event.KeyEvent;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -163,6 +164,21 @@ public class AutoLogHop extends Plugin {
                         break;
                     }
                 }
+                break;
+            case ROW_GRAND_EXCHANGE:
+                //can't use ring of wealth above lv 30 wilderness.
+                if (PvPUtil.getWildernessLevelFrom(client.getLocalPlayer().getWorldLocation()) > 30)
+                    return;
+                //not as janky as inventory items kek
+                Widget equipment = client.getWidget(WidgetInfo.EQUIPMENT_RING);
+                ItemContainer container = client.getItemContainer(InventoryID.EQUIPMENT);
+                if (equipment == null)
+                    return;
+                //don't attempt to tele if we don't have a ring lol
+                if (container != null && Arrays.stream(container.getItems()).noneMatch(item -> client.getItemDefinition(item.getId()).getName().toLowerCase().contains("ring of wealth (")))
+                    return;
+
+                client.invokeMenuAction("Grand Exchange", "<col=ff9040>Ring of wealth ( )</col>", 3, MenuAction.CC_OP.getId(), -1, equipment.getId());
                 break;
         }
     }
