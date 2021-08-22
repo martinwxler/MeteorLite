@@ -616,7 +616,7 @@ public enum ModeWhere implements Enumerated {
 							String var12 = "";
 							var5 = "";
 							var6 = "";
-							switch(Login.field804) {
+							switch(Login.Login_banType) {
 							case 0:
 								var12 = "Your account has been disabled.";
 								var5 = Strings.field3298;

@@ -20,6 +20,8 @@ import meteor.plugins.PluginDependency;
 import meteor.plugins.achievementdiary.DiaryRequirementsPlugin;
 import meteor.plugins.agility.AgilityPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
+import meteor.plugins.autoclicker.AutoClickerPlugin;
+import meteor.plugins.autologhop.AutoLogHop;
 import meteor.plugins.autorun.AutoRun;
 import meteor.plugins.bank.BankPlugin;
 import meteor.plugins.banktags.BankTagsPlugin;
@@ -79,6 +81,7 @@ import meteor.plugins.questlist.QuestListPlugin;
 import meteor.plugins.randomevents.RandomEventPlugin;
 import meteor.plugins.regenmeter.RegenMeterPlugin;
 import meteor.plugins.reportbutton.ReportButtonPlugin;
+import meteor.plugins.rsnhider.RsnHiderPlugin;
 import meteor.plugins.runecraft.RunecraftPlugin;
 import meteor.plugins.runenergy.RunEnergyPlugin;
 import meteor.plugins.runepouch.RunepouchPlugin;
@@ -121,8 +124,8 @@ public class PluginManager {
   private void initPlugins() {
     plugins.add(new AgilityPlugin());
     plugins.add(new AoeWarningPlugin());
-    //plugins.add(new AutoClickerPlugin());
-    //plugins.add(new AutoLogHop());
+    plugins.add(new AutoClickerPlugin());
+    plugins.add(new AutoLogHop());
     plugins.add(new AutoRun());
     plugins.add(new BankPlugin());
     plugins.add(new BankTagsPlugin());
@@ -187,6 +190,7 @@ public class PluginManager {
     plugins.add(new RandomEventPlugin());
     plugins.add(new RegenMeterPlugin());
     plugins.add(new ReportButtonPlugin());
+    plugins.add(new RsnHiderPlugin());
     plugins.add(new RunEnergyPlugin());
     plugins.add(new RunepouchPlugin());
     plugins.add(new RunecraftPlugin());

@@ -140,6 +140,7 @@ public abstract class ClientMixin implements RSClient {
     GameStateChanged gameStateChanged = new GameStateChanged();
     gameStateChanged.setGameState(GameState.of(client.getRSGameState$api()));
     client.getCallbacks().post(gameStateChanged);
+    System.out.println(client.getLoginMessage());
   }
 
   @FieldHook("npcs")
@@ -1425,6 +1426,26 @@ public abstract class ClientMixin implements RSClient {
   }
 
   @Inject
+  @Override
+  public Widget[] getWidgetRoots()
+  {
+    int topGroup = getTopLevelInterfaceId();
+    if (topGroup == -1)
+    {
+      return new Widget[]{};
+    }
+    List<Widget> widgets = new ArrayList<Widget>();
+    for (RSWidget widget : getWidgets()[topGroup])
+    {
+      if (widget != null && widget.getRSParentId() == -1)
+      {
+        widgets.add(widget);
+      }
+    }
+    return widgets.toArray(new Widget[widgets.size()]);
+  }
+
+  @Inject
   private static boolean hideDisconnect = false;
 
   @Inject
@@ -1432,5 +1453,25 @@ public abstract class ClientMixin implements RSClient {
   public void setHideDisconnect(boolean dontShow)
   {
     hideDisconnect = dontShow;
+  }
+
+  @Inject
+  @Override
+  public String getLoginMessage() {
+    if (getLoginIndex() == 12) {
+      if (getBanType() == 0) {
+        return "Your account has been disabled. Please visit the support page for assistance.";
+      }
+
+      if (getBanType() == 1) {
+        return "Account locked as we suspect it has been stolen. Please visit the support page for assistance.";
+      }
+    }
+
+    if (getLoginIndex() == 3) {
+      return "Invalid credentials.";
+    }
+
+    return getLoginResponse1() + " " + getLoginResponse2() + " " + getLoginResponse3();
   }
 }

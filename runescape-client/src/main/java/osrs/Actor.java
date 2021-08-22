@@ -572,7 +572,7 @@ public abstract class Actor extends Renderable {
 					var16 = NetCache.method5088(var7);
 				}
 
-				PacketBufferNode var14 = VerticalAlignment.getPacketBufferNode(ClientPacket.field2649, Client.packetWriter.isaacCipher);
+				PacketBufferNode var14 = VerticalAlignment.getPacketBufferNode(ClientPacket.Packet_numberInput, Client.packetWriter.isaacCipher);
 				var14.packetBuffer.writeInt(var16);
 				Client.packetWriter.addNode(var14);
 				return 1;
@@ -580,14 +580,14 @@ public abstract class Actor extends Renderable {
 				PacketBufferNode var12;
 				if (var0 == ScriptOpcodes.RESUME_NAMEDIALOG) {
 					var7 = Interpreter.Interpreter_stringStack[--class1.Interpreter_stringStackSize];
-					var12 = VerticalAlignment.getPacketBufferNode(ClientPacket.field2608, Client.packetWriter.isaacCipher);
+					var12 = VerticalAlignment.getPacketBufferNode(ClientPacket.Packet_nameInput, Client.packetWriter.isaacCipher);
 					var12.packetBuffer.writeByte(var7.length() + 1);
 					var12.packetBuffer.writeStringCp1252NullTerminated(var7);
 					Client.packetWriter.addNode(var12);
 					return 1;
 				} else if (var0 == ScriptOpcodes.RESUME_STRINGDIALOG) {
 					var7 = Interpreter.Interpreter_stringStack[--class1.Interpreter_stringStackSize];
-					var12 = VerticalAlignment.getPacketBufferNode(ClientPacket.field2637, Client.packetWriter.isaacCipher);
+					var12 = VerticalAlignment.getPacketBufferNode(ClientPacket.Packet_textInput, Client.packetWriter.isaacCipher);
 					var12.packetBuffer.writeByte(var7.length() + 1);
 					var12.packetBuffer.writeStringCp1252NullTerminated(var7);
 					Client.packetWriter.addNode(var12);

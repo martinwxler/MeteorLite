@@ -26,7 +26,9 @@
 package net.runelite.mixins;
 
 import net.runelite.api.Item;
+import net.runelite.api.events.InventoryChanged;
 import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.api.events.ItemObtained;
 import net.runelite.api.mixins.FieldHook;
 import net.runelite.api.mixins.Inject;
 import net.runelite.api.mixins.Mixin;
@@ -44,6 +46,12 @@ public abstract class ItemContainerMixin implements RSItemContainer {
   @Shadow("changedItemContainers")
   private static int[] changedItemContainers;
 
+  @Inject
+  private static int[] itemIdCache = new int[28];
+
+  @Inject
+  private static int[] itemQuantityCache = new int[28];
+
   @FieldHook("changedItemContainers")
   @Inject
   public static void onItemContainerUpdate(int idx) {
@@ -54,17 +62,55 @@ public abstract class ItemContainerMixin implements RSItemContainer {
       RSNodeHashTable itemContainers = client.getItemContainers();
 
       RSItemContainer changedContainer = (RSItemContainer) itemContainers.get$api(containerId);
-      RSItemContainer changedContainerInvOther = (RSItemContainer) itemContainers
-          .get$api(containerId | 0x8000);
+      RSItemContainer changedContainerInvOther = (RSItemContainer) itemContainers.get$api(containerId | 0x8000);
 
       if (changedContainer != null) {
+        if (containerId == 93) {
+          for (int i = 0; i < 28; i++) {
+            int oldId = itemIdCache[i];
+            int oldStack = itemQuantityCache[i];
+            int newId = changedContainer.getItemIds().length <= i ? -1 : changedContainer.getItemIds()[i];
+            int newStack = changedContainer.getStackSizes().length <= i ? 0 : changedContainer.getStackSizes()[i];
+            itemIdCache[i] = newId;
+            itemQuantityCache[i] = newStack;
+
+            if (oldId == newId) {
+              if (oldStack > newStack) {
+                InventoryChanged inventoryChanged = new InventoryChanged(InventoryChanged.ChangeType.ITEM_REMOVED, newId, Math.abs(oldStack - newStack));
+                client.getCallbacks().postDeferred(inventoryChanged);
+                continue;
+              }
+
+              if (oldStack < newStack) {
+                int amount = Math.abs(oldStack - newStack);
+                InventoryChanged inventoryChanged = new InventoryChanged(InventoryChanged.ChangeType.ITEM_ADDED, newId, amount);
+                client.getCallbacks().postDeferred(inventoryChanged);
+                client.getCallbacks().postDeferred(new ItemObtained(newId, amount));
+                continue;
+              }
+            }
+
+            if (oldId != newId) {
+              if (oldId > 0) {
+                InventoryChanged itemRemoved = new InventoryChanged(InventoryChanged.ChangeType.ITEM_REMOVED, oldId, oldStack);
+                client.getCallbacks().postDeferred(itemRemoved);
+              }
+
+              if (newId > 0 && oldId != 0) {
+                InventoryChanged itemAdded = new InventoryChanged(InventoryChanged.ChangeType.ITEM_ADDED, newId, newStack);
+                client.getCallbacks().postDeferred(itemAdded);
+                client.getCallbacks().postDeferred(new ItemObtained(newId, newStack));
+              }
+            }
+          }
+        }
+
         ItemContainerChanged event = new ItemContainerChanged(containerId, changedContainer);
         client.getCallbacks().postDeferred(event);
       }
 
       if (changedContainerInvOther != null) {
-        ItemContainerChanged event = new ItemContainerChanged(containerId | 0x8000,
-            changedContainerInvOther);
+        ItemContainerChanged event = new ItemContainerChanged(containerId | 0x8000, changedContainerInvOther);
         client.getCallbacks().postDeferred(event);
       }
     }
