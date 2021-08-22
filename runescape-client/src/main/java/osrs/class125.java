@@ -235,7 +235,7 @@ public class class125 extends class103 {
 				Interpreter.Interpreter_intStackSize -= 2;
 				var7 = Interpreter.Interpreter_intStack[Interpreter.Interpreter_intStackSize];
 				var9 = Interpreter.Interpreter_intStack[Interpreter.Interpreter_intStackSize + 1];
-				var6 = VerticalAlignment.getPacketBufferNode(ClientPacket.field2600, Client.packetWriter.isaacCipher);
+				var6 = VerticalAlignment.getPacketBufferNode(ClientPacket.Packet_sendReport, Client.packetWriter.isaacCipher);
 				var6.packetBuffer.writeByte(GrandExchangeOfferNameComparator.stringCp1252NullTerminatedByteSize(var8) + 2);
 				var6.packetBuffer.writeStringCp1252NullTerminated(var8);
 				var6.packetBuffer.writeByte(var7 - 1);
