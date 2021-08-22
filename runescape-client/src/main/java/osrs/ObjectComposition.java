@@ -1686,7 +1686,7 @@ public class ObjectComposition extends DualNode {
 										}
 									} else if (Login.loginIndex == 12) {
 										String var29 = "";
-										switch(Login.field804) {
+										switch(Login.Login_banType) {
 										case 0:
 											var29 = "https://support.runescape.com/hc/en-gb/articles/115002238729-Account-Bans";
 											break;

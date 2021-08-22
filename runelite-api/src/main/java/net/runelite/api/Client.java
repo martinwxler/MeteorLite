@@ -2265,6 +2265,7 @@ public interface Client extends GameEngine {
 
   void setMouseLastPressedY(int y);
 
+  String getLoginMessage();
   /**
    * Used to send packets to the server.
    * @return the client's PacketWriter.
