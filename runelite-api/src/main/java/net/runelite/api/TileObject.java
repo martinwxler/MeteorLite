@@ -34,7 +34,7 @@ import net.runelite.api.coords.LocalPoint;
 /**
  * Represents an object on a Tile
  */
-public interface TileObject extends Locatable {
+public interface TileObject extends Locatable, Interactable {
 
   long getHash();
 
@@ -121,8 +121,4 @@ public interface TileObject extends Locatable {
   List<String> actions();
 
   Point menuPoint();
-
-  void interact(String action);
-  void interact(int action);
-  void interact(final int identifier, final int opcode, final int param0, final int param1);
 }

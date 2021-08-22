@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Represents an item inside an {@link ItemLayer}.
  */
-public interface TileItem extends Renderable {
+public interface TileItem extends Renderable, Interactable {
 
   /**
    * @return the ID of the item
@@ -55,11 +55,7 @@ public interface TileItem extends Renderable {
 
   List<String> actions();
 
-  void interact(String action);
-
   int getActionId(int action);
-
-  void interact(int action);
 
   void pickup();
 }
