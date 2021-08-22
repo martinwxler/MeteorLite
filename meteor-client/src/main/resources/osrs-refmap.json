@@ -219,7 +219,7 @@
   "hj": "osrs.SoftWrapper",
   "hk": "osrs.DemotingHashTable",
   "hl": "osrs.class216",
-  "hm": "osrs.class225",
+  "hm": "osrs.Packet",
   "hn": "osrs.class219",
   "ho": "osrs.ModelData0",
   "hp": "osrs.TextureLoader",

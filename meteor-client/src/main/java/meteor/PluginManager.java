@@ -21,6 +21,7 @@ import meteor.plugins.achievementdiary.DiaryRequirementsPlugin;
 import meteor.plugins.agility.AgilityPlugin;
 import meteor.plugins.animsmoothing.AnimationSmoothingPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
+import meteor.plugins.api.plugin.walking.WalkerPlugin;
 import meteor.plugins.autoclicker.AutoClickerPlugin;
 import meteor.plugins.autologhop.AutoLogHop;
 import meteor.plugins.autorun.AutoRun;
@@ -127,6 +128,7 @@ public class PluginManager {
   public static List<Plugin> plugins = new ArrayList<>();
 
   private void initPlugins() {
+    plugins.add(new WalkerPlugin());
     plugins.add(new AgilityPlugin());
     plugins.add(new AnimationSmoothingPlugin());
     plugins.add(new AoeWarningPlugin());

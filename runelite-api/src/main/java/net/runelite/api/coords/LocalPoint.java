@@ -121,4 +121,10 @@ public class LocalPoint {
   public int getSceneY() {
     return y >>> Perspective.LOCAL_COORD_BITS;
   }
+
+  public boolean isInScene()
+  {
+    return x >= 0 && x < Perspective.SCENE_SIZE << Perspective.LOCAL_COORD_BITS
+            && y >= 0 && y < Perspective.SCENE_SIZE << Perspective.LOCAL_COORD_BITS;
+  }
 }

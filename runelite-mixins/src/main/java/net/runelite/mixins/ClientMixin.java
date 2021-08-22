@@ -117,7 +117,6 @@ public abstract class ClientMixin implements RSClient {
     GameStateChanged gameStateChanged = new GameStateChanged();
     gameStateChanged.setGameState(GameState.of(client.getRSGameState$api()));
     client.getCallbacks().post(gameStateChanged);
-    System.out.println(client.getLoginMessage());
   }
 
   @FieldHook("npcs")

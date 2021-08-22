@@ -33,12 +33,7 @@ import javax.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
-import net.runelite.api.Client;
-import net.runelite.api.GameObject;
-import net.runelite.api.MenuAction;
-import net.runelite.api.NPC;
-import net.runelite.api.Point;
-import net.runelite.api.events.InvokeMenuActionEvent;
+import net.runelite.api.*;
 
 /**
  * An item that is being represented in a {@link Widget}.
@@ -46,7 +41,7 @@ import net.runelite.api.events.InvokeMenuActionEvent;
 @AllArgsConstructor
 @ToString
 @Getter
-public class WidgetItem {
+public class WidgetItem implements Interactable {
 
   private final Client client;
 
@@ -110,13 +105,20 @@ public class WidgetItem {
     return new Point((int) bounds.getX(), (int) bounds.getY());
   }
 
-  public List<String> actions() {
-    return Arrays
-        .stream(client.getItemComposition(getId()).getInventoryActions()).filter(Objects::nonNull).collect(Collectors.toList());
+  @Override
+  public String[] getActions() {
+    return client.getItemComposition(getId()).getInventoryActions();
   }
 
+  @Override
+  public List<String> actions() {
+    return Arrays
+        .stream(getActions()).filter(Objects::nonNull).collect(Collectors.toList());
+  }
+
+  @Override
   public void interact(String action) {
-    String[] actions = client.getItemComposition(getId()).getInventoryActions();
+    String[] actions = getActions();
 
     for (int i = 0; i < actions.length; i++) {
       if (action.equalsIgnoreCase(actions[i])) {
@@ -128,9 +130,14 @@ public class WidgetItem {
     throw new IllegalArgumentException("no action \"" + action + "\" on item " + getId());
   }
 
-  private int getActionId(int action) {
+  @Override
+  public int getActionId(int action) {
     switch (action) {
       case 0:
+        if (getActions()[0] == null) {
+          return MenuAction.ITEM_USE.getId();
+        }
+
         return MenuAction.ITEM_FIRST_OPTION.getId();
       case 1:
         return MenuAction.ITEM_SECOND_OPTION.getId();
@@ -145,6 +152,7 @@ public class WidgetItem {
     }
   }
 
+  @Override
   public void interact(int action) {
     client.interact(
         getId(),
@@ -152,6 +160,11 @@ public class WidgetItem {
         getSlot(),
         WidgetInfo.INVENTORY.getId()
     );
+  }
+
+  @Override
+  public void interact(int identifier, int opcode, int param0, int param1) {
+    client.interact(identifier, opcode, param0, param1);
   }
 
   public void useOn(WidgetItem item) {
@@ -176,5 +189,9 @@ public class WidgetItem {
     client.setSelectedItemID(getId());
     client.invokeMenuAction("", "", npc.getIndex(),
         MenuAction.ITEM_USE_ON_NPC.getId(), 0, 0);
+  }
+
+  public String getName() {
+    return client.getItemComposition(getId()).getName();
   }
 }

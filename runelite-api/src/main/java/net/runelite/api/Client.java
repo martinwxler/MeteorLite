@@ -2297,4 +2297,12 @@ public interface Client extends GameEngine {
    * @return the ClientPacket which belongs to this packet
    */
   ClientPacket getTextInputPacket();
+
+  void setSelectedSceneTileX(int sceneX);
+
+  void setSelectedSceneTileY(int sceneY);
+
+  void setViewportWalking(boolean enabled);
+
+  void setCheckClick(boolean enabled);
 }
