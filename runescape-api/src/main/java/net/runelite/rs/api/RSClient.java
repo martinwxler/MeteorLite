@@ -1457,4 +1457,26 @@ public interface RSClient extends RSGameEngine, Client {
   @Override
   void setMouseLastPressedY(int y);
 
+  @Import("packetWriter")
+  @Override
+  RSPacketWriter getPacketWriter();
+
+  @Import("getPacketBufferNode")
+  RSPacketBufferNode createPacket(RSClientPacket packet, RSIsaacCipher isaac);
+
+  @Import("Packet_nameInput")
+  @Override
+  RSClientPacket getNameInputPacket();
+
+  @Import("Packet_numberInput")
+  @Override
+  RSClientPacket getNumberInputPacket();
+
+  @Import("Packet_textInput")
+  @Override
+  RSClientPacket getTextInputPacket();
+
+  @Import("Packet_sendReport")
+  @Override
+  RSClientPacket getReportPacket();
 }
