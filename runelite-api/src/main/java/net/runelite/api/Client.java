@@ -41,6 +41,10 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.PlayerChanged;
 import net.runelite.api.hooks.Callbacks;
 import net.runelite.api.hooks.DrawCallbacks;
+import net.runelite.api.packets.ClientPacket;
+import net.runelite.api.packets.IsaacCipher;
+import net.runelite.api.packets.PacketBufferNode;
+import net.runelite.api.packets.PacketWriter;
 import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -2262,4 +2266,35 @@ public interface Client extends GameEngine {
   void setMouseLastPressedY(int y);
 
   String getLoginMessage();
+  /**
+   * Used to send packets to the server.
+   * @return the client's PacketWriter.
+   */
+  PacketWriter getPacketWriter();
+
+  /**
+   * Used to prepare a packet which can then be queued to the PacketWriter.
+   * @param packet the type of packet
+   * @param isaac client's isaaccipher
+   * @return the prepared packet.
+   */
+  PacketBufferNode preparePacket(ClientPacket packet, IsaacCipher isaac);
+
+  /**
+   * The packet which is sent when sending a name input (ex. adding friends).
+   * @return the ClientPacket which belongs to this packet
+   */
+  ClientPacket getNameInputPacket();
+
+  /**
+   * The packet which is sent when sending a number input (ex. withdrawing X from bank).
+   * @return the ClientPacket which belongs to this packet
+   */
+  ClientPacket getNumberInputPacket();
+
+  /**
+   * The packet which is sent when sending a text input (ex. sending a private message).
+   * @return the ClientPacket which belongs to this packet
+   */
+  ClientPacket getTextInputPacket();
 }
