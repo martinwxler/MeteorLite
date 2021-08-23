@@ -1,11 +1,15 @@
 package meteor.plugins.api.movement;
 
+import meteor.plugins.api.game.Vars;
 import meteor.plugins.api.movement.pathfinder.Walker;
 import meteor.plugins.api.scene.Tiles;
+import meteor.plugins.api.widgets.Widgets;
 import net.runelite.api.Point;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import org.sponge.util.Logger;
 
 import javax.inject.Inject;
@@ -115,5 +119,16 @@ public class Movement {
         Walker.buildPath(destination)
                 .forEach(tile -> tile.outline(client, graphics2D, Color.RED, null));
         destination.outline(client, graphics2D, Color.GREEN, "Destination");
+    }
+
+    public static void toggleRun() {
+        Widget widget = Widgets.get(WidgetInfo.MINIMAP_TOGGLE_RUN_ORB);
+        if (widget != null) {
+            widget.interact("Toggle Run");
+        }
+    }
+
+    public static boolean isStaminaBoosted() {
+        return Vars.getBit(25) == 1;
     }
 }
