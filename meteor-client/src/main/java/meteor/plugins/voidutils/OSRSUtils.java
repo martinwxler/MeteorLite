@@ -131,6 +131,21 @@ public class OSRSUtils {
     return loots.get(0);
   }
 
+  public List<NPC> findTransformedNPCs(String name) {
+    List<NPC> npcs = new ArrayList<>();
+    for (NPC npc: client.getNpcs()) {
+      if (npc.getTransformedComposition() != null) {
+        NPCComposition transformed = npc.getTransformedComposition();
+        if (transformed.getName().equalsIgnoreCase(name))
+          npcs.add(npc);
+      }
+    }
+    npcs.sort(Comparator.comparing(NPC::getDistanceFromLocalPlayer));
+    if (npcs.size() == 0)
+      return null;
+    return npcs;
+  }
+
   // Loads Inventory items from the map via IDs
   public List<WidgetItem> items(int... ids) {
     Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);

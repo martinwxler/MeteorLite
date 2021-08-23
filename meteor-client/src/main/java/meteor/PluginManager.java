@@ -88,7 +88,6 @@ import meteor.plugins.runepouch.RunepouchPlugin;
 import meteor.plugins.slayer.SlayerPlugin;
 import meteor.plugins.smithing.SmithingPlugin;
 import meteor.plugins.socket.SocketPlugin;
-import meteor.plugins.sockethealing.SocketHealingPlugin;
 import meteor.plugins.statusbars.StatusBarsPlugin;
 import meteor.plugins.stretchedmode.StretchedModePlugin;
 import meteor.plugins.tearsofguthix.TearsOfGuthixPlugin;
@@ -205,7 +204,6 @@ public class PluginManager {
     plugins.add(new SlayerPlugin());
     plugins.add(new SmithingPlugin());
     plugins.add(new SocketPlugin());
-    plugins.add(new SocketHealingPlugin());
     plugins.add(new AutoClickerPlugin());
     plugins.add(new AutoLogHop());
     plugins.add(new AutoRun());

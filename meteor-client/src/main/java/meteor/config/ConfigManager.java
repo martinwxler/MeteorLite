@@ -135,7 +135,11 @@ public class ConfigManager {
       return Boolean.parseBoolean(str);
     }
     if (type == int.class || type == Integer.class) {
-      return Integer.parseInt(str);
+      try {
+        return Integer.parseInt(str);
+      } catch (NumberFormatException e) {
+        return 1;
+      }
     }
     if (type == double.class || type == Double.class) {
       return Double.parseDouble(str);

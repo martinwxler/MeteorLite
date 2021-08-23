@@ -23,7 +23,8 @@ import java.util.concurrent.ScheduledExecutorService;
 
 @PluginDescriptor(
         name = "Walker debug",
-        description = "Weed"
+        description = "Weed",
+        enabledByDefault = false
 )
 @Singleton
 public class WalkerPlugin extends Plugin {
@@ -55,6 +56,7 @@ public class WalkerPlugin extends Plugin {
 
     @Override
     public void shutdown() {
+        overlayManager.remove(overlay);
     }
 
     @Subscribe

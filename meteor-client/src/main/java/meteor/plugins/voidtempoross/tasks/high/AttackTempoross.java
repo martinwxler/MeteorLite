@@ -45,7 +45,7 @@ public class AttackTempoross extends PriorityTask {
     }
 
     public NPC getSpiritPool() {
-        List<NPC> npcs = osrs.npcs(10571);
+        List<NPC> npcs = osrs.findTransformedNPCs("Spirit pool");
         if (npcs != null) {
             return npcs.get(0);
         }
@@ -53,7 +53,7 @@ public class AttackTempoross extends PriorityTask {
     }
 
     public NPC getInactiveSpiritPool() {
-        List<NPC> npcs = osrs.npcs(10570);
+        List<NPC> npcs = osrs.findTransformedNPCs("Inactive Spirit pool");
         if (npcs != null) {
             return npcs.get(0);
         }
@@ -61,7 +61,7 @@ public class AttackTempoross extends PriorityTask {
     }
 
     public NPC getTempoross() {
-        List<NPC> npcs = osrs.npcs(10572);
+        List<NPC> npcs = osrs.findTransformedNPCs("Tempoross");
         if (npcs != null) {
             return npcs.get(0);
         }
