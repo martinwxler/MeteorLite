@@ -36,7 +36,7 @@ public class TileItems {
     }
 
     public static TileItem getNearest(String name) {
-        return getNearest(x -> x.getName().equals(name));
+        return getNearest(x -> x.getName() != null && x.getName().equals(name));
     }
 
     public static List<TileItem> getAt(LocalPoint localPoint, Predicate<TileItem> filter) {

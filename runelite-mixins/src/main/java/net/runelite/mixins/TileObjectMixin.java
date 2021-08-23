@@ -70,6 +70,12 @@ public abstract class TileObjectMixin implements TileObject {
 
   @Inject
   @Override
+  public boolean isDefinitionCached() {
+    return objDefCache.containsKey(getId());
+  }
+
+  @Inject
+  @Override
   public RSObjectComposition getDefinition() {
     assert client.isClientThread() : "TileObject.getDefinition must be called on client thread " + getId();
     RSObjectComposition def = client.getRSObjectComposition(getId());

@@ -40,7 +40,7 @@ public class TileObjects {
     }
 
     public static TileObject getNearest(String name) {
-        return getNearest(x -> x.getName().equals(name));
+        return getNearest(x -> x.getName() != null && x.getName().equals(name));
     }
 
     public static List<TileObject> getAt(LocalPoint localPoint, Predicate<TileObject> filter) {

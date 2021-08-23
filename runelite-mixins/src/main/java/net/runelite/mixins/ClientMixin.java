@@ -85,6 +85,8 @@ public abstract class ClientMixin implements RSClient {
   public static HashMap<Integer, RSNPCComposition> npcDefCache = new HashMap<>();
   @Inject
   public static HashMap<Integer, RSObjectComposition> objDefCache = new HashMap<>();
+  @Inject
+  public static HashMap<Integer, RSItemComposition> itemDefCache = new HashMap<>();
 
   @Inject
   @FieldHook("gameState")
@@ -559,22 +561,18 @@ public abstract class ClientMixin implements RSClient {
   @Override
   public ObjectComposition getObjectDefinition(int objectId) {
     assert this.isClientThread() : "getObjectDefinition must be called on client thread";
-    return getRSObjectComposition(objectId);
+    return objDefCache.put(objectId, getRSObjectComposition(objectId));
   }
 
   @Inject
   @Override
-  @Nonnull
   public ItemComposition getItemComposition(int id) {
-    assert this.isClientThread() : "getItemComposition must be called on client thread";
-    return getRSItemDefinition(id);
-  }
+    if (itemDefCache.containsKey(id)) {
+      return itemDefCache.get(id);
+    }
 
-  @Inject
-  @Override
-  @Nonnull
-  public ItemComposition getItemDefinition(int id) {
-    return getItemComposition(id);
+    assert this.isClientThread() : "getItemComposition must be called on client thread";
+    return itemDefCache.put(id, getRSItemDefinition(id));
   }
 
   @Inject
@@ -1539,7 +1537,7 @@ public abstract class ClientMixin implements RSClient {
 
   @Inject
   @Override
-  public boolean isObjectCached(int id) {
-    return objDefCache.containsKey(id);
+  public boolean isItemDefinitionCached(int id) {
+    return itemDefCache.containsKey(id);
   }
 }

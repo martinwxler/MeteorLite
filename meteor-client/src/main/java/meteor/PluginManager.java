@@ -15,6 +15,7 @@ import meteor.plugins.achievementdiary.DiaryRequirementsPlugin;
 import meteor.plugins.agility.AgilityPlugin;
 import meteor.plugins.animsmoothing.AnimationSmoothingPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
+import meteor.plugins.api.plugin.interaction.InteractPlugin;
 import meteor.plugins.api.plugin.walking.WalkerPlugin;
 import meteor.plugins.autoclicker.AutoClickerPlugin;
 import meteor.plugins.autologhop.AutoLogHop;
@@ -176,6 +177,7 @@ public class PluginManager {
     plugins.add(new HunterPlugin());
     plugins.add(new ImplingsPlugin());
     plugins.add(new InteractHighlightPlugin());
+    plugins.add(new InteractPlugin());
     plugins.add(new InventoryGridPlugin());
     plugins.add(new ItemChargePlugin());
     plugins.add(new ItemPricesPlugin());

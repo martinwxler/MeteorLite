@@ -402,18 +402,7 @@ public interface Client extends GameEngine {
    * @return the corresponding item composition
    * @see ItemID
    */
-  @Nonnull
   ItemComposition getItemComposition(int id);
-
-  /**
-   * Gets the item composition corresponding to an items ID.
-   *
-   * @param id the item ID
-   * @return the corresponding item composition
-   * @see ItemID
-   */
-  @Nonnull
-  ItemComposition getItemDefinition(int id);
 
   /**
    * Creates an item icon sprite with passed variables.
@@ -2308,5 +2297,5 @@ public interface Client extends GameEngine {
 
   boolean isTileObjectValid(Tile tile, TileObject tileObject);
 
-  boolean isObjectCached(int id);
+  boolean isItemDefinitionCached(int id);
 }
