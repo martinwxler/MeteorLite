@@ -69,7 +69,7 @@ public interface GpuPluginConfig extends Config {
       position = 3
   )
   default AntiAliasingMode antiAliasingMode() {
-    return AntiAliasingMode.DISABLED;
+    return AntiAliasingMode.MSAA_8;
   }
 
   @ConfigItem(
@@ -79,7 +79,7 @@ public interface GpuPluginConfig extends Config {
       position = 4
   )
   default UIScalingMode uiScalingMode() {
-    return UIScalingMode.LINEAR;
+    return UIScalingMode.CATMULL_ROM;
   }
 
   @Range(
