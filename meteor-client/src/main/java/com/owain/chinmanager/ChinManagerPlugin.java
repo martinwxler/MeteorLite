@@ -1217,6 +1217,8 @@ public class ChinManagerPlugin extends Plugin
 
 		tileItems.remove(item);
 
+		if (item != null)
+			if (item.getTile() != null)
 		if (highlightItemLayer == item.getTile().getItemLayer())
 		{
 			highlightTileObject = null;
