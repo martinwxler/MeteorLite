@@ -65,4 +65,16 @@ public class Equipment {
 
         return null;
     }
+
+    public static boolean contains(Predicate<Item> filter) {
+        return getFirst(filter) != null;
+    }
+
+    public static boolean contains(int id) {
+        return contains(x -> x.getId() == id);
+    }
+
+    public static boolean contains(String name) {
+        return contains(x -> x.getName().equals(name));
+    }
 }
