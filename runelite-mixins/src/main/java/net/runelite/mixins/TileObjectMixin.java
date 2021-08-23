@@ -35,7 +35,7 @@ public abstract class TileObjectMixin implements TileObject {
   private Thread clientThread;
 
   @Shadow("objDefCache")
-  private static HashMap<Integer, RSObjectComposition> objDefCache = new HashMap<>();
+  private static HashMap<Integer, RSObjectComposition> objDefCache;
 
   @Override
   @Inject

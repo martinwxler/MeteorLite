@@ -104,6 +104,7 @@ public abstract class NPCMixin implements RSNPC {
   public void onDefinitionChanged(RSNPCComposition composition) {
     if (composition == null) {
       client.getCallbacks().post(new NpcDespawned(this));
+      npcDefCache.remove(getIndex());
     } else if (this.getId() != -1) {
       RSNPCComposition oldComposition = getComposition();
       if (oldComposition == null) {
