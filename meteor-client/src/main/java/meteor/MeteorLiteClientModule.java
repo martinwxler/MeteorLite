@@ -67,12 +67,18 @@ import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ClientShutdown;
 import meteor.game.WorldService;
 import meteor.plugins.api.commons.Time;
+import meteor.plugins.api.game.GameThread;
+import meteor.plugins.api.game.Vars;
+import meteor.plugins.api.input.Keyboard;
+import meteor.plugins.api.items.Bank;
 import meteor.plugins.api.items.Equipment;
 import meteor.plugins.api.items.Inventory;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.movement.Reachable;
 import meteor.plugins.api.movement.pathfinder.Walker;
+import meteor.plugins.api.packets.Packets;
 import meteor.plugins.api.scene.Tiles;
+import meteor.plugins.api.widgets.Dialog;
 import meteor.plugins.api.widgets.Widgets;
 import meteor.plugins.itemstats.ItemStatChangesService;
 import meteor.plugins.itemstats.ItemStatChangesServiceImpl;
@@ -499,7 +505,13 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
             Walker.class,
             Inventory.class,
             Equipment.class,
-            Widgets.class
+            Bank.class,
+            Widgets.class,
+            Dialog.class,
+            GameThread.class,
+            Keyboard.class,
+            Vars.class,
+            Packets.class
     );
   }
 

@@ -132,6 +132,7 @@ public abstract class ItemContainerMixin implements RSItemContainer {
           stackSizes[i]
       );
 
+      item.setClient(client);
       item.setIndex(i);
       items[i] = item;
     }
@@ -150,6 +151,7 @@ public abstract class ItemContainerMixin implements RSItemContainer {
               stackSizes[slot]
       );
 
+      item.setClient(client);
       item.setIndex(slot);
       return item;
     }

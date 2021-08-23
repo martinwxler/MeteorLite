@@ -166,10 +166,14 @@ public class Walker {
             }
 
             if (!Movement.isRunEnabled() && (client.getEnergy() >= Rand.nextInt(MIN_ENERGY, MAX_MIN_ENERGY) || (local.getHealthScale() > -1 && client.getEnergy() > 0))) {
-                // TODO: toggle run and sleep
+                Movement.toggleRun();
+                Time.sleepUntil(Movement::isRunEnabled, 2000);
             }
 
-            // TODO: check if stam boosted and run not enabled
+            if (!Movement.isRunEnabled() && client.getEnergy() > 0 && Movement.isStaminaBoosted()) {
+                Movement.toggleRun();
+                Time.sleepUntil(Movement::isRunEnabled, 2000);
+            }
         }
 
         return true;

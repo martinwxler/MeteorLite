@@ -24,10 +24,7 @@
  */
 package net.runelite.mixins;
 
-import net.runelite.api.HashTable;
-import net.runelite.api.Node;
-import net.runelite.api.Point;
-import net.runelite.api.WidgetNode;
+import net.runelite.api.*;
 import net.runelite.api.events.WidgetHiddenChanged;
 import net.runelite.api.events.WidgetPositioned;
 import net.runelite.api.mixins.Copy;
@@ -38,6 +35,7 @@ import net.runelite.api.mixins.Replace;
 import net.runelite.api.mixins.Shadow;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetItem;
+import net.runelite.api.widgets.WidgetType;
 import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSModel;
 import net.runelite.rs.api.RSNode;
@@ -592,5 +590,71 @@ public abstract class WidgetMixin implements RSWidget
     }
 
     return new Point(dragOffsetX, dragOffsetY);
+  }
+
+  @Inject
+  @Override
+  public int getActionId(int actionIndex) {
+      switch (getType()) {
+          case WidgetType.LAYER:
+          case WidgetType.RECTANGLE:
+              return MenuAction.CC_OP.getId();
+          case WidgetType.GRAPHIC:
+              return getTargetVerb() == null || getTargetVerb().isEmpty()
+                      ? MenuAction.CC_OP.getId() : MenuAction.WIDGET_TYPE_2.getId();
+          case WidgetType.INVENTORY:
+              return MenuAction.WIDGET_TYPE_2.getId();
+          case WidgetType.TEXT:
+              return MenuAction.WIDGET_TYPE_6.getId();
+          case WidgetType.MODEL:
+              return MenuAction.WIDGET_TYPE_1.getId();
+          default:
+              throw new IllegalArgumentException("Widget: no identifier for " + actionIndex);
+      }
+  }
+
+  @Inject
+  @Override
+  public List<String> actions() {
+    return Arrays.asList(getActions());
+  }
+
+  @Inject
+  @Override
+  public void interact(String action) {
+    interact(actions().indexOf(action));
+  }
+
+  @Inject
+  @Override
+  public void interact(int index) {
+    interact(index, getActionId(index));
+  }
+
+  @Inject
+  public void interact(int index, int menuAction) {
+    interact(getMenuIdentifier(index), menuAction, getIndex(), getId());
+  }
+
+  @Inject
+  @Override
+  public void interact(int identifier, int opcode, int param0, int param1) {
+    client.interact(identifier, opcode, param0, param1);
+  }
+
+  @Inject
+  public int getMenuIdentifier(int actionIndex) {
+    switch (getType()) {
+      case WidgetType.LAYER:
+      case WidgetType.RECTANGLE:
+        return actionIndex + 1;
+      case WidgetType.GRAPHIC:
+        return getTargetVerb() == null || getTargetVerb().isEmpty() ? actionIndex + 1 : 0;
+      case WidgetType.TEXT:
+      case WidgetType.MODEL:
+        return 0;
+      default:
+        throw new IllegalArgumentException("Widget: no identifier for " + actionIndex);
+    }
   }
 }

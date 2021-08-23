@@ -32,63 +32,88 @@ import java.util.List;
 
 @Data
 public class Item implements Interactable {
+    private final int id;
+    private final int quantity;
 
-  private final int id;
-  private final int quantity;
+    private Client client;
+    private String name;
+    private int index;
+    private String[] actions;
 
-  private String name;
-  private int index;
-  private String[] actions;
+    // Interaction
+    private WidgetInfo widgetInfo;
+    private int identifier;
+    private int actionParam;
+    private int widgetId;
 
-  // Interaction
-  private WidgetInfo widgetInfo;
-  private int actionParam;
-  private int widgetId;
+    @Override
+    public String[] getActions() {
+        return actions;
+    }
 
-  @Override
-  public String[] getActions() {
-    return actions;
-  }
+    @Override
+    public int getActionId(int action) {
+        switch (action) {
+            case 0:
+                if (getActions()[0] == null) {
+                    return MenuAction.ITEM_USE.getId();
+                }
 
-  @Override
-  public int getActionId(int action) {
-    switch (action) {
-      case 0:
-        if (getActions()[0] == null) {
-          return MenuAction.ITEM_USE.getId();
+                return MenuAction.ITEM_FIRST_OPTION.getId();
+            case 1:
+                return MenuAction.ITEM_SECOND_OPTION.getId();
+            case 2:
+                return MenuAction.ITEM_THIRD_OPTION.getId();
+            case 3:
+                return MenuAction.ITEM_FOURTH_OPTION.getId();
+            case 4:
+                return MenuAction.ITEM_FIFTH_OPTION.getId();
+            default:
+                throw new IllegalArgumentException("action = " + action);
+        }
+    }
+
+    @Override
+    public List<String> actions() {
+        return Arrays.asList(actions);
+    }
+
+    @Override
+    public void interact(String action) {
+        interact(actions().indexOf(action));
+    }
+
+    @Override
+    public void interact(int index) {
+        if (widgetInfo.getGroupId() == WidgetInfo.EQUIPMENT.getGroupId()) {
+            interact(index + 1, index > 4 ? MenuAction.CC_OP_LOW_PRIORITY.getId() : MenuAction.CC_OP.getId());
+            return;
         }
 
-        return MenuAction.ITEM_FIRST_OPTION.getId();
-      case 1:
-        return MenuAction.ITEM_SECOND_OPTION.getId();
-      case 2:
-        return MenuAction.ITEM_THIRD_OPTION.getId();
-      case 3:
-        return MenuAction.ITEM_FOURTH_OPTION.getId();
-      case 4:
-        return MenuAction.ITEM_FIFTH_OPTION.getId();
-      default:
-        throw new IllegalArgumentException("action = " + action);
+        if (widgetInfo == WidgetInfo.BANK_ITEM_CONTAINER || widgetInfo == WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER) {
+            interact(index, MenuAction.CC_OP.getId());
+            return;
+        }
+
+        interact(getId(), getActionId(index));
     }
-  }
 
-  @Override
-  public List<String> actions() {
-    return Arrays.asList(actions);
-  }
+    public void interact(int index, int menuAction) {
+        if (widgetInfo.getGroupId() == WidgetInfo.EQUIPMENT.getGroupId()) {
+            interact(index + 1, menuAction, actionParam, widgetId);
+            return;
+        }
 
-  @Override
-  public void interact(String action) {
+        if (widgetInfo == WidgetInfo.BANK_ITEM_CONTAINER || widgetInfo == WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER) {
+            interact(index, menuAction, actionParam, widgetId);
+            return;
+        }
 
-  }
+        interact(getId(), menuAction, actionParam, widgetId);
+    }
 
-  @Override
-  public void interact(int index) {
-
-  }
-
-  @Override
-  public void interact(int identifier, int opcode, int param0, int param1) {
-
-  }
+    @Override
+    public void interact(int identifier, int opcode, int param0, int param1) {
+        client.interact(identifier, opcode, param0, param1);
+    }
 }

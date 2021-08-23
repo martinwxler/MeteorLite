@@ -15,21 +15,24 @@ public class Equipment {
 
     public static List<Item> getAll(Predicate<Item> filter) {
         List<Item> items = new ArrayList<>();
-        ItemContainer container = client.getItemContainer(InventoryID.INVENTORY);
+        ItemContainer container = client.getItemContainer(InventoryID.EQUIPMENT);
         if (container == null) {
             return items;
         }
 
         for (Item item : container.getItems()) {
             if (item.getId() != -1 && !item.getName().equals("null")) {
-                WidgetInfo widgetInfo = WidgetInfo.INVENTORY;
-                item.setActionParam(0);
-                item.setWidgetId(widgetInfo.getPackedId());
-                item.setActions(Widgets.get(widgetInfo).getActions());
-                item.setWidgetInfo(widgetInfo);
+                WidgetInfo widgetInfo = getEquipmentWidgetInfo(item.getIndex());
+                if (widgetInfo != null) {
+                    item.setIdentifier(0);
+                    item.setActionParam(-1);
+                    item.setWidgetId(widgetInfo.getPackedId());
+                    item.setActions(Widgets.get(widgetInfo).getActions());
+                    item.setWidgetInfo(widgetInfo);
 
-                if (filter.test(item)) {
-                    items.add(item);
+                    if (filter.test(item)) {
+                        items.add(item);
+                    }
                 }
             }
         }
@@ -51,5 +54,27 @@ public class Equipment {
 
     public static Item getFirst(String name) {
         return getFirst(x -> x.getName().equals(name));
+    }
+
+    private static WidgetInfo getEquipmentWidgetInfo(int itemIndex) {
+        for (EquipmentInventorySlot equipmentInventorySlot : EquipmentInventorySlot.values()) {
+            if (equipmentInventorySlot.getSlotIdx() == itemIndex) {
+                return equipmentInventorySlot.getWidgetInfo();
+            }
+        }
+
+        return null;
+    }
+
+    public static boolean contains(Predicate<Item> filter) {
+        return getFirst(filter) != null;
+    }
+
+    public static boolean contains(int id) {
+        return contains(x -> x.getId() == id);
+    }
+
+    public static boolean contains(String name) {
+        return contains(x -> x.getName().equals(name));
     }
 }

@@ -1,23 +1,31 @@
-package net.runelite.api.packets;
+package meteor.plugins.api.packets;
 
 import net.runelite.api.Client;
+import net.runelite.api.packets.ClientPacket;
+import net.runelite.api.packets.PacketBufferNode;
+import net.runelite.api.packets.PacketWriter;
+
+import javax.inject.Inject;
 
 public class Packets {
+    @Inject
+    private static Client client;
+    
     public static class Dialog {
-        public static void sendNumberInput(Client client, int number) {
-            queuePacket(client, client.getNumberInputPacket(), number);
+        public static void sendNumberInput(int number) {
+            queuePacket(client.getNumberInputPacket(), number);
         }
 
-        public static void sendTextInput(Client client, String text) {
-            queuePacket(client, client.getTextInputPacket(), text);
+        public static void sendTextInput(String text) {
+            queuePacket(client.getTextInputPacket(), text);
         }
 
-        public static void sendNameInput(Client client, String name) {
-            queuePacket(client, client.getNameInputPacket(), name);
+        public static void sendNameInput(String name) {
+            queuePacket(client.getNameInputPacket(), name);
         }
     }
 
-    public static void queuePacket(Client client, ClientPacket clientPacket, Object... data) {
+    public static void queuePacket(ClientPacket clientPacket, Object... data) {
         PacketWriter writer = client.getPacketWriter();
         PacketBufferNode packet = client.preparePacket(clientPacket, writer.getIsaacCipher());
 
