@@ -3,6 +3,7 @@ package meteor.plugins.socket;
 import meteor.config.Config;
 import meteor.config.ConfigGroup;
 import meteor.config.ConfigItem;
+import meteor.config.Range;
 
 import java.util.UUID;
 
@@ -25,6 +26,7 @@ public interface SocketConfig extends Config {
         return "socket.kthisiscvpv.com";
     }
 
+    @Range(min = 1, max = 65535, textInput = true)
     @ConfigItem(position = 2, keyName = "getPort", name = "Server Port Number", description = "The port number of the server to connect to.")
     default int getServerPort() {
         return 26388;
