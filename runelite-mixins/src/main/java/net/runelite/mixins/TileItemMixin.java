@@ -176,4 +176,10 @@ public abstract class TileItemMixin implements RSTileItem {
         getTile().getSceneLocation().getY()
     );
   }
+
+  @Inject
+  @Override
+  public String getName() {
+    return client.getItemComposition(getId()).getName();
+  }
 }

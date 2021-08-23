@@ -28,23 +28,7 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.api.widgets.WidgetType;
-import net.runelite.rs.api.RSAbstractArchive;
-import net.runelite.rs.api.RSArchive;
-import net.runelite.rs.api.RSChatChannel;
-import net.runelite.rs.api.RSClient;
-import net.runelite.rs.api.RSEnumComposition;
-import net.runelite.rs.api.RSIndexedSprite;
-import net.runelite.rs.api.RSItemContainer;
-import net.runelite.rs.api.RSNPC;
-import net.runelite.rs.api.RSNodeDeque;
-import net.runelite.rs.api.RSNodeHashTable;
-import net.runelite.rs.api.RSPacketBuffer;
-import net.runelite.rs.api.RSPlayer;
-import net.runelite.rs.api.RSScriptEvent;
-import net.runelite.rs.api.RSSpritePixels;
-import net.runelite.rs.api.RSTileItem;
-import net.runelite.rs.api.RSUsername;
-import net.runelite.rs.api.RSWidget;
+import net.runelite.rs.api.*;
 import org.sponge.util.Logger;
 
 @Mixin(RSClient.class)
@@ -97,6 +81,10 @@ public abstract class ClientMixin implements RSClient {
   private static boolean interpolateNpcAnimations;
   @Inject
   private static boolean interpolateObjectAnimations;
+  @Inject
+  public static HashMap<Integer, RSNPCComposition> npcDefCache = new HashMap<>();
+  @Inject
+  public static HashMap<Integer, RSObjectComposition> objDefCache = new HashMap<>();
 
   @Inject
   @FieldHook("gameState")
@@ -1531,5 +1519,27 @@ public abstract class ClientMixin implements RSClient {
     }
 
     return getLoginResponse1() + " " + getLoginResponse2() + " " + getLoginResponse3();
+  }
+
+  @Override
+  @Inject
+  public boolean isTileObjectValid(Tile tile, TileObject t) {
+    if (!(t instanceof RSGameObject)) {
+      return true;
+    }
+
+    // actors, projectiles, and graphics objects are added and removed from the scene each frame as GameObjects,
+    // so ignore them.
+    RSGameObject gameObject = (RSGameObject) t;
+    RSRenderable renderable = gameObject.getRenderable();
+    boolean invalid = renderable instanceof RSActor || renderable instanceof RSProjectile || renderable instanceof RSGraphicsObject;
+    invalid |= gameObject.getStartX() != ((RSTile)tile).getX() || gameObject.getStartY() != ((RSTile) tile).getY();
+    return !invalid;
+  }
+
+  @Inject
+  @Override
+  public boolean isObjectCached(int id) {
+    return objDefCache.containsKey(id);
   }
 }

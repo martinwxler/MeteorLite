@@ -3,6 +3,7 @@ package net.runelite.mixins;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import net.runelite.api.GameObject;
 import net.runelite.api.MenuAction;
@@ -16,12 +17,7 @@ import net.runelite.api.mixins.Inject;
 import net.runelite.api.mixins.Mixin;
 import net.runelite.api.mixins.Mixins;
 import net.runelite.api.mixins.Shadow;
-import net.runelite.rs.api.RSBoundaryObject;
-import net.runelite.rs.api.RSClient;
-import net.runelite.rs.api.RSFloorDecoration;
-import net.runelite.rs.api.RSGameObject;
-import net.runelite.rs.api.RSItemLayer;
-import net.runelite.rs.api.RSWallDecoration;
+import net.runelite.rs.api.*;
 
 @Mixins({
     @Mixin(RSWallDecoration.class),
@@ -38,6 +34,9 @@ public abstract class TileObjectMixin implements TileObject {
   @javax.inject.Inject
   private Thread clientThread;
 
+  @Shadow("objDefCache")
+  private static HashMap<Integer, RSObjectComposition> objDefCache = new HashMap<>();
+
   @Override
   @Inject
   public int getId() {
@@ -45,16 +44,41 @@ public abstract class TileObjectMixin implements TileObject {
     return (int) (hash >>> 17 & 4294967295L);
   }
 
-  @Override
   @Inject
+  @Override
   public String getName() {
-    return client.getObjectDefinition(getId()).getName();
+    RSObjectComposition def = getCachedDefinition();
+    return def == null ? null : def.getName();
   }
 
-  @Override
   @Inject
+  @Override
   public String[] getActions() {
-    return client.getObjectDefinition(getId()).getActions();
+    RSObjectComposition def = getCachedDefinition();
+    return def == null ? null : def.getActions();
+  }
+
+  @Inject
+  @Override
+  public RSObjectComposition getCachedDefinition() {
+    if (objDefCache.containsKey(getId())) {
+      return objDefCache.get(getId());
+    }
+
+    return getDefinition();
+  }
+
+  @Inject
+  @Override
+  public RSObjectComposition getDefinition() {
+    assert client.isClientThread() : "TileObject.getDefinition must be called on client thread " + getId();
+    RSObjectComposition def = client.getRSObjectComposition(getId());
+    if (def != null && def.getImpostorIds() != null) {
+      def = def.getImpostor();
+    }
+
+    objDefCache.put(getId(), def);
+    return def;
   }
 
   @Override

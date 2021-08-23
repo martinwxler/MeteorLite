@@ -67,6 +67,10 @@ import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ClientShutdown;
 import meteor.game.WorldService;
 import meteor.plugins.api.commons.Time;
+import meteor.plugins.api.entities.NPCs;
+import meteor.plugins.api.entities.Players;
+import meteor.plugins.api.entities.TileItems;
+import meteor.plugins.api.entities.TileObjects;
 import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.game.Vars;
 import meteor.plugins.api.input.Keyboard;
@@ -91,6 +95,7 @@ import meteor.util.ExecutorServiceExceptionLogger;
 import meteor.util.NonScheduledExecutorServiceExceptionLogger;
 import meteor.util.WorldUtil;
 import net.runelite.api.Client;
+import net.runelite.api.TileItem;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.hooks.Callbacks;
 import net.runelite.http.api.chat.ChatClient;
@@ -511,7 +516,11 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
             GameThread.class,
             Keyboard.class,
             Vars.class,
-            Packets.class
+            Packets.class,
+            TileObjects.class,
+            NPCs.class,
+            TileItems.class,
+            Players.class
     );
   }
 

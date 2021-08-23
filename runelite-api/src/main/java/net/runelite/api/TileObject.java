@@ -110,4 +110,10 @@ public interface TileObject extends Locatable, Interactable {
   String getName();
 
   Point menuPoint();
+
+  ObjectComposition getDefinition();
+
+  ObjectComposition getCachedDefinition();
+
+  boolean isDefinitionCached();
 }

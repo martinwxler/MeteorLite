@@ -2305,4 +2305,8 @@ public interface Client extends GameEngine {
   void setViewportWalking(boolean enabled);
 
   void setCheckClick(boolean enabled);
+
+  boolean isTileObjectValid(Tile tile, TileObject tileObject);
+
+  boolean isObjectCached(int id);
 }
