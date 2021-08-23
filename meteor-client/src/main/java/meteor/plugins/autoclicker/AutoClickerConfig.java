@@ -2,6 +2,12 @@ package meteor.plugins.autoclicker;
 
 import meteor.config.*;
 
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+
+import static java.awt.event.KeyEvent.VK_C;
+import static java.awt.event.KeyEvent.VK_H;
+
 @ConfigGroup("soxsautoclicker")
 public interface AutoClickerConfig extends Config
 {
@@ -23,7 +29,7 @@ public interface AutoClickerConfig extends Config
     )
     default Keybind toggle()
     {
-        return Keybind.NOT_SET;
+        return new Keybind(VK_C, InputEvent.CTRL_DOWN_MASK, false);
     }
 
     @ConfigSection(

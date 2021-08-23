@@ -16,7 +16,7 @@ public class Bootstrapper {
     private static File shadowJar = new File("./meteor-client/build/libs/meteor-client-" + version + "-all.jar");
     private static File outputDir = new File("./meteor-client/build/bootstrap/");
     private static File updateOutput = new File("./meteor-client/build/bootstrap/bootstrap-meteorlite.json");
-    private static File boostrapShadowJar = new File("./meteor-client/build/bootstrap/meteor-client.jar");
+    private static File boostrapShadowJar = new File("./meteor-client/build/bootstrap/meteorlite.jar");
     private static Update update = new Update();
 
     private static Logger log = new Logger("Bootstrapper");

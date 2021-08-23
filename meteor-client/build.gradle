@@ -144,7 +144,8 @@ shadowJar {
             "--add-exports=javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED",
             "--add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED",
             "--add-opens=javafx.graphics/javafx.css=ALL-UNNAMED",
-            "-Dsun.java2d.uiScale=1.0"]
+            "-Dsun.java2d.uiScale=1.0",
+    "--illegal-access=permit"]
 }
 tasks {
     compileJava.dependsOn project(":fernflower").tasks.getByName("decompileInjected")
@@ -164,8 +165,8 @@ jar {
     }
 }
 
-sourceCompatibility = 14
-targetCompatibility = 14
+sourceCompatibility = 16
+targetCompatibility = 16
 
 
 
