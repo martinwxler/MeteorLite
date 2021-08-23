@@ -13,6 +13,7 @@ import meteor.plugins.Plugin;
 import meteor.plugins.PluginDependency;
 import meteor.plugins.achievementdiary.DiaryRequirementsPlugin;
 import meteor.plugins.agility.AgilityPlugin;
+import meteor.plugins.ammo.AmmoPlugin;
 import meteor.plugins.animsmoothing.AnimationSmoothingPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.api.plugin.walking.WalkerPlugin;
@@ -33,6 +34,7 @@ import meteor.plugins.cannonreloader.CannonReloaderPlugin;
 import meteor.plugins.chat.sChatPlugin;
 import meteor.plugins.chatchannel.ChatChannelPlugin;
 import meteor.plugins.chatcommands.ChatCommandsPlugin;
+import meteor.plugins.chatfilter.ChatFilterPlugin;
 import meteor.plugins.cluescrolls.ClueScrollPlugin;
 import meteor.plugins.combatlevel.CombatLevelPlugin;
 import meteor.plugins.defaultworld.DefaultWorldPlugin;
@@ -138,6 +140,7 @@ public class PluginManager {
 
   private void initPlugins() {
     plugins.add(new AgilityPlugin());
+    plugins.add(new AmmoPlugin());
     plugins.add(new AnimationSmoothingPlugin());
     plugins.add(new AoeWarningPlugin());
     plugins.add(new AutoClickerPlugin());
@@ -159,6 +162,7 @@ public class PluginManager {
     plugins.add(new CannonPlugin());
     plugins.add(new CannonReloaderPlugin());
     plugins.add(new ChatCommandsPlugin());
+    plugins.add(new ChatFilterPlugin());
     plugins.add(new ChatTimestampPlugin());
     plugins.add(new ClueScrollPlugin());
     plugins.add(new CombatLevelPlugin());
