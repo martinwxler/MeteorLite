@@ -118,12 +118,6 @@ public abstract class ClientMixin implements RSClient {
     RSNPC npc = cachedNPCs[idx];
     if (npc != null) {
       npc.setIndex(idx);
-
-      if (npc.getComposition() != null)
-      if (npc.getComposition().getConfigs() != null)
-        if (npc.getComposition().transform$api() != null)
-          client.getCallbacks().postDeferred(new NpcTransformedSpawned(npc));
-
       client.getCallbacks().postDeferred(new NpcSpawned(npc));
     }
   }

@@ -55,9 +55,6 @@ public abstract class NPCMixin implements RSNPC {
   @Inject
   public void onDefinitionChanged(RSNPCComposition composition) {
     if (composition == null) {
-      if (getComposition() != null)
-      if (getComposition().getConfigs() != null)
-        client.getCallbacks().post(new NpcTransformedDespawned(this));
       client.getCallbacks().post(new NpcDespawned(this));
     } else if (this.getId() != -1) {
       RSNPCComposition oldComposition = getComposition();
@@ -66,12 +63,6 @@ public abstract class NPCMixin implements RSNPC {
       }
 
       if (oldComposition.getConfigs() != null) {
-        NPCComposition transformed = composition.transform$api();
-        if (transformed != null) {
-          if (transformed.getId() == oldComposition.transform$api().getId()) {
-            return;
-          }
-        } else
         client.getCallbacks().postDeferred(new NpcTransformedChanged(this, composition.transform$api()));
       }
 
