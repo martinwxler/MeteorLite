@@ -4,9 +4,12 @@ import net.runelite.api.Client;
 import org.sponge.util.Logger;
 
 import javax.inject.Inject;
+import java.time.Duration;
+import java.util.function.BooleanSupplier;
 
 public class Time {
     private static final Logger logger = new Logger("Time");
+    private static final int DEFAULT_POLLING_RATE = 100;
     @Inject
     private static Client client;
 
@@ -21,5 +24,29 @@ public class Time {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void sleep(int min, int max) {
+        sleep(Rand.nextInt(min, max));
+    }
+
+    public static void sleepUntil(BooleanSupplier supplier, int pollingRate, int timeOut) {
+        long start = System.currentTimeMillis();
+        while (!supplier.getAsBoolean()) {
+            if (System.currentTimeMillis() > start + timeOut) {
+                break;
+            }
+
+            sleep(pollingRate);
+        }
+    }
+
+    public static void sleepUntil(BooleanSupplier supplier, int timeOut) {
+        sleepUntil(supplier, DEFAULT_POLLING_RATE, timeOut);
+    }
+
+    public static String format(Duration duration) {
+        long secs = Math.abs(duration.getSeconds());
+        return String.format("%02d:%02d:%02d", secs / 3600L, secs % 3600L / 60L, secs % 60L);
     }
 }

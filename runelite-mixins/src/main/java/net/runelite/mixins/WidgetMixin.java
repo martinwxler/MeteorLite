@@ -593,4 +593,30 @@ public abstract class WidgetMixin implements RSWidget
 
     return new Point(dragOffsetX, dragOffsetY);
   }
+
+  // TODO: implement widget interaction
+  @Override
+  public int getActionId(int action) {
+    return 0;
+  }
+
+  @Override
+  public List<String> actions() {
+    return null;
+  }
+
+  @Override
+  public void interact(String action) {
+
+  }
+
+  @Override
+  public void interact(int index) {
+
+  }
+
+  @Override
+  public void interact(int identifier, int opcode, int param0, int param1) {
+
+  }
 }
