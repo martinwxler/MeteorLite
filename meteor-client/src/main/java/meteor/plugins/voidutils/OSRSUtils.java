@@ -1,6 +1,8 @@
 package meteor.plugins.voidutils;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -11,7 +13,9 @@ import meteor.eventbus.Subscribe;
 import meteor.events.AutomationClickEvent;
 import meteor.events.AutomationMouseMoveEvent;
 import meteor.plugins.voidutils.events.LocalPlayerIdleEvent;
+import meteor.ui.overlay.OverlayUtil;
 import net.runelite.api.*;
+import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
@@ -127,6 +131,21 @@ public class OSRSUtils {
     return loots.get(0);
   }
 
+  public List<NPC> findTransformedNPCs(String name) {
+    List<NPC> npcs = new ArrayList<>();
+    for (NPC npc: client.getNpcs()) {
+      if (npc.getTransformedComposition() != null) {
+        NPCComposition transformed = npc.getTransformedComposition();
+        if (transformed.getName().equalsIgnoreCase(name))
+          npcs.add(npc);
+      }
+    }
+    npcs.sort(Comparator.comparing(NPC::getDistanceFromLocalPlayer));
+    if (npcs.size() == 0)
+      return null;
+    return npcs;
+  }
+
   // Loads Inventory items from the map via IDs
   public List<WidgetItem> items(int... ids) {
     Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
@@ -225,22 +244,80 @@ public class OSRSUtils {
 
   @Subscribe
   private void onNPCSpawned(NpcSpawned event) {
-    List<NPC> knownSpawns = npcs.get(event.getNpc().getId());
+    NPCComposition composition = event.getNpc().getComposition();
+
+    List<NPC> knownSpawns = npcs.get(composition.getId());
     if (knownSpawns == null)
       knownSpawns = new ArrayList<>();
 
     knownSpawns.add(event.getNpc());
-    npcs.put(event.getNpc().getId(), knownSpawns);
+    npcs.put(composition.getId(), knownSpawns);
+  }
+
+  @Subscribe
+  private void onNPCTransformedSpawned(NpcTransformedSpawned event) {
+    NPCComposition composition = event.getNpc().getTransformedComposition();
+
+    List<NPC> knownSpawns = npcs.get(composition.getId());
+    if (knownSpawns == null)
+      knownSpawns = new ArrayList<>();
+
+    knownSpawns.add(event.getNpc());
+    npcs.put(composition.getId(), knownSpawns);
+  }
+
+  @Subscribe
+  private void onNPCChanged(NpcChanged event) {
+    NPCComposition composition = event.getNpc().getComposition();
+
+    NPC npcToRemove = null;
+    if (npcs.get(composition.getId()) != null)
+      for (NPC npc : npcs.get(composition.getId())) {
+        if (npc.getLocalLocation().getX() == event.getNpc().getLocalLocation().getX())
+          if (npc.getLocalLocation().getY() == event.getNpc().getLocalLocation().getY());
+        npcToRemove = npc;
+      }
+    if (npcToRemove != null) {
+      npcs.get(composition.getId()).remove(npcToRemove);
+    }
+  }
+
+  @Subscribe
+  private void onNPCTransformedChanged(NpcTransformedChanged event) {
+    NPCComposition composition = event.getNpc().getTransformedComposition();
+
+    NPC npcToRemove = null;
+    if (npcs.get(composition.getId()) != null)
+      for (NPC npc : npcs.get(composition.getId())) {
+        if (npc.getLocalLocation().getX() == event.getNpc().getLocalLocation().getX())
+          if (npc.getLocalLocation().getY() == event.getNpc().getLocalLocation().getY());
+        npcToRemove = npc;
+      }
+    if (npcToRemove != null) {
+      npcs.get(composition.getId()).remove(npcToRemove);
+    }
   }
 
   @Subscribe
   private void onNPCDespawned(NpcDespawned event) {
-    List<NPC> knownSpawns = npcs.get(event.getNpc().getId());
+    NPCComposition composition = event.getNpc().getComposition();
+    List<NPC> knownSpawns = npcs.get(composition.getId());
     if (knownSpawns == null)
       knownSpawns = new ArrayList<>();
 
     knownSpawns.remove(event.getNpc());
-    npcs.put(event.getNpc().getId(), knownSpawns);
+    npcs.put(composition.getId(), knownSpawns);
+  }
+
+  @Subscribe
+  private void onNPCTransformedDespawned(NpcTransformedDespawned event) {
+    NPCComposition composition = event.getNpc().getTransformedComposition();
+    List<NPC> knownSpawns = npcs.get(composition.getId());
+    if (knownSpawns == null)
+      knownSpawns = new ArrayList<>();
+
+    knownSpawns.remove(event.getNpc());
+    npcs.put(composition.getId(), knownSpawns);
   }
 
   @Subscribe

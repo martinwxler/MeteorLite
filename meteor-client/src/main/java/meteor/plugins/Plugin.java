@@ -15,6 +15,9 @@ import meteor.config.Config;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
 import meteor.plugins.voidutils.OSRSUtils;
+import meteor.plugins.voidutils.tasks.PriorityTask;
+import meteor.plugins.voidutils.tasks.Task;
+import meteor.plugins.voidutils.tasks.TaskSet;
 import meteor.task.Scheduler;
 import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.Client;
@@ -40,7 +43,7 @@ public class Plugin implements Module {
   public Scheduler scheduler;
 
   @Getter @Setter
-  private boolean enabled = false;
+  public boolean enabled = false;
 
   @Getter @Setter
   private boolean running = false;
@@ -50,6 +53,8 @@ public class Plugin implements Module {
 
   @Inject
   public OverlayManager overlayManager;
+
+  public TaskSet tasks = new TaskSet(this);
 
   public Plugin() {
     logger.name = this.getClass().getAnnotation(PluginDescriptor.class).name();
@@ -112,4 +117,25 @@ public class Plugin implements Module {
   public void shutDown() {
 
   }
+
+  public <T extends Task> T getTask(Class<? extends Task> type) {
+    for (Task t : tasks.tasks) {
+      if (type.isInstance(t))
+      {
+        return (T) t;
+      }
+    }
+    return null;
+  }
+
+  public <T extends PriorityTask> T getPriorityTask(Class<? extends Task> type) {
+    for (Task t : tasks.tasks) {
+      if (type.isInstance(t))
+      {
+        return (T) t;
+      }
+    }
+    return null;
+  }
+
 }

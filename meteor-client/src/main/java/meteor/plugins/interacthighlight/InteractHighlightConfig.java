@@ -172,10 +172,7 @@ public interface InteractHighlightConfig extends Config
 		return new Color(0x90FF0000, true);
 	}
 
-	@Range(
-			min = 1,
-			max = 10
-	)
+	@Range(min = 1, max = 10)
 	@ConfigItem(
 		keyName = "borderWidth",
 		name = "Border Width",
@@ -193,9 +190,7 @@ public interface InteractHighlightConfig extends Config
 		description = "Specify between 0-4 how much of the model outline should be faded",
 		position = 8
 	)
-	@Range(
-		max = 4
-	)
+	@Range(min = 1, max = 4)
 	default int outlineFeather()
 	{
 		return 4;

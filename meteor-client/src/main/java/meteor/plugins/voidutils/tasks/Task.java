@@ -1,17 +1,10 @@
 package meteor.plugins.voidutils.tasks;
 
-import meteor.eventbus.EventBus;
-
-import javax.inject.Inject;
+import meteor.plugins.Plugin;
 
 public class Task {
 
-    @Inject
-    EventBus eventBus;
-
-    public Task() {
-        eventBus.register(this);
-    }
+    public Class<Plugin> plugin;
 
     public String name() {
         return "";
@@ -21,7 +14,5 @@ public class Task {
         return false;
     }
 
-    public void execute() {
-
-    }
+    public void execute() {}
 }

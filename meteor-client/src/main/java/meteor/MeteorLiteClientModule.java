@@ -147,6 +147,8 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
   static Parent pluginsRoot;
   static Parent toolbarRoot;
 
+  static JPanel rootPanel = new JPanel();
+
   @Provides
   @Named("developerMode")
   private boolean getDeveloperMode() {
@@ -235,16 +237,27 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
     overlayManager.add(tooltipOverlay.get());
 
     applet = (Applet) client;
-
     applet.setSize(1280, 720);
     setAppletConfiguration(applet);
 
-    setupInstanceFrame(applet);
+    //Early init game panel so gpu doesn't eat shit when enabling
+    JPanel gamePanel = new JPanel();
+    rootPanel.setLayout(new BorderLayout());
+    gamePanel.setSize(800, 600);
+    toolbarRoot = FXMLLoader.load(
+            Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("toolbar.fxml")));
+
+    gamePanel.setLayout(new BorderLayout());
+    gamePanel.add(applet, BorderLayout.CENTER);
+    rootPanel.add(gamePanel, BorderLayout.CENTER);
+
     configManager.load();
     pluginManager.startInternalPlugins();
     log.info(
             ANSI_YELLOW + "OSRS instance started in " + (System.currentTimeMillis() - startTime) + " ms"
                     + ANSI_RESET);
+
+    setupJavaFXComponents(applet);
   }
 
   public static void togglePluginsPanel() throws IOException {
@@ -264,7 +277,7 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
     rightPanel.setScene(new Scene(root, width, 800));
   }
 
-  public static void setupInstanceFrame(Applet applet) throws IOException {
+  public static void setupJavaFXComponents(Applet applet) throws IOException {
 
     JFrame instanceFrame = new JFrame();
     if (mainInstanceFrame == null)
@@ -272,23 +285,15 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
     instanceFrame.setSize(1280, 720);
     instanceFrame.setMinimumSize(new Dimension(1280, 720));
 
-    JPanel rootPanel = new JPanel();
-    rootPanel.setLayout(new BorderLayout());
-
     JFXPanel toolbarPanel = new JFXPanel();
     toolbarPanel.setSize(1280, 100);
     rightPanel.setSize(550, 800);
 
-    JPanel gamePanel = new JPanel();
-    toolbarRoot = FXMLLoader.load(
-            Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("toolbar.fxml")));
 
     toolbarPanel.setScene(new Scene(toolbarRoot, 300, 33));
     toolbarPanel.setVisible(true);
     rightPanel.setVisible(false);
-    gamePanel.setLayout(new BorderLayout());
-    gamePanel.add(applet, BorderLayout.CENTER);
-    rootPanel.add(gamePanel, BorderLayout.CENTER);
+
     rootPanel.add(toolbarPanel, BorderLayout.NORTH);
     rootPanel.add(rightPanel, BorderLayout.EAST);
     instanceFrame.add(rootPanel);

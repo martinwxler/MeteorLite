@@ -27,12 +27,14 @@ package meteor.plugins.defaultworld;
 import meteor.config.Config;
 import meteor.config.ConfigGroup;
 import meteor.config.ConfigItem;
+import meteor.config.Range;
 
 @ConfigGroup(DefaultWorldConfig.GROUP)
 public interface DefaultWorldConfig extends Config
 {
 	String GROUP = "defaultworld";
 
+	@Range(min = 1, max = 600, textInput = true)
 	@ConfigItem(
 		keyName = "defaultWorld",
 		name = "Default world",
@@ -53,6 +55,7 @@ public interface DefaultWorldConfig extends Config
 		return false;
 	}
 
+	@Range(min = 1, max = 600, textInput = true)
 	@ConfigItem(
 		keyName = "lastWorld",
 		name = "",

@@ -41,7 +41,7 @@ public interface StretchedModeConfig extends Config
 	)
 	default boolean keepAspectRatio()
 	{
-		return false;
+		return true;
 	}
 
 	@ConfigItem(

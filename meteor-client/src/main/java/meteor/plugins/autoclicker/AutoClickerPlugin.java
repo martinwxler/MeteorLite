@@ -27,8 +27,8 @@ import java.util.concurrent.Executors;
 
 @PluginDescriptor(
         name = "Soxs' AutoClicker",
-        description = "Auto clicks. Lovely to pair with 1-click plugins."
-
+        description = "Auto clicks. Lovely to pair with 1-click plugins.",
+        enabledByDefault = false
 )
 @SuppressWarnings("unused")
 @Singleton

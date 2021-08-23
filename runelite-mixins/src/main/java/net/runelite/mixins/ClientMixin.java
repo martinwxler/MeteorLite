@@ -3,12 +3,7 @@ package net.runelite.mixins;
 import static net.runelite.api.MenuAction.UNKNOWN;
 import static net.runelite.api.Perspective.LOCAL_TILE_SIZE;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -18,19 +13,7 @@ import net.runelite.api.clan.ClanRank;
 import net.runelite.api.clan.ClanSettings;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.CanvasSizeChanged;
-import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.ClanChannelChanged;
-import net.runelite.api.events.ClientTick;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.InvokeMenuActionEvent;
-import net.runelite.api.events.MenuEntryAdded;
-import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.events.NpcSpawned;
-import net.runelite.api.events.PlayerDespawned;
-import net.runelite.api.events.PlayerSpawned;
-import net.runelite.api.events.StatChanged;
-import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.events.*;
 import net.runelite.api.hooks.Callbacks;
 import net.runelite.api.hooks.DrawCallbacks;
 import net.runelite.api.mixins.Copy;
@@ -94,9 +77,13 @@ public abstract class ClientMixin implements RSClient {
   @Inject
   private static int oldMenuEntryCount;
   @Inject
+  private static Set<String> unhiddenCasts = new HashSet<String>();
+  @Inject
   private final ArrayList<String> outdatedScripts = new ArrayList<String>();
   @Inject
   boolean occluderEnabled = false;
+  @Inject
+  private boolean isMirrored = false;
   @Inject
   @javax.inject.Inject
   private Callbacks callbacks;
@@ -104,6 +91,12 @@ public abstract class ClientMixin implements RSClient {
   private DrawCallbacks drawCallbacks;
   @Inject
   private boolean gpu;
+  @Inject
+  private static boolean interpolatePlayerAnimations;
+  @Inject
+  private static boolean interpolateNpcAnimations;
+  @Inject
+  private static boolean interpolateObjectAnimations;
 
   @Inject
   @FieldHook("gameState")
@@ -125,7 +118,6 @@ public abstract class ClientMixin implements RSClient {
     RSNPC npc = cachedNPCs[idx];
     if (npc != null) {
       npc.setIndex(idx);
-
       client.getCallbacks().postDeferred(new NpcSpawned(npc));
     }
   }
@@ -498,6 +490,49 @@ public abstract class ClientMixin implements RSClient {
 
   @Inject
   @Override
+  public boolean isInterpolatePlayerAnimations()
+  {
+    return interpolatePlayerAnimations;
+  }
+
+  @Inject
+  @Override
+  public void setInterpolatePlayerAnimations(boolean interpolate)
+  {
+    interpolatePlayerAnimations = interpolate;
+  }
+
+  @Inject
+  @Override
+  public boolean isInterpolateNpcAnimations()
+  {
+    return interpolateNpcAnimations;
+  }
+
+  @Inject
+  @Override
+  public void setInterpolateNpcAnimations(boolean interpolate)
+  {
+    interpolateNpcAnimations = interpolate;
+  }
+
+  @Inject
+  @Override
+  public boolean isInterpolateObjectAnimations()
+  {
+    return interpolateObjectAnimations;
+  }
+
+  @Inject
+  @Override
+  public void setInterpolateObjectAnimations(boolean interpolate)
+  {
+    interpolateObjectAnimations = interpolate;
+  }
+
+
+  @Inject
+  @Override
   public int getSkyboxColor() {
     return skyboxColor;
   }
@@ -634,6 +669,44 @@ public abstract class ClientMixin implements RSClient {
   @Override
   public boolean isInterpolateWidgetAnimations() {
     return interpolateWidgetAnimations;
+  }
+
+  @Inject
+  @Override
+  public void setInterpolateWidgetAnimations(boolean interpolate)
+  {
+    interpolateWidgetAnimations = interpolate;
+  }
+
+  @Inject
+  @Override
+  public void queueChangedSkill(Skill skill)
+  {
+    int[] skills = client.getChangedSkills();
+    int count = client.getChangedSkillsCount();
+    skills[++count - 1 & 31] = skill.ordinal();
+    client.setChangedSkillsCount(count);
+  }
+
+  @Inject
+  @Override
+  public void setUnhiddenCasts(Set<String> casts)
+  {
+    unhiddenCasts = casts;
+  }
+
+  @Inject
+  @Override
+  public boolean isMirrored()
+  {
+    return isMirrored;
+  }
+
+  @Inject
+  @Override
+  public void setMirrored(boolean isMirrored)
+  {
+    this.isMirrored = isMirrored;
   }
 
   @Inject
@@ -1089,6 +1162,20 @@ public abstract class ClientMixin implements RSClient {
   {
     RSUsername rsName = createName(name, getLoginType());
     return getFriendManager().isFriended(rsName, mustBeLoggedIn);
+  }
+
+  @Inject
+  @Override
+  public NameableContainer<Friend> getFriendContainer()
+  {
+    return getFriendManager().getFriendContainer();
+  }
+
+  @Inject
+  @Override
+  public NameableContainer<Ignore> getIgnoreContainer()
+  {
+    return getFriendManager().getIgnoreContainer();
   }
 
   @Inject

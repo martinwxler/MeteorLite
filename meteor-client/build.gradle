@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'org.meteorlite'
-version '1.0.4'
+version '1.0.9'
 
 repositories {
     mavenCentral()
@@ -45,19 +45,14 @@ dependencies {
 
     implementation(group: "net.runelite.gluegen", name: "gluegen-rt", version: "2.4.0-rc-20200429")
     implementation(group: "net.runelite.jogl", name: "jogl-all", version: "2.4.0-rc-20200429")
-    implementation(group: "net.runelite.jocl", name: "jocl", version: "1.0")
 
     runtimeOnly(group: "net.runelite.pushingpixels", name: "trident", version: "1.5.00")
     runtimeOnly(group: "net.runelite.gluegen", name: "gluegen-rt", version: "2.4.0-rc-20200429", classifier: "natives-linux-amd64")
     runtimeOnly(group: "net.runelite.gluegen", name: "gluegen-rt", version: "2.4.0-rc-20200429", classifier: "natives-windows-amd64")
     runtimeOnly(group: "net.runelite.gluegen", name: "gluegen-rt", version: "2.4.0-rc-20200429", classifier: "natives-windows-i586")
-    runtimeOnly(group: "net.runelite.gluegen", name: "gluegen-rt-natives-macosx", version: "2.4.0-rc-20210117")
     runtimeOnly(group: "net.runelite.jogl", name: "jogl-all", version: "2.4.0-rc-20200429", classifier: "natives-linux-amd64")
     runtimeOnly(group: "net.runelite.jogl", name: "jogl-all", version: "2.4.0-rc-20200429", classifier: "natives-windows-amd64")
     runtimeOnly(group: "net.runelite.jogl", name: "jogl-all", version: "2.4.0-rc-20200429", classifier: "natives-windows-i586")
-    runtimeOnly(group: "net.runelite.jogl", name: "jogl-all-natives-macosx", version: "2.4.0-rc-20210117")
-    runtimeOnly(group: "net.runelite.jocl", name: "jocl", version: "1.0", classifier: "macos-x64")
-    runtimeOnly(group: "net.runelite.jocl", name: "jocl", version: "1.0", classifier: "macos-arm64")
     implementation group: 'com.google.guava', name: 'guava', version: '_'
     implementation(group : "org.apache.commons", name : "commons-text", version : "_")
     implementation(group : "commons-io", name : "commons-io", version : "_")
@@ -149,7 +144,8 @@ shadowJar {
             "--add-exports=javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED",
             "--add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED",
             "--add-opens=javafx.graphics/javafx.css=ALL-UNNAMED",
-            "-Dsun.java2d.uiScale=1.0"]
+            "-Dsun.java2d.uiScale=1.0",
+    "--illegal-access=permit"]
 }
 tasks {
     compileJava.dependsOn project(":fernflower").tasks.getByName("decompileInjected")
@@ -169,8 +165,8 @@ jar {
     }
 }
 
-sourceCompatibility = 14
-targetCompatibility = 14
+sourceCompatibility = 16
+targetCompatibility = 16
 
 
 

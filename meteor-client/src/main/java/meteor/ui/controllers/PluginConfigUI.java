@@ -426,7 +426,7 @@ public class PluginConfigUI {
     name.setText(descriptor.name());
     name.setFill(Paint.valueOf("WHITE"));
     name.setLayoutX(18);
-    name.setLayoutY(18);
+    name.setLayoutY(30);
     name.setWrappingWidth(300);
     name.setFont(Font.font(18));
 

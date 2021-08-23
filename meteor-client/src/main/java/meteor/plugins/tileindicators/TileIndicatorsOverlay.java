@@ -86,7 +86,7 @@ public class TileIndicatorsOverlay extends Overlay
 		return null;
 	}
 
-	private void renderTile(final Graphics2D graphics, final LocalPoint dest, final Color color, final double borderWidth)
+	private void renderTile(final Graphics2D graphics, final LocalPoint dest, final Color color, final int borderWidth)
 	{
 		if (dest == null)
 		{
