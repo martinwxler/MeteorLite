@@ -32,7 +32,7 @@ public class Inventory {
                 item.setWidgetInfo(widgetInfo);
                 item.setActionParam(item.getIndex());
                 item.setWidgetId(widgetInfo.getId());
-                item.setActions(Widgets.get(widgetInfo).getActions());
+                item.setActions(client.getItemComposition(item.getId()).getInventoryActions());
 
                 if (filter.test(item)) {
                     items.add(item);

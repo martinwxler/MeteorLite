@@ -15,8 +15,8 @@ import meteor.plugins.achievementdiary.DiaryRequirementsPlugin;
 import meteor.plugins.agility.AgilityPlugin;
 import meteor.plugins.animsmoothing.AnimationSmoothingPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
-import meteor.plugins.api.plugin.interaction.InteractPlugin;
-import meteor.plugins.api.plugin.walking.WalkerPlugin;
+import meteor.plugins.api.example.chickenkiller.ChickenKillerPlugin;
+import meteor.plugins.api.example.walking.WalkerPlugin;
 import meteor.plugins.autoclicker.AutoClickerPlugin;
 import meteor.plugins.autologhop.AutoLogHop;
 import meteor.plugins.autorun.AutoRun;
@@ -153,6 +153,7 @@ public class PluginManager {
     plugins.add(new BoostsPlugin());
     plugins.add(new BossTimersPlugin());
     plugins.add(new ChatChannelPlugin());
+    plugins.add(new ChickenKillerPlugin());
     plugins.add(new ChinManagerPlugin());
     plugins.add(new ChinLoginPlugin());
     plugins.add(new TickTimersPlugin());
@@ -177,7 +178,6 @@ public class PluginManager {
     plugins.add(new HunterPlugin());
     plugins.add(new ImplingsPlugin());
     plugins.add(new InteractHighlightPlugin());
-    plugins.add(new InteractPlugin());
     plugins.add(new InventoryGridPlugin());
     plugins.add(new ItemChargePlugin());
     plugins.add(new ItemPricesPlugin());

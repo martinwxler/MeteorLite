@@ -71,7 +71,15 @@ public class TileItems {
         Tiles.getTiles().forEach(t -> {
             if (t.getGroundItems() != null) {
                 t.getGroundItems().forEach(item -> {
-                    if (item == null || item.getId() == -1 || !pred.test(item)) {
+                    if (item == null || item.getId() == -1) {
+                        return;
+                    }
+
+                    if (!client.isItemDefinitionCached(item.getId())) {
+                        GameThread.invokeLater(() -> client.getItemComposition(item.getId()));
+                    }
+
+                    if (!pred.test(item)) {
                         return;
                     }
 

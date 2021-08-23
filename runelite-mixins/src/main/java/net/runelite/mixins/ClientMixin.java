@@ -560,8 +560,14 @@ public abstract class ClientMixin implements RSClient {
   @Inject
   @Override
   public ObjectComposition getObjectDefinition(int objectId) {
+    if (objDefCache.containsKey(objectId)) {
+      return objDefCache.get(objectId);
+    }
+
     assert this.isClientThread() : "getObjectDefinition must be called on client thread";
-    return objDefCache.put(objectId, getRSObjectComposition(objectId));
+    RSObjectComposition objectComposition = getRSObjectComposition(objectId);
+    objDefCache.put(objectId, objectComposition);
+    return objectComposition;
   }
 
   @Inject
@@ -572,7 +578,9 @@ public abstract class ClientMixin implements RSClient {
     }
 
     assert this.isClientThread() : "getItemComposition must be called on client thread";
-    return itemDefCache.put(id, getRSItemDefinition(id));
+    RSItemComposition def = getRSItemDefinition(id);
+    itemDefCache.put(id, def);
+    return def;
   }
 
   @Inject

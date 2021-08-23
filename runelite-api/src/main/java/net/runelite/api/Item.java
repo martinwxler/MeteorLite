@@ -36,7 +36,6 @@ public class Item implements Interactable {
     private final int quantity;
 
     private Client client;
-    private String name;
     private int index;
     private String[] actions;
 
@@ -45,6 +44,10 @@ public class Item implements Interactable {
     private int identifier;
     private int actionParam;
     private int widgetId;
+
+    public String getName() {
+        return client.getItemComposition(getId()).getName();
+    }
 
     @Override
     public String[] getActions() {
