@@ -12,25 +12,25 @@ import java.util.function.Predicate;
 public class Inventory {
     @Inject
     private static Client client;
+
     public static List<Item> getAll(Predicate<Item> filter) {
         List<Item> items = new ArrayList<>();
-        ItemContainer container = client.getItemContainer(InventoryID.EQUIPMENT);
+        ItemContainer container = client.getItemContainer(InventoryID.INVENTORY);
         if (container == null) {
             return items;
         }
 
         for (Item item : container.getItems()) {
             if (item.getId() != -1 && !item.getName().equals("null")) {
-                WidgetInfo widgetInfo = getEquipmentWidgetInfo(item.getIndex());
-                if (widgetInfo != null) {
-                    item.setActionParam(0);
-                    item.setWidgetId(widgetInfo.getPackedId());
-                    item.setActions(Widgets.get(widgetInfo).getActions());
-                    item.setWidgetInfo(widgetInfo);
+                WidgetInfo widgetInfo = WidgetInfo.INVENTORY;
+                item.setIdentifier(item.getId());
+                item.setWidgetInfo(widgetInfo);
+                item.setActionParam(item.getIndex());
+                item.setWidgetId(widgetInfo.getId());
+                item.setActions(Widgets.get(widgetInfo).getActions());
 
-                    if (filter.test(item)) {
-                        items.add(item);
-                    }
+                if (filter.test(item)) {
+                    items.add(item);
                 }
             }
         }
@@ -52,15 +52,5 @@ public class Inventory {
 
     public static Item getFirst(String name) {
         return getFirst(x -> x.getName().equals(name));
-    }
-
-    private static WidgetInfo getEquipmentWidgetInfo(int itemIndex) {
-        for (EquipmentInventorySlot equipmentInventorySlot : EquipmentInventorySlot.values()) {
-            if (equipmentInventorySlot.getSlotIdx() == itemIndex) {
-                return equipmentInventorySlot.getWidgetInfo();
-            }
-        }
-
-        return null;
     }
 }

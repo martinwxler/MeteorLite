@@ -42,6 +42,7 @@ public class Item implements Interactable {
 
   // Interaction
   private WidgetInfo widgetInfo;
+  private int identifier;
   private int actionParam;
   private int widgetId;
 
