@@ -4,7 +4,7 @@ import meteor.plugins.Plugin;
 
 import java.util.ArrayList;
 
-public class TaskSet{
+public class TaskSet {
 
     public ArrayList<Task> tasks = new ArrayList<>();
 
@@ -18,5 +18,16 @@ public class TaskSet{
         tasks.add(task);
         plugin.injector.injectMembers(task);
         plugin.eventBus.register(task);
+    }
+
+    public <T extends Task> T getInstance(Class<? extends Task> type)
+    {
+        for (Task t : tasks) {
+            if (type.isInstance(t))
+            {
+                return (T) t;
+            }
+        }
+        return null;
     }
 }

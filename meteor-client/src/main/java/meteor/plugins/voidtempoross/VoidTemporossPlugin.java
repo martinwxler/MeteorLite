@@ -14,13 +14,11 @@ import meteor.eventbus.Subscribe;
 import meteor.input.KeyManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
-import meteor.plugins.voidtempoross.tasks.high.AttackTempoross;
-import meteor.plugins.voidtempoross.tasks.high.Tether;
+import meteor.plugins.voidtempoross.tasks.high.*;
 import meteor.plugins.voidtempoross.tasks.low.*;
 import meteor.plugins.voidutils.events.LocalPlayerIdleEvent;
 import meteor.plugins.voidutils.tasks.PriorityTask;
 import meteor.plugins.voidutils.tasks.Task;
-import meteor.plugins.voidutils.tasks.TaskSet;
 import meteor.util.HotkeyListener;
 import meteor.util.Timer;
 import net.runelite.api.*;
@@ -47,8 +45,6 @@ public class VoidTemporossPlugin extends Plugin {
   @Inject
   private KeyManager keyManager;
 
-  TaskSet taskSet = new TaskSet(this);
-
   private long lastDelayedAction;
   private String lastStateExecuted;
   private int prevSalamanderCount = 0;
@@ -61,12 +57,14 @@ public class VoidTemporossPlugin extends Plugin {
   private boolean determinedSide;
   public String side;
   public String location;
-  private int lastSpotX;
-  private int lastSpotY;
+  public int lastSpotX;
+  public int lastSpotY;
 
   public boolean canInterrupt;
   private NPC lastInteracting;
   public String state;
+
+  public boolean temporossVulnerable = false;
 
   //Handle high priority interactions here
   @Subscribe
@@ -85,6 +83,43 @@ public class VoidTemporossPlugin extends Plugin {
         location = "SHIP";
     }
 
+    if (shouldTether) {
+      Tether tether = getTask(Tether.class);
+      if (tether.clickedTether)
+        if (client.getLocalPlayer().isMoving()) {
+          tether.movedToTether = true;
+          canInterrupt = false;
+          tether.clickedTether = false;
+        }
+
+      if (!tether.movedToTether)
+        tether.execute();
+    }
+
+    CollectFish collectFish = getTask(CollectFish.class);
+    if (collectFish.shouldExecute()) {
+      state = "Collect Fish";
+      collectFish.execute();
+    }
+
+    DouseFireIsland douseFireIsland = getTask(DouseFireIsland.class);
+    if (douseFireIsland.shouldExecute()) {
+      state = "Douse (ISLAND)";
+      douseFireIsland.execute();
+    }
+
+    DouseFireShip douseFireShip = getTask(DouseFireShip.class);
+    if (douseFireShip.shouldExecute()) {
+      state = "Douse (SHIP)";
+      douseFireShip.execute();
+    }
+
+    AttackTempoross attackTempoross = getTask(AttackTempoross.class);
+    if (attackTempoross.shouldExecute()) {
+      state = "Attack (Tempoross)";
+      attackTempoross.execute();
+    }
+
     if (!canInterrupt) {
       return;
     }
@@ -92,16 +127,22 @@ public class VoidTemporossPlugin extends Plugin {
     if (client.getLocalPlayer() == null)
       return;
 
-    if (!client.getLocalPlayer().isIdle())
-      return;
-
-    for (Task task: taskSet.tasks) {
+    for (Task task: tasks.tasks) {
       if (task instanceof PriorityTask)
-      if (task.shouldExecute()) {
+        if (task instanceof Tether) {
+        }
+        else if (task instanceof DouseFireIsland) {
+        }
+        else if (task instanceof DouseFireShip) {
+        }
+        else if (task instanceof AttackTempoross) {
+        } else if (task.shouldExecute()) {
         logger.debug(task.name());
         state = task.name();
         task.execute();
+        canInterrupt = false;
       }
+
     }
   }
 
@@ -127,7 +168,11 @@ public class VoidTemporossPlugin extends Plugin {
       return;
     }
 
-    for (Task task: taskSet.tasks) {
+    for (Task task: tasks.tasks) {
+      if (task instanceof Tether) {
+        if (((Tether) task).movedToTether)
+          continue;
+      }
       if (task instanceof PriorityTask)
         continue;
       if (task.shouldExecute()) {
@@ -280,26 +325,27 @@ public class VoidTemporossPlugin extends Plugin {
   public void startup() {
     overlayManager.add(overlay, infoOverlay);
     keyManager.registerKeyListener(toggleListener, getClass());
-    taskSet.add(new AttackTempoross(this));
-    taskSet.add(new CollectBucket(this));
-    taskSet.add(new CollectFish(this));
-    taskSet.add(new CollectHammer(this));
-    taskSet.add(new CollectHarpoon(this));
-    taskSet.add(new CollectIslandWater(this));
-    taskSet.add(new CollectRope(this));
-    taskSet.add(new CollectShipWater(this));
-    taskSet.add(new CookFish(this));
-    taskSet.add(new DouseFireIsland(this));
-    taskSet.add(new DouseFireShip(this));
-    taskSet.add(new RepairMast(this));
-    taskSet.add(new RepairTotem(this));
-    taskSet.add(new Tether(this));
-    taskSet.add(new WalkToShip(this));
-    taskSet.add(new WalkToShore(this));
+    tasks.add(new AttackTempoross(this));
+    tasks.add(new CollectBucket(this));
+    tasks.add(new CollectShipWater(this));
+    tasks.add(new CollectHammer(this));
+    tasks.add(new CollectHarpoon(this));
+    tasks.add(new RepairMast(this));
+    tasks.add(new LoadFish(this));
+    tasks.add(new RepairTotem(this));
+    tasks.add(new CollectFish(this));
+    tasks.add(new CollectIslandWater(this));
+    tasks.add(new CollectRope(this));
+    tasks.add(new CookFish(this));
+    tasks.add(new DouseFireIsland(this));
+    tasks.add(new DouseFireShip(this));
+    tasks.add(new Tether(this));
+    tasks.add(new WalkToShip(this));
+    tasks.add(new WalkToShore(this));
   }
 
   public void shutdown() {
-    taskSet.tasks.clear();
+    tasks.tasks.clear();
     overlayManager.remove(overlay, infoOverlay);
     keyManager.unregisterKeyListener(toggleListener);
   }

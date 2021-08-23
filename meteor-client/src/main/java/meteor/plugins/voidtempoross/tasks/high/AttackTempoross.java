@@ -2,15 +2,14 @@ package meteor.plugins.voidtempoross.tasks.high;
 
 import meteor.eventbus.Subscribe;
 import meteor.plugins.voidtempoross.VoidTemporossPlugin;
+import meteor.plugins.voidtempoross.tasks.low.WalkToShore;
 import meteor.plugins.voidutils.OSRSUtils;
 import meteor.plugins.voidutils.tasks.PriorityTask;
-import meteor.plugins.voidutils.tasks.Task;
-import net.runelite.api.ChatMessageType;
-import net.runelite.api.GameObject;
 import net.runelite.api.NPC;
 import net.runelite.api.events.ChatMessage;
 
 import javax.inject.Inject;
+import java.util.List;
 
 public class AttackTempoross extends PriorityTask {
 
@@ -32,15 +31,47 @@ public class AttackTempoross extends PriorityTask {
 
     @Override
     public boolean shouldExecute() {
-        return getSpiritPool() != null;
+        if (plugin.temporossVulnerable)
+            return true;
+        return false;
     }
 
     @Override
     public void execute() {
-        getSpiritPool().interact(0);
+        if (getSpiritPool() != null)
+            getSpiritPool().interact(0);
+        else
+            plugin.getTask(WalkToShore.class).execute();
     }
 
     public NPC getSpiritPool() {
-        return osrs.nearestNPC(10571);
+        List<NPC> npcs = osrs.npcs(10571);
+        if (npcs != null) {
+            return npcs.get(0);
+        }
+        return null;
+    }
+
+    public NPC getInactiveSpiritPool() {
+        List<NPC> npcs = osrs.npcs(10570);
+        if (npcs != null) {
+            return npcs.get(0);
+        }
+        return null;
+    }
+
+    public NPC getTempoross() {
+        List<NPC> npcs = osrs.npcs(10572);
+        if (npcs != null) {
+            return npcs.get(0);
+        }
+        return null;
+    }
+
+    @Subscribe
+    public void onChatMessage(ChatMessage event) {
+        if (event.getMessage().contains("empoross is vulnerable")) {
+            plugin.temporossVulnerable = true;
+        }
     }
 }

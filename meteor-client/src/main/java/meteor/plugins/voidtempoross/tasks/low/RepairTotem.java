@@ -12,7 +12,6 @@ public class RepairTotem extends Task {
     @Inject
     OSRSUtils osrs;
 
-    @Inject
     VoidTemporossPlugin plugin;
 
     public RepairTotem(VoidTemporossPlugin plugin) {

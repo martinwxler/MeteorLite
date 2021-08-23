@@ -17,7 +17,6 @@ public class CollectIslandWater extends Task {
         return "Water (Island)";
     }
 
-    @Inject
     VoidTemporossPlugin plugin;
 
     public CollectIslandWater(VoidTemporossPlugin plugin) {
@@ -27,8 +26,10 @@ public class CollectIslandWater extends Task {
 
     @Override
     public boolean shouldExecute() {
-        if (getBucketOfWaterCount() < 5)
-            return true;
+        if (getBucketOfWaterCount() < 2)
+            if (plugin.location.equals("ISLAND"))
+                if (!plugin.shouldTether)
+                    return true;
         return false;
     }
 

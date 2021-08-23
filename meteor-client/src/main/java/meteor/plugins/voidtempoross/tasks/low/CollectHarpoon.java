@@ -12,7 +12,6 @@ public class CollectHarpoon extends Task {
     @Inject
     OSRSUtils osrs;
 
-    @Inject
     VoidTemporossPlugin plugin;
 
     public CollectHarpoon(VoidTemporossPlugin plugin) {
@@ -28,7 +27,9 @@ public class CollectHarpoon extends Task {
     @Override
     public boolean shouldExecute() {
         if (getHarpoonCount() < 1)
-            return true;
+            if (plugin.location.equals("SHIP"))
+                if (!plugin.shouldTether)
+                    return true;
         return false;
     }
 

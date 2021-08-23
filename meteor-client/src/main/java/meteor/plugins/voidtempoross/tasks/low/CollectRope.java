@@ -12,7 +12,6 @@ public class CollectRope extends Task {
     @Inject
     OSRSUtils osrs;
 
-    @Inject
     VoidTemporossPlugin plugin;
 
     public CollectRope(VoidTemporossPlugin plugin) {
@@ -28,7 +27,8 @@ public class CollectRope extends Task {
     @Override
     public boolean shouldExecute() {
         if (getRopeCount() < 1)
-            return true;
+            if (plugin.location.equals("SHIP"))
+                    return true;
         return false;
     }
 

@@ -12,7 +12,6 @@ public class CookFish extends Task {
     @Inject
     OSRSUtils osrs;
 
-    @Inject
     VoidTemporossPlugin plugin;
 
     public CookFish(VoidTemporossPlugin plugin) {
@@ -29,8 +28,10 @@ public class CookFish extends Task {
     public boolean shouldExecute() {
         if (plugin.location.equals("ISLAND"))
             if (osrs.inventoryFull())
-                if (getCaughtFishCount() > 0)
-                    return true;
+                if (!plugin.shouldTether)
+                    if (!plugin.temporossVulnerable)
+                        if (getCaughtFishCount() > 0)
+                            return true;
         return false;
     }
 

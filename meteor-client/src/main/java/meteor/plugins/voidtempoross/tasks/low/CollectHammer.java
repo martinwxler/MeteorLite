@@ -12,7 +12,6 @@ public class CollectHammer extends Task {
     @Inject
     OSRSUtils osrs;
 
-    @Inject
     VoidTemporossPlugin plugin;
 
     public CollectHammer(VoidTemporossPlugin plugin) {
@@ -28,7 +27,9 @@ public class CollectHammer extends Task {
     @Override
     public boolean shouldExecute() {
         if (getHammerCount() < 1)
-            return true;
+            if (plugin.location.equals("SHIP"))
+                if (!plugin.shouldTether)
+                    return true;
         return false;
     }
 

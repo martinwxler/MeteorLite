@@ -12,7 +12,6 @@ public class WalkToShip extends Task {
     @Inject
     OSRSUtils osrs;
 
-    @Inject
     VoidTemporossPlugin plugin;
 
     public WalkToShip(VoidTemporossPlugin plugin) {
@@ -22,15 +21,16 @@ public class WalkToShip extends Task {
 
     @Override
     public String name() {
-        return "Cook Fish";
+        return "Walk (SHIP)";
     }
 
     @Override
     public boolean shouldExecute() {
         if (plugin.location.equals("ISLAND"))
             if (osrs.inventoryFull())
-                if (getCaughtFishCount() > 0)
-                    return true;
+                if (getCookedFish() > 0)
+                    if (getCaughtFishCount() == 0)
+                        return true;
         return false;
     }
 
@@ -55,6 +55,12 @@ public class WalkToShip extends Task {
     public int getCaughtFishCount() {
         if (osrs.items(25564) != null)
             return osrs.items(25564).size();
+        return 0;
+    }
+
+    public int getCookedFish() {
+        if (osrs.items(25565) != null)
+            return osrs.items(25565).size();
         return 0;
     }
 }

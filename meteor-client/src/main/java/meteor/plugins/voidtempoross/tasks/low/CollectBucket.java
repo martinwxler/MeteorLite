@@ -12,7 +12,6 @@ public class CollectBucket extends Task {
     @Inject
     OSRSUtils osrs;
 
-    @Inject
     VoidTemporossPlugin plugin;
 
     public CollectBucket(VoidTemporossPlugin plugin) {
@@ -27,7 +26,10 @@ public class CollectBucket extends Task {
 
     @Override
     public boolean shouldExecute() {
-        return getActiveBucketsCount() < 5;
+        if (plugin.location.equals("SHIP"))
+            if (!plugin.shouldTether)
+                return getActiveBucketsCount() < 5;
+        return false;
     }
 
     @Override

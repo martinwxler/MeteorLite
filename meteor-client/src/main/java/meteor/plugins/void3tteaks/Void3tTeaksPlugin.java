@@ -40,7 +40,7 @@ public class Void3tTeaksPlugin extends Plugin {
   private int lastCut = 0;
   private Random random = new Random();
   private final int ONE_TILE = 64;
-  private int[] teakTreeIDs = new int[] {TEAK_TREE,TEAK_TREE_30438,TEAK_TREE_30439,TEAK_TREE_30440,TEAK_TREE_30441,TEAK_TREE_30442,TEAK_TREE_30443,TEAK_TREE_30444,TEAK_TREE_30445,40758};
+  private int[] teakTreeIDs = new int[] {TEAK_TREE,TEAK_TREE_30438,TEAK_TREE_30439,TEAK_TREE_30440,TEAK_TREE_30441,TEAK_TREE_30442,TEAK_TREE_30443,TEAK_TREE_30444,TEAK_TREE_30445,40758, 9036, 36686};
 
   @Provides
   public Void3tTeaksConfig getConfig(ConfigManager configManager) {

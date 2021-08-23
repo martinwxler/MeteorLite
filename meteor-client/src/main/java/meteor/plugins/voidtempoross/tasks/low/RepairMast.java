@@ -12,7 +12,6 @@ public class RepairMast extends Task {
     @Inject
     OSRSUtils osrs;
 
-    @Inject
     VoidTemporossPlugin plugin;
 
     public RepairMast(VoidTemporossPlugin plugin) {
@@ -40,7 +39,7 @@ public class RepairMast extends Task {
     }
 
     public GameObject getBrokenMast() {
-        return plugin.getSidesObjectNS(10571);
+        return plugin.getSidesObjectEW(10571);
     }
 
     public void fixBrokenTotem() {

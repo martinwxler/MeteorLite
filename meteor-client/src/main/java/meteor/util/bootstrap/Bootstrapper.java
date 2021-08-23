@@ -11,7 +11,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class Bootstrapper {
 
-    private static File shadowJar = new File("./meteor-client/build/libs/meteor-client-1.0.2-all.jar");
+    private static File shadowJar = new File("./meteor-client/build/libs/meteor-client-1.0.5-all.jar");
     private static File outputDir = new File("./meteor-client/build/bootstrap/");
     private static File updateOutput = new File("./meteor-client/build/bootstrap/bootstrap.json");
     private static File boostrapShadowJar = new File("./meteor-client/build/bootstrap/meteor-client.jar");
@@ -22,7 +22,7 @@ public class Bootstrapper {
     private static MessageDigest md5Digest;
 
     public static void main(String[] args) throws NoSuchAlgorithmException {
-        update.version = "1.0.4";
+        update.version = "1.0.5";
         md5Digest = MessageDigest.getInstance("MD5");
         processFile(shadowJar);
         saveBootstrap();

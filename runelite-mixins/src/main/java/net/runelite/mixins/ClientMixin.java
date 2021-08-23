@@ -46,19 +46,7 @@ import net.runelite.api.clan.ClanRank;
 import net.runelite.api.clan.ClanSettings;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.CanvasSizeChanged;
-import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.ClanChannelChanged;
-import net.runelite.api.events.ClientTick;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.InvokeMenuActionEvent;
-import net.runelite.api.events.MenuEntryAdded;
-import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.events.NpcSpawned;
-import net.runelite.api.events.PlayerDespawned;
-import net.runelite.api.events.PlayerSpawned;
-import net.runelite.api.events.StatChanged;
-import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.events.*;
 import net.runelite.api.hooks.Callbacks;
 import net.runelite.api.hooks.DrawCallbacks;
 import net.runelite.api.mixins.Copy;
@@ -153,6 +141,11 @@ public abstract class ClientMixin implements RSClient {
     RSNPC npc = cachedNPCs[idx];
     if (npc != null) {
       npc.setIndex(idx);
+
+      if (npc.getComposition() != null)
+      if (npc.getComposition().getConfigs() != null)
+        if (npc.getComposition().transform$api() != null)
+          client.getCallbacks().postDeferred(new NpcTransformedSpawned(npc));
 
       client.getCallbacks().postDeferred(new NpcSpawned(npc));
     }

@@ -19,6 +19,10 @@ public class Tether extends PriorityTask {
     @Inject
     VoidTemporossPlugin plugin;
 
+    public boolean clickedTether;
+
+    public boolean movedToTether = false;
+
     public Tether(VoidTemporossPlugin plugin) {
         super();
         this.plugin = plugin;
@@ -36,8 +40,12 @@ public class Tether extends PriorityTask {
 
     @Override
     public void execute() {
-        if (getNearestTether() != null)
-            getNearestTether().interact(0);
+        if (!movedToTether)
+            if (getNearestTether() != null) {
+                getNearestTether().interact(0);
+                clickedTether = true;
+            }
+
     }
 
     public GameObject getNearestTether() {
@@ -79,9 +87,13 @@ public class Tether extends PriorityTask {
 
         if (event.getMessage().contains("colossal wave closes in")) {
             plugin.shouldTether = true;
+            movedToTether = false;
+            clickedTether = false;
+            plugin.canInterrupt = true;
         } else if (event.getMessage().contains("slams into you")) {
             plugin.shouldTether = false;
         } else if (event.getMessage().contains("the rope keeps you")) {
+            execute();
             plugin.shouldTether = false;
         }
     }

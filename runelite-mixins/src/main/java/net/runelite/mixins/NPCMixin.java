@@ -9,6 +9,8 @@ import net.runelite.api.Perspective;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.NpcChanged;
 import net.runelite.api.events.NpcDespawned;
+import net.runelite.api.events.NpcTransformedChanged;
+import net.runelite.api.events.NpcTransformedDespawned;
 import net.runelite.api.mixins.FieldHook;
 import net.runelite.api.mixins.Inject;
 import net.runelite.api.mixins.Mixin;
@@ -53,11 +55,24 @@ public abstract class NPCMixin implements RSNPC {
   @Inject
   public void onDefinitionChanged(RSNPCComposition composition) {
     if (composition == null) {
+      if (getComposition() != null)
+      if (getComposition().getConfigs() != null)
+        client.getCallbacks().post(new NpcTransformedDespawned(this));
       client.getCallbacks().post(new NpcDespawned(this));
     } else if (this.getId() != -1) {
       RSNPCComposition oldComposition = getComposition();
       if (oldComposition == null) {
         return;
+      }
+
+      if (oldComposition.getConfigs() != null) {
+        NPCComposition transformed = composition.transform$api();
+        if (transformed != null) {
+          if (transformed.getId() == oldComposition.transform$api().getId()) {
+            return;
+          }
+        } else
+        client.getCallbacks().postDeferred(new NpcTransformedChanged(this, composition.transform$api()));
       }
 
       if (composition.getId() == oldComposition.getId()) {

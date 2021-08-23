@@ -1,10 +1,11 @@
-package meteor.plugins.voidtempoross.tasks.low;
+package meteor.plugins.voidtempoross.tasks.high;
 
 import meteor.plugins.voidtempoross.VoidTemporossPlugin;
 import meteor.plugins.voidutils.OSRSUtils;
 import meteor.plugins.voidutils.tasks.PriorityTask;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
+import net.runelite.api.NPC;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -18,7 +19,6 @@ public class DouseFireShip extends PriorityTask {
     @Inject
     Client client;
 
-    @Inject
     VoidTemporossPlugin plugin;
 
     public DouseFireShip(VoidTemporossPlugin plugin) {
@@ -28,15 +28,15 @@ public class DouseFireShip extends PriorityTask {
 
     @Override
     public String name() {
-        return "Cook Fish";
+        return "Douse (SHIP)";
     }
 
     @Override
     public boolean shouldExecute() {
         if (plugin.location.equals("SHIP"))
-            if (client.getLocalPlayer().isIdle())
                 if (getNearestShipFire() != null)
-                    return true;
+                    if (getNearestShipFire().getDistanceFromLocalPlayer() < 120)
+                        return true;
         return false;
     }
 
@@ -45,14 +45,14 @@ public class DouseFireShip extends PriorityTask {
         getNearestShipFire().interact(0);
     }
 
-    public GameObject getNearestShipFire() {
+    public NPC getNearestShipFire() {
         GameObject islandWater = plugin.getInstanceAnchor();
         if (islandWater == null)
             return null;
 
-        List<GameObject> fires = new ArrayList<>();
-        if (osrs.objects(37582) != null)
-            for (GameObject fire : osrs.objects(37582)) {
+        List<NPC> fires = new ArrayList<>();
+        if (osrs.npcs(8643) != null)
+            for (NPC fire : osrs.npcs(8643)) {
                 if (plugin.side.equals("WEST")) {
                     if ((fire.getLocalLocation().getX() < plugin.getInstanceAnchor().getLocalLocation().getX())
                             && (fire.getLocalLocation().getY() < plugin.getInstanceAnchor().getLocalLocation().getY()))
@@ -63,6 +63,6 @@ public class DouseFireShip extends PriorityTask {
                         fires.add(fire);
                 }
             }
-        return osrs.nearestObject(fires);
+        return osrs.nearestNPC(fires);
     }
 }
