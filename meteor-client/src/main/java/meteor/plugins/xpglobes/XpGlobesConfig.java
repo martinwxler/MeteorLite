@@ -25,11 +25,8 @@
 package meteor.plugins.xpglobes;
 
 import java.awt.Color;
-import meteor.config.Alpha;
-import meteor.config.Config;
-import meteor.config.ConfigGroup;
-import meteor.config.ConfigItem;
-import meteor.config.Units;
+
+import meteor.config.*;
 
 @ConfigGroup("xpglobes")
 public interface XpGlobesConfig extends Config
@@ -147,6 +144,7 @@ public interface XpGlobesConfig extends Config
 		return new Color(128, 128, 128, 127);
 	}
 
+	@Range(min = 1, max = 10)
 	@ConfigItem(
 		keyName = "Progress arc width",
 		name = "Progress arc width",
@@ -159,6 +157,7 @@ public interface XpGlobesConfig extends Config
 		return 2;
 	}
 
+	@Range(min = 1, max = 60)
 	@ConfigItem(
 		keyName = "Orb size",
 		name = "Size of orbs",
@@ -171,6 +170,7 @@ public interface XpGlobesConfig extends Config
 		return 40;
 	}
 
+	@Range(min = 1, max = 60)
 	@ConfigItem(
 		keyName = "Orb duration",
 		name = "Duration of orbs",

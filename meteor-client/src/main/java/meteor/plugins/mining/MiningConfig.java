@@ -25,14 +25,12 @@
  */
 package meteor.plugins.mining;
 
-import meteor.config.Config;
-import meteor.config.ConfigGroup;
-import meteor.config.ConfigItem;
-import meteor.config.Units;
+import meteor.config.*;
 
 @ConfigGroup("mining")
 public interface MiningConfig extends Config
 {
+	@Range(min = 1, max = 60)
 	@ConfigItem(
 		keyName = "statTimeout",
 		name = "Reset stats",

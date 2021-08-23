@@ -207,6 +207,16 @@ public abstract class NPCMixin implements RSNPC {
     client.interact(getIndex(), getActionId(action), 0, 0);
   }
 
+  @Override
+  public String[] getActions() {
+    return client.getNpcDefinition(getId()).getActions();
+  }
+
+  @Override
+  public void interact(int identifier, int opcode, int param0, int param1) {
+    client.interact(identifier, opcode, param0, param1);
+  }
+
   @Inject
   @Override
   public String toString() {

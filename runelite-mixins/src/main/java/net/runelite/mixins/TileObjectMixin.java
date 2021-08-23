@@ -131,7 +131,7 @@ public abstract class TileObjectMixin implements TileObject {
 
   @Override
   @Inject
-  public int getActionID(int action) {
+  public int getActionId(int action) {
     switch (action) {
       case 0:
         return MenuAction.GAME_OBJECT_FIRST_OPTION.getId();
@@ -168,7 +168,7 @@ public abstract class TileObjectMixin implements TileObject {
   @Inject
   public void interact(int action) {
     interact(getId(),
-        getActionID(action),
+        getActionId(action),
         menuPoint().getX(),
         menuPoint().getY()
     );

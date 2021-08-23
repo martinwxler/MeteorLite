@@ -66,30 +66,10 @@ public interface CameraConfig extends Config {
   }
 
   @ConfigItem(
-      keyName = "relaxCameraPitch",
-      name = "Vertical camera",
-      description = "Relax the camera's upper pitch limit",
-      position = 3
-  )
-  default boolean relaxCameraPitch() {
-    return false;
-  }
-
-  @ConfigItem(
-      keyName = "controlFunction",
-      name = "Control Function",
-      description = "Configures the zoom function when control is pressed",
-      position = 4
-  )
-  default ControlFunction controlFunction() {
-    return ControlFunction.NONE;
-  }
-
-  @ConfigItem(
       keyName = "ctrlZoomValue",
       name = "Reset zoom position",
       description = "Position of zoom when it is reset",
-      position = 5
+      position = 3
   )
   @Range(
       min = OUTER_LIMIT_MIN,
@@ -106,10 +86,30 @@ public interface CameraConfig extends Config {
       keyName = "zoomIncrement",
       name = "Zoom Speed",
       description = "Speed of zoom",
-      position = 6
+      position = 4
   )
   default int zoomIncrement() {
     return 25;
+  }
+
+  @ConfigItem(
+       keyName = "controlFunction",
+       name = "Control Function",
+       description = "Configures the zoom function when control is pressed",
+        position = 5
+  )
+  default ControlFunction controlFunction() {
+    return ControlFunction.NONE;
+  }
+
+  @ConfigItem(
+       keyName = "relaxCameraPitch",
+       name = "Vertical camera",
+       description = "Relax the camera's upper pitch limit",
+       position = 6
+  )
+  default boolean relaxCameraPitch() {
+    return false;
   }
 
   @ConfigItem(

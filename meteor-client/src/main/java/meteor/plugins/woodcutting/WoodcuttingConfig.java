@@ -24,14 +24,12 @@
  */
 package meteor.plugins.woodcutting;
 
-import meteor.config.Config;
-import meteor.config.ConfigGroup;
-import meteor.config.ConfigItem;
-import meteor.config.Units;
+import meteor.config.*;
 
 @ConfigGroup("woodcutting")
 public interface WoodcuttingConfig extends Config
 {
+	@Range(min = 1, max = 60)
 	@ConfigItem(
 		position = 1,
 		keyName = "statTimeout",

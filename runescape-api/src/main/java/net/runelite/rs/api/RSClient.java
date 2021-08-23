@@ -271,6 +271,21 @@ public interface RSClient extends RSGameEngine, Client {
   @Override
   void setPassword(String password);
 
+  @Import("Login_response0")
+  String getLoginResponse0();
+
+  @Import("Login_response1")
+  String getLoginResponse1();
+
+  @Import("Login_response2")
+  String getLoginResponse2();
+
+  @Import("Login_response3")
+  String getLoginResponse3();
+
+  @Import("Login_banType")
+  int getBanType();
+
   @Import("otp")
   @Override
   void setOtp(String otp);
@@ -315,6 +330,7 @@ public interface RSClient extends RSGameEngine, Client {
   boolean isCheckClick();
 
   @Import("checkClick")
+  @Override
   void setCheckClick(boolean checkClick);
 
   @Import("menuOptionsCount")
@@ -1116,6 +1132,7 @@ public interface RSClient extends RSGameEngine, Client {
   void setMusicTrackVolume(int volume);
 
   @Import("viewportWalking")
+  @Override
   void setViewportWalking(boolean viewportWalking);
 
   void playMusicTrack(int var0, RSAbstractArchive var1, int var2, int var3, int var4, boolean var5);
@@ -1457,4 +1474,25 @@ public interface RSClient extends RSGameEngine, Client {
   @Override
   void setMouseLastPressedY(int y);
 
+  @Import("packetWriter")
+  @Override
+  RSPacketWriter getPacketWriter();
+
+  @Import("getPacketBufferNode")
+  RSPacketBufferNode createPacket(RSClientPacket packet, RSIsaacCipher isaac);
+
+  @Import("Packet_nameInput")
+  @Override
+  RSClientPacket getNameInputPacket();
+
+  @Import("Packet_numberInput")
+  @Override
+  RSClientPacket getNumberInputPacket();
+
+  @Import("Packet_textInput")
+  @Override
+  RSClientPacket getTextInputPacket();
+
+  @Import("Packet_sendReport")
+  RSClientPacket getReportPacket();
 }

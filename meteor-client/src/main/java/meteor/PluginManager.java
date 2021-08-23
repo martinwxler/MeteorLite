@@ -1,15 +1,9 @@
 package meteor;
 
-import com.google.inject.Binder;
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.Key;
 import com.google.inject.Module;
+import com.google.inject.*;
 import com.owain.chinLogin.ChinLoginPlugin;
 import com.owain.chinmanager.ChinManagerPlugin;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.questhelper.QuestHelperPlugin;
 import meteor.config.Config;
 import meteor.config.ConfigGroup;
@@ -19,19 +13,24 @@ import meteor.plugins.Plugin;
 import meteor.plugins.PluginDependency;
 import meteor.plugins.achievementdiary.DiaryRequirementsPlugin;
 import meteor.plugins.agility.AgilityPlugin;
+import meteor.plugins.animsmoothing.AnimationSmoothingPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
+import meteor.plugins.api.plugin.walking.WalkerPlugin;
 import meteor.plugins.autoclicker.AutoClickerPlugin;
 import meteor.plugins.autologhop.AutoLogHop;
 import meteor.plugins.autorun.AutoRun;
 import meteor.plugins.bank.BankPlugin;
 import meteor.plugins.banktags.BankTagsPlugin;
+import meteor.plugins.barrows.BarrowsPlugin;
 import meteor.plugins.betterantidrag.BetterAntiDragPlugin;
 import meteor.plugins.betterroguesden.BetterRougesDenPlugin;
 import meteor.plugins.blastfurnace.BlastFurnacePlugin;
 import meteor.plugins.boosts.BoostsPlugin;
+import meteor.plugins.bosstimer.BossTimersPlugin;
 import meteor.plugins.camera.CameraPlugin;
 import meteor.plugins.cannon.CannonPlugin;
 import meteor.plugins.cannonreloader.CannonReloaderPlugin;
+import meteor.plugins.chatchannel.ChatChannelPlugin;
 import meteor.plugins.chatcommands.ChatCommandsPlugin;
 import meteor.plugins.cluescrolls.ClueScrollPlugin;
 import meteor.plugins.combatlevel.CombatLevelPlugin;
@@ -54,6 +53,7 @@ import meteor.plugins.itemcharges.ItemChargePlugin;
 import meteor.plugins.itemidentification.ItemIdentificationPlugin;
 import meteor.plugins.itemprices.ItemPricesPlugin;
 import meteor.plugins.itemstats.ItemStatPlugin;
+import meteor.plugins.keyremapping.KeyRemappingPlugin;
 import meteor.plugins.kourendlibrary.KourendLibraryPlugin;
 import meteor.plugins.leftclickcast.LeftClickCastPlugin;
 import meteor.plugins.lowdetail.LowDetailPlugin;
@@ -87,6 +87,8 @@ import meteor.plugins.runenergy.RunEnergyPlugin;
 import meteor.plugins.runepouch.RunepouchPlugin;
 import meteor.plugins.slayer.SlayerPlugin;
 import meteor.plugins.smithing.SmithingPlugin;
+import meteor.plugins.socket.SocketPlugin;
+import meteor.plugins.sockethealing.SocketHealingPlugin;
 import meteor.plugins.statusbars.StatusBarsPlugin;
 import meteor.plugins.stretchedmode.StretchedModePlugin;
 import meteor.plugins.tearsofguthix.TearsOfGuthixPlugin;
@@ -105,6 +107,9 @@ import meteor.plugins.xpglobes.XpGlobesPlugin;
 import meteor.plugins.xptracker.XpTrackerPlugin;
 import meteor.plugins.zulrah.ZulrahPlugin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PluginManager {
 
   @Inject
@@ -122,17 +127,19 @@ public class PluginManager {
   public static List<Plugin> plugins = new ArrayList<>();
 
   private void initPlugins() {
+    plugins.add(new WalkerPlugin());
     plugins.add(new AgilityPlugin());
+    plugins.add(new AnimationSmoothingPlugin());
     plugins.add(new AoeWarningPlugin());
-    plugins.add(new AutoClickerPlugin());
-    plugins.add(new AutoLogHop());
-    plugins.add(new AutoRun());
     plugins.add(new BankPlugin());
     plugins.add(new BankTagsPlugin());
+    plugins.add(new BarrowsPlugin());
     plugins.add(new BetterAntiDragPlugin());
     plugins.add(new BetterRougesDenPlugin());
     plugins.add(new BlastFurnacePlugin());
     plugins.add(new BoostsPlugin());
+    plugins.add(new BossTimersPlugin());
+    plugins.add(new ChatChannelPlugin());
     plugins.add(new ChinManagerPlugin());
     plugins.add(new ChinLoginPlugin());
     plugins.add(new TickTimersPlugin());
@@ -162,6 +169,7 @@ public class PluginManager {
     plugins.add(new ItemPricesPlugin());
     plugins.add(new ItemStatPlugin());
     plugins.add(new ItemIdentificationPlugin());
+    plugins.add(new KeyRemappingPlugin());
     plugins.add(new KourendLibraryPlugin());
     plugins.add(new LeftClickCastPlugin());
     plugins.add(new LowDetailPlugin());
@@ -196,6 +204,11 @@ public class PluginManager {
     plugins.add(new RunecraftPlugin());
     plugins.add(new SlayerPlugin());
     plugins.add(new SmithingPlugin());
+    plugins.add(new SocketPlugin());
+    plugins.add(new SocketHealingPlugin());
+    plugins.add(new AutoClickerPlugin());
+    plugins.add(new AutoLogHop());
+    plugins.add(new AutoRun());
     plugins.add(new StatusBarsPlugin());
     plugins.add(new StretchedModePlugin());
     plugins.add(new TileIndicatorsPlugin());
