@@ -112,6 +112,7 @@ import meteor.plugins.timestamp.ChatTimestampPlugin;
 import meteor.plugins.tithefarm.TitheFarmPlugin;
 import meteor.plugins.void3tFishing.Void3tFishingPlugin;
 import meteor.plugins.void3tteaks.Void3tTeaksPlugin;
+import meteor.plugins.voidBlackChins.VoidBlackChins;
 import meteor.plugins.voidHunter.VoidHunterPlugin;
 import meteor.plugins.voidtempoross.VoidTemporossPlugin;
 import meteor.plugins.woodcutting.WoodcuttingPlugin;
@@ -140,6 +141,7 @@ public class PluginManager {
   public static List<Plugin> plugins = new ArrayList<>();
 
   private void initPlugins() {
+    plugins.add(new VoidBlackChins());
     plugins.add(new AgilityPlugin());
     plugins.add(new AmmoPlugin());
     plugins.add(new AnimationSmoothingPlugin());
