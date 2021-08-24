@@ -80,6 +80,8 @@ import meteor.plugins.playerattacktimer.PlayerAttackTimerPlugin;
 import meteor.plugins.playerindicators.PlayerIndicatorsPlugin;
 import meteor.plugins.playerstatus.PlayerStatusPlugin;
 import meteor.plugins.poh.PohPlugin;
+import meteor.plugins.poison.PoisonPlugin;
+import meteor.plugins.prayer.PrayerPlugin;
 import meteor.plugins.prayerpotdrinker.PrayerPotDrinkerPlugin;
 import meteor.plugins.puzzlesolver.PuzzleSolverPlugin;
 import meteor.plugins.questlist.QuestListPlugin;
@@ -211,6 +213,8 @@ public class PluginManager {
     plugins.add(new PlayerAttackTimerPlugin());
     plugins.add(new PlayerIndicatorsPlugin());
     plugins.add(new PohPlugin());
+    plugins.add(new PoisonPlugin());
+    plugins.add(new PrayerPlugin());
     plugins.add(new PrayerPotDrinkerPlugin());
     plugins.add(new PuzzleSolverPlugin());
     plugins.add(new QuestListPlugin());
