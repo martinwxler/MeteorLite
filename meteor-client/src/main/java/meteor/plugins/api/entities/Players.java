@@ -20,7 +20,7 @@ public class Players {
                 out.add(Player);
             }
         }
-        
+
         return out;
     }
 
