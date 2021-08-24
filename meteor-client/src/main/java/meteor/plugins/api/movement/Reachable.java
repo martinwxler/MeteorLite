@@ -62,7 +62,7 @@ public class Reachable {
             return false;
         }
 
-        return !isWalled(direction, endFlag);
+        return !isWalled(direction, startFlag);
     }
 
     public static WorldPoint getNeighbour(Direction direction, WorldPoint source) {

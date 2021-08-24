@@ -15,6 +15,10 @@ import meteor.plugins.api.items.Equipment;
 import meteor.plugins.api.items.Inventory;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.movement.Reachable;
+import meteor.ui.overlay.OverlayLayer;
+import meteor.ui.overlay.OverlayManager;
+import meteor.ui.overlay.OverlayPosition;
+import meteor.ui.overlay.OverlayPriority;
 import net.runelite.api.Item;
 import net.runelite.api.NPC;
 import net.runelite.api.TileItem;
@@ -38,8 +42,19 @@ public class ChickenKillerPlugin extends Plugin {
     @Inject
     private ChickenKillerConfig chickenKillerConfig;
 
+    @Inject
+    private ChickenKillerOverlay overlay;
+
+    @Inject
+    private OverlayManager overlayManager;
+
     @Override
     public void startup() {
+        overlayManager.add(overlay);
+        overlay.setPosition(OverlayPosition.DYNAMIC);
+        overlay.setLayer(OverlayLayer.ABOVE_WIDGETS);
+        overlay.setPriority(OverlayPriority.LOW);
+
         executor.scheduleAtFixedRate(() -> {
             if (!chickenKillerConfig.enabled()) {
                 return;
@@ -80,6 +95,7 @@ public class ChickenKillerPlugin extends Plugin {
                     return;
                 }
 
+                overlay.setLocatable(chicken);
                 if (!Reachable.isInteractable(chicken)) {
                     Movement.walkTo(chicken.getWorldLocation());
                     return;
@@ -95,5 +111,10 @@ public class ChickenKillerPlugin extends Plugin {
     @Provides
     public ChickenKillerConfig getConfig(ConfigManager configManager) {
         return configManager.getConfig(ChickenKillerConfig.class);
+    }
+
+    @Override
+    public void shutdown() {
+        overlayManager.remove(overlay);
     }
 }
