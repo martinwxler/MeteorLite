@@ -16,6 +16,10 @@ public class Game {
         return getState() == GameState.LOGGED_IN || getState() == GameState.LOADING;
     }
 
+    public static boolean isOnLoginScreen() {
+        return getState() == GameState.LOGIN_SCREEN || getState() == GameState.LOGIN_SCREEN_AUTHENTICATOR;
+    }
+
     public static GameState getState() {
         return client.getGameState();
     }

@@ -111,14 +111,22 @@ public class Dialog {
         }
     }
 
+    public static boolean chooseOption(int index) {
+        if (isViewingOptions()) {
+            Keyboard.type(index);
+            return true;
+        }
+
+        return false;
+    }
+
     public static boolean chooseOption(String... options) {
         if (isViewingOptions()) {
             for (int i = 0; i < getOptions().size(); i++) {
                 Widget widget = getOptions().get(i);
                 for (String option : options) {
                     if (widget.getText().contains(option)) {
-                        Keyboard.type(i + 1);
-                        return true;
+                        return chooseOption(i + 1);
                     }
                 }
             }
