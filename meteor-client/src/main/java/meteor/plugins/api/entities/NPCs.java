@@ -26,7 +26,8 @@ public class NPCs {
                 out.add(npc);
             }
         }
-
+        if (out.size() == 0)
+            return null;
         return out;
     }
 
