@@ -7,10 +7,7 @@ import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -20,7 +17,8 @@ public class TileObjects {
 
     public static List<TileObject> getAll(Predicate<TileObject> filter) {
         return Tiles.getTiles().stream()
-                .flatMap(tile -> parseTile(tile, filter).stream())
+                .map(tile -> parseTile(tile, filter))
+                .filter(Objects::nonNull).flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
 

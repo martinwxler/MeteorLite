@@ -8,10 +8,7 @@ import net.runelite.api.coords.WorldPoint;
 import org.sponge.util.Logger;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -21,8 +18,10 @@ public class TileItems {
     private static Client client;
 
     public static List<TileItem> getAll(Predicate<TileItem> filter) {
+
         return Tiles.getTiles().stream()
-                .flatMap(tile -> parseTile(tile, filter).stream())
+                .map(tile -> parseTile(tile, filter))
+                .filter(Objects::nonNull).flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
 
@@ -88,8 +87,11 @@ public class TileItems {
                 out.add(item);
             }
         }
-        if (out.size() == 0)
+
+        if (out.size() == 0) {
             return null;
+        }
+
         return out;
     }
 }
