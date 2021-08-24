@@ -8,14 +8,10 @@ import meteor.plugins.PluginDescriptor;
 import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.widgets.Widgets;
-import meteor.plugins.voidutils.events.LocalPlayerIdleEvent;
 import meteor.ui.overlay.worldmap.WorldMapOverlay;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.MenuEntryAdded;
-import net.runelite.api.events.MenuOpened;
-import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 
@@ -28,7 +24,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 @PluginDescriptor(
         name = "World Map Walker",
-        description = "Weed",
+        description = "Right click anywhere within the World Map to walk there",
         enabledByDefault = false
 )
 @Singleton
@@ -60,7 +56,7 @@ public class WorldMapWalkerPlugin extends Plugin {
     }
 
     @Subscribe
-    public void onLocalPlayerIdle(LocalPlayerIdleEvent e) {
+    public void onGameTick(GameTick event) {
         if (Movement.isWalking()) {
             return;
         }
