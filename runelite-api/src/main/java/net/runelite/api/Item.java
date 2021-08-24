@@ -119,4 +119,12 @@ public class Item implements Interactable {
     public void interact(int identifier, int opcode, int param0, int param1) {
         client.interact(identifier, opcode, param0, param1);
     }
+
+    public void useOn(TileObject object) {
+        client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+        client.setSelectedItemSlot(getIndex());
+        client.setSelectedItemID(getId());
+        client.interact(object.getId(), MenuAction.ITEM_USE_ON_GAME_OBJECT.getId(),
+                object.menuPoint().getX(), object.menuPoint().getY());
+    }
 }

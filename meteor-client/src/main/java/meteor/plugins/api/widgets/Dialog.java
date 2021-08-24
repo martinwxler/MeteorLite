@@ -105,6 +105,28 @@ public class Dialog {
         return !getOptions().isEmpty();
     }
 
+    public static void continueSpace() {
+        if (Dialog.isOpen()) {
+            Keyboard.sendSpace();
+        }
+    }
+
+    public static boolean chooseOption(String... options) {
+        if (isViewingOptions()) {
+            for (int i = 0; i < getOptions().size(); i++) {
+                Widget widget = getOptions().get(i);
+                for (String option : options) {
+                    if (widget.getText().contains(option)) {
+                        Keyboard.type(i + 1);
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
     public static List<Widget> getOptions() {
         Widget widget = Widgets.get(WidgetID.DIALOG_OPTION_GROUP_ID, 1);
         if (widget == null || GameThread.invokeLater(widget::isHidden)) {
