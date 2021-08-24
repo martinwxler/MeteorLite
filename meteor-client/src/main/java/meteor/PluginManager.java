@@ -42,6 +42,7 @@ import meteor.plugins.defaultworld.DefaultWorldPlugin;
 import meteor.plugins.devtools.DevToolsPlugin;
 import meteor.plugins.discord.DiscordPlugin;
 import meteor.plugins.environmentaid.EnvironmentAidPlugin;
+import meteor.plugins.xpdrop.XpDropPlugin;
 import meteor.plugins.fairyring.FairyRingPlugin;
 import meteor.plugins.fishing.FishingPlugin;
 import meteor.plugins.fps.FpsPlugin;
@@ -114,6 +115,7 @@ import meteor.plugins.timestamp.ChatTimestampPlugin;
 import meteor.plugins.tithefarm.TitheFarmPlugin;
 import meteor.plugins.void3tFishing.Void3tFishingPlugin;
 import meteor.plugins.void3tteaks.Void3tTeaksPlugin;
+import meteor.plugins.voidBlackChins.VoidBlackChins;
 import meteor.plugins.voidHunter.VoidHunterPlugin;
 import meteor.plugins.voidtempoross.VoidTemporossPlugin;
 import meteor.plugins.woodcutting.WoodcuttingPlugin;
@@ -142,6 +144,7 @@ public class PluginManager {
   public static List<Plugin> plugins = new ArrayList<>();
 
   private void initPlugins() {
+    plugins.add(new VoidBlackChins());
     plugins.add(new AgilityPlugin());
     plugins.add(new AmmoPlugin());
     plugins.add(new AnimationSmoothingPlugin());
@@ -255,6 +258,7 @@ public class PluginManager {
     plugins.add(new WalkerPlugin());
     plugins.add(new WoodcuttingPlugin());
     plugins.add(new WorldMapPlugin());
+    plugins.add(new XpDropPlugin());
     plugins.add(new XpTrackerPlugin());
     plugins.add(new XpGlobesPlugin());
     plugins.add(new ZulrahPlugin());
