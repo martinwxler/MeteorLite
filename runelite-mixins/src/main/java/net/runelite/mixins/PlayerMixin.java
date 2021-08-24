@@ -117,9 +117,22 @@ public abstract class PlayerMixin implements RSPlayer {
   @Override
   @Inject
   public void interact(int action) {
-    client.interact(getIndex(), getActionId(action), 0, 0);
+    interact(getIndex(), getActionId(action));
   }
 
+  @Inject
+  @Override
+  public void interact(String action) {
+    interact(actions().indexOf(action));
+  }
+
+  @Inject
+  @Override
+  public void interact(int index, int menuAction) {
+    interact(getIndex(), menuAction, 0, 0);
+  }
+
+  @Inject
   @Override
   public void interact(int identifier, int opcode, int param0, int param1) {
     client.interact(identifier, opcode, param0, param1);

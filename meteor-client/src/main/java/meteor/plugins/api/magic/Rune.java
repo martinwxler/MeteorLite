@@ -1,6 +1,11 @@
 package meteor.plugins.api.magic;
 
+import meteor.plugins.api.items.Equipment;
+import meteor.plugins.api.items.Inventory;
+import net.runelite.api.Item;
 import net.runelite.api.ItemID;
+
+import java.util.Arrays;
 
 public enum Rune {
     AIR(ItemID.AIR_RUNE, "Air", "Smoke", "Mist", "Dust"),
@@ -17,8 +22,7 @@ public enum Rune {
     ASTRAL(ItemID.ASTRAL_RUNE, "Astral"),
     BLOOD(ItemID.BLOOD_RUNE, "Blood"),
     SOUL(ItemID.SOUL_RUNE, "Soul"),
-    WRATH(ItemID.WRATH_RUNE, "Wrath")
-    ;
+    WRATH(ItemID.WRATH_RUNE, "Wrath");
 
     private final int runeId;
     private final String[] runeNames;
@@ -34,5 +38,28 @@ public enum Rune {
 
     public int getRuneId() {
         return runeId;
+    }
+
+    public int getQuantity() {
+        if (isStaffEquipped()) {
+            return Integer.MAX_VALUE;
+        }
+
+        Item rune = Inventory.getFirst(x -> x.getName() != null && x.getName().contains("rune") &&
+                        Arrays.stream(values())
+                                .anyMatch(r -> Arrays.stream(r.runeNames)
+                                        .anyMatch(name -> x.getId() == runeId || x.getName().contains(name))));
+        if (rune == null) {
+            return 0;
+        }
+
+        return rune.getQuantity() + RunePouch.getQuantity(this);
+    }
+
+    private boolean isStaffEquipped() {
+        return Equipment.contains(x -> x.getName() != null && x.getName().contains(" staff") &&
+                Arrays.stream(values())
+                        .anyMatch(v -> Arrays.stream(v.runeNames)
+                                .anyMatch(n -> x.getName().contains(n))));
     }
 }

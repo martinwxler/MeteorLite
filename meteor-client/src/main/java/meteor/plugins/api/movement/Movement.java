@@ -1,5 +1,6 @@
 package meteor.plugins.api.movement;
 
+import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.game.Vars;
 import meteor.plugins.api.movement.pathfinder.Walker;
 import meteor.plugins.api.scene.Tiles;
@@ -16,6 +17,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.*;
 import java.util.Comparator;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Singleton
 public class Movement {
@@ -24,12 +27,23 @@ public class Movement {
     @Inject
     private static Client client;
 
-    public static void setDestination(int sceneX, int sceneY) {
+    @Inject
+    private static ScheduledExecutorService executor;
+
+    private static void setWalkDestination(int sceneX, int sceneY) {
+        logger.debug("Setting destination {} {}", sceneX, sceneY);
+
         client.setSelectedSceneTileX(sceneX);
         client.setSelectedSceneTileY(sceneY);
         client.setViewportWalking(true);
-        logger.debug("Setting destination {} {}", sceneX, sceneY);
-//        client.setCheckClick(true);
+    }
+
+    public static void setDestination(int sceneX, int sceneY) {
+        if (client.isClientThread()) {
+            executor.schedule(() -> setWalkDestination(sceneX, sceneY), 25, TimeUnit.MILLISECONDS);
+        } else {
+            setWalkDestination(sceneX, sceneY);
+        }
     }
 
     public static boolean isWalking() {

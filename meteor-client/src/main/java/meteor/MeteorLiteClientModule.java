@@ -71,8 +71,7 @@ import meteor.plugins.api.entities.NPCs;
 import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.entities.TileItems;
 import meteor.plugins.api.entities.TileObjects;
-import meteor.plugins.api.game.GameThread;
-import meteor.plugins.api.game.Vars;
+import meteor.plugins.api.game.*;
 import meteor.plugins.api.input.Keyboard;
 import meteor.plugins.api.items.Bank;
 import meteor.plugins.api.items.Equipment;
@@ -520,7 +519,10 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
             TileObjects.class,
             NPCs.class,
             TileItems.class,
-            Players.class
+            Players.class,
+            Worlds.class,
+            Game.class,
+            Skills.class
     );
   }
 

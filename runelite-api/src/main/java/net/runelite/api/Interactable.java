@@ -17,6 +17,8 @@ public interface Interactable {
 
     void interact(final int identifier, final int opcode, final int param0, final int param1);
 
+    void interact(int index, int menuAction);
+
     default boolean hasAction(String action) {
         if (getActions() == null) {
             return false;

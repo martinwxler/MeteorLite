@@ -5,6 +5,7 @@ import meteor.plugins.api.scene.Tiles;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+import org.sponge.util.Logger;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -15,12 +16,13 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class TileItems {
+    private static final Logger logger = new Logger("TileItems");
     @Inject
     private static Client client;
 
     public static List<TileItem> getAll(Predicate<TileItem> filter) {
         return Tiles.getTiles().stream()
-                .flatMap(tile -> parseTile(null, filter).stream())
+                .flatMap(tile -> parseTile(tile, filter).stream())
                 .collect(Collectors.toList());
     }
 
@@ -68,29 +70,24 @@ public class TileItems {
 
     private static List<TileItem> parseTile(Tile tile, Predicate<TileItem> pred) {
         List<TileItem> out = new ArrayList<>();
-        Tiles.getTiles().forEach(t -> {
-            if (t.getGroundItems() != null) {
-                t.getGroundItems().forEach(item -> {
-                    if (item == null || item.getId() == -1) {
-                        return;
-                    }
+        if (tile.getGroundItems() != null) {
+            for (TileItem item : tile.getGroundItems()) {
+                if (item == null || item.getId() == -1) {
+                    continue;
+                }
 
-                    if (!client.isItemDefinitionCached(item.getId())) {
-                        GameThread.invokeLater(() -> client.getItemComposition(item.getId()));
-                    }
+                if (!client.isItemDefinitionCached(item.getId())) {
+                    logger.debug("TileItem {} is not cached, going to cache it", item.getId());
+                    GameThread.invokeLater(() -> client.getItemComposition(item.getId()));
+                }
 
-                    if (!pred.test(item)) {
-                        return;
-                    }
+                if (!pred.test(item)) {
+                    continue;
+                }
 
-                    if (tile != null && !tile.getWorldLocation().equals(item.getTile().getWorldLocation())) {
-                        return;
-                    }
-
-                    out.add(item);
-                });
+                out.add(item);
             }
-        });
+        }
 
         return out;
     }

@@ -6,11 +6,16 @@ import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.plugins.api.commons.Time;
+import meteor.plugins.api.entities.NPCs;
 import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.entities.TileItems;
+import meteor.plugins.api.entities.TileObjects;
 import meteor.plugins.api.game.Combat;
+import meteor.plugins.api.items.Equipment;
+import meteor.plugins.api.items.Inventory;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.movement.Reachable;
+import net.runelite.api.Item;
 import net.runelite.api.NPC;
 import net.runelite.api.TileItem;
 import net.runelite.api.coords.WorldPoint;
@@ -41,27 +46,29 @@ public class ChickenKillerPlugin extends Plugin {
             }
 
             try {
-                logger.debug("Looping");
                 if (Movement.isWalking()) {
-                    logger.debug("Pathing");
                     return;
                 }
 
-                TileItem feather = TileItems.getNearest("Feather");
-                if (feather != null) {
-                    if (!Reachable.isInteractable(feather.getTile())) {
-                        logger.debug("Reaching feather");
-                        Movement.walkTo(feather.getTile().getWorldLocation());
+                Item bones = Inventory.getFirst("Bones");
+                if (bones != null) {
+                    bones.interact("Bury");
+                    return;
+                }
+
+                TileItem loot = TileItems.getNearest(x -> x.getName() != null &&
+                        (x.getName().equals("Bones") || x.getName().equals("Feather")));
+                if (loot != null) {
+                    if (!Reachable.isInteractable(loot.getTile())) {
+                        Movement.walkTo(loot.getTile().getWorldLocation());
                         return;
                     }
 
-                    logger.debug("Picking up feather");
-                    feather.pickup();
+                    loot.pickup();
                     return;
                 }
 
                 if (Players.getLocal().getInteracting() != null) {
-                    logger.debug("We're currently fighting {}", Players.getLocal().getInteracting());
                     return;
                 }
 
@@ -69,18 +76,15 @@ public class ChickenKillerPlugin extends Plugin {
                         && x.getName().equals("Chicken") && !x.isDead()
                 );
                 if (chicken == null) {
-                    logger.debug("Moving to chicken area");
                     Movement.walkTo(new WorldPoint(3233, 3293, 0));
                     return;
                 }
 
                 if (!Reachable.isInteractable(chicken)) {
-                    logger.debug("Trying to reach chicken");
                     Movement.walkTo(chicken.getWorldLocation());
                     return;
                 }
 
-                logger.debug("Attacking chicken");
                 chicken.interact("Attack");
             } catch (Exception ex) {
                 ex.printStackTrace();
