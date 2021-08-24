@@ -45,11 +45,8 @@ public class ChickenKillerPlugin extends Plugin {
                 return;
             }
 
-            logger.debug("Looping");
-
             try {
                 if (Movement.isWalking()) {
-                    logger.debug("We are pathing");
                     return;
                 }
 
@@ -59,15 +56,11 @@ public class ChickenKillerPlugin extends Plugin {
                     return;
                 }
 
-                long start = System.currentTimeMillis();
                 TileItem loot = TileItems.getNearest(x -> x.getName() != null &&
                         (x.getName().equals("Bones") || x.getName().equals("Feather")));
-                logger.debug("TileItem took {}", System.currentTimeMillis() - start);
                 if (loot != null) {
                     if (!Reachable.isInteractable(loot.getTile())) {
-                        start = System.currentTimeMillis();
                         Movement.walkTo(loot.getTile().getWorldLocation());
-                        logger.debug("TileItem walkTo took {}", System.currentTimeMillis() - start);
                         return;
                     }
 
@@ -79,22 +72,16 @@ public class ChickenKillerPlugin extends Plugin {
                     return;
                 }
 
-                start = System.currentTimeMillis();
                 NPC chicken = Combat.getAttackableNPC(x -> x.getName() != null
                         && x.getName().equals("Chicken") && !x.isDead()
                 );
-                logger.debug("Chicken took {}", System.currentTimeMillis() - start);
                 if (chicken == null) {
-                    start = System.currentTimeMillis();
                     Movement.walkTo(new WorldPoint(3233, 3293, 0));
-                    logger.debug("Area walkTo took {}", System.currentTimeMillis() - start);
                     return;
                 }
 
                 if (!Reachable.isInteractable(chicken)) {
-                    start = System.currentTimeMillis();
                     Movement.walkTo(chicken.getWorldLocation());
-                    logger.debug("Chicken walkTo took {}", System.currentTimeMillis() - start);
                     return;
                 }
 

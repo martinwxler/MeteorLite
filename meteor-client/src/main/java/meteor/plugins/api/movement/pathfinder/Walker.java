@@ -4,7 +4,6 @@ import meteor.plugins.api.commons.Rand;
 import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.movement.Movement;
-import meteor.plugins.api.movement.Reachable;
 import meteor.plugins.api.scene.Tiles;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
@@ -58,6 +57,10 @@ public class Walker {
 
     public static boolean walkTo(WorldPoint destination) {
         Player local = Players.getLocal();
+        if (destination.equals(local.getWorldLocation())) {
+            return true;
+        }
+
         Map<WorldPoint, List<Transport>> transports = buildTransportLinks();
         LinkedHashMap<WorldPoint, Teleport> teleports = buildTeleportLinks(destination);
         List<WorldPoint> startPoints = new ArrayList<>(teleports.keySet());
@@ -105,13 +108,11 @@ public class Walker {
         }
 
         if (reachablePath.size() - 1 <= MIN_TILES_WALKED_IN_STEP) {
-            return step(reachablePath.get(reachablePath.size() - 1), Integer.MAX_VALUE);
+            return step(reachablePath.get(reachablePath.size() - 1));
         }
 
         int targetDistance = MIN_TILES_WALKED_IN_STEP + Rand.nextInt(0, reachablePath.size() - MIN_TILES_WALKED_IN_STEP);
-        int rechooseDistance = recalculateDistance(targetDistance);
-
-        return step(reachablePath.get(targetDistance), rechooseDistance);
+        return step(reachablePath.get(targetDistance));
     }
 
     public static List<WorldPoint> reachablePath(List<WorldPoint> remainingPath) {
@@ -133,32 +134,25 @@ public class Walker {
         return out;
     }
 
-    public static boolean step(WorldPoint destination, int tiles) {
+    public static boolean step(WorldPoint destination) {
         Player local = Players.getLocal();
         logger.debug("Stepping towards " + destination);
         Movement.walk(destination);
-        int tilesWalked = 0;
 
-        while (tilesWalked < tiles) {
-            if (Movement.isRunEnabled()) {
-                tilesWalked += 2;
-            } else {
-                tilesWalked++;
-            }
+        if (local.getWorldLocation().equals(destination)) {
+            return false;
+        }
 
-            if (local.getWorldLocation().equals(destination)) {
-                return false;
-            }
+        if (!Movement.isRunEnabled() && (client.getEnergy() >= Rand.nextInt(MIN_ENERGY, MAX_MIN_ENERGY) || (local.getHealthScale() > -1 && client.getEnergy() > 0))) {
+            Movement.toggleRun();
+            Time.sleepUntil(Movement::isRunEnabled, 2000);
+            return true;
+        }
 
-            if (!Movement.isRunEnabled() && (client.getEnergy() >= Rand.nextInt(MIN_ENERGY, MAX_MIN_ENERGY) || (local.getHealthScale() > -1 && client.getEnergy() > 0))) {
-                Movement.toggleRun();
-                Time.sleepUntil(Movement::isRunEnabled, 2000);
-            }
-
-            if (!Movement.isRunEnabled() && client.getEnergy() > 0 && Movement.isStaminaBoosted()) {
-                Movement.toggleRun();
-                Time.sleepUntil(Movement::isRunEnabled, 2000);
-            }
+        if (!Movement.isRunEnabled() && client.getEnergy() > 0 && Movement.isStaminaBoosted()) {
+            Movement.toggleRun();
+            Time.sleepUntil(Movement::isRunEnabled, 2000);
+            return true;
         }
 
         return true;

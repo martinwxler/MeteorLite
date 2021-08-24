@@ -6,6 +6,7 @@ import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.plugins.api.movement.Movement;
+import meteor.plugins.voidutils.events.LocalPlayerIdleEvent;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayManager;
 import meteor.ui.overlay.OverlayPosition;
@@ -60,7 +61,7 @@ public class WalkerPlugin extends Plugin {
     }
 
     @Subscribe
-    public void onGameTick(GameTick e) {
+    public void onLocalPlayerIdle(LocalPlayerIdleEvent e) {
         if (Movement.isWalking()) {
             return;
         }
@@ -69,7 +70,7 @@ public class WalkerPlugin extends Plugin {
             WorldPoint walkPoint = new WorldPoint(config.x(), config.y(), client.getPlane());
             logger.debug("Destination is {} {}", walkPoint.getX(), walkPoint.getY());
             overlay.setTile(walkPoint);
-            executorService.execute(() -> Movement.walkTo(walkPoint));
+            Movement.walkTo(walkPoint);
         }
     }
 
