@@ -30,6 +30,7 @@ dependencies {
     implementation(files("../openosrs-injector/build/injected/injected-client.jar"))
     implementation group: 'de.jensd', name: 'fontawesomefx-commons', version: '_'
     implementation group: 'de.jensd', name: 'fontawesomefx-fontawesome', version: '_'
+    implementation 'de.jensd:fontawesomefx-materialicons:2.2.0-9.1.2'
     implementation 'com.jfoenix:jfoenix:_'
     implementation group: 'org.jetbrains', name: 'annotations', version: '21.0.1'
     runtimeOnly(files("../openosrs-injector/build/injected/injected-client.jar"))
