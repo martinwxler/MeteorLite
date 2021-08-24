@@ -46,7 +46,7 @@ public class TileObjects {
     public static List<TileObject> getAt(LocalPoint localPoint, Predicate<TileObject> filter) {
         Tile tile = client.getScene().getTiles()[client.getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
         if (tile == null) {
-            return Collections.emptyList();
+            return null;
         }
 
         return parseTile(tile, filter);
@@ -55,7 +55,7 @@ public class TileObjects {
     public static List<TileObject> getAt(WorldPoint worldPoint, Predicate<TileObject> filter) {
         LocalPoint localPoint = LocalPoint.fromWorld(client, worldPoint);
         if (localPoint == null) {
-            return Collections.emptyList();
+            return null;
         }
 
         Tile tile = client.getScene().getTiles()[client.getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
@@ -116,7 +116,8 @@ public class TileObjects {
                 out.add(gameObject);
             }
         }
-
+        if (out.size() == 0)
+            return null;
         return out;
     }
 }

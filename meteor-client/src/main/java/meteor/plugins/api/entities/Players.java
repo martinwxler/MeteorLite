@@ -20,7 +20,8 @@ public class Players {
                 out.add(Player);
             }
         }
-
+        if (out.size() == 0)
+            return null;
         return out;
     }
 
