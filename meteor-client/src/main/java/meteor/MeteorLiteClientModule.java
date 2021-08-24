@@ -500,30 +500,9 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
     bind(Logger.class).toInstance(log);
 
     requestStaticInjection(
-            Reachable.class,
-            Movement.class,
-            Time.class,
-            Tiles.class,
-            Walker.class,
-            Inventory.class,
-            Equipment.class,
-            Bank.class,
-            Widgets.class,
-            Dialog.class,
             GameThread.class,
-            Keyboard.class,
-            Vars.class,
-            Packets.class,
-            TileObjects.class,
-            NPCs.class,
-            TileItems.class,
-            Players.class,
-            Worlds.class,
-            Game.class,
-            Skills.class,
-            GameSettings.class,
-            Mouse.class,
-            Projectiles.class
+            Movement.class,
+            Game.class
     );
   }
 

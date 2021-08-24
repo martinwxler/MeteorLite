@@ -24,13 +24,10 @@ public class Worlds {
     private static final Point LOBBY_WORLD_SELECTOR = new Point(20, 475);
     private static final Point CLOSE_LOBBY_SELECTOR = new Point(715, 10);
 
-    @Inject
-    private static Client client;
-
     public static List<World> getAll(Predicate<World> filter) {
         List<World> out = new ArrayList<>();
 
-        World[] worlds = client.getWorldList();
+        World[] worlds = Game.getClient().getWorldList();
         if (worlds == null) {
             loadWorlds();
             return out;
@@ -62,7 +59,7 @@ public class Worlds {
     }
 
     public static int getCurrentId() {
-        return client.getWorld();
+        return Game.getClient().getWorld();
     }
 
     public static void hopTo(World world, boolean spam) {
@@ -81,7 +78,7 @@ public class Worlds {
             return;
         }
 
-        client.hopToWorld(world);
+        Game.getClient().hopToWorld(world);
         if (!spam) {
             Time.sleepUntil(() -> Game.getState() == GameState.HOPPING, 3000);
         }
@@ -93,7 +90,7 @@ public class Worlds {
     }
 
     public static World getCurrentWorld() {
-        return getFirst(client.getWorld());
+        return getFirst(Game.getClient().getWorld());
     }
 
     public static boolean inMembersWorld() {
@@ -118,7 +115,7 @@ public class Worlds {
             Tabs.open(Tab.LOG_OUT);
         }
 
-        client.openWorldHopper();
+        Game.getClient().openWorldHopper();
     }
 
     public static void openLobbyWorlds() {

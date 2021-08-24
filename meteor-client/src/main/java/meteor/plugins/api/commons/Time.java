@@ -1,5 +1,6 @@
 package meteor.plugins.api.commons;
 
+import meteor.plugins.api.game.Game;
 import net.runelite.api.Client;
 import org.sponge.util.Logger;
 
@@ -10,11 +11,9 @@ import java.util.function.BooleanSupplier;
 public class Time {
     private static final Logger logger = new Logger("Time");
     private static final int DEFAULT_POLLING_RATE = 100;
-    @Inject
-    private static Client client;
 
     public static void sleep(int ms) {
-        if (client.isClientThread()) {
+        if (Game.getClient().isClientThread()) {
             logger.warn("Tried to sleep on client thread!");
             return;
         }

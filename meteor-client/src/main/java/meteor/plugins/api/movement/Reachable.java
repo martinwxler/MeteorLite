@@ -1,5 +1,6 @@
 package meteor.plugins.api.movement;
 
+import meteor.plugins.api.game.Game;
 import net.runelite.api.Client;
 import net.runelite.api.CollisionData;
 import net.runelite.api.Locatable;
@@ -15,8 +16,6 @@ import java.util.stream.Collectors;
 
 @Singleton
 public class Reachable {
-    @Inject
-    private static Client client;
 
     public static boolean check(int flag, int checkFlag) {
         return (flag & checkFlag) != 0;
@@ -31,17 +30,17 @@ public class Reachable {
     }
 
     public static int getCollisionFlag(WorldPoint point) {
-        CollisionData[] collisionMaps = client.getCollisionMaps();
+        CollisionData[] collisionMaps = Game.getClient().getCollisionMaps();
         if (collisionMaps == null) {
             return -1;
         }
 
-        CollisionData collisionData = collisionMaps[client.getPlane()];
+        CollisionData collisionData = collisionMaps[Game.getClient().getPlane()];
         if (collisionData == null) {
             return -1;
         }
 
-        LocalPoint localPoint = LocalPoint.fromWorld(client, point);
+        LocalPoint localPoint = LocalPoint.fromWorld(Game.getClient(), point);
         if (localPoint == null) {
             return -1;
         }
@@ -79,7 +78,7 @@ public class Reachable {
         List<WorldPoint> out = new ArrayList<>();
         for (Direction dir : Direction.values()) {
             WorldPoint neighbour = getNeighbour(dir, current);
-            if (!neighbour.isInScene(client)) {
+            if (!neighbour.isInScene(Game.getClient())) {
                 continue;
             }
 
@@ -101,7 +100,7 @@ public class Reachable {
     }
 
     public static List<WorldPoint> getVisitedTiles(WorldPoint destination, Locatable targetObject) {
-        Player local = client.getLocalPlayer();
+        Player local = Game.getClient().getLocalPlayer();
         // Don't check if too far away
         if (local == null || destination.distanceTo(local.getWorldLocation()) > 35) {
             return Collections.emptyList();

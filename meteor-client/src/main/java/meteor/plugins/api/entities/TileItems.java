@@ -1,5 +1,6 @@
 package meteor.plugins.api.entities;
 
+import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.scene.Tiles;
 import net.runelite.api.*;
@@ -17,8 +18,6 @@ import java.util.stream.Collectors;
 
 public class TileItems {
     private static final Logger logger = new Logger("TileItems");
-    @Inject
-    private static Client client;
 
     public static List<TileItem> getAll(Predicate<TileItem> filter) {
         return Tiles.getTiles().stream()
@@ -90,7 +89,7 @@ public class TileItems {
     }
 
     public static List<TileItem> getAt(LocalPoint localPoint, Predicate<TileItem> filter) {
-        Tile tile = client.getScene().getTiles()[client.getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
+        Tile tile = Game.getClient().getScene().getTiles()[Game.getClient().getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
         if (tile == null) {
             return Collections.emptyList();
         }
@@ -99,12 +98,12 @@ public class TileItems {
     }
 
     public static List<TileItem> getAt(WorldPoint worldPoint, Predicate<TileItem> filter) {
-        LocalPoint localPoint = LocalPoint.fromWorld(client, worldPoint);
+        LocalPoint localPoint = LocalPoint.fromWorld(Game.getClient(), worldPoint);
         if (localPoint == null) {
             return Collections.emptyList();
         }
 
-        Tile tile = client.getScene().getTiles()[client.getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
+        Tile tile = Game.getClient().getScene().getTiles()[Game.getClient().getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
         if (tile == null) {
             return Collections.emptyList();
         }
@@ -124,9 +123,9 @@ public class TileItems {
                     continue;
                 }
 
-                if (!client.isItemDefinitionCached(item.getId())) {
+                if (!Game.getClient().isItemDefinitionCached(item.getId())) {
                     logger.debug("TileItem {} is not cached, going to cache it", item.getId());
-                    GameThread.invokeLater(() -> client.getItemComposition(item.getId()));
+                    GameThread.invokeLater(() -> Game.getClient().getItemComposition(item.getId()));
                 }
 
                 if (!pred.test(item)) {

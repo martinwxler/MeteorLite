@@ -2,6 +2,7 @@ package meteor.plugins.api.input;
 
 import meteor.plugins.api.commons.Rand;
 import meteor.plugins.api.commons.Time;
+import meteor.plugins.api.game.Game;
 import net.runelite.api.Client;
 
 import javax.inject.Inject;
@@ -12,13 +13,10 @@ import java.util.function.Supplier;
 public class Mouse {
     private static final Supplier<Point> CLICK_POINT_SUPPLIER = () -> new Point(Rand.nextInt(520, 568), Rand.nextInt(55, 70));
 
-    @Inject
-    private static Client client;
-
     private static boolean exited = true;
 
     public static void click(int x, int y, boolean left) {
-        Canvas canvas = client.getCanvas();
+        Canvas canvas = Game.getClient().getCanvas();
 
         if (exited) {
             entered(x, y, canvas, System.currentTimeMillis());

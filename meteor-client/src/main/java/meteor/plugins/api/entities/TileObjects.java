@@ -1,5 +1,6 @@
 package meteor.plugins.api.entities;
 
+import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.scene.Tiles;
 import net.runelite.api.*;
@@ -12,8 +13,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class TileObjects {
-    @Inject
-    private static Client client;
 
     public static List<TileObject> getAll(Predicate<TileObject> filter) {
         return Tiles.getTiles().stream()
@@ -50,7 +49,7 @@ public class TileObjects {
     }
 
     public static TileObject getNearest(Predicate<TileObject> filter) {
-        Player local = client.getLocalPlayer();
+        Player local = Game.getClient().getLocalPlayer();
         if (local == null) {
             return null;
         }
@@ -89,7 +88,7 @@ public class TileObjects {
     }
 
     public static List<TileObject> getAt(LocalPoint localPoint, Predicate<TileObject> filter) {
-        Tile tile = client.getScene().getTiles()[client.getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
+        Tile tile = Game.getClient().getScene().getTiles()[Game.getClient().getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
         if (tile == null) {
             return Collections.emptyList();
         }
@@ -98,12 +97,12 @@ public class TileObjects {
     }
 
     public static List<TileObject> getAt(WorldPoint worldPoint, Predicate<TileObject> filter) {
-        LocalPoint localPoint = LocalPoint.fromWorld(client, worldPoint);
+        LocalPoint localPoint = LocalPoint.fromWorld(Game.getClient(), worldPoint);
         if (localPoint == null) {
             return Collections.emptyList();
         }
 
-        Tile tile = client.getScene().getTiles()[client.getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
+        Tile tile = Game.getClient().getScene().getTiles()[Game.getClient().getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
         if (tile == null) {
             return Collections.emptyList();
         }
@@ -121,7 +120,7 @@ public class TileObjects {
                 return false;
             }
 
-            if (!client.isTileObjectValid(tile, x)) {
+            if (!Game.getClient().isTileObjectValid(tile, x)) {
                 return false;
             }
 

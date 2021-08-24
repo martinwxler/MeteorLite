@@ -1,6 +1,7 @@
 package meteor.plugins.api.items;
 
 import meteor.plugins.api.commons.Time;
+import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.game.Vars;
 import meteor.plugins.api.widgets.Dialog;
@@ -19,8 +20,6 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class Bank {
-    @Inject
-    private static Client client;
 
     public static void setQuantityMode(QuantityMode quantityMode) {
         if (getQuantityMode() != quantityMode) {
@@ -167,11 +166,11 @@ public class Bank {
 
     public static void withdraw(Predicate<Item> filter, int amount, WithdrawMode withdrawMode) {
         Item item = getFirst(filter.and(x -> {
-            if (client.isItemDefinitionCached(x.getId())) {
-                return client.getItemComposition(x.getId()).getPlaceholderTemplateId() == -1;
+            if (Game.getClient().isItemDefinitionCached(x.getId())) {
+                return Game.getClient().getItemComposition(x.getId()).getPlaceholderTemplateId() == -1;
             }
 
-            return GameThread.invokeLater(() -> client.getItemComposition(x.getId()).getPlaceholderTemplateId() == -1);
+            return GameThread.invokeLater(() -> Game.getClient().getItemComposition(x.getId()).getPlaceholderTemplateId() == -1);
         }));
 
         if (item == null) {
@@ -212,14 +211,14 @@ public class Bank {
 
     public static List<Item> getInventory(Predicate<Item> filter) {
         List<Item> items = new ArrayList<>();
-        ItemContainer container = client.getItemContainer(InventoryID.INVENTORY);
+        ItemContainer container = Game.getClient().getItemContainer(InventoryID.INVENTORY);
         if (container == null) {
             return items;
         }
 
         for (Item item : container.getItems()) {
-            if (!client.isItemDefinitionCached(item.getId())) {
-                GameThread.invokeLater(() -> client.getItemComposition(item.getId()));
+            if (!Game.getClient().isItemDefinitionCached(item.getId())) {
+                GameThread.invokeLater(() -> Game.getClient().getItemComposition(item.getId()));
             }
 
             if (item.getId() != -1 && item.getName() != null && !item.getName().equals("null")) {
@@ -241,7 +240,7 @@ public class Bank {
 
     public static List<Item> getAll(Predicate<Item> filter) {
         List<Item> items = new ArrayList<>();
-        ItemContainer container = client.getItemContainer(InventoryID.BANK);
+        ItemContainer container = Game.getClient().getItemContainer(InventoryID.BANK);
         if (container == null) {
             return items;
         }

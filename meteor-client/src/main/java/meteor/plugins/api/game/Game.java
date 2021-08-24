@@ -12,6 +12,10 @@ public class Game {
     @Inject
     private static Client client;
 
+    public static Client getClient() {
+        return client;
+    }
+
     public static boolean isLoggedIn() {
         return getState() == GameState.LOGGED_IN || getState() == GameState.LOADING;
     }

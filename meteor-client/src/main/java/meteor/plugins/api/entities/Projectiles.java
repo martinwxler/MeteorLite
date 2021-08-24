@@ -1,5 +1,6 @@
 package meteor.plugins.api.entities;
 
+import meteor.plugins.api.game.Game;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
@@ -7,19 +8,16 @@ import net.runelite.api.Projectile;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 
 public class Projectiles {
-    @Inject
-    private static Client client;
 
     public static List<Projectile> getAll(Predicate<Projectile> filter) {
         List<Projectile> out = new ArrayList<>();
-        for (Projectile projectile : client.getProjectiles()) {
+        for (Projectile projectile : Game.getClient().getProjectiles()) {
             if (projectile != null && filter.test(projectile)) {
                 out.add(projectile);
             }
@@ -43,7 +41,7 @@ public class Projectiles {
     public static Projectile getNearest(Predicate<Projectile> filter) {
         return getAll(filter).stream()
                 .min(Comparator.comparingInt(p ->
-                        WorldPoint.fromLocal(client, (int) p.getX(), (int) p.getY(), client.getPlane())
+                        WorldPoint.fromLocal(Game.getClient(), (int) p.getX(), (int) p.getY(), Game.getClient().getPlane())
                                 .distanceTo(Players.getLocal().getWorldLocation()))
                 )
                 .orElse(null);
@@ -66,7 +64,7 @@ public class Projectiles {
     }
 
     public static Projectile getNearest(WorldPoint startPoint) {
-        LocalPoint localPoint = LocalPoint.fromWorld(client, startPoint);
+        LocalPoint localPoint = LocalPoint.fromWorld(Game.getClient(), startPoint);
         if (localPoint == null) {
             return null;
         }

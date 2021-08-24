@@ -1,6 +1,7 @@
 package meteor.plugins.api.widgets;
 
 import meteor.plugins.api.commons.Time;
+import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.input.Keyboard;
 import net.runelite.api.Client;
@@ -14,12 +15,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class Dialog {
-    @Inject
-    private static Client client;
-
     // Tutorial island continue dialogs
     public static void continueTutorial() {
-        GameThread.invoke(() -> client.runScript(299, 1, 1, 1));
+        GameThread.invoke(() -> Game.getClient().runScript(299, 1, 1, 1));
     }
 
     public static boolean isOpen() {

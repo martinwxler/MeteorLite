@@ -13,8 +13,6 @@ import javax.inject.Inject;
 import java.util.function.Supplier;
 
 public class GameSettings {
-    @Inject
-    private static Client client;
 
     public enum Display {
         FIXED(() -> Widgets.get(WidgetInfo.FIXED_VIEWPORT)),
@@ -39,13 +37,13 @@ public class GameSettings {
             }
 
             switch (displayMode) {
-                case FIXED -> GameThread.invoke(() -> client.runScript(3998, 0));
-                case RESIZABLE_MODERN -> GameThread.invoke(() -> client.runScript(3998, 1));
+                case FIXED -> GameThread.invoke(() -> Game.getClient().runScript(3998, 0));
+                case RESIZABLE_MODERN -> GameThread.invoke(() -> Game.getClient().runScript(3998, 1));
 
                 case RESIZABLE_CLASSIC -> GameThread.invoke(() -> {
                     // I have no fuckin idea but it works
-                    client.runScript(441, 7602188, 7602213, 7602207, 7602209, 7602214, 7602215, 7602176);
-                    client.interact(1, 57, 2, 7602213);
+                    Game.getClient().runScript(441, 7602188, 7602213, 7602207, 7602209, 7602214, 7602215, 7602176);
+                    Game.getClient().interact(1, 57, 2, 7602213);
                 });
             }
         }
