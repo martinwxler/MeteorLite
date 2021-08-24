@@ -15,6 +15,7 @@ import meteor.plugins.api.items.Equipment;
 import meteor.plugins.api.items.Inventory;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.movement.Reachable;
+import net.runelite.api.Item;
 import net.runelite.api.NPC;
 import net.runelite.api.TileItem;
 import net.runelite.api.coords.WorldPoint;
@@ -52,18 +53,25 @@ public class ChickenKillerPlugin extends Plugin {
                     return;
                 }
 
+                Item bones = Inventory.getFirst("Bones");
+                if (bones != null) {
+                    bones.interact("Bury");
+                    return;
+                }
+
                 long start = System.currentTimeMillis();
-                TileItem feather = TileItems.getNearest("Feather");
+                TileItem loot = TileItems.getNearest(x -> x.getName() != null &&
+                        (x.getName().equals("Bones") && x.getName().equals("Feather")));
                 logger.debug("TileItem took {}", System.currentTimeMillis() - start);
-                if (feather != null) {
-                    if (!Reachable.isInteractable(feather.getTile())) {
+                if (loot != null) {
+                    if (!Reachable.isInteractable(loot.getTile())) {
                         start = System.currentTimeMillis();
-                        Movement.walkTo(feather.getTile().getWorldLocation());
-                        logger.debug("Feather walkTo took {}", System.currentTimeMillis() - start);
+                        Movement.walkTo(loot.getTile().getWorldLocation());
+                        logger.debug("TileItem walkTo took {}", System.currentTimeMillis() - start);
                         return;
                     }
 
-                    feather.pickup();
+                    loot.pickup();
                     return;
                 }
 
