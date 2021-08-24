@@ -7,4 +7,8 @@ import meteor.plugins.api.magic.Rune;
 public class RuneRequirement {
     int quantity;
     Rune rune;
+
+    public boolean meetsRequirements() {
+        return rune.getQuantity() >= quantity;
+    }
 }

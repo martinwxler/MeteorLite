@@ -5,19 +5,18 @@ import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
-import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.movement.Movement;
-import meteor.plugins.api.widgets.Widgets;
+import meteor.plugins.voidutils.events.LocalPlayerIdleEvent;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayManager;
 import meteor.ui.overlay.OverlayPosition;
 import meteor.ui.overlay.OverlayPriority;
-import meteor.ui.overlay.worldmap.WorldMapOverlay;
-import net.runelite.api.*;
+import net.runelite.api.GameState;
+import net.runelite.api.MenuAction;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.*;
-import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameTick;
+import net.runelite.api.events.MenuOptionClicked;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -72,7 +71,7 @@ public class WalkerPlugin extends Plugin {
     }
 
     @Subscribe
-    public void onGameTick(GameTick e) {
+    public void onLocalPlayerIdle(LocalPlayerIdleEvent e) {
         if (Movement.isWalking()) {
             return;
         }
@@ -81,7 +80,7 @@ public class WalkerPlugin extends Plugin {
             WorldPoint walkPoint = mapWalking ? mapPoint : new WorldPoint(config.x(), config.y(), client.getPlane());
             logger.debug("Destination is {} {}", walkPoint.getX(), walkPoint.getY());
             overlay.setTile(walkPoint);
-            executorService.execute(() -> Movement.walkTo(walkPoint));
+            Movement.walkTo(walkPoint);
         }
     }
 
