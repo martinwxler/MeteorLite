@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'org.meteorlite'
-version '1.0.9'
+version '1.0.10'
 
 repositories {
     mavenCentral()
@@ -146,7 +146,8 @@ shadowJar {
             "--add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED",
             "--add-opens=javafx.graphics/javafx.css=ALL-UNNAMED",
             "-Dsun.java2d.uiScale=1.0",
-    "--illegal-access=permit"]
+            "--illegal-access=permit",
+            "-ea"]
 }
 tasks {
     compileJava.dependsOn project(":fernflower").tasks.getByName("decompileInjected")
