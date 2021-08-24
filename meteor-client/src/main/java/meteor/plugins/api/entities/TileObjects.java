@@ -17,8 +17,7 @@ public class TileObjects {
 
     public static List<TileObject> getAll(Predicate<TileObject> filter) {
         return Tiles.getTiles().stream()
-                .map(tile -> parseTile(tile, filter))
-                .filter(Objects::nonNull).flatMap(Collection::stream)
+                .flatMap(tile -> parseTile(tile, filter).stream())
                 .collect(Collectors.toList());
     }
 

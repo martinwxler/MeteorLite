@@ -61,7 +61,7 @@ public class ChickenKillerPlugin extends Plugin {
 
                 long start = System.currentTimeMillis();
                 TileItem loot = TileItems.getNearest(x -> x.getName() != null &&
-                        (x.getName().equals("Bones") && x.getName().equals("Feather")));
+                        (x.getName().equals("Bones") || x.getName().equals("Feather")));
                 logger.debug("TileItem took {}", System.currentTimeMillis() - start);
                 if (loot != null) {
                     if (!Reachable.isInteractable(loot.getTile())) {
