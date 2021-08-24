@@ -1,5 +1,6 @@
 package meteor.plugins.api.items;
 
+import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.widgets.Widgets;
 import net.runelite.api.*;
 import net.runelite.api.widgets.WidgetInfo;
@@ -21,13 +22,17 @@ public class Inventory {
         }
 
         for (Item item : container.getItems()) {
-            if (item.getId() != -1 && !item.getName().equals("null")) {
+            if (!client.isItemDefinitionCached(item.getId())) {
+                GameThread.invokeLater(() -> client.getItemComposition(item.getId()));
+            }
+
+            if (item.getId() != -1 && item.getName() != null && !item.getName().equals("null")) {
                 WidgetInfo widgetInfo = WidgetInfo.INVENTORY;
                 item.setIdentifier(item.getId());
                 item.setWidgetInfo(widgetInfo);
                 item.setActionParam(item.getIndex());
                 item.setWidgetId(widgetInfo.getId());
-                item.setActions(Widgets.get(widgetInfo).getActions());
+                item.setActions(client.getItemComposition(item.getId()).getInventoryActions());
 
                 if (filter.test(item)) {
                     items.add(item);
@@ -51,7 +56,7 @@ public class Inventory {
     }
 
     public static Item getFirst(String name) {
-        return getFirst(x -> x.getName().equals(name));
+        return getFirst(x -> x.getName() != null && x.getName().equals(name));
     }
 
     public static boolean contains(Predicate<Item> filter) {
@@ -63,6 +68,6 @@ public class Inventory {
     }
 
     public static boolean contains(String name) {
-        return contains(x -> x.getName().equals(name));
+        return contains(x -> x.getName() != null && x.getName().equals(name));
     }
 }

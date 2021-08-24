@@ -1,4 +1,4 @@
-package meteor.plugins.api.plugin.walking;
+package meteor.plugins.api.example.walking;
 
 import lombok.Setter;
 import meteor.plugins.api.movement.Movement;

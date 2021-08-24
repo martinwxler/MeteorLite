@@ -1,4 +1,4 @@
-package meteor.plugins.api.plugin.walking;
+package meteor.plugins.api.example.walking;
 
 import com.google.inject.Provides;
 import meteor.config.ConfigManager;

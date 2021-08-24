@@ -2,6 +2,7 @@ package net.runelite.mixins;
 
 import java.awt.Shape;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import net.runelite.api.MenuAction;
 import net.runelite.api.NPCComposition;
@@ -29,6 +30,63 @@ public abstract class NPCMixin implements RSNPC {
   @Inject
   private int npcIndex;
 
+  @Shadow("npcDefCache")
+  private static HashMap<Integer, RSNPCComposition> npcDefCache;
+
+  @Inject
+  @Override
+  public int getId()
+  {
+    RSNPCComposition composition = transformIfRequired();
+    return composition == null ? -1 : composition.getId();
+  }
+
+  @Inject
+  @Override
+  public String getName()
+  {
+    RSNPCComposition composition = transformIfRequired();
+    return composition == null ? null : composition.getName().replace('\u00A0', ' ');
+  }
+
+  @Inject
+  @Override
+  public int getCombatLevel()
+  {
+    RSNPCComposition composition = transformIfRequired();
+    return composition == null ? -1 : composition.getCombatLevel();
+  }
+
+  @Inject
+  @Override
+  public String[] getActions()
+  {
+    RSNPCComposition composition = transformIfRequired();
+    return composition == null ? null : composition.getActions();
+  }
+
+  @Inject
+  private RSNPCComposition transformIfRequired() {
+    RSNPCComposition composition = getComposition();
+    if (isTransformRequired())
+    {
+      if (!npcDefCache.containsKey(getIndex())) {
+        assert client.isClientThread() : "NPCComposition.getTransformed must be called on client thread";
+        composition = npcDefCache.put(getIndex(), composition.transform$api());
+      } else {
+        composition = npcDefCache.get(getIndex());
+      }
+    }
+
+    return composition;
+  }
+
+  @Inject
+  @Override
+  public boolean isDefinitionCached() {
+    return npcDefCache.containsKey(getIndex());
+  }
+
   @Inject
   @Override
   public int getIndex() {
@@ -41,21 +99,12 @@ public abstract class NPCMixin implements RSNPC {
     npcIndex = id;
   }
 
-  @Inject
-  @Override
-  public String getName() {
-    RSNPCComposition composition = getComposition();
-    if (composition != null && composition.getConfigs() != null) {
-      composition = composition.transform$api();
-    }
-    return composition == null ? null : composition.getName().replace('\u00A0', ' ');
-  }
-
   @FieldHook(value = "definition", before = true)
   @Inject
   public void onDefinitionChanged(RSNPCComposition composition) {
     if (composition == null) {
       client.getCallbacks().post(new NpcDespawned(this));
+      npcDefCache.remove(getIndex());
     } else if (this.getId() != -1) {
       RSNPCComposition oldComposition = getComposition();
       if (oldComposition == null) {
@@ -72,16 +121,6 @@ public abstract class NPCMixin implements RSNPC {
 
       client.getCallbacks().postDeferred(new NpcChanged(this, oldComposition));
     }
-  }
-
-  @Inject
-  @Override
-  public int getId() {
-    RSNPCComposition composition = getComposition();
-    if (composition != null && composition.getConfigs() != null) {
-      composition = composition.transform$api();
-    }
-    return composition == null ? -1 : composition.getId();
   }
 
   @Inject
@@ -135,19 +174,6 @@ public abstract class NPCMixin implements RSNPC {
     return (distanceX + distanceY) / 2;
   }
 
-  @Inject
-  @Override
-  public int getCombatLevel()
-  {
-    RSNPCComposition composition = getComposition();
-    if (composition != null && composition.getConfigs() != null)
-    {
-      composition = composition.transform$api();
-    }
-    return composition == null ? -1 : composition.getCombatLevel();
-  }
-
-
   @Override
   @Inject
   public List<String> actions() {
@@ -199,13 +225,15 @@ public abstract class NPCMixin implements RSNPC {
   }
 
   @Override
-  public String[] getActions() {
-    return client.getNpcDefinition(getId()).getActions();
-  }
-
-  @Override
+  @Inject
   public void interact(int identifier, int opcode, int param0, int param1) {
     client.interact(identifier, opcode, param0, param1);
+  }
+
+  @Inject
+  @Override
+  public boolean isTransformRequired() {
+    return getComposition() != null && getComposition().getConfigs() != null;
   }
 
   @Inject

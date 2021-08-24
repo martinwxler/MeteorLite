@@ -38,7 +38,7 @@ abstract class ItemComparableEntry extends AbstractComparableEntry
 
 			for (short i = 0; i < itemCount; i++)
 			{
-				ItemComposition def = client.getItemDefinition(i);
+				ItemComposition def = client.getItemComposition(i);
 				if (def.getNote() != -1 || !StringUtils.containsIgnoreCase(def.getName(), target))
 				{
 					continue;

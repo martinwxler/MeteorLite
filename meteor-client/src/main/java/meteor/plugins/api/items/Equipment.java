@@ -1,5 +1,6 @@
 package meteor.plugins.api.items;
 
+import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.widgets.Widgets;
 import net.runelite.api.*;
 import net.runelite.api.widgets.WidgetInfo;
@@ -21,7 +22,11 @@ public class Equipment {
         }
 
         for (Item item : container.getItems()) {
-            if (item.getId() != -1 && !item.getName().equals("null")) {
+            if (!client.isItemDefinitionCached(item.getId())) {
+                GameThread.invokeLater(() -> client.getItemComposition(item.getId()));
+            }
+
+            if (item.getId() != -1 && item.getName() != null && !item.getName().equals("null")) {
                 WidgetInfo widgetInfo = getEquipmentWidgetInfo(item.getIndex());
                 if (widgetInfo != null) {
                     item.setIdentifier(0);
@@ -53,7 +58,7 @@ public class Equipment {
     }
 
     public static Item getFirst(String name) {
-        return getFirst(x -> x.getName().equals(name));
+        return getFirst(x -> x.getName() != null && x.getName().equals(name));
     }
 
     private static WidgetInfo getEquipmentWidgetInfo(int itemIndex) {
@@ -75,6 +80,6 @@ public class Equipment {
     }
 
     public static boolean contains(String name) {
-        return contains(x -> x.getName().equals(name));
+        return contains(x -> x.getName() != null && x.getName().equals(name));
     }
 }
