@@ -30,6 +30,34 @@ public class NPCs {
         return out;
     }
 
+    public static List<NPC> getAll(int... ids) {
+        return getAll(x -> {
+            for (int id : ids) {
+                if (id == x.getId()) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+    }
+
+    public static List<NPC> getAll(String... names) {
+        return getAll(x -> {
+            if (x.getName() == null) {
+                return false;
+            }
+
+            for (String name : names) {
+                if (name.equals(x.getName())) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+    }
+
     public static NPC getNearest(Predicate<NPC> filter) {
         Player local = client.getLocalPlayer();
         if (local == null) {
@@ -41,11 +69,31 @@ public class NPCs {
                 .orElse(null);
     }
 
-    public static NPC getNearest(int id) {
-        return getNearest(x -> x.getId() == id);
+    public static NPC getNearest(int... ids) {
+        return getNearest(x -> {
+            for (int id : ids) {
+                if (id == x.getId()) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
     }
 
-    public static NPC getNearest(String name) {
-        return getNearest(x -> x.getName() != null && x.getName().equals(name));
+    public static NPC getNearest(String... names) {
+        return getNearest(x -> {
+            if (x.getName() == null) {
+                return false;
+            }
+
+            for (String name : names) {
+                if (name.equals(x.getName())) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
     }
 }

@@ -21,6 +21,34 @@ public class TileObjects {
                 .collect(Collectors.toList());
     }
 
+    public static List<TileObject> getAll(int... ids) {
+        return getAll(x -> {
+            for (int id : ids) {
+                if (id == x.getId()) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+    }
+
+    public static List<TileObject> getAll(String... names) {
+        return getAll(x -> {
+            if (x.getName() == null) {
+                return false;
+            }
+
+            for (String name : names) {
+                if (name.equals(x.getName())) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+    }
+
     public static TileObject getNearest(Predicate<TileObject> filter) {
         Player local = client.getLocalPlayer();
         if (local == null) {
@@ -32,12 +60,32 @@ public class TileObjects {
                 .orElse(null);
     }
 
-    public static TileObject getNearest(int id) {
-        return getNearest(x -> x.getId() == id);
+    public static TileObject getNearest(int... ids) {
+        return getNearest(x -> {
+            for (int id : ids) {
+                if (id == x.getId()) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
     }
 
-    public static TileObject getNearest(String name) {
-        return getNearest(x -> x.getName() != null && x.getName().equals(name));
+    public static TileObject getNearest(String... names) {
+        return getNearest(x -> {
+            if (x.getName() == null) {
+                return false;
+            }
+
+            for (String name : names) {
+                if (name.equals(x.getName())) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
     }
 
     public static List<TileObject> getAt(LocalPoint localPoint, Predicate<TileObject> filter) {

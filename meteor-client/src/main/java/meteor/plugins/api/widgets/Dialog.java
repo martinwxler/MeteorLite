@@ -89,7 +89,7 @@ public class Dialog {
     public static boolean isEnterInputOpen() {
         Widget widget = Widgets.get(WidgetInfo.CHATBOX_FULL_INPUT);
         // TODO: make sure GE search isn't open
-        return widget != null && GameThread.invokeLater(() -> !widget.isHidden());
+        return widget != null && !GameThread.invokeLater(widget::isHidden);
     }
 
     public static void enterInput(String input) {

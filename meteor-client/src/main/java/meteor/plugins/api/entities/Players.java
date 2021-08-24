@@ -1,6 +1,7 @@
 package meteor.plugins.api.entities;
 
 import net.runelite.api.Client;
+import net.runelite.api.NPC;
 import net.runelite.api.Player;
 
 import javax.inject.Inject;
@@ -24,6 +25,22 @@ public class Players {
         return out;
     }
 
+    public static List<Player> getAll(String... names) {
+        return getAll(x -> {
+            if (x.getName() == null) {
+                return false;
+            }
+
+            for (String name : names) {
+                if (name.equals(x.getName())) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+    }
+
     public static Player getNearest(Predicate<Player> filter) {
         Player local = client.getLocalPlayer();
         if (local == null) {
@@ -35,8 +52,20 @@ public class Players {
                 .orElse(null);
     }
 
-    public static Player getNearest(String name) {
-        return getNearest(x -> x.getName() != null && x.getName().equals(name));
+    public static Player getNearest(String... names) {
+        return getNearest(x -> {
+            if (x.getName() == null) {
+                return false;
+            }
+
+            for (String name : names) {
+                if (name.equals(x.getName())) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
     }
 
     public static Player getHintArrowed() {

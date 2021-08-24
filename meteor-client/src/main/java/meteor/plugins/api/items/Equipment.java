@@ -49,6 +49,34 @@ public class Equipment {
         return getAll(x -> true);
     }
 
+    public static List<Item> getAll(int... ids) {
+        return getAll(x -> {
+            for (int id : ids) {
+                if (id == x.getId()) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+    }
+
+    public static List<Item> getAll(String... names) {
+        return getAll(x -> {
+            if (x.getName() == null) {
+                return false;
+            }
+
+            for (String name : names) {
+                if (name.equals(x.getName())) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+    }
+
     public static Item getFirst(Predicate<Item> filter) {
         return getAll(filter).stream().findFirst().orElse(null);
     }

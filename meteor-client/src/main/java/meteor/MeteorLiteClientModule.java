@@ -67,10 +67,7 @@ import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ClientShutdown;
 import meteor.game.WorldService;
 import meteor.plugins.api.commons.Time;
-import meteor.plugins.api.entities.NPCs;
-import meteor.plugins.api.entities.Players;
-import meteor.plugins.api.entities.TileItems;
-import meteor.plugins.api.entities.TileObjects;
+import meteor.plugins.api.entities.*;
 import meteor.plugins.api.game.*;
 import meteor.plugins.api.input.Keyboard;
 import meteor.plugins.api.input.Mouse;
@@ -525,7 +522,8 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
             Game.class,
             Skills.class,
             GameSettings.class,
-            Mouse.class
+            Mouse.class,
+            Projectiles.class
     );
   }
 
