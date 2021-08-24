@@ -32,6 +32,9 @@ public class Keyboard {
         canvas.dispatchEvent(released);
     }
 
+    public static void type(int number) {
+        type(String.valueOf(number));
+    }
     public static void type(String text) {
         type(text, false);
     }
