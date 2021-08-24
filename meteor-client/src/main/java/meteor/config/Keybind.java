@@ -64,7 +64,6 @@ public class Keybind {
       // because this breaks if you do the keycode backwards
       Integer mf = getModifierForKeyCode(keyCode);
       if (mf != null) {
-        assert (modifiers & mf) != 0;
         keyCode = KeyEvent.VK_UNDEFINED;
       }
 
