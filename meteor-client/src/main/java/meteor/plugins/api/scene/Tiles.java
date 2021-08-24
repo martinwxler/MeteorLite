@@ -30,8 +30,7 @@ public class Tiles {
                 }
             }
         }
-        if (out.size() == 0)
-            return null;
+
         return out;
     }
 

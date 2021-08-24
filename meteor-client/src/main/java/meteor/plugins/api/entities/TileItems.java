@@ -53,12 +53,12 @@ public class TileItems {
     public static List<TileItem> getAt(WorldPoint worldPoint, Predicate<TileItem> filter) {
         LocalPoint localPoint = LocalPoint.fromWorld(client, worldPoint);
         if (localPoint == null) {
-            return null;
+            return Collections.emptyList();
         }
 
         Tile tile = client.getScene().getTiles()[client.getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
         if (tile == null) {
-            return null;
+            return Collections.emptyList();
         }
 
         return parseTile(tile, filter);
@@ -88,8 +88,7 @@ public class TileItems {
                 out.add(item);
             }
         }
-        if (out.size() == 0)
-            return null;
+
         return out;
     }
 }
