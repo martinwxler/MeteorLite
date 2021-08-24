@@ -632,6 +632,7 @@ public abstract class WidgetMixin implements RSWidget
   }
 
   @Inject
+  @Override
   public void interact(int index, int menuAction) {
     interact(getMenuIdentifier(index), menuAction, getIndex(), getId());
   }

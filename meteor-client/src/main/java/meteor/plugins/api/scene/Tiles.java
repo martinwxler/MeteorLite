@@ -1,5 +1,6 @@
 package meteor.plugins.api.scene;
 
+import meteor.plugins.api.entities.Players;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 
@@ -17,10 +18,7 @@ public class Tiles {
 
     public static List<Tile> getTiles(Predicate<Tile> filter) {
         List<Tile> out = new ArrayList<>();
-        Player local = client.getLocalPlayer();
-        if (local == null) {
-            return out;
-        }
+        Player local = Players.getLocal();
 
         for (int x = 0; x < Constants.SCENE_SIZE; x++) {
             for (int y = 0; y < Constants.SCENE_SIZE; y++) {

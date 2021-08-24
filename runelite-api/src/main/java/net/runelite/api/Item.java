@@ -89,7 +89,7 @@ public class Item implements Interactable {
     @Override
     public void interact(int index) {
         if (widgetInfo.getGroupId() == WidgetInfo.EQUIPMENT.getGroupId()) {
-            interact(index + 1, index > 4 ? MenuAction.CC_OP_LOW_PRIORITY.getId() : MenuAction.CC_OP.getId());
+            interact(index, index > 4 ? MenuAction.CC_OP_LOW_PRIORITY.getId() : MenuAction.CC_OP.getId());
             return;
         }
 

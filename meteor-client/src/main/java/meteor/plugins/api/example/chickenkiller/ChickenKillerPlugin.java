@@ -6,9 +6,13 @@ import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.plugins.api.commons.Time;
+import meteor.plugins.api.entities.NPCs;
 import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.entities.TileItems;
+import meteor.plugins.api.entities.TileObjects;
 import meteor.plugins.api.game.Combat;
+import meteor.plugins.api.items.Equipment;
+import meteor.plugins.api.items.Inventory;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.movement.Reachable;
 import net.runelite.api.NPC;
@@ -40,47 +44,52 @@ public class ChickenKillerPlugin extends Plugin {
                 return;
             }
 
+            logger.debug("Looping");
+
             try {
-                logger.debug("Looping");
                 if (Movement.isWalking()) {
-                    logger.debug("Pathing");
+                    logger.debug("We are pathing");
                     return;
                 }
 
+                long start = System.currentTimeMillis();
                 TileItem feather = TileItems.getNearest("Feather");
+                logger.debug("TileItem took {}", System.currentTimeMillis() - start);
                 if (feather != null) {
                     if (!Reachable.isInteractable(feather.getTile())) {
-                        logger.debug("Reaching feather");
+                        start = System.currentTimeMillis();
                         Movement.walkTo(feather.getTile().getWorldLocation());
+                        logger.debug("Feather walkTo took {}", System.currentTimeMillis() - start);
                         return;
                     }
 
-                    logger.debug("Picking up feather");
                     feather.pickup();
                     return;
                 }
 
                 if (Players.getLocal().getInteracting() != null) {
-                    logger.debug("We're currently fighting {}", Players.getLocal().getInteracting());
                     return;
                 }
 
+                start = System.currentTimeMillis();
                 NPC chicken = Combat.getAttackableNPC(x -> x.getName() != null
                         && x.getName().equals("Chicken") && !x.isDead()
                 );
+                logger.debug("Chicken took {}", System.currentTimeMillis() - start);
                 if (chicken == null) {
-                    logger.debug("Moving to chicken area");
+                    start = System.currentTimeMillis();
                     Movement.walkTo(new WorldPoint(3233, 3293, 0));
+                    logger.debug("Area walkTo took {}", System.currentTimeMillis() - start);
                     return;
                 }
 
                 if (!Reachable.isInteractable(chicken)) {
-                    logger.debug("Trying to reach chicken");
+                    start = System.currentTimeMillis();
                     Movement.walkTo(chicken.getWorldLocation());
+                    logger.debug("Chicken walkTo took {}", System.currentTimeMillis() - start);
                     return;
                 }
 
-                logger.debug("Attacking chicken");
                 chicken.interact("Attack");
             } catch (Exception ex) {
                 ex.printStackTrace();

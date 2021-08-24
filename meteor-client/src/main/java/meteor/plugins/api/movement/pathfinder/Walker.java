@@ -2,6 +2,7 @@ package meteor.plugins.api.movement.pathfinder;
 
 import meteor.plugins.api.commons.Rand;
 import meteor.plugins.api.commons.Time;
+import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.movement.Reachable;
 import meteor.plugins.api.scene.Tiles;
@@ -56,11 +57,7 @@ public class Walker {
     }
 
     public static boolean walkTo(WorldPoint destination) {
-        Player local = client.getLocalPlayer();
-        if (local == null) {
-            return false;
-        }
-
+        Player local = Players.getLocal();
         Map<WorldPoint, List<Transport>> transports = buildTransportLinks();
         LinkedHashMap<WorldPoint, Teleport> teleports = buildTeleportLinks(destination);
         List<WorldPoint> startPoints = new ArrayList<>(teleports.keySet());
@@ -85,11 +82,7 @@ public class Walker {
     }
 
     public static boolean walkAlong(List<WorldPoint> path, Map<WorldPoint, List<Transport>> transports) {
-        Player local = client.getLocalPlayer();
-        if (local == null) {
-            return false;
-        }
-
+        Player local = Players.getLocal();
         WorldPoint destination = path.get(path.size() - 1);
         if (local.getWorldLocation().distanceTo(destination) > 0) {
             List<WorldPoint> remainingPath = remainingPath(path);
@@ -122,11 +115,7 @@ public class Walker {
     }
 
     public static List<WorldPoint> reachablePath(List<WorldPoint> remainingPath) {
-        Player local = client.getLocalPlayer();
-        if (local == null) {
-            return Collections.emptyList();
-        }
-
+        Player local = Players.getLocal();
         List<WorldPoint> out = new ArrayList<>();
         for (WorldPoint p : remainingPath) {
             Tile tile = Tiles.getTiles(x -> x.getWorldLocation().equals(p)).stream().findFirst().orElse(null);
@@ -145,11 +134,7 @@ public class Walker {
     }
 
     public static boolean step(WorldPoint destination, int tiles) {
-        Player local = client.getLocalPlayer();
-        if (local == null) {
-            return false;
-        }
-
+        Player local = Players.getLocal();
         logger.debug("Stepping towards " + destination);
         Movement.walk(destination);
         int tilesWalked = 0;
@@ -186,11 +171,7 @@ public class Walker {
     }
 
     public static boolean handleTransports(List<WorldPoint> path, Map<WorldPoint, List<Transport>> transports) {
-        Player local = client.getLocalPlayer();
-        if (local == null) {
-            return false;
-        }
-
+        Player local = Players.getLocal();
         for (int i = 0; i < MAX_INTERACT_DISTANCE; i++) {
             if (i + 1 >= path.size()) {
                 break;
@@ -221,12 +202,14 @@ public class Walker {
 
             if (isDoored(tileA, tileB)) {
                 tileA.getWallObject().interact("Open");
+                logger.debug("Handling door {}", tileA.getWallObject());
                 Time.sleep(2000);
                 return true;
             }
 
             if (isDoored(tileB, tileA)) {
                 tileB.getWallObject().interact("Open");
+                logger.debug("Handling door {}", tileB.getWallObject());
                 Time.sleep(2000);
                 return true;
             }
@@ -300,12 +283,7 @@ public class Walker {
     }
 
     public static List<WorldPoint> buildPath(WorldPoint destination) {
-        Player local = client.getLocalPlayer();
-
-        if (local == null) {
-            return Collections.emptyList();
-        }
-
+        Player local = Players.getLocal();
         Map<WorldPoint, List<Transport>> transports = buildTransportLinks();
         LinkedHashMap<WorldPoint, Teleport> teleports = buildTeleportLinks(destination);
         List<WorldPoint> startPoints = new ArrayList<>(teleports.keySet());
@@ -316,11 +294,7 @@ public class Walker {
 
     public static LinkedHashMap<WorldPoint, Teleport> buildTeleportLinks(WorldPoint destination) {
         LinkedHashMap<WorldPoint, Teleport> out = new LinkedHashMap<>();
-        Player local = client.getLocalPlayer();
-
-        if (local == null) {
-            return out;
-        }
+        Player local = Players.getLocal();
 
         for (Teleport teleport : teleports) {
             if (teleport.getDestination().distanceTo(local.getWorldLocation()) > 50

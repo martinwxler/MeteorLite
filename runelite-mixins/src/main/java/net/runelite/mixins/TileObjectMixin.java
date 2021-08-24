@@ -150,13 +150,7 @@ public abstract class TileObjectMixin implements TileObject {
   @Override
   @Inject
   public void interact(String action) {
-    for (int i = 0; i < actions().size(); i++) {
-      if (action.equalsIgnoreCase(actions().get(i))) {
-        interact(i);
-        return;
-      }
-    }
-    throw new IllegalArgumentException("no action \"" + action + "\" on object " + getId());
+    interact(actions().indexOf(action));
   }
 
   @Override
@@ -197,17 +191,18 @@ public abstract class TileObjectMixin implements TileObject {
   @Override
   @Inject
   public void interact(int action) {
-    interact(getId(),
-        getActionId(action),
-        menuPoint().getX(),
-        menuPoint().getY()
-    );
+    interact(getId(), getActionId(action));
   }
 
   @Inject
   @Override
-  public void interact(final int identifier, final int opcode, final int param0, final int param1) {
-    client.getCallbacks()
-        .post(new InvokeMenuActionEvent("", "", identifier, opcode, param0, param1));
+  public void interact(int identifier, int opcode, int param0, int param1) {
+    client.interact(identifier, opcode, param0, param1);
+  }
+
+  @Inject
+  @Override
+  public void interact(int index, int menuAction) {
+    interact(getId(), menuAction, menuPoint().getX(), menuPoint().getY());
   }
 }
