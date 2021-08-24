@@ -118,16 +118,7 @@ public class WidgetItem implements Interactable {
 
   @Override
   public void interact(String action) {
-    String[] actions = getActions();
-
-    for (int i = 0; i < actions.length; i++) {
-      if (action.equalsIgnoreCase(actions[i])) {
-        interact(i);
-        return;
-      }
-    }
-
-    throw new IllegalArgumentException("no action \"" + action + "\" on item " + getId());
+    interact(actions().indexOf(action));
   }
 
   @Override
@@ -154,17 +145,17 @@ public class WidgetItem implements Interactable {
 
   @Override
   public void interact(int action) {
-    client.interact(
-        getId(),
-        getActionId(action),
-        getSlot(),
-        WidgetInfo.INVENTORY.getId()
-    );
+    interact(getId(), getActionId(action));
   }
 
   @Override
   public void interact(int identifier, int opcode, int param0, int param1) {
     client.interact(identifier, opcode, param0, param1);
+  }
+
+  @Override
+  public void interact(int index, int menuAction) {
+    interact(getId(), menuAction, getSlot(), WidgetInfo.INVENTORY.getId());
   }
 
   public void useOn(WidgetItem item) {
