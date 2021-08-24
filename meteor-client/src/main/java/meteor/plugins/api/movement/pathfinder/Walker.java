@@ -29,12 +29,8 @@ public class Walker {
     private static final int MAX_MIN_ENERGY = 50;
     private static final int MIN_ENERGY = 5;
 
-    private static List<Transport> transports = TransportLoader.buildTransports();
-    private static List<Teleport> teleports = TeleportLoader.buildTeleports();
-
     @Inject
     private static Client client;
-
     private static final CollisionMap collisionMap;
 
     static {
@@ -183,6 +179,7 @@ public class Walker {
                 Transport transport = transportTargets.stream().filter(x -> x.getDestination().equals(b)).findFirst().orElse(null);
 
                 if (transport != null && local.getWorldLocation().distanceTo(transport.getSource()) <= transport.getSourceRadius()) {
+                    logger.debug("Trying to use transport at {}", transport.getSource());
                     transport.getHandler().run();
                     Time.sleep(2800);
                     return true;
@@ -269,7 +266,7 @@ public class Walker {
 
     public static Map<WorldPoint, List<Transport>> buildTransportLinks() {
         Map<WorldPoint, List<Transport>> out = new HashMap<>();
-        for (Transport transport : transports) {
+        for (Transport transport : TransportLoader.buildTransports()) {
             out.computeIfAbsent(transport.getSource(), x -> new ArrayList<>()).add(transport);
         }
 
@@ -290,7 +287,7 @@ public class Walker {
         LinkedHashMap<WorldPoint, Teleport> out = new LinkedHashMap<>();
         Player local = Players.getLocal();
 
-        for (Teleport teleport : teleports) {
+        for (Teleport teleport : TeleportLoader.buildTeleports()) {
             if (teleport.getDestination().distanceTo(local.getWorldLocation()) > 50
                     && local.getWorldLocation().distanceTo(destination) > teleport.getDestination().distanceTo(destination) + 20) {
                 out.putIfAbsent(teleport.getDestination(), teleport);

@@ -1,6 +1,7 @@
 package meteor.plugins.api.movement;
 
 import meteor.plugins.api.commons.Time;
+import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.game.Vars;
 import meteor.plugins.api.movement.pathfinder.Walker;
 import meteor.plugins.api.scene.Tiles;
@@ -33,9 +34,14 @@ public class Movement {
     private static void setWalkDestination(int sceneX, int sceneY) {
         logger.debug("Setting destination {} {}", sceneX, sceneY);
 
-        client.setSelectedSceneTileX(sceneX);
-        client.setSelectedSceneTileY(sceneY);
-        client.setViewportWalking(true);
+        int attempts = 0;
+
+        do {
+            client.setSelectedSceneTileX(sceneX);
+            client.setSelectedSceneTileY(sceneY);
+            client.setViewportWalking(true);
+            Time.sleep(25);
+        } while (client.getLocalDestinationLocation() == null && attempts++ < 10);
     }
 
     public static void setDestination(int sceneX, int sceneY) {
@@ -47,10 +53,9 @@ public class Movement {
     }
 
     public static boolean isWalking() {
-        Player local = client.getLocalPlayer();
+        Player local = Players.getLocal();
         LocalPoint destination = client.getLocalDestinationLocation();
-        return local != null
-                && local.isMoving()
+        return local.isMoving()
                 && destination != null
                 && destination.distanceTo(local.getLocalLocation()) > 4;
     }

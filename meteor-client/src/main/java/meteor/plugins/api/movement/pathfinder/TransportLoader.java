@@ -207,7 +207,7 @@ public class TransportLoader {
             if (item == null) {
                 return;
             }
-            TileObject obj = TileObjects.getNearest(x -> x.getId() == objId && x.getWorldLocation() == source);
+            TileObject obj = TileObjects.getNearest(objId);
             if (obj != null) {
                 item.useOn(obj);
             }
@@ -262,7 +262,7 @@ public class TransportLoader {
             String action
     ) {
         return new Transport(source, destination, Integer.MAX_VALUE, 0, () -> {
-            TileObject obj = TileObjects.getNearest(x -> x.getWorldLocation() == source && x.getId() == objId);
+            TileObject obj = TileObjects.getNearest(objId);
             if (obj != null) {
                 obj.interact(action);
             }
@@ -290,7 +290,7 @@ public class TransportLoader {
                 return;
             }
 
-            TileObject obj = TileObjects.getNearest(x -> x.getWorldLocation() == source && x.getId() == objId);
+            TileObject obj = TileObjects.getNearest(objId);
             if (obj != null) {
                 obj.interact(action);
             }

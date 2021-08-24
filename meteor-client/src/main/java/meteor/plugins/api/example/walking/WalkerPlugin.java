@@ -61,8 +61,9 @@ public class WalkerPlugin extends Plugin {
     }
 
     @Subscribe
-    public void onLocalPlayerIdle(LocalPlayerIdleEvent e) {
+    public void onGameTick(GameTick e) {
         if (Movement.isWalking()) {
+            logger.debug("We are currently pathing");
             return;
         }
 
@@ -70,7 +71,9 @@ public class WalkerPlugin extends Plugin {
             WorldPoint walkPoint = new WorldPoint(config.x(), config.y(), client.getPlane());
             logger.debug("Destination is {} {}", walkPoint.getX(), walkPoint.getY());
             overlay.setTile(walkPoint);
+            long start = System.currentTimeMillis();
             Movement.walkTo(walkPoint);
+            logger.debug("WalkTo took {} ms", System.currentTimeMillis() - start);
         }
     }
 
