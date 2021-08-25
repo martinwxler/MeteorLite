@@ -236,6 +236,7 @@ public class PluginManager {
     plugins.add(new SocketHealingPlugin());
     plugins.add(new SocketIceDemonPlugin());
     plugins.add(new SocketPlanksPlugin());
+    plugins.add(new PlayerStatusPlugin());
     plugins.add(new SotetsegPlugin());
     plugins.add(new SpecialCounterExtendedPlugin());
     plugins.add(new SocketThievingPlugin());
