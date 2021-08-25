@@ -352,7 +352,18 @@ public interface ImplingsConfig extends Config {
   }
 
   enum ImplingMode {
-    NONE,
-    HIGHLIGHT,
+    NONE("None"),
+    HIGHLIGHT("Highlight");
+
+    private final String name;
+
+    ImplingMode(String name) {
+      this.name = name;
+    }
+
+    @Override
+    public String toString() {
+      return name;
+    }
   }
 }
