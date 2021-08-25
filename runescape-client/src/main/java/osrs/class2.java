@@ -2,6 +2,6 @@ package osrs;
 
 import net.runelite.mapping.ObfuscatedName;
 
-@ObfuscatedName("v")
+@ObfuscatedName("m")
 public interface class2 {
 }

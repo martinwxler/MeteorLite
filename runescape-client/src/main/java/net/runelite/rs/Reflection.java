@@ -111,17 +111,21 @@ public class Reflection {
   }
 
   public static Field findField(Class<?> clazz, String name) throws NoSuchFieldException {
-    for (Field f : clazz.getDeclaredFields()) {
-      ObfuscatedName annotation = f.getAnnotation(ObfuscatedName.class);
-      if (annotation != null && annotation.value().equals(name)) {
-        if (printDebugMessages) {
-          logger.info("[Get] " + f.getName() + " in " + clazz);
+    try {
+      for (Field f : clazz.getDeclaredFields()) {
+        ObfuscatedName annotation = f.getAnnotation(ObfuscatedName.class);
+        if (annotation != null && annotation.value().equals(name)) {
+          if (printDebugMessages) {
+            logger.info("[Get] " + f.getName() + " in " + clazz);
+          }
+          return f;
         }
-        return f;
       }
-    }
 
-    return clazz.getDeclaredField(name);
+      return clazz.getDeclaredField(name);
+    } catch (NoSuchFieldException e) {
+      throw e;
+    }
   }
 
   public static String getMethodName(Method method) {

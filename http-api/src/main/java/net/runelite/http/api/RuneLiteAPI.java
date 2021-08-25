@@ -52,7 +52,7 @@ public class RuneLiteAPI {
   private static String version;
 
   static {
-    version = "1.7.19";
+    version = "1.7.21";
     userAgent = "RuneLite/" + version + "-";
       OkHttpClient.Builder builder = new OkHttpClient.Builder();
       List<ConnectionSpec> specs = new ArrayList<>();
