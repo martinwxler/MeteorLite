@@ -25,7 +25,7 @@ import java.util.concurrent.ScheduledExecutorService;
 @PluginDescriptor(
         name = "World Map Walker",
         description = "Right click anywhere within the World Map to walk there",
-        enabledByDefault = false
+        enabledByDefault = true
 )
 @Singleton
 public class WorldMapWalkerPlugin extends Plugin {
@@ -72,7 +72,6 @@ public class WorldMapWalkerPlugin extends Plugin {
 
     @Subscribe
     public void onMenuOpened(MenuOpened event) { //TODO: Event doesn't work
-        logger.info("Last menu opened point: {}", client.getMouseCanvasPosition());
         lastMenuOpenedPoint = client.getMouseCanvasPosition();
     }
 
@@ -93,7 +92,7 @@ public class WorldMapWalkerPlugin extends Plugin {
     @Subscribe
     public void onMenuOptionClicked(MenuOptionClicked e) {
         if (e.getMenuOption().equals("Map walk here")) {
-            mapPoint = calculateMapPoint(/*client.isMenuOpen() ? lastMenuOpenedPoint :*/ client.getMouseCanvasPosition());
+            mapPoint = calculateMapPoint(client.isMenuOpen() ? lastMenuOpenedPoint : client.getMouseCanvasPosition());
             logger.debug("Walking to: {}", mapPoint.toString());
             var mapWidget = Widgets.get(595, 38);
 
@@ -119,7 +118,7 @@ public class WorldMapWalkerPlugin extends Plugin {
     private WorldPoint calculateMapPoint(Point point) {
         float zoom = client.getRenderOverview().getWorldMapZoom();
         RenderOverview renderOverview = client.getRenderOverview();
-        final WorldPoint mapPoint = new WorldPoint(renderOverview.getWorldMapPosition().getX(), renderOverview.getWorldMapPosition().getY() + 100, 0);
+        final WorldPoint mapPoint = new WorldPoint(renderOverview.getWorldMapPosition().getX(), renderOverview.getWorldMapPosition().getY(), 0);
         final Point middle = worldMapOverlay.mapWorldPointToGraphicsPoint(mapPoint);
 
         final int dx = (int) ((point.getX() - middle.getX()) / zoom);
