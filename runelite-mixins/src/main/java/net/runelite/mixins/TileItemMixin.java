@@ -1,6 +1,7 @@
 package net.runelite.mixins;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import net.runelite.api.MenuAction;
 import net.runelite.api.Point;
@@ -116,28 +117,6 @@ public abstract class TileItemMixin implements RSTileItem {
 
   @Override
   @Inject
-  public List<String> actions() {
-    List<String> actions = new ArrayList<String>();
-    for (String s : client.getItemComposition(getId()).getGroundActions())
-      if (s != null)
-        actions.add(s);
-    return actions;
-  }
-
-  @Override
-  @Inject
-  public void interact(String action) {
-    for (int i = 0; i < actions().size(); i++) {
-      if (action.equalsIgnoreCase(actions().get(i))) {
-        interact(i);
-        return;
-      }
-    }
-    throw new IllegalArgumentException("no action \"" + action + "\" on ground item " + getId());
-  }
-
-  @Override
-  @Inject
   public int getActionId(int action) {
     switch (action) {
       case 0:
@@ -158,22 +137,49 @@ public abstract class TileItemMixin implements RSTileItem {
   @Override
   @Inject
   public void interact(int action) {
-    client.interact(
-        getId(),
-        action,
-        getTile().getSceneLocation().getX(),
-        getTile().getSceneLocation().getY()
-    );
+    interact(getId(), getActionId(action));
+  }
+
+  @Override
+  @Inject
+  public List<String> actions() {
+    return Arrays.asList(getActions());
+  }
+
+  @Override
+  @Inject
+  public void interact(String action) {
+    interact(actions().indexOf(action));
+  }
+
+  @Inject
+  @Override
+  public String[] getActions() {
+    return client.getItemComposition(getId()).getGroundActions();
+  }
+
+  @Inject
+  @Override
+  public void interact(int identifier, int opcode, int param0, int param1) {
+    client.interact(identifier, opcode, param0, param1);
+  }
+
+  @Inject
+  @Override
+  public void interact(int index, int menuAction) {
+    interact(getId(), menuAction, getTile().getSceneLocation().getX(),
+            getTile().getSceneLocation().getY());
   }
 
   @Override
   @Inject
   public void pickup() {
-    client.interact(
-        getId(),
-        MenuAction.GROUND_ITEM_THIRD_OPTION.getId(),
-        getTile().getSceneLocation().getX(),
-        getTile().getSceneLocation().getY()
-    );
+    interact(getId(), MenuAction.GROUND_ITEM_THIRD_OPTION.getId());
+  }
+
+  @Inject
+  @Override
+  public String getName() {
+    return client.getItemComposition(getId()).getName();
   }
 }

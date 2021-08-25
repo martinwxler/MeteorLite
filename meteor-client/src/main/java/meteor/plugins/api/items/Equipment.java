@@ -1,5 +1,6 @@
 package meteor.plugins.api.items;
 
+import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.widgets.Widgets;
 import net.runelite.api.*;
 import net.runelite.api.widgets.WidgetInfo;
@@ -21,7 +22,11 @@ public class Equipment {
         }
 
         for (Item item : container.getItems()) {
-            if (item.getId() != -1 && !item.getName().equals("null")) {
+            if (!client.isItemDefinitionCached(item.getId())) {
+                GameThread.invokeLater(() -> client.getItemComposition(item.getId()));
+            }
+
+            if (item.getId() != -1 && item.getName() != null && !item.getName().equals("null")) {
                 WidgetInfo widgetInfo = getEquipmentWidgetInfo(item.getIndex());
                 if (widgetInfo != null) {
                     item.setIdentifier(0);
@@ -48,12 +53,32 @@ public class Equipment {
         return getAll(filter).stream().findFirst().orElse(null);
     }
 
-    public static Item getFirst(int id) {
-        return getFirst(x -> x.getId() == id);
+    public static Item getFirst(int... ids) {
+        return getFirst(x -> {
+            for (int id : ids) {
+                if (id == x.getId()) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
     }
 
-    public static Item getFirst(String name) {
-        return getFirst(x -> x.getName().equals(name));
+    public static Item getFirst(String... names) {
+        return getFirst(x -> {
+            if (x.getName() == null) {
+                return false;
+            }
+
+            for (String name : names) {
+                if (name.equals(x.getName())) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
     }
 
     private static WidgetInfo getEquipmentWidgetInfo(int itemIndex) {
@@ -70,11 +95,31 @@ public class Equipment {
         return getFirst(filter) != null;
     }
 
-    public static boolean contains(int id) {
-        return contains(x -> x.getId() == id);
+    public static boolean contains(int... ids) {
+        return contains(x -> {
+            for (int id : ids) {
+                if (id == x.getId()) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
     }
 
-    public static boolean contains(String name) {
-        return contains(x -> x.getName().equals(name));
+    public static boolean contains(String... names) {
+        return contains(x -> {
+            if (x.getName() == null) {
+                return false;
+            }
+
+            for (String name : names) {
+                if (name.equals(x.getName())) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
     }
 }

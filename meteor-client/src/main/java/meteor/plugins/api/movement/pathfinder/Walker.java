@@ -2,8 +2,8 @@ package meteor.plugins.api.movement.pathfinder;
 
 import meteor.plugins.api.commons.Rand;
 import meteor.plugins.api.commons.Time;
+import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.movement.Movement;
-import meteor.plugins.api.movement.Reachable;
 import meteor.plugins.api.scene.Tiles;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
@@ -29,12 +29,8 @@ public class Walker {
     private static final int MAX_MIN_ENERGY = 50;
     private static final int MIN_ENERGY = 5;
 
-    private static List<Transport> transports = TransportLoader.buildTransports();
-    private static List<Teleport> teleports = TeleportLoader.buildTeleports();
-
     @Inject
     private static Client client;
-
     private static final CollisionMap collisionMap;
 
     static {
@@ -56,9 +52,9 @@ public class Walker {
     }
 
     public static boolean walkTo(WorldPoint destination) {
-        Player local = client.getLocalPlayer();
-        if (local == null) {
-            return false;
+        Player local = Players.getLocal();
+        if (destination.equals(local.getWorldLocation())) {
+            return true;
         }
 
         Map<WorldPoint, List<Transport>> transports = buildTransportLinks();
@@ -85,11 +81,7 @@ public class Walker {
     }
 
     public static boolean walkAlong(List<WorldPoint> path, Map<WorldPoint, List<Transport>> transports) {
-        Player local = client.getLocalPlayer();
-        if (local == null) {
-            return false;
-        }
-
+        Player local = Players.getLocal();
         WorldPoint destination = path.get(path.size() - 1);
         if (local.getWorldLocation().distanceTo(destination) > 0) {
             List<WorldPoint> remainingPath = remainingPath(path);
@@ -112,21 +104,15 @@ public class Walker {
         }
 
         if (reachablePath.size() - 1 <= MIN_TILES_WALKED_IN_STEP) {
-            return step(reachablePath.get(reachablePath.size() - 1), Integer.MAX_VALUE);
+            return step(reachablePath.get(reachablePath.size() - 1));
         }
 
         int targetDistance = MIN_TILES_WALKED_IN_STEP + Rand.nextInt(0, reachablePath.size() - MIN_TILES_WALKED_IN_STEP);
-        int rechooseDistance = recalculateDistance(targetDistance);
-
-        return step(reachablePath.get(targetDistance), rechooseDistance);
+        return step(reachablePath.get(targetDistance));
     }
 
     public static List<WorldPoint> reachablePath(List<WorldPoint> remainingPath) {
-        Player local = client.getLocalPlayer();
-        if (local == null) {
-            return Collections.emptyList();
-        }
-
+        Player local = Players.getLocal();
         List<WorldPoint> out = new ArrayList<>();
         for (WorldPoint p : remainingPath) {
             Tile tile = Tiles.getTiles(x -> x.getWorldLocation().equals(p)).stream().findFirst().orElse(null);
@@ -144,36 +130,25 @@ public class Walker {
         return out;
     }
 
-    public static boolean step(WorldPoint destination, int tiles) {
-        Player local = client.getLocalPlayer();
-        if (local == null) {
+    public static boolean step(WorldPoint destination) {
+        Player local = Players.getLocal();
+        logger.debug("Stepping towards " + destination);
+        Movement.walk(destination);
+
+        if (local.getWorldLocation().equals(destination)) {
             return false;
         }
 
-        logger.debug("Stepping towards " + destination);
-        Movement.walk(destination);
-        int tilesWalked = 0;
+        if (!Movement.isRunEnabled() && (client.getEnergy() >= Rand.nextInt(MIN_ENERGY, MAX_MIN_ENERGY) || (local.getHealthScale() > -1 && client.getEnergy() > 0))) {
+            Movement.toggleRun();
+            Time.sleepUntil(Movement::isRunEnabled, 2000);
+            return true;
+        }
 
-        while (tilesWalked < tiles) {
-            if (Movement.isRunEnabled()) {
-                tilesWalked += 2;
-            } else {
-                tilesWalked++;
-            }
-
-            if (local.getWorldLocation().equals(destination)) {
-                return false;
-            }
-
-            if (!Movement.isRunEnabled() && (client.getEnergy() >= Rand.nextInt(MIN_ENERGY, MAX_MIN_ENERGY) || (local.getHealthScale() > -1 && client.getEnergy() > 0))) {
-                Movement.toggleRun();
-                Time.sleepUntil(Movement::isRunEnabled, 2000);
-            }
-
-            if (!Movement.isRunEnabled() && client.getEnergy() > 0 && Movement.isStaminaBoosted()) {
-                Movement.toggleRun();
-                Time.sleepUntil(Movement::isRunEnabled, 2000);
-            }
+        if (!Movement.isRunEnabled() && client.getEnergy() > 0 && Movement.isStaminaBoosted()) {
+            Movement.toggleRun();
+            Time.sleepUntil(Movement::isRunEnabled, 2000);
+            return true;
         }
 
         return true;
@@ -186,11 +161,7 @@ public class Walker {
     }
 
     public static boolean handleTransports(List<WorldPoint> path, Map<WorldPoint, List<Transport>> transports) {
-        Player local = client.getLocalPlayer();
-        if (local == null) {
-            return false;
-        }
-
+        Player local = Players.getLocal();
         for (int i = 0; i < MAX_INTERACT_DISTANCE; i++) {
             if (i + 1 >= path.size()) {
                 break;
@@ -208,6 +179,7 @@ public class Walker {
                 Transport transport = transportTargets.stream().filter(x -> x.getDestination().equals(b)).findFirst().orElse(null);
 
                 if (transport != null && local.getWorldLocation().distanceTo(transport.getSource()) <= transport.getSourceRadius()) {
+                    logger.debug("Trying to use transport at {}", transport.getSource());
                     transport.getHandler().run();
                     Time.sleep(2800);
                     return true;
@@ -221,12 +193,14 @@ public class Walker {
 
             if (isDoored(tileA, tileB)) {
                 tileA.getWallObject().interact("Open");
+                logger.debug("Handling door {}", tileA.getWallObject());
                 Time.sleep(2000);
                 return true;
             }
 
             if (isDoored(tileB, tileA)) {
                 tileB.getWallObject().interact("Open");
+                logger.debug("Handling door {}", tileB.getWallObject());
                 Time.sleep(2000);
                 return true;
             }
@@ -292,7 +266,7 @@ public class Walker {
 
     public static Map<WorldPoint, List<Transport>> buildTransportLinks() {
         Map<WorldPoint, List<Transport>> out = new HashMap<>();
-        for (Transport transport : transports) {
+        for (Transport transport : TransportLoader.buildTransports()) {
             out.computeIfAbsent(transport.getSource(), x -> new ArrayList<>()).add(transport);
         }
 
@@ -300,12 +274,7 @@ public class Walker {
     }
 
     public static List<WorldPoint> buildPath(WorldPoint destination) {
-        Player local = client.getLocalPlayer();
-
-        if (local == null) {
-            return Collections.emptyList();
-        }
-
+        Player local = Players.getLocal();
         Map<WorldPoint, List<Transport>> transports = buildTransportLinks();
         LinkedHashMap<WorldPoint, Teleport> teleports = buildTeleportLinks(destination);
         List<WorldPoint> startPoints = new ArrayList<>(teleports.keySet());
@@ -316,13 +285,9 @@ public class Walker {
 
     public static LinkedHashMap<WorldPoint, Teleport> buildTeleportLinks(WorldPoint destination) {
         LinkedHashMap<WorldPoint, Teleport> out = new LinkedHashMap<>();
-        Player local = client.getLocalPlayer();
+        Player local = Players.getLocal();
 
-        if (local == null) {
-            return out;
-        }
-
-        for (Teleport teleport : teleports) {
+        for (Teleport teleport : TeleportLoader.buildTeleports()) {
             if (teleport.getDestination().distanceTo(local.getWorldLocation()) > 50
                     && local.getWorldLocation().distanceTo(destination) > teleport.getDestination().distanceTo(destination) + 20) {
                 out.putIfAbsent(teleport.getDestination(), teleport);

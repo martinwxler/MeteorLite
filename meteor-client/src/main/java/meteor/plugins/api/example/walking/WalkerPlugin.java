@@ -1,4 +1,4 @@
-package meteor.plugins.api.plugin.walking;
+package meteor.plugins.api.example.walking;
 
 import com.google.inject.Provides;
 import meteor.config.ConfigManager;
@@ -6,6 +6,7 @@ import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.plugins.api.movement.Movement;
+import meteor.plugins.voidutils.events.LocalPlayerIdleEvent;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayManager;
 import meteor.ui.overlay.OverlayPosition;
@@ -62,6 +63,7 @@ public class WalkerPlugin extends Plugin {
     @Subscribe
     public void onGameTick(GameTick e) {
         if (Movement.isWalking()) {
+            logger.debug("We are currently pathing");
             return;
         }
 
@@ -69,7 +71,9 @@ public class WalkerPlugin extends Plugin {
             WorldPoint walkPoint = new WorldPoint(config.x(), config.y(), client.getPlane());
             logger.debug("Destination is {} {}", walkPoint.getX(), walkPoint.getY());
             overlay.setTile(walkPoint);
-            executorService.execute(() -> Movement.walkTo(walkPoint));
+            long start = System.currentTimeMillis();
+            Movement.walkTo(walkPoint);
+            logger.debug("WalkTo took {} ms", System.currentTimeMillis() - start);
         }
     }
 

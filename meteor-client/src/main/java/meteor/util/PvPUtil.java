@@ -25,33 +25,95 @@
  */
 package meteor.util;
 
-import net.runelite.api.Client;
-import net.runelite.api.Player;
+import meteor.game.ItemManager;
+import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.TreeMap;
+
+import static meteor.util.QuantityFormatter.quantityToRSDecimalStack;
 
 public class PvPUtil
 {
 	/**
 	 * Gets the wilderness level based on a world point
-	 * Java reimplementation of clientscript 384 [proc,wilderness_level]
-	 *
 	 * @param point the point in the world to get the wilderness level for
 	 * @return the int representing the wilderness level
 	 */
 	public static int getWildernessLevelFrom(WorldPoint point)
 	{
-		return meteor.util.PvPUtil.getWildernessLevelFrom(point);
+		int x = point.getX();
+		int y = point.getY();
+
+		int underLevel = ((y - 9920) / 8) + 1;
+		int upperLevel = ((y - 3520) / 8) + 1;
+
+		return y > 6400 ? underLevel : upperLevel;
 	}
 
 	/**
 	 * Determines if another player is attackable based off of wilderness level and combat levels
-	 *
 	 * @param client The client of the local player
 	 * @param player the player to determine attackability
 	 * @return returns true if the player is attackable, false otherwise
 	 */
 	public static boolean isAttackable(Client client, Player player)
 	{
-		return meteor.util.PvPUtil.isAttackable(client, player);
+		int wildernessLevel = 0;
+		if (!(client.getVar(Varbits.IN_WILDERNESS) == 1 || WorldType.isPvpWorld(client.getWorldType())))
+		{
+			return false;
+		}
+		if (WorldType.isPvpWorld(client.getWorldType()))
+		{
+			if (client.getVar(Varbits.IN_WILDERNESS) != 1)
+			{
+				return Math.abs(client.getLocalPlayer().getCombatLevel() - player.getCombatLevel()) <= 15;
+			}
+			wildernessLevel = 15;
+		}
+		return Math.abs(client.getLocalPlayer().getCombatLevel() - player.getCombatLevel())
+				< (getWildernessLevelFrom(client.getLocalPlayer().getWorldLocation())+ wildernessLevel);
+	}
+
+	public static int calculateRisk(Client client, ItemManager itemManager)
+	{
+		if (client.getItemContainer(InventoryID.EQUIPMENT) == null)
+		{
+			return 0;
+		}
+		if (client.getItemContainer(InventoryID.INVENTORY) != null)
+		if (client.getItemContainer(InventoryID.INVENTORY).getItems().length == 0)
+		{
+			return 0;
+		}
+		Item[] items = ArrayUtils.addAll(Objects.requireNonNull(client.getItemContainer(InventoryID.EQUIPMENT)).getItems(),
+				Objects.requireNonNull(client.getItemContainer(InventoryID.INVENTORY)).getItems());
+		TreeMap<Integer, Item> priceMap = new TreeMap<>(Comparator.comparingInt(Integer::intValue));
+		int wealth = 0;
+		for (Item i : items)
+		{
+			int value = (itemManager.getItemPrice(i.getId()) * i.getQuantity());
+
+			final ItemComposition itemComposition = itemManager.getItemComposition(i.getId());
+			if (!itemComposition.isTradeable() && value == 0)
+			{
+				value = itemComposition.getPrice() * i.getQuantity();
+				priceMap.put(value, i);
+			}
+			else
+			{
+				value = itemManager.getItemPrice(i.getId()) * i.getQuantity();
+				if (i.getId() > 0 && value > 0)
+				{
+					priceMap.put(value, i);
+				}
+			}
+			wealth += value;
+		}
+		return Integer.parseInt(quantityToRSDecimalStack(priceMap.keySet().stream().mapToInt(Integer::intValue).sum()));
 	}
 }

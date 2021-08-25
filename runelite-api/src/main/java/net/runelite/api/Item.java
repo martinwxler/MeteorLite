@@ -36,7 +36,6 @@ public class Item implements Interactable {
     private final int quantity;
 
     private Client client;
-    private String name;
     private int index;
     private String[] actions;
 
@@ -45,6 +44,10 @@ public class Item implements Interactable {
     private int identifier;
     private int actionParam;
     private int widgetId;
+
+    public String getName() {
+        return client.getItemComposition(getId()).getName();
+    }
 
     @Override
     public String[] getActions() {
@@ -86,7 +89,7 @@ public class Item implements Interactable {
     @Override
     public void interact(int index) {
         if (widgetInfo.getGroupId() == WidgetInfo.EQUIPMENT.getGroupId()) {
-            interact(index + 1, index > 4 ? MenuAction.CC_OP_LOW_PRIORITY.getId() : MenuAction.CC_OP.getId());
+            interact(index, index > 4 ? MenuAction.CC_OP_LOW_PRIORITY.getId() : MenuAction.CC_OP.getId());
             return;
         }
 
@@ -115,5 +118,13 @@ public class Item implements Interactable {
     @Override
     public void interact(int identifier, int opcode, int param0, int param1) {
         client.interact(identifier, opcode, param0, param1);
+    }
+
+    public void useOn(TileObject object) {
+        client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+        client.setSelectedItemSlot(getIndex());
+        client.setSelectedItemID(getId());
+        client.interact(object.getId(), MenuAction.ITEM_USE_ON_GAME_OBJECT.getId(),
+                object.menuPoint().getX(), object.menuPoint().getY());
     }
 }

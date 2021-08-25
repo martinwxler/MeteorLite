@@ -26,6 +26,7 @@
 package net.runelite.mixins;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import meteor.events.AutomationMouseMoveEvent;
@@ -48,20 +49,7 @@ import net.runelite.api.mixins.FieldHook;
 import net.runelite.api.mixins.Inject;
 import net.runelite.api.mixins.Mixin;
 import net.runelite.api.mixins.Shadow;
-import net.runelite.rs.api.RSActor;
-import net.runelite.rs.api.RSBoundaryObject;
-import net.runelite.rs.api.RSClient;
-import net.runelite.rs.api.RSFloorDecoration;
-import net.runelite.rs.api.RSRenderable;
-import net.runelite.rs.api.RSGameObject;
-import net.runelite.rs.api.RSGraphicsObject;
-import net.runelite.rs.api.RSItemLayer;
-import net.runelite.rs.api.RSNode;
-import net.runelite.rs.api.RSNodeDeque;
-import net.runelite.rs.api.RSProjectile;
-import net.runelite.rs.api.RSTile;
-import net.runelite.rs.api.RSTileItem;
-import net.runelite.rs.api.RSWallDecoration;
+import net.runelite.rs.api.*;
 import org.sponge.util.Logger;
 
 import static net.runelite.api.MenuAction.WALK;
@@ -89,6 +77,9 @@ public abstract class TileMixin implements RSTile
 
   @Inject
   private RSGameObject[] previousGameObjects;
+
+  @Shadow("objDefCache")
+  public static HashMap<Integer, RSObjectComposition> objDefCache;
 
   @Inject
   @Override
@@ -277,6 +268,7 @@ public abstract class TileMixin implements RSTile
       wallObjectDespawned.setTile(this);
       wallObjectDespawned.setWallObject(previous);
       client.getCallbacks().post(wallObjectDespawned);
+      objDefCache.remove(previous.getId());
     }
     else if (current != null && previous == null)
     {
@@ -322,6 +314,7 @@ public abstract class TileMixin implements RSTile
       decorativeObjectDespawned.setTile(this);
       decorativeObjectDespawned.setDecorativeObject(previous);
       client.getCallbacks().post(decorativeObjectDespawned);
+      objDefCache.remove(previous.getId());
     }
     else if (current != null && previous == null)
     {
@@ -367,6 +360,7 @@ public abstract class TileMixin implements RSTile
       groundObjectDespawned.setTile(this);
       groundObjectDespawned.setGroundObject(previous);
       client.getCallbacks().post(groundObjectDespawned);
+      objDefCache.remove(previous.getId());
     }
     else if (current != null && previous == null)
     {
@@ -455,6 +449,7 @@ public abstract class TileMixin implements RSTile
       gameObjectDespawned.setTile(this);
       gameObjectDespawned.setGameObject(previous);
       client.getCallbacks().post(gameObjectDespawned);
+      objDefCache.remove(previous.getId());
     }
     else if (previous == null)
     {

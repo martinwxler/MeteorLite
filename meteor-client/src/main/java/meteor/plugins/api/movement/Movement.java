@@ -1,5 +1,7 @@
 package meteor.plugins.api.movement;
 
+import meteor.plugins.api.commons.Time;
+import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.game.Vars;
 import meteor.plugins.api.movement.pathfinder.Walker;
 import meteor.plugins.api.scene.Tiles;
@@ -16,6 +18,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.*;
 import java.util.Comparator;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Singleton
 public class Movement {
@@ -24,19 +28,34 @@ public class Movement {
     @Inject
     private static Client client;
 
-    public static void setDestination(int sceneX, int sceneY) {
-        client.setSelectedSceneTileX(sceneX);
-        client.setSelectedSceneTileY(sceneY);
-        client.setViewportWalking(true);
+    @Inject
+    private static ScheduledExecutorService executor;
+
+    private static void setWalkDestination(int sceneX, int sceneY) {
         logger.debug("Setting destination {} {}", sceneX, sceneY);
-//        client.setCheckClick(true);
+
+        int attempts = 0;
+
+        do {
+            client.setSelectedSceneTileX(sceneX);
+            client.setSelectedSceneTileY(sceneY);
+            client.setViewportWalking(true);
+            Time.sleep(25);
+        } while (client.getLocalDestinationLocation() == null && attempts++ < 10);
+    }
+
+    public static void setDestination(int sceneX, int sceneY) {
+        if (client.isClientThread()) {
+            executor.schedule(() -> setWalkDestination(sceneX, sceneY), 25, TimeUnit.MILLISECONDS);
+        } else {
+            setWalkDestination(sceneX, sceneY);
+        }
     }
 
     public static boolean isWalking() {
-        Player local = client.getLocalPlayer();
+        Player local = Players.getLocal();
         LocalPoint destination = client.getLocalDestinationLocation();
-        return local != null
-                && local.isMoving()
+        return local.isMoving()
                 && destination != null
                 && destination.distanceTo(local.getLocalLocation()) > 4;
     }

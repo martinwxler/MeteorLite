@@ -109,7 +109,7 @@ public class Bank {
     }
 
     public static void depositAll(String name) {
-        depositAll(x -> x.getName().equals(name));
+        depositAll(x -> x.getName() != null && x.getName().equals(name));
     }
 
     public static void depositAll(int id) {
@@ -121,7 +121,7 @@ public class Bank {
     }
 
     public static void deposit(String name, int amount) {
-        deposit(x -> x.getName().equals(name), amount);
+        deposit(x -> x.getName() != null && x.getName().equals(name), amount);
     }
 
     public static void deposit(int id, int amount) {
@@ -146,7 +146,7 @@ public class Bank {
     
 
     public static void withdrawAll(String name, WithdrawMode withdrawMode) {
-        withdrawAll(x -> x.getName().equals(name), withdrawMode);
+        withdrawAll(x -> x.getName() != null && x.getName().equals(name), withdrawMode);
     }
 
     public static void withdrawAll(int id, WithdrawMode withdrawMode) {
@@ -158,7 +158,7 @@ public class Bank {
     }
 
     public static void withdraw(String name, int amount, WithdrawMode withdrawMode) {
-        withdraw(x -> x.getName().equals(name), amount, withdrawMode);
+        withdraw(x -> x.getName() != null &&  x.getName().equals(name), amount, withdrawMode);
     }
 
     public static void withdraw(int id, int amount, WithdrawMode withdrawMode) {
@@ -166,7 +166,14 @@ public class Bank {
     }
 
     public static void withdraw(Predicate<Item> filter, int amount, WithdrawMode withdrawMode) {
-        Item item = getFirst(filter.and(x -> client.getItemDefinition(x.getId()).getPlaceholderTemplateId() == -1));
+        Item item = getFirst(filter.and(x -> {
+            if (client.isItemDefinitionCached(x.getId())) {
+                return client.getItemComposition(x.getId()).getPlaceholderTemplateId() == -1;
+            }
+
+            return GameThread.invokeLater(() -> client.getItemComposition(x.getId()).getPlaceholderTemplateId() == -1);
+        }));
+
         if (item == null) {
             return;
         }
@@ -211,7 +218,11 @@ public class Bank {
         }
 
         for (Item item : container.getItems()) {
-            if (item.getId() != -1 && !item.getName().equals("null")) {
+            if (!client.isItemDefinitionCached(item.getId())) {
+                GameThread.invokeLater(() -> client.getItemComposition(item.getId()));
+            }
+
+            if (item.getId() != -1 && item.getName() != null && !item.getName().equals("null")) {
                 WidgetInfo widgetInfo = WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER;
                 item.setIdentifier(0);
                 item.setWidgetInfo(widgetInfo);
@@ -236,7 +247,7 @@ public class Bank {
         }
 
         for (Item item : container.getItems()) {
-            if (item.getId() != -1 && !item.getName().equals("null")) {
+            if (item.getId() != -1 && item.getName() != null && !item.getName().equals("null")) {
                 WidgetInfo widgetInfo = WidgetInfo.BANK_ITEM_CONTAINER;
                 item.setIdentifier(0);
                 item.setWidgetInfo(widgetInfo);
@@ -266,7 +277,7 @@ public class Bank {
     }
 
     public static Item getFirst(String name) {
-        return getFirst(x -> x.getName().equals(name));
+        return getFirst(x -> x.getName() != null &&  x.getName().equals(name));
     }
 
     public static boolean contains(Predicate<Item> filter) {
@@ -278,7 +289,7 @@ public class Bank {
     }
 
     public static boolean contains(String name) {
-        return contains(x -> x.getName().equals(name));
+        return contains(x -> x.getName() != null && x.getName().equals(name));
     }
 
     public enum Component {
