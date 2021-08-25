@@ -75,6 +75,7 @@ import meteor.plugins.npcindicators.NpcIndicatorsPlugin;
 import meteor.plugins.npcstatus.NpcStatusPlugin;
 import meteor.plugins.objectindicators.ObjectIndicatorsPlugin;
 import meteor.plugins.oneclick.OneClickPlugin;
+import meteor.plugins.oneclick3t4g.OneClick3t4g;
 import meteor.plugins.oneclickagility.OneClickAgilityPlugin;
 import meteor.plugins.oneclickdropper.OneClickDropperPlugin;
 import meteor.plugins.oneclickthieving.OneClickThievingPlugin;
@@ -206,6 +207,7 @@ public class PluginManager {
     plugins.add(new NpcIndicatorsPlugin());
     plugins.add(new NpcStatusPlugin());
     plugins.add(new ObjectIndicatorsPlugin());
+    plugins.add(new OneClick3t4g());
     plugins.add(new OneClickPlugin());
     plugins.add(new OneClickAgilityPlugin());
     plugins.add(new OneClickDropperPlugin());
