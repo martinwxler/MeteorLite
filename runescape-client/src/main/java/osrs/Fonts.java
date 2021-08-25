@@ -184,7 +184,7 @@ public class Fonts {
 				FriendsChat.pcmPlayer1 = class114.method2487(GameEngine.taskHandler, 1, 2048);
 				MusicPatchPcmStream.pcmStreamMixer = new PcmStreamMixer();
 				FriendsChat.pcmPlayer1.setStream(MusicPatchPcmStream.pcmStreamMixer);
-				Language.field3798 = new Decimator(22050, class276.field3287);
+				Language.decimator = new Decimator(22050, class276.field3287);
 				Login.Login_loadingText = "Prepared sound engine";
 				Login.Login_loadingPercent = 35;
 				Client.titleLoadingStage = 50;

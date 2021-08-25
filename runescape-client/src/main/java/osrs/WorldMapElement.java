@@ -486,7 +486,7 @@ public class WorldMapElement extends DualNode {
 				return 1;
 			} else if (var0 == 1125) {
 				var8 = Interpreter.Interpreter_intStack[--class240.Interpreter_intStackSize];
-				class410 var6 = (class410)class260.findEnumerated(WorldMapScaleHandler.FillMode_values(), var8);
+				FillMode var6 = (FillMode)class260.findEnumerated(WorldMapScaleHandler.FillMode_values(), var8);
 				if (var6 != null) {
 					var3.fillMode = var6;
 					Actor.invalidateWidget(var3);

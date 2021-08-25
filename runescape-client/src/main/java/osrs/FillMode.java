@@ -1,12 +1,14 @@
 package osrs;
 
 import net.runelite.mapping.Export;
+import net.runelite.mapping.Implements;
 import net.runelite.mapping.ObfuscatedGetter;
 import net.runelite.mapping.ObfuscatedName;
 import net.runelite.mapping.ObfuscatedSignature;
 
 @ObfuscatedName("oh")
-public enum class410 implements MouseWheel {
+@Implements("FillMode")
+public enum FillMode implements MouseWheel {
 	@ObfuscatedName("n")
 	@ObfuscatedSignature(
 		descriptor = "Loh;"
@@ -35,7 +37,7 @@ public enum class410 implements MouseWheel {
 	)
 	final int field4356;
 
-	class410(int var3, int var4) {
+	FillMode(int var3, int var4) {
 		this.field4353 = var3;
 		this.field4356 = var4;
 	}

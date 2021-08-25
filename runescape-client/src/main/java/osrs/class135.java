@@ -68,8 +68,8 @@ public class class135 extends class116 {
 		garbageValue = "217"
 	)
 	static void method2672(int var0) {
-		if (var0 != Client.field635) {
-			Client.field635 = var0;
+		if (var0 != Client.loginState) {
+			Client.loginState = var0;
 		}
 	}
 }

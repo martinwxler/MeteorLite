@@ -114,8 +114,8 @@ public abstract class Renderable extends DualNode {
 				int var10;
 				int var16;
 				for (var8 = 0; var8 < Client.mapIconCount; ++var8) {
-					var16 = Client.field501[var8] * 4 + 2 - class129.localPlayer.x / 32;
-					var10 = Client.field616[var8] * 4 + 2 - class129.localPlayer.y / 32;
+					var16 = Client.mapIconXs[var8] * 4 + 2 - class129.localPlayer.x / 32;
+					var10 = Client.mapIconYs[var8] * 4 + 2 - class129.localPlayer.y / 32;
 					Fonts.drawSpriteOnMinimap(var1, var2, var16, var10, Client.mapIcons[var8], var4);
 				}
 

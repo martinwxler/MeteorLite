@@ -21,7 +21,8 @@ public class class65 {
 	@ObfuscatedSignature(
 		descriptor = "Led;"
 	)
-	static Task field856;
+	@Export("socketTask")
+	static Task socketTask;
 
 	static {
 		field849 = new BigInteger("80782894952180643741752986186714059433953886149239752893425047584684715842049");

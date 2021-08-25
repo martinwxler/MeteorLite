@@ -644,8 +644,8 @@ public class WorldMapScaleHandler {
 		garbageValue = "-7730"
 	)
 	@Export("FillMode_values")
-	public static class410[] FillMode_values() {
-		return new class410[]{class410.field4354, class410.SOLID, class410.field4352};
+	public static FillMode[] FillMode_values() {
+		return new FillMode[]{FillMode.field4354, FillMode.SOLID, FillMode.field4352};
 	}
 
 	@ObfuscatedName("n")

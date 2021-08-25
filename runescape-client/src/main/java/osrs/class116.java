@@ -43,6 +43,6 @@ public abstract class class116 extends Node {
 	)
 	static final void method2497() {
 		Client.field630 = Client.cycleCntr;
-		PlatformInfo.field4073 = true;
+		PlatformInfo.ClanChat_inClanChat = true;
 	}
 }

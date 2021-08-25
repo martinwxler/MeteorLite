@@ -10,7 +10,8 @@ import net.runelite.mapping.ObfuscatedSignature;
 @Implements("PlatformInfo")
 public class PlatformInfo extends Node {
 	@ObfuscatedName("qf")
-	static boolean field4073;
+	@Export("ClanChat_inClanChat")
+	static boolean ClanChat_inClanChat;
 	@ObfuscatedName("as")
 	@ObfuscatedGetter(
 		intValue = -301713757

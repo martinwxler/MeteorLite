@@ -12,7 +12,8 @@ public class UserComparator9 extends AbstractUserComparator {
 	@ObfuscatedName("y")
 	public static short[][] field1330;
 	@ObfuscatedName("fp")
-	static SecureRandom field1332;
+	@Export("secureRandom")
+	static SecureRandom secureRandom;
 	@ObfuscatedName("n")
 	@Export("reversed")
 	final boolean reversed;

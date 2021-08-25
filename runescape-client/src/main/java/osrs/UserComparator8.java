@@ -716,7 +716,7 @@ public class UserComparator8 extends AbstractUserComparator {
 		}
 
 		if (Client.hintArrowType == 2) {
-			Login.worldToScreen((Client.hintArrowX - FloorOverlayDefinition.baseX << 7) + Client.field506, (Client.hintArrowY - class320.baseY << 7) + Client.field507, Client.field737 * 2);
+			Login.worldToScreen((Client.hintArrowX - FloorOverlayDefinition.baseX << 7) + Client.hintArrowSubX, (Client.hintArrowY - class320.baseY << 7) + Client.hintArrowSubY, Client.hintArrowHeight * 2);
 			if (Client.viewportTempX > -1 && Client.cycle % 20 < 10) {
 				class7.headIconHintSprites[0].drawTransBgAt(var0 + Client.viewportTempX - 12, Client.viewportTempY + var1 - 28);
 			}

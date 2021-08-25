@@ -177,35 +177,35 @@ public class class275 {
 		}
 
 		if (MouseHandler.MouseHandler_currentButton == 4 && Script.mouseCam) {
-			var0 = MouseHandler.MouseHandler_y - Client.field562;
-			Client.field698 = var0 * 2;
-			Client.field562 = var0 != -1 && var0 != 1 ? (MouseHandler.MouseHandler_y + Client.field562) / 2 : MouseHandler.MouseHandler_y * 1256288259 * -447169877;
-			var1 = Client.field561 - MouseHandler.MouseHandler_x;
-			Client.field559 = var1 * 2;
-			Client.field561 = var1 != -1 && var1 != 1 ? (MouseHandler.MouseHandler_x + Client.field561) / 2 : MouseHandler.MouseHandler_x * -849531271 * -1434592311;
+			var0 = MouseHandler.MouseHandler_y - Client.mouseCamClickedY;
+			Client.camAngleDX = var0 * 2;
+			Client.mouseCamClickedY = var0 != -1 && var0 != 1 ? (MouseHandler.MouseHandler_y + Client.mouseCamClickedY) / 2 : MouseHandler.MouseHandler_y * 1256288259 * -447169877;
+			var1 = Client.mouseCamClickedX - MouseHandler.MouseHandler_x;
+			Client.camAngleDY = var1 * 2;
+			Client.mouseCamClickedX = var1 != -1 && var1 != 1 ? (MouseHandler.MouseHandler_x + Client.mouseCamClickedX) / 2 : MouseHandler.MouseHandler_x * -849531271 * -1434592311;
 		} else {
 			if (KeyHandler.KeyHandler_pressedKeys[96]) {
-				Client.field559 += (-24 - Client.field559) / 2;
+				Client.camAngleDY += (-24 - Client.camAngleDY) / 2;
 			} else if (KeyHandler.KeyHandler_pressedKeys[97]) {
-				Client.field559 += (24 - Client.field559) / 2;
+				Client.camAngleDY += (24 - Client.camAngleDY) / 2;
 			} else {
-				Client.field559 /= 2;
+				Client.camAngleDY /= 2;
 			}
 
 			if (KeyHandler.KeyHandler_pressedKeys[98]) {
-				Client.field698 += (12 - Client.field698) / 2;
+				Client.camAngleDX += (12 - Client.camAngleDX) / 2;
 			} else if (KeyHandler.KeyHandler_pressedKeys[99]) {
-				Client.field698 += (-12 - Client.field698) / 2;
+				Client.camAngleDX += (-12 - Client.camAngleDX) / 2;
 			} else {
-				Client.field698 /= 2;
+				Client.camAngleDX /= 2;
 			}
 
-			Client.field562 = MouseHandler.MouseHandler_y;
-			Client.field561 = MouseHandler.MouseHandler_x;
+			Client.mouseCamClickedY = MouseHandler.MouseHandler_y;
+			Client.mouseCamClickedX = MouseHandler.MouseHandler_x;
 		}
 
-		Client.camAngleY = Client.field559 / 2 + Client.camAngleY & 2047;
-		Client.camAngleX += Client.field698 / 2;
+		Client.camAngleY = Client.camAngleDY / 2 + Client.camAngleY & 2047;
+		Client.camAngleX += Client.camAngleDX / 2;
 		if (Client.camAngleX < 128) {
 			Client.camAngleX = 128;
 		}
