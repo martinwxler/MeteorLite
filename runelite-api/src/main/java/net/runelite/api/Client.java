@@ -2300,4 +2300,6 @@ public interface Client extends GameEngine {
   boolean isItemDefinitionCached(int id);
 
   boolean loadWorlds();
+
+  Widget[][] getWidgets();
 }
