@@ -11,7 +11,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class Bootstrapper {
 
-    private static final String version = "1.0.10";
+    private static final String version = "1.0.11";
 
     private static File shadowJar = new File("./meteor-client/build/libs/meteor-client-" + version + "-all.jar");
     private static File outputDir = new File("./meteor-client/build/bootstrap/");
