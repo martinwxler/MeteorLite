@@ -19,6 +19,8 @@ import meteor.plugins.voidutils.tasks.PriorityTask;
 import meteor.plugins.voidutils.tasks.Task;
 import meteor.plugins.voidutils.tasks.TaskSet;
 import meteor.task.Scheduler;
+import meteor.ui.components.PluginToggleButton;
+import meteor.ui.controllers.PluginListUI;
 import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.Client;
 import org.sponge.util.Logger;
@@ -105,6 +107,14 @@ public class Plugin implements Module {
       eventBus.register(this);
       updateConfig();
     }
+
+    PluginListUI.overrideToggleListener = true;
+    for (PluginToggleButton ptb : PluginListUI.configGroupPluginMap.values()) {
+      if (ptb.plugin == this) {
+        ptb.setSelected(enabled);
+      }
+    }
+    PluginListUI.overrideToggleListener = false;
   }
 
 

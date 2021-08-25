@@ -97,15 +97,37 @@ public interface BoostsConfig extends Config {
   }
 
   enum DisplayChangeMode {
-    ALWAYS,
-    BOOSTED,
-    NEVER
+    ALWAYS("Always"),
+    BOOSTED("Boosted"),
+    NEVER("Never");
+
+    private final String name;
+
+    DisplayChangeMode(String name) {
+      this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
   }
 
   enum DisplayBoosts {
-    NONE,
-    COMBAT,
-    NON_COMBAT,
-    BOTH
+    NONE("None"),
+    COMBAT("Combat"),
+    NON_COMBAT("Non Combat"),
+    BOTH("Both");
+
+    private final String name;
+
+    DisplayBoosts(String name) {
+      this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
   }
 }

@@ -25,10 +25,13 @@
 package net.runelite.api;
 
 import lombok.Data;
+import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.widgets.WidgetItem;
 
 import java.util.Arrays;
 import java.util.List;
+import net.runelite.api.widgets.WidgetItem;
 
 @Data
 public class Item implements Interactable {
@@ -36,7 +39,7 @@ public class Item implements Interactable {
     private final int quantity;
 
     private Client client;
-    private int index;
+    private int slot;
     private String[] actions;
 
     // Interaction
@@ -122,9 +125,56 @@ public class Item implements Interactable {
 
     public void useOn(TileObject object) {
         client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+        client.setSelectedItemSlot(getSlot());
+        client.setSelectedItemID(getId());
+        object.interact(0, MenuAction.ITEM_USE_ON_GAME_OBJECT.getId());
+    }
+
+    public void useOn(Item item) {
+        client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+        client.setSelectedItemSlot(item.getIndex());
+        client.setSelectedItemID(item.getId());
+        item.interact(0, MenuAction.ITEM_USE_ON_WIDGET_ITEM.getId());
+    }
+
+    public void useOn(Actor actor) {
+        MenuAction menuAction = actor instanceof NPC ? MenuAction.ITEM_USE_ON_NPC : MenuAction.ITEM_USE_ON_PLAYER;
+        client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
         client.setSelectedItemSlot(getIndex());
         client.setSelectedItemID(getId());
-        client.interact(object.getId(), MenuAction.ITEM_USE_ON_GAME_OBJECT.getId(),
-                object.menuPoint().getX(), object.menuPoint().getY());
+        actor.interact(0, menuAction.getId());
+    }
+
+    public void useOn(Widget widget) {
+        client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+        client.setSelectedItemSlot(getIndex());
+        client.setSelectedItemID(getId());
+        interact(0, MenuAction.ITEM_USE_ON_WIDGET.getId(), widget.getIndex(), widget.getId());
+    }
+
+
+    public void useOn(Item item) {
+        client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+        client.setSelectedItemSlot(item.getSlot());
+        client.setSelectedItemID(item.getId());
+        client.invokeMenuAction("", "", getId(),
+            MenuAction.ITEM_USE_ON_WIDGET_ITEM.getId(), getSlot(), WidgetInfo.INVENTORY.getId());
+    }
+
+
+    public void useOn(WidgetItem item) {
+        client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+        client.setSelectedItemSlot(item.getSlot());
+        client.setSelectedItemID(item.getId());
+        client.invokeMenuAction("", "", getId(),
+            MenuAction.ITEM_USE_ON_WIDGET_ITEM.getId(), getSlot(), WidgetInfo.INVENTORY.getId());
+    }
+
+    public void useOn(NPC npc) {
+        client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+        client.setSelectedItemSlot(getSlot());
+        client.setSelectedItemID(getId());
+        client.invokeMenuAction("", "", npc.getIndex(),
+            MenuAction.ITEM_USE_ON_NPC.getId(), 0, 0);
     }
 }

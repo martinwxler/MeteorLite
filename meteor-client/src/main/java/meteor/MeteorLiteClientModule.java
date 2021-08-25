@@ -67,12 +67,10 @@ import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ClientShutdown;
 import meteor.game.WorldService;
 import meteor.plugins.api.commons.Time;
-import meteor.plugins.api.entities.NPCs;
-import meteor.plugins.api.entities.Players;
-import meteor.plugins.api.entities.TileItems;
-import meteor.plugins.api.entities.TileObjects;
+import meteor.plugins.api.entities.*;
 import meteor.plugins.api.game.*;
 import meteor.plugins.api.input.Keyboard;
+import meteor.plugins.api.input.Mouse;
 import meteor.plugins.api.items.Bank;
 import meteor.plugins.api.items.Equipment;
 import meteor.plugins.api.items.Inventory;
@@ -502,27 +500,9 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
     bind(Logger.class).toInstance(log);
 
     requestStaticInjection(
-            Reachable.class,
-            Movement.class,
-            Time.class,
-            Tiles.class,
-            Walker.class,
-            Inventory.class,
-            Equipment.class,
-            Bank.class,
-            Widgets.class,
-            Dialog.class,
             GameThread.class,
-            Keyboard.class,
-            Vars.class,
-            Packets.class,
-            TileObjects.class,
-            NPCs.class,
-            TileItems.class,
-            Players.class,
-            Worlds.class,
-            Game.class,
-            Skills.class
+            Movement.class,
+            Game.class
     );
   }
 

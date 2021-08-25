@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'org.meteorlite'
-version '1.0.10'
+version '1.0.14'
 
 repositories {
     mavenCentral()
@@ -73,6 +73,13 @@ dependencies {
     implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.9.0'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.21'
     implementation(group : "net.runelite", name : "discord", version : "1.4")
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.52'
+}
+
+task createJavadocs (type: Javadoc)
+{
+    source = sourceSets.main.allJava
+    classpath = sourceSets.main.getCompileClasspath()
 }
 
 runtime {

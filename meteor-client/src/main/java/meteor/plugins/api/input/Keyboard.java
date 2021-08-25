@@ -1,6 +1,7 @@
 package meteor.plugins.api.input;
 
 import meteor.plugins.api.commons.Time;
+import meteor.plugins.api.game.Game;
 import net.runelite.api.Client;
 
 import javax.inject.Inject;
@@ -8,10 +9,8 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 
 public class Keyboard {
-    @Inject
-    private static Client client;
     public static void type(char c) {
-        Canvas canvas = client.getCanvas();
+        Canvas canvas = Game.getClient().getCanvas();
         long time = System.currentTimeMillis();
         int keyCode = KeyEvent.getExtendedKeyCodeForChar(c);
         KeyEvent pressed = new KeyEvent(canvas, KeyEvent.KEY_PRESSED, time, 0, keyCode, c, KeyEvent.KEY_LOCATION_STANDARD);

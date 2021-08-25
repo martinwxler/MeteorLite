@@ -49,7 +49,9 @@ public class PluginListUI {
 
   boolean fakeEvent = false;
 
-  public Map<String, PluginToggleButton> configGroupPluginMap = new HashMap<>();
+  public static Map<String, PluginToggleButton> configGroupPluginMap = new HashMap<>();
+
+  public static boolean overrideToggleListener = false;
 
   @Inject
   ConfigManager configManager;
@@ -123,13 +125,11 @@ public class PluginListUI {
         toggleButton.setLayoutX(290);
         PluginToggleButton finalToggleButton = toggleButton;
         toggleButton.selectedProperty().addListener((options, oldValue, newValue) -> {
-          if (newValue && finalToggleButton.plugin.isEnabled())
+          if (newValue == finalToggleButton.plugin.isEnabled())
             return;
-          if (!newValue && !finalToggleButton.plugin.isEnabled())
-            return;
-          p.toggle();
+          if (!overrideToggleListener)
+            p.toggle();
         });
-        toggleButton.addEventHandler(MouseEvent.MOUSE_PRESSED, (e) -> p.toggle());
 
         toggleButton.setStyle("-fx-text-fill: CYAN;");
         try {

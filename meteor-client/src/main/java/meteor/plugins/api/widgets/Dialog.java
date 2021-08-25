@@ -1,6 +1,7 @@
 package meteor.plugins.api.widgets;
 
 import meteor.plugins.api.commons.Time;
+import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.input.Keyboard;
 import net.runelite.api.Client;
@@ -14,12 +15,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class Dialog {
-    @Inject
-    private static Client client;
-
     // Tutorial island continue dialogs
     public static void continueTutorial() {
-        GameThread.invoke(() -> client.runScript(299, 1, 1, 1));
+        GameThread.invoke(() -> Game.getClient().runScript(299, 1, 1, 1));
     }
 
     public static boolean isOpen() {
@@ -89,7 +87,7 @@ public class Dialog {
     public static boolean isEnterInputOpen() {
         Widget widget = Widgets.get(WidgetInfo.CHATBOX_FULL_INPUT);
         // TODO: make sure GE search isn't open
-        return widget != null && GameThread.invokeLater(() -> !widget.isHidden());
+        return widget != null && !GameThread.invokeLater(widget::isHidden);
     }
 
     public static void enterInput(String input) {
@@ -111,14 +109,22 @@ public class Dialog {
         }
     }
 
+    public static boolean chooseOption(int index) {
+        if (isViewingOptions()) {
+            Keyboard.type(index);
+            return true;
+        }
+
+        return false;
+    }
+
     public static boolean chooseOption(String... options) {
         if (isViewingOptions()) {
             for (int i = 0; i < getOptions().size(); i++) {
                 Widget widget = getOptions().get(i);
                 for (String option : options) {
                     if (widget.getText().contains(option)) {
-                        Keyboard.type(i + 1);
-                        return true;
+                        return chooseOption(i + 1);
                     }
                 }
             }

@@ -6,7 +6,10 @@ import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
+import meteor.plugins.api.entities.TileObjects;
+import meteor.plugins.api.items.Inventory;
 import net.runelite.api.GameObject;
+import net.runelite.api.Item;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.StatChanged;
@@ -68,23 +71,23 @@ public class Void3tTeaksPlugin extends Plugin {
       return;
     }
 
-    if (osrs.nearestObject(teakTreeIDs) == null)
+    if (TileObjects.getNearest(teakTreeIDs) == null)
       return;
 
-    if (osrs.items(GUAM_LEAF) == null)
+    if (Inventory.getFirst(GUAM_LEAF) == null)
       return;
 
-    if (osrs.items(PESTLE_AND_MORTAR) == null)
+    if (Inventory.getFirst(PESTLE_AND_MORTAR) == null)
       return;
 
-    if (osrs.items(SWAMP_TAR) == null || osrs.items(SWAMP_TAR).get(0).getQuantity() < 15)
+    if (Inventory.getFirst(SWAMP_TAR) == null || Inventory.getAll(SWAMP_TAR).get(0).getQuantity() < 15)
       return;
 
-    if (osrs.nearestObject(teakTreeIDs).getDistanceFromLocalPlayer() > ONE_TILE)
+    if (((GameObject)TileObjects.getNearest(teakTreeIDs)).getDistanceFromLocalPlayer() > ONE_TILE)
       delayedTicks = -2;
 
-    List<WidgetItem> cuts = osrs.items(TEAK_LOGS);
-    if (cuts != null) {
+    List<Item> cuts = Inventory.getAll(TEAK_LOGS);
+    if (!cuts.isEmpty()) {
       cut++;
       lastCut = 0;
       dropCut();
@@ -108,7 +111,7 @@ public class Void3tTeaksPlugin extends Plugin {
   }
 
   private void dropCut() {
-    WidgetItem logsCut = osrs.firstItem(TEAK_LOGS);
+    Item logsCut = Inventory.getFirst(TEAK_LOGS);
     if (logsCut != null)
       logsCut.interact("drop");
   }
@@ -116,16 +119,16 @@ public class Void3tTeaksPlugin extends Plugin {
   private void clickTeakTree() {
     if (client.getLocalPlayer().isMoving())
       return;
-    GameObject nearestTeakTree = osrs.nearestObject(teakTreeIDs);
+    GameObject nearestTeakTree = (GameObject) TileObjects.getNearest(teakTreeIDs);
     if (nearestTeakTree != null)
       nearestTeakTree.interact("Chop down");
   }
 
   private void useGuamOnSwampTar() {
-    if (osrs.nearestObject(teakTreeIDs).getDistanceFromLocalPlayer() > ONE_TILE)
+    if (((GameObject)TileObjects.getNearest(teakTreeIDs)).getDistanceFromLocalPlayer() > ONE_TILE)
       return;
-    WidgetItem cleanGuam = osrs.firstItem(GUAM_LEAF);
-    WidgetItem swampTar = osrs.firstItem(SWAMP_TAR);
+    Item cleanGuam = Inventory.getFirst(GUAM_LEAF);
+    Item swampTar = Inventory.getFirst(SWAMP_TAR);
     if (cleanGuam != null && swampTar != null)
       cleanGuam.useOn(swampTar);
   }

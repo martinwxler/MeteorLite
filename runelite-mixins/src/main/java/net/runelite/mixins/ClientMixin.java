@@ -97,6 +97,22 @@ public abstract class ClientMixin implements RSClient {
     client.getCallbacks().post(gameStateChanged);
   }
 
+  @Inject
+  @Override
+  public void setGameState(GameState gameState)
+  {
+    assert this.isClientThread() : "setGameState must be called on client thread";
+    setGameState(gameState.getState());
+  }
+
+  @Inject
+  @Override
+  public void setGameState(int state)
+  {
+    assert this.isClientThread() : "setGameState must be called on client thread";
+    client.setRSGameState(state);
+  }
+
   @FieldHook("npcs")
   @Inject
   public static void cachedNPCsChanged(int idx) {
@@ -1068,6 +1084,13 @@ public abstract class ClientMixin implements RSClient {
 
   @Inject
   @Override
+  public void stopNow()
+  {
+    setStopTimeMs(1);
+  }
+
+  @Inject
+  @Override
   public boolean isPrayerActive(Prayer prayer)
   {
     return getVar(prayer.getVarbit()) == 1;
@@ -1547,5 +1570,19 @@ public abstract class ClientMixin implements RSClient {
   @Override
   public boolean isItemDefinitionCached(int id) {
     return itemDefCache.containsKey(id);
+  }
+
+  @Inject
+  @MethodHook("openMenu")
+  public void menuOpened(int x, int y)
+  {
+    final MenuOpened event = new MenuOpened();
+    event.setMenuEntries(getMenuEntries());
+    callbacks.post(event);
+
+    if (event.isModified())
+    {
+      setMenuEntries(event.getMenuEntries());
+    }
   }
 }

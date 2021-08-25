@@ -1,5 +1,6 @@
 package meteor.plugins.api.entities;
 
+import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.GameThread;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
@@ -12,12 +13,10 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class NPCs {
-    @Inject
-    private static Client client;
 
     public static List<NPC> getAll(Predicate<NPC> filter) {
         List<NPC> out = new ArrayList<>();
-        for (NPC npc : client.getNpcs()) {
+        for (NPC npc : Game.getClient().getNpcs()) {
             if (npc.isTransformRequired() && !npc.isDefinitionCached()) {
                 GameThread.invokeLater(npc::getName); // Transform and cache it by calling getName
             }
@@ -30,8 +29,36 @@ public class NPCs {
         return out;
     }
 
+    public static List<NPC> getAll(int... ids) {
+        return getAll(x -> {
+            for (int id : ids) {
+                if (id == x.getId()) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+    }
+
+    public static List<NPC> getAll(String... names) {
+        return getAll(x -> {
+            if (x.getName() == null) {
+                return false;
+            }
+
+            for (String name : names) {
+                if (name.equals(x.getName())) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+    }
+
     public static NPC getNearest(Predicate<NPC> filter) {
-        Player local = client.getLocalPlayer();
+        Player local = Game.getClient().getLocalPlayer();
         if (local == null) {
             return null;
         }
@@ -41,11 +68,31 @@ public class NPCs {
                 .orElse(null);
     }
 
-    public static NPC getNearest(int id) {
-        return getNearest(x -> x.getId() == id);
+    public static NPC getNearest(int... ids) {
+        return getNearest(x -> {
+            for (int id : ids) {
+                if (id == x.getId()) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
     }
 
-    public static NPC getNearest(String name) {
-        return getNearest(x -> x.getName() != null && x.getName().equals(name));
+    public static NPC getNearest(String... names) {
+        return getNearest(x -> {
+            if (x.getName() == null) {
+                return false;
+            }
+
+            for (String name : names) {
+                if (name.equals(x.getName())) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
     }
 }

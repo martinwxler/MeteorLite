@@ -406,6 +406,10 @@ public class WorldPoint {
     return getRegionOffset(y);
   }
 
+  public void outline(Client client, Graphics2D graphics2D, Color color) {
+    outline(client, graphics2D, color, null);
+  }
+
   public void outline(Client client, Graphics2D graphics, Color color, String text) {
     LocalPoint localPoint = LocalPoint.fromWorld(client, this);
     if (localPoint == null) {

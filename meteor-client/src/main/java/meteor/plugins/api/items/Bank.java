@@ -1,11 +1,11 @@
 package meteor.plugins.api.items;
 
 import meteor.plugins.api.commons.Time;
+import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.game.Vars;
 import meteor.plugins.api.widgets.Dialog;
 import meteor.plugins.api.widgets.Widgets;
-import net.runelite.api.Client;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
@@ -13,14 +13,11 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
 public class Bank {
-    @Inject
-    private static Client client;
 
     public static void setQuantityMode(QuantityMode quantityMode) {
         if (getQuantityMode() != quantityMode) {
@@ -167,11 +164,11 @@ public class Bank {
 
     public static void withdraw(Predicate<Item> filter, int amount, WithdrawMode withdrawMode) {
         Item item = getFirst(filter.and(x -> {
-            if (client.isItemDefinitionCached(x.getId())) {
-                return client.getItemComposition(x.getId()).getPlaceholderTemplateId() == -1;
+            if (Game.getClient().isItemDefinitionCached(x.getId())) {
+                return Game.getClient().getItemComposition(x.getId()).getPlaceholderTemplateId() == -1;
             }
 
-            return GameThread.invokeLater(() -> client.getItemComposition(x.getId()).getPlaceholderTemplateId() == -1);
+            return GameThread.invokeLater(() -> Game.getClient().getItemComposition(x.getId()).getPlaceholderTemplateId() == -1);
         }));
 
         if (item == null) {
@@ -212,21 +209,21 @@ public class Bank {
 
     public static List<Item> getInventory(Predicate<Item> filter) {
         List<Item> items = new ArrayList<>();
-        ItemContainer container = client.getItemContainer(InventoryID.INVENTORY);
+        ItemContainer container = Game.getClient().getItemContainer(InventoryID.INVENTORY);
         if (container == null) {
             return items;
         }
 
         for (Item item : container.getItems()) {
-            if (!client.isItemDefinitionCached(item.getId())) {
-                GameThread.invokeLater(() -> client.getItemComposition(item.getId()));
+            if (!Game.getClient().isItemDefinitionCached(item.getId())) {
+                GameThread.invokeLater(() -> Game.getClient().getItemComposition(item.getId()));
             }
 
             if (item.getId() != -1 && item.getName() != null && !item.getName().equals("null")) {
                 WidgetInfo widgetInfo = WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER;
                 item.setIdentifier(0);
                 item.setWidgetInfo(widgetInfo);
-                item.setActionParam(item.getIndex());
+                item.setActionParam(item.getSlot());
                 item.setWidgetId(widgetInfo.getId());
                 item.setActions(Widgets.get(widgetInfo).getActions());
 
@@ -241,7 +238,7 @@ public class Bank {
 
     public static List<Item> getAll(Predicate<Item> filter) {
         List<Item> items = new ArrayList<>();
-        ItemContainer container = client.getItemContainer(InventoryID.BANK);
+        ItemContainer container = Game.getClient().getItemContainer(InventoryID.BANK);
         if (container == null) {
             return items;
         }
@@ -251,7 +248,7 @@ public class Bank {
                 WidgetInfo widgetInfo = WidgetInfo.BANK_ITEM_CONTAINER;
                 item.setIdentifier(0);
                 item.setWidgetInfo(widgetInfo);
-                item.setActionParam(item.getIndex());
+                item.setActionParam(item.getSlot());
                 item.setWidgetId(widgetInfo.getId());
                 item.setActions(Widgets.get(widgetInfo).getActions());
 
@@ -268,16 +265,64 @@ public class Bank {
         return getAll(x -> true);
     }
 
+    public static List<Item> getAll(int... ids) {
+        return getAll(x -> {
+            for (int id : ids) {
+                if (id == x.getId()) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+    }
+
+    public static List<Item> getAll(String... names) {
+        return getAll(x -> {
+            if (x.getName() == null) {
+                return false;
+            }
+
+            for (String name : names) {
+                if (name.equals(x.getName())) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+    }
+
     public static Item getFirst(Predicate<Item> filter) {
         return getAll(filter).stream().findFirst().orElse(null);
     }
 
-    public static Item getFirst(int id) {
-        return getFirst(x -> x.getId() == id);
+    public static Item getFirst(int... ids) {
+        return getFirst(x -> {
+            for (int id : ids) {
+                if (id == x.getId()) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
     }
 
-    public static Item getFirst(String name) {
-        return getFirst(x -> x.getName() != null &&  x.getName().equals(name));
+    public static Item getFirst(String... names) {
+        return getFirst(x -> {
+            if (x.getName() == null) {
+                return false;
+            }
+
+            for (String name : names) {
+                if (name.equals(x.getName())) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
     }
 
     public static boolean contains(Predicate<Item> filter) {
