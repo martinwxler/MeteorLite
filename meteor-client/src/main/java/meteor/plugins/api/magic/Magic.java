@@ -9,6 +9,8 @@ import net.runelite.api.widgets.Widget;
 import java.util.Arrays;
 
 public class Magic {
+    private static final int SPELLBOOK_VARBIT = 4070;
+    private static final int AUTOCAST_VARP = 108;
     public enum SpellBook {
         REGULAR(0),
         ANCIENT(1),
@@ -22,13 +24,13 @@ public class Magic {
         }
 
         public static SpellBook getCurrent() {
-            return Arrays.stream(values()).filter(x -> Vars.getBit(4070) == x.varbitValue)
+            return Arrays.stream(values()).filter(x -> Vars.getBit(SPELLBOOK_VARBIT) == x.varbitValue)
                     .findFirst().orElse(null);
         }
     }
 
     public static boolean isAutoCasting() {
-        return Vars.getVarp(108) != 0;
+        return Vars.getVarp(AUTOCAST_VARP) != 0;
     }
 
     public static boolean isSpellSelected(Spell spell) {

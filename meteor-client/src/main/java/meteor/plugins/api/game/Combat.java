@@ -12,22 +12,27 @@ import net.runelite.api.widgets.WidgetInfo;
 
 import java.util.Arrays;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class Combat {
+    private static final int POISON_VARP = 102;
+    private static final int SPEC_VARP = 301;
+    private static final int SPEC_ENERGY_VARP = 300;
+    private static final Supplier<Widget> SPEC_BUTTON = () -> Widgets.get(593, 36);
     public static boolean isRetaliating() {
         return Vars.getVarp(VarPlayer.AUTO_RETALIATE.getId()) == 0;
     }
 
     public static boolean isPoisoned() {
-        return Vars.getVarp(102) > 0;
+        return Vars.getVarp(POISON_VARP) > 0;
     }
 
     public static boolean isSpecEnabled() {
-        return Vars.getVarp(301) == 1;
+        return Vars.getVarp(SPEC_VARP) == 1;
     }
 
     public static int getSpecEnergy() {
-        return Vars.getVarp(300) / 10;
+        return Vars.getVarp(SPEC_ENERGY_VARP) / 10;
     }
 
     public static void toggleSpec() {
@@ -35,7 +40,7 @@ public class Combat {
             return;
         }
 
-        Widget spec = Widgets.get(593, 36);
+        Widget spec = SPEC_BUTTON.get();
         if (spec != null) {
             spec.interact(0);
         }

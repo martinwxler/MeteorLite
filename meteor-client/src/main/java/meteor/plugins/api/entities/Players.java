@@ -10,18 +10,15 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class Players {
 
     public static List<Player> getAll(Predicate<Player> filter) {
-        List<Player> out = new ArrayList<>();
-        for (Player Player : Game.getClient().getPlayers()) {
-            if (filter.test(Player)) {
-                out.add(Player);
-            }
-        }
-
-        return out;
+        return Game.getClient().getPlayers()
+                .stream()
+                .filter(filter)
+                .collect(Collectors.toList());
     }
 
     public static List<Player> getAll(String... names) {

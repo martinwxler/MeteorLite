@@ -6,7 +6,11 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 
+import java.util.function.Supplier;
+
 public class Production {
+    private static final Supplier<Widget> OPTIONS = () -> Widgets.get(WidgetID.MULTISKILL_MENU_GROUP_ID, 13);
+    private static final Supplier<Widget> OTHER_QUANTITY = () -> Widgets.get(WidgetID.MULTISKILL_MENU_GROUP_ID, 11);
     public static boolean isOpen() {
         Widget widget = Widgets.get(WidgetInfo.MULTI_SKILL_MENU);
         return widget != null && !GameThread.invokeLater(widget::isHidden);
@@ -17,7 +21,7 @@ public class Production {
             return;
         }
 
-        Widget optionsWidget = Widgets.get(WidgetID.MULTISKILL_MENU_GROUP_ID, 13);
+        Widget optionsWidget = OPTIONS.get();
         if (optionsWidget == null || GameThread.invokeLater(optionsWidget::isHidden)) {
             return;
         }
@@ -33,7 +37,7 @@ public class Production {
     }
 
     public static void selectOtherQuantity() {
-        Widget otherQuantity = Widgets.get(WidgetID.MULTISKILL_MENU_GROUP_ID, 11);
+        Widget otherQuantity = OTHER_QUANTITY.get();
         if (otherQuantity != null && !GameThread.invokeLater(otherQuantity::isHidden)) {
             otherQuantity.interact(0);
         }
