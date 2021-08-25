@@ -26,7 +26,19 @@ package meteor.plugins.chatfilter;
 
 public enum ChatFilterType
 {
-	CENSOR_WORDS,
-	CENSOR_MESSAGE,
-	REMOVE_MESSAGE
+	CENSOR_WORDS("Censor words"),
+	CENSOR_MESSAGE("Censor message"),
+	REMOVE_MESSAGE("Remove message");
+
+	private final String name;
+
+	ChatFilterType(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
+
 }
