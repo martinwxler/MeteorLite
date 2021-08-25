@@ -1492,4 +1492,8 @@ public interface RSClient extends RSGameEngine, Client {
   @Import("Packet_textInput")
   @Override
   RSClientPacket getTextInputPacket();
+
+  @Import("loadWorlds")
+  @Override
+  boolean loadWorlds();
 }

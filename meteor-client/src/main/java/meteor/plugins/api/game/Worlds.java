@@ -99,7 +99,7 @@ public class Worlds {
 
     public static void loadWorlds() {
         if (Game.isOnLoginScreen()) {
-            openLobbyWorlds();
+            Game.getClient().loadWorlds();
             Time.sleep(200);
             closeLobbyWorlds();
             return;
