@@ -1,5 +1,6 @@
 package meteor.plugins.api.packets;
 
+import meteor.plugins.api.game.Game;
 import net.runelite.api.Client;
 import net.runelite.api.packets.ClientPacket;
 import net.runelite.api.packets.PacketBufferNode;
@@ -8,26 +9,24 @@ import net.runelite.api.packets.PacketWriter;
 import javax.inject.Inject;
 
 public class Packets {
-    @Inject
-    private static Client client;
     
     public static class Dialog {
         public static void sendNumberInput(int number) {
-            queuePacket(client.getNumberInputPacket(), number);
+            queuePacket(Game.getClient().getNumberInputPacket(), number);
         }
 
         public static void sendTextInput(String text) {
-            queuePacket(client.getTextInputPacket(), text);
+            queuePacket(Game.getClient().getTextInputPacket(), text);
         }
 
         public static void sendNameInput(String name) {
-            queuePacket(client.getNameInputPacket(), name);
+            queuePacket(Game.getClient().getNameInputPacket(), name);
         }
     }
 
     public static void queuePacket(ClientPacket clientPacket, Object... data) {
-        PacketWriter writer = client.getPacketWriter();
-        PacketBufferNode packet = client.preparePacket(clientPacket, writer.getIsaacCipher());
+        PacketWriter writer = Game.getClient().getPacketWriter();
+        PacketBufferNode packet = Game.getClient().preparePacket(clientPacket, writer.getIsaacCipher());
 
         for (Object o : data) {
             if (o instanceof Byte) {

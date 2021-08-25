@@ -1,6 +1,8 @@
 package meteor.plugins.api.entities;
 
+import meteor.plugins.api.game.Game;
 import net.runelite.api.Client;
+import net.runelite.api.NPC;
 import net.runelite.api.Player;
 
 import javax.inject.Inject;
@@ -10,12 +12,10 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class Players {
-    @Inject
-    private static Client client;
 
     public static List<Player> getAll(Predicate<Player> filter) {
         List<Player> out = new ArrayList<>();
-        for (Player Player : client.getPlayers()) {
+        for (Player Player : Game.getClient().getPlayers()) {
             if (filter.test(Player)) {
                 out.add(Player);
             }
@@ -24,8 +24,24 @@ public class Players {
         return out;
     }
 
+    public static List<Player> getAll(String... names) {
+        return getAll(x -> {
+            if (x.getName() == null) {
+                return false;
+            }
+
+            for (String name : names) {
+                if (name.equals(x.getName())) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+    }
+
     public static Player getNearest(Predicate<Player> filter) {
-        Player local = client.getLocalPlayer();
+        Player local = Game.getClient().getLocalPlayer();
         if (local == null) {
             return null;
         }
@@ -35,16 +51,28 @@ public class Players {
                 .orElse(null);
     }
 
-    public static Player getNearest(String name) {
-        return getNearest(x -> x.getName() != null && x.getName().equals(name));
+    public static Player getNearest(String... names) {
+        return getNearest(x -> {
+            if (x.getName() == null) {
+                return false;
+            }
+
+            for (String name : names) {
+                if (name.equals(x.getName())) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
     }
 
     public static Player getHintArrowed() {
-        return client.getHintArrowPlayer();
+        return Game.getClient().getHintArrowPlayer();
     }
 
     public static Player getLocal() {
-        Player local = client.getLocalPlayer();
+        Player local = Game.getClient().getLocalPlayer();
         if (local == null) {
             throw new IllegalStateException("Local player was null");
         }

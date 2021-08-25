@@ -14,7 +14,7 @@ public class GameThread {
     @Inject
     private static Client client;
 
-    public static <T> void invoke(Runnable runnable) {
+    public static void invoke(Runnable runnable) {
         if (client.isClientThread()) {
             runnable.run();
         } else {

@@ -1,6 +1,7 @@
 package meteor.plugins.api.movement.pathfinder;
 
 import lombok.RequiredArgsConstructor;
+import meteor.plugins.api.game.Game;
 import meteor.plugins.api.movement.Reachable;
 import net.runelite.api.Client;
 import net.runelite.api.coords.WorldPoint;
@@ -15,8 +16,6 @@ public class Pathfinder {
     private final WorldPoint destination;
     private final Deque<WorldPoint> boundary = new ArrayDeque<>();
     private final CoordMap predecessors = new CoordMap();
-    private final Client client;
-
     private WorldPoint nearest = null;
     
     public List<WorldPoint> find() {
@@ -46,7 +45,8 @@ public class Pathfinder {
                 bestDistance = distance;
             }
 
-            if (destination.isInScene(client) && ((Reachable.isObstacle(destination) && boundary.size() > 200)) || boundary.size() > 1000) {
+            if (destination.isInScene(Game.getClient())
+                    && ((Reachable.isObstacle(destination) && boundary.size() > 200)) || boundary.size() > 1000) {
                 break;
             }
 
