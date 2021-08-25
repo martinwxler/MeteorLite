@@ -8,7 +8,7 @@ import net.runelite.mapping.ObfuscatedSignature;
 
 @ObfuscatedName("ix")
 @Implements("ClientPacket")
-public class ClientPacket implements class238 {
+public class ClientPacket implements Packet {
 	@ObfuscatedName("n")
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
@@ -138,7 +138,8 @@ public class ClientPacket implements class238 {
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
 	)
-	public static final ClientPacket field2665;
+	@Export("Packet_numberInput")
+	public static final ClientPacket Packet_numberInput;
 	@ObfuscatedName("aq")
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
@@ -173,7 +174,8 @@ public class ClientPacket implements class238 {
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
 	)
-	public static final ClientPacket field2725;
+	@Export("Packet_nameInput")
+	public static final ClientPacket Packet_nameInput;
 	@ObfuscatedName("ae")
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
@@ -308,7 +310,8 @@ public class ClientPacket implements class238 {
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
 	)
-	public static final ClientPacket field2673;
+	@Export("Packet_textInput")
+	public static final ClientPacket Packet_textInput;
 	@ObfuscatedName("bh")
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
@@ -578,14 +581,14 @@ public class ClientPacket implements class238 {
 		field2662 = new ClientPacket(22, 4);
 		field2733 = new ClientPacket(23, 8);
 		field2664 = new ClientPacket(24, 5);
-		field2665 = new ClientPacket(25, 4);
+		Packet_numberInput = new ClientPacket(25, 4);
 		field2666 = new ClientPacket(26, -1);
 		field2667 = new ClientPacket(27, -1);
 		field2668 = new ClientPacket(28, 8);
 		field2702 = new ClientPacket(29, 7);
 		field2670 = new ClientPacket(30, 3);
 		field2671 = new ClientPacket(31, 8);
-		field2725 = new ClientPacket(32, -1);
+		Packet_nameInput = new ClientPacket(32, -1);
 		field2690 = new ClientPacket(33, 6);
 		field2674 = new ClientPacket(34, 8);
 		field2675 = new ClientPacket(35, -1);
@@ -612,7 +615,7 @@ public class ClientPacket implements class238 {
 		field2681 = new ClientPacket(56, 8);
 		field2722 = new ClientPacket(57, -1);
 		field2696 = new ClientPacket(58, 0);
-		field2673 = new ClientPacket(59, -1);
+		Packet_textInput = new ClientPacket(59, -1);
 		field2700 = new ClientPacket(60, 4);
 		field2701 = new ClientPacket(61, 1);
 		field2678 = new ClientPacket(62, 9);
