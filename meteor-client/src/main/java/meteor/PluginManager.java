@@ -43,6 +43,7 @@ import meteor.plugins.devtools.DevToolsPlugin;
 import meteor.plugins.discord.DiscordPlugin;
 import meteor.plugins.environmentaid.EnvironmentAidPlugin;
 import meteor.plugins.menuentrymodifier.MenuEntryModifierPlugin;
+import meteor.plugins.worldmapwalker.WorldMapWalkerPlugin;
 import meteor.plugins.xpdrop.XpDropPlugin;
 import meteor.plugins.fairyring.FairyRingPlugin;
 import meteor.plugins.fishing.FishingPlugin;
@@ -259,6 +260,7 @@ public class PluginManager {
     plugins.add(new WalkerPlugin());
     plugins.add(new WoodcuttingPlugin());
     plugins.add(new WorldMapPlugin());
+    plugins.add(new WorldMapWalkerPlugin());
     plugins.add(new XpDropPlugin());
     plugins.add(new XpTrackerPlugin());
     plugins.add(new XpGlobesPlugin());
