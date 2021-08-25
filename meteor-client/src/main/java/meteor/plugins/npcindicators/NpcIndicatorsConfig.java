@@ -197,4 +197,13 @@ public interface NpcIndicatorsConfig extends Config {
   default boolean showRespawnTimer() {
     return true;
   }
+
+  @ConfigItem(
+          position = 14,
+          keyName = "highlightTrueLocation",
+          name = "Highlight true location",
+          description = "Configures whether or not NPC should be highlighted by their true location")
+  default boolean highlightTrueLocation() {
+    return false;
+  }
 }
