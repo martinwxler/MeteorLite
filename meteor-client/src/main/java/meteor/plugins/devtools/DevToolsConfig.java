@@ -59,7 +59,7 @@ public interface DevToolsConfig extends Config {
 
   @ConfigItem(
       keyName = "gameObjectsActive",
-      name = "gameObjects",
+      name = "Game Objects",
       description = ""
   )
   default boolean gameObjectsActive()
