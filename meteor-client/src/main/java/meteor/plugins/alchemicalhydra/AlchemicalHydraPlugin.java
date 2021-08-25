@@ -98,7 +98,7 @@ public class AlchemicalHydraPlugin extends Plugin
 	private int lastAttackTick = -1;
 
 	@Provides
-	AlchemicalHydraConfig provideConfig(final ConfigManager configManager)
+	public AlchemicalHydraConfig getConfig(final ConfigManager configManager)
 	{
 		return configManager.getConfig(AlchemicalHydraConfig.class);
 	}
