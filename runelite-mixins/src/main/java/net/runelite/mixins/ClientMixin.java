@@ -1571,4 +1571,18 @@ public abstract class ClientMixin implements RSClient {
   public boolean isItemDefinitionCached(int id) {
     return itemDefCache.containsKey(id);
   }
+
+  @Inject
+  @MethodHook("openMenu")
+  public void menuOpened(int x, int y)
+  {
+    final MenuOpened event = new MenuOpened();
+    event.setMenuEntries(getMenuEntries());
+    callbacks.post(event);
+
+    if (event.isModified())
+    {
+      setMenuEntries(event.getMenuEntries());
+    }
+  }
 }
