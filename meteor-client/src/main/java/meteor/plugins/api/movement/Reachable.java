@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Singleton
 public class Reachable {
+    private static final int MAX_ATTEMPTED_TILES = 1000;
 
     public static boolean check(int flag, int checkFlag) {
         return (flag & checkFlag) != 0;
@@ -117,7 +118,7 @@ public class Reachable {
 
         while (!queue.isEmpty()) {
             // Stop if too many attempts, for performance
-            if (visitedTiles.size() > 1000) {
+            if (visitedTiles.size() > MAX_ATTEMPTED_TILES) {
                 return visitedTiles;
             }
 

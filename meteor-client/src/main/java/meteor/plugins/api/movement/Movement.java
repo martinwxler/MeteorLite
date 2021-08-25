@@ -24,6 +24,8 @@ import java.util.concurrent.TimeUnit;
 @Singleton
 public class Movement {
     private static final Logger logger = new Logger("Movement");
+    private static final int STAMINA_VARBIT = 25;
+    private static final int RUN_VARP = 173;
 
     @Inject
     private static Client client;
@@ -62,29 +64,6 @@ public class Movement {
 
     public static void walk(Point point) {
         setDestination(point.getX(), point.getY());
-    }
-
-    public static void walk(int worldX, int worldY) {
-        int sceneX = worldX - client.getBaseX();
-        int sceneY = worldY - client.getBaseY();
-
-        if (sceneX > 104) {
-            sceneX = 104;
-        }
-
-        if (sceneX < 0) {
-            sceneX = 0;
-        }
-
-        if (sceneY > 104) {
-            sceneY = 104;
-        }
-
-        if (sceneY < 0) {
-            sceneY = 0;
-        }
-
-        walk(new Point(sceneX, sceneY));
     }
 
     public static void walk(WorldPoint worldPoint) {
@@ -131,7 +110,7 @@ public class Movement {
     }
 
     public static boolean isRunEnabled() {
-        return client.getVarpValue(173) == 1;
+        return client.getVarpValue(RUN_VARP) == 1;
     }
 
     public static void drawPath(Graphics2D graphics2D, WorldPoint destination) {
@@ -148,6 +127,6 @@ public class Movement {
     }
 
     public static boolean isStaminaBoosted() {
-        return Vars.getBit(25) == 1;
+        return Vars.getBit(STAMINA_VARBIT) == 1;
     }
 }

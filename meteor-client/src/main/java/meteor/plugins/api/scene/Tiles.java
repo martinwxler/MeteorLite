@@ -14,6 +14,8 @@ import java.util.function.Predicate;
 
 @Singleton
 public class Tiles {
+    private static final int MAX_RANGE = 50;
+
     public static List<Tile> getTiles(Predicate<Tile> filter) {
         List<Tile> out = new ArrayList<>();
         Player local = Players.getLocal();
@@ -22,7 +24,7 @@ public class Tiles {
             for (int y = 0; y < Constants.SCENE_SIZE; y++) {
                 Tile tile = Game.getClient().getScene().getTiles()[Game.getClient().getPlane()][x][y];
                 if (tile != null
-                        && tile.getWorldLocation().distanceTo(local.getWorldLocation()) <= 50
+                        && tile.getWorldLocation().distanceTo(local.getWorldLocation()) <= MAX_RANGE
                         && filter.test(tile)) {
                     out.add(tile);
                 }
