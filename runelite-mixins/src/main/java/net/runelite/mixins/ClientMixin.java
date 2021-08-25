@@ -97,6 +97,22 @@ public abstract class ClientMixin implements RSClient {
     client.getCallbacks().post(gameStateChanged);
   }
 
+  @Inject
+  @Override
+  public void setGameState(GameState gameState)
+  {
+    assert this.isClientThread() : "setGameState must be called on client thread";
+    setGameState(gameState.getState());
+  }
+
+  @Inject
+  @Override
+  public void setGameState(int state)
+  {
+    assert this.isClientThread() : "setGameState must be called on client thread";
+    client.setRSGameState(state);
+  }
+
   @FieldHook("npcs")
   @Inject
   public static void cachedNPCsChanged(int idx) {
@@ -1064,6 +1080,13 @@ public abstract class ClientMixin implements RSClient {
   public void setInvertPitch(boolean state)
   {
     invertPitch = state;
+  }
+
+  @Inject
+  @Override
+  public void stopNow()
+  {
+    setStopTimeMs(1);
   }
 
   @Inject

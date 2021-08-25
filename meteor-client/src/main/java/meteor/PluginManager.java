@@ -42,6 +42,7 @@ import meteor.plugins.defaultworld.DefaultWorldPlugin;
 import meteor.plugins.devtools.DevToolsPlugin;
 import meteor.plugins.discord.DiscordPlugin;
 import meteor.plugins.environmentaid.EnvironmentAidPlugin;
+import meteor.plugins.menuentrymodifier.MenuEntryModifierPlugin;
 import meteor.plugins.xpdrop.XpDropPlugin;
 import meteor.plugins.fairyring.FairyRingPlugin;
 import meteor.plugins.fishing.FishingPlugin;
@@ -144,14 +145,10 @@ public class PluginManager {
   public static List<Plugin> plugins = new ArrayList<>();
 
   private void initPlugins() {
-    plugins.add(new VoidBlackChins());
     plugins.add(new AgilityPlugin());
     plugins.add(new AmmoPlugin());
     plugins.add(new AnimationSmoothingPlugin());
     plugins.add(new AoeWarningPlugin());
-    plugins.add(new AutoClickerPlugin());
-    plugins.add(new AutoLogHop());
-    plugins.add(new AutoRun());
     plugins.add(new BankPlugin());
     plugins.add(new BankTagsPlugin());
     plugins.add(new BarrowsPlugin());
@@ -181,6 +178,7 @@ public class PluginManager {
     plugins.add(new FairyRingPlugin());
     plugins.add(new FishingPlugin());
     plugins.add(new FpsPlugin());
+    plugins.add(new GpuPlugin());
     plugins.add(new GroundItemsPlugin());
     plugins.add(new GroundMarkerPlugin());
     plugins.add(new HerbiboarPlugin());
@@ -196,6 +194,7 @@ public class PluginManager {
     plugins.add(new KourendLibraryPlugin());
     plugins.add(new LeftClickCastPlugin());
     plugins.add(new LowDetailPlugin());
+    plugins.add(new MenuEntryModifierPlugin());
     plugins.add(new MenuEntrySwapperPlugin());
     plugins.add(new MenuEntrySwapperExtendedPlugin());
     plugins.add(new MinimapPlugin());
@@ -228,9 +227,6 @@ public class PluginManager {
     plugins.add(new RunepouchPlugin());
     plugins.add(new RunecraftPlugin());
     plugins.add(new SlayerPlugin());
-    plugins.add(new AutoClickerPlugin());
-    plugins.add(new AutoLogHop());
-    plugins.add(new AutoRun());
     plugins.add(new SmithingPlugin());
     plugins.add(new SocketPlugin());
     plugins.add(new SocketBossTimersPlugin());
@@ -240,11 +236,13 @@ public class PluginManager {
     plugins.add(new SocketHealingPlugin());
     plugins.add(new SocketIceDemonPlugin());
     plugins.add(new SocketPlanksPlugin());
-    plugins.add(new PlayerIndicatorsPlugin());
     plugins.add(new PlayerStatusPlugin());
     plugins.add(new SotetsegPlugin());
     plugins.add(new SpecialCounterExtendedPlugin());
     plugins.add(new SocketThievingPlugin());
+    plugins.add(new AutoClickerPlugin());
+    plugins.add(new AutoLogHop());
+    plugins.add(new AutoRun());
     plugins.add(new StatusBarsPlugin());
     plugins.add(new StretchedModePlugin());
     plugins.add(new TileIndicatorsPlugin());
@@ -253,6 +251,7 @@ public class PluginManager {
     plugins.add(new TearsOfGuthixPlugin());
     plugins.add(new Void3tFishingPlugin());
     plugins.add(new Void3tTeaksPlugin());
+    plugins.add(new VoidBlackChins());
     plugins.add(new VoidHunterPlugin());
     plugins.add(new VoidTemporossPlugin());
     plugins.add(new WalkerPlugin());
@@ -262,7 +261,6 @@ public class PluginManager {
     plugins.add(new XpTrackerPlugin());
     plugins.add(new XpGlobesPlugin());
     plugins.add(new ZulrahPlugin());
-    plugins.add(new GpuPlugin());
   }
 
   public void startInternalPlugins() {
