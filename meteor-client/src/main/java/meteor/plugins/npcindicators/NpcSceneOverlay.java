@@ -149,6 +149,19 @@ public class NpcSceneOverlay extends Overlay {
       return;
     }
 
+    if (config.highlightTrueLocation()) {
+      int drawHeight;
+      LocalPoint lp;
+      Polygon tilePoly;
+      drawHeight = npcComposition.getSize();
+      lp = LocalPoint.fromWorld(this.client, actor.getWorldLocation());
+      if (lp != null) {
+        lp = new LocalPoint(lp.getX() + drawHeight * 128 / 2 - 64, lp.getY() + drawHeight * 128 / 2 - 64);
+        tilePoly = Perspective.getCanvasTileAreaPoly(this.client, lp, drawHeight);
+        this.renderPoly(graphics, color, tilePoly);
+      }
+    }
+
     if (config.highlightHull()) {
       Shape objectClickbox = actor.getConvexHull();
       renderPoly(graphics, color, objectClickbox);

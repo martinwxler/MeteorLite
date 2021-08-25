@@ -193,7 +193,8 @@ public interface NpcIndicatorsConfig extends Config {
       position = 13,
       keyName = "showRespawnTimer",
       name = "Show respawn timer",
-      description = "Show respawn timer of tagged NPCs")
+      description = "Show respawn timer of tagged NPCs"
+  )
   default boolean showRespawnTimer() {
     return true;
   }
@@ -202,8 +203,10 @@ public interface NpcIndicatorsConfig extends Config {
           position = 14,
           keyName = "highlightTrueLocation",
           name = "Highlight true location",
-          description = "Configures whether or not NPC should be highlighted by their true location")
+          description = "Configures whether or not NPC should be highlighted by their true location"
+  )
   default boolean highlightTrueLocation() {
     return false;
   }
+
 }
