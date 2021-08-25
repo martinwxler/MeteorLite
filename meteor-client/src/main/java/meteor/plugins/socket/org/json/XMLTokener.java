@@ -79,16 +79,6 @@ public class XMLTokener extends JSONTokener {
         }
     }
 
-
-    /**
-     * Get the next XML outer token, trimming whitespace. There are two kinds
-     * of tokens: the '<' character which begins a markup tag, and the content
-     * text between markup tags.
-     *
-     * @return  A string, or a '<' Character, or null if there is no more
-     * source text.
-     * @throws JSONException
-     */
     public Object nextContent() throws JSONException {
         char         c;
         StringBuilder sb;
@@ -142,15 +132,6 @@ public class XMLTokener extends JSONTokener {
     }
 
 
-    /**
-     * Returns the next XML meta token. This is used for skipping over <!...>
-     * and <?...?> structures.
-     * @return Syntax characters (<code>< > / = ! ?</code>) are returned as
-     *  Character, and strings and names are returned as Boolean. We don't care
-     *  what the values actually are.
-     * @throws JSONException If a string is not properly closed or if the XML
-     *  is badly structured.
-     */
     public Object nextMeta() throws JSONException {
         char c;
         char q;

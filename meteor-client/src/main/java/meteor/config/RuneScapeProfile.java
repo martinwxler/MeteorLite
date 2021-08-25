@@ -26,10 +26,7 @@ package meteor.config;
 
 import lombok.Data;
 
-/**
- * A profile/save of a OSRS account. Each account can 1 profile per {@link
- * net.runelite.client.config.RuneScapeProfileType} (ie Standard/League/DMM}.
- */
+
 @Data
 public class RuneScapeProfile {
 

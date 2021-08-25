@@ -75,6 +75,13 @@ dependencies {
     implementation(group : "net.runelite", name : "discord", version : "1.4")
 }
 
+task createJavadocs (type: Javadoc)
+{
+    source = sourceSets.main.allJava
+    classpath = sourceSets.main.getCompileClasspath()
+    exclude += 'com/app/com4j/api/**'
+}
+
 runtime {
     options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
     jpackage {
