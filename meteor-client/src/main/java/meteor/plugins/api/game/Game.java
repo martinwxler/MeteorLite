@@ -9,6 +9,7 @@ import net.runelite.api.widgets.WidgetInfo;
 import javax.inject.Inject;
 
 public class Game {
+    private static final int MEMBER_DAYS_VARP = 1780;
     @Inject
     private static Client client;
 
@@ -35,5 +36,9 @@ public class Game {
         }
 
         return Integer.parseInt(wildyLevelWidget.getText().replace("Level: ", ""));
+    }
+
+    public static int getMembershipDays() {
+        return Vars.getVarp(MEMBER_DAYS_VARP);
     }
 }

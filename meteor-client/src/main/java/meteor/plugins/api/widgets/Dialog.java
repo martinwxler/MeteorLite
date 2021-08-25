@@ -4,156 +4,167 @@ import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.input.Keyboard;
-import net.runelite.api.Client;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class Dialog {
-    // Tutorial island continue dialogs
-    public static void continueTutorial() {
-        GameThread.invoke(() -> Game.getClient().runScript(299, 1, 1, 1));
-    }
 
-    public static boolean isOpen() {
-        Widget widget = Widgets.get(162, 557);
-        return widget != null && GameThread.invokeLater(() -> !widget.isHidden());
-    }
+	private static final Supplier<Widget> DIALOG = () -> Widgets.get(162, 557);
+	private static final Supplier<Widget> WEIRD_CONT = () -> Widgets.get(193, 3);
+	private static final Supplier<Widget> NPC_CONT = () -> Widgets.get(WidgetID.DIALOG_NPC_GROUP_ID, 4);
+	private static final Supplier<Widget> PLAYER_CONT = () -> Widgets.get(WidgetID.DIALOG_PLAYER_GROUP_ID, 3);
+	private static final Supplier<Widget> DEATH_CONT = () -> Widgets.get(663, 0);
+	private static final Supplier<Widget> TUT_CONT = () -> Widgets.get(229, 2);
+	private static final Supplier<Widget> OPTIONS = () -> Widgets.get(WidgetID.DIALOG_OPTION_GROUP_ID, 1);
 
-    public static boolean canContinue() {
-        return GameThread.invokeLater(() -> canContinueNPC() || canContinuePlayer() || canContinueDeath()
-                || canWeirdContinue() || canWeirderContinue() || canContinueTutIsland() || canContinueTutIsland2()
-                || canContinueTutIsland3());
-    }
+	// Tutorial island continue dialogs
+	public static void continueTutorial() {
+		GameThread.invoke(() -> Game.getClient().runScript(299, 1, 1, 1));
+	}
 
-    public static boolean canLevelUpContinue() {
-        Widget widget = Widgets.get(WidgetInfo.LEVEL_UP_LEVEL);
-        return widget != null && GameThread.invokeLater(() -> !widget.isHidden());
-    }
+	public static boolean isOpen() {
+		Widget widget = DIALOG.get();
+		return widget != null && GameThread.invokeLater(() -> !widget.isHidden());
+	}
 
-    public static boolean canWeirdContinue() {
-        Widget widget = Widgets.get(WidgetInfo.DIALOG2_SPRITE_CONTINUE);
-        return widget != null && GameThread.invokeLater(() -> !widget.isHidden());
-    }
+	public static boolean canContinue() {
+		return GameThread.invokeLater(() -> canContinueNPC() || canContinuePlayer() || canContinueDeath()
+						|| canWeirdContinue() || canWeirderContinue() || canContinueTutIsland() || canContinueTutIsland2()
+						|| canContinueTutIsland3());
+	}
 
-    public static boolean canWeirderContinue() {
-        Widget widget = Widgets.get(193, 3);
-        return widget != null && GameThread.invokeLater(() -> !widget.isHidden());
-    }
+	public static boolean canLevelUpContinue() {
+		Widget widget = Widgets.get(WidgetInfo.LEVEL_UP_LEVEL);
+		return widget != null && GameThread.invokeLater(() -> !widget.isHidden());
+	}
 
-    public static boolean canContinueNPC() {
-        Widget widget = Widgets.get(WidgetID.DIALOG_NPC_GROUP_ID, 4);
-        return widget != null && GameThread.invokeLater(() -> !widget.isHidden());
-    }
+	public static boolean canWeirdContinue() {
+		Widget widget = Widgets.get(WidgetInfo.DIALOG2_SPRITE_CONTINUE);
+		return widget != null && GameThread.invokeLater(() -> !widget.isHidden());
+	}
 
-    public static boolean canContinuePlayer() {
-        Widget widget = Widgets.get(WidgetID.DIALOG_PLAYER_GROUP_ID, 3);
-        return widget != null && GameThread.invokeLater(() -> !widget.isHidden());
-    }
+	public static boolean canWeirderContinue() {
+		Widget widget = WEIRD_CONT.get();
+		return widget != null && GameThread.invokeLater(() -> !widget.isHidden());
+	}
 
-    public static boolean canContinueDeath() {
-        Widget widget = Widgets.get(663, 0);
-        return widget != null
-                && GameThread.invokeLater(() -> !widget.isHidden())
-                && widget.getChild(2) != null
-                && GameThread.invokeLater(() -> !widget.getChild(2).isHidden());
-    }
+	public static boolean canContinueNPC() {
+		Widget widget = NPC_CONT.get();
+		return widget != null && GameThread.invokeLater(() -> !widget.isHidden());
+	}
 
-    public static boolean canContinueTutIsland() {
-        Widget widget = Widgets.get(229, 2);
-        return widget != null && GameThread.invokeLater(() -> !widget.isHidden());
-    }
+	public static boolean canContinuePlayer() {
+		Widget widget = PLAYER_CONT.get();
+		return widget != null && GameThread.invokeLater(() -> !widget.isHidden());
+	}
 
-    public static boolean canContinueTutIsland2() {
-        Widget widget = Widgets.get(WidgetInfo.DIALOG_SPRITE);
-        return widget != null
-                && GameThread.invokeLater(() -> !widget.isHidden())
-                && widget.getChild(2) != null
-                && GameThread.invokeLater(() -> !widget.getChild(2).isHidden());
-    }
+	public static boolean canContinueDeath() {
+		Widget widget = DEATH_CONT.get();
+		return widget != null && GameThread.invokeLater(() ->
+						!widget.isHidden()
+										&& widget.getChild(2) != null
+										&& !widget.getChild(2).isHidden()
+		);
+	}
 
-    public static boolean canContinueTutIsland3() {
-        Widget widget = Widgets.get(WidgetInfo.CHATBOX_FULL_INPUT);
-        return widget != null
-                && GameThread.invokeLater(() -> !widget.isHidden())
-                && widget.getText().toLowerCase().contains("continue");
-    }
+	public static boolean canContinueTutIsland() {
+		Widget widget = TUT_CONT.get();
+		return widget != null && GameThread.invokeLater(() -> !widget.isHidden());
+	}
 
-    public static boolean isEnterInputOpen() {
-        Widget widget = Widgets.get(WidgetInfo.CHATBOX_FULL_INPUT);
-        // TODO: make sure GE search isn't open
-        return widget != null && !GameThread.invokeLater(widget::isHidden);
-    }
+	public static boolean canContinueTutIsland2() {
+		Widget widget = Widgets.get(WidgetInfo.DIALOG_SPRITE);
+		return widget != null
+						&& GameThread.invokeLater(() ->
+						!widget.isHidden()
+										&& widget.getChild(2) != null
+										&& !widget.getChild(2).isHidden()
+		);
+	}
 
-    public static void enterInput(String input) {
-        Time.sleepUntil(Dialog::isEnterInputOpen, 2000);
-        Keyboard.type(input);
-    }
+	public static boolean canContinueTutIsland3() {
+		Widget widget = Widgets.get(WidgetInfo.CHATBOX_FULL_INPUT);
+		return widget != null
+						&& GameThread.invokeLater(() -> !widget.isHidden())
+						&& widget.getText().toLowerCase().contains("continue");
+	}
 
-    public static void enterInput(int input) {
-        enterInput(String.valueOf(input));
-    }
+	public static boolean isEnterInputOpen() {
+		Widget widget = Widgets.get(WidgetInfo.CHATBOX_FULL_INPUT);
+		// TODO: make sure GE search isn't open
+		return widget != null && !GameThread.invokeLater(widget::isHidden);
+	}
 
-    public static boolean isViewingOptions() {
-        return !getOptions().isEmpty();
-    }
+	public static void enterInput(String input) {
+		Time.sleepUntil(Dialog::isEnterInputOpen, 2000);
+		Keyboard.type(input);
+	}
 
-    public static void continueSpace() {
-        if (Dialog.isOpen()) {
-            Keyboard.sendSpace();
-        }
-    }
+	public static void enterInput(int input) {
+		enterInput(String.valueOf(input));
+	}
 
-    public static boolean chooseOption(int index) {
-        if (isViewingOptions()) {
-            Keyboard.type(index);
-            return true;
-        }
+	public static boolean isViewingOptions() {
+		return !getOptions().isEmpty();
+	}
 
-        return false;
-    }
+	public static void continueSpace() {
+		if (Dialog.isOpen()) {
+			Keyboard.sendSpace();
+		}
+	}
 
-    public static boolean chooseOption(String... options) {
-        if (isViewingOptions()) {
-            for (int i = 0; i < getOptions().size(); i++) {
-                Widget widget = getOptions().get(i);
-                for (String option : options) {
-                    if (widget.getText().contains(option)) {
-                        return chooseOption(i + 1);
-                    }
-                }
-            }
-        }
+	public static boolean chooseOption(int index) {
+		if (isViewingOptions()) {
+			Keyboard.type(index);
+			return true;
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    public static List<Widget> getOptions() {
-        Widget widget = Widgets.get(WidgetID.DIALOG_OPTION_GROUP_ID, 1);
-        if (widget == null || GameThread.invokeLater(widget::isHidden)) {
-            return Collections.emptyList();
-        }
+	public static boolean chooseOption(String... options) {
+		if (isViewingOptions()) {
+			for (int i = 0; i < getOptions().size(); i++) {
+				Widget widget = getOptions().get(i);
+				for (String option : options) {
+					if (widget.getText().contains(option)) {
+						return chooseOption(i + 1);
+					}
+				}
+			}
+		}
 
-        List<Widget> out = new ArrayList<>();
-        Widget[] children = widget.getChildren();
-        if (children == null) {
-            return out;
-        }
+		return false;
+	}
 
-        // Skip first child, it's not a dialog option
-        for (int i = 1; i < children.length; i++) {
-            if (children[i].getText().isBlank()) {
-                continue;
-            }
+	public static List<Widget> getOptions() {
+		Widget widget = OPTIONS.get();
+		if (widget == null || GameThread.invokeLater(widget::isHidden)) {
+			return Collections.emptyList();
+		}
 
-            out.add(children[i]);
-        }
+		List<Widget> out = new ArrayList<>();
+		Widget[] children = widget.getChildren();
+		if (children == null) {
+			return out;
+		}
 
-        return out;
-    }
+		// Skip first child, it's not a dialog option
+		for (int i = 1; i < children.length; i++) {
+			if (children[i].getText().isBlank()) {
+				continue;
+			}
+
+			out.add(children[i]);
+		}
+
+		return out;
+	}
 }

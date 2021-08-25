@@ -3,6 +3,7 @@ package meteor.plugins.oneclick3t4g;
 import com.google.inject.Provides;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
+import meteor.plugins.api.items.Inventory;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
@@ -48,21 +49,6 @@ public class OneClick3t4g extends Plugin {
         startingTickCount = client.getTickCount();
         stage =0;
         rocks = new ArrayList<>();
-    }
-    public boolean isSamePoint(WorldPoint a,WorldPoint b){
-        return a.getX() == b.getX() && a.getY() == b.getY() && a.getPlane() == b.getPlane();
-    }
-    @Subscribe
-    public void onGameObjectDespawned(GameObjectDespawned despawned){
-        WorldPoint rock1 = new WorldPoint(3165,2908,0);
-        WorldPoint rock2 = new WorldPoint(3165,2909,0);
-        WorldPoint rock3 = new WorldPoint(3165,2910,0);
-        WorldPoint rock4 = new WorldPoint(3167,2911,0);
-        WorldPoint point = despawned.getGameObject().getWorldLocation();
-        if(isSamePoint(rock1,point)||isSamePoint(rock2,point)||isSamePoint(rock3,point)||isSamePoint(rock4,point)) {
-            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "you despawned a rock. disabling plugin", null);
-            this.toggle();
-        }
     }
     @Subscribe
     public void onMenuOptionClicked(MenuOptionClicked event)
