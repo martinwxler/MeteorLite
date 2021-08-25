@@ -79,7 +79,6 @@ task createJavadocs (type: Javadoc)
 {
     source = sourceSets.main.allJava
     classpath = sourceSets.main.getCompileClasspath()
-    exclude += 'com/app/com4j/api/**'
 }
 
 runtime {
