@@ -6,7 +6,6 @@ import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.game.Vars;
 import meteor.plugins.api.widgets.Dialog;
 import meteor.plugins.api.widgets.Widgets;
-import net.runelite.api.Client;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
@@ -14,7 +13,6 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -225,7 +223,7 @@ public class Bank {
                 WidgetInfo widgetInfo = WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER;
                 item.setIdentifier(0);
                 item.setWidgetInfo(widgetInfo);
-                item.setActionParam(item.getIndex());
+                item.setActionParam(item.getSlot());
                 item.setWidgetId(widgetInfo.getId());
                 item.setActions(Widgets.get(widgetInfo).getActions());
 
@@ -250,7 +248,7 @@ public class Bank {
                 WidgetInfo widgetInfo = WidgetInfo.BANK_ITEM_CONTAINER;
                 item.setIdentifier(0);
                 item.setWidgetInfo(widgetInfo);
-                item.setActionParam(item.getIndex());
+                item.setActionParam(item.getSlot());
                 item.setWidgetId(widgetInfo.getId());
                 item.setActions(Widgets.get(widgetInfo).getActions());
 

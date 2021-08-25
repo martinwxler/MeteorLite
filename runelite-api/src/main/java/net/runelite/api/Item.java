@@ -29,6 +29,7 @@ import net.runelite.api.widgets.WidgetInfo;
 
 import java.util.Arrays;
 import java.util.List;
+import net.runelite.api.widgets.WidgetItem;
 
 @Data
 public class Item implements Interactable {
@@ -36,7 +37,7 @@ public class Item implements Interactable {
     private final int quantity;
 
     private Client client;
-    private int index;
+    private int slot;
     private String[] actions;
 
     // Interaction
@@ -122,9 +123,35 @@ public class Item implements Interactable {
 
     public void useOn(TileObject object) {
         client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
-        client.setSelectedItemSlot(getIndex());
+        client.setSelectedItemSlot(getSlot());
         client.setSelectedItemID(getId());
         client.interact(object.getId(), MenuAction.ITEM_USE_ON_GAME_OBJECT.getId(),
                 object.menuPoint().getX(), object.menuPoint().getY());
+    }
+
+
+    public void useOn(Item item) {
+        client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+        client.setSelectedItemSlot(item.getSlot());
+        client.setSelectedItemID(item.getId());
+        client.invokeMenuAction("", "", getId(),
+            MenuAction.ITEM_USE_ON_WIDGET_ITEM.getId(), getSlot(), WidgetInfo.INVENTORY.getId());
+    }
+
+
+    public void useOn(WidgetItem item) {
+        client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+        client.setSelectedItemSlot(item.getSlot());
+        client.setSelectedItemID(item.getId());
+        client.invokeMenuAction("", "", getId(),
+            MenuAction.ITEM_USE_ON_WIDGET_ITEM.getId(), getSlot(), WidgetInfo.INVENTORY.getId());
+    }
+
+    public void useOn(NPC npc) {
+        client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
+        client.setSelectedItemSlot(getSlot());
+        client.setSelectedItemID(getId());
+        client.invokeMenuAction("", "", npc.getIndex(),
+            MenuAction.ITEM_USE_ON_NPC.getId(), 0, 0);
     }
 }

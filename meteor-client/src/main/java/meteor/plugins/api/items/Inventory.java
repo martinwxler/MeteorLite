@@ -2,11 +2,9 @@ package meteor.plugins.api.items;
 
 import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.GameThread;
-import meteor.plugins.api.widgets.Widgets;
 import net.runelite.api.*;
 import net.runelite.api.widgets.WidgetInfo;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -29,7 +27,7 @@ public class Inventory {
                 WidgetInfo widgetInfo = WidgetInfo.INVENTORY;
                 item.setIdentifier(item.getId());
                 item.setWidgetInfo(widgetInfo);
-                item.setActionParam(item.getIndex());
+                item.setActionParam(item.getSlot());
                 item.setWidgetId(widgetInfo.getId());
                 item.setActions(Game.getClient().getItemComposition(item.getId()).getInventoryActions());
 

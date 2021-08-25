@@ -6,7 +6,6 @@ import meteor.plugins.api.widgets.Widgets;
 import net.runelite.api.*;
 import net.runelite.api.widgets.WidgetInfo;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -26,7 +25,7 @@ public class Equipment {
             }
 
             if (item.getId() != -1 && item.getName() != null && !item.getName().equals("null")) {
-                WidgetInfo widgetInfo = getEquipmentWidgetInfo(item.getIndex());
+                WidgetInfo widgetInfo = getEquipmentWidgetInfo(item.getSlot());
                 if (widgetInfo != null) {
                     item.setIdentifier(0);
                     item.setActionParam(-1);

@@ -158,29 +158,6 @@ public class WidgetItem implements Interactable {
     interact(getId(), menuAction, getSlot(), WidgetInfo.INVENTORY.getId());
   }
 
-  public void useOn(WidgetItem item) {
-    client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
-    client.setSelectedItemSlot(item.getSlot());
-    client.setSelectedItemID(item.getId());
-    client.invokeMenuAction("", "", getId(),
-        MenuAction.ITEM_USE_ON_WIDGET_ITEM.getId(), getSlot(), WidgetInfo.INVENTORY.getId());
-  }
-
-  public void useOn(GameObject object) {
-    client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
-    client.setSelectedItemSlot(getSlot());
-    client.setSelectedItemID(getId());
-    client.invokeMenuAction("", "", object.getId(),
-        MenuAction.ITEM_USE_ON_GAME_OBJECT.getId(), object.menuPoint().getX(), object.menuPoint().getY());
-  }
-
-  public void useOn(NPC npc) {
-    client.setSelectedItemWidget(WidgetInfo.INVENTORY.getId());
-    client.setSelectedItemSlot(getSlot());
-    client.setSelectedItemID(getId());
-    client.invokeMenuAction("", "", npc.getIndex(),
-        MenuAction.ITEM_USE_ON_NPC.getId(), 0, 0);
-  }
 
   public String getName() {
     return client.getItemComposition(getId()).getName();

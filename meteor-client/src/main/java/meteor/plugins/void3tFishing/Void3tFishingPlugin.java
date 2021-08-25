@@ -19,6 +19,9 @@ import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
+import meteor.plugins.api.entities.NPCs;
+import meteor.plugins.api.items.Inventory;
+import net.runelite.api.Item;
 import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
 import net.runelite.api.Skill;
@@ -74,26 +77,26 @@ public class Void3tFishingPlugin extends Plugin {
       return;
     }
 
-    if (osrs.nearestNPC(FISHING_SPOT_1542) == null)
+    if (NPCs.getNearest(FISHING_SPOT_1542) == null)
       return;
 
-    if (osrs.items(GUAM_LEAF) == null)
+    if (Inventory.getFirst(GUAM_LEAF) == null)
       return;
 
-    if (osrs.items(BARBARIAN_ROD) == null)
+    if (Inventory.getFirst(BARBARIAN_ROD) == null)
       return;
 
-    if (osrs.items(PESTLE_AND_MORTAR) == null)
+    if (Inventory.getFirst(PESTLE_AND_MORTAR) == null)
       return;
 
-    if (osrs.items(SWAMP_TAR) == null || osrs.items(SWAMP_TAR).get(0).getQuantity() < 15)
+    if (Inventory.getFirst(SWAMP_TAR) == null || Inventory.getAll(SWAMP_TAR).get(0).getQuantity() < 15)
       return;
 
-    if (osrs.nearestNPC(FISHING_SPOT_1542).getDistanceFromLocalPlayer() > ONE_TILE ||
-            (osrs.nearestNPC(FISHING_SPOT_1542).getDistanceFromLocalPlayer() == ONE_TILE && client.getLocalPlayer().isIdle()))
+    if (NPCs.getNearest(FISHING_SPOT_1542).getDistanceFromLocalPlayer() > ONE_TILE ||
+            (NPCs.getNearest(FISHING_SPOT_1542).getDistanceFromLocalPlayer() == ONE_TILE && client.getLocalPlayer().isIdle()))
       delayedTicks = -2;
 
-    List<WidgetItem> catches = osrs.items(LEAPING_TROUT, LEAPING_SALMON, LEAPING_STURGEON);
+    List<Item> catches = Inventory.getAll(LEAPING_TROUT, LEAPING_SALMON, LEAPING_STURGEON);
     if (catches != null) {
       caught++;
       lastCaught = 0;
@@ -118,7 +121,7 @@ public class Void3tFishingPlugin extends Plugin {
   }
 
   private void dropCatch() {
-    WidgetItem caughtFish = osrs.firstItem(LEAPING_TROUT, LEAPING_SALMON, LEAPING_STURGEON);
+    Item caughtFish = Inventory.getFirst(LEAPING_TROUT, LEAPING_SALMON, LEAPING_STURGEON);
     if (caughtFish != null)
       caughtFish.interact("drop");
   }
@@ -126,16 +129,16 @@ public class Void3tFishingPlugin extends Plugin {
   private void clickFishingSpot() {
     if (client.getLocalPlayer().isMoving())
       return;
-    NPC nearestFishingSpot = osrs.nearestNPC(FISHING_SPOT_1542);
+    NPC nearestFishingSpot = NPCs.getNearest(FISHING_SPOT_1542);
     if (nearestFishingSpot != null)
       nearestFishingSpot.interact(0);
   }
 
   private void useGuamOnSwampTar() {
-    if (osrs.nearestNPC(FISHING_SPOT_1542).getDistanceFromLocalPlayer() > ONE_TILE)
+    if (NPCs.getNearest(FISHING_SPOT_1542).getDistanceFromLocalPlayer() > ONE_TILE)
       return;
-    WidgetItem cleanGuam = osrs.firstItem(GUAM_LEAF);
-    WidgetItem swampTar = osrs.firstItem(SWAMP_TAR);
+    Item cleanGuam = Inventory.getFirst(GUAM_LEAF);
+    Item swampTar = Inventory.getFirst(SWAMP_TAR);
     if (cleanGuam != null && swampTar != null)
       cleanGuam.useOn(swampTar);
   }
