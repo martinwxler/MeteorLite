@@ -125,13 +125,8 @@ public class PluginListUI {
         toggleButton.setLayoutX(290);
         PluginToggleButton finalToggleButton = toggleButton;
         toggleButton.selectedProperty().addListener((options, oldValue, newValue) -> {
-          if (newValue && finalToggleButton.plugin.isEnabled())
+          if (newValue == finalToggleButton.plugin.isEnabled())
             return;
-          if (!newValue && !finalToggleButton.plugin.isEnabled())
-            return;
-          p.toggle();
-        });
-        toggleButton.addEventHandler(MouseEvent.MOUSE_PRESSED, (e) -> {
           if (!overrideToggleListener)
             p.toggle();
         });
