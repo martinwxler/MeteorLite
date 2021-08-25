@@ -239,7 +239,7 @@
   "id": "osrs.MusicPatchNode",
   "ie": "osrs.LoginPacket",
   "if": "osrs.class245",
-  "ig": "osrs.class238",
+  "ig": "osrs.Packet",
   "ih": "osrs.class244",
   "ii": "osrs.SpriteMask",
   "ij": "osrs.Wrapper",

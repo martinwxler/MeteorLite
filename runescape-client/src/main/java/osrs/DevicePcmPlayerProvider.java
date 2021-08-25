@@ -941,7 +941,7 @@ public class DevicePcmPlayerProvider implements class45 {
 										}
 									} else if (Login.loginIndex == 14) {
 										String var49 = "";
-										switch(Login.field874) {
+										switch(Login.Login_banType) {
 										case 0:
 											var49 = "https://support.runescape.com/hc/en-gb/articles/115002238729-Account-Bans";
 											break;
