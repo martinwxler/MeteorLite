@@ -38,6 +38,7 @@ import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ConfigChanged;
+import meteor.events.ExternalsReloaded;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.ui.components.Category;
@@ -611,5 +612,10 @@ public class PluginListUI {
       contextMenu.show(pluginName, screenBounds.getMinX() + 150, screenBounds.getMinY() + 20);
     });
     pluginList.getChildren().add(pluginPanel);
+  }
+
+  @Subscribe
+  public void onExternalsReloaded(ExternalsReloaded e) {
+    refreshPlugins();
   }
 }
