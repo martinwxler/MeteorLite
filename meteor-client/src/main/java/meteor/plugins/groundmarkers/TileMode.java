@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018, TheLonelyDev <https://github.com/TheLonelyDev>
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Snakk <http://github.com/SnakkSnokk>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,16 +25,22 @@
 
 package meteor.plugins.groundmarkers;
 
-import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@Value
-@EqualsAndHashCode(exclude = {"group"})
-class GroundMarkerPoint
+@Getter
+@RequiredArgsConstructor
+public enum TileMode
 {
-	private int regionId;
-	private int regionX;
-	private int regionY;
-	private int z;
-	private int group;
+    DEFAULT("Default"),
+    NO_OUTLINE("No Outline"),
+    NO_OUTLINE_COLOR("No Outline Color");
+
+    private final String name;
+
+    @Override
+    public String toString()
+    {
+        return name;
+    }
 }

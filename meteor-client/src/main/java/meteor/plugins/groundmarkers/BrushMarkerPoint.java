@@ -23,19 +23,22 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package meteor.plugins.groundmarkers;
 
+import java.awt.Color;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
+/**
+ * Used for serialization of ground marker points.
+ */
 @Value
-@EqualsAndHashCode(exclude = {"group"})
-class GroundMarkerPoint
+@EqualsAndHashCode(exclude = { "color" })
+class BrushMarkerPoint
 {
 	private int regionId;
 	private int regionX;
 	private int regionY;
 	private int z;
-	private int group;
+	private Color color;
 }
