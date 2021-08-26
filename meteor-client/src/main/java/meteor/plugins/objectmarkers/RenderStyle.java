@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Tomas Slusny <slusnucky@gmail.com>
+ * Copyright (c) 2019, Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,23 +23,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package meteor.plugins.objectindicators;
+package meteor.plugins.objectmarkers;
 
-import java.awt.Color;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-class ObjectPoint {
-
-  private int id = -1;
-  private String name;
-  private int regionId;
-  private int regionX;
-  private int regionY;
-  private int z;
-  private Color color;
+public enum RenderStyle
+{
+	CLICKBOX,
+	HULL,
+	AREA,
+	OUTLINE
 }

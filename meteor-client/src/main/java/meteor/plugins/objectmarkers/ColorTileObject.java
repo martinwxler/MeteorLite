@@ -22,7 +22,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.objectindicators;
+package meteor.plugins.objectmarkers;
 
 import java.awt.Color;
 import lombok.RequiredArgsConstructor;
@@ -31,21 +31,21 @@ import net.runelite.api.ObjectComposition;
 import net.runelite.api.TileObject;
 
 /**
- * Used to denote marked objects and their colors. Note: This is not used for serialization of
- * object indicators; see {@link ObjectPoint}
+ * Used to denote marked objects and their colors.
+ * Note: This is not used for serialization of object indicators; see {@link ObjectPoint}
  */
 @Value
 @RequiredArgsConstructor
-class ColorTileObject {
-
-  private final TileObject tileObject;
-  /**
-   * Non-transformed object composition for the object
-   */
-  private final ObjectComposition composition;
-  /**
-   * Name to highlight for multilocs
-   */
-  private final String name;
-  private final Color color;
+class ColorTileObject
+{
+	private final TileObject tileObject;
+	/**
+	 * Non-transformed object composition for the object
+	 */
+	private final ObjectComposition composition;
+	/**
+	 * Name to highlight for multilocs
+	 */
+	private final String name;
+	private final Color color;
 }
