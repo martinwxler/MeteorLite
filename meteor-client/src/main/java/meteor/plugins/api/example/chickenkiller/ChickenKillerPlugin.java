@@ -5,6 +5,7 @@ import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
+import meteor.plugins.api.commons.StopWatch;
 import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.entities.NPCs;
 import meteor.plugins.api.entities.Players;
@@ -16,15 +17,20 @@ import meteor.plugins.api.items.Equipment;
 import meteor.plugins.api.items.Inventory;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.movement.Reachable;
+import meteor.plugins.api.statistics.DefaultOverlay;
+import meteor.plugins.api.statistics.Statistic;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayManager;
 import meteor.ui.overlay.OverlayPosition;
 import meteor.ui.overlay.OverlayPriority;
 import net.runelite.api.Item;
+import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
 import net.runelite.api.TileItem;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.ExperienceGained;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.ItemObtained;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -47,11 +53,34 @@ public class ChickenKillerPlugin extends Plugin {
     private ChickenKillerOverlay overlay;
 
     @Inject
+    private DefaultOverlay defaultOverlay;
+
+    @Inject
     private OverlayManager overlayManager;
+
+    private int totalFeathers;
+    private StopWatch runTime = StopWatch.start();
+
+    @Subscribe
+    public void onExperienceGained(ExperienceGained experienceGained) {
+        defaultOverlay.trackSkill(experienceGained.getSkill(), false);
+    }
+
+    @Subscribe
+    public void onItemObtained(ItemObtained e) {
+        if (e.getItemId() == ItemID.FEATHER) {
+            totalFeathers += e.getAmount();
+        }
+    }
 
     @Override
     public void startup() {
+        defaultOverlay.setHeader(this.getName());
+        defaultOverlay.submit("Time running", new Statistic(() -> runTime.toElapsedString()));
+        defaultOverlay.submit("Feathers", new Statistic(runTime, () -> totalFeathers));
+        overlayManager.add(defaultOverlay);
         overlayManager.add(overlay);
+
         overlay.setPosition(OverlayPosition.DYNAMIC);
         overlay.setLayer(OverlayLayer.ABOVE_WIDGETS);
         overlay.setPriority(OverlayPriority.LOW);
@@ -67,6 +96,7 @@ public class ChickenKillerPlugin extends Plugin {
                 }
 
                 if (Bank.isOpen()) {
+                    logger.debug("Bank is open");
                     if (!Inventory.contains(995)) {
                         logger.debug("Withdrawing coins");
                         Bank.withdrawAll(995, Bank.WithdrawMode.DEFAULT);
@@ -94,7 +124,7 @@ public class ChickenKillerPlugin extends Plugin {
 
                 TileItem loot = TileItems.getNearest(x -> x.getName() != null &&
                         (x.getName().equals("Bones") || x.getName().equals("Feather")));
-                if (loot != null) {
+                if (loot != null && loot.getTile().getWorldLocation().distanceTo(Players.getLocal().getWorldLocation()) < 15) {
                     if (!Reachable.isInteractable(loot.getTile())) {
                         Movement.walkTo(loot.getTile().getWorldLocation());
                         return;
@@ -137,5 +167,6 @@ public class ChickenKillerPlugin extends Plugin {
     @Override
     public void shutdown() {
         overlayManager.remove(overlay);
+        overlayManager.remove(defaultOverlay);
     }
 }
