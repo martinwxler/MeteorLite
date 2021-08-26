@@ -23,19 +23,47 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package meteor.plugins.groundmarkers;
 
-import lombok.EqualsAndHashCode;
-import lombok.Value;
+import java.awt.event.KeyEvent;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import meteor.input.KeyListener;
 
-@Value
-@EqualsAndHashCode(exclude = {"group"})
-class GroundMarkerPoint
+@Singleton
+public class GroundMarkerInputListener implements KeyListener
 {
-	private int regionId;
-	private int regionX;
-	private int regionY;
-	private int z;
-	private int group;
+	private static final int HOTKEY = KeyEvent.VK_SHIFT;
+
+	private final sGroundMarkerPlugin plugin;
+
+	@Inject
+	private GroundMarkerInputListener(final sGroundMarkerPlugin plugin)
+	{
+		this.plugin = plugin;
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e)
+	{
+
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e)
+	{
+		if (e.getKeyCode() == HOTKEY)
+		{
+			plugin.setHotKeyPressed(true);
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e)
+	{
+		if (e.getKeyCode() == HOTKEY)
+		{
+			plugin.setHotKeyPressed(false);
+		}
+	}
 }

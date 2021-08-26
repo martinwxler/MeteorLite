@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Tomas Slusny <slusnucky@gmail.com>
+ * Copyright (c) 2018, TheStonedTurtle <https://github.com/TheStonedTurtle>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,24 +22,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package meteor.plugins.groundmarkers;
 
-package meteor.plugins.objectindicators;
+import lombok.Value;
+import net.runelite.api.coords.WorldPoint;
 
-import java.awt.Color;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-class ObjectPoint {
-
-  private int id = -1;
-  private String name;
-  private int regionId;
-  private int regionX;
-  private int regionY;
-  private int z;
-  private Color color;
+@Value
+class sGroundMarkerWorldPoint
+{
+	private GroundMarkerPoint groundMarkerPoint;
+	private WorldPoint worldPoint;
 }

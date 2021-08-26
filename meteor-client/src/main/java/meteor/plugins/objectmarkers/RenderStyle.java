@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018, TheLonelyDev <https://github.com/TheLonelyDev>
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2019, Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,18 +23,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package meteor.plugins.groundmarkers;
+package meteor.plugins.objectmarkers;
 
-import lombok.EqualsAndHashCode;
-import lombok.Value;
-
-@Value
-@EqualsAndHashCode(exclude = {"group"})
-class GroundMarkerPoint
+public enum RenderStyle
 {
-	private int regionId;
-	private int regionX;
-	private int regionY;
-	private int z;
-	private int group;
+	CLICKBOX,
+	HULL,
+	AREA,
+	OUTLINE
 }
