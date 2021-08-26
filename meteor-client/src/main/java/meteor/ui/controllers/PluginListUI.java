@@ -92,7 +92,9 @@ public class PluginListUI {
           String categoryPluginsConfig = configManager.getConfiguration("category", name);
           if (categoryPluginsConfig != null) {
             String[] categoryPlugins = categoryPluginsConfig.split(",");
-            category.plugins.addAll(Arrays.asList(categoryPlugins));
+            for (String s : categoryPlugins)
+              if (!s.equals(""))
+                category.plugins.add(s);
           }
           categories.add(category);
         }
@@ -190,7 +192,7 @@ public class PluginListUI {
       pluginPanel.setPrefHeight(15);
       pluginPanel.setPrefWidth(280);
       pluginPanel.setStyle("-fx-background-color: #212121; -fx-border-style: solid;  -fx-border-color: #121212; -fx-border-width: 1;");
-
+      pluginPanel.getStylesheets().add("css/plugins/jfx-contextmenu.css");
       Text categoryName = new Text();
       categoryName.setText(c.name);
       categoryName.setFill(Paint.valueOf("CYAN"));
@@ -200,12 +202,13 @@ public class PluginListUI {
       categoryName.setFont(Font.font(18));
 
       ContextMenu contextMenu = new ContextMenu();
+      contextMenu.setStyle("-fx-highlight-fill: #424242");
       int position = getCategoryPosition(c);
 
       if (position > 0) {
         contextMenu.setStyle("-fx-background-color: #121212;");
         CategoryMenuItem moveUp = new CategoryMenuItem(c, null, "Move up");
-        moveUp.setStyle("-fx-background-color: #121212; -fx-text-fill: cyan;");
+        moveUp.setStyle("-fx-background-color: #121212; -fx-text-fill: cyan; -fx-highlight-fill: #424242");
         moveUp.setOnAction((event) -> {
           moveUp(c);
           saveCategories();
@@ -216,7 +219,7 @@ public class PluginListUI {
       if (position < categories.size() - 1) {
         contextMenu.setStyle("-fx-background-color: #121212;");
         CategoryMenuItem moveDown = new CategoryMenuItem(c, null, "Move Down");
-        moveDown.setStyle("-fx-background-color: #121212; -fx-text-fill: cyan;");
+        moveDown.setStyle("-fx-background-color: #121212; -fx-text-fill: cyan; -fx-highlight-fill: #424242");
         moveDown.setOnAction((event) -> {
           moveDown(c);
           saveCategories();
@@ -227,7 +230,7 @@ public class PluginListUI {
       if (!c.name.equals("MeteorLite")) {
         contextMenu.setStyle("-fx-background-color: #121212;");
         CategoryMenuItem moveDown = new CategoryMenuItem(c, null, "Remove");
-        moveDown.setStyle("-fx-background-color: #121212; -fx-text-fill: cyan;");
+        moveDown.setStyle("-fx-background-color: #121212; -fx-text-fill: cyan; -fx-highlight-fill: #424242");
         moveDown.setOnAction((event) -> {
           remove(c);
           saveCategories();
@@ -256,7 +259,7 @@ public class PluginListUI {
         for (String s : c.plugins) {
           Plugin p = PluginManager.getInstance(s);
           if (p != null)
-            addPlugin(p);
+            addPlugin(p, c);
         }
       }
 
@@ -339,6 +342,16 @@ public class PluginListUI {
     return -1;
   }
 
+  private int getPluginPosition(Category category, String plugin) {
+    int i = 0;
+    for (String c : category.plugins) {
+      if (c.equals(plugin) )
+        return i;
+      i++;
+    }
+    return -1;
+  }
+
   private void remove(Category category) {
     ArrayList<Category> temp = new ArrayList<>();
     for (Category c : categories)
@@ -350,6 +363,26 @@ public class PluginListUI {
   }
 
   private void moveUp(Category category) {
+    ArrayList<Category> temp = new ArrayList<>();
+    int categoryPosition = getCategoryPosition(category);
+    int currentPos = 0;
+    Category replaced = null;
+    for (Category c : categories) {
+      if (currentPos == categoryPosition - 1) {
+        replaced = c;
+        temp.add(category);
+      }
+      else if (currentPos == categoryPosition)
+        temp.add(replaced);
+      else
+        temp.add(c);
+      currentPos++;
+    }
+    categories = temp;
+    refreshPlugins();
+  }
+
+  private void moveUp(Category category, String plugin) {
     ArrayList<Category> temp = new ArrayList<>();
     int categoryPosition = getCategoryPosition(category);
     int currentPos = 0;
@@ -396,7 +429,34 @@ public class PluginListUI {
     refreshPlugins();
   }
 
-  private void addPlugin(Plugin p) {
+  private void moveDown(Category category, String plugin) {
+    ArrayList<String> temp = new ArrayList<>();
+    int categoryPosition = getPluginPosition(category, plugin);
+    int currentPos = 0;
+    String replaced = null;
+    for (String c : category.plugins) {
+      if (currentPos == categoryPosition + 1) {
+        replaced = c;
+      }
+      currentPos++;
+    }
+    currentPos = 0;
+    for (String c : category.plugins) {
+      if (currentPos == categoryPosition)
+        temp.add(replaced);
+      else if (currentPos == categoryPosition + 1) {
+        replaced = c;
+        temp.add(plugin);
+      }
+      else
+        temp.add(c);
+      currentPos++;
+    }
+    category.plugins = temp;
+    refreshPlugins();
+  }
+
+  private void addPlugin(Plugin p, Category category) {
     AnchorPane pluginPanel = new AnchorPane();
     pluginPanel.setStyle("-fx-border-color: transparent;");
 
@@ -490,8 +550,10 @@ public class PluginListUI {
     ContextMenu contextMenu = new ContextMenu();
     contextMenu.setStyle("-fx-background-color: #121212;");
     for (Category c : categories) {
+      if (c.name.equals("MeteorLite"))
+        continue;
       if (!c.plugins.contains(p.getName())) {
-        CategoryMenuItem menuItem = new CategoryMenuItem(c, p, "Add to: " + c.name);
+        CategoryMenuItem menuItem = new CategoryMenuItem(c, p, "Add : " + c.name);
         menuItem.setStyle("-fx-background-color: #121212; -fx-text-fill: cyan;");
         menuItem.setOnAction((event) -> {
           if (!c.plugins.contains(p.getName())) {
@@ -501,6 +563,45 @@ public class PluginListUI {
           }
         });
         contextMenu.getItems().add(menuItem);
+      }
+      else {
+        CategoryMenuItem menuItem = new CategoryMenuItem(c, p, "Remove : " + c.name);
+        menuItem.setStyle("-fx-background-color: #121212; -fx-text-fill: cyan;");
+        menuItem.setOnAction((event) -> {
+          if (c.plugins.contains(p.getName())) {
+            c.plugins.remove(p.getName());
+            refreshPlugins();
+            saveCategories();
+          }
+        });
+        contextMenu.getItems().add(menuItem);
+      }
+    }
+
+    if (!category.name.equals("MeteorLite")) {
+      if (getPluginPosition(category, p.getName()) > 0) {
+        new Logger("").debug(getPluginPosition(category, p.getName()));
+        CategoryMenuItem moveUpMenuItem = new CategoryMenuItem(category, p, "Move up");
+        moveUpMenuItem.setStyle("-fx-background-color: #121212; -fx-text-fill: cyan;");
+        moveUpMenuItem.setOnAction((event) -> {
+          moveUp(category, p.getName());
+          refreshPlugins();
+          saveCategories();
+        });
+        contextMenu.getItems().add(moveUpMenuItem);
+      }
+
+      if (getPluginPosition(category, p.getName()) < category.plugins.size() - 1) {
+        CategoryMenuItem moveDownMenuItem = new CategoryMenuItem(category, p, "Move Down");
+        moveDownMenuItem.setStyle("-fx-background-color: #121212; -fx-text-fill: cyan;");
+        moveDownMenuItem.setOnAction((event) -> {
+          if (category.plugins.contains(p.getName())) {
+            moveDown(category, p.getName());
+            refreshPlugins();
+            saveCategories();
+          }
+        });
+        contextMenu.getItems().add(moveDownMenuItem);
       }
     }
 

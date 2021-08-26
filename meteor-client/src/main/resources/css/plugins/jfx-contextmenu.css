@@ -12,6 +12,7 @@
   -fx-text-fill: cyan;
 }
 
-.menu-item:focused .label {
-  -fx-text-fill: cyan;
+.menu-item:focused {
+  -fx-background: #424242;
+  -fx-background-color: #424242;
 }
