@@ -595,7 +595,22 @@ public abstract class WidgetMixin implements RSWidget
   @Inject
   @Override
   public int getActionId(int actionIndex) {
-      return Widget.getActionId(this, actionIndex);
+    switch (getType()) {
+      case WidgetType.LAYER:
+      case WidgetType.RECTANGLE:
+        return MenuAction.CC_OP.getId();
+      case WidgetType.GRAPHIC:
+        return getTargetVerb() == null || getTargetVerb().isEmpty()
+                ? MenuAction.CC_OP.getId() : MenuAction.WIDGET_TYPE_2.getId();
+      case WidgetType.INVENTORY:
+        return MenuAction.WIDGET_TYPE_2.getId();
+      case WidgetType.TEXT:
+        return MenuAction.WIDGET_TYPE_6.getId();
+      case WidgetType.MODEL:
+        return MenuAction.WIDGET_TYPE_1.getId();
+      default:
+        throw new IllegalArgumentException("Widget: no identifier for " + actionIndex);
+    }
   }
 
   @Inject
@@ -630,6 +645,17 @@ public abstract class WidgetMixin implements RSWidget
 
   @Inject
   public int getMenuIdentifier(int actionIndex) {
-    return Widget.getMenuIdentifier(this, actionIndex);
+    switch (getType()) {
+      case WidgetType.LAYER:
+      case WidgetType.RECTANGLE:
+        return actionIndex + 1;
+      case WidgetType.GRAPHIC:
+        return getTargetVerb() == null || getTargetVerb().isEmpty() ? actionIndex + 1 : 0;
+      case WidgetType.TEXT:
+      case WidgetType.MODEL:
+        return 0;
+      default:
+        throw new IllegalArgumentException("Widget: no identifier for " + actionIndex);
+    }
   }
 }
