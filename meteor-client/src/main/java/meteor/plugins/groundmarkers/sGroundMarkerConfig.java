@@ -29,9 +29,9 @@ package meteor.plugins.groundmarkers;
 import java.awt.Color;
 import lombok.RequiredArgsConstructor;
 import meteor.config.*;
-import meteor.plugins.groundmarkers.GroundMarkerConfig;
+import meteor.plugins.groundmarkers.sGroundMarkerConfig;
 
-@ConfigGroup(GroundMarkerConfig.GROUND_MARKER_CONFIG_GROUP)
+@ConfigGroup(sGroundMarkerConfig.GROUND_MARKER_CONFIG_GROUP)
 public interface sGroundMarkerConfig extends Config
 {
 	String GROUND_MARKER_CONFIG_GROUP = "groundMarker";
