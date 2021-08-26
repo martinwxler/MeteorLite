@@ -383,22 +383,22 @@ public class PluginListUI {
   }
 
   private void moveUp(Category category, String plugin) {
-    ArrayList<Category> temp = new ArrayList<>();
-    int categoryPosition = getCategoryPosition(category);
+    ArrayList<String> temp = new ArrayList<>();
+    int categoryPosition = getPluginPosition(category, plugin);
     int currentPos = 0;
-    Category replaced = null;
-    for (Category c : categories) {
+    String replaced = null;
+    for (String p : category.plugins) {
       if (currentPos == categoryPosition - 1) {
-        replaced = c;
-        temp.add(category);
+        replaced = p;
+        temp.add(plugin);
       }
       else if (currentPos == categoryPosition)
         temp.add(replaced);
       else
-        temp.add(c);
+        temp.add(p);
       currentPos++;
     }
-    categories = temp;
+    category.plugins = temp;
     refreshPlugins();
   }
 
