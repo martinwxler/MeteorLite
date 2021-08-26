@@ -103,8 +103,9 @@ import org.sponge.util.Logger;
 
 public class MeteorLiteClientModule extends AbstractModule implements AppletStub, AppletContext {
 
-  public static JFrame mainInstanceFrame = new JFrame();
   public static String uuid = UUID.randomUUID().toString();
+  public static JFrame mainWindow;
+
   @Inject
   private EventBus eventBus;
 
@@ -287,16 +288,13 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
 
   public static void setupJavaFXComponents(Applet applet) throws IOException {
 
-    JFrame instanceFrame = new JFrame();
-    if (mainInstanceFrame == null)
-      mainInstanceFrame = instanceFrame;
-    instanceFrame.setSize(1280, 720);
-    instanceFrame.setMinimumSize(new Dimension(1280, 720));
+    mainWindow = new JFrame();
+    mainWindow.setSize(1280, 720);
+    mainWindow.setMinimumSize(new Dimension(1280, 720));
 
     JFXPanel toolbarPanel = new JFXPanel();
     toolbarPanel.setSize(1280, 100);
     rightPanel.setSize(550, 800);
-
 
     toolbarPanel.setScene(new Scene(toolbarRoot, 300, 33));
     toolbarPanel.setVisible(true);
@@ -304,12 +302,12 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
 
     rootPanel.add(toolbarPanel, BorderLayout.NORTH);
     rootPanel.add(rightPanel, BorderLayout.EAST);
-    instanceFrame.add(rootPanel);
+    mainWindow.add(rootPanel);
     rootPanel.setVisible(true);
-    instanceFrame.setVisible(true);
-    instanceFrame.setExtendedState(instanceFrame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
-    instanceFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-    instanceFrame.addWindowListener(new WindowAdapter() {
+    mainWindow.setVisible(true);
+    mainWindow.setExtendedState(mainWindow.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+    mainWindow.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    mainWindow.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent event) {
         ClientShutdown shutdown = new ClientShutdown();

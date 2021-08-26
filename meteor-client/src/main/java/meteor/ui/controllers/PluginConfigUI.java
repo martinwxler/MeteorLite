@@ -1,5 +1,6 @@
 package meteor.ui.controllers;
 
+import static meteor.MeteorLiteClientModule.mainWindow;
 import static meteor.ui.controllers.PluginListUI.lastPluginInteracted;
 
 import com.jfoenix.controls.JFXButton;
@@ -8,6 +9,7 @@ import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXSlider;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.JFXTooltip;
 import com.sun.javafx.collections.ObservableListWrapper;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -152,7 +154,7 @@ public class PluginConfigUI {
 
     ScrollBar scrollBar = new ScrollBar();
     scrollBar.setOrientation(Orientation.VERTICAL);
-    scrollBar.setMinSize(5, 4096);
+    scrollBar.setMinSize(5, mainWindow.getHeight());
     AnchorPane.setRightAnchor(scrollBar, 0.0);
     scrollBar.setMin(0);
     scrollBar.setMax(100);
@@ -249,6 +251,20 @@ public class PluginConfigUI {
     name.setWrappingWidth(300);
     name.setFont(Font.font(18));
 
+    JFXTooltip tooltip = new JFXTooltip();
+    if (configItem.getItem().description().length() > 0)
+      tooltip.setText(configItem.getItem().description());
+
+    name.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
+      if (!tooltip.isShowing())
+        if (tooltip.getText().length() > 0)
+          tooltip.showOnAnchors(name, 0, -50);
+    });
+
+    name.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
+      tooltip.hide();
+    });
+
     root.getChildren().add(name);
 
     Class<? extends Enum> type = (Class<? extends Enum>) configItem.getType();
@@ -286,6 +302,20 @@ public class PluginConfigUI {
     name.setWrappingWidth(300);
     name.setFont(Font.font(18));
 
+    JFXTooltip tooltip = new JFXTooltip();
+    if (configItem.getItem().description().length() > 0)
+      tooltip.setText(configItem.getItem().description());
+
+    name.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
+      if (!tooltip.isShowing())
+        if (tooltip.getText().length() > 0)
+          tooltip.showOnAnchors(name, 0, -50);
+    });
+
+    name.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
+      tooltip.hide();
+    });
+
     root.getChildren().add(name);
 
     JFXTextField textField = new JFXTextField();
@@ -321,6 +351,20 @@ public class PluginConfigUI {
     name.setWrappingWidth(300);
     name.setFont(Font.font(18));
     AnchorPane.setBottomAnchor(name, 150.0);
+
+    JFXTooltip tooltip = new JFXTooltip();
+    if (descriptor.getItem().description().length() > 0)
+      tooltip.setText(descriptor.getItem().description());
+
+    name.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
+      if (!tooltip.isShowing())
+        if (tooltip.getText().length() > 0)
+          tooltip.showOnAnchors(name, 0, -50);
+    });
+
+    name.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
+      tooltip.hide();
+    });
 
     root.getChildren().add(name);
 
@@ -359,6 +403,20 @@ public class PluginConfigUI {
     name.setWrappingWidth(300);
     name.setFont(Font.font(18));
 
+    JFXTooltip tooltip = new JFXTooltip();
+    if (descriptor.getItem().description().length() > 0)
+      tooltip.setText(descriptor.getItem().description());
+
+    name.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
+      if (!tooltip.isShowing())
+        if (tooltip.getText().length() > 0)
+          tooltip.showOnAnchors(name, 0, -50);
+    });
+
+    name.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
+      tooltip.hide();
+    });
+
     root.getChildren().add(name);
 
     PluginToggleButton toggleButton = new PluginToggleButton(plugin);
@@ -389,6 +447,20 @@ public class PluginConfigUI {
     name.setLayoutY(18);
     name.setWrappingWidth(300);
     name.setFont(Font.font(18));
+
+    JFXTooltip tooltip = new JFXTooltip();
+    if (descriptor.getItem().description().length() > 0)
+      tooltip.setText(descriptor.getItem().description());
+
+    name.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
+      if (!tooltip.isShowing())
+        if (tooltip.getText().length() > 0)
+          tooltip.showOnAnchors(name, 0, -50);
+    });
+
+    name.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
+      tooltip.hide();
+    });
 
     root.getChildren().add(name);
 
@@ -458,6 +530,20 @@ public class PluginConfigUI {
     textField.setStyle("-jfx-focus-color: CYAN;");
     textField.getStylesheets().add("css/plugins/jfx-textfield.css");
 
+    JFXTooltip tooltip = new JFXTooltip();
+    if (descriptor.getItem().description().length() > 0)
+      tooltip.setText(descriptor.getItem().description());
+
+    textField.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
+      if (!tooltip.isShowing())
+        if (tooltip.getText().length() > 0)
+          tooltip.showOnAnchors(textField, 0, -50);
+    });
+
+    textField.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
+      tooltip.hide();
+    });
+
     root.getChildren().add(textField);
   }
 
@@ -470,6 +556,20 @@ public class PluginConfigUI {
     name.setLayoutY(18);
     name.setWrappingWidth(300);
     name.setFont(Font.font(18));
+
+    JFXTooltip tooltip = new JFXTooltip();
+    if (configItem.getItem().description().length() > 0)
+      tooltip.setText(configItem.getItem().description());
+
+    name.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
+      if (!tooltip.isShowing())
+        if (tooltip.getText().length() > 0)
+          tooltip.showOnAnchors(name, 0, -50);
+    });
+
+    name.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
+      tooltip.hide();
+    });
 
     root.getChildren().add(name);
 

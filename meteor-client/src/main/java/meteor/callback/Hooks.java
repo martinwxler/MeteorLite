@@ -24,6 +24,7 @@
  */
 package meteor.callback;
 
+import static meteor.MeteorLiteClientModule.mainWindow;
 import static net.runelite.api.widgets.WidgetInfo.WORLD_MAP_VIEW;
 
 import java.awt.Color;
@@ -300,7 +301,7 @@ public class Hooks implements Callbacks {
     Image image = mainBufferProvider.getImage();
     final Image finalImage;
     if (client.isStretchedEnabled()) {
-      GraphicsConfiguration gc = MeteorLiteClientModule.mainInstanceFrame.getGraphicsConfiguration();
+      GraphicsConfiguration gc = mainWindow.getGraphicsConfiguration();
       Dimension stretchedDimensions = client.getStretchedDimensions();
 
       if (lastStretchedDimensions == null || !lastStretchedDimensions.equals(stretchedDimensions)
