@@ -124,7 +124,7 @@ public class ChickenKillerPlugin extends Plugin {
 
                 TileItem loot = TileItems.getNearest(x -> x.getName() != null &&
                         (x.getName().equals("Bones") || x.getName().equals("Feather")));
-                if (loot != null && loot.getDistanceFromLocalPlayer() < 15) {
+                if (loot != null && loot.getTile().getWorldLocation().distanceTo(Players.getLocal().getWorldLocation()) < 15) {
                     if (!Reachable.isInteractable(loot.getTile())) {
                         Movement.walkTo(loot.getTile().getWorldLocation());
                         return;
