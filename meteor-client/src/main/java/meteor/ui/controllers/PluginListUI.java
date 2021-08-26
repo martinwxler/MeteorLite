@@ -160,14 +160,17 @@ public class PluginListUI {
       pluginName.setFont(Font.font(18));
 
       JFXTooltip tooltip = new JFXTooltip();
+      if (p.getClass().getAnnotation(PluginDescriptor.class).description().length() > 0)
       tooltip.setText(p.getClass().getAnnotation(PluginDescriptor.class).description());
 
       pluginName.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
         if (!tooltip.isShowing())
-          tooltip.showOnAnchors(pluginName, 0, -50);
+          if (tooltip.getText().length() > 0)
+            tooltip.showOnAnchors(pluginName, 0, -50);
       });
 
       pluginName.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
+        if (tooltip.isShowing())
         tooltip.hide();
       });
 
@@ -181,7 +184,7 @@ public class PluginListUI {
 
     ScrollBar scrollBar = new ScrollBar();
     scrollBar.setOrientation(Orientation.VERTICAL);
-    scrollBar.setMinSize(5, 4096);
+    scrollBar.setMinSize(5, MeteorLiteClientModule.mainWindow.getHeight());
     AnchorPane.setRightAnchor(scrollBar, 0.0);
     scrollBar.setMin(0);
     scrollBar.setMax(100);
