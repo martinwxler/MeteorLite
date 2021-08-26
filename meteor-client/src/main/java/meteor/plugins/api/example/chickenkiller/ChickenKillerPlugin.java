@@ -5,6 +5,7 @@ import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
+import meteor.plugins.api.commons.StopWatch;
 import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.entities.NPCs;
 import meteor.plugins.api.entities.Players;
@@ -17,16 +18,19 @@ import meteor.plugins.api.items.Inventory;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.movement.Reachable;
 import meteor.plugins.api.statistics.DefaultOverlay;
+import meteor.plugins.api.statistics.Statistic;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayManager;
 import meteor.ui.overlay.OverlayPosition;
 import meteor.ui.overlay.OverlayPriority;
 import net.runelite.api.Item;
+import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
 import net.runelite.api.TileItem;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ExperienceGained;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.ItemObtained;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -54,14 +58,26 @@ public class ChickenKillerPlugin extends Plugin {
     @Inject
     private OverlayManager overlayManager;
 
+    private int totalFeathers;
+    private StopWatch runTime = StopWatch.start();
+
     @Subscribe
     public void onExperienceGained(ExperienceGained experienceGained) {
         defaultOverlay.trackSkill(experienceGained.getSkill(), false);
     }
 
+    @Subscribe
+    public void onItemObtained(ItemObtained e) {
+        if (e.getItemId() == ItemID.FEATHER) {
+            totalFeathers += e.getAmount();
+        }
+    }
+
     @Override
     public void startup() {
         defaultOverlay.setHeader(this.getName());
+        defaultOverlay.submit("Time running", new Statistic(() -> runTime.toElapsedString()));
+        defaultOverlay.submit("Feathers", new Statistic(runTime, () -> totalFeathers));
         overlayManager.add(defaultOverlay);
         overlayManager.add(overlay);
 
