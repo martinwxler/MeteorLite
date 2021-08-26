@@ -65,6 +65,7 @@ import meteor.eventbus.DeferredEventBus;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ClientShutdown;
+import meteor.events.ExternalsReloaded;
 import meteor.game.WorldService;
 import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.entities.*;
@@ -162,6 +163,11 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
   @Named("developerMode")
   private boolean getDeveloperMode() {
     return false;
+  }
+
+  @Subscribe
+  public void onExternalsReloaded(ExternalsReloaded e) {
+    pluginManager.startExternals();
   }
 
   @Subscribe
