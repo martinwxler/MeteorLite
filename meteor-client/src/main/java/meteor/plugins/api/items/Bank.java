@@ -14,9 +14,11 @@ import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class Bank {
 	private static final int WITHDRAW_MODE_VARBIT = 3958;
@@ -169,13 +171,7 @@ public class Bank {
 	}
 
 	public static void withdraw(Predicate<Item> filter, int amount, WithdrawMode withdrawMode) {
-		Item item = getFirst(filter.and(x -> {
-			if (Game.getClient().isItemDefinitionCached(x.getId())) {
-				return Game.getClient().getItemComposition(x.getId()).getPlaceholderTemplateId() == -1;
-			}
-
-			return GameThread.invokeLater(() -> Game.getClient().getItemComposition(x.getId()).getPlaceholderTemplateId() == -1);
-		}));
+		Item item = getFirst(filter.and(x -> GameThread.invokeLater(() -> Game.getClient().getItemComposition(x.getId()).getPlaceholderTemplateId() == -1)));
 
 		if (item == null) {
 			return;
@@ -220,18 +216,14 @@ public class Bank {
 			return items;
 		}
 
-		for (Item item : container.getItems()) {
-			if (!Game.getClient().isItemDefinitionCached(item.getId())) {
-				GameThread.invokeLater(() -> Game.getClient().getItemComposition(item.getId()));
-			}
+		Inventory.cacheItems(container);
 
+		Item[] containerItems = container.getItems();
+		for (int i = 0, containerItemsLength = containerItems.length; i < containerItemsLength; i++) {
+			Item item = containerItems[i];
 			if (item.getId() != -1 && item.getName() != null && !item.getName().equals("null")) {
-				WidgetInfo widgetInfo = WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER;
-				item.setIdentifier(0);
-				item.setWidgetInfo(widgetInfo);
-				item.setActionParam(item.getSlot());
-				item.setWidgetId(widgetInfo.getId());
-				item.setActions(Widgets.get(widgetInfo).getActions());
+				item.setWidgetId(item.calculateWidgetId(WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER));
+				item.setSlot(i);
 
 				if (filter.test(item)) {
 					items.add(item);
@@ -249,14 +241,14 @@ public class Bank {
 			return items;
 		}
 
-		for (Item item : container.getItems()) {
+		Inventory.cacheItems(container);
+
+		Item[] containerItems = container.getItems();
+		for (int i = 0, containerItemsLength = containerItems.length; i < containerItemsLength; i++) {
+			Item item = containerItems[i];
 			if (item.getId() != -1 && item.getName() != null && !item.getName().equals("null")) {
-				WidgetInfo widgetInfo = WidgetInfo.BANK_ITEM_CONTAINER;
-				item.setIdentifier(0);
-				item.setWidgetInfo(widgetInfo);
-				item.setActionParam(item.getSlot());
-				item.setWidgetId(widgetInfo.getId());
-				item.setActions(Widgets.get(widgetInfo).getActions());
+				item.setWidgetId(item.calculateWidgetId(WidgetInfo.BANK_ITEM_CONTAINER));
+				item.setSlot(i);
 
 				if (filter.test(item)) {
 					items.add(item);

@@ -4,6 +4,7 @@ import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.input.Keyboard;
+import meteor.plugins.api.items.GrandExchange;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
@@ -17,6 +18,7 @@ public class Dialog {
 
 	private static final Supplier<Widget> DIALOG = () -> Widgets.get(162, 557);
 	private static final Supplier<Widget> WEIRD_CONT = () -> Widgets.get(193, 3);
+	private static final Supplier<Widget> WEIRD_CONT_2 = () -> Widgets.get(633, 0);
 	private static final Supplier<Widget> NPC_CONT = () -> Widgets.get(WidgetID.DIALOG_NPC_GROUP_ID, 4);
 	private static final Supplier<Widget> PLAYER_CONT = () -> Widgets.get(WidgetID.DIALOG_PLAYER_GROUP_ID, 3);
 	private static final Supplier<Widget> DEATH_CONT = () -> Widgets.get(663, 0);
@@ -30,12 +32,12 @@ public class Dialog {
 
 	public static boolean isOpen() {
 		Widget widget = DIALOG.get();
-		return widget != null && GameThread.invokeLater(() -> !widget.isHidden());
+		return widget == null || GameThread.invokeLater(widget::isHidden);
 	}
 
 	public static boolean canContinue() {
 		return GameThread.invokeLater(() -> canContinueNPC() || canContinuePlayer() || canContinueDeath()
-						|| canWeirdContinue() || canWeirderContinue() || canContinueTutIsland() || canContinueTutIsland2()
+						|| canWeirdContinue() || canWeirderContinue() || canWeirdestContinue() || canContinueTutIsland() || canContinueTutIsland2()
 						|| canContinueTutIsland3());
 	}
 
@@ -51,6 +53,11 @@ public class Dialog {
 
 	public static boolean canWeirderContinue() {
 		Widget widget = WEIRD_CONT.get();
+		return widget != null && GameThread.invokeLater(() -> !widget.isHidden());
+	}
+
+	public static boolean canWeirdestContinue() {
+		Widget widget = WEIRD_CONT_2.get();
 		return widget != null && GameThread.invokeLater(() -> !widget.isHidden());
 	}
 
@@ -97,8 +104,7 @@ public class Dialog {
 
 	public static boolean isEnterInputOpen() {
 		Widget widget = Widgets.get(WidgetInfo.CHATBOX_FULL_INPUT);
-		// TODO: make sure GE search isn't open
-		return widget != null && !GameThread.invokeLater(widget::isHidden);
+		return widget != null && !GameThread.invokeLater(widget::isHidden) && !GrandExchange.isSearchingItem();
 	}
 
 	public static void enterInput(String input) {
