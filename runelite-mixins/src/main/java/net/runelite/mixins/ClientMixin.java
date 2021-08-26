@@ -330,16 +330,37 @@ public abstract class ClientMixin implements RSClient {
       {
         oldXp = 0;
       }
+			int level = client.getRealSkillLevel(updatedSkill);
       StatChanged statChanged = new StatChanged(
           updatedSkill,
           newXp,
-          client.getRealSkillLevel(updatedSkill),
+          level,
           client.getBoostedSkillLevel(updatedSkill),
           newXp - oldXp
       );
+      if (oldXp == 0 && newXp > 0) {
+        oldXp = newXp;
+        oldXpMap.put(updatedSkill, newXp);
+      }
+
       client.getCallbacks().post(statChanged);
-      oldXpMap.put(updatedSkill, client.getSkillExperience(updatedSkill));
+			experienceGained(oldXp, newXp, level, updatedSkill);
     }
+  }
+
+  @Inject
+  public static void experienceGained(int oldExp, int currentExp, int skillLevel, Skill updatedSkill) {
+		if (currentExp > oldExp) {
+			ExperienceGained experienceGained = new ExperienceGained(
+							updatedSkill,
+							oldExp,
+							currentExp,
+							skillLevel
+			);
+
+			client.getCallbacks().post(experienceGained);
+			oldXpMap.put(updatedSkill, currentExp);
+		}
   }
 
   @FieldHook("changedSkills")
