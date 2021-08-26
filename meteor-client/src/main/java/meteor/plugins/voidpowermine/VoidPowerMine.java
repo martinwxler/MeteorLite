@@ -16,7 +16,7 @@ import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameTick;
 
 @PluginDescriptor(
-    name = "Void 3t Fishing",
+    name = "Void Powermine",
         enabledByDefault = false
 )
 public class VoidPowerMine extends Plugin {
@@ -73,6 +73,4 @@ public class VoidPowerMine extends Plugin {
       }
     }
   }
-
-
 }
