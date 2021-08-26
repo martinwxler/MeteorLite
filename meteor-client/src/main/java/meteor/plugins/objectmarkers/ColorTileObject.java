@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018, TheLonelyDev <https://github.com/TheLonelyDev>
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2020, dekvall <https://github.com/dekvall>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,19 +22,30 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package meteor.plugins.objectmarkers;
 
-package meteor.plugins.groundmarkers;
-
-import lombok.EqualsAndHashCode;
+import java.awt.Color;
+import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import net.runelite.api.ObjectComposition;
+import net.runelite.api.TileObject;
 
+/**
+ * Used to denote marked objects and their colors.
+ * Note: This is not used for serialization of object indicators; see {@link ObjectPoint}
+ */
 @Value
-@EqualsAndHashCode(exclude = {"group"})
-class GroundMarkerPoint
+@RequiredArgsConstructor
+class ColorTileObject
 {
-	private int regionId;
-	private int regionX;
-	private int regionY;
-	private int z;
-	private int group;
+	private final TileObject tileObject;
+	/**
+	 * Non-transformed object composition for the object
+	 */
+	private final ObjectComposition composition;
+	/**
+	 * Name to highlight for multilocs
+	 */
+	private final String name;
+	private final Color color;
 }
