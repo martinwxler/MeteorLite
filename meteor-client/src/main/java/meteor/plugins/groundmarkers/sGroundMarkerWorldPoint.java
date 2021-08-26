@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018, TheLonelyDev <https://github.com/TheLonelyDev>
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, TheStonedTurtle <https://github.com/TheStonedTurtle>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,19 +22,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package meteor.plugins.groundmarkers;
 
-import lombok.EqualsAndHashCode;
 import lombok.Value;
+import net.runelite.api.coords.WorldPoint;
 
 @Value
-@EqualsAndHashCode(exclude = {"group"})
-class GroundMarkerPoint
+class sGroundMarkerWorldPoint
 {
-	private int regionId;
-	private int regionX;
-	private int regionY;
-	private int z;
-	private int group;
+	private GroundMarkerPoint groundMarkerPoint;
+	private WorldPoint worldPoint;
 }
