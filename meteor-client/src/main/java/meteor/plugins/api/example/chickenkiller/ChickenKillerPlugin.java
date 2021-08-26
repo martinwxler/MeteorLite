@@ -16,6 +16,7 @@ import meteor.plugins.api.items.Equipment;
 import meteor.plugins.api.items.Inventory;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.movement.Reachable;
+import meteor.plugins.api.statistics.DefaultOverlay;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayManager;
 import meteor.ui.overlay.OverlayPosition;
@@ -24,6 +25,7 @@ import net.runelite.api.Item;
 import net.runelite.api.NPC;
 import net.runelite.api.TileItem;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.ExperienceGained;
 import net.runelite.api.events.GameTick;
 
 import javax.inject.Inject;
@@ -47,11 +49,22 @@ public class ChickenKillerPlugin extends Plugin {
     private ChickenKillerOverlay overlay;
 
     @Inject
+    private DefaultOverlay defaultOverlay;
+
+    @Inject
     private OverlayManager overlayManager;
+
+    @Subscribe
+    public void onExperienceGained(ExperienceGained experienceGained) {
+        defaultOverlay.trackSkill(experienceGained.getSkill(), false);
+    }
 
     @Override
     public void startup() {
+        defaultOverlay.setHeader(this.getName());
+        overlayManager.add(defaultOverlay);
         overlayManager.add(overlay);
+
         overlay.setPosition(OverlayPosition.DYNAMIC);
         overlay.setLayer(OverlayLayer.ABOVE_WIDGETS);
         overlay.setPriority(OverlayPriority.LOW);
@@ -67,6 +80,7 @@ public class ChickenKillerPlugin extends Plugin {
                 }
 
                 if (Bank.isOpen()) {
+                    logger.debug("Bank is open");
                     if (!Inventory.contains(995)) {
                         logger.debug("Withdrawing coins");
                         Bank.withdrawAll(995, Bank.WithdrawMode.DEFAULT);
@@ -94,7 +108,7 @@ public class ChickenKillerPlugin extends Plugin {
 
                 TileItem loot = TileItems.getNearest(x -> x.getName() != null &&
                         (x.getName().equals("Bones") || x.getName().equals("Feather")));
-                if (loot != null) {
+                if (loot != null && loot.getDistanceFromLocalPlayer() < 15) {
                     if (!Reachable.isInteractable(loot.getTile())) {
                         Movement.walkTo(loot.getTile().getWorldLocation());
                         return;
@@ -137,5 +151,6 @@ public class ChickenKillerPlugin extends Plugin {
     @Override
     public void shutdown() {
         overlayManager.remove(overlay);
+        overlayManager.remove(defaultOverlay);
     }
 }
