@@ -528,20 +528,19 @@ public class PluginListUI {
     pluginName.setWrappingWidth(300);
     pluginName.setFont(Font.font(18));
 
-    JFXTooltip tooltip = new JFXTooltip();
-    if (p.getClass().getAnnotation(PluginDescriptor.class).description().length() > 0)
+    if (p.getClass().getAnnotation(PluginDescriptor.class).description().length() > 0) {
+      JFXTooltip tooltip = new JFXTooltip();
       tooltip.setText(p.getClass().getAnnotation(PluginDescriptor.class).description());
 
-    pluginName.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
-      if (!tooltip.isShowing())
-        if (tooltip.getText().length() > 0)
-          tooltip.showOnAnchors(pluginName, 0, -50);
-    });
+      pluginName.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
+            tooltip.showOnAnchors(pluginName, 0, -50);
+      });
 
-    pluginName.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
-      if (tooltip.isShowing())
-        tooltip.hide();
-    });
+      pluginName.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
+          tooltip.hide();
+      });
+    }
+
 
     pluginPanel.getChildren().add(pluginName);
     pluginPanel.getChildren().add(configButton); //Order matters here! Very Important! uwu
