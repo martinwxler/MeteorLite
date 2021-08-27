@@ -3,10 +3,11 @@ plugins {
     id 'application'
     id 'com.github.johnrengelman.shadow'
     id 'org.beryx.runtime'
+    id 'org.openjfx.javafxplugin' version '0.0.10'
 }
 
 group 'org.meteorlite'
-version '1.0.16'
+version '1.0.17'
 
 repositories {
     mavenCentral()
@@ -62,18 +63,13 @@ dependencies {
     implementation(group : "io.reactivex.rxjava3", name : "rxjava", version : "_")
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '_'
     implementation group: 'com.google.code.gson', name: 'gson', version: '_'
-    implementation(files("./lib/javafx.base.jar"))
-    implementation(files("./lib/javafx.controls.jar"))
-    implementation(files("./lib/javafx.fxml.jar"))
-    implementation(files("./lib/javafx.graphics.jar"))
-    implementation(files("./lib/javafx.media.jar"))
-    implementation(files("./lib/javafx.swing.jar"))
-    implementation(files("./lib/javafx.web.jar"))
-    implementation(files("./lib/javafx.swt.jar"))
     implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.9.0'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.21'
     implementation(group : "net.runelite", name : "discord", version : "1.4")
     implementation 'org.bouncycastle:bcprov-jdk15on:1.52'
+    implementation 'org.openjfx:javafx:16'
+
+
 }
 
 task createJavadocs (type: Javadoc)
@@ -99,6 +95,11 @@ runtime {
                 "--win-menu",
                 "--win-shortcut"]
     }
+}
+
+javafx {
+    sdk = "C:/Program Files/Java/javafx-sdk-11.0.2"
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.swing', 'javafx.graphics', 'javafx.media']
 }
 
 application {
