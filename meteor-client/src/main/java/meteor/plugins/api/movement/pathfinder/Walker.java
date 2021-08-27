@@ -29,7 +29,7 @@ public class Walker {
     private static final int MIN_TILES_LEFT_BEFORE_RECHOOSE = 3;
     private static final int MAX_MIN_ENERGY = 50;
     private static final int MIN_ENERGY = 5;
-    private static final CollisionMap collisionMap;
+    public static final CollisionMap collisionMap;
 
     static {
         CollisionMap loaded;
