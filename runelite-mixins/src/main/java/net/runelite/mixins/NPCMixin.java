@@ -1,41 +1,20 @@
-/*
- * Copyright (c) 2016-2017, Adam <Adam@sigterm.info>
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
 package net.runelite.mixins;
 
 import java.awt.Shape;
-import net.runelite.api.AnimationID;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import net.runelite.api.MenuAction;
 import net.runelite.api.NPCComposition;
 import net.runelite.api.Perspective;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.NpcChanged;
 import net.runelite.api.events.NpcDespawned;
-import net.runelite.api.mixins.Copy;
+import net.runelite.api.events.NpcTransformedChanged;
+import net.runelite.api.events.NpcTransformedDespawned;
 import net.runelite.api.mixins.FieldHook;
 import net.runelite.api.mixins.Inject;
 import net.runelite.api.mixins.Mixin;
-import net.runelite.api.mixins.Replace;
 import net.runelite.api.mixins.Shadow;
 import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSModel;
@@ -51,34 +30,61 @@ public abstract class NPCMixin implements RSNPC {
   @Inject
   private int npcIndex;
 
+  @Shadow("npcDefCache")
+  private static HashMap<Integer, RSNPCComposition> npcDefCache;
+
   @Inject
   @Override
-  public int getId() {
-    RSNPCComposition composition = getComposition();
-    if (composition != null && composition.getConfigs() != null) {
-      composition = composition.transform$api();
-    }
+  public int getId()
+  {
+    RSNPCComposition composition = transformIfRequired();
     return composition == null ? -1 : composition.getId();
   }
 
   @Inject
   @Override
-  public String getName() {
-    RSNPCComposition composition = getComposition();
-    if (composition != null && composition.getConfigs() != null) {
-      composition = composition.transform$api();
-    }
+  public String getName()
+  {
+    RSNPCComposition composition = transformIfRequired();
     return composition == null ? null : composition.getName().replace('\u00A0', ' ');
   }
 
   @Inject
   @Override
-  public int getCombatLevel() {
-    RSNPCComposition composition = getComposition();
-    if (composition != null && composition.getConfigs() != null) {
-      composition = composition.transform$api();
-    }
+  public int getCombatLevel()
+  {
+    RSNPCComposition composition = transformIfRequired();
     return composition == null ? -1 : composition.getCombatLevel();
+  }
+
+  @Inject
+  @Override
+  public String[] getActions()
+  {
+    RSNPCComposition composition = transformIfRequired();
+    return composition == null ? null : composition.getActions();
+  }
+
+  @Inject
+  private RSNPCComposition transformIfRequired() {
+    RSNPCComposition composition = getComposition();
+    if (isTransformRequired())
+    {
+      if (!npcDefCache.containsKey(getIndex())) {
+        assert client.isClientThread() : "NPCComposition.getTransformed must be called on client thread";
+        composition = npcDefCache.put(getIndex(), composition.transform$api());
+      } else {
+        composition = npcDefCache.get(getIndex());
+      }
+    }
+
+    return composition;
+  }
+
+  @Inject
+  @Override
+  public boolean isDefinitionCached() {
+    return npcDefCache.containsKey(getIndex());
   }
 
   @Inject
@@ -98,6 +104,7 @@ public abstract class NPCMixin implements RSNPC {
   public void onDefinitionChanged(RSNPCComposition composition) {
     if (composition == null) {
       client.getCallbacks().post(new NpcDespawned(this));
+      npcDefCache.remove(getIndex());
     } else if (this.getId() != -1) {
       RSNPCComposition oldComposition = getComposition();
       if (oldComposition == null) {
@@ -110,42 +117,6 @@ public abstract class NPCMixin implements RSNPC {
 
       client.getCallbacks().postDeferred(new NpcChanged(this, oldComposition));
     }
-  }
-
-  @Copy("getModel")
-  @Replace("getModel")
-  @SuppressWarnings("InfiniteRecursion")
-  public RSModel copy$getModel() {
-    if (!client.isInterpolateNpcAnimations()
-        || getAnimation() == AnimationID.HELLHOUND_DEFENCE) {
-      return copy$getModel();
-    }
-    int actionFrame = getActionFrame();
-    int poseFrame = getPoseFrame();
-    int spotAnimFrame = getSpotAnimFrame();
-    try {
-      // combine the frames with the frame cycle so we can access this information in the sequence methods
-      // without having to change method calls
-      setActionFrame(Integer.MIN_VALUE | getActionFrameCycle() << 16 | actionFrame);
-      setPoseFrame(Integer.MIN_VALUE | getPoseFrameCycle() << 16 | poseFrame);
-      setSpotAnimFrame(Integer.MIN_VALUE | getSpotAnimationFrameCycle() << 16 | spotAnimFrame);
-      return copy$getModel();
-    } finally {
-      // reset frames
-      setActionFrame(actionFrame);
-      setPoseFrame(poseFrame);
-      setSpotAnimFrame(spotAnimFrame);
-    }
-  }
-
-  @Inject
-  @Override
-  public NPCComposition getTransformedComposition() {
-    RSNPCComposition composition = getComposition();
-    if (composition != null && composition.getConfigs() != null) {
-      composition = composition.transform$api();
-    }
-    return composition;
   }
 
   @Inject
@@ -164,5 +135,112 @@ public abstract class NPCMixin implements RSNPC {
     int tileHeight = Perspective.getTileHeight(client, tileHeightPoint, client.getPlane());
 
     return model.getConvexHull(getX(), getY(), getOrientation(), tileHeight);
+  }
+
+  @Inject
+  @Override
+  public NPCComposition getTransformedComposition()
+  {
+    RSNPCComposition composition = getComposition();
+    if (composition != null && composition.getConfigs() != null)
+    {
+      composition = composition.transform$api();
+    }
+    return composition;
+  }
+
+  @Inject
+  @Override
+  public int getDistanceFromLocalPlayer() {
+    //Mancrappen :tm:
+    int distanceX;
+    int distanceY;
+    LocalPoint localPlayerPosition = client.getLocalPlayer().getLocalLocation();
+
+    if (getX() > localPlayerPosition.getX())
+      distanceX = getX() - localPlayerPosition.getX();
+    else
+      distanceX = localPlayerPosition.getX() - getX();
+
+    if (getY() > localPlayerPosition.getY())
+      distanceY = getY() - localPlayerPosition.getY();
+    else
+      distanceY = localPlayerPosition.getY() - getY();
+
+    return (distanceX + distanceY) / 2;
+  }
+
+  @Override
+  @Inject
+  public List<String> actions() {
+    List<String> actions = new ArrayList<>();
+    for (String s : getComposition().getActions())
+      if (s != null)
+        actions.add(s);
+    return actions;
+  }
+
+  @Override
+  @Inject
+  public void interact(String action) {
+    String[] actions = getComposition().getActions();
+
+    for (int i = 0; i < actions.length; i++) {
+      if (action.equalsIgnoreCase(actions[i])) {
+        interact(i);
+        return;
+      }
+    }
+
+    throw new IllegalArgumentException("action \"" + action + "\" not found on NPC " + getId());
+  }
+
+  @Override
+  @Inject
+  public int getActionId(int action) {
+    switch (action) {
+      case 0:
+        return MenuAction.NPC_FIRST_OPTION.getId();
+      case 1:
+        return MenuAction.NPC_SECOND_OPTION.getId();
+      case 2:
+        return MenuAction.NPC_THIRD_OPTION.getId();
+      case 3:
+        return MenuAction.NPC_FOURTH_OPTION.getId();
+      case 4:
+        return MenuAction.NPC_FIFTH_OPTION.getId();
+      default:
+        throw new IllegalArgumentException("action = " + action);
+    }
+  }
+
+  @Override
+  @Inject
+  public void interact(int action) {
+    interact(getIndex(), getActionId(action));
+  }
+
+  @Override
+  @Inject
+  public void interact(int identifier, int opcode, int param0, int param1) {
+    client.interact(identifier, opcode, param0, param1);
+  }
+
+  @Inject
+  @Override
+  public void interact(int index, int menuAction) {
+    interact(getIndex(), menuAction, 0, 0);
+  }
+
+  @Inject
+  @Override
+  public boolean isTransformRequired() {
+    return getComposition() != null && getComposition().getConfigs() != null;
+  }
+
+  @Inject
+  @Override
+  public String toString() {
+    return getIndex() + ": " + getName() + " (" + getId() + ") at " + getWorldLocation();
   }
 }
