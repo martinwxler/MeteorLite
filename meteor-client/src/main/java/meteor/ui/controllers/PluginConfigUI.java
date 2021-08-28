@@ -251,20 +251,22 @@ public class PluginConfigUI {
     name.setWrappingWidth(300);
     name.setFont(Font.font(18));
 
-    JFXTooltip tooltip = new JFXTooltip();
-    if (configItem.getItem().description().length() > 0)
+
+    if (configItem.getItem().description().length() > 0) {
+      JFXTooltip tooltip = new JFXTooltip();
       tooltip.setText(configItem.getItem().description());
 
-    name.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
-      if (!tooltip.isShowing())
-        if (tooltip.getText().length() > 0)
-          tooltip.showOnAnchors(name, 0, -50);
-    });
+      name.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
+        if (!tooltip.isShowing())
+          if (tooltip.getText().length() > 0)
+            tooltip.showOnAnchors(name, 0, -50);
+      });
 
-    name.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
-      if (tooltip.isShowing())
-        tooltip.hide();
-    });
+      name.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
+        if (tooltip.isShowing())
+          tooltip.hide();
+      });
+    }
 
     root.getChildren().add(name);
 
@@ -303,19 +305,22 @@ public class PluginConfigUI {
     name.setWrappingWidth(300);
     name.setFont(Font.font(18));
 
-    JFXTooltip tooltip = new JFXTooltip();
-    if (configItem.getItem().description().length() > 0)
+
+    if (configItem.getItem().description().length() > 0) {
+      JFXTooltip tooltip = new JFXTooltip();
       tooltip.setText(configItem.getItem().description());
 
-    name.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
-      if (!tooltip.isShowing())
-        if (tooltip.getText().length() > 0)
-          tooltip.showOnAnchors(name, 0, -50);
-    });
+      name.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
+        if (!tooltip.isShowing())
+          if (tooltip.getText().length() > 0)
+            tooltip.showOnAnchors(name, 0, -50);
+      });
 
-    name.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
-      tooltip.hide();
-    });
+      name.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
+        tooltip.hide();
+      });
+    }
+
 
     root.getChildren().add(name);
 
@@ -353,19 +358,18 @@ public class PluginConfigUI {
     name.setFont(Font.font(18));
     AnchorPane.setBottomAnchor(name, 150.0);
 
-    JFXTooltip tooltip = new JFXTooltip();
-    if (descriptor.getItem().description().length() > 0)
+    if (descriptor.getItem().description().length() > 0) {
+      JFXTooltip tooltip = new JFXTooltip();
       tooltip.setText(descriptor.getItem().description());
 
-    name.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
-      if (!tooltip.isShowing())
-        if (tooltip.getText().length() > 0)
-          tooltip.showOnAnchors(name, 0, -50);
-    });
+      name.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
+        tooltip.showOnAnchors(name, 0, -50);
+      });
 
-    name.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
-      tooltip.hide();
-    });
+      name.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
+        tooltip.hide();
+      });
+    }
 
     root.getChildren().add(name);
 
@@ -404,19 +408,19 @@ public class PluginConfigUI {
     name.setWrappingWidth(300);
     name.setFont(Font.font(18));
 
-    JFXTooltip tooltip = new JFXTooltip();
-    if (descriptor.getItem().description().length() > 0)
+
+    if (descriptor.getItem().description().length() > 0) {
+      JFXTooltip tooltip = new JFXTooltip();
       tooltip.setText(descriptor.getItem().description());
 
-    name.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
-      if (!tooltip.isShowing())
-        if (tooltip.getText().length() > 0)
-          tooltip.showOnAnchors(name, 0, -50);
-    });
+      name.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
+        tooltip.showOnAnchors(name, 0, -50);
+      });
 
-    name.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
-      tooltip.hide();
-    });
+      name.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
+        tooltip.hide();
+      });
+    }
 
     root.getChildren().add(name);
 
@@ -449,19 +453,22 @@ public class PluginConfigUI {
     name.setWrappingWidth(300);
     name.setFont(Font.font(18));
 
-    JFXTooltip tooltip = new JFXTooltip();
-    if (descriptor.getItem().description().length() > 0)
+
+    if (descriptor.getItem().description().length() > 0) {
+      JFXTooltip tooltip = new JFXTooltip();
       tooltip.setText(descriptor.getItem().description());
 
-    name.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
-      if (!tooltip.isShowing())
-        if (tooltip.getText().length() > 0)
-          tooltip.showOnAnchors(name, 0, -50);
-    });
+      name.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
+        if (!tooltip.isShowing())
+          if (tooltip.getText().length() > 0)
+            tooltip.showOnAnchors(name, 0, -50);
+      });
 
-    name.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
-      tooltip.hide();
-    });
+      name.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
+        tooltip.hide();
+      });
+    }
+
 
     root.getChildren().add(name);
 
@@ -531,19 +538,21 @@ public class PluginConfigUI {
     textField.setStyle("-jfx-focus-color: CYAN;");
     textField.getStylesheets().add("css/plugins/jfx-textfield.css");
 
-    JFXTooltip tooltip = new JFXTooltip();
-    if (descriptor.getItem().description().length() > 0)
+
+    if (descriptor.getItem().description().length() > 0) {
+      JFXTooltip tooltip = new JFXTooltip();
       tooltip.setText(descriptor.getItem().description());
 
-    textField.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
-      if (!tooltip.isShowing())
-        if (tooltip.getText().length() > 0)
-          tooltip.showOnAnchors(textField, 0, -50);
-    });
+      textField.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
+        if (!tooltip.isShowing())
+          if (tooltip.getText().length() > 0)
+            tooltip.showOnAnchors(textField, 0, -50);
+      });
 
-    textField.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
-      tooltip.hide();
-    });
+      textField.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
+        tooltip.hide();
+      });
+    }
 
     root.getChildren().add(textField);
   }
@@ -558,19 +567,22 @@ public class PluginConfigUI {
     name.setWrappingWidth(300);
     name.setFont(Font.font(18));
 
-    JFXTooltip tooltip = new JFXTooltip();
-    if (configItem.getItem().description().length() > 0)
+
+    if (configItem.getItem().description().length() > 0) {
+      JFXTooltip tooltip = new JFXTooltip();
       tooltip.setText(configItem.getItem().description());
 
-    name.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
-      if (!tooltip.isShowing())
-        if (tooltip.getText().length() > 0)
-          tooltip.showOnAnchors(name, 0, -50);
-    });
+      name.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
+        if (!tooltip.isShowing())
+          if (tooltip.getText().length() > 0)
+            tooltip.showOnAnchors(name, 0, -50);
+      });
 
-    name.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
-      tooltip.hide();
-    });
+      name.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
+        tooltip.hide();
+      });
+    }
+
 
     root.getChildren().add(name);
 
