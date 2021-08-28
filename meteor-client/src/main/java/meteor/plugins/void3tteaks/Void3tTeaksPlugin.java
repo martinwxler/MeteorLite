@@ -113,7 +113,7 @@ public class Void3tTeaksPlugin extends Plugin {
   private void dropCut() {
     Item logsCut = Inventory.getFirst(TEAK_LOGS);
     if (logsCut != null)
-      logsCut.interact("drop");
+      logsCut.drop();
   }
 
   private void clickTeakTree() {

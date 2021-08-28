@@ -58,7 +58,6 @@ import meteor.plugins.gauntlet.GauntletPlugin;
 import meteor.plugins.gpu.GpuPlugin;
 import meteor.plugins.grotesqueguardians.GrotesqueGuardiansPlugin;
 import meteor.plugins.grounditems.GroundItemsPlugin;
-import meteor.plugins.groundmarkers.GroundMarkerPlugin;
 import meteor.plugins.herbiboars.HerbiboarPlugin;
 import meteor.plugins.hunter.HunterPlugin;
 import meteor.plugins.implings.ImplingsPlugin;
@@ -88,7 +87,6 @@ import meteor.plugins.nightmare.NightmarePlugin;
 import meteor.plugins.npcindicators.NpcIndicatorsPlugin;
 import meteor.plugins.npcstatus.NpcStatusPlugin;
 import meteor.plugins.npcunaggroarea.NpcAggroAreaPlugin;
-import meteor.plugins.objectindicators.ObjectIndicatorsPlugin;
 import meteor.plugins.oneclick.OneClickPlugin;
 import meteor.plugins.oneclick3t4g.OneClick3t4g;
 import meteor.plugins.oneclickagility.OneClickAgilityPlugin;
@@ -122,6 +120,8 @@ import meteor.plugins.socketplanks.SocketPlanksPlugin;
 import meteor.plugins.socketthieving.SocketThievingPlugin;
 import meteor.plugins.sotetseg.SotetsegPlugin;
 import meteor.plugins.specialcounterextended.SpecialCounterExtendedPlugin;
+import meteor.plugins.groundmarkers.sGroundMarkerPlugin;
+import meteor.plugins.objectmarkers.sObjectIndicatorsPlugin;
 import meteor.plugins.statusbars.StatusBarsPlugin;
 import meteor.plugins.stretchedmode.StretchedModePlugin;
 import meteor.plugins.tearsofguthix.TearsOfGuthixPlugin;
@@ -134,6 +134,8 @@ import meteor.plugins.tithefarm.TitheFarmPlugin;
 import meteor.plugins.vetion.VetionPlugin;
 import meteor.plugins.void3tFishing.Void3tFishingPlugin;
 import meteor.plugins.void3tteaks.Void3tTeaksPlugin;
+import meteor.plugins.voidpowerchop.VoidPowerChop;
+import meteor.plugins.voidpowermine.VoidPowerMine;
 import meteor.plugins.vorkath.VorkathPlugin;
 import meteor.plugins.woodcutting.WoodcuttingPlugin;
 import meteor.plugins.worldmap.WorldMapPlugin;
@@ -169,7 +171,7 @@ public class PluginManager {
 
 	public static List<Plugin> plugins = new ArrayList<>();
 
-	private void initPlugins() {
+  private void initPlugins() {
 		plugins.add(new AgilityPlugin());
 		plugins.add(new AlchemicalHydraPlugin());
 		plugins.add(new AmmoPlugin());
@@ -216,7 +218,7 @@ public class PluginManager {
 		plugins.add(new GpuPlugin());
 		plugins.add(new GrotesqueGuardiansPlugin());
 		plugins.add(new GroundItemsPlugin());
-		plugins.add(new GroundMarkerPlugin());
+		plugins.add(new sGroundMarkerPlugin());
 		plugins.add(new HerbiboarPlugin());
 		plugins.add(new HunterPlugin());
 		plugins.add(new ImplingsPlugin());
@@ -246,7 +248,7 @@ public class PluginManager {
 		plugins.add(new NpcAggroAreaPlugin());
 		plugins.add(new NpcIndicatorsPlugin());
 		plugins.add(new NpcStatusPlugin());
-		plugins.add(new ObjectIndicatorsPlugin());
+		plugins.add(new sObjectIndicatorsPlugin());
 		plugins.add(new OneClickPlugin());
 		plugins.add(new OneClick3t4g());
 		plugins.add(new OneClickAgilityPlugin());
@@ -295,6 +297,8 @@ public class PluginManager {
 		plugins.add(new VetionPlugin());
 		plugins.add(new Void3tFishingPlugin());
 		plugins.add(new Void3tTeaksPlugin());
+		plugins.add(new VoidPowerMine());
+		plugins.add(new VoidPowerChop());
 		plugins.add(new VorkathPlugin());
 		plugins.add(new WalkerPlugin());
 		plugins.add(new WoodcuttingPlugin());
@@ -304,7 +308,7 @@ public class PluginManager {
 		plugins.add(new XpTrackerPlugin());
 		plugins.add(new XpGlobesPlugin());
 		plugins.add(new ZulrahPlugin());
-	}
+  }
 
 	public void startInternalPlugins() {
 		initPlugins();
