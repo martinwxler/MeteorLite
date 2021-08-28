@@ -10,6 +10,7 @@ import meteor.plugins.api.entities.TileObjects;
 import meteor.plugins.api.game.Game;
 import meteor.plugins.api.items.Inventory;
 import net.runelite.api.GameObject;
+import net.runelite.api.MenuAction;
 import net.runelite.api.ObjectID;
 import net.runelite.api.Player;
 import net.runelite.api.events.ConfigButtonClicked;
@@ -56,8 +57,7 @@ public class VoidPowerMine extends Plugin {
       return;
 
     if (Inventory.getFirst(440) != null)
-    Inventory.getFirst(440).interact("Drop");
-
+    Inventory.getFirst(440).drop();
     GameObject nearestRock = (GameObject) TileObjects.getNearest(ironRocks);
     if (nearestRock != null) {
       if (nearestRock.getDistanceFromLocalPlayer() < 300)

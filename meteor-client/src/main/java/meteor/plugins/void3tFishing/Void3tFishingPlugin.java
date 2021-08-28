@@ -123,7 +123,7 @@ public class Void3tFishingPlugin extends Plugin {
   private void dropCatch() {
     Item caughtFish = Inventory.getFirst(LEAPING_TROUT, LEAPING_SALMON, LEAPING_STURGEON);
     if (caughtFish != null)
-      caughtFish.interact("drop");
+      caughtFish.drop();
   }
 
   private void clickFishingSpot() {

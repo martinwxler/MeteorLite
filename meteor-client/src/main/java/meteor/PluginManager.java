@@ -134,6 +134,7 @@ import meteor.plugins.tithefarm.TitheFarmPlugin;
 import meteor.plugins.vetion.VetionPlugin;
 import meteor.plugins.void3tFishing.Void3tFishingPlugin;
 import meteor.plugins.void3tteaks.Void3tTeaksPlugin;
+import meteor.plugins.voidpowerchop.VoidPowerChop;
 import meteor.plugins.voidpowermine.VoidPowerMine;
 import meteor.plugins.vorkath.VorkathPlugin;
 import meteor.plugins.woodcutting.WoodcuttingPlugin;
@@ -297,6 +298,7 @@ public class PluginManager {
 		plugins.add(new Void3tFishingPlugin());
 		plugins.add(new Void3tTeaksPlugin());
 		plugins.add(new VoidPowerMine());
+		plugins.add(new VoidPowerChop());
 		plugins.add(new VorkathPlugin());
 		plugins.add(new WalkerPlugin());
 		plugins.add(new WoodcuttingPlugin());
