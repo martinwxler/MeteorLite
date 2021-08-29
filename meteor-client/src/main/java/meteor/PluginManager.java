@@ -90,6 +90,7 @@ import meteor.plugins.npcunaggroarea.NpcAggroAreaPlugin;
 import meteor.plugins.oneclick.OneClickPlugin;
 import meteor.plugins.oneclick3t4g.OneClick3t4g;
 import meteor.plugins.oneclickagility.OneClickAgilityPlugin;
+import meteor.plugins.oneclickcustom.OneClickCustomPlugin;
 import meteor.plugins.oneclickdropper.OneClickDropperPlugin;
 import meteor.plugins.oneclickthieving.OneClickThievingPlugin;
 import meteor.plugins.playerattacktimer.PlayerAttackTimerPlugin;
@@ -249,6 +250,7 @@ public class PluginManager {
 		plugins.add(new NpcIndicatorsPlugin());
 		plugins.add(new NpcStatusPlugin());
 		plugins.add(new sObjectIndicatorsPlugin());
+	  	plugins.add(new OneClickCustomPlugin());
 		plugins.add(new OneClickPlugin());
 		plugins.add(new OneClick3t4g());
 		plugins.add(new OneClickAgilityPlugin());
