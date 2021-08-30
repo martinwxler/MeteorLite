@@ -252,10 +252,10 @@ public class PluginManager {
 		plugins.add(new NpcIndicatorsPlugin());
 		plugins.add(new NpcStatusPlugin());
 		plugins.add(new sObjectIndicatorsPlugin());
-	  	plugins.add(new OneClickCustomPlugin());
 		plugins.add(new OneClickPlugin());
 		plugins.add(new OneClick3t4g());
 		plugins.add(new OneClickAgilityPlugin());
+		plugins.add(new OneClickCustomPlugin());
 		plugins.add(new OneClickDropperPlugin());
 		plugins.add(new OneClickThievingPlugin());
 		plugins.add(new PlayerAttackTimerPlugin());
