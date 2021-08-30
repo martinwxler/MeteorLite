@@ -16,13 +16,21 @@ import net.runelite.api.coords.WorldPoint;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class TransportLoader {
+    private static final int BUILD_DELAY_SECONDS = 5;
+    private static Instant lastBuild = Instant.now().minusSeconds(6);
 
     public static List<Transport> buildTransports() {
+        if (lastBuild.plusSeconds(BUILD_DELAY_SECONDS).isAfter(Instant.now())) {
+            return Collections.emptyList();
+        }
+
+        lastBuild = Instant.now();
         List<Transport> transports = new ArrayList<>();
         try {
             InputStream txt = TransportLoader.class.getResourceAsStream("/transports.txt");

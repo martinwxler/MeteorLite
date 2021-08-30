@@ -49,6 +49,7 @@ import meteor.plugins.defaultworld.DefaultWorldPlugin;
 import meteor.plugins.demonicgorilla.DemonicGorillaPlugin;
 import meteor.plugins.devtools.DevToolsPlugin;
 import meteor.plugins.discord.DiscordPlugin;
+import meteor.plugins.entityinspector.EntityInspectorPlugin;
 import meteor.plugins.environmentaid.EnvironmentAidPlugin;
 import meteor.plugins.fairyring.FairyRingPlugin;
 import meteor.plugins.fightcave.FightCavePlugin;
@@ -208,6 +209,7 @@ public class PluginManager {
 		plugins.add(new DevToolsPlugin());
 		plugins.add(new DiaryRequirementsPlugin());
 		plugins.add(new DiscordPlugin());
+		plugins.add(new EntityInspectorPlugin());
 		plugins.add(new EnvironmentAidPlugin());
 		plugins.add(new ExternalManagerPlugin());
 		plugins.add(new FairyRingPlugin());
