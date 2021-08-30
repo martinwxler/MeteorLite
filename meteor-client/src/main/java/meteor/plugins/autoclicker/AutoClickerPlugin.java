@@ -4,6 +4,7 @@ package meteor.plugins.autoclicker;
 import com.google.inject.Provides;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.NPC;
 import net.runelite.api.Point;
 import meteor.callback.ClientThread;
 import meteor.config.ConfigManager;
@@ -21,6 +22,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -63,9 +65,6 @@ public class AutoClickerPlugin extends Plugin {
     private static SMouseListener myMouseListener;
     private static boolean setupMouseListener = false;
     private static boolean inputDisabled = false;
-
-    private boolean wasBreaking = false;
-    private Point lastPointBeforeBreak = null;
 
 
     @Provides
@@ -141,12 +140,33 @@ public class AutoClickerPlugin extends Plugin {
             {
 
                 while (run) {
-                    if (wasBreaking && lastPointBeforeBreak != null && config.followMouse())
+                    Point mousePoint = client.getMouseCanvasPosition();
+                    if (config.mouseOnNPC())
                     {
-                        mouseEvent(MouseEvent.MOUSE_MOVED, lastPointBeforeBreak);
-                        wasBreaking = false;
-                        lastPointBeforeBreak = null;
-                        continue;
+                        List<NPC> npcs = client.getNpcs();
+                        boolean shouldContinue = false;
+                        for (NPC npc : npcs)
+                        {
+                            if (npc == null)
+                                continue;
+                            if (npc.getId() == config.mouseOnNPCID())
+                            {
+                                if (npc.getConvexHull().contains(mousePoint.getX(), mousePoint.getY()))
+                                {
+                                    shouldContinue = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!shouldContinue)
+                        {
+                            try {
+                                Thread.sleep(getBetweenClicksDelay());
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            continue;
+                        }
                     }
 
                     if (random.nextInt(100) < config.frequencyAFK()) {
@@ -163,9 +183,9 @@ public class AutoClickerPlugin extends Plugin {
                                     (!config.skipOnInteraction() || client.getLocalPlayer().getInteracting() == null) &&
                                     (!config.skipOnAnimating() || client.getLocalPlayer().getAnimation() == -1)) {
                                 if (config.followMouse()) {
-                                    clickService.submit(() -> click(lastPointBeforeBreak = client.getMouseCanvasPosition()));
+                                    clickService.submit(() -> click(client.getMouseCanvasPosition()));
                                 } else
-                                    clickService.submit(() -> click(lastPointBeforeBreak = savedPoint));
+                                    clickService.submit(() -> click(savedPoint));
                             }
                         });
                     }
