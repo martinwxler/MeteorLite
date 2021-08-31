@@ -8,12 +8,12 @@ import meteor.config.ConfigSection;
 @ConfigGroup("entityinspector")
 public interface EntityInspectorConfig extends Config {
 	@ConfigSection(
-					keyName = "displayedInfo",
+					keyName = "settings",
 					position = 0,
-					name = "Displayed info",
+					name = "Settings",
 					description = ""
 	)
-	String displayedInfo = "Displayed info";
+	String displayedInfo = "Settings";
 
 	@ConfigItem(
 					keyName = "hover",
@@ -173,18 +173,10 @@ public interface EntityInspectorConfig extends Config {
 	}
 
 	@ConfigSection(
-					keyName = "actorInfo",
-					position = 0,
-					name = "Actor info",
-					description = ""
-	)
-	String actorInfo = "Actor info";
-
-	@ConfigSection(
 					keyName = "actors",
-					position = 0,
 					name = "Actors",
-					description = ""
+					description = "",
+					position = 2
 	)
 	String actors = "Actors";
 

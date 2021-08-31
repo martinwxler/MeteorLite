@@ -362,7 +362,6 @@ public class EntityInspectorOverlay extends Overlay {
 	}
 
 	public String createInfo(Interactable interactable) {
-
 		StringBuilder sb = new StringBuilder();
 		if (interactable instanceof Actor actor) {
 			if (config.indexes()) {
@@ -375,7 +374,7 @@ public class EntityInspectorOverlay extends Overlay {
 				}
 			}
 
-			sb.append(appendCommonFields(sb, actor));
+			appendCommonFields(sb, actor);
 
 			if (config.animations()) {
 				sb.append("Animations: ").append(actor.getAnimation()).append("\n");
@@ -393,7 +392,7 @@ public class EntityInspectorOverlay extends Overlay {
 				sb.append("ID: ").append(obj.getId()).append("\n");
 			}
 
-			sb.append(appendCommonFields(sb, obj));
+			appendCommonFields(sb, obj);
 
 			if (config.animations()) {
 				if (obj instanceof GameObject go && go.getRenderable() instanceof DynamicObject dyn) {
@@ -413,14 +412,14 @@ public class EntityInspectorOverlay extends Overlay {
 				sb.append("Quantity: ").append(tileItem.getQuantity()).append("\n");
 			}
 
-			sb.append(appendCommonFields(sb, tileItem));
+			appendCommonFields(sb, tileItem);
 			return sb.toString();
 		}
 
 		return sb.toString();
 	}
 
-	private StringBuilder appendCommonFields(StringBuilder sb, Interactable interactable) {
+	private void appendCommonFields(StringBuilder sb, Interactable interactable) {
 		if (interactable instanceof Actor actor) {
 			if (config.names()) {
 				sb.append("Name: ").append(actor.getName()).append("\n");
@@ -434,7 +433,7 @@ public class EntityInspectorOverlay extends Overlay {
 				sb.append("Location: ").append(actor.getWorldLocation()).append("\n");
 			}
 
-			return sb;
+			return;
 		}
 
 		if (interactable instanceof TileObject obj) {
@@ -450,7 +449,7 @@ public class EntityInspectorOverlay extends Overlay {
 				sb.append("Location: ").append(obj.getWorldLocation()).append("\n");
 			}
 
-			return sb;
+			return;
 		}
 
 		if (interactable instanceof TileItem tileItem) {
@@ -465,10 +464,6 @@ public class EntityInspectorOverlay extends Overlay {
 			if (config.worldLocations()) {
 				sb.append("Location: ").append(tileItem.getTile().getWorldLocation()).append("\n");
 			}
-
-			return sb;
 		}
-
-		return sb;
 	}
 }
