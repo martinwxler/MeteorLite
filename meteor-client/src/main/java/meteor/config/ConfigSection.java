@@ -37,7 +37,7 @@ public @interface ConfigSection {
 
   String description();
 
-  int position();
+  int position() default Integer.MAX_VALUE;
 
   boolean closedByDefault() default false;
 

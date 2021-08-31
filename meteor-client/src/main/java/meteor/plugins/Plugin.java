@@ -47,9 +47,6 @@ public class Plugin implements Module {
   @Getter @Setter
   public boolean enabled = false;
 
-  @Getter @Setter
-  private boolean running = false;
-
   @Setter
   private Config config;
 

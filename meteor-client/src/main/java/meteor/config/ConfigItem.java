@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface ConfigItem {
 
-  int position() default -1;
+  int position() default Integer.MAX_VALUE;
 
   String keyName();
 

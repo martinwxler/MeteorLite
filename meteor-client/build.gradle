@@ -98,7 +98,7 @@ runtime {
 }
 
 javafx {
-    sdk = "C:/Program Files/Java/javafx-sdk-11.0.2"
+    sdk = projectDir.toString()
     modules = ['javafx.controls', 'javafx.fxml', 'javafx.swing', 'javafx.graphics', 'javafx.media']
 }
 

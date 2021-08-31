@@ -1,9 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import java.net.URL?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" style="-fx-background-color: #212121; -fx-border-color: #121212; -fx-border-width: 3;" id="pluginPanel" maxHeight="-Infinity"
-  maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" fx:id="pluginConfigPanel"
-  prefHeight="781.0"
-  prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.171"
-  fx:controller="meteor.ui.controllers.PluginConfigUI">
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane id="pluginPanel" style="-fx-background-color: #212121; -fx-border-color: #121212; -fx-border-width: 3;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="meteor.ui.controllers.PluginConfigUI">
+   <FontAwesomeIconView glyphName="PLUG" glyphStyle="-fx-fill: CYAN" AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="8.0">
+      <font>
+         <Font name="FontAwesome" size="18.0" />
+      </font></FontAwesomeIconView>
+   <Text fx:id="pluginTitle" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Plugin" AnchorPane.leftAnchor="32.0" AnchorPane.topAnchor="8.0">
+      <font>
+         <Font size="18.0" />
+      </font></Text>
+   <ScrollPane fitToHeight="true" fitToWidth="true" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="32.0">
+      <content>
+         <VBox fx:id="nodeList" />
+      </content>
+      <stylesheets>
+         <URL value="@css/plugins/jfx-scrollbar.css" />
+         <URL value="@css/plugins/jfx-scrollpane.css" />
+      </stylesheets></ScrollPane>
 </AnchorPane>
