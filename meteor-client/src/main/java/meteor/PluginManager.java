@@ -19,7 +19,6 @@ import meteor.plugins.animsmoothing.AnimationSmoothingPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.api.example.chickenkiller.ChickenKillerPlugin;
 import meteor.plugins.api.example.deathevent.DeathEventPlugin;
-import meteor.plugins.api.example.walking.WalkerPlugin;
 import meteor.plugins.api.externals.ExternalManagerPlugin;
 import meteor.plugins.autoclicker.AutoClickerPlugin;
 import meteor.plugins.autologhop.AutoLogHop;
