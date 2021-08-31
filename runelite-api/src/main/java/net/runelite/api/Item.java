@@ -112,6 +112,10 @@ public class Item implements Interactable {
 		}
 	}
 
+	public void drop() {
+		interact(4);
+	}
+
 	public void interact(int index, int menuAction) {
 		switch (getType()) {
 			case TRADE, TRADE_INVENTORY -> {
@@ -145,7 +149,7 @@ public class Item implements Interactable {
 		client.setSelectedItemWidget(widgetId);
 		client.setSelectedItemSlot(item.getSlot());
 		client.setSelectedItemID(item.getId());
-		item.interact(0, MenuAction.ITEM_USE_ON_WIDGET_ITEM.getId());
+		interact(0, MenuAction.ITEM_USE_ON_WIDGET_ITEM.getId());
 	}
 
 	public void useOn(Actor actor) {

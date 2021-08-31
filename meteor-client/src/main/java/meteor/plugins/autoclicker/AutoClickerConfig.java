@@ -266,4 +266,30 @@ public interface AutoClickerConfig extends Config
         return false;
     }
 
+    @ConfigItem(
+            keyName = "mouseOnNPC",
+            name = "Mouse On NPC",
+            description = "",
+            position = 24,
+            section = clickerFilters
+    )
+    default boolean mouseOnNPC()
+    {
+        return false;
+    }
+
+    @Range(textInput = true)
+    @ConfigItem(
+            keyName = "mouseOnNPCID",
+            name = "NPC ID",
+            description = "",
+            position = 25,
+            section = clickerFilters,
+            hidden = true,
+            unhide = "mouseOnNPC"
+    )
+    default int mouseOnNPCID()
+    {
+        return 0;
+    }
 }

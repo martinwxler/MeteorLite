@@ -39,7 +39,8 @@ import java.util.concurrent.TimeUnit;
 
 @PluginDescriptor(
         name = "Chicken Killer",
-        description = "Weed"
+        description = "Weed",
+        enabledByDefault = false
 )
 @Singleton
 public class ChickenKillerPlugin extends Plugin {
