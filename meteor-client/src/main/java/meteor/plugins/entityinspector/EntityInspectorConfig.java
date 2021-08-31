@@ -17,9 +17,10 @@ public interface EntityInspectorConfig extends Config {
 
 	@ConfigItem(
 					keyName = "hover",
-					name = "Hover",
+					name = "Hover only",
 					description = "Show on hover",
-					section = displayedInfo
+					section = displayedInfo,
+					position = 0
 	)
 	default boolean hover() {
 		return true;
@@ -29,7 +30,8 @@ public interface EntityInspectorConfig extends Config {
 					keyName = "ids",
 					name = "IDs",
 					description = "Show ids",
-					section = displayedInfo
+					section = displayedInfo,
+					position = 1
 	)
 	default boolean ids() {
 		return true;
@@ -39,7 +41,8 @@ public interface EntityInspectorConfig extends Config {
 					keyName = "names",
 					name = "Names",
 					description = "Show names",
-					section = displayedInfo
+					section = displayedInfo,
+					position = 2
 	)
 	default boolean names() {
 		return true;
@@ -49,7 +52,8 @@ public interface EntityInspectorConfig extends Config {
 					keyName = "actions",
 					name = "Actions",
 					description = "Show actions",
-					section = displayedInfo
+					section = displayedInfo,
+					position = 3
 	)
 	default boolean actions() {
 		return true;
@@ -59,7 +63,8 @@ public interface EntityInspectorConfig extends Config {
 					keyName = "locations",
 					name = "World locations",
 					description = "Show world locations",
-					section = displayedInfo
+					section = displayedInfo,
+					position = 4
 	)
 	default boolean worldLocations() {
 		return true;
@@ -69,7 +74,8 @@ public interface EntityInspectorConfig extends Config {
 					keyName = "indexes",
 					name = "Indexes (Actors)",
 					description = "Show indexes",
-					section = displayedInfo
+					section = displayedInfo,
+					position = 5
 	)
 	default boolean indexes() {
 		return true;
@@ -79,7 +85,8 @@ public interface EntityInspectorConfig extends Config {
 					keyName = "animations",
 					name = "Animations",
 					description = "Show animations",
-					section = displayedInfo
+					section = displayedInfo,
+					position = 6
 	)
 	default boolean animations() {
 		return true;
@@ -89,7 +96,8 @@ public interface EntityInspectorConfig extends Config {
 					keyName = "graphics",
 					name = "Graphic (Actors)",
 					description = "Show graphics",
-					section = displayedInfo
+					section = displayedInfo,
+					position = 7
 	)
 	default boolean graphics() {
 		return true;
@@ -99,7 +107,8 @@ public interface EntityInspectorConfig extends Config {
 					keyName = "quantities",
 					name = "Quantities (TileItems)",
 					description = "Show quantities",
-					section = displayedInfo
+					section = displayedInfo,
+					position = 8
 	)
 	default boolean quantities() {
 		return true;
@@ -238,7 +247,8 @@ public interface EntityInspectorConfig extends Config {
 	@ConfigItem(
 					keyName = "path",
 					name = "Path",
-					description = "Render calculated Path"
+					description = "Render calculated Path",
+					position = 200
 	)
 	default boolean path() {
 		return false;
@@ -247,7 +257,8 @@ public interface EntityInspectorConfig extends Config {
 	@ConfigItem(
 					keyName = "collisions",
 					name = "Collision Map",
-					description = "Render Collision Map"
+					description = "Render Collision Map",
+					position = 201
 	)
 	default boolean collisions() {
 		return false;

@@ -49,21 +49,22 @@ public class EntityInspectorOverlay extends Overlay {
 	@Override
 	public Dimension render(Graphics2D g) {
 		g.setFont(FONT);
+		Point mouse = client.getMouseCanvasPosition();
 
 		if (config.gameObjects() || config.groundObjects() || config.wallObjects() || config.decorObjects()) {
-			renderTileObjects(g);
+			renderTileObjects(g, mouse);
 		}
 
 		if (config.tileItems()) {
-			renderTileItems(g);
+			renderTileItems(g, mouse);
 		}
 
 		if (config.npcs()) {
-			renderNpcs(g);
+			renderNpcs(g, mouse);
 		}
 
 		if (config.players()) {
-			renderPlayers(g);
+			renderPlayers(g, mouse);
 		}
 
 		if (config.projectiles()) {
@@ -95,10 +96,9 @@ public class EntityInspectorOverlay extends Overlay {
 		return null;
 	}
 
-	public void renderPlayers(Graphics2D graphics) {
+	public void renderPlayers(Graphics2D graphics, Point point) {
 		List<Player> players = Players.getAll();
 		Player local = Players.getLocal();
-		Point point = client.getMouseCanvasPosition();
 
 		for (Player p : players) {
 			if (!p.equals(local)
@@ -110,8 +110,7 @@ public class EntityInspectorOverlay extends Overlay {
 			}
 		}
 
-		if (local.getConvexHull() != null
-						&& (local.getConvexHull() != null && local.getConvexHull().contains(point.getX(), point.getY()) || !config.hover())) {
+		if (local.getConvexHull() != null && local.getConvexHull().contains(point.getX(), point.getY()) || !config.hover()) {
 			graphics.setColor(CYAN);
 
 			OverlayUtil.renderActorParagraph(graphics, local, createInfo(local), CYAN);
@@ -119,9 +118,8 @@ public class EntityInspectorOverlay extends Overlay {
 		}
 	}
 
-	public void renderNpcs(Graphics2D graphics) {
+	public void renderNpcs(Graphics2D graphics, Point point) {
 		List<NPC> npcs = NPCs.getAll(x -> true);
-		Point point = client.getMouseCanvasPosition();
 
 		for (NPC npc : npcs) {
 			Color color = npc.getCombatLevel() > 1 ? YELLOW : ORANGE;
@@ -134,21 +132,22 @@ public class EntityInspectorOverlay extends Overlay {
 		}
 	}
 
-	public void renderTileObjects(Graphics2D graphics) {
+	public void renderTileObjects(Graphics2D graphics, Point mouse) {
 		List<TileObject> tileObjects = TileObjects.getAll(x -> true);
+
 		for (TileObject tileObject : tileObjects) {
 			if (tileObject instanceof GameObject gameObject && config.gameObjects()) {
-				renderGameObjects(graphics, gameObject);
+				renderGameObjects(graphics, gameObject, mouse);
 				continue;
 			}
 
 			if (tileObject instanceof WallObject wallObject && config.wallObjects()) {
-				renderWallObject(graphics, wallObject);
+				renderWallObject(graphics, wallObject, mouse);
 				continue;
 			}
 
 			if (tileObject instanceof GroundObject groundObject && config.groundObjects()) {
-				renderGroundObject(graphics, groundObject);
+				renderGroundObject(graphics, groundObject, mouse);
 				continue;
 			}
 
@@ -167,9 +166,8 @@ public class EntityInspectorOverlay extends Overlay {
 		}
 	}
 
-	public void renderTileItems(Graphics2D graphics) {
+	public void renderTileItems(Graphics2D graphics, Point point) {
 		List<TileItem> tileItems = TileItems.getAll(x -> true);
-		Point point = client.getMouseCanvasPosition();
 
 		for (TileItem tileItem : tileItems) {
 			ItemLayer tileItemPile = tileItem.getTile().getItemLayer();
@@ -185,53 +183,79 @@ public class EntityInspectorOverlay extends Overlay {
 		}
 	}
 
-	public void renderGameObjects(Graphics2D graphics, GameObject go) {
-		Point point = client.getMouseCanvasPosition();
-
-		if (go != null && (go.getConvexHull() != null
-						&& go.getConvexHull().contains(point.getX(), point.getY()) || !config.hover())) {
-			Renderable entity = go.getRenderable();
-			Color color = entity instanceof DynamicObject ? TURQOISE : GREEN;
-
-			graphics.setColor(color);
-			graphics.draw(go.getConvexHull());
-
-			OverlayUtil.renderTileOverlayParagraph(graphics, go, createInfo(go), color);
+	public void renderGameObjects(Graphics2D graphics, GameObject go, Point point) {
+		if (go == null) {
+			return;
 		}
+
+		Shape hull = go.getConvexHull();
+		if (hull == null) {
+			return;
+		}
+
+		if (!hull.contains(point.getX(), point.getY()) && config.hover()) {
+			return;
+		}
+
+		Renderable entity = go.getRenderable();
+
+		Color color = entity instanceof DynamicObject ? TURQOISE : GREEN;
+
+		graphics.setColor(color);
+		graphics.draw(hull);
+
+		OverlayUtil.renderTileOverlayParagraph(graphics, go, createInfo(go), color);
 	}
 
-	public void renderGroundObject(Graphics2D graphics, GroundObject gr) {
-		Point point = client.getMouseCanvasPosition();
-
-		if (gr != null && (gr.getConvexHull() != null
-						&& gr.getConvexHull().contains(point.getX(), point.getY()) || !config.hover())) {
-			OverlayUtil.renderTileOverlayParagraph(graphics, gr, createInfo(gr), PURPLE);
+	public void renderGroundObject(Graphics2D graphics, GroundObject gr, Point point) {
+		if (gr == null) {
+			return;
 		}
+
+		Shape hull = gr.getConvexHull();
+		if (hull == null) {
+			return;
+		}
+
+		if (!hull.contains(point.getX(), point.getY()) && config.hover()) {
+			return;
+		}
+
+		OverlayUtil.renderTileOverlayParagraph(graphics, gr, createInfo(gr), PURPLE);
 	}
 
-	public void renderWallObject(Graphics2D graphics, WallObject w) {
-		Point point = client.getMouseCanvasPosition();
-
-		if (w != null && (w.getConvexHull() != null
-						&& w.getConvexHull().contains(point.getX(), point.getY()) || !config.hover())) {
-			OverlayUtil.renderTileOverlayParagraph(graphics, w, createInfo(w), GRAY);
+	public void renderWallObject(Graphics2D graphics, WallObject w, Point point) {
+		if (w == null) {
+			return;
 		}
+
+		Shape hull = w.getConvexHull();
+		if (hull == null) {
+			return;
+		}
+
+		if (!hull.contains(point.getX(), point.getY()) && config.hover()) {
+			return;
+		}
+
+		OverlayUtil.renderTileOverlayParagraph(graphics, w, createInfo(w), GRAY);
 	}
 
 	public void renderDecorObject(Graphics2D graphics, DecorativeObject deo) {
+		if (deo == null) {
+			return;
+		}
 
-		if (deo != null) {
-			OverlayUtil.renderTileOverlay(graphics, deo, createInfo(deo), DEEP_PURPLE);
+		OverlayUtil.renderTileOverlay(graphics, deo, createInfo(deo), DEEP_PURPLE);
 
-			Shape p = deo.getConvexHull();
-			if (p != null) {
-				graphics.draw(p);
-			}
+		Shape p = deo.getConvexHull();
+		if (p != null) {
+			graphics.draw(p);
+		}
 
-			p = deo.getConvexHull2();
-			if (p != null) {
-				graphics.draw(p);
-			}
+		p = deo.getConvexHull2();
+		if (p != null) {
+			graphics.draw(p);
 		}
 	}
 
@@ -294,9 +318,11 @@ public class EntityInspectorOverlay extends Overlay {
 				LocalPoint projectilePoint = new LocalPoint((int) projectile.getX(), (int) projectile.getY());
 				Point textLocation = Perspective.getCanvasTextLocation(client, graphics, projectilePoint, infoString, 0);
 
-				if (textLocation != null) {
-					OverlayUtil.renderTextLocation(graphics, textLocation, infoString, Color.RED);
+				if (textLocation == null) {
+					continue;
 				}
+
+				OverlayUtil.renderTextLocation(graphics, textLocation, infoString, Color.RED);
 			}
 		}
 	}
@@ -336,12 +362,9 @@ public class EntityInspectorOverlay extends Overlay {
 	}
 
 	public String createInfo(Interactable interactable) {
+
 		StringBuilder sb = new StringBuilder();
 		if (interactable instanceof Actor actor) {
-			if (config.names()) {
-				sb.append("Name: ").append(actor.getName()).append("\n");
-			}
-
 			if (config.indexes()) {
 				if (actor instanceof Player player) {
 					sb.append("Index: ").append(player.getIndex()).append("\n");
@@ -352,9 +375,7 @@ public class EntityInspectorOverlay extends Overlay {
 				}
 			}
 
-			if (config.actions()) {
-				sb.append("Actions: ").append(Arrays.toString(actor.getActions())).append("\n");
-			}
+			sb.append(appendCommonFields(sb, actor));
 
 			if (config.animations()) {
 				sb.append("Animations: ").append(actor.getAnimation()).append("\n");
@@ -363,11 +384,57 @@ public class EntityInspectorOverlay extends Overlay {
 			if (config.graphics()) {
 				sb.append("Graphic: ").append(actor.getGraphic()).append("\n");
 			}
+
+			return sb.toString();
+		}
+
+		if (interactable instanceof TileObject obj) {
+			if (config.ids()) {
+				sb.append("ID: ").append(obj.getId()).append("\n");
+			}
+
+			sb.append(appendCommonFields(sb, obj));
+
+			if (config.animations()) {
+				if (obj instanceof GameObject go && go.getRenderable() instanceof DynamicObject dyn) {
+					sb.append("Animations: ").append(dyn.getAnimationID()).append("\n");
+				}
+			}
+
+			return sb.toString();
+		}
+
+		if (interactable instanceof TileItem tileItem) {
+			if (config.ids()) {
+				sb.append("ID: ").append(tileItem.getId()).append("\n");
+			}
+
+			if (config.quantities()) {
+				sb.append("Quantity: ").append(tileItem.getQuantity()).append("\n");
+			}
+
+			sb.append(appendCommonFields(sb, tileItem));
+			return sb.toString();
+		}
+
+		return sb.toString();
+	}
+
+	private StringBuilder appendCommonFields(StringBuilder sb, Interactable interactable) {
+		if (interactable instanceof Actor actor) {
+			if (config.names()) {
+				sb.append("Name: ").append(actor.getName()).append("\n");
+			}
+
+			if (config.actions()) {
+				sb.append("Actions: ").append(Arrays.toString(actor.getActions())).append("\n");
+			}
+
 			if (config.worldLocations()) {
 				sb.append("Location: ").append(actor.getWorldLocation()).append("\n");
 			}
 
-			return sb.toString();
+			return sb;
 		}
 
 		if (interactable instanceof TileObject obj) {
@@ -375,27 +442,33 @@ public class EntityInspectorOverlay extends Overlay {
 				sb.append("Name: ").append(obj.getName()).append("\n");
 			}
 
-			if (config.ids()) {
-				sb.append("ID: ").append(obj.getId()).append("\n");
-			}
-
 			if (config.actions()) {
 				sb.append("Actions: ").append(Arrays.toString(obj.getActions())).append("\n");
-			}
-
-			if (config.animations()) {
-				if (obj instanceof DynamicObject dyn) {
-					sb.append("Animations: ").append(dyn.getAnimationID()).append("\n");
-				}
 			}
 
 			if (config.worldLocations()) {
 				sb.append("Location: ").append(obj.getWorldLocation()).append("\n");
 			}
 
-			return sb.toString();
+			return sb;
 		}
 
-		return sb.toString();
+		if (interactable instanceof TileItem tileItem) {
+			if (config.names()) {
+				sb.append("Name: ").append(tileItem.getName()).append("\n");
+			}
+
+			if (config.actions()) {
+				sb.append("Actions: ").append(Arrays.toString(tileItem.getActions())).append("\n");
+			}
+
+			if (config.worldLocations()) {
+				sb.append("Location: ").append(tileItem.getTile().getWorldLocation()).append("\n");
+			}
+
+			return sb;
+		}
+
+		return sb;
 	}
 }
