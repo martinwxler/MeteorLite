@@ -15,7 +15,7 @@ import javax.inject.Inject;
 
 @PluginDescriptor(
 				name = "Entity Inspector",
-				description = "Shows entity information on mouse hover"
+				description = "Shows entity information"
 )
 public class EntityInspectorPlugin extends Plugin {
 	@Inject
@@ -66,7 +66,6 @@ public class EntityInspectorPlugin extends Plugin {
 
 		if (event.getKey().equals("scriptInspector")) {
 			scriptInspector.open();
-			return;
 		}
 	}
 }

@@ -60,6 +60,7 @@ import meteor.plugins.gpu.GpuPlugin;
 import meteor.plugins.grotesqueguardians.GrotesqueGuardiansPlugin;
 import meteor.plugins.grounditems.GroundItemsPlugin;
 import meteor.plugins.herbiboars.HerbiboarPlugin;
+import meteor.plugins.hootagility.HootAgilityPlugin;
 import meteor.plugins.hunter.HunterPlugin;
 import meteor.plugins.implings.ImplingsPlugin;
 import meteor.plugins.inferno.InfernoPlugin;
@@ -160,6 +161,7 @@ import java.util.jar.JarFile;
 
 public class PluginManager {
 	private static final Logger logger = new Logger("PluginManager");
+	public static final File EXTERNALS_DIR = new File(MeteorLiteClientLauncher.METEOR_DIR, "externals");
 
 	@Inject
 	private EventBus eventBus;
@@ -171,11 +173,16 @@ public class PluginManager {
 	private MeteorLiteClientModule meteorLiteClientModule;
 
 	PluginManager() {
+		if (!EXTERNALS_DIR.exists()) {
+			EXTERNALS_DIR.mkdirs();
+		}
 	}
 
 	public static List<Plugin> plugins = new ArrayList<>();
 
   private void initPlugins() {
+		plugins.add(new ExternalManagerPlugin()); // Leave at the top pls, it's not a regular plugin
+
 		plugins.add(new AgilityPlugin());
 		plugins.add(new AlchemicalHydraPlugin());
 		plugins.add(new AmmoPlugin());
@@ -215,7 +222,6 @@ public class PluginManager {
 		plugins.add(new EntityHiderExtendedPlugin());
 		plugins.add(new EntityInspectorPlugin());
 		plugins.add(new EnvironmentAidPlugin());
-		plugins.add(new ExternalManagerPlugin());
 		plugins.add(new FairyRingPlugin());
 		plugins.add(new FightCavePlugin());
 		plugins.add(new FishingPlugin());
@@ -226,6 +232,7 @@ public class PluginManager {
 		plugins.add(new GroundItemsPlugin());
 		plugins.add(new sGroundMarkerPlugin());
 		plugins.add(new HerbiboarPlugin());
+		plugins.add(new HootAgilityPlugin());
 		plugins.add(new HunterPlugin());
 		plugins.add(new ImplingsPlugin());
 		plugins.add(new InfernoPlugin());
@@ -373,8 +380,9 @@ public class PluginManager {
 	}
 
 	public void startExternals() {
-		List<Plugin> externals = loadPluginsFromDir(new File(MeteorLiteClientLauncher.METEOR_DIR, "externals"));
-		externals.forEach(e -> plugins.removeIf(p -> p.getName().equals(e.getName())));
+		List<Plugin> externals = loadPluginsFromDir(EXTERNALS_DIR);
+		plugins.stream().filter(Plugin::isExternal).forEach(Plugin::unload);
+		plugins.removeIf(Plugin::isExternal);
 
 		for (Plugin external : externals) {
 			plugins.add(external);
@@ -405,8 +413,9 @@ public class PluginManager {
 						}
 
 						String name = entry.getName();
-						name = name.substring(0, name.length() - ".class".length());
-						name = name.replace('/', '.');
+						name = name.substring(0, name.length() - ".class".length())
+										.replace('/', '.');
+
 						try {
 							var clazz = ucl.loadClass(name);
 							if (!Plugin.class.isAssignableFrom(clazz) || Modifier.isAbstract(clazz.getModifiers())) {
@@ -416,6 +425,7 @@ public class PluginManager {
 							Class<? extends Plugin> pluginClass = (Class<? extends Plugin>) clazz;
 							var plugin = pluginClass.getDeclaredConstructor().newInstance();
 							logger.debug("Loading external plugin {}", plugin.getName());
+							plugin.setExternal(true);
 							plugins.add(plugin);
 						} catch (Exception e) {
 							e.printStackTrace();
