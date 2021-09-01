@@ -417,7 +417,8 @@ public class PluginListUI {
     if (p.getConfig(MeteorLiteClientLauncher.mainClientInstance.instanceInjector.getInstance(ConfigManager.class)) != null) {
       if (p.getConfig(MeteorLiteClientLauncher.mainClientInstance.instanceInjector.getInstance(ConfigManager.class)).getClass().getDeclaredMethods().length > 4) {
         AnchorPane.setRightAnchor(configButton, 48.0);
-        AnchorPane.setTopAnchor(configButton, 8.0);
+        AnchorPane.setTopAnchor(configButton, 4.0);
+        AnchorPane.setBottomAnchor(configButton, 4.0);
 
         FontAwesomeIconView cog = new FontAwesomeIconView(FontAwesomeIcon.COG);
         cog.setFill(Paint.valueOf("CYAN"));
@@ -444,7 +445,6 @@ public class PluginListUI {
         if (newValue == finalToggleButton.plugin.isEnabled()) {
           return;
         }
-
         if (!overrideToggleListener) {
           p.toggle();
         }
@@ -476,6 +476,7 @@ public class PluginListUI {
     pluginName.setFill(Paint.valueOf("WHITE"));
     AnchorPane.setLeftAnchor(pluginName, 8.0);
     AnchorPane.setTopAnchor(pluginName, 8.0);
+    AnchorPane.setBottomAnchor(pluginName, 8.0);
     pluginName.setFont(Font.font(18));
 
     if (p.getClass().getAnnotation(PluginDescriptor.class).description().length() > 0) {

@@ -22,6 +22,7 @@ import meteor.MeteorLiteClientModule;
 import meteor.config.Button;
 import meteor.config.*;
 import meteor.plugins.Plugin;
+import meteor.plugins.PluginDescriptor;
 import meteor.ui.components.ConfigButton;
 import meteor.ui.components.ConfigSectionPane;
 import meteor.ui.components.PluginToggleButton;
@@ -41,6 +42,9 @@ import static meteor.ui.controllers.PluginListUI.lastPluginInteracted;
 public class PluginConfigUI {
 
 	private static final Logger logger = new Logger("PluginConfigController");
+
+	@FXML
+	private AnchorPane rootPanel;
 
 	@FXML
 	private VBox configList;
@@ -64,6 +68,16 @@ public class PluginConfigUI {
 		plugin = lastPluginInteracted;
 		pluginTitle.setText(plugin.getName());
 		configManager = MeteorLiteClientLauncher.mainClientInstance.instanceInjector.getInstance(ConfigManager.class);
+
+		PluginToggleButton toggleButton = PluginListUI.configGroupPluginMap
+						.get(plugin.getConfig(configManager).getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class).value());
+		if (toggleButton != null) {
+			AnchorPane.clearConstraints(toggleButton);
+			AnchorPane.setTopAnchor(toggleButton, 8.0);
+			AnchorPane.setRightAnchor(toggleButton, 8.0);
+
+			rootPanel.getChildren().add(toggleButton);
+		}
 
 		initSections();
 		initConfigs();

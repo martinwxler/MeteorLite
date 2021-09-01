@@ -50,6 +50,9 @@ public class Plugin implements Module {
   @Setter
   private Config config;
 
+  @Getter @Setter
+  private boolean external;
+
   @Inject
   public OverlayManager overlayManager;
 
@@ -89,21 +92,26 @@ public class Plugin implements Module {
     MeteorLiteClientModule.updateRightPanel(configRoot, 370);
   }
 
-  public void toggle() {
-    if (enabled)
-    {
+  public void unload() {
+    scheduler.unregister(this);
+    eventBus.unregister(this);
+    shutdown();
+  }
+
+  public void toggle(boolean on) {
+    if (!on) {
       shutdown();
       setEnabled(false);
       scheduler.unregister(this);
       eventBus.unregister(this);
-      updateConfig();
     } else {
       startup();
       setEnabled(true);
       scheduler.register(this);
       eventBus.register(this);
-      updateConfig();
     }
+
+    updateConfig();
 
     PluginListUI.overrideToggleListener = true;
     for (PluginToggleButton ptb : PluginListUI.configGroupPluginMap.values()) {
@@ -113,6 +121,10 @@ public class Plugin implements Module {
     }
 
     PluginListUI.overrideToggleListener = false;
+  }
+
+  public void toggle() {
+    toggle(!enabled);
   }
 
 
