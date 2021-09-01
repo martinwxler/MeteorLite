@@ -23,6 +23,7 @@ import meteor.config.Button;
 import meteor.config.*;
 import meteor.plugins.Plugin;
 import meteor.ui.components.ConfigButton;
+import meteor.ui.components.ConfigSectionPane;
 import meteor.ui.components.PluginToggleButton;
 import net.runelite.api.Client;
 import net.runelite.api.events.ConfigButtonClicked;
@@ -39,7 +40,7 @@ import static meteor.ui.controllers.PluginListUI.lastPluginInteracted;
 
 public class PluginConfigUI {
 
-	Logger logger = new Logger("PluginConfigController");
+	private static final Logger logger = new Logger("PluginConfigController");
 
 	@FXML
 	private VBox configList;
@@ -47,7 +48,7 @@ public class PluginConfigUI {
 	@FXML
 	private Text pluginTitle;
 
-	private final Map<String, VBox> sections = new HashMap<>();
+	private final Map<String, ConfigSectionPane> sections = new HashMap<>();
 
 	private Plugin plugin;
 
@@ -76,8 +77,9 @@ public class PluginConfigUI {
 						.sorted(Comparator.comparingInt(ConfigSectionDescriptor::position))
 						.collect(Collectors.toList())) {
 			ConfigSection section = csd.getSection();
-			Accordion sectionBox = createSection(section);
-			configList.getChildren().add(sectionBox);
+			ConfigSectionPane sectionBox = createSection(section);
+			configList.getChildren().add(sectionBox.getTitledPane());
+			sectionBox.getTitledPane().setExpanded(!section.closedByDefault());
 		}
 	}
 
@@ -89,8 +91,8 @@ public class PluginConfigUI {
 			for (ConfigItemDescriptor configItemDescriptor : descriptor.getItems().stream()
 							.sorted(Comparator.comparingInt(ConfigItemDescriptor::position))
 							.collect(Collectors.toList())) {
-				VBox sectionBox = sections.get(configItemDescriptor.getItem().section());
-				Pane configContainer = sectionBox != null ? sectionBox : createNode();
+				ConfigSectionPane sectionBox = sections.get(configItemDescriptor.getItem().section());
+				Pane configContainer = sectionBox != null ? sectionBox.getContainer() : createNode();
 
 				if (configItemDescriptor.getType() == int.class) {
 					if (configItemDescriptor.getRange() != null) {
@@ -436,19 +438,10 @@ public class PluginConfigUI {
 		return node;
 	}
 
-	public Accordion createSection(ConfigSection configSection) {
-		VBox sectionBox = new VBox();
-
-		TitledPane titlePane = new TitledPane(configSection.name(), sectionBox);
-		Accordion accordion = new Accordion(titlePane);
-
-		titlePane.getStylesheets().add("css/plugins/jfx-titledpane.css");
-
-//		sectionBox.setStyle("-fx-border-style: solid;  -fx-border-color: #424242; -fx-border-width: 1;");
-		sectionBox.getChildren().add(titlePane);
-
-		sections.put(configSection.name(), sectionBox);
-		return accordion;
+	public ConfigSectionPane createSection(ConfigSection configSection) {
+		ConfigSectionPane section = new ConfigSectionPane(configSection.name());
+		sections.put(section.getName(), section);
+		return section;
 	}
 
 	private void addConfigItemComponents(Pane root, Node... nodes) {
