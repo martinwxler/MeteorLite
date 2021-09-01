@@ -7,6 +7,8 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Accordion;
+import javafx.scene.control.TitledPane;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -40,7 +42,7 @@ public class PluginConfigUI {
 	Logger logger = new Logger("PluginConfigController");
 
 	@FXML
-	private VBox nodeList;
+	private VBox configList;
 
 	@FXML
 	private Text pluginTitle;
@@ -59,22 +61,31 @@ public class PluginConfigUI {
 	public void initialize() {
 		MeteorLiteClientModule.instanceInjectorStatic.injectMembers(this);
 		plugin = lastPluginInteracted;
-
 		pluginTitle.setText(plugin.getName());
-
 		configManager = MeteorLiteClientLauncher.mainClientInstance.instanceInjector.getInstance(ConfigManager.class);
+
+		initSections();
+		initConfigs();
+	}
+
+	private void initSections() {
 		Config config = plugin.getConfig(configManager);
 		ConfigDescriptor descriptor = configManager.getConfigDescriptor(config);
-		if (descriptor != null) {
-			for (ConfigSectionDescriptor csd : descriptor.getSections().stream()
-							.sorted(Comparator.comparingInt(ConfigSectionDescriptor::position))
-							.collect(Collectors.toList())) {
-				ConfigSection section = csd.getSection();
-				VBox sectionBox = createSection(section);
-				sections.put(section.name(), sectionBox);
-				nodeList.getChildren().add(sectionBox);
-			}
 
+		for (ConfigSectionDescriptor csd : descriptor.getSections().stream()
+						.sorted(Comparator.comparingInt(ConfigSectionDescriptor::position))
+						.collect(Collectors.toList())) {
+			ConfigSection section = csd.getSection();
+			Accordion sectionBox = createSection(section);
+			configList.getChildren().add(sectionBox);
+		}
+	}
+
+	private void initConfigs() {
+		Config config = plugin.getConfig(configManager);
+		ConfigDescriptor descriptor = configManager.getConfigDescriptor(config);
+
+		if (descriptor != null) {
 			for (ConfigItemDescriptor configItemDescriptor : descriptor.getItems().stream()
 							.sorted(Comparator.comparingInt(ConfigItemDescriptor::position))
 							.collect(Collectors.toList())) {
@@ -110,8 +121,8 @@ public class PluginConfigUI {
 				if (configItemDescriptor.getType().isEnum()) {
 					createEnumNode(descriptor, configContainer, configItemDescriptor);
 				}
-				if (!configContainer.getChildren().isEmpty() && !nodeList.getChildren().contains(configContainer)) {
-					nodeList.getChildren().add(configContainer);
+				if (!configContainer.getChildren().isEmpty() && !configList.getChildren().contains(configContainer)) {
+					configList.getChildren().add(configContainer);
 				}
 			}
 		}
@@ -260,7 +271,8 @@ public class PluginConfigUI {
 		AnchorPane.setTopAnchor(name, 8.0);
 
 		PluginToggleButton toggleButton = new PluginToggleButton(plugin);
-		AnchorPane.setTopAnchor(toggleButton, 8.0);
+		AnchorPane.setTopAnchor(toggleButton, 2.0);
+		AnchorPane.setBottomAnchor(toggleButton, 2.0);
 		AnchorPane.setRightAnchor(toggleButton, 8.0);
 		toggleButton.setSize(6);
 
@@ -424,20 +436,19 @@ public class PluginConfigUI {
 		return node;
 	}
 
-	public VBox createSection(ConfigSection configSection) {
+	public Accordion createSection(ConfigSection configSection) {
 		VBox sectionBox = new VBox();
-		AnchorPane.setTopAnchor(sectionBox, 8.0);
-		AnchorPane.setLeftAnchor(sectionBox, 8.0);
 
-		Pane titlePane = createNode();
-		Text name = createText(configSection.name(), Paint.valueOf("CYAN"), configSection.description());
-		AnchorPane.setTopAnchor(name, 8.0);
-		AnchorPane.setLeftAnchor(name, 8.0);
+		TitledPane titlePane = new TitledPane(configSection.name(), sectionBox);
+		Accordion accordion = new Accordion(titlePane);
 
-		sectionBox.setStyle("-fx-border-style: solid;  -fx-border-color: #424242; -fx-border-width: 1;");
-		titlePane.getChildren().add(name);
+		titlePane.getStylesheets().add("css/plugins/jfx-titledpane.css");
+
+//		sectionBox.setStyle("-fx-border-style: solid;  -fx-border-color: #424242; -fx-border-width: 1;");
 		sectionBox.getChildren().add(titlePane);
-		return sectionBox;
+
+		sections.put(configSection.name(), sectionBox);
+		return accordion;
 	}
 
 	private void addConfigItemComponents(Pane root, Node... nodes) {
