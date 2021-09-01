@@ -1,9 +1,7 @@
 package meteor.plugins.entityinspector;
 
-import meteor.config.Config;
-import meteor.config.ConfigGroup;
-import meteor.config.ConfigItem;
-import meteor.config.ConfigSection;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import meteor.config.*;
 
 @ConfigGroup("entityinspector")
 public interface EntityInspectorConfig extends Config {
@@ -11,7 +9,8 @@ public interface EntityInspectorConfig extends Config {
 					keyName = "settings",
 					position = 0,
 					name = "Settings",
-					description = ""
+					description = "",
+					closedByDefault = true
 	)
 	String displayedInfo = "Settings";
 
@@ -118,7 +117,8 @@ public interface EntityInspectorConfig extends Config {
 					keyName = "tileObjects",
 					position = 1,
 					name = "Tile Objects",
-					description = ""
+					description = "",
+					closedByDefault = true
 	)
 	String tileObjects = "Tile Objects";
 
@@ -176,7 +176,8 @@ public interface EntityInspectorConfig extends Config {
 					keyName = "actors",
 					name = "Actors",
 					description = "",
-					position = 2
+					position = 2,
+					closedByDefault = true
 	)
 	String actors = "Actors";
 
@@ -201,18 +202,19 @@ public interface EntityInspectorConfig extends Config {
 	}
 
 	@ConfigSection(
-					name = "Utilities",
-					keyName = "utils",
+					name = "Others",
+					keyName = "others",
 					description = "",
-					position = 9
+					position = 9,
+					closedByDefault = true
 	)
-	String utils = "Utilities";
+	String others = "Others";
 
 	@ConfigItem(
 					keyName = "projectiles",
 					name = "Projectiles",
 					description = "Render Projectiles",
-					section = utils
+					section = others
 	)
 	default boolean projectiles() {
 		return false;
@@ -222,7 +224,7 @@ public interface EntityInspectorConfig extends Config {
 					keyName = "graphicsObjects",
 					name = "Graphics Objects",
 					description = "Render Graphics Objects",
-					section = utils
+					section = others
 	)
 	default boolean graphicsObjects() {
 		return false;
@@ -232,7 +234,7 @@ public interface EntityInspectorConfig extends Config {
 					keyName = "inventory",
 					name = "Inventory",
 					description = "Render Inventory",
-					section = utils
+					section = others
 	)
 	default boolean inventory() {
 		return false;
@@ -242,7 +244,7 @@ public interface EntityInspectorConfig extends Config {
 					keyName = "tileLocation",
 					name = "Tile Location",
 					description = "Render Tile Location",
-					section = utils
+					section = others
 	)
 	default boolean tileLocation() {
 		return false;
@@ -253,7 +255,7 @@ public interface EntityInspectorConfig extends Config {
 					name = "Path",
 					description = "Render calculated Path",
 					position = 200,
-					section = utils
+					section = others
 	)
 	default boolean path() {
 		return false;
@@ -264,9 +266,51 @@ public interface EntityInspectorConfig extends Config {
 					name = "Collision Map",
 					description = "Render Collision Map",
 					position = 201,
-					section = utils
+					section = others
 	)
 	default boolean collisions() {
 		return false;
+	}
+
+	@ConfigSection(
+					name = "Utils",
+					keyName = "utils",
+					description = "",
+					position = 10,
+					closedByDefault = true
+	)
+	String utils = "Utils";
+
+	@Icon(FontAwesomeIcon.SEARCH)
+	@ConfigItem(
+					keyName = "widgetInspector",
+					name = "Widget Inspector",
+					description = "Open the Widget Inspector",
+					section = utils
+	)
+	default Button widgetInspector() {
+		return new Button();
+	}
+
+	@Icon(FontAwesomeIcon.SEARCH)
+	@ConfigItem(
+					keyName = "varInspector",
+					name = "Var Inspector",
+					description = "Open the Var Inspector",
+					section = utils
+	)
+	default Button varInspector() {
+		return new Button();
+	}
+
+	@Icon(FontAwesomeIcon.SEARCH)
+	@ConfigItem(
+					keyName = "scriptInspector",
+					name = "Script Inspector",
+					description = "Open the Script Inspector",
+					section = utils
+	)
+	default Button scriptInspector() {
+		return new Button();
 	}
 }

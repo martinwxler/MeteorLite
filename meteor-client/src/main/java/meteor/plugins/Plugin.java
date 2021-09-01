@@ -85,6 +85,7 @@ public class Plugin implements Module {
     } catch (IOException e) {
       e.printStackTrace();
     }
+
     MeteorLiteClientModule.updateRightPanel(configRoot, 370);
   }
 
@@ -96,8 +97,7 @@ public class Plugin implements Module {
       scheduler.unregister(this);
       eventBus.unregister(this);
       updateConfig();
-    }
-    else {
+    } else {
       startup();
       setEnabled(true);
       scheduler.register(this);
@@ -111,6 +111,7 @@ public class Plugin implements Module {
         ptb.setSelected(enabled);
       }
     }
+
     PluginListUI.overrideToggleListener = false;
   }
 

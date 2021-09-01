@@ -1497,6 +1497,4 @@ public interface RSClient extends RSGameEngine, Client {
   @Import("loadWorlds")
   @Override
   boolean loadWorlds();
-
-
 }
