@@ -87,6 +87,8 @@ public abstract class ClientMixin implements RSClient {
   public static HashMap<Integer, RSObjectComposition> objDefCache = new HashMap<>();
   @Inject
   public static HashMap<Integer, RSItemComposition> itemDefCache = new HashMap<>();
+  @Inject
+  private static boolean lowCpu;
 
   @Inject
   @FieldHook("gameState")
@@ -1604,6 +1606,34 @@ public abstract class ClientMixin implements RSClient {
     if (event.isModified())
     {
       setMenuEntries(event.getMenuEntries());
+    }
+  }
+
+  @Inject
+  @Override
+  public boolean isLowCpu() {
+    return lowCpu;
+  }
+
+  @Inject
+  @Override
+  public void setLowCpu(boolean enabled) {
+    lowCpu = enabled;
+  }
+
+  @Copy("drawWidgets")
+  @Replace("drawWidgets")
+  static final void copy$drawWidgets(int var0, int var1, int var2, int var3, int var4, int var5, int var6, int var7) {
+    if (!lowCpu) {
+      copy$drawWidgets(var0, var1, var2, var3, var4, var5, var6, var7);
+    }
+  }
+
+  @Copy("drawModelComponents")
+  @Replace("drawModelComponents")
+  static void copy$drawModelComponents(Widget[] var0, int var1) {
+    if (!lowCpu) {
+      copy$drawModelComponents(var0, var1);
     }
   }
 }

@@ -1,18 +1,13 @@
 package meteor.ui.controllers;
 
-import static meteor.MeteorLiteClientModule.pluginsPanelVisible;
-
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXTooltip;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import java.util.ArrayList;
-
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.scene.Scene;
-import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -39,13 +34,13 @@ import meteor.ui.components.PluginToggleButton;
 import org.sponge.util.Logger;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PluginListUI {
+import static meteor.MeteorLiteClientModule.pluginsPanelVisible;
 
-  @FXML
-  private AnchorPane rootPanel;
+public class PluginListUI {
 
   @FXML
   private FontAwesomeIconView addCategory;
@@ -449,6 +444,7 @@ public class PluginListUI {
         if (newValue == finalToggleButton.plugin.isEnabled()) {
           return;
         }
+
         if (!overrideToggleListener) {
           p.toggle();
         }

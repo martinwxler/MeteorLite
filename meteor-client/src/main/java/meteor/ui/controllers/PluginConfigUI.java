@@ -133,10 +133,10 @@ public class PluginConfigUI {
 	private void createButtonNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
 		ConfigButton button = new ConfigButton(configItem.getIcon().canToggle());
 
-		AnchorPane.setTopAnchor(button, 8.0);
-		AnchorPane.setBottomAnchor(button, 8.0);
-		AnchorPane.setRightAnchor(button, 125.0);
-		AnchorPane.setLeftAnchor(button, 125.0);
+		AnchorPane.setTopAnchor(button, 4.0);
+		AnchorPane.setBottomAnchor(button, 4.0);
+		AnchorPane.setRightAnchor(button, 40.0);
+		AnchorPane.setLeftAnchor(button, 40.0);
 		AtomicReference<FontAwesomeIcon> icon = new AtomicReference<>();
 
 		if (button.isToggleable()) {
@@ -153,7 +153,7 @@ public class PluginConfigUI {
 		}
 
 		FontAwesomeIconView buttonIcon = new FontAwesomeIconView(icon.get());
-		buttonIcon.setSize("11");
+		buttonIcon.setSize("16");
 		buttonIcon.setFill(javafx.scene.paint.Color.valueOf("CYAN"));
 		button.setGraphic(buttonIcon);
 		button.autosize();

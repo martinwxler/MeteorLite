@@ -74,6 +74,7 @@ import meteor.plugins.keyremapping.KeyRemappingPlugin;
 import meteor.plugins.kourendlibrary.KourendLibraryPlugin;
 import meteor.plugins.leftclickcast.LeftClickCastPlugin;
 import meteor.plugins.lizardmenshaman.LizardmanShamanPlugin;
+import meteor.plugins.lowcpu.LowCpuPlugin;
 import meteor.plugins.lowdetail.LowDetailPlugin;
 import meteor.plugins.menuentrymodifier.MenuEntryModifierPlugin;
 import meteor.plugins.menuentryswapper.MenuEntrySwapperPlugin;
@@ -239,6 +240,7 @@ public class PluginManager {
 		plugins.add(new KourendLibraryPlugin());
 		plugins.add(new LeftClickCastPlugin());
 		plugins.add(new LizardmanShamanPlugin());
+		plugins.add(new LowCpuPlugin());
 		plugins.add(new LowDetailPlugin());
 		plugins.add(new MenuEntryModifierPlugin());
 		plugins.add(new MenuEntrySwapperPlugin());
@@ -360,9 +362,14 @@ public class PluginManager {
 				configManager.setDefaultConfiguration(plugin, config, false);
 			}
 		}
-		if (finalConfig != null)
-			if (Boolean.parseBoolean(configManager.getConfiguration(finalConfig.getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class).value(), "pluginEnabled")))
-				plugin.toggle();
+
+		if (finalConfig == null) {
+			return;
+		}
+
+		if (Boolean.parseBoolean(configManager.getConfiguration(finalConfig.getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class).value(), "pluginEnabled"))) {
+			plugin.toggle();
+		}
 	}
 
 	public void startExternals() {

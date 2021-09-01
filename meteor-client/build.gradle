@@ -68,7 +68,7 @@ dependencies {
     implementation(group : "net.runelite", name : "discord", version : "1.4")
     implementation 'org.bouncycastle:bcprov-jdk15on:1.52'
     implementation 'org.openjfx:javafx:16'
-
+    implementation 'org.slf4j:slf4j-api:1.7.12'
 
 }
 

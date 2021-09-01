@@ -2302,4 +2302,8 @@ public interface Client extends GameEngine {
   boolean loadWorlds();
 
   Widget[][] getWidgets();
+
+  boolean isLowCpu();
+
+  void setLowCpu(boolean enabled);
 }

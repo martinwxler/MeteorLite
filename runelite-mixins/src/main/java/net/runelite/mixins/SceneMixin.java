@@ -54,6 +54,8 @@ public abstract class SceneMixin implements RSScene {
 
   @Shadow("client")
   static RSClient client;
+  @Shadow("lowCpu")
+  static boolean lowCpu;
   @Shadow("skyboxColor")
   static int skyboxColor;
   @Shadow("Scene_planeOccluders")
@@ -83,6 +85,10 @@ public abstract class SceneMixin implements RSScene {
 
   @Replace("draw")
   void drawScene(int cameraX, int cameraY, int cameraZ, int cameraPitch, int cameraYaw, int plane) {
+    if (lowCpu) {
+      return;
+    }
+
     final DrawCallbacks drawCallbacks = client.getDrawCallbacks();
     if (drawCallbacks != null) {
       drawCallbacks.drawScene(cameraX, cameraY, cameraZ, cameraPitch, cameraYaw, plane);
