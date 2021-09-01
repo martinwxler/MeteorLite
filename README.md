@@ -31,7 +31,7 @@ It maintains solid performance with these settings on my RTX 2060M
 ```
 
 ## Building
-MeteorLite is built using JDK 1.8 currently due to a meteor-agent requirement.
+MeteorLite is built using JDK 16 and JavaFX. You will need to add JavaFX in your programfiles/java folder prior to building.
 It is built using the gradle task
 ```
 clean build run
@@ -41,5 +41,4 @@ clean build run
 OpenOSRS staff :  https://github.com/open-osrs/runelite  
 RuneLite staff :  https://github.com/runelite/runelite  
 RuneScape staff :  https://oldschool.runescape.com/  
-Sponge Mixins :  https://github.com/SpongePowered/Mixin  
 Jfoenix :  https://github.com/sshahine/JFoenix  
