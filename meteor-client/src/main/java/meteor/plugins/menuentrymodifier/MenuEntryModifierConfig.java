@@ -41,6 +41,15 @@ public interface MenuEntryModifierConfig extends Config
             keyName = "filtersSection"
     )
     String filtersSection = "Filters";
+
+    @ConfigSection(
+        name = "General",
+        description = "",
+        position = 9,
+        keyName = "general"
+    )
+    String general = "General";
+
     //endregion sections
 
     //region general
@@ -48,6 +57,7 @@ public interface MenuEntryModifierConfig extends Config
             keyName = "hotkeyButton",
             name = "Hotkey",
             description = "Hotkey for filtering",
+            section = general,
             position = 0
     )
     default Keybind hotkeyButton() { return Keybind.NOT_SET; }
@@ -56,6 +66,7 @@ public interface MenuEntryModifierConfig extends Config
             keyName = "removeEnabled",
             name = "Removing enabled",
             description = "Remove option(s) enabled",
+            section = general,
             position = 1
     )
     default boolean removeEnabled() { return false; }

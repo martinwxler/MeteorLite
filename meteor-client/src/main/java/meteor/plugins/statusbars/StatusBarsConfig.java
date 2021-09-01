@@ -27,6 +27,7 @@ package meteor.plugins.statusbars;
 import meteor.config.Config;
 import meteor.config.ConfigGroup;
 import meteor.config.ConfigItem;
+import meteor.config.Range;
 import meteor.config.Units;
 import meteor.plugins.statusbars.config.BarMode;
 
@@ -85,6 +86,7 @@ public interface StatusBarsConfig extends Config
 		return BarMode.PRAYER;
 	}
 
+	@Range (min = 0, max = 12)
 	@ConfigItem(
 		keyName = "hideAfterCombatDelay",
 		name = "Hide after combat delay",

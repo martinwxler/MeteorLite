@@ -11,7 +11,7 @@ public interface PlayerIndicatorsExtendedConfig extends Config {
     @ConfigItem(
             position = 0,
             keyName = "nameColor",
-            name = "Socket Player Name Color",
+            name = "Player Name Color",
             description = "Name color"
     )
     default Color nameColor() {

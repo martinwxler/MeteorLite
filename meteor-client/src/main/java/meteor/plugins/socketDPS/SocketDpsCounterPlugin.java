@@ -28,7 +28,12 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-@PluginDescriptor(name = "Socket - Damage Counter", description = "Counts damage by a party", enabledByDefault = false)
+@PluginDescriptor(
+    name = "Socket - Damage Counter",
+    description = "Counts damage by a party",
+    enabledByDefault = false
+)
+
 @PluginDependency(SocketPlugin.class)
 public class SocketDpsCounterPlugin extends Plugin {
     private static final Logger log = Logger.getLogger(SocketDpsCounterPlugin.class);

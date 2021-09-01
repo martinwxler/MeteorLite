@@ -39,7 +39,14 @@ public interface PlayerIndicatorsConfig extends Config
 		description = "Toggle highlighted players by type (self, friends, etc.) and choose their highlight colors",
 		position = 99
 	)
-	String highlightSection = "section";
+	String highlightSection = "Highlight Options";
+
+	@ConfigSection(
+			name = "General",
+			description = "",
+			position = 98
+	)
+	String general = "General";
 
 	@ConfigItem(
 		position = 0,
@@ -189,7 +196,8 @@ public interface PlayerIndicatorsConfig extends Config
 		position = 10,
 		keyName = "drawPlayerTiles",
 		name = "Draw tiles under players",
-		description = "Configures whether or not tiles under highlighted players should be drawn"
+		description = "Configures whether or not tiles under highlighted players should be drawn",
+		section = general
 	)
 	default boolean drawTiles()
 	{
@@ -200,7 +208,8 @@ public interface PlayerIndicatorsConfig extends Config
 		position = 11,
 		keyName = "playerNamePosition",
 		name = "Name position",
-		description = "Configures the position of drawn player names, or if they should be disabled"
+		description = "Configures the position of drawn player names, or if they should be disabled",
+		section = general
 	)
 	default PlayerNameLocation playerNamePosition()
 	{
@@ -211,7 +220,8 @@ public interface PlayerIndicatorsConfig extends Config
 		position = 12,
 		keyName = "drawMinimapNames",
 		name = "Draw names on minimap",
-		description = "Configures whether or not minimap names for players with rendered names should be drawn"
+		description = "Configures whether or not minimap names for players with rendered names should be drawn",
+		section = general
 	)
 	default boolean drawMinimapNames()
 	{
@@ -222,7 +232,8 @@ public interface PlayerIndicatorsConfig extends Config
 		position = 13,
 		keyName = "colorPlayerMenu",
 		name = "Colorize player menu",
-		description = "Color right click menu for players"
+		description = "Color right click menu for players",
+		section = general
 	)
 	default boolean colorPlayerMenu()
 	{
@@ -233,7 +244,8 @@ public interface PlayerIndicatorsConfig extends Config
 		position = 14,
 		keyName = "clanMenuIcons",
 		name = "Show friends chat ranks",
-		description = "Add friends chat rank to right click menu and next to player names"
+		description = "Add friends chat rank to right click menu and next to player names",
+		section = general
 	)
 	default boolean showFriendsChatRanks()
 	{
@@ -244,7 +256,8 @@ public interface PlayerIndicatorsConfig extends Config
 		position = 15,
 		keyName = "clanchatMenuIcons",
 		name = "Show clan chat ranks",
-		description = "Add clan chat rank to right click menu and next to player names"
+		description = "Add clan chat rank to right click menu and next to player names",
+		section = general
 	)
 	default boolean showClanChatRanks()
 	{

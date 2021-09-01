@@ -36,16 +36,26 @@ public interface ItemIdentificationConfig extends Config
 {
 	@ConfigSection(
 		name = "Categories",
+		keyName = "identificationSection",
 		description = "The categories of items to identify",
 		position = 99
 	)
-	String identificationSection = "identification";
+	String identificationSection = "Categories";
+
+	@ConfigSection(
+			name = "General",
+			keyName = "general",
+			description = "General settings",
+			position = 98
+	)
+	String general = "General";
 
 	@ConfigItem(
 		keyName = "identificationType",
 		name = "Identification Type",
 		position = -4,
-		description = "How much to show of the item name"
+		description = "How much to show of the item name",
+		section = general
 	)
 	default ItemIdentificationMode identificationType()
 	{
@@ -56,7 +66,8 @@ public interface ItemIdentificationConfig extends Config
 		keyName = "textColor",
 		name = "Color",
 		position = -3,
-		description = "The colour of the identification text"
+		description = "The colour of the identification text",
+		section = general
 	)
 	default Color textColor()
 	{
@@ -77,7 +88,8 @@ public interface ItemIdentificationConfig extends Config
 	@ConfigItem(
 		keyName = "showSacks",
 		name = "Sacks",
-		description = "Show identification on Sacks"
+		description = "Show identification on Sacks",
+		section = identificationSection
 	)
 	default boolean showSacks()
 	{

@@ -7,12 +7,12 @@ import java.awt.*;
 @ConfigGroup("icDemon")
 public interface SocketIceDemonConfig extends Config {
   @ConfigSection(
-          name = "<html><font color=#00aeef>Brazier",
+          name = "Brazier",
           description = "Brazier Plugins",
           position = 0,
           closedByDefault = true
   )
-  String brazierSection = "brazier";
+  String brazierSection = "Brazier";
 
   @ConfigItem(
           keyName = "display4Scav",

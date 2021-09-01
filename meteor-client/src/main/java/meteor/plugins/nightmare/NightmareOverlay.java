@@ -1,18 +1,36 @@
 package meteor.plugins.nightmare;
 
-import meteor.ui.overlay.outline.OPRSModelOutlineRenderer;
-import net.runelite.api.Point;
-import net.runelite.api.*;
-import net.runelite.api.coords.LocalPoint;
-import net.runelite.api.geometry.Geometry;
-import meteor.ui.overlay.*;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.util.Map;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import meteor.ui.overlay.outline.OPRSModelOutlineRenderer;
+import net.runelite.api.Client;
+import net.runelite.api.GameObject;
+import net.runelite.api.GraphicsObject;
+import net.runelite.api.NPC;
+import net.runelite.api.Perspective;
+import static net.runelite.api.Perspective.getCanvasTileAreaPoly;
+import net.runelite.api.Player;
+import net.runelite.api.Point;
+import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.geometry.Geometry;
+import meteor.ui.overlay.Overlay;
+import meteor.ui.overlay.OverlayLayer;
+import meteor.ui.overlay.OverlayPosition;
+import meteor.ui.overlay.OverlayPriority;
+import meteor.ui.overlay.OverlayUtil;
+
 
 import static net.runelite.api.Perspective.getCanvasTileAreaPoly;
 
@@ -48,35 +66,52 @@ class NightmareOverlay extends Overlay
 
 		if (config.highlightShadows())
 		{
-			for (GraphicsObject graphicsObject : client.getGraphicsObjects())
+			for (GraphicsObject graphicsObject : plugin.getShadows())
 			{
-				Color color;
-
-				if (graphicsObject.getId() == NIGHTMARE_SHADOW)
-				{
-					color = Color.ORANGE;
-				}
-				else
-				{
-					continue;
-				}
-
 				LocalPoint lp = graphicsObject.getLocation();
 				Polygon poly = Perspective.getCanvasTilePoly(client, lp);
+				Player localPlayer = client.getLocalPlayer();
 
-				if (poly != null)
+				if (poly != null && localPlayer != null)
 				{
-					OverlayUtil.renderPolygon(graphics, poly, color);
+					WorldPoint playerWorldPoint = localPlayer.getWorldLocation();
+					WorldPoint shadowsWorldPoint = WorldPoint.fromLocal(client, lp);
+
+					if (playerWorldPoint.distanceTo(shadowsWorldPoint) <= config.shadowsRenderDistance())
+					{
+						graphics.setPaintMode();
+						graphics.setColor(config.shadowsBorderColour());
+						graphics.draw(poly);
+						graphics.setColor(config.shadowsColour());
+						graphics.fill(poly);
+
+						if (config.shadowsTickCounter())
+						{
+							String count = Integer.toString(plugin.getShadowsTicks());
+							Point point = Perspective.getCanvasTextLocation(client, graphics, lp, count, 0);
+							if (point != null)
+							{
+								renderTextLocation(graphics, count, 12, Font.BOLD, Color.WHITE, point);
+							}
+						}
+					}
 				}
 			}
-			if (plugin.isShadowsSpawning())
+			if (plugin.isShadowsSpawning() && plugin.getNm() != null)
 			{
-				if (plugin.getNm() != null)
-				{
-					Polygon tilePoly = Perspective.getCanvasTileAreaPoly(client, plugin.getNm().getLocalLocation(), 5);
-					OverlayUtil.renderPolygon(graphics, tilePoly, Color.ORANGE);
-				}
+				Polygon tilePoly = Perspective.getCanvasTileAreaPoly(client, plugin.getNm().getLocalLocation(), 5);
+				OverlayUtil.renderPolygon(graphics, tilePoly, config.shadowsBorderColour());
 			}
+		}
+
+		if (config.highlightNightmareHitboxOnCharge() && plugin.getNm() != null)
+		{
+			drawNightmareHitboxOnCharge(graphics, plugin.getNm(), plugin.isNightmareCharging());
+		}
+
+		if (config.highlightNightmareChargeRange() && plugin.getNm() != null)
+		{
+			drawNightmareChargeRange(graphics, plugin.getNm(), plugin.isNightmareCharging());
 		}
 
 		int ticksUntilNext = plugin.getTicksUntilNextAttack();
@@ -102,13 +137,13 @@ class NightmareOverlay extends Overlay
 		if (config.showTicksUntilParasite() && ticksUntilNextParasite > 0)
 		{
 			String str = Integer.toString(ticksUntilNextParasite);
-
 			for (Player player : plugin.getParasiteTargets().values())
 			{
 				LocalPoint lp = player.getLocalLocation();
 				Point point = Perspective.getCanvasTextLocation(client, graphics, lp, str, 0);
+				Color color = !plugin.isParasite() && player.equals(client.getLocalPlayer()) ? Color.GREEN : Color.RED;
 
-				renderTextLocation(graphics, str, 14, Font.BOLD, Color.RED, point);
+				renderTextLocation(graphics, str, 14, Font.BOLD, color, point);
 			}
 		}
 
@@ -131,16 +166,6 @@ class NightmareOverlay extends Overlay
 		if (config.highlightHuskTarget())
 		{
 			drawHuskTarget(graphics, plugin.getHuskTarget());
-		}
-
-		if (config.highlightNightmareHitboxOnCharge())
-		{
-			drawNightmareHitboxOnCharge(graphics, plugin.getNm(), plugin.isNightmareCharging());
-		}
-
-		if (config.highlightNightmareChargeRange())
-		{
-			drawNightmareChargeRange(graphics, plugin.getNm(), plugin.isNightmareCharging());
 		}
 
 		if (config.huskHighlight())
@@ -222,7 +247,7 @@ class NightmareOverlay extends Overlay
 		if (plugin.getNm() != null)
 		{
 			Polygon tilePoly = Perspective.getCanvasTileAreaPoly(client, plugin.getNm().getLocalLocation(), 5);
-			OverlayUtil.renderPolygon(graphics, tilePoly, Color.ORANGE);
+			OverlayUtil.renderPolygon(graphics, tilePoly, config.nightmareChargeBorderCol());
 		}
 	}
 
@@ -241,13 +266,13 @@ class NightmareOverlay extends Overlay
 
 		// if nightmare is at the gates, there are extra dangerous squares
 		int offset = 1792;
-		if (nmX == 6208)
+		if (nmX == 6208 || nmX == 7232)
 		{
 			offset = 2048;
 		}
 
 		// facing west
-		if (nmX == 5312)
+		if (nmX == 5312 || nmX == 6336)
 		{
 			polyAddPoints.addPoint(nmX + offset + 256 + 64, nmY + 256 + 64);
 			polyAddPoints.addPoint(nmX - 256 - 64, nmY + 256 + 64);
@@ -255,7 +280,7 @@ class NightmareOverlay extends Overlay
 			polyAddPoints.addPoint(nmX + offset + 256 + 64, nmY - 256 - 64);
 		}
 		// facing east
-		else if (nmX == 7104)
+		else if (nmX == 7104 || nmX == 8128)
 		{
 			polyAddPoints.addPoint(nmX + 256 + 64, nmY + 256 + 64);
 			polyAddPoints.addPoint(nmX - offset - 256 - 64, nmY + 256 + 64);
@@ -263,7 +288,7 @@ class NightmareOverlay extends Overlay
 			polyAddPoints.addPoint(nmX + 256 + 64, nmY - 256 - 64);
 		}
 		// facing north
-		else if (nmY == 8000 || nmY == 8128)
+		else if (nmY == 8000 || nmY == 8128 || nmY == 9024 || nmY == 9152)
 		{
 			polyAddPoints.addPoint(nmX + 256 + 64, nmY + 256 + 64);
 			polyAddPoints.addPoint(nmX - 256 - 64, nmY + 256 + 64);
@@ -271,7 +296,7 @@ class NightmareOverlay extends Overlay
 			polyAddPoints.addPoint(nmX + 256 + 64, nmY - offset - 256 - 64);
 		}
 		//facing south
-		else if (nmY == 6080 || nmY == 6208)
+		else if (nmY == 6080 || nmY == 6208 || nmY == 7104 || nmY == 7232)
 		{
 			polyAddPoints.addPoint(nmX + 256 + 64, nmY + offset + 256 + 64);
 			polyAddPoints.addPoint(nmX - 256 - 64, nmY + offset + 256 + 64);
@@ -293,8 +318,8 @@ class NightmareOverlay extends Overlay
 		graphics.setStroke(new BasicStroke(1));
 
 		path = Geometry.filterPath(path, (p1, p2) ->
-			Perspective.localToCanvas(client, new LocalPoint((int) p1[0], (int) p1[1]), client.getPlane()) != null &&
-				Perspective.localToCanvas(client, new LocalPoint((int) p2[0], (int) p2[1]), client.getPlane()) != null);
+				Perspective.localToCanvas(client, new LocalPoint((int) p1[0], (int) p1[1]), client.getPlane()) != null &&
+						Perspective.localToCanvas(client, new LocalPoint((int) p2[0], (int) p2[1]), client.getPlane()) != null);
 		path = Geometry.transformPath(path, coords ->
 		{
 			Point point = Perspective.localToCanvas(client, new LocalPoint((int) coords[0], (int) coords[1]), client.getPlane());
@@ -320,9 +345,11 @@ class NightmareOverlay extends Overlay
 			switch (id)
 			{
 				case 9454:
+				case 9466:
 					color = Color.CYAN;
 					break;
 				case 9455:
+				case 9467:
 					color = Color.GREEN;
 					break;
 				default:

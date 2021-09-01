@@ -114,7 +114,6 @@ public interface AoeWarningConfig extends Config
     return true;
   }
 
-
   @ConfigItem(
       keyName = "delay",
       name = "Fade Delay",
@@ -210,19 +209,20 @@ public interface AoeWarningConfig extends Config
   {
     return true;
   }
+
   @ConfigSection(
-      keyName = "lizardmanaoeTitle",
-      name = "Lizardman Shamans",
-      description = "",
-      position = 12
+      keyName = "bosses",
+      position = 11,
+      name = "Bosses",
+      description = ""
   )
-  String lizardmanaoeTitle = "Lizardman Shamans";
+  String bosses = "Bosses";
 
   @ConfigItem(
       keyName = "lizardmanaoe",
       name = "Lizardman Shamans",
       description = "Configures whether or not AoE Projectile Warnings for Lizardman Shamans is displayed",
-      section = lizardmanaoeTitle,
+      section = bosses,
       position = 13
   )
   default boolean isShamansEnabled()
@@ -230,19 +230,11 @@ public interface AoeWarningConfig extends Config
     return true;
   }
 
-  @ConfigSection(
-      keyName = "archaeologistaoeTitle",
-      name = "Crazy Archaeologist",
-      description = "",
-      position = 15
-  )
-  String archaeologistaoeTitle = "Crazy Archaeologist";
-
   @ConfigItem(
       keyName = "archaeologistaoe",
       name = "Crazy Archaeologist",
       description = "Configures whether or not AoE Projectile Warnings for Archaeologist is displayed",
-      section = archaeologistaoeTitle,
+      section = bosses,
       position = 16
   )
   default boolean isArchaeologistEnabled()
@@ -250,19 +242,11 @@ public interface AoeWarningConfig extends Config
     return true;
   }
 
-  @ConfigSection(
-      keyName = "icedemonTitle",
-      name = "Ice Demon",
-      description = "",
-      position = 18
-  )
-  String icedemonTitle = "Ice Demon";
-
   @ConfigItem(
       keyName = "icedemon",
       name = "Ice Demon",
       description = "Configures whether or not AoE Projectile Warnings for Ice Demon is displayed",
-      section = icedemonTitle,
+      section = bosses,
       position = 19
   )
   default boolean isIceDemonEnabled()
@@ -270,20 +254,11 @@ public interface AoeWarningConfig extends Config
     return true;
   }
 
-
-  @ConfigSection(
-      keyName = "vasaTitle",
-      name = "Vasa",
-      description = "",
-      position = 21
-  )
-  String vasaTitle = "Vasa";
-
   @ConfigItem(
       keyName = "vasa",
       name = "Vasa",
       description = "Configures whether or not AoE Projectile Warnings for Vasa is displayed",
-      section = vasaTitle,
+      section = bosses,
       position = 22
   )
   default boolean isVasaEnabled()
@@ -291,20 +266,11 @@ public interface AoeWarningConfig extends Config
     return true;
   }
 
-
-  @ConfigSection(
-      keyName = "tektonTitle",
-      name = "Tekton",
-      description = "",
-      position = 24
-  )
-  String tektonTitle = "Tekton";
-
   @ConfigItem(
       keyName = "tekton",
       name = "Tekton",
       description = "Configures whether or not AoE Projectile Warnings for Tekton is displayed",
-      section = tektonTitle,
+      section = bosses,
       position = 25
   )
   default boolean isTektonEnabled()
@@ -312,19 +278,11 @@ public interface AoeWarningConfig extends Config
     return true;
   }
 
-  @ConfigSection(
-      keyName = "vorkathTitle",
-      name = "Vorkath",
-      description = "",
-      position = 27
-  )
-  String vorkathTitle = "Vorkath";
-
   @ConfigItem(
       keyName = "vorkath",
       name = "Vorkath",
       description = "Configure what AoE projectiles you should be warned for at Vorkath",
-      section = vorkathTitle,
+      section = bosses,
       position = 28,
       enumClass = VorkathMode.class
   )
@@ -333,19 +291,11 @@ public interface AoeWarningConfig extends Config
     return EnumSet.allOf(VorkathMode.class);
   }
 
-  @ConfigSection(
-      keyName = "galvekTitle",
-      name = "Galvek",
-      description = "",
-      position = 30
-  )
-  String galvekTitle = "Galvek";
-
   @ConfigItem(
       keyName = "galvek",
       name = "Galvek",
       description = "Configures whether or not AoE Projectile Warnings for Galvek are displayed",
-      section = galvekTitle,
+      section = bosses,
       position = 31
   )
   default boolean isGalvekEnabled()
@@ -353,20 +303,11 @@ public interface AoeWarningConfig extends Config
     return true;
   }
 
-
-  @ConfigSection(
-      keyName = "gargbossTitle",
-      name = "Gargoyle Boss",
-      description = "",
-      position = 33
-  )
-  String gargbossTitle = "Gargoyle Boss";
-
   @ConfigItem(
       keyName = "gargboss",
       name = "Gargoyle Boss",
       description = "Configs whether or not AoE Projectile Warnings for Dawn/Dusk are displayed",
-      section = gargbossTitle,
+      section = bosses,
       position = 34
   )
   default boolean isGargBossEnabled()
@@ -374,19 +315,11 @@ public interface AoeWarningConfig extends Config
     return true;
   }
 
-  @ConfigSection(
-      keyName = "vetionTitle",
-      name = "Vet'ion",
-      description = "",
-      position = 36
-  )
-  String vetionTitle = "Vet'ion";
-
   @ConfigItem(
       keyName = "vetion",
       name = "Vet'ion",
       description = "Configures whether or not AoE Projectile Warnings for Vet'ion are displayed",
-      section = vetionTitle,
+      section = bosses,
       position = 37
   )
   default boolean isVetionEnabled()
@@ -394,19 +327,11 @@ public interface AoeWarningConfig extends Config
     return true;
   }
 
-  @ConfigSection(
-      keyName = "chaosfanaticTitle",
-      name = "Chaos Fanatic",
-      description = "",
-      position = 39
-  )
-  String chaosfanaticTitle = "Chaos Fanatic";
-
   @ConfigItem(
       keyName = "chaosfanatic",
       name = "Chaos Fanatic",
       description = "Configures whether or not AoE Projectile Warnings for Chaos Fanatic are displayed",
-      section = chaosfanaticTitle,
+      section = bosses,
       position = 40
   )
   default boolean isChaosFanaticEnabled()
@@ -414,19 +339,11 @@ public interface AoeWarningConfig extends Config
     return true;
   }
 
-  @ConfigSection(
-      keyName = "olmTitle",
-      name = "Olm",
-      description = "",
-      position = 42
-  )
-  String olmTitle = "Olm";
-
   @ConfigItem(
       keyName = "olm",
       name = "Olm",
       description = "Configures whether or not AoE Projectile Warnings for The Great Olm are displayed",
-      section = olmTitle,
+      section = bosses,
       position = 43
   )
   default boolean isOlmEnabled()
@@ -438,7 +355,7 @@ public interface AoeWarningConfig extends Config
       keyName = "bombDisplay",
       name = "Olm Bombs",
       description = "Display a timer and colour-coded AoE for Olm's crystal-phase bombs.",
-      section = olmTitle,
+      section = bosses,
       position = 46
   )
   default boolean bombDisplay()
@@ -450,7 +367,7 @@ public interface AoeWarningConfig extends Config
       keyName = "lightning",
       name = "Olm Lightning Trails",
       description = "Show Lightning Trails",
-      section = olmTitle,
+      section = bosses,
       position = 49
   )
   default boolean LightningTrail()
@@ -458,19 +375,11 @@ public interface AoeWarningConfig extends Config
     return true;
   }
 
-  @ConfigSection(
-      keyName = "corpTitle",
-      name = "Corporeal Beast",
-      description = "",
-      position = 51
-  )
-  String corpTitle = "Corporeal Beast";
-
   @ConfigItem(
       keyName = "corp",
       name = "Corporeal Beast",
       description = "Configures whether or not AoE Projectile Warnings for the Corporeal Beast are displayed",
-      section = corpTitle,
+      section = bosses,
       position = 52
   )
   default boolean isCorpEnabled()
@@ -478,19 +387,11 @@ public interface AoeWarningConfig extends Config
     return true;
   }
 
-  @ConfigSection(
-      keyName = "wintertodtTitle",
-      name = "Wintertodt",
-      description = "",
-      position = 54
-  )
-  String wintertodtTitle = "Wintertodt";
-
   @ConfigItem(
       keyName = "wintertodt",
       name = "Wintertodt Snow Fall",
       description = "Configures whether or not AOE Projectile Warnings for the Wintertodt snow fall are displayed",
-      section = wintertodtTitle,
+      section = bosses,
       position = 55
   )
   default boolean isWintertodtEnabled()
@@ -498,19 +399,11 @@ public interface AoeWarningConfig extends Config
     return true;
   }
 
-  @ConfigSection(
-      keyName = "xarpusTitle",
-      name = "Xarpus",
-      description = "",
-      position = 57
-  )
-  String xarpusTitle = "Xarpus";
-
   @ConfigItem(
       keyName = "isXarpusEnabled",
       name = "Xarpus",
       description = "Configures whether or not AOE Projectile Warnings for Xarpus are displayed",
-      section = xarpusTitle,
+      section = bosses,
       position = 58
   )
   default boolean isXarpusEnabled()
@@ -518,19 +411,11 @@ public interface AoeWarningConfig extends Config
     return true;
   }
 
-  @ConfigSection(
-      keyName = "addyDragsTitle",
-      name = "Addy Drags",
-      description = "",
-      position = 60
-  )
-  String addyDragsTitle = "Addy Drags";
-
   @ConfigItem(
       keyName = "addyDrags",
       name = "Addy Drags",
       description = "Show Bad Areas",
-      section = addyDragsTitle,
+      section = bosses,
       position = 61
   )
   default boolean addyDrags()
@@ -538,39 +423,22 @@ public interface AoeWarningConfig extends Config
     return true;
   }
 
-  @ConfigSection(
-      keyName = "drakeTitle",
-      name = "Drakes",
-      description = "",
-      position = 63
-  )
-  String drakeTitle = "Drakes";
-
   @ConfigItem(
       keyName = "drake",
       name = "Drakes Breath",
       description = "Configures if Drakes Breath tile markers are displayed",
-      section = drakeTitle,
+      section = bosses,
       position = 64
   )
   default boolean isDrakeEnabled()
   {
     return true;
   }
-
-  @ConfigSection(
-      keyName = "cerberusTitle",
-      name = "Cerberus",
-      description = "",
-      position = 66
-  )
-  String cerberusTitle = "Cerberus";
-
   @ConfigItem(
       keyName = "cerbFire",
       name = "Cerberus Fire",
       description = "Configures if Cerberus fire tile markers are displayed",
-      section = cerberusTitle,
+      section = bosses,
       position = 67
   )
   default boolean isCerbFireEnabled()
@@ -578,19 +446,11 @@ public interface AoeWarningConfig extends Config
     return true;
   }
 
-  @ConfigSection(
-      keyName = "demonicGorillaTitle",
-      name = "Demonic Gorilla",
-      description = "",
-      position = 69
-  )
-  String demonicGorillaTitle = "Demonic Gorilla";
-
   @ConfigItem(
       keyName = "demonicGorilla",
       name = "Demonic Gorilla",
       description = "Configures if Demonic Gorilla boulder tile markers are displayed",
-      section = demonicGorillaTitle,
+      section = bosses,
       position = 70
   )
   default boolean isDemonicGorillaEnabled()
@@ -598,19 +458,11 @@ public interface AoeWarningConfig extends Config
     return true;
   }
 
-  @ConfigSection(
-      keyName = "verzikTitle",
-      name = "Verzik",
-      description = "",
-      position = 72
-  )
-  String verzikTitle = "Verzik";
-
   @ConfigItem(
       keyName = "verzik",
       name = "Verzik",
       description = "Configures if Verzik purple Nylo/falling rock AOE is shown",
-      section = verzikTitle,
+      section = bosses,
       position = 73
   )
   default boolean isVerzikEnabled()

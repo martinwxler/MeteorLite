@@ -44,7 +44,7 @@ public interface SpecialCounterExtendedConfig extends Config {
 
     @Range(textInput = true)
     @ConfigItem(
-            position = 1,
+            position = 2,
             keyName = "getFadeDelay",
             name = "Fade Delay",
             description = "Delay, in milliseconds, until the icon disappears."
@@ -55,7 +55,7 @@ public interface SpecialCounterExtendedConfig extends Config {
 
     @Range(textInput = true)
     @ConfigItem(
-            position = 2,
+            position = 3,
             keyName = "getMaxHeight",
             name = "Travel Height",
             description = "Maximum height, in pixels, for the icon to travel."
@@ -65,7 +65,7 @@ public interface SpecialCounterExtendedConfig extends Config {
     }
 
     @ConfigItem(
-            position = 3,
+            position = 1,
             keyName = "guessDawnbringer",
             name = "Guess Dawnbringer Hit",
             description = "Guess Dawnbringer based on XP drop. Provides faster results."

@@ -13,40 +13,53 @@ import meteor.config.Units;
 
 @ConfigGroup("znzulrah")
 public interface ZulrahConfig extends Config {
+
+   @ConfigSection(
+       name = "General",
+       description = "",
+       position = 0,
+       closedByDefault = true
+   )
+   String general = "General";
+
    @ConfigSection(
       name = "Zulrah",
-      description = "",
-      position = 0,
-      closedByDefault = true
-   )
-   String zulrahSection = "zulrahSection";
-   @ConfigSection(
-      name = "Fight Helper",
       description = "",
       position = 1,
       closedByDefault = true
    )
-   String fightHelperSection = "fightHelperSection";
+   String zulrahSection = "Zulrah";
+   
    @ConfigSection(
-      name = "Phase Helper",
+      name = "Fight Helper",
       description = "",
       position = 2,
       closedByDefault = true
    )
-   String phaseHelperSection = "phaseHelperSection";
+   String fightHelperSection = "Fight Helper";
+   
    @ConfigSection(
-      name = "Miscellaneous",
+      name = "Phase Helper",
       description = "",
       position = 3,
       closedByDefault = true
    )
-   String miscellaneousSection = "miscellaneousSection";
+   String phaseHelperSection = "Phase Helper";
+   
+   @ConfigSection(
+      name = "Miscellaneous",
+      description = "",
+      position = 4,
+      closedByDefault = true
+   )
+   String miscellaneousSection = "Miscellaneous";
 
    @ConfigItem(
       name = "Font Type",
       keyName = "fontType",
       description = "Configure the font for the plugin overlays to use",
-      position = 4
+      position = 4,
+      section = general
    )
    default FontType fontType() {
       return FontType.SMALL;
@@ -56,7 +69,8 @@ public interface ZulrahConfig extends Config {
       name = "Text Outline",
       keyName = "textOutline",
       description = "Use an outline around text instead of a text shadow",
-      position = 5
+      position = 5,
+      section = general
    )
    default boolean textOutline() {
       return false;
@@ -66,7 +80,8 @@ public interface ZulrahConfig extends Config {
       name = "Outline Width",
       keyName = "outlineWidth",
       description = "Configures the stroke for the plugin polygons",
-      position = 6
+      position = 6,
+      section = general
    )
    @Range(
       max = 3,
@@ -81,7 +96,8 @@ public interface ZulrahConfig extends Config {
       name = "Fill Alpha",
       keyName = "fillAlpha",
       description = "Configures the fill intesity for the plugin polygons",
-      position = 7
+      position = 7,
+      section = general
    )
    @Range(
       max = 255,
@@ -97,7 +113,7 @@ public interface ZulrahConfig extends Config {
       keyName = "phaseTickCounter",
       description = "Displays a tick counter on Zulrah showing how long until the next phase",
       position = 0,
-      section = "zulrahSection"
+      section = zulrahSection
    )
    default boolean phaseTickCounter() {
       return false;
@@ -108,7 +124,7 @@ public interface ZulrahConfig extends Config {
       keyName = "attackTickCounter",
       description = "Displays a attack tick counter on Zulrah showing how long until the next auto attack",
       position = 1,
-      section = "zulrahSection"
+      section = zulrahSection
    )
    default boolean attackTickCounter() {
       return false;
@@ -119,7 +135,7 @@ public interface ZulrahConfig extends Config {
       keyName = "tickCounterColors",
       description = "Configure the color for the Zulrah tick counters",
       position = 2,
-      section = "zulrahSection"
+      section = zulrahSection
    )
    @Alpha
    default Color tickCounterColors() {
@@ -131,7 +147,7 @@ public interface ZulrahConfig extends Config {
       keyName = "totalTickCounter",
       description = "Displays a total tick counter infobox showing how long Zulrah has been alive for in ticks",
       position = 3,
-      section = "zulrahSection"
+      section = zulrahSection
    )
    default boolean totalTickCounter() {
       return false;
@@ -142,7 +158,7 @@ public interface ZulrahConfig extends Config {
       keyName = "displayZulrahTile",
       description = "Highlights Zulrah's current tile in a 5x5",
       position = 4,
-      section = "zulrahSection"
+      section = zulrahSection
    )
    default boolean displayZulrahTile() {
       return false;
@@ -153,7 +169,7 @@ public interface ZulrahConfig extends Config {
       keyName = "zulrahTileColor",
       description = "Configures the color for Zulrah's tile highlight",
       position = 5,
-      section = "zulrahSection"
+      section = zulrahSection
    )
    @Alpha
    default Color zulrahTileColor() {
@@ -165,7 +181,7 @@ public interface ZulrahConfig extends Config {
       keyName = "prayerHelper",
       description = "Displays an overlay showing the correct prayer to use for the entirity of the Zulrah fight<br>Changes color dependent on whether or not you're praying correctly or not",
       position = 0,
-      section = "fightHelperSection"
+      section = fightHelperSection
    )
    default boolean prayerHelper() {
       return false;
@@ -176,7 +192,7 @@ public interface ZulrahConfig extends Config {
       keyName = "prayerMarker",
       description = "Marks the correct prayer to use in the prayer book to use for the entirity of the Zulrah fight<br>Changes color dependent on whether or not you're praying correctly or not",
       position = 1,
-      section = "fightHelperSection"
+      section = fightHelperSection
    )
    default boolean prayerMarker() {
       return false;
@@ -187,7 +203,7 @@ public interface ZulrahConfig extends Config {
       keyName = "prayerConservation",
       description = "Displays text over your head showing when it's safe to turn off your overheads<br>Overlay gets displayed when Zulrah is not actively targeting you and your overheads are on",
       position = 2,
-      section = "fightHelperSection"
+      section = fightHelperSection
    )
    default boolean prayerConservation() {
       return false;
@@ -198,7 +214,7 @@ public interface ZulrahConfig extends Config {
       keyName = "standLocations",
       description = "Highlights the tiles to stand on for the current and next Zulrah phase",
       position = 7,
-      section = "fightHelperSection"
+      section = fightHelperSection
    )
    default boolean standLocations() {
       return false;
@@ -209,7 +225,7 @@ public interface ZulrahConfig extends Config {
       keyName = "standAndNextColor",
       description = "Configure the color for the stand/next GROUPED tile and text",
       position = 8,
-      section = "fightHelperSection"
+      section = fightHelperSection
    )
    @Alpha
    default Color standAndNextTileColor() {
@@ -221,7 +237,7 @@ public interface ZulrahConfig extends Config {
       keyName = "standTileColor",
       description = "Configure the color for the current stand tile and text",
       position = 9,
-      section = "fightHelperSection"
+      section = fightHelperSection
    )
    @Alpha
    default Color standTileColor() {
@@ -233,7 +249,7 @@ public interface ZulrahConfig extends Config {
       keyName = "nextStandTileColor",
       description = "Configure the color for the next stand tile and text",
       position = 10,
-      section = "fightHelperSection"
+      section = fightHelperSection
    )
    @Alpha
    default Color nextTileColor() {
@@ -245,7 +261,7 @@ public interface ZulrahConfig extends Config {
       keyName = "stallLocations",
       description = "Highlights the tile to pillar stall a Zulrah phase if it supports it",
       position = 11,
-      section = "fightHelperSection"
+      section = fightHelperSection
    )
    default boolean stallLocations() {
       return false;
@@ -256,7 +272,7 @@ public interface ZulrahConfig extends Config {
       keyName = "stallTileColor",
       description = "Configures the color for the stall tile and text",
       position = 12,
-      section = "fightHelperSection"
+      section = fightHelperSection
    )
    @Alpha
    default Color stallTileColor() {
@@ -268,7 +284,7 @@ public interface ZulrahConfig extends Config {
       keyName = "phaseDisplayType",
       description = "Overlay: Displays Zulrah's phases details on an overlay<br>Tile: Displays Zulrah's phases details on tiles",
       position = 0,
-      section = "phaseHelperSection"
+      section = phaseHelperSection
    )
    default ZulrahConfig.DisplayType phaseDisplayType() {
       return DisplayType.OFF;
@@ -279,7 +295,7 @@ public interface ZulrahConfig extends Config {
       keyName = "phaseDisplayMode",
       description = "Current: Only displays the current Zulrah phase<br>Next: Only displays the next Zulrah phase<br>",
       position = 1,
-      section = "phaseHelperSection"
+      section = phaseHelperSection
    )
    default ZulrahConfig.DisplayMode phaseDisplayMode() {
       return DisplayMode.BOTH;
@@ -290,7 +306,7 @@ public interface ZulrahConfig extends Config {
       keyName = "phaseRotationName",
       description = "Requires: Display Type ('Overlay' or 'Both')<br>Displays text above InfoBox overlay showing the rotation name or unidentified",
       position = 2,
-      section = "phaseHelperSection"
+      section = phaseHelperSection
    )
    default boolean phaseRotationName() {
       return false;
@@ -301,7 +317,7 @@ public interface ZulrahConfig extends Config {
       keyName = "phaseHats",
       description = "Displays Zulrah's skill type as an icon on the tile overlay",
       position = 3,
-      section = "phaseHelperSection"
+      section = phaseHelperSection
    )
    default boolean phaseHats() {
       return false;
@@ -312,7 +328,7 @@ public interface ZulrahConfig extends Config {
       keyName = "phaseTags",
       description = "Tags each Zulrah phase on the tile overlay with:<br>[Current] = Current Zulrah phase<br>[Next] = Definite next Zulrah phase<br>[P. Next] = Potentially Zulrah's next phase",
       position = 4,
-      section = "phaseHelperSection"
+      section = phaseHelperSection
    )
    default boolean phaseTags() {
       return false;
@@ -323,7 +339,7 @@ public interface ZulrahConfig extends Config {
       keyName = "instanceTimer",
       description = "Displays an overlay showing how long Zulrah has been alive in minutes:seconds format<br>Timer resets on Zulrah death and/or leaving of the instance of any fashion",
       position = 0,
-      section = "miscellaneousSection"
+      section = miscellaneousSection
    )
    default boolean instanceTimer() {
       return false;
@@ -334,7 +350,7 @@ public interface ZulrahConfig extends Config {
       keyName = "snakelingSetting",
       description = "Remove Att. Op.: Removes the 'Attack' option from all the active Snakelings<br>Entity Hider: Hides all the active Snakelings",
       position = 1,
-      section = "miscellaneousSection"
+      section = miscellaneousSection
    )
    default ZulrahConfig.SnakelingSettings snakelingSetting() {
       return SnakelingSettings.OFF;
@@ -345,7 +361,7 @@ public interface ZulrahConfig extends Config {
       keyName = "snakelingMesHotkey",
       description = "Override the Snakeling MES to show attack options while hotkey is pressed",
       position = 2,
-      section = "miscellaneousSection"
+      section = miscellaneousSection
    )
    default Keybind snakelingMesHotkey() {
       return Keybind.NOT_SET;
@@ -356,7 +372,7 @@ public interface ZulrahConfig extends Config {
       keyName = "displayToxicClouds",
       description = "Highlights the Toxic Clouds and displays their time until despawn",
       position = 3,
-      section = "miscellaneousSection"
+      section = miscellaneousSection
    )
    default boolean displayToxicClouds() {
       return false;
@@ -367,7 +383,7 @@ public interface ZulrahConfig extends Config {
       keyName = "toxicCloudColor",
       description = "Configures the color of the Toxic Cloud highlight",
       position = 4,
-      section = "miscellaneousSection"
+      section = miscellaneousSection
    )
    @Alpha
    default Color toxicCloudsColor() {
@@ -379,7 +395,7 @@ public interface ZulrahConfig extends Config {
       keyName = "displayProjectiles",
       description = "Displays when and where the Snakeling/Toxic Clouds projectile will approximately land",
       position = 5,
-      section = "miscellaneousSection"
+      section = miscellaneousSection
    )
    default boolean displayProjectiles() {
       return false;
@@ -390,7 +406,7 @@ public interface ZulrahConfig extends Config {
       keyName = "projectilesColor",
       description = "Configures the color of the Projectiles highlight",
       position = 6,
-      section = "miscellaneousSection"
+      section = miscellaneousSection
    )
    @Alpha
    default Color projectilesColor() {

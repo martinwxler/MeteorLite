@@ -69,17 +69,19 @@ public interface sGroundMarkerConfig extends Config
 	}
 
 	@ConfigSection(
-			name = "<html><font color=#00aeef>Group Colors",
+			name = "Group Colors",
 			description = "Colors for ground marker groups 1-12.",
 			position = 0,
-			closedByDefault = true)
-	public static final String groupSections = "groupSection";
+			closedByDefault = true
+	)
+	String groupSections = "groupSection";
 
 	@ConfigItem(
 		position = 0,
 		keyName = "amount",
 		name = "Amount of groups",
-		description = "The amount of inventory groups"
+		description = "The amount of inventory groups",
+		section = groupSections
 	)
 	default amount getAmount()
 	{
@@ -92,7 +94,7 @@ public interface sGroundMarkerConfig extends Config
 		keyName = "markerColor",
 		name = "Default tile Color",
 		description = "Will not have color with No Outline",
-		section = "groupSection"
+		section = groupSections
 	)
 	default Color markerColor()
 	{
@@ -105,7 +107,7 @@ public interface sGroundMarkerConfig extends Config
 		keyName = "markerColor2",
 		name = "Group 2 tile color",
 		description = "Configures the color of the 2nd group of marked tiles",
-		section = "groupSection"
+		section = groupSections
 	)
 	default Color markerColor2()
 	{
@@ -118,7 +120,7 @@ public interface sGroundMarkerConfig extends Config
 		keyName = "markerColor3",
 		name = "Group 3 tile color",
 		description = "Configures the color of the 3rd group of marked tiles",
-		section = "groupSection"
+		section = groupSections
 	)
 	default Color markerColor3()
 	{
@@ -131,7 +133,7 @@ public interface sGroundMarkerConfig extends Config
 		keyName = "markerColor4",
 		name = "Group 4 tile color",
 		description = "Configures the color of the 4th group of marked tiles",
-		section = "groupSection"
+		section = groupSections
 	)
 	default Color markerColor4()
 	{
@@ -144,7 +146,7 @@ public interface sGroundMarkerConfig extends Config
 		keyName = "markerColor5",
 		name = "Group 5 tile color",
 		description = "Configures the color of the 5th group of marked tiles",
-		section = "groupSection"
+		section = groupSections
 	)
 	default Color markerColor5()
 	{
@@ -157,7 +159,7 @@ public interface sGroundMarkerConfig extends Config
 		keyName = "markerColor6",
 		name = "Group 6 tile color",
 		description = "Configures the color of the 6th group of marked tiles",
-		section = "groupSection"
+		section = groupSections
 	)
 	default Color markerColor6()
 	{
@@ -170,7 +172,7 @@ public interface sGroundMarkerConfig extends Config
 		keyName = "markerColor7",
 		name = "Group 7 tile color",
 		description = "Configures the color of the 7th group of marked tiles",
-		section = "groupSection"
+		section = groupSections
 	)
 	default Color markerColor7()
 	{
@@ -183,7 +185,7 @@ public interface sGroundMarkerConfig extends Config
 		keyName = "markerColor8",
 		name = "Group 8 tile color",
 		description = "Configures the color of the 8th group of marked tiles",
-		section = "groupSection"
+		section = groupSections
 	)
 	default Color markerColor8()
 	{
@@ -196,7 +198,7 @@ public interface sGroundMarkerConfig extends Config
 		keyName = "markerColor9",
 		name = "Group 9 tile color",
 		description = "Configures the color of the 9th group of marked tiles",
-		section = "groupSection"
+		section = groupSections
 	)
 	default Color markerColor9()
 	{
@@ -209,7 +211,7 @@ public interface sGroundMarkerConfig extends Config
 		keyName = "markerColor10",
 		name = "Group 10 tile color",
 		description = "Configures the color of the 10th group of marked tiles",
-		section = "groupSection"
+		section = groupSections
 	)
 	default Color markerColor10()
 	{
@@ -222,7 +224,7 @@ public interface sGroundMarkerConfig extends Config
 		keyName = "markerColor11",
 		name = "Group 11 tile color",
 		description = "Configures the color of the 11th group of marked tiles",
-		section = "groupSection"
+		section = groupSections
 	)
 	default Color markerColor11()
 	{
@@ -235,7 +237,7 @@ public interface sGroundMarkerConfig extends Config
 		keyName = "markerColor12",
 		name = "Group 12 tile color",
 		description = "Configures the color of the 12th group of marked tiles",
-		section = "groupSection"
+		section = groupSections
 	)
 	default Color markerColor12()
 	{

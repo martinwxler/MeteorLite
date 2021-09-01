@@ -40,7 +40,7 @@ public interface MenuEntrySwapperConfig extends Config {
       position = 0,
       closedByDefault = true
   )
-  String itemSection = "items";
+  String itemSection = "Item Swaps";
 
   @ConfigSection(
       name = "NPC Swaps",
@@ -48,7 +48,7 @@ public interface MenuEntrySwapperConfig extends Config {
       position = 1,
       closedByDefault = true
   )
-  String npcSection = "npcs";
+  String npcSection = "NPC Swaps";
 
   @ConfigSection(
       name = "Object Swaps",
@@ -56,7 +56,7 @@ public interface MenuEntrySwapperConfig extends Config {
       position = 2,
       closedByDefault = true
   )
-  String objectSection = "objects";
+  String objectSection = "Object Swaps";
 
   @ConfigSection(
       name = "UI Swaps",
@@ -64,7 +64,7 @@ public interface MenuEntrySwapperConfig extends Config {
       position = 3,
       closedByDefault = true
   )
-  String uiSection = "ui";
+  String uiSection = "UI Swaps";
 
   @ConfigItem(
       position = -2,

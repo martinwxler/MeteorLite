@@ -34,17 +34,19 @@ public interface InteractHighlightConfig extends Config
 {
 	@ConfigSection(
 		name = "NPCs",
+		keyName = "npcSection",
 		description = "Settings for NPC highlight",
 		position = 0
 	)
-	String npcSection = "npcSection";
+	String npcSection = "NPCs";
 
 	@ConfigSection(
 		name = "Objects",
+		keyName = "objectSection",
 		description = "Settings for object highlight",
 		position = 1
 	)
-	String objectSection = "objectSection";
+	String objectSection = "Objects";
 
 	@ConfigItem(
 		keyName = "npcShowHover",

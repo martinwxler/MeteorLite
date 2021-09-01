@@ -50,15 +50,25 @@ public interface ItemChargeConfig extends Config {
 
   @ConfigSection(
       name = "Charge Settings",
+      keyName = "chargeSection",
       description = "Configuration for which charges should be displayed",
       position = 98
   )
-  String chargesSection = "charges";
+  String chargesSection = "Charge Settings";
+
+  @ConfigSection(
+      name = "Warnings",
+      keyName = "warningsSection",
+      description = "Configuration for which charges should be displayed",
+      position = 97
+  )
+  String warningsSection = "Warnings";
 
   @ConfigItem(
       keyName = "veryLowWarningColor",
       name = "Very Low Warning",
       description = "The color of the overlay when charges are very low",
+      section = warningsSection,
       position = 1
   )
   default Color veryLowWarningColor() {
@@ -69,6 +79,7 @@ public interface ItemChargeConfig extends Config {
       keyName = "lowWarningColor",
       name = "Low Warning",
       description = "The color of the overlay when charges are low",
+      section = warningsSection,
       position = 2
   )
   default Color lowWarningolor() {
@@ -83,6 +94,7 @@ public interface ItemChargeConfig extends Config {
       keyName = "veryLowWarning",
       name = "Very Low Warning",
       description = "The charge count for the very low warning color",
+      section = warningsSection,
       position = 3
   )
   default int veryLowWarning() {
@@ -97,6 +109,7 @@ public interface ItemChargeConfig extends Config {
       keyName = "lowWarning",
       name = "Low Warning",
       description = "The charge count for the low warning color",
+      section = warningsSection,
       position = 4
   )
   default int lowWarning() {
