@@ -200,10 +200,19 @@ public interface EntityInspectorConfig extends Config {
 		return false;
 	}
 
+	@ConfigSection(
+					name = "Utilities",
+					keyName = "utils",
+					description = "",
+					position = 9
+	)
+	String utils = "Utilities";
+
 	@ConfigItem(
 					keyName = "projectiles",
 					name = "Projectiles",
-					description = "Render Projectiles"
+					description = "Render Projectiles",
+					section = utils
 	)
 	default boolean projectiles() {
 		return false;
@@ -212,7 +221,8 @@ public interface EntityInspectorConfig extends Config {
 	@ConfigItem(
 					keyName = "graphicsObjects",
 					name = "Graphics Objects",
-					description = "Render Graphics Objects"
+					description = "Render Graphics Objects",
+					section = utils
 	)
 	default boolean graphicsObjects() {
 		return false;
@@ -221,7 +231,8 @@ public interface EntityInspectorConfig extends Config {
 	@ConfigItem(
 					keyName = "inventory",
 					name = "Inventory",
-					description = "Render Inventory"
+					description = "Render Inventory",
+					section = utils
 	)
 	default boolean inventory() {
 		return false;
@@ -230,7 +241,8 @@ public interface EntityInspectorConfig extends Config {
 	@ConfigItem(
 					keyName = "tileLocation",
 					name = "Tile Location",
-					description = "Render Tile Location"
+					description = "Render Tile Location",
+					section = utils
 	)
 	default boolean tileLocation() {
 		return false;
@@ -240,7 +252,8 @@ public interface EntityInspectorConfig extends Config {
 					keyName = "path",
 					name = "Path",
 					description = "Render calculated Path",
-					position = 200
+					position = 200,
+					section = utils
 	)
 	default boolean path() {
 		return false;
@@ -250,7 +263,8 @@ public interface EntityInspectorConfig extends Config {
 					keyName = "collisions",
 					name = "Collision Map",
 					description = "Render Collision Map",
-					position = 201
+					position = 201,
+					section = utils
 	)
 	default boolean collisions() {
 		return false;

@@ -74,14 +74,14 @@ public interface sGroundMarkerConfig extends Config
 			position = 0,
 			closedByDefault = true
 	)
-	String groupSections = "groupSection";
+	String groupSections = "Group Colors";
 
 	@ConfigItem(
-		position = 0,
-		keyName = "amount",
-		name = "Amount of groups",
-		description = "The amount of inventory groups",
-		section = groupSections
+			position = 0,
+			keyName = "amount",
+			name = "Amount of groups",
+			description = "The amount of inventory groups",
+			section = groupSections
 	)
 	default amount getAmount()
 	{
@@ -90,11 +90,11 @@ public interface sGroundMarkerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 1,
-		keyName = "markerColor",
-		name = "Default tile Color",
-		description = "Will not have color with No Outline",
-		section = groupSections
+			position = 1,
+			keyName = "markerColor",
+			name = "Default tile Color",
+			description = "Will not have color with No Outline",
+			section = groupSections
 	)
 	default Color markerColor()
 	{
@@ -103,11 +103,11 @@ public interface sGroundMarkerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 3,
-		keyName = "markerColor2",
-		name = "Group 2 tile color",
-		description = "Configures the color of the 2nd group of marked tiles",
-		section = groupSections
+			position = 3,
+			keyName = "markerColor2",
+			name = "Group 2 tile color",
+			description = "Configures the color of the 2nd group of marked tiles",
+			section = groupSections
 	)
 	default Color markerColor2()
 	{
@@ -116,11 +116,11 @@ public interface sGroundMarkerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 4,
-		keyName = "markerColor3",
-		name = "Group 3 tile color",
-		description = "Configures the color of the 3rd group of marked tiles",
-		section = groupSections
+			position = 4,
+			keyName = "markerColor3",
+			name = "Group 3 tile color",
+			description = "Configures the color of the 3rd group of marked tiles",
+			section = groupSections
 	)
 	default Color markerColor3()
 	{
@@ -129,11 +129,11 @@ public interface sGroundMarkerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 5,
-		keyName = "markerColor4",
-		name = "Group 4 tile color",
-		description = "Configures the color of the 4th group of marked tiles",
-		section = groupSections
+			position = 5,
+			keyName = "markerColor4",
+			name = "Group 4 tile color",
+			description = "Configures the color of the 4th group of marked tiles",
+			section = groupSections
 	)
 	default Color markerColor4()
 	{
@@ -142,11 +142,11 @@ public interface sGroundMarkerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 6,
-		keyName = "markerColor5",
-		name = "Group 5 tile color",
-		description = "Configures the color of the 5th group of marked tiles",
-		section = groupSections
+			position = 6,
+			keyName = "markerColor5",
+			name = "Group 5 tile color",
+			description = "Configures the color of the 5th group of marked tiles",
+			section = groupSections
 	)
 	default Color markerColor5()
 	{
@@ -155,11 +155,11 @@ public interface sGroundMarkerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 7,
-		keyName = "markerColor6",
-		name = "Group 6 tile color",
-		description = "Configures the color of the 6th group of marked tiles",
-		section = groupSections
+			position = 7,
+			keyName = "markerColor6",
+			name = "Group 6 tile color",
+			description = "Configures the color of the 6th group of marked tiles",
+			section = groupSections
 	)
 	default Color markerColor6()
 	{
@@ -168,11 +168,11 @@ public interface sGroundMarkerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 8,
-		keyName = "markerColor7",
-		name = "Group 7 tile color",
-		description = "Configures the color of the 7th group of marked tiles",
-		section = groupSections
+			position = 8,
+			keyName = "markerColor7",
+			name = "Group 7 tile color",
+			description = "Configures the color of the 7th group of marked tiles",
+			section = groupSections
 	)
 	default Color markerColor7()
 	{
@@ -181,11 +181,11 @@ public interface sGroundMarkerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 9,
-		keyName = "markerColor8",
-		name = "Group 8 tile color",
-		description = "Configures the color of the 8th group of marked tiles",
-		section = groupSections
+			position = 9,
+			keyName = "markerColor8",
+			name = "Group 8 tile color",
+			description = "Configures the color of the 8th group of marked tiles",
+			section = groupSections
 	)
 	default Color markerColor8()
 	{
@@ -194,11 +194,11 @@ public interface sGroundMarkerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 10,
-		keyName = "markerColor9",
-		name = "Group 9 tile color",
-		description = "Configures the color of the 9th group of marked tiles",
-		section = groupSections
+			position = 10,
+			keyName = "markerColor9",
+			name = "Group 9 tile color",
+			description = "Configures the color of the 9th group of marked tiles",
+			section = groupSections
 	)
 	default Color markerColor9()
 	{
@@ -207,11 +207,11 @@ public interface sGroundMarkerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 11,
-		keyName = "markerColor10",
-		name = "Group 10 tile color",
-		description = "Configures the color of the 10th group of marked tiles",
-		section = groupSections
+			position = 11,
+			keyName = "markerColor10",
+			name = "Group 10 tile color",
+			description = "Configures the color of the 10th group of marked tiles",
+			section = groupSections
 	)
 	default Color markerColor10()
 	{
@@ -220,11 +220,11 @@ public interface sGroundMarkerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 12,
-		keyName = "markerColor11",
-		name = "Group 11 tile color",
-		description = "Configures the color of the 11th group of marked tiles",
-		section = groupSections
+			position = 12,
+			keyName = "markerColor11",
+			name = "Group 11 tile color",
+			description = "Configures the color of the 11th group of marked tiles",
+			section = groupSections
 	)
 	default Color markerColor11()
 	{
@@ -233,22 +233,31 @@ public interface sGroundMarkerConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 13,
-		keyName = "markerColor12",
-		name = "Group 12 tile color",
-		description = "Configures the color of the 12th group of marked tiles",
-		section = groupSections
+			position = 13,
+			keyName = "markerColor12",
+			name = "Group 12 tile color",
+			description = "Configures the color of the 12th group of marked tiles",
+			section = groupSections
 	)
 	default Color markerColor12()
 	{
 		return Color.LIGHT_GRAY;
 	}
 
+	@ConfigSection(
+			name = "Settings",
+			keyName = "settings",
+			description = "",
+			position = 1
+	)
+	String settings = "Settings";
+
 	@ConfigItem(
-		position = 14,
-		keyName = "showMinimap",
-		name = "Show on minimap",
-		description = "Shows marked tiles on the minimap"
+			position = 14,
+			keyName = "showMinimap",
+			name = "Show on minimap",
+			description = "Shows marked tiles on the minimap",
+			section = settings
 	)
 	default boolean showMinimap()
 	{
@@ -256,14 +265,15 @@ public interface sGroundMarkerConfig extends Config
 	}
 
 	@Range(
-		min = 1,
-		max = 100
+			min = 1,
+			max = 100
 	)
 	@ConfigItem(
-		position = 15,
-		keyName = "minimapOpacity",
-		name = "Minimap opacity",
-		description = "The opacity of the minimap markers"
+			position = 15,
+			keyName = "minimapOpacity",
+			name = "Minimap opacity",
+			description = "The opacity of the minimap markers",
+			section = settings
 	)
 	@Units(Units.PERCENT)
 	default int minimapOverlayOpacity()
@@ -279,7 +289,8 @@ public interface sGroundMarkerConfig extends Config
 			keyName = "opacity",
 			position = 16,
 			name = "Opacity",
-			description = "The opacity of ground markers from 0 to 255 (0 being black and 255 being transparent)"
+			description = "The opacity of ground markers from 0 to 255 (0 being black and 255 being transparent)",
+			section = settings
 	)
 	default int opacity()
 	{
@@ -290,7 +301,8 @@ public interface sGroundMarkerConfig extends Config
 			keyName = "tileMode",
 			position = 17,
 			name = "Tile Mode",
-			description = "Configures how the tiles are displayed"
+			description = "Configures how the tiles are displayed",
+			section = settings
 	)
 	default  TileMode swapTileMode()
 	{
@@ -301,7 +313,8 @@ public interface sGroundMarkerConfig extends Config
 			keyName = "tileSize",
 			name = "Tile Size",
 			description = "Changes the tile size. Multiple tile sizes will mark around the tile selected",
-			position = 18
+			position = 18,
+			section = settings
 	)
 	default TileSize tileSize()
 	{
@@ -312,7 +325,8 @@ public interface sGroundMarkerConfig extends Config
 			keyName = SHOW_IMPORT_EXPORT_KEY_NAME,
 			name = "Show Import/Export options",
 			description = "Show the Import/Export options on the minimap right-click menu",
-			position = 19
+			position = 19,
+			section = settings
 	)
 	default boolean showImportExport()
 	{
@@ -323,7 +337,8 @@ public interface sGroundMarkerConfig extends Config
 			keyName = SHOW_CLEAR_KEY_NAME,
 			name = "Show Clear option",
 			description = "Show the Clear option on the minimap right-click menu, which deletes all currently loaded markers",
-			position = 20
+			position = 20,
+			section = settings
 	)
 	default boolean showClear()
 	{

@@ -285,7 +285,8 @@ public interface ItemChargeConfig extends Config {
       keyName = "showInfoboxes",
       name = "Infoboxes",
       description = "Show an infobox with remaining charges for equipped items",
-      position = 24
+      position = 24,
+      section = chargesSection
   )
   default boolean showInfoboxes() {
     return false;

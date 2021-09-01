@@ -39,7 +39,7 @@ public interface XpTrackerConfig extends Config
 		description = "Canvas overlay options",
 		position = 99
 	)
-	String overlaySection = "overlay";
+	String overlaySection = "Overlay";
 
 	@ConfigItem(
 		position = 0,

@@ -86,7 +86,8 @@ public interface AoeWarningConfig extends Config
       keyName = "overlayTitle",
       name = "Overlay",
       description = "",
-      position = 1
+      position = 1,
+      closedByDefault = true
   )
   String overlayTitle = "Overlay";
 
@@ -146,7 +147,7 @@ public interface AoeWarningConfig extends Config
       keyName = "tickTimers",
       name = "Tick Timers",
       description = "Configures whether or not AoE Projectile Warnings has tick timers overlaid as well.",
-      section = overlayTitle,
+      section = textTitle,
       position = 6
   )
   default boolean tickTimers()
@@ -159,8 +160,7 @@ public interface AoeWarningConfig extends Config
       position = 7,
       name = "Text",
       description = "",
-      hidden = true,
-      unhide = "tickTimers"
+      closedByDefault = true
   )
   String textTitle = "Text";
 
@@ -214,7 +214,8 @@ public interface AoeWarningConfig extends Config
       keyName = "bosses",
       position = 11,
       name = "Bosses",
-      description = ""
+      description = "",
+      closedByDefault = true
   )
   String bosses = "Bosses";
 

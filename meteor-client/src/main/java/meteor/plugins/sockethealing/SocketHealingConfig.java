@@ -66,7 +66,8 @@ public interface SocketHealingConfig extends Config {
         position = 4,
         keyName = "refreshRate",
         name = "Socket Refresh Rate",
-        description = "This is how many ticks you would like in-between updating the information."
+        description = "This is how many ticks you would like in-between updating the information.",
+        section = general
     )
     default int refreshRate() {
         return 5;

@@ -23,7 +23,8 @@ public interface LeftClickConfig extends Config
 			position = 0,
 			keyName = "enableSwaps",
 			name = "Enable Swaps",
-			description = "This will make it so the plugin isnt dumb"
+			description = "This will make it so the plugin isnt dumb",
+			section = preset
 	)
 	default boolean enableSwaps()
 	{

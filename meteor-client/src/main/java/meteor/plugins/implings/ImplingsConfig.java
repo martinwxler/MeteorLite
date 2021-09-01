@@ -40,9 +40,10 @@ public interface ImplingsConfig extends Config {
   @ConfigSection(
       name = "Impling Type Settings",
       description = "Configuration for each type of impling",
-      position = 99
+      position = 99,
+      closedByDefault = true
   )
-  String implingSection = "implings";
+  String implingSection = "Impling Type Settings";
 
   @ConfigItem(
       position = 1,

@@ -7,16 +7,14 @@ public interface SocketDefenceConfig extends Config {
     @ConfigSection(
             name = "Corp",
             description = "Corp settings",
-            position = 0,
-            closedByDefault = true
+            position = 0
     )
     public static final String corpSection = "Corp";
 
     @ConfigSection(
         name = "Chambers of Xeric",
         description = "CoX Settings",
-        position = 1,
-        closedByDefault = true
+        position = 1
     )
     public static final String cox = "Chambers of Xeric";
 
