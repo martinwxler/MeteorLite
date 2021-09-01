@@ -30,6 +30,16 @@ import meteor.config.*;
 @ConfigGroup("vorkath")
 public interface VorkathConfig extends Config
 {
+	@ConfigItem(
+			keyName = "lcUndead",
+			name = "left click crumble undead",
+			description = "casts crumble undead when you left click the spawn",
+			position = -1
+	)
+	default boolean lcUndead()
+	{
+		return false;
+	}
 	@ConfigSection(
 		keyName = "acidTitle",
 		position = 1,

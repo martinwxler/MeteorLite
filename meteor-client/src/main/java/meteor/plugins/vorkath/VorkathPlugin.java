@@ -30,6 +30,11 @@ import com.google.inject.Inject;
 import com.google.inject.Provides;
 import lombok.AccessLevel;
 import lombok.Getter;
+import meteor.plugins.api.entities.NPCs;
+import meteor.plugins.api.magic.Magic;
+import meteor.plugins.api.magic.Regular;
+import meteor.plugins.api.magic.Spell;
+import meteor.plugins.leftclickcast.Spells;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
@@ -324,7 +329,18 @@ public class VorkathPlugin extends Plugin
 			}
 		}
 	}
-
+	@Subscribe
+	public void onMenuOptionClicked(MenuOptionClicked event){
+		if(config.lcUndead()){
+			if(event.getMenuTarget().toLowerCase().contains("zombified spawn")){
+				event.setMenuEntry(new MenuEntry("Cast","<col=00ff00>Crumble Undead</col><col=ffffff> -> <col=ffff00>Zombified Spawn",NPCs.getNearest("Zombified Spawn").getIndex(),MenuAction.SPELL_CAST_ON_NPC.getId(), 0,0,false));
+				client.setSelectedSpellWidget(Regular.CRUMBLE_UNDEAD.getWidget().getPackedId());
+				client.setSelectedSpellName("<col=00ff00>" + Regular.CRUMBLE_UNDEAD.getWidget().name() + "</col>");
+				client.setSelectedSpellChildIndex(-1);
+				return;
+			}
+		}
+	}
 	@Subscribe
 	private void onClientTick(ClientTick event)
 	{
