@@ -17,7 +17,7 @@ import meteor.plugins.alchemicalhydra.AlchemicalHydraPlugin;
 import meteor.plugins.ammo.AmmoPlugin;
 import meteor.plugins.animsmoothing.AnimationSmoothingPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
-import meteor.plugins.api.example.chickenkiller.ChickenKillerPlugin;
+import meteor.plugins.hootfighter.HootFighterPlugin;
 import meteor.plugins.api.example.deathevent.DeathEventPlugin;
 import meteor.plugins.api.externals.ExternalManagerPlugin;
 import meteor.plugins.autoclicker.AutoClickerPlugin;
@@ -206,7 +206,6 @@ public class PluginManager {
 		plugins.add(new ChatCommandsPlugin());
 		plugins.add(new ChatFilterPlugin());
 		plugins.add(new ChatTimestampPlugin());
-		plugins.add(new ChickenKillerPlugin());
 		plugins.add(new ChinManagerPlugin());
 		plugins.add(new ChinLoginPlugin());
 		plugins.add(new ClueScrollPlugin());
@@ -233,6 +232,7 @@ public class PluginManager {
 		plugins.add(new sGroundMarkerPlugin());
 		plugins.add(new HerbiboarPlugin());
 		plugins.add(new HootAgilityPlugin());
+		plugins.add(new HootFighterPlugin());
 		plugins.add(new HunterPlugin());
 		plugins.add(new ImplingsPlugin());
 		plugins.add(new InfernoPlugin());

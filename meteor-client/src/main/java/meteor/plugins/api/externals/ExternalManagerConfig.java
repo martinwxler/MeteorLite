@@ -4,6 +4,15 @@ import meteor.config.*;
 
 @ConfigGroup("externalmanager")
 public interface ExternalManagerConfig extends Config {
+	@ConfigItem(
+					keyName = "startup",
+					name = "Load on startup",
+					description = "Load externals on startup"
+	)
+	default boolean startup() {
+		return false;
+	}
+
 	@Icon
 	@ConfigItem(
 					keyName = "reload",
