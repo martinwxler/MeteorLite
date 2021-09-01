@@ -1,15 +1,33 @@
 package meteor.plugins.oneclickthieving;
 
-import meteor.config.Config;
-import meteor.config.ConfigGroup;
-import meteor.config.ConfigItem;
-import meteor.config.Range;
+import meteor.config.*;
 
 import static meteor.plugins.oneclickthieving.PrayMethod.LAZY_PRAY;
 
 @ConfigGroup("oneclicjthieving")
 public interface OneClickThievingConfig extends Config
 {
+    @ConfigItem(
+            keyName = "clickOverride",
+            name = "Clicks Override",
+            description = "Makes all of your clicks pickpocket chosen NPC",
+            position = -2
+    )
+    default boolean clickOverride()
+    {
+        return false;
+    }
+    @Range(textInput = true)
+    @ConfigItem(
+            keyName = "npcID",
+            name = "NPC ID",
+            description = "the id of the npc you want to pickpocket",
+            position = -1
+    )
+    default int npcID()
+    {
+        return 0;
+    }
     @ConfigItem(
             keyName = "enableCoinPouch",
             name = "Open Coin Pouch",
