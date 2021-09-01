@@ -301,7 +301,6 @@
   "kq": "osrs.GrandExchangeOffer",
   "kr": "osrs.class301",
   "ks": "osrs.NetCache",
-  "kt": "osrs.class303",
   "ku": "osrs.GrandExchangeOfferNameComparator",
   "kv": "osrs.GrandExchangeOfferWorldComparator",
   "kw": "osrs.GrandExchangeOfferTotalQuantityComparator",

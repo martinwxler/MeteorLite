@@ -2,10 +2,15 @@ package meteor.plugins.api.movement;
 
 import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.entities.Players;
+import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.Vars;
+import meteor.plugins.api.movement.pathfinder.CollisionMap;
+import meteor.plugins.api.movement.pathfinder.Transport;
+import meteor.plugins.api.movement.pathfinder.TransportLoader;
 import meteor.plugins.api.movement.pathfinder.Walker;
 import meteor.plugins.api.scene.Tiles;
 import meteor.plugins.api.widgets.Widgets;
+import meteor.ui.overlay.OverlayUtil;
 import net.runelite.api.Point;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
@@ -18,12 +23,16 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.*;
 import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Singleton
 public class Movement {
     private static final Logger logger = new Logger("Movement");
+    private static final Color TILE_BLOCKED_COLOR = new Color(0, 128, 255, 128);
+    private static final Color TRANSPORT_COLOR = new Color(0, 255, 0, 128);
+
     private static final int STAMINA_VARBIT = 25;
     private static final int RUN_VARP = 173;
 
@@ -117,6 +126,79 @@ public class Movement {
         Walker.buildPath(destination)
                 .forEach(tile -> tile.outline(client, graphics2D, Color.RED, null));
         destination.outline(client, graphics2D, Color.GREEN, "Destination");
+    }
+
+    public static void drawCollisions(Graphics2D graphics2D) {
+        Client client = Game.getClient();
+        List<Tile> tiles = Tiles.getTiles();
+
+        if (tiles.isEmpty()) {
+            return;
+        }
+
+        List<Transport> transports = TransportLoader.buildTransports();
+
+        for (Transport transport : transports) {
+            OverlayUtil.fillTile(graphics2D, client, transport.getSource(), TRANSPORT_COLOR);
+            Point center = Perspective.tileCenter(client, transport.getSource());
+            if (center == null) {
+                continue;
+            }
+
+            Point linkCenter = Perspective.tileCenter(client, transport.getDestination());
+            if (linkCenter == null) {
+                continue;
+            }
+
+            graphics2D.drawLine(center.getX(), center.getY(), linkCenter.getX(), linkCenter.getY());
+        }
+
+        CollisionMap collisionMap = Walker.collisionMap;
+        if (collisionMap == null) {
+            return;
+        }
+
+        for (Tile tile : tiles) {
+            Shape poly = Perspective.getCanvasTilePoly(client, tile.getLocalLocation());
+            if (poly == null) {
+                continue;
+            }
+
+            StringBuilder sb = new StringBuilder("");
+            if (!collisionMap.n(tile.getWorldLocation())) {
+                sb.append("n");
+            }
+
+            if (!collisionMap.s(tile.getWorldLocation())) {
+                sb.append("s");
+            }
+
+            if (!collisionMap.w(tile.getWorldLocation())) {
+                sb.append("w");
+            }
+
+            if (!collisionMap.e(tile.getWorldLocation())) {
+                sb.append("e");
+            }
+
+            String s = sb.toString();
+            if (s.isEmpty()) {
+                continue;
+            }
+
+            if (!s.equals("nswe")) {
+                graphics2D.setColor(Color.WHITE);
+                int stringX = (int)
+                        (poly.getBounds().getCenterX() -
+                                graphics2D.getFontMetrics().getStringBounds(s, graphics2D).getWidth() / 2);
+                int stringY = (int) poly.getBounds().getCenterY();
+                graphics2D.drawString(s, stringX, stringY);
+                continue;
+            }
+
+            graphics2D.setColor(TILE_BLOCKED_COLOR);
+            graphics2D.fill(poly);
+        }
     }
 
     public static void toggleRun() {

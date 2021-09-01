@@ -40,7 +40,14 @@ public interface NpcIndicatorsConfig extends Config {
       description = "The render style of NPC highlighting",
       position = 0
   )
-  String renderStyleSection = "renderStyleSection";
+  String renderStyleSection = "Render style";
+
+  @ConfigSection(
+      name = "Settings",
+      description = "The render style of NPC highlighting",
+      position = 0
+  )
+  String settings = "Settings";
 
   @ConfigItem(
       position = 0,
@@ -128,7 +135,8 @@ public interface NpcIndicatorsConfig extends Config {
       position = 7,
       keyName = "npcToHighlight",
       name = "NPCs to Highlight",
-      description = "List of NPC names to highlight"
+      description = "List of NPC names to highlight",
+      section = settings
   )
   default String getNpcToHighlight() {
     return "";
@@ -137,7 +145,8 @@ public interface NpcIndicatorsConfig extends Config {
   @ConfigItem(
       keyName = "npcToHighlight",
       name = "",
-      description = ""
+      description = "",
+      section = settings
   )
   void setNpcToHighlight(String npcsToHighlight);
 
@@ -145,7 +154,8 @@ public interface NpcIndicatorsConfig extends Config {
       position = 8,
       keyName = "drawNames",
       name = "Draw names above NPC",
-      description = "Configures whether or not NPC names should be drawn above the NPC"
+      description = "Configures whether or not NPC names should be drawn above the NPC",
+      section = settings
   )
   default boolean drawNames() {
     return false;
@@ -155,7 +165,8 @@ public interface NpcIndicatorsConfig extends Config {
       position = 9,
       keyName = "drawMinimapNames",
       name = "Draw names on minimap",
-      description = "Configures whether or not NPC names should be drawn on the minimap"
+      description = "Configures whether or not NPC names should be drawn on the minimap",
+      section = settings
   )
   default boolean drawMinimapNames() {
     return false;
@@ -165,7 +176,8 @@ public interface NpcIndicatorsConfig extends Config {
       position = 10,
       keyName = "highlightMenuNames",
       name = "Highlight menu names",
-      description = "Highlight NPC names in right click menu"
+      description = "Highlight NPC names in right click menu",
+      section = settings
   )
   default boolean highlightMenuNames() {
     return false;
@@ -175,7 +187,8 @@ public interface NpcIndicatorsConfig extends Config {
       position = 11,
       keyName = "ignoreDeadNpcs",
       name = "Ignore dead NPCs",
-      description = "Prevents highlighting NPCs after they are dead"
+      description = "Prevents highlighting NPCs after they are dead",
+      section = settings
   )
   default boolean ignoreDeadNpcs() {
     return true;
@@ -185,7 +198,8 @@ public interface NpcIndicatorsConfig extends Config {
       position = 12,
       keyName = "deadNpcMenuColor",
       name = "Dead NPC menu color",
-      description = "Color of the NPC menus for dead NPCs"
+      description = "Color of the NPC menus for dead NPCs",
+      section = settings
   )
   default Color deadNpcMenuColor() { return Color.WHITE; }
 
@@ -193,17 +207,19 @@ public interface NpcIndicatorsConfig extends Config {
       position = 13,
       keyName = "showRespawnTimer",
       name = "Show respawn timer",
-      description = "Show respawn timer of tagged NPCs"
+      description = "Show respawn timer of tagged NPCs",
+      section = settings
   )
   default boolean showRespawnTimer() {
     return true;
   }
 
   @ConfigItem(
-          position = 14,
-          keyName = "highlightTrueLocation",
-          name = "Highlight true location",
-          description = "Configures whether or not NPC should be highlighted by their true location"
+      position = 14,
+      keyName = "highlightTrueLocation",
+      name = "Highlight true location",
+      description = "Configures whether or not NPC should be highlighted by their true location",
+      section = settings
   )
   default boolean highlightTrueLocation() {
     return false;

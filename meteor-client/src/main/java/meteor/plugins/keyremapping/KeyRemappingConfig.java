@@ -34,17 +34,19 @@ public interface KeyRemappingConfig extends Config
 {
 	@ConfigSection(
 		name = "Camera Remapping",
+		keyName = "cameraSection",
 		description = "Settings for remapping the camera",
 		position = 0
 	)
-	String cameraSection = "camera";
+	String cameraSection = "Camera Remapping";
 
 	@ConfigSection(
 		name = "F Key Remapping",
+		keyName = "fKeySection",
 		description = "Settings for remapping the F Keys",
 		position = 1
 	)
-	String fKeySection = "fKeys";
+	String fKeySection = "F Key Remapping";
 
 	@ConfigItem(
 		position = 1,

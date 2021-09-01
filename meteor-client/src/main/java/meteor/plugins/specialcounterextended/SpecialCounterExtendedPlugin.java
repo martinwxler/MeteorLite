@@ -49,7 +49,7 @@ import java.util.Map;
 import java.util.Set;
 
 @PluginDescriptor(
-        name = "Socket - Special Attack Counter",
+        name = "Socket - Spec Counter",
         description = "Track DWH, Arclight, Darklight, and BGS special attacks used on NPCs using server sockets.",
         tags = {"socket", "server", "discord", "connection", "broadcast", "combat", "npcs", "overlay"},
         enabledByDefault = false

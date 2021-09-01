@@ -22,7 +22,8 @@ import java.util.stream.Collectors;
 
 @PluginDescriptor(
 				name = "Death Event",
-				description = "Completes the Death random event for first deaths"
+				description = "Completes the Death random event for first deaths",
+				enabledByDefault = false
 )
 public class DeathEventPlugin extends Plugin {
 	@SuppressWarnings("unused")

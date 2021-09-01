@@ -164,7 +164,7 @@ public interface QuestHelperConfig extends Config
 
 	@ConfigItem(
 			keyName = "showMiniMapArrow",
-			name = "Display arrows on the mini-map and overworld",
+			name = "Display arrows on the mini-map",
 			description = "Choose whether flashing arrows point to the next objective"
 	)
 	default boolean showMiniMapArrow()
@@ -187,7 +187,7 @@ public interface QuestHelperConfig extends Config
 		name = "Colours",
 		description = "What colour each option can be"
 	)
-	String colorSection = "colorSection";
+	String colorSection = "Colours";
 
 	@ConfigItem(
 		keyName = "textHighlightColor",
@@ -250,7 +250,7 @@ public interface QuestHelperConfig extends Config
 		name = "Quest Filters",
 		description = "Determines which quests should be shown via the selected filter(s)"
 	)
-	String filterSection = "filterSection";
+	String filterSection = "Quest Filters";
 
 	@ConfigItem(
 		keyName = "orderListBy",

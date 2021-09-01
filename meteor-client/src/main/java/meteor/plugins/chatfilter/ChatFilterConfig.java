@@ -36,7 +36,7 @@ public interface ChatFilterConfig extends Config
 		position = 0,
 		closedByDefault = true
 	)
-	String filterLists = "filterLists";
+	String filterLists = "Filter Lists";
 
 	@ConfigItem(
 		keyName = "filteredWords",

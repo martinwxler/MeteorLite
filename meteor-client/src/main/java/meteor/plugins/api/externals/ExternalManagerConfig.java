@@ -4,7 +4,7 @@ import meteor.config.*;
 
 @ConfigGroup("externalmanager")
 public interface ExternalManagerConfig extends Config {
-	@Icon(canToggle = true)
+	@Icon
 	@ConfigItem(
 					keyName = "reload",
 					name = "(Re-)Load Externals",

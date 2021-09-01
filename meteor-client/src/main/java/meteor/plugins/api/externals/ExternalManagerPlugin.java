@@ -9,7 +9,7 @@ import meteor.plugins.PluginDescriptor;
 import meteor.plugins.api.game.Game;
 import net.runelite.api.events.ConfigButtonClicked;
 
-@PluginDescriptor(name = "External Manager")
+@PluginDescriptor(name = "External Manager", cantDisable = true)
 public class ExternalManagerPlugin extends Plugin {
 	@Provides
 	public ExternalManagerConfig getConfig(ConfigManager configManager) {

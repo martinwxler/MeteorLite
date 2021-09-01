@@ -123,7 +123,7 @@ public interface XpGlobesConfig extends Config
 	@Alpha
 	@ConfigItem(
 		keyName = "Progress orb outline color",
-		name = "Progress orb outline color",
+		name = "Outline color",
 		description = "Change the color of the progress orb outline",
 		position = 8
 	)
@@ -135,7 +135,7 @@ public interface XpGlobesConfig extends Config
 	@Alpha
 	@ConfigItem(
 		keyName = "Progress orb background color",
-		name = "Progress orb background color",
+		name = "Background color",
 		description = "Change the color of the progress orb background",
 		position = 9
 	)

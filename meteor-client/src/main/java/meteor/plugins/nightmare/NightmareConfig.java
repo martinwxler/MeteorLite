@@ -31,20 +31,69 @@ import java.awt.*;
 public interface NightmareConfig extends Config
 {
 	@ConfigSection(
-		name = "General",
-		description = "Configure general settings.",
-		position = 0,
-		keyName = "generalSection"
+			name = "General",
+			description = "Configure general settings.",
+			position = 0,
+			keyName = "generalSection"
 	)
 	String generalSection = "General";
 
+	@ConfigSection(
+			name = "Totems",
+			description = "Configure Totems settings.",
+			position = 1,
+			keyName = "totemsSection"
+	)
+	String totemsSection = "Totems";
+
+	@ConfigSection(
+			name = "Shadows",
+			description = "Configure Shadows settings.",
+			position = 2,
+			keyName = "shadowsSection"
+	)
+	String shadowsSection = "Shadows";
+
+	@ConfigSection(
+			name = "Spores",
+			description = "Configure Spores settings.",
+			position = 3,
+			keyName = "sporesSection"
+	)
+	String sporesSection = "Spores";
+
+	@ConfigSection(
+			name = "Parasites",
+			description = "Configure Parasites settings.",
+			position = 4,
+			keyName = "parasitesSection"
+	)
+	String parasitesSection = "Parasites";
+
+	@ConfigSection(
+			name = "Husk",
+			description = "Configure Husk settings.",
+			position = 5,
+			keyName = "huskSection"
+	)
+	String huskSection = "Husk";
+
+	@ConfigSection(
+			name = "Charge",
+			description = "Configure Charge settings.",
+			position = 6,
+			keyName = "chargeSection"
+	)
+	String chargeSection = "Charge";
+
+	//GENERAL SECTION
 	@ConfigItem(
-		keyName = "prayerHelper",
-		name = "Prayer helper",
-		description = "Displays the correct prayer to use at various points in the fight.",
-		position = 0,
-		section = generalSection,
-		enumClass = PrayerDisplay.class
+			keyName = "prayerHelper",
+			name = "Prayer helper",
+			description = "Displays the correct prayer to use at various points in the fight.",
+			position = 0,
+			section = generalSection,
+			enumClass = PrayerDisplay.class
 	)
 	default PrayerDisplay prayerHelper()
 	{
@@ -52,11 +101,11 @@ public interface NightmareConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "tickCounter",
-		name = "Show Ticks",
-		description = "Displays the number of ticks until next attack",
-		position = 1,
-		section = generalSection
+			keyName = "tickCounter",
+			name = "Show Ticks",
+			description = "Displays the number of ticks until next attack",
+			position = 1,
+			section = generalSection
 	)
 	default boolean ticksCounter()
 	{
@@ -64,11 +113,72 @@ public interface NightmareConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "highlightTotems",
-		name = "Highlight Totems",
-		description = "Highlights Totems based on their status",
-		position = 2,
-		section = generalSection
+			keyName = "hideAttackNightmareTotems",
+			name = "Hide Attack during Totems",
+			description = "Remove the attack option on Nightmare during Totems",
+			position = 2,
+			section = generalSection
+	)
+	default boolean hideAttackNightmareTotems()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "hideAttackNightmareParasites",
+			name = "Hide Attack during Parasites",
+			description = "Remove the attack option on Nightmare during Parasites",
+			position = 3,
+			section = generalSection
+	)
+	default boolean hideAttackNightmareParasites()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "hideAttackNightmareHusk",
+			name = "Hide Attack during Husks",
+			description = "Remove the attack option on Nightmare during Husks",
+			position = 4,
+			section = generalSection
+	)
+	default boolean hideAttackNightmareHusk()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "hideAttackNightmareSleepwalkers",
+			name = "Hide Attack during Sleepwalkers",
+			description = "Remove the attack option on Nightmare during Sleepwalkers (not on last phase of Phosanis)",
+			position = 5,
+			section = generalSection
+	)
+	default boolean hideAttackNightmareSleepwalkers()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "hideAttackSleepwalkers",
+			name = "Hide Attack Sleepwalkers LP",
+			description = "Remove the attack option on Sleepwalkers during the last phase of Phosanis",
+			position = 6,
+			section = generalSection
+	)
+	default boolean hideAttackSleepwalkers()
+	{
+		return false;
+	}
+
+	//TOTEMS SECTION
+	@ConfigItem(
+			keyName = "highlightTotems",
+			name = "Highlight Totems",
+			description = "Highlights Totems based on their status",
+			position = 0,
+			section = totemsSection
 	)
 	default boolean highlightTotems()
 	{
@@ -76,17 +186,17 @@ public interface NightmareConfig extends Config
 	}
 
 	@Range(
-		min = 1,
-		max = 10
+			min = 1,
+			max = 10
 	)
 	@ConfigItem(
-		name = "Totem Outline Size",
-		description = "Change the size of the totem outline.",
-		position = 3,
-		keyName = "totemOutlineSize",
-		section = generalSection,
-		hidden = true,
-		unhide = "highlightTotems"
+			name = "Totem Outline Size",
+			description = "Change the size of the totem outline.",
+			position = 1,
+			keyName = "totemOutlineSize",
+			section = totemsSection,
+			hidden = true,
+			unhide = "highlightTotems"
 	)
 	@Units(Units.POINTS)
 	default int totemOutlineSize()
@@ -94,12 +204,13 @@ public interface NightmareConfig extends Config
 		return 3;
 	}
 
+	//SHADOWS SECTION
 	@ConfigItem(
-		keyName = "highlightShadows",
-		name = "Highlight Shadows",
-		description = "Highlights the Shadow Attacks",
-		position = 4,
-		section = generalSection
+			keyName = "highlightShadows",
+			name = "Highlight Shadows",
+			description = "Highlights the Shadow Attacks",
+			position = 0,
+			section = shadowsSection
 	)
 	default boolean highlightShadows()
 	{
@@ -107,11 +218,67 @@ public interface NightmareConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "highlightSpores",
-		name = "Highlight Spores",
-		description = "Highlights spores that will make you yawn",
-		position = 5,
-		section = generalSection
+			keyName = "shadowsTickCounter",
+			name = "Shadows Tick Counter",
+			description = "Displays the number of ticks until shadows do damage",
+			position = 1,
+			section = shadowsSection
+	)
+	default boolean shadowsTickCounter()
+	{
+		return true;
+	}
+
+	@Range(
+			max = 20,
+			min = 1
+	)
+	@ConfigItem(
+			keyName = "shadowsRenderDistance",
+			name = "Render Distance",
+			description = "Render shadows distance in tiles from your player",
+			position = 2,
+			section = shadowsSection
+	)
+	@Units("tiles")
+	default int shadowsRenderDistance()
+	{
+		return 5;
+	}
+
+	@Alpha
+	@ConfigItem(
+			keyName = "shadowsBorderColour",
+			name = "Shadows border colour",
+			description = "Colour the edges of the area highlighted by shadows",
+			position = 3,
+			section = shadowsSection
+	)
+	default Color shadowsBorderColour()
+	{
+		return new Color(0, 255, 255, 100);
+	}
+
+	@Alpha
+	@ConfigItem(
+			keyName = "shadowsColour",
+			name = "Shadows colour",
+			description = "Colour for shadows highlight",
+			position = 4,
+			section = shadowsSection
+	)
+	default Color shadowsColour()
+	{
+		return new Color(0, 255, 255, 50);
+	}
+
+	//SPORES SECTION
+	@ConfigItem(
+			keyName = "highlightSpores",
+			name = "Highlight Spores",
+			description = "Highlights spores that will make you yawn",
+			position = 0,
+			section = sporesSection
 	)
 	default boolean highlightSpores()
 	{
@@ -120,13 +287,12 @@ public interface NightmareConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		keyName = "poisonBorderCol",
-		name = "Poison border colour",
-		description = "Colour the edges of the area highlighted by poison special will be",
-		position = 6,
-		section = generalSection
+			keyName = "poisonBorderCol",
+			name = "Poison border colour",
+			description = "Colour the edges of the area highlighted by poison special will be",
+			position = 1,
+			section = sporesSection
 	)
-
 	default Color poisonBorderCol()
 	{
 		return new Color(255, 0, 0, 100);
@@ -134,11 +300,11 @@ public interface NightmareConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		keyName = "poisonCol",
-		name = "Poison colour",
-		description = "Colour the fill of the area highlighted by poison special will be",
-		position = 7,
-		section = generalSection
+			keyName = "poisonCol",
+			name = "Poison colour",
+			description = "Colour the fill of the area highlighted by poison special will be",
+			position = 2,
+			section = sporesSection
 	)
 	default Color poisonCol()
 	{
@@ -146,11 +312,24 @@ public interface NightmareConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "showTicksUntilParasite",
-		name = "Indicate Parasites",
-		description = "Displays a red tick timer on any impregnated players",
-		position = 8,
-		section = generalSection
+			keyName = "yawnInfoBox",
+			name = "Yawn InfoBox",
+			description = "InfoBox telling you the time until your yawning ends",
+			position = 3,
+			section = sporesSection
+	)
+	default boolean yawnInfoBox()
+	{
+		return true;
+	}
+
+	//PARASITES SECTION
+	@ConfigItem(
+			keyName = "showTicksUntilParasite",
+			name = "Indicate Parasites",
+			description = "Displays a red tick timer on any impregnated players",
+			position = 0,
+			section = parasitesSection
 	)
 	default boolean showTicksUntilParasite()
 	{
@@ -158,11 +337,48 @@ public interface NightmareConfig extends Config
 	}
 
 	@ConfigItem(
+			keyName = "parasitesInfoBox",
+			name = "Parasites InfoBox",
+			description = "InfoBox telling you the time until parasites",
+			position = 1,
+			section = parasitesSection
+	)
+	default boolean parasitesInfoBox()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+			keyName = "sanfewReminder",
+			name = "Sanfew Reminder",
+			description = "Overlay that reminds you to drink a sanfew when impregnated",
+			position = 2,
+			section = parasitesSection
+	)
+	default boolean sanfewReminder()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+			keyName = "flash",
+			name = "Flash screen when impregnated",
+			description = "Your Screen flashes when the nightmare infects you with her parasite",
+			position = 3,
+			section = parasitesSection
+	)
+	default boolean flash()
+	{
+		return false;
+	}
+
+	//HUSK SECTION
+	@ConfigItem(
 			keyName = "highlightHusk",
 			name = "Highlight Husk",
 			description = "Highlights the mage and range husk",
-			position = 9,
-			section = generalSection
+			position = 0,
+			section = huskSection
 	)
 	default boolean huskHighlight()
 	{
@@ -170,11 +386,11 @@ public interface NightmareConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "highlightHuskTarget",
-		name = "Highlight Husk Target(s)",
-		description = "Highlights whoever the husks will spawn on",
-		position = 10,
-		section = generalSection
+			keyName = "highlightHuskTarget",
+			name = "Highlight Husk Target(s)",
+			description = "Highlights whoever the husks will spawn on",
+			position = 1,
+			section = huskSection
 	)
 	default boolean highlightHuskTarget()
 	{
@@ -183,11 +399,11 @@ public interface NightmareConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		keyName = "huskBorderCol",
-		name = "Husk Target Border",
-		description = "Colour the edges of the area highlighted by poison special will be",
-		position = 11,
-		section = generalSection
+			keyName = "huskBorderCol",
+			name = "Target Border Color",
+			description = "Colour the edges of the area highlighted by poison special will be",
+			position = 2,
+			section = huskSection
 	)
 
 	default Color huskBorderCol()
@@ -195,12 +411,13 @@ public interface NightmareConfig extends Config
 		return new Color(255, 0, 0, 100);
 	}
 
+	//CHARGE SECTION
 	@ConfigItem(
-		keyName = "highlightNightmareHitboxOnCharge",
-		name = "Highlight Nightmare's Hitbox On Charge",
-		description = "Highlights the hitbox of the Nightmare when she charges",
-		position = 12,
-		section = generalSection
+			keyName = "highlightNightmareHitboxOnCharge",
+			name = "Highlight Hitbox On Charge",
+			description = "Highlights the hitbox of the Nightmare when she charges",
+			position = 0,
+			section = chargeSection
 	)
 	default boolean highlightNightmareHitboxOnCharge()
 	{
@@ -208,11 +425,11 @@ public interface NightmareConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "highlightNightmareChargeRange",
-		name = "Highlight Nightmare's Charge Range",
-		description = "Highlights the range the Nightmare will damage you with her charge attack",
-		position = 13,
-		section = generalSection
+			keyName = "highlightNightmareChargeRange",
+			name = "Highlight Charge Range",
+			description = "Highlights the range the Nightmare will damage you with her charge attack",
+			position = 1,
+			section = chargeSection
 	)
 	default boolean highlightNightmareChargeRange()
 	{
@@ -221,11 +438,11 @@ public interface NightmareConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		keyName = "nightmareChargeBorderCol",
-		name = "NM Charge Border",
-		description = "Color the edges of the area highlighted by the nightmare's charge attack",
-		position = 14,
-		section = generalSection
+			keyName = "nightmareChargeBorderCol",
+			name = "Charge Border Color",
+			description = "Color the edges of the area highlighted by the nightmare's charge attack",
+			position = 2,
+			section = chargeSection
 	)
 
 	default Color nightmareChargeBorderCol()
@@ -235,27 +452,15 @@ public interface NightmareConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		keyName = "nightmareChargeCol",
-		name = "NM charge fill",
-		description = "Color the fill of the area highlighted by the nightmare's charge attack",
-		position = 15,
-		section = generalSection
+			keyName = "nightmareChargeCol",
+			name = "Charge Fill Color",
+			description = "Color the fill of the area highlighted by the nightmare's charge attack",
+			position = 3,
+			section = chargeSection
 	)
 	default Color nightmareChargeCol()
 	{
 		return new Color(255, 0, 0, 50);
-	}
-
-	@ConfigItem(
-		keyName = "flash",
-		name = "Flash screen when infected",
-		description = "Your Screen flashes when the nightmare infects you with her parasite",
-		position = 16,
-		section = generalSection
-	)
-	default boolean flash()
-	{
-		return false;
 	}
 
 	enum PrayerDisplay

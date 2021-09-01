@@ -42,9 +42,9 @@ public interface CerberusConfig extends Config
 		name = "General",
 		description = "",
 		position = 0,
-		keyName = "General"
+		keyName = "generalSection"
 	)
-	String generalSection = "Overlay";
+	String generalSection = "General";
 
 	@ConfigSection(
 		name = "Current Attack",

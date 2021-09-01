@@ -27,6 +27,7 @@ package meteor.plugins.xpdrop;
 import meteor.config.Config;
 import meteor.config.ConfigGroup;
 import meteor.config.ConfigItem;
+import meteor.config.Range;
 import meteor.config.Units;
 
 import java.awt.*;
@@ -93,6 +94,7 @@ public interface XpDropConfig extends Config
 		return new Color(0x15, 0x80, 0xAD);
 	}
 
+	@Range (min = 0, max = 12)
 	@ConfigItem(
 		keyName = "fakeXpDropDelay",
 		name = "Fake Xp Drop delay",
@@ -107,7 +109,7 @@ public interface XpDropConfig extends Config
 
 	@ConfigItem(
 		keyName = "showdamagedrops",
-		name = "Show Damage on XP Drop",
+		name = "Show Damage",
 		description = "Show what you hit next to the XP drop",
 		position = 5
 	)

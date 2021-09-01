@@ -5,19 +5,26 @@ import meteor.config.*;
 @ConfigGroup("socketdefence")
 public interface SocketDefenceConfig extends Config {
     @ConfigSection(
-            name = "<html><font color=#00aeef>Corp",
+            name = "Corp",
             description = "Corp settings",
-            position = 0,
-            closedByDefault = true
+            position = 0
     )
-    public static final String corpSection = "corp";
+    public static final String corpSection = "Corp";
+
+    @ConfigSection(
+        name = "Chambers of Xeric",
+        description = "CoX Settings",
+        position = 1
+    )
+    public static final String cox = "Chambers of Xeric";
 
     @Range(max = 50, min = 2)
     @ConfigItem(
             name = "Low Defence Threshold",
             keyName = "lowDef",
             description = "Sets when you want the defence to appear as yellow (low defence).",
-            position = 0
+            position = 0,
+            section = cox
     )
     default int lowDef() {
         return 10;
@@ -27,7 +34,8 @@ public interface SocketDefenceConfig extends Config {
             keyName = "cm",
             name = "Challenge Mode",
             description = "Toggle this to set the defence to Challenge Mode when doing Cox",
-            position = 1
+            position = 1,
+            section = cox
     )
     default boolean cm() {
         return true;
@@ -37,7 +45,8 @@ public interface SocketDefenceConfig extends Config {
             keyName = "vulnerability",
             name = "Show Vulnerability",
             description = "Displays an infobox when you successfully land vulnerability",
-            position = 1
+            position = 2,
+            section = cox
     )
     default boolean vulnerability() {
         return true;

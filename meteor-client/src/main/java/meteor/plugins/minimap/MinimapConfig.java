@@ -40,14 +40,23 @@ public interface MinimapConfig extends Config
 	@ConfigSection(
 		name = "Minimap dot colors",
 		description = "The colors of dots on the minimap.",
-		position = 0
+		position = 10
 	)
-	String minimapDotSection = "minimapDotSection";
+	String minimapDotSection = "Minimap dot colors";
+
+	@ConfigSection(
+			name = "General",
+			description = "",
+			position = 9,
+			keyName = "general"
+	)
+	String general = "General";
 
 	@ConfigItem(
 		keyName = "hideMinimap",
 		name = "Hide minimap",
-		description = "Do not show the minimap on screen (Resizable only)"
+		description = "Do not show the minimap on screen (Resizable only)",
+		section = general
 	)
 	default boolean hideMinimap()
 	{

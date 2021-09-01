@@ -77,7 +77,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import static meteor.plugins.menuentryswapperextended.util.comparableentry.ComparableEntries.newBaseComparableEntry;
 
 @PluginDescriptor(
-	name = "Menu Entry Swapper Extended",
+	name = "MESX",
 	enabledByDefault = false,
 	description = "Change the default option that is displayed when hovering over objects",
 	tags = {"pickpocket", "equipped items", "inventory", "items", "equip", "construction"}

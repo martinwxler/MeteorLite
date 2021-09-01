@@ -19,7 +19,6 @@ import meteor.plugins.animsmoothing.AnimationSmoothingPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.api.example.chickenkiller.ChickenKillerPlugin;
 import meteor.plugins.api.example.deathevent.DeathEventPlugin;
-import meteor.plugins.api.example.walking.WalkerPlugin;
 import meteor.plugins.api.externals.ExternalManagerPlugin;
 import meteor.plugins.autoclicker.AutoClickerPlugin;
 import meteor.plugins.autologhop.AutoLogHop;
@@ -49,6 +48,8 @@ import meteor.plugins.defaultworld.DefaultWorldPlugin;
 import meteor.plugins.demonicgorilla.DemonicGorillaPlugin;
 import meteor.plugins.devtools.DevToolsPlugin;
 import meteor.plugins.discord.DiscordPlugin;
+import meteor.plugins.entityhiderextended.EntityHiderExtendedPlugin;
+import meteor.plugins.entityinspector.EntityInspectorPlugin;
 import meteor.plugins.environmentaid.EnvironmentAidPlugin;
 import meteor.plugins.fairyring.FairyRingPlugin;
 import meteor.plugins.fightcave.FightCavePlugin;
@@ -59,6 +60,7 @@ import meteor.plugins.gpu.GpuPlugin;
 import meteor.plugins.grotesqueguardians.GrotesqueGuardiansPlugin;
 import meteor.plugins.grounditems.GroundItemsPlugin;
 import meteor.plugins.herbiboars.HerbiboarPlugin;
+import meteor.plugins.hootagility.HootAgilityPlugin;
 import meteor.plugins.hunter.HunterPlugin;
 import meteor.plugins.implings.ImplingsPlugin;
 import meteor.plugins.inferno.InfernoPlugin;
@@ -73,6 +75,7 @@ import meteor.plugins.keyremapping.KeyRemappingPlugin;
 import meteor.plugins.kourendlibrary.KourendLibraryPlugin;
 import meteor.plugins.leftclickcast.LeftClickCastPlugin;
 import meteor.plugins.lizardmenshaman.LizardmanShamanPlugin;
+import meteor.plugins.lowcpu.LowCpuPlugin;
 import meteor.plugins.lowdetail.LowDetailPlugin;
 import meteor.plugins.menuentrymodifier.MenuEntryModifierPlugin;
 import meteor.plugins.menuentryswapper.MenuEntrySwapperPlugin;
@@ -90,10 +93,12 @@ import meteor.plugins.npcunaggroarea.NpcAggroAreaPlugin;
 import meteor.plugins.oneclick.OneClickPlugin;
 import meteor.plugins.oneclick3t4g.OneClick3t4g;
 import meteor.plugins.oneclickagility.OneClickAgilityPlugin;
+import meteor.plugins.oneclickcustom.OneClickCustomPlugin;
 import meteor.plugins.oneclickdropper.OneClickDropperPlugin;
 import meteor.plugins.oneclickthieving.OneClickThievingPlugin;
 import meteor.plugins.playerattacktimer.PlayerAttackTimerPlugin;
 import meteor.plugins.playerindicators.PlayerIndicatorsPlugin;
+import meteor.plugins.playerindicatorsextended.PlayerIndicatorsExtendedPlugin;
 import meteor.plugins.playerstatus.PlayerStatusPlugin;
 import meteor.plugins.poh.PohPlugin;
 import meteor.plugins.poison.PoisonPlugin;
@@ -156,6 +161,7 @@ import java.util.jar.JarFile;
 
 public class PluginManager {
 	private static final Logger logger = new Logger("PluginManager");
+	public static final File EXTERNALS_DIR = new File(MeteorLiteClientLauncher.METEOR_DIR, "externals");
 
 	@Inject
 	private EventBus eventBus;
@@ -167,11 +173,16 @@ public class PluginManager {
 	private MeteorLiteClientModule meteorLiteClientModule;
 
 	PluginManager() {
+		if (!EXTERNALS_DIR.exists()) {
+			EXTERNALS_DIR.mkdirs();
+		}
 	}
 
 	public static List<Plugin> plugins = new ArrayList<>();
 
   private void initPlugins() {
+		plugins.add(new ExternalManagerPlugin()); // Leave at the top pls, it's not a regular plugin
+
 		plugins.add(new AgilityPlugin());
 		plugins.add(new AlchemicalHydraPlugin());
 		plugins.add(new AmmoPlugin());
@@ -208,8 +219,9 @@ public class PluginManager {
 		plugins.add(new DevToolsPlugin());
 		plugins.add(new DiaryRequirementsPlugin());
 		plugins.add(new DiscordPlugin());
+		plugins.add(new EntityHiderExtendedPlugin());
+		plugins.add(new EntityInspectorPlugin());
 		plugins.add(new EnvironmentAidPlugin());
-		plugins.add(new ExternalManagerPlugin());
 		plugins.add(new FairyRingPlugin());
 		plugins.add(new FightCavePlugin());
 		plugins.add(new FishingPlugin());
@@ -220,20 +232,22 @@ public class PluginManager {
 		plugins.add(new GroundItemsPlugin());
 		plugins.add(new sGroundMarkerPlugin());
 		plugins.add(new HerbiboarPlugin());
+		plugins.add(new HootAgilityPlugin());
 		plugins.add(new HunterPlugin());
 		plugins.add(new ImplingsPlugin());
 		plugins.add(new InfernoPlugin());
 		plugins.add(new InteractHighlightPlugin());
 		plugins.add(new InventoryGridPlugin());
 		plugins.add(new ItemChargePlugin());
+		plugins.add(new ItemIdentificationPlugin());
 		plugins.add(new ItemPricesPlugin());
 		plugins.add(new ItemStatPlugin());
-		plugins.add(new ItemIdentificationPlugin());
 		plugins.add(new KQPlugin());
 		plugins.add(new KeyRemappingPlugin());
 		plugins.add(new KourendLibraryPlugin());
 		plugins.add(new LeftClickCastPlugin());
 		plugins.add(new LizardmanShamanPlugin());
+		plugins.add(new LowCpuPlugin());
 		plugins.add(new LowDetailPlugin());
 		plugins.add(new MenuEntryModifierPlugin());
 		plugins.add(new MenuEntrySwapperPlugin());
@@ -252,6 +266,7 @@ public class PluginManager {
 		plugins.add(new OneClickPlugin());
 		plugins.add(new OneClick3t4g());
 		plugins.add(new OneClickAgilityPlugin());
+		plugins.add(new OneClickCustomPlugin());
 		plugins.add(new OneClickDropperPlugin());
 		plugins.add(new OneClickThievingPlugin());
 		plugins.add(new PlayerAttackTimerPlugin());
@@ -280,6 +295,7 @@ public class PluginManager {
 		plugins.add(new SocketHealingPlugin());
 		plugins.add(new SocketIceDemonPlugin());
 		plugins.add(new SocketPlanksPlugin());
+		plugins.add(new PlayerIndicatorsExtendedPlugin());
 		plugins.add(new PlayerStatusPlugin());
 		plugins.add(new SotetsegPlugin());
 		plugins.add(new SpecialCounterExtendedPlugin());
@@ -289,18 +305,17 @@ public class PluginManager {
 		plugins.add(new AutoRun());
 		plugins.add(new StatusBarsPlugin());
 		plugins.add(new StretchedModePlugin());
+		plugins.add(new TearsOfGuthixPlugin());
 		plugins.add(new TheatrePlugin());
 		plugins.add(new TileIndicatorsPlugin());
 		plugins.add(new TimersPlugin());
 		plugins.add(new TitheFarmPlugin());
-		plugins.add(new TearsOfGuthixPlugin());
 		plugins.add(new VetionPlugin());
 		plugins.add(new Void3tFishingPlugin());
 		plugins.add(new Void3tTeaksPlugin());
 		plugins.add(new VoidPowerMine());
 		plugins.add(new VoidPowerChop());
 		plugins.add(new VorkathPlugin());
-		plugins.add(new WalkerPlugin());
 		plugins.add(new WoodcuttingPlugin());
 		plugins.add(new WorldMapPlugin());
 		plugins.add(new WorldMapWalkerPlugin());
@@ -354,14 +369,20 @@ public class PluginManager {
 				configManager.setDefaultConfiguration(plugin, config, false);
 			}
 		}
-		if (finalConfig != null)
-			if (Boolean.parseBoolean(configManager.getConfiguration(finalConfig.getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class).value(), "pluginEnabled")))
-				plugin.toggle();
+
+		if (finalConfig == null) {
+			return;
+		}
+
+		if (Boolean.parseBoolean(configManager.getConfiguration(finalConfig.getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class).value(), "pluginEnabled"))) {
+			plugin.toggle();
+		}
 	}
 
 	public void startExternals() {
-		List<Plugin> externals = loadPluginsFromDir(new File(MeteorLiteClientLauncher.METEOR_DIR, "externals"));
-		externals.forEach(e -> plugins.removeIf(p -> p.getName().equals(e.getName())));
+		List<Plugin> externals = loadPluginsFromDir(EXTERNALS_DIR);
+		plugins.stream().filter(Plugin::isExternal).forEach(Plugin::unload);
+		plugins.removeIf(Plugin::isExternal);
 
 		for (Plugin external : externals) {
 			plugins.add(external);
@@ -392,8 +413,9 @@ public class PluginManager {
 						}
 
 						String name = entry.getName();
-						name = name.substring(0, name.length() - ".class".length());
-						name = name.replace('/', '.');
+						name = name.substring(0, name.length() - ".class".length())
+										.replace('/', '.');
+
 						try {
 							var clazz = ucl.loadClass(name);
 							if (!Plugin.class.isAssignableFrom(clazz) || Modifier.isAbstract(clazz.getModifiers())) {
@@ -403,6 +425,7 @@ public class PluginManager {
 							Class<? extends Plugin> pluginClass = (Class<? extends Plugin>) clazz;
 							var plugin = pluginClass.getDeclaredConstructor().newInstance();
 							logger.debug("Loading external plugin {}", plugin.getName());
+							plugin.setExternal(true);
 							plugins.add(plugin);
 						} catch (Exception e) {
 							e.printStackTrace();
