@@ -55,7 +55,7 @@ public class ItemClient {
 
     HttpUrl url = urlBuilder.build();
 
-    log.debug("Built URI: " + url);
+    log.debug("Requesting URI: " + url);
 
     Request request = new Request.Builder()
         .url(url)
@@ -84,7 +84,7 @@ public class ItemClient {
 
     HttpUrl url = urlBuilder.build();
 
-    log.debug("Built URI: " + url);
+    log.debug("Requesting URI: " + url);
 
     Request request = new Request.Builder()
         .url(url)

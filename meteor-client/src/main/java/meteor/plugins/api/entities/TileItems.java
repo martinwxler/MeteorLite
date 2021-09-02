@@ -124,7 +124,6 @@ public class TileItems {
                 }
 
                 if (!Game.getClient().isItemDefinitionCached(item.getId())) {
-                    logger.debug("TileItem {} is not cached, going to cache it", item.getId());
                     GameThread.invokeLater(() -> Game.getClient().getItemComposition(item.getId()));
                 }
 
