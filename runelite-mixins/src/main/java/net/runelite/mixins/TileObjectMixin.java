@@ -118,7 +118,7 @@ public abstract class TileObjectMixin implements TileObject {
   @Override
   public String getName() {
     RSObjectComposition def = getCachedDefinition();
-    return def == null ? null : def.getName();
+    return def == null ? null : def.getName().replace('\u00A0', ' ');
   }
 
   @Inject

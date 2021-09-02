@@ -63,6 +63,6 @@ public abstract class ClanChannelMemberMixin implements RSClanChannelMember
 	@Inject
 	public String getName$api()
 	{
-		return getUsername().getName$api();
+		return getUsername().getName$api().replace('\u00A0', ' ');
 	}
 }

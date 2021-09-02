@@ -45,7 +45,7 @@ public class Item implements Interactable {
 	private int widgetId;
 
 	public String getName() {
-		return client.getItemComposition(getId()).getName();
+		return client.getItemComposition(getId()).getName().replace('\u00A0', ' ');
 	}
 
 	@Override
