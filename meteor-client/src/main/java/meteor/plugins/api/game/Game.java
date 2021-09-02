@@ -35,6 +35,15 @@ public class Game {
             return 0;
         }
 
+        // Dmm
+        if (wildyLevelWidget.getText().contains("Guarded") || wildyLevelWidget.getText().contains("Protection")) {
+            return 0;
+        }
+
+        if (wildyLevelWidget.getText().contains("Deadman")) {
+            return Integer.MAX_VALUE;
+        }
+
         return Integer.parseInt(wildyLevelWidget.getText().replace("Level: ", ""));
     }
 

@@ -7,6 +7,7 @@ import net.runelite.api.widgets.WidgetInfo;
 
 import javax.inject.Inject;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class Widgets {
@@ -26,7 +27,7 @@ public class Widgets {
     public static List<Widget> get(int group) {
         Widget[] widgets = Game.getClient().getWidgets()[group];
         if (widgets == null) {
-            return null;
+            return Collections.emptyList();
         }
 
         return Arrays.asList(widgets);

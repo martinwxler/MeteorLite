@@ -275,17 +275,30 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
     setupJavaFXComponents(applet);
   }
 
-  public static void togglePluginsPanel() throws IOException {
+  public static void toggleRightPanel() throws IOException {
     if (pluginsPanelVisible) {
       rightPanel.setVisible(false);
     } else {
-      pluginsRootScene = new Scene(FXMLLoader.load(
-              Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("plugins.fxml"))), 350, 800);
-      rightPanel.setScene(pluginsRootScene);
+      // Load plugins if not loaded yet
+      if (pluginsRootScene == null) {
+        showPlugins();
+      }
+
       rightPanel.setVisible(true);
     }
 
     pluginsPanelVisible = !pluginsPanelVisible;
+  }
+
+  public static void showPlugins() throws IOException {
+    if (pluginsRootScene == null) {
+      pluginsRootScene = new Scene(FXMLLoader.load(
+              Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("plugins.fxml"))), 350, 800);
+    }
+
+    if (rightPanel.getScene() == null || !rightPanel.getScene().equals(pluginsRootScene)) {
+      rightPanel.setScene(pluginsRootScene);
+    }
   }
 
   public static void updateRightPanel(Parent root, int width) {
