@@ -180,6 +180,6 @@ public abstract class TileItemMixin implements RSTileItem {
   @Inject
   @Override
   public String getName() {
-    return client.getItemComposition(getId()).getName();
+    return client.getItemComposition(getId()).getName().replace('\u00A0', ' ');
   }
 }
