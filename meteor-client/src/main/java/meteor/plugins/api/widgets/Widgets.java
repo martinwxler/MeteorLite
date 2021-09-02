@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class Widgets {
 
@@ -31,6 +32,10 @@ public class Widgets {
         }
 
         return Arrays.asList(widgets);
+    }
+
+    public static Widget get(int group, Predicate<Widget> filter) {
+        return get(group).stream().filter(filter).findFirst().orElse(null);
     }
 
     public static Widget fromId(int packedId) {
