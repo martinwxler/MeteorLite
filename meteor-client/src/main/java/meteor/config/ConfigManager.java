@@ -503,7 +503,6 @@ public class ConfigManager {
       oldValue = (String) properties.setProperty(wholeKey, value);
     }
 
-    log.debug("set config {}-{} ", wholeKey, value);
     handler.invalidate();
 
     ConfigChanged configChanged = new ConfigChanged();
