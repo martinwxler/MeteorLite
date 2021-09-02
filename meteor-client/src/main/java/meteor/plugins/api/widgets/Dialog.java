@@ -38,7 +38,7 @@ public class Dialog {
 	public static boolean canContinue() {
 		return GameThread.invokeLater(() -> canContinueNPC() || canContinuePlayer() || canContinueDeath()
 						|| canWeirdContinue() || canWeirderContinue() || canWeirdestContinue() || canContinueTutIsland() || canContinueTutIsland2()
-						|| canContinueTutIsland3());
+						|| canContinueTutIsland3() || canLevelUpContinue());
 	}
 
 	public static boolean canLevelUpContinue() {

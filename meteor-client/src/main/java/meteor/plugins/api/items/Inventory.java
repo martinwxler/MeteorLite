@@ -147,4 +147,9 @@ public class Inventory {
             });
         }
     }
+
+    public static boolean isFull() {
+        return getAll(x -> true).size() == 28;
+    }
+
 }
