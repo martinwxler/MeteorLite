@@ -7,8 +7,6 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.TitledPane;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -22,7 +20,6 @@ import meteor.MeteorLiteClientModule;
 import meteor.config.Button;
 import meteor.config.*;
 import meteor.plugins.Plugin;
-import meteor.plugins.PluginDescriptor;
 import meteor.ui.components.ConfigButton;
 import meteor.ui.components.ConfigSectionPane;
 import meteor.ui.components.PluginToggleButton;
@@ -32,6 +29,7 @@ import org.sponge.util.Logger;
 
 import javax.inject.Inject;
 import java.awt.*;
+import java.io.IOException;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -492,5 +490,10 @@ public class PluginConfigUI {
 		}
 
 		return label;
+	}
+
+	@FXML
+	protected void closeConfig(MouseEvent event) throws IOException {
+		MeteorLiteClientModule.showPlugins();
 	}
 }

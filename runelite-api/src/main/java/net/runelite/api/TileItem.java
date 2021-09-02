@@ -24,6 +24,9 @@
  */
 package net.runelite.api;
 
+import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldPoint;
+
 /**
  * Represents an item inside an {@link ItemLayer}.
  */
@@ -54,4 +57,20 @@ public interface TileItem extends Renderable, Interactable {
   void pickup();
 
   String getName();
+
+  default int distanceTo(Locatable locatable) {
+    return getTile().distanceTo(locatable.getWorldLocation());
+  }
+
+  default int distanceTo(WorldPoint point) {
+    return getTile().distanceTo(point);
+  }
+
+  default WorldPoint getWorldLocation() {
+    return getTile().getWorldLocation();
+  }
+
+  default LocalPoint getLocalLocation() {
+    return getTile().getLocalLocation();
+  }
 }

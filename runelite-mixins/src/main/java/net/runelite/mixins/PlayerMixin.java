@@ -245,6 +245,11 @@ public abstract class PlayerMixin implements RSPlayer {
   }
 
   @Override
+  public String[] getActions() {
+    return client.getPlayerOptions();
+  }
+
+  @Override
   public List<String> actions() {
     return Arrays.asList(getActions());
   }
