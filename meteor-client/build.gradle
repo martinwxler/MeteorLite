@@ -28,8 +28,6 @@ dependencies {
     implementation(project(":meteor-logger"))
     implementation(project(":http-api"))
     implementation(project(":runelite-annotations"))
-    compileOnly(project(":openosrs-injector"))
-    compileOnly(project(":runelite-script-assembler"))
     implementation(files("../openosrs-injector/build/injected/injected-client.jar"))
     implementation group: 'de.jensd', name: 'fontawesomefx-commons', version: '_'
     implementation group: 'de.jensd', name: 'fontawesomefx-fontawesome', version: '_'
@@ -158,48 +156,19 @@ shadowJar {
             "--illegal-access=permit",
             "-ea"]
 }
-
-
-
-task inject(type: JavaExec) {
-    onlyIf {
-        !state.upToDate
-    }
-    classpath = sourceSets.main.compileClasspath
-    main = 'com.openosrs.injector.Injector'
-}
-
-
-task assembleScripts(type: JavaExec) {
-    onlyIf {
-        !state.upToDate
-    }
-    classpath = sourceSets.main.compileClasspath
-    main = 'net.runelite.script.AssembleMojo'
-}
-
-
-task bootstrap(type: JavaExec) {
-    inject.setEnabled(false)
-    assembleScripts.setEnabled(false)
-    classpath = sourceSets.main.runtimeClasspath
-    main = "meteor.util.bootstrap.Bootstrapper"
-}
-
-
-
 tasks {
     compileJava.dependsOn project(":fernflower").tasks.getByName("decompileInjected")
     compileJava.dependsOn(":runelite-mixins:compileJava")
-    inject.dependsOn(":runelite-mixins:compileJava")
-    inject.outputs.upToDateWhen {
-        //tasks.findByPath(":runelite-mixins:compileJava").state.upToDate.booleanValue()
-    }
 }
 
 processResources {
-    dependsOn(assembleScripts)
+    dependsOn(":runelite-script-assembler:assembleScripts")
     from("${buildDir}/scripts")
+}
+
+task bootstrap(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = "meteor.util.bootstrap.Bootstrapper"
 }
 
 jar {
