@@ -52,13 +52,15 @@ public class PluginListUI {
 
   public static Map<String, PluginToggleButton> configGroupPluginMap = new HashMap<>();
 
+  public static Map<Plugin, AnchorPane> pluginPanels = new HashMap<>();
+
   public static boolean overrideToggleListener = false;
 
   @Inject
-  ConfigManager configManager;
+  private ConfigManager configManager;
 
   @Inject
-  EventBus eventBus;
+  private EventBus eventBus;
   private ArrayList<Category> categories = new ArrayList<>();
 
   @FXML
@@ -145,10 +147,12 @@ public class PluginListUI {
 
   public void refreshPlugins() {
     pluginList.getChildren().clear();
+    pluginPanels.clear();
+    configGroupPluginMap.clear();
 
     for (Category c : categories) {
-      AnchorPane pluginPanel = new AnchorPane();
-      pluginPanel.setStyle("-fx-border-color: transparent;");
+      AnchorPane categoryPanel = new AnchorPane();
+      categoryPanel.setStyle("-fx-border-color: transparent;");
       FontAwesomeIconView tick;
       if (!c.open) {
         tick = new FontAwesomeIconView(FontAwesomeIcon.ANGLE_RIGHT);
@@ -162,8 +166,8 @@ public class PluginListUI {
       AnchorPane.setTopAnchor(tick, 8.0);
       AnchorPane.setBottomAnchor(tick, 8.0);
 
-      pluginPanel.setStyle("-fx-background-color: #212121; -fx-border-style: solid;  -fx-border-color: #121212; -fx-border-width: 1;");
-      pluginPanel.getStylesheets().add("css/plugins/jfx-contextmenu.css");
+      categoryPanel.setStyle("-fx-background-color: #212121; -fx-border-style: solid;  -fx-border-color: #121212; -fx-border-width: 1;");
+      categoryPanel.getStylesheets().add("css/plugins/jfx-contextmenu.css");
       Text categoryName = new Text();
       categoryName.setText(c.name);
       categoryName.setFill(Paint.valueOf("CYAN"));
@@ -210,9 +214,9 @@ public class PluginListUI {
         contextMenu.getItems().add(moveDown);
       }
 
-      pluginPanel.getChildren().add(tick);
-      pluginPanel.getChildren().add(categoryName);
-      pluginPanel.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
+      categoryPanel.getChildren().add(tick);
+      categoryPanel.getChildren().add(categoryName);
+      categoryPanel.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
         if (e.getButton() == MouseButton.PRIMARY) {
           c.open = !c.open;
           refreshPlugins();
@@ -223,7 +227,7 @@ public class PluginListUI {
         }
       });
 
-      pluginList.getChildren().add(pluginPanel);
+      pluginList.getChildren().add(categoryPanel);
 
       if (c.open) {
         for (String s : c.plugins) {
@@ -410,30 +414,17 @@ public class PluginListUI {
 
   private void addPlugin(Plugin p, Category category) {
     AnchorPane pluginPanel = new AnchorPane();
+    pluginPanels.put(p, pluginPanel);
     pluginPanel.setStyle("-fx-border-color: transparent;");
     pluginPanel.setStyle("-fx-background-color: #212121; -fx-border-style: solid;  -fx-border-color: #121212; -fx-border-width: 1;");
 
-    PluginConfigButton configButton = new PluginConfigButton(p);
-    if (p.getConfig(MeteorLiteClientLauncher.mainClientInstance.instanceInjector.getInstance(ConfigManager.class)) != null) {
-      if (p.getConfig(MeteorLiteClientLauncher.mainClientInstance.instanceInjector.getInstance(ConfigManager.class)).getClass().getDeclaredMethods().length > 4) {
-        AnchorPane.setRightAnchor(configButton, 48.0);
-        AnchorPane.setTopAnchor(configButton, 4.0);
-        AnchorPane.setBottomAnchor(configButton, 4.0);
-
-        FontAwesomeIconView cog = new FontAwesomeIconView(FontAwesomeIcon.COG);
-        cog.setFill(Paint.valueOf("CYAN"));
-        cog.setSize("18");
-        configButton.setGraphic(cog);
-        configButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-          lastPluginInteracted = p;
-          p.showConfig();
-          pluginsPanelVisible = !pluginsPanelVisible;
-        });
-      }
+    String configGroup = p.getConfig(configManager).getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class).value();
+    PluginToggleButton toggleButton = null;
+    if (configGroup != null) {
+      toggleButton = configGroupPluginMap.get(configGroup);
     }
 
-    PluginToggleButton toggleButton = null;
-    if (!p.getClass().getAnnotation(PluginDescriptor.class).cantDisable()) {
+    if (toggleButton == null && !p.getClass().getAnnotation(PluginDescriptor.class).cantDisable()) {
       toggleButton = new PluginToggleButton(p);
       toggleButton.setSize(6);
       AnchorPane.setTopAnchor(toggleButton, 2.0);
@@ -469,6 +460,27 @@ public class PluginListUI {
           configManager.setConfiguration(p.getConfig(configManager).getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class).value(), "pluginEnabled", newValue);
         }
       });
+    }
+
+    PluginConfigButton configButton = new PluginConfigButton(p);
+    if (p.getConfig(MeteorLiteClientLauncher.mainClientInstance.instanceInjector.getInstance(ConfigManager.class)) != null) {
+      if (p.getConfig(MeteorLiteClientLauncher.mainClientInstance.instanceInjector.getInstance(ConfigManager.class)).getClass().getDeclaredMethods().length > 4) {
+        AnchorPane.setRightAnchor(configButton, 48.0);
+        AnchorPane.setTopAnchor(configButton, 4.0);
+        AnchorPane.setBottomAnchor(configButton, 4.0);
+
+        FontAwesomeIconView cog = new FontAwesomeIconView(FontAwesomeIcon.COG);
+        cog.setFill(Paint.valueOf("CYAN"));
+        cog.setSize("18");
+        configButton.setGraphic(cog);
+        PluginToggleButton finalToggleButton1 = toggleButton;
+        configButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
+          lastPluginInteracted = p;
+          pluginPanel.getChildren().remove(finalToggleButton1);
+          p.showConfig();
+          pluginsPanelVisible = !pluginsPanelVisible;
+        });
+      }
     }
 
     Text pluginName = new Text();

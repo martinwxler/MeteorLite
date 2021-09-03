@@ -24,15 +24,15 @@
  */
 package net.runelite.api.events;
 
-import lombok.Value;
+import net.runelite.api.MenuEntry;
 
-@Value
-public class InvokeMenuActionEvent
+public class InvokeMenuActionEvent extends MenuEntry
 {
-	String option;
-	String target;
-	int id;
-	int opcode;
-	int param0;
-	int param1;
+	public InvokeMenuActionEvent(String option, String target, int identifier, int opcode, int param0, int param1) {
+		super(option, target, identifier, opcode, param0, param1, false);
+	}
+
+	public InvokeMenuActionEvent(int identifier, int opcode, int param0, int param1) {
+		super("", "", identifier, opcode, param0, param1, false);
+	}
 }

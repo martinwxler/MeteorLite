@@ -29,19 +29,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import meteor.events.AutomationMouseMoveEvent;
-import net.runelite.api.CollisionData;
-import net.runelite.api.CollisionDataFlag;
-import net.runelite.api.Constants;
-import net.runelite.api.DecorativeObject;
-import net.runelite.api.GameState;
-import net.runelite.api.GroundObject;
-import net.runelite.api.ItemLayer;
-import net.runelite.api.Node;
-import net.runelite.api.Point;
-import net.runelite.api.Tile;
-import net.runelite.api.TileItem;
-import net.runelite.api.WallObject;
+import meteor.events.AutomationMouseMoved;
+import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
@@ -51,8 +40,6 @@ import net.runelite.api.mixins.Mixin;
 import net.runelite.api.mixins.Shadow;
 import net.runelite.rs.api.*;
 import org.sponge.util.Logger;
-
-import static net.runelite.api.MenuAction.WALK;
 
 @Mixin(RSTile.class)
 public abstract class TileMixin implements RSTile
@@ -583,13 +570,6 @@ public abstract class TileMixin implements RSTile
   @Override
   @Inject
   public void walkHere() {
-    Point p = new Point(getSceneLocation().getX(), getSceneLocation().getY());
-    client.getCallbacks().post(new AutomationMouseMoveEvent(p));
-    client.setSelectedSceneTileX(getX());
-    client.setSelectedSceneTileY(getY());
-    client.setViewportWalking(true);
-//    client.setMouseLastPressedX(getSceneLocation().getX());
-//    client.setMouseLastPressedY(getSceneLocation().getX());
-//    client.invokeMenuAction("Walk here", "", 0, WALK.getId(), getX(), getY());
+    client.interact(0, MenuAction.WALK.getId(), getX(), getY());
   }
 }

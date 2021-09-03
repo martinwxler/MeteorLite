@@ -8,8 +8,10 @@ import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.plugins.api.commons.Rand;
 import meteor.plugins.api.input.Mouse;
+import meteor.plugins.api.movement.Movement;
 import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.Client;
+import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.events.InvokeMenuActionEvent;
 import net.runelite.api.events.MenuOptionClicked;
@@ -36,27 +38,28 @@ public class InteractionPlugin extends Plugin {
 	@Inject
 	private Client client;
 	private MenuEntry action;
+	private int mouseClickX;
+	private int mouseClickY;
 
 	@Subscribe
 	public void onInvokeMenuAction(InvokeMenuActionEvent e) {
 		if (config.mouseEvents()) {
-			int clickX = Rand.nextInt(0, client.getCanvasWidth());
-			int clickY = Rand.nextInt(0, client.getCanvasHeight());
-			logger.debug("Sending click to {} {}", clickX, clickY);
+			mouseClickX = Rand.nextInt(0, client.getCanvasWidth());
+			mouseClickY = Rand.nextInt(0, client.getCanvasHeight());
+			logger.debug("Sending click to {} {}", mouseClickX, mouseClickY);
 
 			action = new MenuEntry(e.getOption(), e.getTarget(), e.getId(),
 							e.getOpcode(), e.getParam0(), e.getParam1(), false);
 
-			Mouse.click(clickX, clickY, true);
+			Mouse.click(mouseClickX, mouseClickY, true);
 		} else {
-			client.invokeMenuAction(e.getOption(), e.getTarget(), e.getId(),
-							e.getOpcode(), e.getParam0(), e.getParam1());
+			processAction(e);
 		}
 	}
 
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked e) {
-		if (config.mouseEvents()) {
+		if (config.mouseEvents() && e.getCanvasX() == mouseClickX && e.getCanvasY() == mouseClickY) {
 			e.consume();
 
 			if (action == null) {
@@ -64,6 +67,14 @@ public class InteractionPlugin extends Plugin {
 				return;
 			}
 
+			processAction(action);
+		}
+	}
+
+	private void processAction(MenuEntry action) {
+		if (action.getMenuAction() == MenuAction.WALK) {
+			Movement.setDestination(action.getParam0(), action.getParam1());
+		} else {
 			client.invokeMenuAction(action.getOption(), action.getTarget(), action.getId(),
 							action.getMenuAction().getId(), action.getParam0(), action.getParam1());
 		}
