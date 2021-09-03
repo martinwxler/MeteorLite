@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -48,6 +49,9 @@ public class PluginListUI {
   @FXML
   private VBox pluginList;
 
+  @FXML
+  public ScrollPane scrollPane;
+
   public static Plugin lastPluginInteracted;
 
   public static Map<String, PluginToggleButton> configGroupPluginMap = new HashMap<>();
@@ -59,14 +63,17 @@ public class PluginListUI {
   @Inject
   private ConfigManager configManager;
 
+  public static PluginListUI INSTANCE;
+
   @Inject
   private EventBus eventBus;
-  private ArrayList<Category> categories = new ArrayList<>();
+  public static ArrayList<Category> categories = new ArrayList<>();
 
   @FXML
   public void initialize() {
     MeteorLiteClientModule.instanceInjectorStatic.injectMembers(this);
     eventBus.register(this);
+    INSTANCE = this;
     categories.clear();
 
     addCategory.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
@@ -424,7 +431,7 @@ public class PluginListUI {
       toggleButton = configGroupPluginMap.get(configGroup);
     }
 
-    if (toggleButton == null || !p.getClass().getAnnotation(PluginDescriptor.class).cantDisable()) {
+    if (!p.getClass().getAnnotation(PluginDescriptor.class).cantDisable()) {
       toggleButton = new PluginToggleButton(p);
       toggleButton.setSize(6);
       AnchorPane.setTopAnchor(toggleButton, 2.0);

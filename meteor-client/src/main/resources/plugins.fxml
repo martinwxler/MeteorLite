@@ -23,7 +23,7 @@
             <Font name="FontAwesome" size="18.0" />
          </font>
       </FontAwesomeIconView>
-      <ScrollPane fitToHeight="true" fitToWidth="true" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="40.0">
+      <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="40.0">
          <stylesheets>
             <URL value="@css/plugins/jfx-scrollpane.css" />
             <URL value="@css/plugins/jfx-scrollbar.css" />

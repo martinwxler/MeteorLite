@@ -20,6 +20,7 @@ import meteor.MeteorLiteClientModule;
 import meteor.config.Button;
 import meteor.config.*;
 import meteor.plugins.Plugin;
+import meteor.ui.components.Category;
 import meteor.ui.components.ConfigButton;
 import meteor.ui.components.ConfigSectionPane;
 import meteor.ui.components.PluginToggleButton;
@@ -496,14 +497,7 @@ public class PluginConfigUI {
 
 	@FXML
 	protected void closeConfig(MouseEvent event) throws IOException {
-		if (toggleButton != null && plugin != null) {
-			AnchorPane pluginPanel = pluginPanels.get(plugin);
-
-			if (pluginPanel != null) {
-				pluginPanel.getChildren().add(toggleButton);
-			}
-		}
-
+		PluginListUI.INSTANCE.refreshPlugins();
 		MeteorLiteClientModule.showPlugins();
 	}
 }
