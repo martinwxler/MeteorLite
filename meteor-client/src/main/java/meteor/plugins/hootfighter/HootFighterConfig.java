@@ -36,6 +36,14 @@ public interface HootFighterConfig extends Config {
 	)
 	String prayers = "Prayers";
 
+	@ConfigSection(
+					name = "Alching",
+					description = "Alching settings",
+					position = 4,
+					closedByDefault = true
+	)
+	String alching = "Alching";
+
 	@ConfigItem(
 					keyName = "monster",
 					name = "Monster",
@@ -169,5 +177,38 @@ public interface HootFighterConfig extends Config {
 	)
 	default boolean restore() {
 		return false;
+	}
+
+	@ConfigItem(
+					keyName = "alch",
+					name = "Alch items",
+					description = "Alchs items",
+					position = 0,
+					section = alching
+	)
+	default boolean alching() {
+		return false;
+	}
+
+	@ConfigItem(
+					keyName = "alchSpell",
+					name = "Alch spell",
+					description = "Alch spell",
+					position = 1,
+					section = alching
+	)
+	default AlchSpell alchSpell() {
+		return AlchSpell.HIGH;
+	}
+
+	@ConfigItem(
+					keyName = "alchItems",
+					name = "Alch items",
+					description = "Items to alch, separated by comma. ex: Maple shortbow,Rune scimitar",
+					position = 2,
+					section = alching
+	)
+	default String alchItems() {
+		return "Weed";
 	}
 }
