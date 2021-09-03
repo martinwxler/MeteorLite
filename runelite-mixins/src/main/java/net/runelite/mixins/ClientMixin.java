@@ -987,6 +987,24 @@ public abstract class ClientMixin implements RSClient {
     }
   }
 
+  @Copy("runWidgetOnLoadListener")
+  @Replace("runWidgetOnLoadListener")
+  @SuppressWarnings("InfiniteRecursion")
+  public static void copy$runWidgetOnLoadListener(int groupId)
+  {
+    copy$runWidgetOnLoadListener(groupId);
+
+    RSWidget[][] widgets = client.getWidgets();
+    boolean loaded = widgets != null && widgets[groupId] != null;
+
+    if (loaded)
+    {
+      WidgetLoaded event = new WidgetLoaded();
+      event.setGroupId(groupId);
+      client.getCallbacks().post(event);
+    }
+  }
+
   @Inject
   @Override
   public HintArrowType getHintArrowType()
