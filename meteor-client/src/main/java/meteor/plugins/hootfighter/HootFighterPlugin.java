@@ -17,14 +17,18 @@ import meteor.plugins.api.widgets.Dialog;
 import meteor.plugins.api.widgets.Prayers;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameTick;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @PluginDescriptor(
 				name = "Hoot Fighter",
@@ -42,11 +46,17 @@ public class HootFighterPlugin extends Plugin {
 
 	private WorldPoint startPoint;
 
+	private List<TileItem> notOurItems = new ArrayList<>();
+
 	@Override
 	public void startup() {
 		executor = Executors.newSingleThreadScheduledExecutor();
 		executor.scheduleWithFixedDelay(() -> {
 			try {
+				if (!Game.isLoggedIn()) {
+					return;
+				}
+
 				if (config.quickPrayer() && !Prayers.isQuickPrayerEnabled() && Players.getLocal().getInteracting() != null) {
 					Prayers.toggleQuickPrayer(true);
 				}
@@ -71,7 +81,7 @@ public class HootFighterPlugin extends Plugin {
 			if (config.eat() && Combat.getHealthPercent() <= config.healthPercent()) {
 				List<String> foods = List.of(config.foods().split(","));
 				Item food = Inventory.getFirst(x -> !foods.isEmpty() && x.getName() != null && foods.contains(x.getName())
-								|| foods.isEmpty() && x.hasAction("Eat"));
+								|| foods.contains("Any") && x.hasAction("Eat"));
 				if (food != null) {
 					food.interact("Eat");
 					return;
@@ -92,17 +102,18 @@ public class HootFighterPlugin extends Plugin {
 			}
 
 			if (config.buryBones()) {
-				Item bones = Inventory.getFirst("Bones");
+				Item bones = Inventory.getFirst(x -> x.hasAction("Bury") || x.hasAction("Scatter"));
 				if (bones != null) {
-					bones.interact("Bury");
+					bones.interact(0);
 					return;
 				}
 			}
 
 			Player local = Players.getLocal();
 			List<String> itemsToLoot = List.of(config.loot().split(","));
-			if (!itemsToLoot.isEmpty()) {
+			if (!itemsToLoot.isEmpty() && !Inventory.isFull()) {
 				TileItem loot = TileItems.getNearest(x -> x.getTile().getWorldLocation().distanceTo(local.getWorldLocation()) < 15
+								&& !notOurItems.contains(x)
 								&& (x.getName() != null && itemsToLoot.contains(x.getName())
 								|| (config.lootValue() > -1 && itemManager.getItemPrice(x.getId()) * x.getQuantity() > config.lootValue())
 								|| (config.untradables() && !client.getItemComposition(x.getId()).isTradeable())));
@@ -155,6 +166,16 @@ public class HootFighterPlugin extends Plugin {
 	public void shutdown() {
 		if (executor != null) {
 			executor.shutdown();
+		}
+	}
+
+	@Subscribe
+	public void onChatMessage(ChatMessage e) {
+		String message = e.getMessage();
+		if (message.contains("other players have dropped")) {
+			var notOurs = TileItems.getAt(Players.getLocal().getWorldLocation(), x -> true);
+			logger.debug("{} are not our items", notOurs.stream().map(TileItem::getName).collect(Collectors.toList()));
+			notOurItems.addAll(notOurs);
 		}
 	}
 }

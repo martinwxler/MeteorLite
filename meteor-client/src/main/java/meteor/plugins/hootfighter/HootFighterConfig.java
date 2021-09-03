@@ -73,12 +73,12 @@ public interface HootFighterConfig extends Config {
 	@ConfigItem(
 					keyName = "loots",
 					name = "Loot Items",
-					description = "Items to loot separated by comma",
+					description = "Items to loot separated by comma. ex: Lobster,Tuna",
 					position = 0,
 					section = loot
 	)
 	default String loot() {
-		return "Bones,Coins";
+		return "Any";
 	}
 
 	@Range(textInput = true)
@@ -130,12 +130,12 @@ public interface HootFighterConfig extends Config {
 	@ConfigItem(
 					keyName = "foods",
 					name = "Food",
-					description = "Food to eat, separated by comma",
+					description = "Food to eat, separated by comma. ex: Bones,Coins",
 					position = 0,
 					section = health
 	)
 	default String foods() {
-		return "Lobster,Tuna";
+		return "Any";
 	}
 
 	@ConfigItem(
