@@ -9,14 +9,18 @@ import meteor.plugins.PluginDescriptor;
 import meteor.plugins.api.commons.Rand;
 import meteor.plugins.api.input.Mouse;
 import meteor.plugins.api.movement.Movement;
+import meteor.plugins.api.widgets.Widgets;
 import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.Client;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.events.InvokeMenuActionEvent;
 import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 
 import javax.inject.Inject;
+import java.awt.*;
 
 @PluginDescriptor(
 				name = "Interaction Manager",
@@ -44,8 +48,9 @@ public class InteractionPlugin extends Plugin {
 	@Subscribe
 	public void onInvokeMenuAction(InvokeMenuActionEvent e) {
 		if (config.mouseEvents()) {
-			mouseClickX = Rand.nextInt(0, client.getCanvasWidth());
-			mouseClickY = Rand.nextInt(0, client.getCanvasHeight());
+			Point randomPoint = getClickPoint();
+			mouseClickX = randomPoint.x;
+			mouseClickY = randomPoint.y;
 			logger.debug("Sending click to {} {}", mouseClickX, mouseClickY);
 
 			action = new MenuEntry(e.getOption(), e.getTarget(), e.getId(),
@@ -95,5 +100,35 @@ public class InteractionPlugin extends Plugin {
 	public void shutdown() {
 		overlayManager.remove(overlay);
 		mouseManager.unregisterMouseListener(overlay);
+	}
+
+	private Point getClickPoint() {
+		Rectangle bounds = client.getCanvas().getBounds();
+		Point randomPoint = new Point(Rand.nextInt(2, bounds.width), Rand.nextInt(2, bounds.height));
+		Rectangle minimap = getMinimap();
+		if (minimap != null && minimap.contains(randomPoint)) {
+			return getClickPoint();
+		}
+
+		return randomPoint;
+	}
+
+	private Rectangle getMinimap() {
+		Widget fixedMinimap = Widgets.get(WidgetInfo.FIXED_VIEWPORT_MINIMAP_DRAW_AREA);
+		if (fixedMinimap != null) {
+			return fixedMinimap.getBounds();
+		}
+
+		Widget resizableMinimap = Widgets.get(WidgetInfo.RESIZABLE_MINIMAP_DRAW_AREA);
+		if (resizableMinimap != null) {
+			return resizableMinimap.getBounds();
+		}
+
+		Widget resizable2Minimap = Widgets.get(WidgetInfo.RESIZABLE_MINIMAP_STONES_DRAW_AREA);
+		if (resizable2Minimap != null) {
+			return resizable2Minimap.getBounds();
+		}
+
+		return null;
 	}
 }
