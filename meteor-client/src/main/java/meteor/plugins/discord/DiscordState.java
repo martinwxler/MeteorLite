@@ -38,6 +38,7 @@ import javax.inject.Named;
 import lombok.Data;
 import meteor.discord.DiscordPresence;
 import meteor.discord.DiscordService;
+import meteor.util.bootstrap.Bootstrapper;
 import net.runelite.api.Client;
 
 /**
@@ -60,7 +61,7 @@ class DiscordState
 	private final DiscordService discordService;
 	private final DiscordConfig config;
 	private final String runeliteTitle = "MeteorLite";
-	private final String runeliteVersion = "1.0.4";
+	private final String runeliteVersion = Bootstrapper.version;
 	private DiscordPresence lastPresence;
 
 	@Inject
@@ -187,7 +188,7 @@ class DiscordState
 		DiscordPresence.DiscordPresenceBuilder presenceBuilder = DiscordPresence.builder()
 			.state(MoreObjects.firstNonNull(state, ""))
 			.details(MoreObjects.firstNonNull(details, ""))
-			.largeImageText(runeliteTitle + " v" + versionShortHand)
+			.largeImageText("meteorlite")
 			.smallImageKey(imageKey);
 
 		final Instant startTime;
