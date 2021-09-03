@@ -424,7 +424,7 @@ public class PluginListUI {
       toggleButton = configGroupPluginMap.get(configGroup);
     }
 
-    if (toggleButton == null && !p.getClass().getAnnotation(PluginDescriptor.class).cantDisable()) {
+    if (toggleButton == null || !p.getClass().getAnnotation(PluginDescriptor.class).cantDisable()) {
       toggleButton = new PluginToggleButton(p);
       toggleButton.setSize(6);
       AnchorPane.setTopAnchor(toggleButton, 2.0);
