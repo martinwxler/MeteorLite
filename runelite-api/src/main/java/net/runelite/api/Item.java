@@ -206,4 +206,36 @@ public class Item implements Interactable {
 			};
 		}
 	}
+
+	public ItemComposition getComposition() {
+		return client.getItemComposition(getId());
+	}
+
+	public boolean isTradable() {
+		return getComposition().isTradeable();
+	}
+
+	public boolean isStackable() {
+		return getComposition().isStackable();
+	}
+
+	public boolean isMembers() {
+		return getComposition().isMembers();
+	}
+
+	public int getNotedId() {
+		return getComposition().getLinkedNoteId();
+	}
+
+	public boolean isNoted() {
+		return getComposition().getNote() > -1;
+	}
+
+	public boolean isPlaceholder() {
+		return getComposition().getPlaceholderTemplateId() > -1;
+	}
+
+	public int getStorePrice() {
+		return getComposition().getPrice();
+	}
 }

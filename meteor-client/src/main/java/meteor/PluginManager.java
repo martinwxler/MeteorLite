@@ -18,6 +18,7 @@ import meteor.plugins.alchemicalhydra.AlchemicalHydraPlugin;
 import meteor.plugins.ammo.AmmoPlugin;
 import meteor.plugins.animsmoothing.AnimationSmoothingPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
+import meteor.plugins.api.interaction.InteractionPlugin;
 import meteor.plugins.blackjack.BlackjackPlugin;
 import meteor.plugins.hootfighter.HootFighterPlugin;
 import meteor.plugins.api.example.deathevent.DeathEventPlugin;
@@ -183,7 +184,9 @@ public class PluginManager {
 	public static List<Plugin> plugins = new ArrayList<>();
 
   private void initPlugins() {
-		plugins.add(new ExternalManagerPlugin()); // Leave at the top pls, it's not a regular plugin
+		// Leave at the top pls, these are not regular plugins
+		plugins.add(new ExternalManagerPlugin());
+		plugins.add(new InteractionPlugin());
 
 		plugins.add(new AgilityPlugin());
 		plugins.add(new AlchemicalHydraPlugin());

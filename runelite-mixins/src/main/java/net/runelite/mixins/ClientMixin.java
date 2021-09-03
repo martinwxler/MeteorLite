@@ -451,7 +451,10 @@ public abstract class ClientMixin implements RSClient {
     menuOptionClicked.setWidgetId(param1);
     menuOptionClicked.setSelectedItemIndex(client.getSelectedItemSlot());
 
-    client.getCallbacks().post(menuOptionClicked);
+    // Do not send automated clicks to eventbus
+    if (canvasX != -1 && canvasY != -1) {
+      client.getCallbacks().post(menuOptionClicked);
+    }
 
     if (menuOptionClicked.isConsumed()) {
       return;
@@ -478,7 +481,8 @@ public abstract class ClientMixin implements RSClient {
   {
     assert isClientThread() : "invokeMenuAction must be called on client thread";
 
-    client.sendMenuAction(param0, param1, opcode, identifier, option, target, 658, 384);
+    // X and Y are not sent to the servers, so if invoke is called, send -1 and -1
+    client.sendMenuAction(param0, param1, opcode, identifier, option, target, -1, -1);
   }
 
   @Inject

@@ -28,6 +28,14 @@ public interface HootFighterConfig extends Config {
 	)
 	String loot = "Loot";
 
+	@ConfigSection(
+					name = "Prayers",
+					description = "Prayers settings",
+					position = 3,
+					closedByDefault = true
+	)
+	String prayers = "Prayers";
+
 	@ConfigItem(
 					keyName = "monster",
 					name = "Monster",
@@ -63,7 +71,7 @@ public interface HootFighterConfig extends Config {
 	}
 
 	@ConfigItem(
-					keyName = "loot",
+					keyName = "loots",
 					name = "Loot Items",
 					description = "Items to loot separated by comma",
 					position = 0,
@@ -83,6 +91,17 @@ public interface HootFighterConfig extends Config {
 	)
 	default int lootValue() {
 		return -1;
+	}
+
+	@ConfigItem(
+					keyName = "untradables",
+					name = "Loot untradables",
+					description = "Loot untradables",
+					position = 2,
+					section = loot
+	)
+	default boolean untradables() {
+		return true;
 	}
 
 	@ConfigItem(
@@ -117,5 +136,38 @@ public interface HootFighterConfig extends Config {
 	)
 	default String foods() {
 		return "Lobster,Tuna";
+	}
+
+	@ConfigItem(
+					keyName = "quickPrayer",
+					name = "Use Quick Prayers",
+					description = "Use Quick Prayers",
+					position = 0,
+					section = prayers
+	)
+	default boolean quickPrayer() {
+		return false;
+	}
+
+	@ConfigItem(
+					keyName = "flick",
+					name = "Flick",
+					description = "One ticks quick prayers",
+					position = 1,
+					section = prayers
+	)
+	default boolean flick() {
+		return false;
+	}
+
+	@ConfigItem(
+					keyName = "restore",
+					name = "Restore prayer",
+					description = "Drinks pots to restore prayer points",
+					position =  2,
+					section = prayers
+	)
+	default boolean restore() {
+		return false;
 	}
 }
