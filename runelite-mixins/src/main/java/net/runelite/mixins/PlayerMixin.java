@@ -220,6 +220,7 @@ public abstract class PlayerMixin implements RSPlayer {
     return (Polygon[]) polys.toArray(new Polygon[0]);
   }
 
+  @Inject
   @Override
   public int getActionId(int action) {
     switch (action) {
@@ -244,11 +245,13 @@ public abstract class PlayerMixin implements RSPlayer {
     }
   }
 
+  @Inject
   @Override
   public String[] getActions() {
     return client.getPlayerOptions();
   }
 
+  @Inject
   @Override
   public List<String> actions() {
     return Arrays.asList(getActions());
