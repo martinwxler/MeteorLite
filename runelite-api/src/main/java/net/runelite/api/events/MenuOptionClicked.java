@@ -75,6 +75,10 @@ public class MenuOptionClicked
    */
   private boolean consumed;
 
+  private int canvasX;
+
+  private int canvasY;
+
   /**
    * Marks the event as having been consumed.
    * <p>
@@ -119,5 +123,9 @@ public class MenuOptionClicked
   public void setWidgetId(int i)
   {
     param1 = i;
+  }
+
+  public boolean isAutomated() {
+    return canvasX == -1 && canvasY == -1;
   }
 }

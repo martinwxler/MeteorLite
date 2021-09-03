@@ -24,11 +24,11 @@
  */
 package meteor.events;
 
-public class ToggleToolbarEvent {
+public class ToolbarToggled {
 
-  public static final ToggleToolbarEvent INSTANCE = new ToggleToolbarEvent();
+  public static final ToolbarToggled INSTANCE = new ToolbarToggled();
 
-  private ToggleToolbarEvent() {
+  private ToolbarToggled() {
     // noop
   }
 }

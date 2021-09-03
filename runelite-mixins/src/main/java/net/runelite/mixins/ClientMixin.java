@@ -450,9 +450,11 @@ public abstract class ClientMixin implements RSClient {
     menuOptionClicked.setId(id);
     menuOptionClicked.setWidgetId(param1);
     menuOptionClicked.setSelectedItemIndex(client.getSelectedItemSlot());
+    menuOptionClicked.setCanvasX(canvasX);
+    menuOptionClicked.setCanvasY(canvasY);
 
-    // Do not send automated clicks to eventbus
-    if (canvasX != -1 && canvasY != -1) {
+    // Do not forward automated interaction events to eventbus
+    if (!menuOptionClicked.isAutomated()) {
       client.getCallbacks().post(menuOptionClicked);
     }
 

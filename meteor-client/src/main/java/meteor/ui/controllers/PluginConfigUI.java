@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static meteor.ui.controllers.PluginListUI.lastPluginInteracted;
+import static meteor.ui.controllers.PluginListUI.pluginPanels;
 
 public class PluginConfigUI {
 
@@ -43,6 +44,9 @@ public class PluginConfigUI {
 
 	@FXML
 	private AnchorPane rootPanel;
+
+	@FXML
+	private AnchorPane titlePanel;
 
 	@FXML
 	private VBox configList;
@@ -55,10 +59,12 @@ public class PluginConfigUI {
 	private Plugin plugin;
 
 	@Inject
-	Client client;
+	private Client client;
 
 	@Inject
-	ConfigManager configManager;
+	private ConfigManager configManager;
+
+	private PluginToggleButton toggleButton;
 
 	@FXML
 	public void initialize() {
@@ -67,14 +73,10 @@ public class PluginConfigUI {
 		pluginTitle.setText(plugin.getName());
 		configManager = MeteorLiteClientLauncher.mainClientInstance.instanceInjector.getInstance(ConfigManager.class);
 
-		PluginToggleButton toggleButton = PluginListUI.configGroupPluginMap
+		toggleButton = PluginListUI.configGroupPluginMap
 						.get(plugin.getConfig(configManager).getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class).value());
 		if (toggleButton != null) {
-			AnchorPane.clearConstraints(toggleButton);
-			AnchorPane.setTopAnchor(toggleButton, 8.0);
-			AnchorPane.setRightAnchor(toggleButton, 8.0);
-
-			rootPanel.getChildren().add(toggleButton);
+			titlePanel.getChildren().add(toggleButton);
 		}
 
 		initSections();
@@ -494,6 +496,14 @@ public class PluginConfigUI {
 
 	@FXML
 	protected void closeConfig(MouseEvent event) throws IOException {
+		if (toggleButton != null && plugin != null) {
+			AnchorPane pluginPanel = pluginPanels.get(plugin);
+
+			if (pluginPanel != null) {
+				pluginPanel.getChildren().add(toggleButton);
+			}
+		}
+
 		MeteorLiteClientModule.showPlugins();
 	}
 }

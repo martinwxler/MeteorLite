@@ -1,6 +1,6 @@
 package net.runelite.mixins.meteor;
 
-import meteor.events.ToggleToolbarEvent;
+import meteor.events.ToolbarToggled;
 import net.runelite.api.mixins.Copy;
 import net.runelite.api.mixins.Inject;
 import net.runelite.api.mixins.Mixin;
@@ -35,7 +35,7 @@ public abstract class CheatManagerMixin implements RSClient {
       foundCustomCheat = true;
     }
     if (s.equals("toolbar")) {
-      client.getCallbacks().post(ToggleToolbarEvent.INSTANCE);
+      client.getCallbacks().post(ToolbarToggled.INSTANCE);
       client.getLogger().debug("Toggled Toolbar");
       foundCustomCheat = true;
     }

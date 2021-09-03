@@ -72,7 +72,7 @@ public class Movement {
     }
 
     public static void walk(Point point) {
-        setDestination(point.getX(), point.getY());
+        Game.getClient().interact(0, MenuAction.WALK.getId(), point.getX(), point.getY());
     }
 
     public static void walk(WorldPoint worldPoint) {
@@ -107,7 +107,7 @@ public class Movement {
             return;
         }
 
-        setDestination(localPoint.getSceneX(), localPoint.getSceneY());
+        Game.getClient().interact(0, MenuAction.WALK.getId(), localPoint.getSceneX(), localPoint.getSceneY());
     }
 
     public static void walk(Locatable locatable) {

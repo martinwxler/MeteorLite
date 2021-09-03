@@ -8,7 +8,7 @@ import meteor.config.ConfigItem;
 public interface InteractionConfig extends Config {
 	@ConfigItem(
 					keyName = "mouseEvents",
-					name = "Mouse events (Blocks manual input)",
+					name = "Mouse events",
 					description = "Sends mouse events before interaction"
 	)
 	default boolean mouseEvents() {
