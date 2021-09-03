@@ -116,6 +116,7 @@ public class Item implements Interactable {
 		interact(4);
 	}
 
+	@Override
 	public void interact(int index, int menuAction) {
 		switch (getType()) {
 			case TRADE, TRADE_INVENTORY -> {

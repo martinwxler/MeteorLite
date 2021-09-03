@@ -57,7 +57,7 @@ public class HootFighterPlugin extends Plugin {
 					return;
 				}
 
-				if (config.quickPrayer() && !Prayers.isQuickPrayerEnabled() && Players.getLocal().getInteracting() != null) {
+				if (config.quickPrayer() && !Prayers.isQuickPrayerEnabled()) {
 					Prayers.toggleQuickPrayer(true);
 				}
 			} catch (Exception e) {
@@ -76,6 +76,10 @@ public class HootFighterPlugin extends Plugin {
 		try {
 			if (Movement.isWalking()) {
 				return;
+			}
+
+			if (config.flick() && Prayers.isQuickPrayerEnabled()) {
+				Prayers.toggleQuickPrayer(false);
 			}
 
 			if (config.eat() && Combat.getHealthPercent() <= config.healthPercent()) {
@@ -97,10 +101,6 @@ public class HootFighterPlugin extends Plugin {
 				}
 			}
 
-			if (config.flick() && Prayers.isQuickPrayerEnabled()) {
-				Prayers.toggleQuickPrayer(false);
-			}
-
 			if (config.buryBones()) {
 				Item bones = Inventory.getFirst(x -> x.hasAction("Bury") || x.hasAction("Scatter"));
 				if (bones != null) {
@@ -112,11 +112,11 @@ public class HootFighterPlugin extends Plugin {
 			Player local = Players.getLocal();
 			List<String> itemsToLoot = List.of(config.loot().split(","));
 			if (!itemsToLoot.isEmpty() && !Inventory.isFull()) {
-				TileItem loot = TileItems.getNearest(x -> x.getTile().getWorldLocation().distanceTo(local.getWorldLocation()) < 15
+				TileItem loot = TileItems.getNearest(x -> x.getTile().getWorldLocation().distanceTo(local.getWorldLocation()) < config.attackRange()
 								&& !notOurItems.contains(x)
 								&& (x.getName() != null && itemsToLoot.contains(x.getName())
-								|| (config.lootValue() > -1 && itemManager.getItemPrice(x.getId()) * x.getQuantity() > config.lootValue())
-								|| (config.untradables() && !client.getItemComposition(x.getId()).isTradeable())));
+								|| config.lootValue() > -1 && itemManager.getItemPrice(x.getId()) * x.getQuantity() > config.lootValue()
+								|| config.untradables() && !client.getItemComposition(x.getId()).isTradeable()));
 				if (loot != null && loot.getTile().getWorldLocation().distanceTo(local.getWorldLocation()) < config.attackRange()) {
 					if (!Reachable.isInteractable(loot.getTile())) {
 						Movement.walkTo(loot.getTile().getWorldLocation());
