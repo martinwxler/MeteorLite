@@ -76,6 +76,8 @@ public class Bootstrapper {
     }
 
     private static void saveBootstrap() {
+        if (update.size < 100)
+            throw new RuntimeException("Bad bootstrap, bump meteor-client version");
         outputDir.mkdirs();
         if (!updateOutput.exists()) {
             try {

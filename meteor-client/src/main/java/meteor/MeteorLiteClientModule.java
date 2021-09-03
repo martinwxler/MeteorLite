@@ -308,8 +308,8 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
   public static void setupJavaFXComponents(Applet applet) throws IOException {
 
     mainWindow = new JFrame();
-    mainWindow.setSize(1280, 720);
-    mainWindow.setMinimumSize(new Dimension(1280, 720));
+    mainWindow.setSize(765, 503);
+    mainWindow.setMinimumSize(new Dimension(765, 503));
 
     JFXPanel toolbarPanel = new JFXPanel();
     toolbarPanel.setSize(1280, 100);
