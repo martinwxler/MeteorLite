@@ -8,14 +8,25 @@ import net.runelite.api.Client;
 import javax.inject.Inject;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 public class Mouse {
-    private static final Supplier<Point> CLICK_POINT_SUPPLIER = () -> new Point(Rand.nextInt(520, 568), Rand.nextInt(55, 70));
+    public static final Supplier<Point> CLICK_POINT_SUPPLIER = () -> new Point(Rand.nextInt(520, 568), Rand.nextInt(55, 70));
 
     private static boolean exited = true;
+    private static final Executor CLICK_EXECUTOR = Executors.newSingleThreadExecutor();
 
     public static void click(int x, int y, boolean left) {
+        if (Game.getClient().isClientThread()) {
+            CLICK_EXECUTOR.execute(() -> handleClick(x, y, left));
+        } else {
+            handleClick(x, y, left);
+        }
+    }
+
+    private static void handleClick(int x, int y, boolean left) {
         Canvas canvas = Game.getClient().getCanvas();
 
         if (exited) {
@@ -83,5 +94,11 @@ public class Mouse {
         event.setSource("meteor");
         canvas.dispatchEvent(event);
         exited = false;
+    }
+
+    public static synchronized void moved(int x, int y, Canvas canvas, long time) {
+        MouseEvent event = new MouseEvent(canvas, MouseEvent.MOUSE_MOVED, time, 0, x, y, 0, false);
+        event.setSource("meteor");
+        canvas.dispatchEvent(event);
     }
 }
