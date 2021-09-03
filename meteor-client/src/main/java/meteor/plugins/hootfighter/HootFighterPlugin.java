@@ -11,6 +11,9 @@ import meteor.plugins.api.entities.TileItems;
 import meteor.plugins.api.game.Combat;
 import meteor.plugins.api.game.Game;
 import meteor.plugins.api.items.Inventory;
+import meteor.plugins.api.magic.Magic;
+import meteor.plugins.api.magic.Regular;
+import meteor.plugins.api.magic.Spell;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.movement.Reachable;
 import meteor.plugins.api.widgets.Dialog;
@@ -112,12 +115,13 @@ public class HootFighterPlugin extends Plugin {
 			Player local = Players.getLocal();
 			List<String> itemsToLoot = List.of(config.loot().split(","));
 			if (!itemsToLoot.isEmpty() && !Inventory.isFull()) {
-				TileItem loot = TileItems.getNearest(x -> x.getTile().getWorldLocation().distanceTo(local.getWorldLocation()) < config.attackRange()
+				TileItem loot = TileItems.getNearest(x ->
+								x.getTile().getWorldLocation().distanceTo(local.getWorldLocation()) < config.attackRange()
 								&& !notOurItems.contains(x)
-								&& (x.getName() != null && itemsToLoot.contains(x.getName())
-								|| config.lootValue() > -1 && itemManager.getItemPrice(x.getId()) * x.getQuantity() > config.lootValue()
-								|| config.untradables() && !client.getItemComposition(x.getId()).isTradeable()));
-				if (loot != null && loot.getTile().getWorldLocation().distanceTo(local.getWorldLocation()) < config.attackRange()) {
+								&& ((x.getName() != null && itemsToLoot.contains(x.getName())
+								|| (config.lootValue() > -1 && itemManager.getItemPrice(x.getId()) * x.getQuantity() > config.lootValue())
+								|| (config.untradables() && !client.getItemComposition(x.getId()).isTradeable()))));
+				if (loot != null) {
 					if (!Reachable.isInteractable(loot.getTile())) {
 						Movement.walkTo(loot.getTile().getWorldLocation());
 						return;
@@ -125,6 +129,18 @@ public class HootFighterPlugin extends Plugin {
 
 					loot.pickup();
 					return;
+				}
+			}
+
+			if (config.alching()) {
+				AlchSpell alchSpell = config.alchSpell();
+				if (alchSpell.canCast()) {
+					List<String> alchItems = List.of(config.alchItems().split(","));
+					Item alchItem = Inventory.getFirst(x -> x.getName() != null && alchItems.contains(x.getName()));
+					if (alchItem != null) {
+						Magic.cast(alchSpell.getSpell(), alchItem);
+						return;
+					}
 				}
 			}
 
