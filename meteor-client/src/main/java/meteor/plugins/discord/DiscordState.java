@@ -61,7 +61,7 @@ class DiscordState
 	private final DiscordService discordService;
 	private final DiscordConfig config;
 	private final String runeliteTitle = "MeteorLite";
-	private final String runeliteVersion = Bootstrapper.version;
+	private final String runeliteVersion = "420";
 	private DiscordPresence lastPresence;
 
 	@Inject

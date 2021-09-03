@@ -27,11 +27,3 @@ dependencies {
 test {
     useJUnitPlatform()
 }
-
-task assembleScripts(type: JavaExec) {
-    onlyIf {
-        !state.upToDate
-    }
-    classpath = sourceSets.main.runtimeClasspath
-    main = 'net.runelite.script.AssembleMojo'
-}

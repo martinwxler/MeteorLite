@@ -2,6 +2,9 @@ package meteor.util.bootstrap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import org.sponge.util.Logger;
 
 import java.io.*;
@@ -10,32 +13,63 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Bootstrapper {
-
-    public static final String version = "1.0.21";
-
-    private static File shadowJar = new File("./meteor-client/build/libs/meteor-client-" + version + "-all.jar");
-    private static File outputDir = new File("./meteor-client/build/bootstrap/");
-    private static File updateOutput = new File("./meteor-client/build/bootstrap/bootstrap-meteorlite.json");
-    private static File boostrapShadowJar = new File("./meteor-client/build/bootstrap/meteorlite.jar");
-    private static Update update = new Update();
+    private static final File HOSTING_UPDATE = new File("./build/update.json");
+    private static final String HOSTING_BASE = "https://raw.githubusercontent.com/MeteorLite/Hosting/main/";
+    private static File shadowJar;
+    private static File outputDir = new File("./build/bootstrap/");
+    private static File updateOutput = new File("./build/bootstrap/bootstrap-meteorlite.json");
+    private static final File bootstrapShadowJar = new File("./build/bootstrap/meteorlite.jar");
 
     private static Logger log = new Logger("Bootstrapper");
 
     private static MessageDigest md5Digest;
+    private static Update update;
+    private static String currentVer;
 
-    public static void main(String[] args) throws NoSuchAlgorithmException {
-        update.version = version;
+    public static void main(String[] args) throws NoSuchAlgorithmException, IOException {
+        outputDir.mkdirs();
+        fetchCurrentRevision();
+        Reader reader = Files.newBufferedReader(HOSTING_UPDATE.toPath());
+        Gson gson = new Gson();
+        update = gson.fromJson(reader, Update.class);;
+        String[] vers = update.version.split("\\.");
+        int patch = Integer.parseInt(vers[2]);
+        currentVer = vers[0] + "." + vers[1] + "." + patch;
+        update.version = vers[0] + "." + vers[1] + "." + (patch + 1);
+        shadowJar = new File("./build/libs/meteor-client-" + currentVer + "-all.jar");
         md5Digest = MessageDigest.getInstance("MD5");
         processFile(shadowJar);
         saveBootstrap();
         copyShadowJar();
     }
 
+    private static void fetchCurrentRevision() {
+        if (HOSTING_UPDATE.exists()) {
+            HOSTING_UPDATE.delete();
+        }
+
+        URL website = null;
+        try {
+            website = new URL(HOSTING_BASE + "bootstrap-meteorlite.json");
+            String filepath = HOSTING_UPDATE.getAbsolutePath();
+
+            ReadableByteChannel channel = Channels.newChannel(website.openStream());
+            HOSTING_UPDATE.createNewFile();
+            FileOutputStream stream = new FileOutputStream(filepath);
+
+            stream.getChannel().transferFrom(channel, 0, Long.MAX_VALUE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
     private static void copyShadowJar() {
         try {
-            if (boostrapShadowJar.exists())
-                boostrapShadowJar.delete();
-            Files.copy(shadowJar.toPath(), new File("./meteor-client/build/bootstrap/meteorlite.jar").toPath());
+            if (bootstrapShadowJar.exists())
+                bootstrapShadowJar.delete();
+            Files.copy(new File("./build/libs/meteor-client-" + currentVer + "-all.jar").toPath(), bootstrapShadowJar.toPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
