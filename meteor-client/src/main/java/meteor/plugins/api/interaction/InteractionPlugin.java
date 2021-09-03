@@ -7,6 +7,7 @@ import meteor.input.MouseManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.plugins.api.commons.Rand;
+import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.input.Mouse;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.widgets.Widgets;
@@ -80,8 +81,8 @@ public class InteractionPlugin extends Plugin {
 		if (action.getMenuAction() == MenuAction.WALK) {
 			Movement.setDestination(action.getParam0(), action.getParam1());
 		} else {
-			client.invokeMenuAction(action.getOption(), action.getTarget(), action.getId(),
-							action.getMenuAction().getId(), action.getParam0(), action.getParam1());
+			GameThread.invoke(() -> client.invokeMenuAction(action.getOption(), action.getTarget(), action.getId(),
+							action.getMenuAction().getId(), action.getParam0(), action.getParam1()));
 		}
 	}
 

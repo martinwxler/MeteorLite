@@ -53,7 +53,6 @@ public class HootFighterPlugin extends Plugin {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
 		}, 0, 100, TimeUnit.MILLISECONDS);
 
 		if (Game.isLoggedIn()) {
@@ -150,5 +149,12 @@ public class HootFighterPlugin extends Plugin {
 	@Provides
 	public HootFighterConfig getConfig(ConfigManager configManager) {
 		return configManager.getConfig(HootFighterConfig.class);
+	}
+
+	@Override
+	public void shutdown() {
+		if (executor != null) {
+			executor.shutdown();
+		}
 	}
 }
