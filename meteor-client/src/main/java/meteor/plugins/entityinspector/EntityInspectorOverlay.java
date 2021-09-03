@@ -97,12 +97,11 @@ public class EntityInspectorOverlay extends Overlay {
 	}
 
 	public void renderPlayers(Graphics2D graphics, Point point) {
-		List<Player> players = Players.getAll();
 		Player local = Players.getLocal();
+		List<Player> players = Players.getAll(x -> !x.equals(local));
 
 		for (Player p : players) {
-			if (!p.equals(local)
-							&& (p.getConvexHull() != null && p.getConvexHull().contains(point.getX(), point.getY()) || !config.hover())) {
+			if (p.getConvexHull() != null && p.getConvexHull().contains(point.getX(), point.getY()) || !config.hover()) {
 				graphics.setColor(BLUE);
 				graphics.draw(p.getConvexHull());
 
