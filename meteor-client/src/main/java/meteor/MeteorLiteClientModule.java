@@ -288,6 +288,17 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
     }
 
     pluginsPanelVisible = !pluginsPanelVisible;
+    if (pluginsPanelVisible) {
+      mainWindow.setMinimumSize(new Dimension(1280, 720));
+      mainWindow.validate();
+    }
+    else
+      setMinimumFrameSize();
+  }
+
+  private static void setMinimumFrameSize() {
+    mainWindow.setMinimumSize(new Dimension(780, 575));
+    mainWindow.validate();
   }
 
   public static void showPlugins() throws IOException {
@@ -308,9 +319,8 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
   public static void setupJavaFXComponents(Applet applet) throws IOException {
 
     mainWindow = new JFrame();
-    mainWindow.setSize(765, 503);
-    mainWindow.setMinimumSize(new Dimension(765, 503));
-
+    mainWindow.setSize(780, 575);
+    setMinimumFrameSize();
     JFXPanel toolbarPanel = new JFXPanel();
     toolbarPanel.setSize(1280, 100);
     rightPanel.setSize(550, 800);
