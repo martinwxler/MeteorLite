@@ -111,6 +111,7 @@ import meteor.plugins.prayer.PrayerPlugin;
 import meteor.plugins.prayerpotdrinker.PrayerPotDrinkerPlugin;
 import meteor.plugins.puzzlesolver.PuzzleSolverPlugin;
 import meteor.plugins.questlist.QuestListPlugin;
+import meteor.plugins.raids.RaidsPlugin;
 import meteor.plugins.randomevents.RandomEventPlugin;
 import meteor.plugins.regenmeter.RegenMeterPlugin;
 import meteor.plugins.reportbutton.ReportButtonPlugin;
@@ -219,6 +220,7 @@ public class PluginManager {
 		plugins.add(new ClueScrollPlugin());
 		plugins.add(new CombatLevelPlugin());
 		plugins.add(new ContinueClickerPlugin());
+		plugins.add(new RaidsPlugin());
 		plugins.add(new CoxPlugin());
 		plugins.add(new DagannothKingsPlugin());
 		plugins.add(new DeathEventPlugin());
