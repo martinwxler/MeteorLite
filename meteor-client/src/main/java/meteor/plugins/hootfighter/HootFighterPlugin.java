@@ -87,8 +87,8 @@ public class HootFighterPlugin extends Plugin {
 
 			if (config.eat() && Combat.getHealthPercent() <= config.healthPercent()) {
 				List<String> foods = List.of(config.foods().split(","));
-				Item food = Inventory.getFirst(x -> !foods.isEmpty() && x.getName() != null && foods.contains(x.getName())
-								|| foods.contains("Any") && x.hasAction("Eat"));
+				Item food = Inventory.getFirst(x -> (x.getName() != null && foods.stream().anyMatch(a -> x.getName().contains(a)))
+								|| (foods.contains("Any") && x.hasAction("Eat")));
 				if (food != null) {
 					food.interact("Eat");
 					return;
@@ -117,10 +117,11 @@ public class HootFighterPlugin extends Plugin {
 			if (!itemsToLoot.isEmpty() && !Inventory.isFull()) {
 				TileItem loot = TileItems.getNearest(x ->
 								x.getTile().getWorldLocation().distanceTo(local.getWorldLocation()) < config.attackRange()
-								&& !notOurItems.contains(x)
-								&& ((x.getName() != null && itemsToLoot.contains(x.getName())
-								|| (config.lootValue() > -1 && itemManager.getItemPrice(x.getId()) * x.getQuantity() > config.lootValue())
-								|| (config.untradables() && !client.getItemComposition(x.getId()).isTradeable()))));
+												&& !notOurItems.contains(x)
+												&& ((x.getName() != null && itemsToLoot.contains(x.getName())
+												|| (config.lootValue() > -1 && itemManager.getItemPrice(x.getId()) * x.getQuantity() > config.lootValue())
+												|| (config.untradables() && (!x.isTradable()) || x.hasInventoryAction("Destroy"))))
+				);
 				if (loot != null) {
 					if (!Reachable.isInteractable(loot.getTile())) {
 						Movement.walkTo(loot.getTile().getWorldLocation());
