@@ -3,6 +3,8 @@ package net.runelite.mixins;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import net.runelite.api.ItemComposition;
 import net.runelite.api.MenuAction;
 import net.runelite.api.Point;
 import net.runelite.api.Tile;
@@ -155,7 +157,7 @@ public abstract class TileItemMixin implements RSTileItem {
   @Inject
   @Override
   public String[] getActions() {
-    return client.getItemComposition(getId()).getGroundActions();
+    return getComposition().getGroundActions();
   }
 
   @Inject
@@ -180,6 +182,53 @@ public abstract class TileItemMixin implements RSTileItem {
   @Inject
   @Override
   public String getName() {
-    return client.getItemComposition(getId()).getName().replace('\u00A0', ' ');
+    return getComposition().getName().replace('\u00A0', ' ');
+  }
+
+  @Inject
+  private ItemComposition getComposition() {
+    return client.getItemComposition(getId());
+  }
+
+  @Inject
+  @Override
+  public boolean isTradable() {
+    return getComposition().isTradeable();
+  }
+
+  @Inject
+  @Override
+  public boolean isStackable() {
+    return getComposition().isStackable();
+  }
+
+  @Inject
+  @Override
+  public boolean isMembers() {
+    return getComposition().isMembers();
+  }
+
+  @Inject
+  @Override
+  public int getNotedId() {
+    return getComposition().getLinkedNoteId();
+  }
+
+  @Inject
+  @Override
+  public boolean isNoted() {
+    return getComposition().getNote() > -1;
+  }
+
+  @Inject
+  @Override
+  public int getStorePrice() {
+    return getComposition().getPrice();
+  }
+
+  @Inject
+  @Override
+  public String[] getInventoryActions() {
+    return getComposition().getInventoryActions();
   }
 }

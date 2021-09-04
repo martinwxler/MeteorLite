@@ -27,6 +27,9 @@ package net.runelite.api;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Represents an item inside an {@link ItemLayer}.
  */
@@ -72,5 +75,27 @@ public interface TileItem extends Renderable, Interactable {
 
   default LocalPoint getLocalLocation() {
     return getTile().getLocalLocation();
+  }
+
+  boolean isTradable();
+
+  boolean isStackable();
+
+  boolean isMembers();
+
+  int getNotedId();
+
+  boolean isNoted();
+
+  int getStorePrice();
+
+  String[] getInventoryActions();
+
+  default List<String> inventoryActions() {
+    return Arrays.asList(getInventoryActions());
+  }
+
+  default boolean hasInventoryAction(String action) {
+    return inventoryActions().contains(action);
   }
 }
