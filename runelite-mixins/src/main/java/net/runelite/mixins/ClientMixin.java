@@ -89,6 +89,8 @@ public abstract class ClientMixin implements RSClient {
   public static HashMap<Integer, RSItemComposition> itemDefCache = new HashMap<>();
   @Inject
   private static boolean lowCpu;
+  @Inject
+  private static boolean allWidgetsAreOpTargetable = false;
 
   @Inject
   @FieldHook("gameState")
@@ -725,6 +727,13 @@ public abstract class ClientMixin implements RSClient {
     int count = client.getChangedSkillsCount();
     skills[++count - 1 & 31] = skill.ordinal();
     client.setChangedSkillsCount(count);
+  }
+
+  @Inject
+  @Override
+  public void setAllWidgetsAreOpTargetable(boolean yes)
+  {
+    allWidgetsAreOpTargetable = yes;
   }
 
   @Inject
