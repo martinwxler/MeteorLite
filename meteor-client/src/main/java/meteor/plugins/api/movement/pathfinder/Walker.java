@@ -4,16 +4,15 @@ import meteor.plugins.api.commons.Rand;
 import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.game.Game;
+import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.scene.Tiles;
-import net.runelite.api.Client;
 import net.runelite.api.Player;
 import net.runelite.api.Tile;
 import net.runelite.api.WallObject;
 import net.runelite.api.coords.WorldPoint;
 import org.sponge.util.Logger;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -70,7 +69,6 @@ public class Walker {
 
         if (teleport != null) {
             teleport.getHandler().run();
-            logger.debug("Running teleport handler");
             Time.sleep(5000);
             return false;
         }
@@ -85,7 +83,6 @@ public class Walker {
             List<WorldPoint> remainingPath = remainingPath(path);
 
             if (handleTransports(remainingPath, transports)) {
-                logger.debug("Running transport handler");
                 return false;
             }
 
@@ -211,6 +208,10 @@ public class Walker {
         WallObject wall = source.getWallObject();
         if (wall == null) {
             return false;
+        }
+
+        if (!wall.isDefinitionCached()) {
+            GameThread.invokeLater(() -> Game.getClient().getObjectComposition(wall.getId()));
         }
 
         return isWalled(source, destination) && wall.hasAction("Open");

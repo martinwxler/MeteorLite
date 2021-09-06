@@ -12,7 +12,7 @@ public class Time {
     private static final Logger logger = new Logger("Time");
     private static final int DEFAULT_POLLING_RATE = 100;
 
-    public static void sleep(int ms) {
+    public static void sleep(long ms) {
         if (Game.getClient().isClientThread()) {
             logger.warn("Tried to sleep on client thread!");
             return;

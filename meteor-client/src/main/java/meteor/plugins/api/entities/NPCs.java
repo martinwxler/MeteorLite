@@ -11,16 +11,27 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class NPCs {
 
     public static List<NPC> getAll(Predicate<NPC> filter) {
         List<NPC> out = new ArrayList<>();
-        for (NPC npc : Game.getClient().getNpcs()) {
-            if (npc.isTransformRequired() && !npc.isDefinitionCached()) {
-                GameThread.invokeLater(npc::getName); // Transform and cache it by calling getName
-            }
+        List<NPC> npcs = Game.getClient().getNpcs();
+        List<NPC> uncached = npcs.stream()
+                .filter(x -> x.isTransformRequired() && !x.isDefinitionCached())
+                .collect(Collectors.toList());
+        if (!uncached.isEmpty()) {
+            GameThread.invokeLater(() -> {
+                for (NPC npc : uncached) {
+                    npc.getName(); // Transform and cache it by calling getName
+                }
 
+                return true;
+            });
+        }
+
+        for (NPC npc : npcs) {
             if (filter.test(npc)) {
                 out.add(npc);
             }
@@ -58,13 +69,8 @@ public class NPCs {
     }
 
     public static NPC getNearest(Predicate<NPC> filter) {
-        Player local = Game.getClient().getLocalPlayer();
-        if (local == null) {
-            return null;
-        }
-
         return getAll(filter).stream()
-                .min(Comparator.comparingInt(t -> t.getWorldLocation().distanceTo(local.getWorldLocation())))
+                .min(Comparator.comparingInt(t -> t.getWorldLocation().distanceTo(Players.getLocal())))
                 .orElse(null);
     }
 

@@ -143,7 +143,7 @@ public class EnvironmentAidBarrowsOverlay extends Overlay
 			return;
 		}
 
-		ObjectComposition objectComp = client.getObjectDefinition(wall.getId());
+		ObjectComposition objectComp = client.getObjectComposition(wall.getId());
 		ObjectComposition impostor = objectComp.getImpostorIds() != null ? objectComp.getImpostor() : null;
 
 		if (impostor != null && impostor.getActions()[0] != null)
@@ -179,7 +179,7 @@ public class EnvironmentAidBarrowsOverlay extends Overlay
 			return;
 		}
 
-		ObjectComposition objectComp = client.getObjectDefinition(ladder.getId());
+		ObjectComposition objectComp = client.getObjectComposition(ladder.getId());
 
 		if (objectComp.getImpostorIds() != null && objectComp.getImpostor() != null)
 		{

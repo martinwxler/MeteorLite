@@ -92,33 +92,15 @@ public class Combat {
 
 	public static NPC getAttackableNPC(Predicate<NPC> filter) {
 		Player local = Players.getLocal();
-		NPC attackingMe = NPCs.getNearest(x -> {
-			if (!x.hasAction("Attack")) {
-				return false;
-			}
-
-			if (Players.getNearest(p -> p.getInteracting() != null && p.getInteracting().equals(x)) != null) {
-				return false;
-			}
-
-			return x.getInteracting() != null && x.getInteracting().equals(local) && filter.test(x);
-		});
-
+		NPC attackingMe = NPCs.getNearest(x -> x.hasAction("Attack") && Players.getNearest(p -> p.getInteracting() != null
+						&& p.getInteracting().equals(x)) == null && x.getInteracting() != null && x.getInteracting().equals(local)
+						&& filter.test(x));
 		if (attackingMe != null) {
 			return attackingMe;
 		}
 
-		return NPCs.getNearest(x -> {
-			if (!x.hasAction("Attack")) {
-				return false;
-			}
-
-			if (Players.getNearest(p -> p.getInteracting() != null && p.getInteracting().equals(x)) != null) {
-				return false;
-			}
-
-			return x.getInteracting() == null && filter.test(x);
-		});
+		return NPCs.getNearest(x -> x.hasAction("Attack") && Players.getNearest(p -> p.getInteracting() != null
+						&& p.getInteracting().equals(x)) == null && x.getInteracting() == null && filter.test(x));
 	}
 
 	public static int getCurrentHealth() {

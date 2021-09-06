@@ -604,7 +604,7 @@ public abstract class ClientMixin implements RSClient {
 
   @Inject
   @Override
-  public ObjectComposition getObjectDefinition(int objectId) {
+  public ObjectComposition getObjectComposition(int objectId) {
     if (objDefCache.containsKey(objectId)) {
       return objDefCache.get(objectId);
     }
@@ -630,7 +630,7 @@ public abstract class ClientMixin implements RSClient {
 
   @Inject
   @Override
-  public NPCComposition getNpcDefinition(int id) {
+  public NPCComposition getNpcComposition(int id) {
     assert this.isClientThread() : "getNpcDefinition must be called on client thread";
     return getRSNpcComposition(id);
   }
@@ -1659,5 +1659,41 @@ public abstract class ClientMixin implements RSClient {
     if (!lowCpu) {
       copy$drawModelComponents(var0, var1);
     }
+  }
+
+  @Inject
+  @Override
+  public void uncacheNPC(int id) {
+    npcDefCache.remove(id);
+  }
+
+  @Inject
+  @Override
+  public void uncacheItem(int id) {
+    itemDefCache.remove(id);
+  }
+
+  @Inject
+  @Override
+  public void uncacheObject(int id) {
+    objDefCache.remove(id);
+  }
+
+  @Inject
+  @Override
+  public void clearNPCCache() {
+    npcDefCache.clear();
+  }
+
+  @Inject
+  @Override
+  public void clearItemCache() {
+    itemDefCache.clear();
+  }
+
+  @Inject
+  @Override
+  public void clearObjectCache() {
+    objDefCache.clear();
   }
 }
