@@ -12,143 +12,138 @@ import net.runelite.api.widgets.WidgetInfo;
 
 import java.util.Arrays;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class Combat {
-    public static boolean isRetaliating() {
-        return Vars.getVarp(VarPlayer.AUTO_RETALIATE.getId()) == 0;
-    }
+	private static final int POISON_VARP = 102;
+	private static final int SPEC_VARP = 301;
+	private static final int SPEC_ENERGY_VARP = 300;
+	private static final Supplier<Widget> SPEC_BUTTON = () -> Widgets.get(593, 36);
 
-    public static boolean isPoisoned() {
-        return Vars.getVarp(102) > 0;
-    }
+	public static boolean isRetaliating() {
+		return Vars.getVarp(VarPlayer.AUTO_RETALIATE.getId()) == 0;
+	}
 
-    public static boolean isSpecEnabled() {
-        return Vars.getVarp(301) == 1;
-    }
+	public static boolean isPoisoned() {
+		return Vars.getVarp(POISON_VARP) > 0;
+	}
 
-    public static int getSpecEnergy() {
-        return Vars.getVarp(300) / 10;
-    }
+	public static boolean isSpecEnabled() {
+		return Vars.getVarp(SPEC_VARP) == 1;
+	}
 
-    public static void toggleSpec() {
-        if (isSpecEnabled()) {
-            return;
-        }
+	public static int getSpecEnergy() {
+		return Vars.getVarp(SPEC_ENERGY_VARP) / 10;
+	}
 
-        Widget spec = Widgets.get(593, 36);
-        if (spec != null) {
-            spec.interact(0);
-        }
-    }
+	public static void toggleSpec() {
+		if (isSpecEnabled()) {
+			return;
+		}
 
-    public static void setAttackStyle(AttackStyle attackStyle) {
-        if (attackStyle.widgetInfo == null) {
-            return;
-        }
+		Widget spec = SPEC_BUTTON.get();
+		if (spec != null) {
+			spec.interact(0);
+		}
+	}
 
-        Widget widget = Widgets.get(attackStyle.widgetInfo);
-        if (widget != null) {
-            widget.interact(0);
-        }
-    }
+	public static void setAttackStyle(AttackStyle attackStyle) {
+		if (attackStyle.widgetInfo == null) {
+			return;
+		}
 
-    public static AttackStyle getAttackStyle() {
-        return AttackStyle.fromIndex(Vars.getVarp(43));
-    }
+		Widget widget = Widgets.get(attackStyle.widgetInfo);
+		if (widget != null) {
+			widget.interact(0);
+		}
+	}
 
-    public static NPC getAttackableNPC(int... ids) {
-        return getAttackableNPC(x -> {
-            for (int id : ids) {
-                if (id == x.getId()) {
-                    return true;
-                }
-            }
+	public static AttackStyle getAttackStyle() {
+		return AttackStyle.fromIndex(Vars.getVarp(43));
+	}
 
-            return false;
-        });
-    }
+	public static NPC getAttackableNPC(int... ids) {
+		return getAttackableNPC(x -> {
+			for (int id : ids) {
+				if (id == x.getId()) {
+					return true;
+				}
+			}
 
-    public static NPC getAttackableNPC(String... names) {
-        return getAttackableNPC(x -> {
-            if (x.getName() == null) {
-                return false;
-            }
+			return false;
+		});
+	}
 
-            for (String name : names) {
-                if (name.equals(x.getName())) {
-                    return true;
-                }
-            }
+	public static NPC getAttackableNPC(String... names) {
+		return getAttackableNPC(x -> {
+			if (x.getName() == null) {
+				return false;
+			}
 
-            return false;
-        });
-    }
+			for (String name : names) {
+				if (name.equals(x.getName())) {
+					return true;
+				}
+			}
 
-    public static NPC getAttackableNPC(Predicate<NPC> filter) {
-        Player local = Players.getLocal();
-        NPC attackingMe = NPCs.getNearest(x -> {
-           if (Players.getNearest(p -> p.getInteracting() != null && p.getInteracting().equals(x)) != null) {
-               return false;
-           }
+			return false;
+		});
+	}
 
-           return x.getInteracting() != null && x.getInteracting().equals(local) && filter.test(x);
-        });
+	public static NPC getAttackableNPC(Predicate<NPC> filter) {
+		Player local = Players.getLocal();
+		NPC attackingMe = NPCs.getNearest(x -> x.hasAction("Attack") && Players.getNearest(p -> p.getInteracting() != null
+						&& p.getInteracting().equals(x)) == null && x.getInteracting() != null && x.getInteracting().equals(local)
+						&& filter.test(x));
+		if (attackingMe != null) {
+			return attackingMe;
+		}
 
-        if (attackingMe != null) {
-            return attackingMe;
-        }
+		return NPCs.getNearest(x -> x.hasAction("Attack") && Players.getNearest(p -> p.getInteracting() != null
+						&& p.getInteracting().equals(x)) == null && x.getInteracting() == null && filter.test(x));
+	}
 
-        return NPCs.getNearest(x -> {
-            if (Players.getNearest(p -> p.getInteracting() != null && p.getInteracting().equals(x)) != null) {
-                return false;
-            }
+	public static int getCurrentHealth() {
+		return Skills.getBoostedLevel(Skill.HITPOINTS);
+	}
 
-            return x.getInteracting() == null && filter.test(x);
-        });
-    }
+	public static int getMissingHealth() {
+		return Skills.getLevel(Skill.HITPOINTS) - Skills.getBoostedLevel(Skill.HITPOINTS);
+	}
 
-    public static int getCurrentHealth() {
-        return Skills.getBoostedLevel(Skill.HITPOINTS);
-    }
+	public static double getHealthPercent() {
+		return ((double) getCurrentHealth() / Skills.getLevel(Skill.HITPOINTS)) * 100;
+	}
 
-    public static int getMissingHealth() {
-        return Skills.getLevel(Skill.HITPOINTS) - Skills.getBoostedLevel(Skill.HITPOINTS);
-    }
+	public enum AttackStyle {
+		FIRST(0, WidgetInfo.COMBAT_STYLE_ONE),
+		SECOND(1, WidgetInfo.COMBAT_STYLE_TWO),
+		THIRD(2, WidgetInfo.COMBAT_STYLE_THREE),
+		FOURTH(3, WidgetInfo.COMBAT_STYLE_FOUR),
+		SPELLS(4, WidgetInfo.COMBAT_SPELL_BOX),
+		SPELLS_DEFENSIVE(4, WidgetInfo.COMBAT_DEFENSIVE_SPELL_BOX),
+		UNKNOWN(-1, null);
 
-    public static double getHealthPercent() {
-        return ((double) getCurrentHealth() / Skills.getLevel(Skill.HITPOINTS)) * 100;
-    }
+		private final int index;
+		private final WidgetInfo widgetInfo;
 
-    public enum AttackStyle {
-        FIRST(0, WidgetInfo.COMBAT_STYLE_ONE),
-        SECOND(1, WidgetInfo.COMBAT_STYLE_TWO),
-        THIRD(2, WidgetInfo.COMBAT_STYLE_THREE),
-        FOURTH(3, WidgetInfo.COMBAT_STYLE_FOUR),
-        SPELLS(4, WidgetInfo.COMBAT_SPELL_BOX),
-        SPELLS_DEFENSIVE(4, WidgetInfo.COMBAT_DEFENSIVE_SPELL_BOX),
-        UNKNOWN(-1, null)
-        ;
+		AttackStyle(int index, WidgetInfo widgetInfo) {
+			this.index = index;
+			this.widgetInfo = widgetInfo;
+		}
 
-        private final int index;
-        private final WidgetInfo widgetInfo;
+		public int getIndex() {
+			return index;
+		}
 
-        AttackStyle(int index, WidgetInfo widgetInfo) {
-            this.index = index;
-            this.widgetInfo = widgetInfo;
-        }
+		public WidgetInfo getWidgetInfo() {
+			return widgetInfo;
+		}
 
-        public int getIndex() {
-            return index;
-        }
-
-        public WidgetInfo getWidgetInfo() {
-            return widgetInfo;
-        }
-
-        public static AttackStyle fromIndex(int index) {
-            return Arrays.stream(values()).filter(x -> x.index == index)
-                    .findFirst()
-                    .orElse(UNKNOWN);
-        }
-    }
+		public static AttackStyle fromIndex(int index) {
+			return Arrays.stream(values()).filter(x -> x.index == index)
+							.findFirst()
+							.orElse(UNKNOWN);
+		}
+	}
 }

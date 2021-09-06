@@ -39,7 +39,14 @@ public interface RunecraftConfig extends Config {
 			description = "Abyss rift overlay settings",
 			position = 99
 	)
-	String riftSection = "rifts";
+	String riftSection = "Rift Settings";
+
+	@ConfigSection(
+			name = "Settings",
+			description = "Abyss rift overlay settings",
+			position = 98
+	)
+	String settings = "Settings";
 
 	@ConfigItem(
 			keyName = "showRifts",
@@ -210,7 +217,8 @@ public interface RunecraftConfig extends Config {
 			keyName = "hightlightDarkMage",
 			name = "Highlight Dark Mage NPC",
 			description = "Configures whether to highlight the Dark Mage when pouches are degraded",
-			position = 18
+			position = 18,
+			section = settings
 	)
 	default boolean hightlightDarkMage() {
 		return true;

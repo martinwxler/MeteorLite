@@ -33,59 +33,7 @@ public abstract class NPCMixin implements RSNPC {
   @Shadow("npcDefCache")
   private static HashMap<Integer, RSNPCComposition> npcDefCache;
 
-  @Inject
-  @Override
-  public int getId()
-  {
-    RSNPCComposition composition = transformIfRequired();
-    return composition == null ? -1 : composition.getId();
-  }
 
-  @Inject
-  @Override
-  public String getName()
-  {
-    RSNPCComposition composition = transformIfRequired();
-    return composition == null ? null : composition.getName().replace('\u00A0', ' ');
-  }
-
-  @Inject
-  @Override
-  public int getCombatLevel()
-  {
-    RSNPCComposition composition = transformIfRequired();
-    return composition == null ? -1 : composition.getCombatLevel();
-  }
-
-  @Inject
-  @Override
-  public String[] getActions()
-  {
-    RSNPCComposition composition = transformIfRequired();
-    return composition == null ? null : composition.getActions();
-  }
-
-  @Inject
-  private RSNPCComposition transformIfRequired() {
-    RSNPCComposition composition = getComposition();
-    if (isTransformRequired())
-    {
-      if (!npcDefCache.containsKey(getIndex())) {
-        assert client.isClientThread() : "NPCComposition.getTransformed must be called on client thread";
-        composition = npcDefCache.put(getIndex(), composition.transform$api());
-      } else {
-        composition = npcDefCache.get(getIndex());
-      }
-    }
-
-    return composition;
-  }
-
-  @Inject
-  @Override
-  public boolean isDefinitionCached() {
-    return npcDefCache.containsKey(getIndex());
-  }
 
   @Inject
   @Override
@@ -109,10 +57,6 @@ public abstract class NPCMixin implements RSNPC {
       RSNPCComposition oldComposition = getComposition();
       if (oldComposition == null) {
         return;
-      }
-
-      if (oldComposition.getConfigs() != null) {
-        client.getCallbacks().postDeferred(new NpcTransformedChanged(this, composition.transform$api()));
       }
 
       if (composition.getId() == oldComposition.getId()) {
@@ -172,6 +116,60 @@ public abstract class NPCMixin implements RSNPC {
       distanceY = localPlayerPosition.getY() - getY();
 
     return (distanceX + distanceY) / 2;
+  }
+
+  @Inject
+  @Override
+  public int getId()
+  {
+    RSNPCComposition composition = transformIfRequired();
+    return composition == null ? -1 : composition.getId();
+  }
+
+  @Inject
+  @Override
+  public String getName()
+  {
+    RSNPCComposition composition = transformIfRequired();
+    return composition == null ? null : composition.getName().replace('\u00A0', ' ');
+  }
+
+  @Inject
+  @Override
+  public int getCombatLevel()
+  {
+    RSNPCComposition composition = transformIfRequired();
+    return composition == null ? -1 : composition.getCombatLevel();
+  }
+
+  @Inject
+  @Override
+  public String[] getActions()
+  {
+    RSNPCComposition composition = transformIfRequired();
+    return composition == null ? null : composition.getActions();
+  }
+
+  @Inject
+  private RSNPCComposition transformIfRequired() {
+    RSNPCComposition composition = getComposition();
+    if (isTransformRequired()) {
+      if (!npcDefCache.containsKey(getIndex())) {
+        assert client.isClientThread() : "NPCComposition.getTransformed must be called on client thread";
+        composition = composition.transform$api();
+        npcDefCache.put(getIndex(), composition);
+      } else {
+        composition = npcDefCache.get(getIndex());
+      }
+    }
+
+    return composition;
+  }
+
+  @Inject
+  @Override
+  public boolean isDefinitionCached() {
+    return npcDefCache.containsKey(getIndex());
   }
 
   @Override

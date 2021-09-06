@@ -1,10 +1,9 @@
 package net.runelite.api.packets;
 
 public enum PacketOpcode {
-    ENTERINPUT_NAME(46),
-    ENTERINPUT_TEXT(100),
-    ENTERINPUT_NUMBER(57),
-    REPORT_PLAYER(38),
+    ENTERINPUT_NAME(32),
+    ENTERINPUT_TEXT(59),
+    ENTERINPUT_NUMBER(25),
 
     ;
 

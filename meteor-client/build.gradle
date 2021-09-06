@@ -3,10 +3,11 @@ plugins {
     id 'application'
     id 'com.github.johnrengelman.shadow'
     id 'org.beryx.runtime'
+    id 'org.openjfx.javafxplugin' version '0.0.10'
 }
 
 group 'org.meteorlite'
-version '1.0.10'
+version '1.0.24'
 
 repositories {
     mavenCentral()
@@ -62,17 +63,19 @@ dependencies {
     implementation(group : "io.reactivex.rxjava3", name : "rxjava", version : "_")
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '_'
     implementation group: 'com.google.code.gson', name: 'gson', version: '_'
-    implementation(files("./lib/javafx.base.jar"))
-    implementation(files("./lib/javafx.controls.jar"))
-    implementation(files("./lib/javafx.fxml.jar"))
-    implementation(files("./lib/javafx.graphics.jar"))
-    implementation(files("./lib/javafx.media.jar"))
-    implementation(files("./lib/javafx.swing.jar"))
-    implementation(files("./lib/javafx.web.jar"))
-    implementation(files("./lib/javafx.swt.jar"))
     implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.9.0'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.21'
     implementation(group : "net.runelite", name : "discord", version : "1.4")
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.52'
+    implementation 'org.openjfx:javafx:16'
+    implementation 'org.slf4j:slf4j-api:1.7.12'
+
+}
+
+task createJavadocs (type: Javadoc)
+{
+    source = sourceSets.main.allJava
+    classpath = sourceSets.main.getCompileClasspath()
 }
 
 runtime {
@@ -92,6 +95,10 @@ runtime {
                 "--win-menu",
                 "--win-shortcut"]
     }
+}
+
+javafx {
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.swing', 'javafx.graphics', 'javafx.media']
 }
 
 application {
@@ -123,7 +130,6 @@ shadowJar {
             "-noverify",
             "-Dprism.allowhidpi=false",
             "-Dsun.awt.noerasebackground=true",
-            "--module-path=C:/Program Files/Java/javafx-sdk-11.0.2/lib",
             "--add-modules=javafx.media",
             "--add-modules=javafx.fxml",
             "--add-modules=javafx.swing",
@@ -144,6 +150,8 @@ shadowJar {
             "--add-exports=javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED",
             "--add-exports=javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED",
             "--add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED",
+            "--add-exports=javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED",
+            "--add-exports=javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED",
             "--add-opens=javafx.graphics/javafx.css=ALL-UNNAMED",
             "-Dsun.java2d.uiScale=1.0",
             "--illegal-access=permit",
@@ -157,6 +165,11 @@ tasks {
 processResources {
     dependsOn(":runelite-script-assembler:assembleScripts")
     from("${buildDir}/scripts")
+}
+
+task bootstrap(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = "meteor.util.bootstrap.Bootstrapper"
 }
 
 jar {

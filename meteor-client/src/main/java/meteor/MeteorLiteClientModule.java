@@ -65,24 +65,10 @@ import meteor.eventbus.DeferredEventBus;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ClientShutdown;
+import meteor.events.ExternalsReloaded;
 import meteor.game.WorldService;
-import meteor.plugins.api.commons.Time;
-import meteor.plugins.api.entities.NPCs;
-import meteor.plugins.api.entities.Players;
-import meteor.plugins.api.entities.TileItems;
-import meteor.plugins.api.entities.TileObjects;
 import meteor.plugins.api.game.*;
-import meteor.plugins.api.input.Keyboard;
-import meteor.plugins.api.items.Bank;
-import meteor.plugins.api.items.Equipment;
-import meteor.plugins.api.items.Inventory;
 import meteor.plugins.api.movement.Movement;
-import meteor.plugins.api.movement.Reachable;
-import meteor.plugins.api.movement.pathfinder.Walker;
-import meteor.plugins.api.packets.Packets;
-import meteor.plugins.api.scene.Tiles;
-import meteor.plugins.api.widgets.Dialog;
-import meteor.plugins.api.widgets.Widgets;
 import meteor.plugins.itemstats.ItemStatChangesService;
 import meteor.plugins.itemstats.ItemStatChangesServiceImpl;
 import meteor.ui.controllers.ToolbarFXMLController;
@@ -94,7 +80,6 @@ import meteor.util.ExecutorServiceExceptionLogger;
 import meteor.util.NonScheduledExecutorServiceExceptionLogger;
 import meteor.util.WorldUtil;
 import net.runelite.api.Client;
-import net.runelite.api.TileItem;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.hooks.Callbacks;
 import net.runelite.http.api.chat.ChatClient;
@@ -105,8 +90,15 @@ import org.sponge.util.Logger;
 
 public class MeteorLiteClientModule extends AbstractModule implements AppletStub, AppletContext {
 
-  public static JFrame mainInstanceFrame = new JFrame();
   public static String uuid = UUID.randomUUID().toString();
+  public static JFrame mainWindow;
+
+  private static final int GAME_WINDOW_MIN_WIDTH = 765;
+  private static final int GAME_WINDOW_MIN_HEIGHT = 503;
+
+  private static final int TOOLBAR_HEIGHT = 33;
+  private static final int RIGHT_PANEL_LENGTH = 350;
+
   @Inject
   private EventBus eventBus;
 
@@ -163,6 +155,11 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
   @Named("developerMode")
   private boolean getDeveloperMode() {
     return false;
+  }
+
+  @Subscribe
+  public void onExternalsReloaded(ExternalsReloaded e) {
+    pluginManager.startExternals();
   }
 
   @Subscribe
@@ -247,19 +244,20 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
     overlayManager.add(tooltipOverlay.get());
 
     applet = (Applet) client;
-    applet.setSize(1280, 720);
+    applet.setMinimumSize(new Dimension(GAME_WINDOW_MIN_WIDTH, GAME_WINDOW_MIN_HEIGHT));
     setAppletConfiguration(applet);
 
     //Early init game panel so gpu doesn't eat shit when enabling
     JPanel gamePanel = new JPanel();
     rootPanel.setLayout(new BorderLayout());
-    gamePanel.setSize(800, 600);
+    gamePanel.setMinimumSize(new Dimension(GAME_WINDOW_MIN_WIDTH, GAME_WINDOW_MIN_HEIGHT));
     toolbarRoot = FXMLLoader.load(
             Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("toolbar.fxml")));
 
     gamePanel.setLayout(new BorderLayout());
     gamePanel.add(applet, BorderLayout.CENTER);
     rootPanel.add(gamePanel, BorderLayout.CENTER);
+    rootPanel.setMinimumSize(new Dimension(GAME_WINDOW_MIN_WIDTH, GAME_WINDOW_MIN_HEIGHT));
 
     configManager.load();
     pluginManager.startInternalPlugins();
@@ -270,17 +268,47 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
     setupJavaFXComponents(applet);
   }
 
-  public static void togglePluginsPanel() throws IOException {
+  public static void toggleRightPanel() throws IOException {
     if (pluginsPanelVisible) {
       rightPanel.setVisible(false);
     } else {
-      pluginsRootScene = new Scene(FXMLLoader.load(
-              Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("plugins.fxml"))), 350, 800);
-      rightPanel.setScene(pluginsRootScene);
+      // Load plugins if not loaded yet
+      if (pluginsRootScene == null) {
+        showPlugins();
+      }
+
       rightPanel.setVisible(true);
     }
 
     pluginsPanelVisible = !pluginsPanelVisible;
+    if (pluginsPanelVisible) {
+      mainWindow.setMinimumSize(new Dimension(GAME_WINDOW_MIN_WIDTH + (GAME_WINDOW_MIN_WIDTH - 749) + RIGHT_PANEL_LENGTH, GAME_WINDOW_MIN_HEIGHT + (GAME_WINDOW_MIN_HEIGHT - 464) + TOOLBAR_HEIGHT));
+      mainWindow.validate();
+    } else {
+      setMinimumFrameSize();
+    }
+  }
+
+  private static void setMinimumFrameSize() {
+    // The numbers 749 and 464 come from the main windows content pane when the min size is set to the osrs client resolution (765x503).
+    // So we adjust the main window to be large enough to fit those bounds inside the content pane.
+      boolean resize = mainWindow.getSize().equals(mainWindow.getMinimumSize());
+      mainWindow.setMinimumSize(new Dimension(GAME_WINDOW_MIN_WIDTH + (GAME_WINDOW_MIN_WIDTH - 749), GAME_WINDOW_MIN_HEIGHT + (GAME_WINDOW_MIN_HEIGHT - 464) + TOOLBAR_HEIGHT));
+      if (resize) {
+        mainWindow.setSize(mainWindow.getMinimumSize());
+      }
+      mainWindow.validate();
+  }
+
+  public static void showPlugins() throws IOException {
+    if (pluginsRootScene == null) {
+      pluginsRootScene = new Scene(FXMLLoader.load(
+              Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("plugins.fxml"))), 350, 800);
+    }
+
+    if (rightPanel.getScene() == null || !rightPanel.getScene().equals(pluginsRootScene)) {
+      rightPanel.setScene(pluginsRootScene);
+    }
   }
 
   public static void updateRightPanel(Parent root, int width) {
@@ -289,16 +317,11 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
 
   public static void setupJavaFXComponents(Applet applet) throws IOException {
 
-    JFrame instanceFrame = new JFrame();
-    if (mainInstanceFrame == null)
-      mainInstanceFrame = instanceFrame;
-    instanceFrame.setSize(1280, 720);
-    instanceFrame.setMinimumSize(new Dimension(1280, 720));
-
+    mainWindow = new JFrame();
+    setMinimumFrameSize();
     JFXPanel toolbarPanel = new JFXPanel();
     toolbarPanel.setSize(1280, 100);
     rightPanel.setSize(550, 800);
-
 
     toolbarPanel.setScene(new Scene(toolbarRoot, 300, 33));
     toolbarPanel.setVisible(true);
@@ -306,12 +329,12 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
 
     rootPanel.add(toolbarPanel, BorderLayout.NORTH);
     rootPanel.add(rightPanel, BorderLayout.EAST);
-    instanceFrame.add(rootPanel);
+    mainWindow.add(rootPanel);
     rootPanel.setVisible(true);
-    instanceFrame.setVisible(true);
-    instanceFrame.setExtendedState(instanceFrame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
-    instanceFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-    instanceFrame.addWindowListener(new WindowAdapter() {
+    mainWindow.setVisible(true);
+    mainWindow.setExtendedState(mainWindow.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+    mainWindow.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    mainWindow.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent event) {
         ClientShutdown shutdown = new ClientShutdown();
@@ -502,27 +525,9 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
     bind(Logger.class).toInstance(log);
 
     requestStaticInjection(
-            Reachable.class,
-            Movement.class,
-            Time.class,
-            Tiles.class,
-            Walker.class,
-            Inventory.class,
-            Equipment.class,
-            Bank.class,
-            Widgets.class,
-            Dialog.class,
             GameThread.class,
-            Keyboard.class,
-            Vars.class,
-            Packets.class,
-            TileObjects.class,
-            NPCs.class,
-            TileItems.class,
-            Players.class,
-            Worlds.class,
-            Game.class,
-            Skills.class
+            Movement.class,
+            Game.class
     );
   }
 

@@ -1,5 +1,6 @@
 package meteor.plugins.api.entities;
 
+import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.GameThread;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
@@ -10,18 +11,29 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-public class NPCs {
-    @Inject
-    private static Client client;
+public class NPCs extends Entities<NPC> {
+    private static final NPCs NPCS = new NPCs();
 
-    public static List<NPC> getAll(Predicate<NPC> filter) {
+    @Override
+    protected List<NPC> all(Predicate<? super NPC> filter) {
         List<NPC> out = new ArrayList<>();
-        for (NPC npc : client.getNpcs()) {
-            if (npc.isTransformRequired() && !npc.isDefinitionCached()) {
-                GameThread.invokeLater(npc::getName); // Transform and cache it by calling getName
-            }
+        List<NPC> npcs = Game.getClient().getNpcs();
+        List<NPC> uncached = npcs.stream()
+                .filter(x -> x.isTransformRequired() && !x.isDefinitionCached())
+                .collect(Collectors.toList());
+        if (!uncached.isEmpty()) {
+            GameThread.invokeLater(() -> {
+                for (NPC npc : uncached) {
+                    npc.getName(); // Transform and cache it by calling getName
+                }
 
+                return true;
+            });
+        }
+
+        for (NPC npc : npcs) {
             if (filter.test(npc)) {
                 out.add(npc);
             }
@@ -30,22 +42,27 @@ public class NPCs {
         return out;
     }
 
+    public static List<NPC> getAll(Predicate<NPC> filter) {
+        return NPCS.all(filter);
+    }
+
+    public static List<NPC> getAll(int... ids) {
+        return NPCS.all(ids);
+    }
+
+    public static List<NPC> getAll(String... names) {
+        return NPCS.all(names);
+    }
+
     public static NPC getNearest(Predicate<NPC> filter) {
-        Player local = client.getLocalPlayer();
-        if (local == null) {
-            return null;
-        }
-
-        return getAll(filter).stream()
-                .min(Comparator.comparingInt(t -> t.getWorldLocation().distanceTo(local.getWorldLocation())))
-                .orElse(null);
+        return NPCS.nearest(filter);
     }
 
-    public static NPC getNearest(int id) {
-        return getNearest(x -> x.getId() == id);
+    public static NPC getNearest(int... ids) {
+        return NPCS.nearest(ids);
     }
 
-    public static NPC getNearest(String name) {
-        return getNearest(x -> x.getName() != null && x.getName().equals(name));
+    public static NPC getNearest(String... names) {
+        return NPCS.nearest(names);
     }
 }

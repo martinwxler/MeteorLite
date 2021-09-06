@@ -21,6 +21,6 @@ public class ToolbarFXMLController {
 
   @FXML
   protected void handlePluginsPressed(ActionEvent event) throws IOException {
-    MeteorLiteClientModule.togglePluginsPanel();
+    MeteorLiteClientModule.toggleRightPanel();
   }
 }

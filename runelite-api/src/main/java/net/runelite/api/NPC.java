@@ -24,7 +24,6 @@
  */
 package net.runelite.api;
 
-import java.util.List;
 import javax.annotation.Nullable;
 
 /**

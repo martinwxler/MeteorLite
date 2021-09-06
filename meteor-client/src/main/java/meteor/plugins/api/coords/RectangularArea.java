@@ -5,25 +5,13 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.mixins.Inject;
 
 public class RectangularArea implements Area {
-    private final int x1;
-    private final int x2;
-    private final int y1;
-    private final int y2;
+    private final int minX;
+    private final int maxX;
+    private final int minY;
+    private final int maxY;
     private final int plane;
 
-    private int minX;
-    private int maxX;
-    private int minY;
-    private int maxY;
-
-    @Inject
-    private Rand rand;
-
     public RectangularArea(int x1, int x2, int y1, int y2, int plane) {
-        this.x1 = x1;
-        this.x2 = x2;
-        this.y1 = y1;
-        this.y2 = y2;
         this.plane = plane;
 
         if (x1 <= x2) {
@@ -48,7 +36,7 @@ public class RectangularArea implements Area {
     }
 
     public WorldPoint getRandomTile() {
-        return new WorldPoint(rand.nextInt(minX, maxX), rand.nextInt(minY, maxY), plane);
+        return new WorldPoint(Rand.nextInt(minX, maxX), Rand.nextInt(minY, maxY), plane);
     }
 
     public WorldPoint getCenter() {

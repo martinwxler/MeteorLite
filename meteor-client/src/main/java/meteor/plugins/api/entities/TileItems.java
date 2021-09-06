@@ -1,5 +1,6 @@
 package meteor.plugins.api.entities;
 
+import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.scene.Tiles;
 import net.runelite.api.*;
@@ -15,80 +16,87 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class TileItems {
-    private static final Logger logger = new Logger("TileItems");
-    @Inject
-    private static Client client;
+public class TileItems extends Entities<TileItem> {
+	private static final TileItems TILE_ITEMS = new TileItems();
 
-    public static List<TileItem> getAll(Predicate<TileItem> filter) {
-        return Tiles.getTiles().stream()
-                .flatMap(tile -> parseTile(tile, filter).stream())
-                .collect(Collectors.toList());
-    }
+	@Override
+	protected List<TileItem> all(Predicate<? super TileItem> filter) {
+		return Tiles.getTiles().stream()
+						.flatMap(tile -> parseTile(tile, filter).stream())
+						.collect(Collectors.toList());
+	}
 
-    public static TileItem getNearest(Predicate<TileItem> filter) {
-        Player local = Players.getLocal();
-        return getAll(filter).stream()
-                .min(Comparator.comparingInt(t -> t.getTile().getWorldLocation().distanceTo(local.getWorldLocation())))
-                .orElse(null);
-    }
+	public static List<TileItem> getAll(Predicate<TileItem> filter) {
+		return TILE_ITEMS.all(filter);
+	}
 
-    public static TileItem getNearest(int id) {
-        return getNearest(x -> x.getId() == id);
-    }
+	public static List<TileItem> getAll(int... ids) {
+		return TILE_ITEMS.all(ids);
+	}
 
-    public static TileItem getNearest(String name) {
-        return getNearest(x -> x.getName() != null && x.getName().equals(name));
-    }
+	public static List<TileItem> getAll(String... names) {
+		return TILE_ITEMS.all(names);
+	}
 
-    public static List<TileItem> getAt(LocalPoint localPoint, Predicate<TileItem> filter) {
-        Tile tile = client.getScene().getTiles()[client.getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
-        if (tile == null) {
-            return Collections.emptyList();
-        }
+	public static TileItem getNearest(Predicate<TileItem> filter) {
+		return TILE_ITEMS.nearest(filter);
+	}
 
-        return parseTile(tile, filter);
-    }
+	public static TileItem getNearest(int... ids) {
+		return TILE_ITEMS.nearest(ids);
+	}
 
-    public static List<TileItem> getAt(WorldPoint worldPoint, Predicate<TileItem> filter) {
-        LocalPoint localPoint = LocalPoint.fromWorld(client, worldPoint);
-        if (localPoint == null) {
-            return Collections.emptyList();
-        }
+	public static TileItem getNearest(String... names) {
+		return TILE_ITEMS.nearest(names);
+	}
 
-        Tile tile = client.getScene().getTiles()[client.getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
-        if (tile == null) {
-            return Collections.emptyList();
-        }
+	public static List<TileItem> getAt(LocalPoint localPoint, Predicate<TileItem> filter) {
+		Tile tile = Game.getClient().getScene().getTiles()[Game.getClient().getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
+		if (tile == null) {
+			return Collections.emptyList();
+		}
 
-        return parseTile(tile, filter);
-    }
+		return parseTile(tile, filter);
+	}
 
-    public static List<TileItem> getAt(Tile tile, Predicate<TileItem> filter) {
-        return parseTile(tile, filter);
-    }
+	public static List<TileItem> getAt(WorldPoint worldPoint, Predicate<TileItem> filter) {
+		LocalPoint localPoint = LocalPoint.fromWorld(Game.getClient(), worldPoint);
+		if (localPoint == null) {
+			return Collections.emptyList();
+		}
 
-    private static List<TileItem> parseTile(Tile tile, Predicate<TileItem> pred) {
-        List<TileItem> out = new ArrayList<>();
-        if (tile.getGroundItems() != null) {
-            for (TileItem item : tile.getGroundItems()) {
-                if (item == null || item.getId() == -1) {
-                    continue;
-                }
+		Tile tile = Game.getClient().getScene().getTiles()[Game.getClient().getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
+		if (tile == null) {
+			return Collections.emptyList();
+		}
 
-                if (!client.isItemDefinitionCached(item.getId())) {
-                    logger.debug("TileItem {} is not cached, going to cache it", item.getId());
-                    GameThread.invokeLater(() -> client.getItemComposition(item.getId()));
-                }
+		return parseTile(tile, filter);
+	}
 
-                if (!pred.test(item)) {
-                    continue;
-                }
+	public static List<TileItem> getAt(Tile tile, Predicate<TileItem> filter) {
+		return parseTile(tile, filter);
+	}
 
-                out.add(item);
-            }
-        }
+	private static List<TileItem> parseTile(Tile tile, Predicate<? super TileItem> pred) {
+		List<TileItem> out = new ArrayList<>();
+		if (tile.getGroundItems() != null) {
+			for (TileItem item : tile.getGroundItems()) {
+				if (item == null || item.getId() == -1) {
+					continue;
+				}
 
-        return out;
-    }
+				if (!Game.getClient().isItemDefinitionCached(item.getId())) {
+					GameThread.invokeLater(() -> Game.getClient().getItemComposition(item.getId()));
+				}
+
+				if (!pred.test(item)) {
+					continue;
+				}
+
+				out.add(item);
+			}
+		}
+
+		return out;
+	}
 }

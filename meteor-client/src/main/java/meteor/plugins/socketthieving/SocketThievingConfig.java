@@ -11,8 +11,8 @@ public interface SocketThievingConfig extends Config {
     @Range(textInput = true)
     @ConfigItem(
             keyName = "grubRate",
-            name = "Average grubs per chest for non-Socket",
-            description = "Average grubs per chest that contained some, for use in count estimation",
+            name = "Average grubs",
+            description = "Average grubs per chest (225 = 2.25) (based on team size and thieving levels)",
             position = 1
     )
     default int grubRate() {
@@ -22,8 +22,8 @@ public interface SocketThievingConfig extends Config {
     @Range(textInput = true)
     @ConfigItem(
             keyName = "gumdropFactor",
-            name = "Gumdrop Highlight Factor",
-            description = "Highlight bat chests in pretty colors",
+            name = "Gumdrop Highlight",
+            description = "Highlight bat chests in pretty colors idk why this is a text field",
             position = 2
     )
     default int gumdropFactor() {

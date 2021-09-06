@@ -58,7 +58,7 @@ public interface DefaultWorldConfig extends Config
 	@Range(min = 1, max = 600, textInput = true)
 	@ConfigItem(
 		keyName = "lastWorld",
-		name = "",
+		name = "Last World",
 		description = "",
 		hidden = true
 	)

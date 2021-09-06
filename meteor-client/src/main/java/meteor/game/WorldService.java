@@ -88,8 +88,6 @@ public class WorldService
 
 	private void fetch()
 	{
-		log.debug("Fetching worlds");
-
 		try
 		{
 			WorldResult worldResult = worldClient.lookupWorlds();

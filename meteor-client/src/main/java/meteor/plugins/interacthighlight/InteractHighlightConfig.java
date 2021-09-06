@@ -34,17 +34,19 @@ public interface InteractHighlightConfig extends Config
 {
 	@ConfigSection(
 		name = "NPCs",
+		keyName = "npcSection",
 		description = "Settings for NPC highlight",
 		position = 0
 	)
-	String npcSection = "npcSection";
+	String npcSection = "NPCs";
 
 	@ConfigSection(
 		name = "Objects",
+		keyName = "objectSection",
 		description = "Settings for object highlight",
 		position = 1
 	)
-	String objectSection = "objectSection";
+	String objectSection = "Objects";
 
 	@ConfigItem(
 		keyName = "npcShowHover",
@@ -172,12 +174,21 @@ public interface InteractHighlightConfig extends Config
 		return new Color(0x90FF0000, true);
 	}
 
+	@ConfigSection(
+			name = "Outline",
+			keyName = "settings",
+			description = "",
+			position = 1
+	)
+	String settings = "Outline";
+
 	@Range(min = 1, max = 10)
 	@ConfigItem(
-		keyName = "borderWidth",
-		name = "Border Width",
-		description = "Width of the outlined border",
-		position = 7
+			keyName = "borderWidth",
+			name = "Border Width",
+			description = "Width of the outlined border",
+			position = 7,
+			section = settings
 	)
 	default int borderWidth()
 	{
@@ -185,10 +196,11 @@ public interface InteractHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "outlineFeather",
-		name = "Outline feather",
-		description = "Specify between 0-4 how much of the model outline should be faded",
-		position = 8
+			keyName = "outlineFeather",
+			name = "Outline feather",
+			description = "Specify between 0-4 how much of the model outline should be faded",
+			position = 8,
+			section = settings
 	)
 	@Range(min = 1, max = 4)
 	default int outlineFeather()

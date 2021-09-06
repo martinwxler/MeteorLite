@@ -421,7 +421,7 @@ public class ItemRequirement extends AbstractRequirement
 
 	/**
 	 * Get the difference between the required quantity for this requirement and the amount the client has.
-	 * Any value <= 0 indicates they have the required amount
+	 * Any value less than or equal to 0 indicates they have the required amount
 	 */
 	public int getRequiredItemDifference(Client client, int itemID, boolean checkConsideringSlotRestrictions,
 										 List<Item> items)

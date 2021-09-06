@@ -491,15 +491,7 @@ public class ItemChargePlugin extends Plugin {
   }
 
   int getItemCharges(String key) {
-    // Migrate old non-profile configurations
     Integer i = configManager.getConfiguration(ItemChargeConfig.GROUP, key, Integer.class);
-    if (i != null) {
-      configManager.unsetConfiguration(ItemChargeConfig.GROUP, key);
-      configManager.setConfiguration(ItemChargeConfig.GROUP, key, i);
-      return i;
-    }
-
-    i = configManager.getConfiguration(ItemChargeConfig.GROUP, key, Integer.class);
     return i == null ? -1 : i;
   }
 

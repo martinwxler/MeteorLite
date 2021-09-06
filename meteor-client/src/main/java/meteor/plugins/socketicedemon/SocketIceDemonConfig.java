@@ -7,18 +7,27 @@ import java.awt.*;
 @ConfigGroup("icDemon")
 public interface SocketIceDemonConfig extends Config {
   @ConfigSection(
-          name = "<html><font color=#00aeef>Brazier",
+          name = "Brazier",
           description = "Brazier Plugins",
           position = 0,
           closedByDefault = true
   )
-  String brazierSection = "brazier";
+  String brazierSection = "Brazier";
+
+  @ConfigSection(
+          name = "Settings",
+          keyName = "settings",
+          description = "",
+          position = 1
+  )
+  String settings = "Settings";
 
   @ConfigItem(
           keyName = "display4Scav",
           name = "Display Overlay for CM Scaver",
           description = "Displays the overlay when you are in Scavs or Ice Demon. Have to be in Socket to accurately display the information.",
-          position = 1
+          position = 1,
+          section = settings
   )
   default boolean display4Scav() {
     return true;
@@ -28,7 +37,8 @@ public interface SocketIceDemonConfig extends Config {
           keyName = "dumpMsg",
           name = "Dump Message",
           description = "Puts a message in game chat of when to dump based off your current raids party size",
-          position = 2
+          position = 2,
+          section = settings
   )
   default boolean dumpMsg() {
     return true;
@@ -38,7 +48,8 @@ public interface SocketIceDemonConfig extends Config {
           keyName = "showTeamKindling",
           name = "Show Kindling Needed",
           description = "Shows the amount of kindling needed in the infobox",
-          position = 3
+          position = 3,
+          section = settings
   )
   default boolean showTeamKindling() {
     return true;
@@ -48,7 +59,8 @@ public interface SocketIceDemonConfig extends Config {
           keyName = "showNames",
           name = "Show Names",
           description = "Shows the name of players and how many kindling they got",
-          position = 4
+          position = 4,
+          section = settings
   )
   default boolean showNames() { return true; }
 
@@ -56,7 +68,8 @@ public interface SocketIceDemonConfig extends Config {
           keyName = "iceDemonSpawnTicks",
           name = "Ice Demon Spawn Ticks",
           description = "Displays ticks until Ice Demon activates after finishing lighting",
-          position = 5
+          position = 5,
+          section = settings
   )
   default boolean iceDemonSpawnTicks() {
     return true;
@@ -66,7 +79,8 @@ public interface SocketIceDemonConfig extends Config {
           keyName = "iceDemonHp",
           name = "Ice Demon HP",
           description = "Displays Ice Demon HP percent while lighting kindling",
-          position = 6
+          position = 6,
+          section = settings
   )
   default boolean iceDemonHp() {
     return true;

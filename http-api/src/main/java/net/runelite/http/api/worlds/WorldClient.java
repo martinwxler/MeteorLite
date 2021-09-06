@@ -50,7 +50,7 @@ public class WorldClient
 			.addPathSegment("worlds.js")
 			.build();
 
-		log.debug("Built URI: {}", url);
+		log.debug("Requesting URI: {}", url);
 
 		Request request = new Request.Builder()
 			.url(url)

@@ -35,32 +35,44 @@ public interface ChatChannelConfig extends Config
 	String GROUP = "clanchat"; // group name from the old plugin
 
 	@ConfigSection(
-		name = "Friends Chat",
-		description = "Configuration for friends chat",
-		position = 10
+			name = "General",
+			keyName = "general",
+			description = "",
+			position = 10
 	)
-	String friendsChatSection = "friendsChat";
+	String general = "General";
+
+	@ConfigSection(
+		name = "Friends Chat",
+		keyName = "friendsChatSection",
+		description = "Configuration for friends chat",
+		position = 20
+	)
+	String friendsChatSection = "Friends Chat";
 
 	@ConfigSection(
 		name = "Clan Chat",
+		keyName = "clanChatSection",
 		description = "Configuration for clan chat",
-		position = 20
+		position = 30
 	)
-	String clanChatSection = "clanChat";
+	String clanChatSection = "Clan Chat";
 
 	@ConfigSection(
 		name = "Guest Clan Chat",
+		keyName = "guestClanChatSection",
 		description = "Configuration for guest clan chat",
-		position = 30
+		position = 40
 	)
-	String guestClanChatSection = "guestClanChat";
+	String guestClanChatSection = "Guest Clan Chat";
 
 	@Range(min = 1, max = 40)
 	@ConfigItem(
 		keyName = "joinLeaveTimeout",
 		name = "Join/Leave timeout",
 		description = "Set the timeout duration of join/leave messages. A value of 0 will make the messages permanent.",
-		position = 0
+		section = general,
+		position = 1
 	)
 	default int joinLeaveTimeout()
 	{
@@ -71,7 +83,8 @@ public interface ChatChannelConfig extends Config
 		keyName = "targetMode",
 		name = "Target mode",
 		description = "Enables target changing mode via /f, /c, and /g which controls which channel messages are sent to.",
-		position = 1
+		section = general,
+		position = 2
 	)
 	default boolean targetMode()
 	{
@@ -104,7 +117,7 @@ public interface ChatChannelConfig extends Config
 
 	@ConfigItem(
 		keyName = "chatsData",
-		name = "",
+		name = "RL Devs Are Dumb Ignore this",
 		description = "",
 		hidden = true
 	)

@@ -14,12 +14,15 @@ import net.runelite.api.Item;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.Widget;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class TeleportLoader {
+    private static final int BUILD_DELAY_SECONDS = 5;
+    private static Instant lastBuild = Instant.now().minusSeconds(6);
+    private static List<Teleport> LAST_TELEPORT_LIST = Collections.emptyList();
     private static final int[] RING_OF_DUELING = new int[]{2552, 2554, 2556, 2558, 2560, 2562, 2564, 2566};
     private static final int[] GAMES_NECKLACE = new int[]{3853, 3863, 3855, 3857, 3859, 3861, 3863, 3865, 3867};
     private static final int[] COMBAT_BRACELET = new int[]{11118, 11972, 11974, 11120, 11122, 11124};
@@ -34,6 +37,12 @@ public class TeleportLoader {
     private static final int[] SKILLS_NECKLACE = new int[]{11105, 11111, 11109, 11107, 11970, 11968};
 
     public static List<Teleport> buildTeleports() {
+        if (lastBuild.plusSeconds(BUILD_DELAY_SECONDS).isAfter(Instant.now())) {
+            return List.copyOf(LAST_TELEPORT_LIST);
+        }
+
+        lastBuild = Instant.now();
+
         List<Teleport> teleports = new ArrayList<>();
         if (Worlds.inMembersWorld()) {
             if (Game.getWildyLevel() <= 20) {
@@ -140,8 +149,8 @@ public class TeleportLoader {
                 }
             }
         }
-
-        return teleports;
+        LAST_TELEPORT_LIST = teleports;
+        return List.copyOf(LAST_TELEPORT_LIST);
     }
 
     public static void jewelryTeleport(String target, int... ids) {

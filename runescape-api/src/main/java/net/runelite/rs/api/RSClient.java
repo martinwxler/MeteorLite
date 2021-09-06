@@ -198,6 +198,7 @@ public interface RSClient extends RSGameEngine, Client {
   void setDraggedOnWidget(Widget widget);
 
   @Import("Widget_interfaceComponents")
+  @Override
   RSWidget[][] getWidgets();
 
   /**
@@ -1493,6 +1494,7 @@ public interface RSClient extends RSGameEngine, Client {
   @Override
   RSClientPacket getTextInputPacket();
 
-  @Import("Packet_sendReport")
-  RSClientPacket getReportPacket();
+  @Import("loadWorlds")
+  @Override
+  boolean loadWorlds();
 }

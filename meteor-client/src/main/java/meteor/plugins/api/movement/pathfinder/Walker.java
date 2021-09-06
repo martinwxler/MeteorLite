@@ -3,16 +3,16 @@ package meteor.plugins.api.movement.pathfinder;
 import meteor.plugins.api.commons.Rand;
 import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.entities.Players;
+import meteor.plugins.api.game.Game;
+import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.scene.Tiles;
-import net.runelite.api.Client;
 import net.runelite.api.Player;
 import net.runelite.api.Tile;
 import net.runelite.api.WallObject;
 import net.runelite.api.coords.WorldPoint;
 import org.sponge.util.Logger;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -28,10 +28,7 @@ public class Walker {
     private static final int MIN_TILES_LEFT_BEFORE_RECHOOSE = 3;
     private static final int MAX_MIN_ENERGY = 50;
     private static final int MIN_ENERGY = 5;
-
-    @Inject
-    private static Client client;
-    private static final CollisionMap collisionMap;
+    public static final CollisionMap collisionMap;
 
     static {
         CollisionMap loaded;
@@ -72,7 +69,6 @@ public class Walker {
 
         if (teleport != null) {
             teleport.getHandler().run();
-            logger.debug("Running teleport handler");
             Time.sleep(5000);
             return false;
         }
@@ -87,7 +83,6 @@ public class Walker {
             List<WorldPoint> remainingPath = remainingPath(path);
 
             if (handleTransports(remainingPath, transports)) {
-                logger.debug("Running transport handler");
                 return false;
             }
 
@@ -139,13 +134,13 @@ public class Walker {
             return false;
         }
 
-        if (!Movement.isRunEnabled() && (client.getEnergy() >= Rand.nextInt(MIN_ENERGY, MAX_MIN_ENERGY) || (local.getHealthScale() > -1 && client.getEnergy() > 0))) {
+        if (!Movement.isRunEnabled() && (Game.getClient().getEnergy() >= Rand.nextInt(MIN_ENERGY, MAX_MIN_ENERGY) || (local.getHealthScale() > -1 && Game.getClient().getEnergy() > 0))) {
             Movement.toggleRun();
             Time.sleepUntil(Movement::isRunEnabled, 2000);
             return true;
         }
 
-        if (!Movement.isRunEnabled() && client.getEnergy() > 0 && Movement.isStaminaBoosted()) {
+        if (!Movement.isRunEnabled() && Game.getClient().getEnergy() > 0 && Movement.isStaminaBoosted()) {
             Movement.toggleRun();
             Time.sleepUntil(Movement::isRunEnabled, 2000);
             return true;
@@ -215,6 +210,10 @@ public class Walker {
             return false;
         }
 
+        if (!wall.isDefinitionCached()) {
+            GameThread.invokeLater(() -> Game.getClient().getObjectComposition(wall.getId()));
+        }
+
         return isWalled(source, destination) && wall.hasAction("Open");
     }
 
@@ -237,7 +236,7 @@ public class Walker {
     }
 
     public static List<WorldPoint> remainingPath(List<WorldPoint> path) {
-        Player local = client.getLocalPlayer();
+        Player local = Game.getClient().getLocalPlayer();
         if (local == null) {
             return Collections.emptyList();
         }
@@ -261,7 +260,7 @@ public class Walker {
         }
 
         return new Pathfinder(collisionMap, transports, startPoints,
-                destination, client).find();
+                destination).find();
     }
 
     public static Map<WorldPoint, List<Transport>> buildTransportLinks() {

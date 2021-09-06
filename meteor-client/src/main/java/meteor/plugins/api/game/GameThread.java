@@ -2,11 +2,13 @@ package meteor.plugins.api.game;
 
 import meteor.callback.ClientThread;
 import net.runelite.api.Client;
+import org.sponge.util.Logger;
 
 import javax.inject.Inject;
 import java.util.concurrent.*;
 
 public class GameThread {
+    private static final Logger log = new Logger("GameThread");
     private static final long TIMEOUT = 500;
     @Inject
     private static ClientThread clientThread;
@@ -14,7 +16,7 @@ public class GameThread {
     @Inject
     private static Client client;
 
-    public static <T> void invoke(Runnable runnable) {
+    public static void invoke(Runnable runnable) {
         if (client.isClientThread()) {
             runnable.run();
         } else {

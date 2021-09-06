@@ -4,7 +4,6 @@ import static net.runelite.api.MenuAction.UNKNOWN;
 import static net.runelite.api.Perspective.LOCAL_TILE_SIZE;
 
 import java.util.*;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.runelite.api.*;
@@ -87,6 +86,10 @@ public abstract class ClientMixin implements RSClient {
   public static HashMap<Integer, RSObjectComposition> objDefCache = new HashMap<>();
   @Inject
   public static HashMap<Integer, RSItemComposition> itemDefCache = new HashMap<>();
+  @Inject
+  private static boolean lowCpu;
+  @Inject
+  private static boolean allWidgetsAreOpTargetable = false;
 
   @Inject
   @FieldHook("gameState")
@@ -95,6 +98,22 @@ public abstract class ClientMixin implements RSClient {
     GameStateChanged gameStateChanged = new GameStateChanged();
     gameStateChanged.setGameState(GameState.of(client.getRSGameState$api()));
     client.getCallbacks().post(gameStateChanged);
+  }
+
+  @Inject
+  @Override
+  public void setGameState(GameState gameState)
+  {
+    assert this.isClientThread() : "setGameState must be called on client thread";
+    setGameState(gameState.getState());
+  }
+
+  @Inject
+  @Override
+  public void setGameState(int state)
+  {
+    assert this.isClientThread() : "setGameState must be called on client thread";
+    client.setRSGameState(state);
   }
 
   @FieldHook("npcs")
@@ -314,16 +333,37 @@ public abstract class ClientMixin implements RSClient {
       {
         oldXp = 0;
       }
+			int level = client.getRealSkillLevel(updatedSkill);
       StatChanged statChanged = new StatChanged(
           updatedSkill,
           newXp,
-          client.getRealSkillLevel(updatedSkill),
+          level,
           client.getBoostedSkillLevel(updatedSkill),
           newXp - oldXp
       );
+      if (oldXp == 0 && newXp > 0) {
+        oldXp = newXp;
+        oldXpMap.put(updatedSkill, newXp);
+      }
+
       client.getCallbacks().post(statChanged);
-      oldXpMap.put(updatedSkill, client.getSkillExperience(updatedSkill));
+			experienceGained(oldXp, newXp, level, updatedSkill);
     }
+  }
+
+  @Inject
+  public static void experienceGained(int oldExp, int currentExp, int skillLevel, Skill updatedSkill) {
+		if (currentExp > oldExp) {
+			ExperienceGained experienceGained = new ExperienceGained(
+							updatedSkill,
+							oldExp,
+							currentExp,
+							skillLevel
+			);
+
+			client.getCallbacks().post(experienceGained);
+			oldXpMap.put(updatedSkill, currentExp);
+		}
   }
 
   @FieldHook("changedSkills")
@@ -411,8 +451,13 @@ public abstract class ClientMixin implements RSClient {
     menuOptionClicked.setId(id);
     menuOptionClicked.setWidgetId(param1);
     menuOptionClicked.setSelectedItemIndex(client.getSelectedItemSlot());
+    menuOptionClicked.setCanvasX(canvasX);
+    menuOptionClicked.setCanvasY(canvasY);
 
-    client.getCallbacks().post(menuOptionClicked);
+    // Do not forward automated interaction events to eventbus
+    if (!menuOptionClicked.isAutomated()) {
+      client.getCallbacks().post(menuOptionClicked);
+    }
 
     if (menuOptionClicked.isConsumed()) {
       return;
@@ -439,7 +484,8 @@ public abstract class ClientMixin implements RSClient {
   {
     assert isClientThread() : "invokeMenuAction must be called on client thread";
 
-    client.sendMenuAction(param0, param1, opcode, identifier, option, target, 658, 384);
+    // X and Y are not sent to the servers, so if invoke is called, send -1 and -1
+    client.sendMenuAction(param0, param1, opcode, identifier, option, target, -1, -1);
   }
 
   @Inject
@@ -559,7 +605,7 @@ public abstract class ClientMixin implements RSClient {
 
   @Inject
   @Override
-  public ObjectComposition getObjectDefinition(int objectId) {
+  public ObjectComposition getObjectComposition(int objectId) {
     if (objDefCache.containsKey(objectId)) {
       return objDefCache.get(objectId);
     }
@@ -585,7 +631,7 @@ public abstract class ClientMixin implements RSClient {
 
   @Inject
   @Override
-  public NPCComposition getNpcDefinition(int id) {
+  public NPCComposition getNpcComposition(int id) {
     assert this.isClientThread() : "getNpcDefinition must be called on client thread";
     return getRSNpcComposition(id);
   }
@@ -680,6 +726,13 @@ public abstract class ClientMixin implements RSClient {
     int count = client.getChangedSkillsCount();
     skills[++count - 1 & 31] = skill.ordinal();
     client.setChangedSkillsCount(count);
+  }
+
+  @Inject
+  @Override
+  public void setAllWidgetsAreOpTargetable(boolean yes)
+  {
+    allWidgetsAreOpTargetable = yes;
   }
 
   @Inject
@@ -942,6 +995,24 @@ public abstract class ClientMixin implements RSClient {
     }
   }
 
+  @Copy("runWidgetOnLoadListener")
+  @Replace("runWidgetOnLoadListener")
+  @SuppressWarnings("InfiniteRecursion")
+  public static void copy$runWidgetOnLoadListener(int groupId)
+  {
+    copy$runWidgetOnLoadListener(groupId);
+
+    RSWidget[][] widgets = client.getWidgets();
+    boolean loaded = widgets != null && widgets[groupId] != null;
+
+    if (loaded)
+    {
+      WidgetLoaded event = new WidgetLoaded();
+      event.setGroupId(groupId);
+      client.getCallbacks().post(event);
+    }
+  }
+
   @Inject
   @Override
   public HintArrowType getHintArrowType()
@@ -1068,6 +1139,13 @@ public abstract class ClientMixin implements RSClient {
 
   @Inject
   @Override
+  public void stopNow()
+  {
+    setStopTimeMs(1);
+  }
+
+  @Inject
+  @Override
   public boolean isPrayerActive(Prayer prayer)
   {
     return getVar(prayer.getVarbit()) == 1;
@@ -1160,14 +1238,14 @@ public abstract class ClientMixin implements RSClient {
 
   @Inject
   @Override
-  public NameableContainer<Friend> getFriendContainer()
+  public ChatEntityContainer<Friend> getFriendContainer()
   {
     return getFriendManager().getFriendContainer();
   }
 
   @Inject
   @Override
-  public NameableContainer<Ignore> getIgnoreContainer()
+  public ChatEntityContainer<Ignore> getIgnoreContainer()
   {
     return getFriendManager().getIgnoreContainer();
   }
@@ -1547,5 +1625,83 @@ public abstract class ClientMixin implements RSClient {
   @Override
   public boolean isItemDefinitionCached(int id) {
     return itemDefCache.containsKey(id);
+  }
+
+  @Inject
+  @MethodHook("openMenu")
+  public void menuOpened(int x, int y)
+  {
+    final MenuOpened event = new MenuOpened();
+    event.setMenuEntries(getMenuEntries());
+    callbacks.post(event);
+
+    if (event.isModified())
+    {
+      setMenuEntries(event.getMenuEntries());
+    }
+  }
+
+  @Inject
+  @Override
+  public boolean isLowCpu() {
+    return lowCpu;
+  }
+
+  @Inject
+  @Override
+  public void setLowCpu(boolean enabled) {
+    lowCpu = enabled;
+  }
+
+  @Copy("drawWidgets")
+  @Replace("drawWidgets")
+  static final void copy$drawWidgets(int var0, int var1, int var2, int var3, int var4, int var5, int var6, int var7) {
+    if (!lowCpu) {
+      copy$drawWidgets(var0, var1, var2, var3, var4, var5, var6, var7);
+    }
+  }
+
+  @Copy("drawModelComponents")
+  @Replace("drawModelComponents")
+  static void copy$drawModelComponents(Widget[] var0, int var1) {
+    if (!lowCpu) {
+      copy$drawModelComponents(var0, var1);
+    }
+  }
+
+  @Inject
+  @Override
+  public void uncacheNPC(int id) {
+    npcDefCache.remove(id);
+  }
+
+  @Inject
+  @Override
+  public void uncacheItem(int id) {
+    itemDefCache.remove(id);
+  }
+
+  @Inject
+  @Override
+  public void uncacheObject(int id) {
+    objDefCache.remove(id);
+  }
+
+  @Inject
+  @Override
+  public void clearNPCCache() {
+    npcDefCache.clear();
+  }
+
+  @Inject
+  @Override
+  public void clearItemCache() {
+    itemDefCache.clear();
+  }
+
+  @Inject
+  @Override
+  public void clearObjectCache() {
+    objDefCache.clear();
   }
 }

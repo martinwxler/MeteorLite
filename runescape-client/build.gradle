@@ -24,6 +24,10 @@ java {
 dependencies {
     implementation(project(":runelite-annotations"))
     implementation(project(":meteor-logger"))
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.52'
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:_'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     implementation 'com.google.code.gson:gson:_'

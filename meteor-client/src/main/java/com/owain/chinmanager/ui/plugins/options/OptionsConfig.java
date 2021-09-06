@@ -30,6 +30,7 @@ import meteor.config.Config;
 import meteor.config.ConfigGroup;
 import meteor.config.ConfigItem;
 import meteor.config.ConfigTitle;
+import meteor.config.Range;
 
 @ConfigGroup(CONFIG_GROUP)
 public interface OptionsConfig extends Config
@@ -41,6 +42,7 @@ public interface OptionsConfig extends Config
 	)
 	String miscellaneousTitle = "Miscellaneous";
 
+	@Range(min = 1, max = 10)
 	@ConfigItem(
 		keyName = "stopAfterBreaks",
 		name = "Stop after x breaks",

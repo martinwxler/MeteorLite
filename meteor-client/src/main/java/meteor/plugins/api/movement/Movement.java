@@ -2,10 +2,15 @@ package meteor.plugins.api.movement;
 
 import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.entities.Players;
+import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.Vars;
+import meteor.plugins.api.movement.pathfinder.CollisionMap;
+import meteor.plugins.api.movement.pathfinder.Transport;
+import meteor.plugins.api.movement.pathfinder.TransportLoader;
 import meteor.plugins.api.movement.pathfinder.Walker;
 import meteor.plugins.api.scene.Tiles;
 import meteor.plugins.api.widgets.Widgets;
+import meteor.ui.overlay.OverlayUtil;
 import net.runelite.api.Point;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
@@ -18,12 +23,19 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.*;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Singleton
 public class Movement {
     private static final Logger logger = new Logger("Movement");
+    private static final Color TILE_BLOCKED_COLOR = new Color(0, 128, 255, 128);
+    private static final Color TRANSPORT_COLOR = new Color(0, 255, 0, 128);
+
+    private static final int STAMINA_VARBIT = 25;
+    private static final int RUN_VARP = 173;
 
     @Inject
     private static Client client;
@@ -32,8 +44,6 @@ public class Movement {
     private static ScheduledExecutorService executor;
 
     private static void setWalkDestination(int sceneX, int sceneY) {
-        logger.debug("Setting destination {} {}", sceneX, sceneY);
-
         int attempts = 0;
 
         do {
@@ -61,30 +71,7 @@ public class Movement {
     }
 
     public static void walk(Point point) {
-        setDestination(point.getX(), point.getY());
-    }
-
-    public static void walk(int worldX, int worldY) {
-        int sceneX = worldX - client.getBaseX();
-        int sceneY = worldY - client.getBaseY();
-
-        if (sceneX > 104) {
-            sceneX = 104;
-        }
-
-        if (sceneX < 0) {
-            sceneX = 0;
-        }
-
-        if (sceneY > 104) {
-            sceneY = 104;
-        }
-
-        if (sceneY < 0) {
-            sceneY = 0;
-        }
-
-        walk(new Point(sceneX, sceneY));
+        Game.getClient().interact(0, MenuAction.WALK.getId(), point.getX(), point.getY());
     }
 
     public static void walk(WorldPoint worldPoint) {
@@ -119,7 +106,7 @@ public class Movement {
             return;
         }
 
-        setDestination(localPoint.getSceneX(), localPoint.getSceneY());
+        Game.getClient().interact(0, MenuAction.WALK.getId(), localPoint.getSceneX(), localPoint.getSceneY());
     }
 
     public static void walk(Locatable locatable) {
@@ -131,13 +118,103 @@ public class Movement {
     }
 
     public static boolean isRunEnabled() {
-        return client.getVarpValue(173) == 1;
+        return client.getVarpValue(RUN_VARP) == 1;
     }
 
     public static void drawPath(Graphics2D graphics2D, WorldPoint destination) {
         Walker.buildPath(destination)
                 .forEach(tile -> tile.outline(client, graphics2D, Color.RED, null));
         destination.outline(client, graphics2D, Color.GREEN, "Destination");
+    }
+
+    public static void drawCollisions(Graphics2D graphics2D) {
+        Client client = Game.getClient();
+        java.util.List<Tile> tiles = Tiles.getTiles();
+
+        if (tiles.isEmpty()) {
+            return;
+        }
+
+        List<Transport> transports = TransportLoader.buildTransports();
+
+        for (Transport transport : transports) {
+            OverlayUtil.fillTile(graphics2D, client, transport.getSource(), TRANSPORT_COLOR);
+            net.runelite.api.Point center = Perspective.tileCenter(client, transport.getSource());
+            if (center == null) {
+                continue;
+            }
+
+            Point linkCenter = Perspective.tileCenter(client, transport.getDestination());
+            if (linkCenter == null) {
+                continue;
+            }
+
+            graphics2D.drawLine(center.getX(), center.getY(), linkCenter.getX(), linkCenter.getY());
+        }
+
+        CollisionMap collisionMap = Walker.collisionMap;
+        if (collisionMap == null) {
+            return;
+        }
+
+        for (Tile tile : tiles) {
+            Polygon poly = Perspective.getCanvasTilePoly(client, tile.getLocalLocation());
+            if (poly == null) {
+                continue;
+            }
+
+            StringBuilder sb = new StringBuilder("");
+            graphics2D.setColor(Color.WHITE);
+            if (!collisionMap.n(tile.getWorldLocation())) {
+                sb.append("n");
+            }
+
+            if (!collisionMap.s(tile.getWorldLocation())) {
+                sb.append("s");
+            }
+
+            if (!collisionMap.w(tile.getWorldLocation())) {
+                sb.append("w");
+            }
+
+            if (!collisionMap.e(tile.getWorldLocation())) {
+                sb.append("e");
+            }
+
+            String s = sb.toString();
+            if (s.isEmpty()) {
+                continue;
+            }
+
+            if (!s.equals("nswe")) {
+                graphics2D.setColor(Color.WHITE);
+                if (s.contains("n")) {
+                    graphics2D.drawLine(poly.xpoints[3], poly.ypoints[3], poly.xpoints[2], poly.ypoints[2]);
+                }
+
+                if (s.contains("s")) {
+                    graphics2D.drawLine(poly.xpoints[0], poly.ypoints[0], poly.xpoints[1], poly.ypoints[1]);
+                }
+
+                if (s.contains("w")) {
+                    graphics2D.drawLine(poly.xpoints[0], poly.ypoints[0], poly.xpoints[3], poly.ypoints[3]);
+                }
+
+                if (s.contains("e")) {
+                    graphics2D.drawLine(poly.xpoints[1], poly.ypoints[1], poly.xpoints[2], poly.ypoints[2]);
+                }
+
+                int stringX = (int)
+                        (poly.getBounds().getCenterX() -
+                                graphics2D.getFontMetrics().getStringBounds(s, graphics2D).getWidth() / 2);
+                int stringY = (int) poly.getBounds().getCenterY();
+                graphics2D.drawString(s, stringX, stringY);
+                continue;
+            }
+
+            graphics2D.setColor(TILE_BLOCKED_COLOR);
+            graphics2D.fill(poly);
+        }
     }
 
     public static void toggleRun() {
@@ -148,6 +225,32 @@ public class Movement {
     }
 
     public static boolean isStaminaBoosted() {
-        return Vars.getBit(25) == 1;
+        return Vars.getBit(STAMINA_VARBIT) == 1;
+    }
+
+    public static int calculateDistance(WorldPoint destination) {
+        List<WorldPoint> path = Walker.buildPath(destination);
+
+        if (path.size() < 2) {
+            return 0;
+        }
+
+        Iterator<WorldPoint> it = path.iterator();
+        WorldPoint prev = it.next();
+        WorldPoint current;
+        int distance = 0;
+
+        // WorldPoint#distanceTo() returns max int when planes are different, but since the pathfinder can traverse
+        // obstacles, we just add one to the distance to account for whatever obstacle is in between the current point
+        // and the next.
+        while (it.hasNext()) {
+            current = it.next();
+            if (prev.getPlane() != current.getPlane()) {
+                distance += 1;
+            } else {
+                distance += Math.max(Math.abs(prev.getX() - current.getX()), Math.abs(prev.getY() - current.getY()));
+            }
+        }
+        return distance;
     }
 }

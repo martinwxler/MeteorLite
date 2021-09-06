@@ -9,11 +9,20 @@ import net.runelite.api.widgets.WidgetInfo;
 import javax.inject.Inject;
 
 public class Game {
+    private static final int MEMBER_DAYS_VARP = 1780;
     @Inject
     private static Client client;
 
+    public static Client getClient() {
+        return client;
+    }
+
     public static boolean isLoggedIn() {
         return getState() == GameState.LOGGED_IN || getState() == GameState.LOADING;
+    }
+
+    public static boolean isOnLoginScreen() {
+        return getState() == GameState.LOGIN_SCREEN || getState() == GameState.LOGIN_SCREEN_AUTHENTICATOR;
     }
 
     public static GameState getState() {
@@ -26,6 +35,19 @@ public class Game {
             return 0;
         }
 
+        // Dmm
+        if (wildyLevelWidget.getText().contains("Guarded") || wildyLevelWidget.getText().contains("Protection")) {
+            return 0;
+        }
+
+        if (wildyLevelWidget.getText().contains("Deadman")) {
+            return Integer.MAX_VALUE;
+        }
+
         return Integer.parseInt(wildyLevelWidget.getText().replace("Level: ", ""));
+    }
+
+    public static int getMembershipDays() {
+        return Vars.getVarp(MEMBER_DAYS_VARP);
     }
 }
