@@ -28,13 +28,13 @@ import lombok.Value;
 import net.runelite.api.ChatEntity;
 
 /**
- * An event trigger when a player is removed from the friend or ignore list.
+ * An event where a {@link ChatEntity} has had their name changed.
  */
 @Value
-public class RemovedFriend {
+public class ChatEntityNameChanged {
 
   /**
-   * The removed friend or ignore entry
+   * The nameable that changed names.
    */
-  private final ChatEntity chatEntity;
+  ChatEntity chatEntity;
 }

@@ -1,13 +1,13 @@
 package net.runelite.rs.api;
 
-import net.runelite.api.Nameable;
-import net.runelite.api.NameableContainer;
+import net.runelite.api.ChatEntity;
+import net.runelite.api.ChatEntityContainer;
 import net.runelite.mapping.Import;
 
-public interface RSUserList<T extends Nameable> extends NameableContainer<T> {
+public interface RSUserList<T extends ChatEntity> extends ChatEntityContainer<T> {
 
   @Import("array")
-  Nameable[] getNameables();
+  ChatEntity[] getNameables();
 
   @Import("getSize")
   int getCount();

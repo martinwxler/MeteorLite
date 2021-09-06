@@ -9,9 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class Equipment {
+public class Equipment extends Items {
+    private static final Equipment EQUIPMENT = new Equipment();
 
-    public static List<Item> getAll(Predicate<Item> filter) {
+    @Override
+    protected List<Item> all(Predicate<Item> filter) {
         List<Item> items = new ArrayList<>();
         ItemContainer container = Game.getClient().getItemContainer(InventoryID.EQUIPMENT);
         if (container == null) {
@@ -41,68 +43,32 @@ public class Equipment {
         return items;
     }
 
+    public static List<Item> getAll(Predicate<Item> filter) {
+        return EQUIPMENT.all(filter);
+    }
+
     public static List<Item> getAll() {
         return getAll(x -> true);
     }
 
     public static List<Item> getAll(int... ids) {
-        return getAll(x -> {
-            for (int id : ids) {
-                if (id == x.getId()) {
-                    return true;
-                }
-            }
-
-            return false;
-        });
+        return EQUIPMENT.all(ids);
     }
 
     public static List<Item> getAll(String... names) {
-        return getAll(x -> {
-            if (x.getName() == null) {
-                return false;
-            }
-
-            for (String name : names) {
-                if (name.equals(x.getName())) {
-                    return true;
-                }
-            }
-
-            return false;
-        });
+        return EQUIPMENT.all(names);
     }
 
     public static Item getFirst(Predicate<Item> filter) {
-        return getAll(filter).stream().findFirst().orElse(null);
+        return EQUIPMENT.first(filter);
     }
 
     public static Item getFirst(int... ids) {
-        return getFirst(x -> {
-            for (int id : ids) {
-                if (id == x.getId()) {
-                    return true;
-                }
-            }
-
-            return false;
-        });
+        return EQUIPMENT.first(ids);
     }
 
     public static Item getFirst(String... names) {
-        return getFirst(x -> {
-            if (x.getName() == null) {
-                return false;
-            }
-
-            for (String name : names) {
-                if (name.equals(x.getName())) {
-                    return true;
-                }
-            }
-
-            return false;
-        });
+        return EQUIPMENT.first(names);
     }
 
     private static WidgetInfo getEquipmentWidgetInfo(int itemIndex) {
@@ -116,34 +82,14 @@ public class Equipment {
     }
 
     public static boolean contains(Predicate<Item> filter) {
-        return getFirst(filter) != null;
+        return EQUIPMENT.exists(filter);
     }
 
-    public static boolean contains(int... ids) {
-        return contains(x -> {
-            for (int id : ids) {
-                if (id == x.getId()) {
-                    return true;
-                }
-            }
-
-            return false;
-        });
+    public static boolean contains(int id) {
+        return EQUIPMENT.exists(id);
     }
 
-    public static boolean contains(String... names) {
-        return contains(x -> {
-            if (x.getName() == null) {
-                return false;
-            }
-
-            for (String name : names) {
-                if (name.equals(x.getName())) {
-                    return true;
-                }
-            }
-
-            return false;
-        });
+    public static boolean contains(String name) {
+        return EQUIPMENT.exists(name);
     }
 }

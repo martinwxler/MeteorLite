@@ -65,9 +65,6 @@ public abstract class TileMixin implements RSTile
   @Inject
   private RSGameObject[] previousGameObjects;
 
-  @Shadow("objDefCache")
-  public static HashMap<Integer, RSObjectComposition> objDefCache;
-
   @Inject
   @Override
   public WorldPoint getWorldLocation()
@@ -255,7 +252,6 @@ public abstract class TileMixin implements RSTile
       wallObjectDespawned.setTile(this);
       wallObjectDespawned.setWallObject(previous);
       client.getCallbacks().post(wallObjectDespawned);
-      objDefCache.remove(previous.getId());
     }
     else if (current != null && previous == null)
     {
@@ -301,7 +297,6 @@ public abstract class TileMixin implements RSTile
       decorativeObjectDespawned.setTile(this);
       decorativeObjectDespawned.setDecorativeObject(previous);
       client.getCallbacks().post(decorativeObjectDespawned);
-      objDefCache.remove(previous.getId());
     }
     else if (current != null && previous == null)
     {
@@ -347,7 +342,6 @@ public abstract class TileMixin implements RSTile
       groundObjectDespawned.setTile(this);
       groundObjectDespawned.setGroundObject(previous);
       client.getCallbacks().post(groundObjectDespawned);
-      objDefCache.remove(previous.getId());
     }
     else if (current != null && previous == null)
     {
@@ -436,7 +430,6 @@ public abstract class TileMixin implements RSTile
       gameObjectDespawned.setTile(this);
       gameObjectDespawned.setGameObject(previous);
       client.getCallbacks().post(gameObjectDespawned);
-      objDefCache.remove(previous.getId());
     }
     else if (previous == null)
     {

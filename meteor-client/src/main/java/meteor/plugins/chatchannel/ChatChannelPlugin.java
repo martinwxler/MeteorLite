@@ -787,7 +787,7 @@ public class ChatChannelPlugin extends Plugin
 			return;
 		}
 
-		NameableContainer<Ignore> ignoreContainer = client.getIgnoreContainer();
+		ChatEntityContainer<Ignore> ignoreContainer = client.getIgnoreContainer();
 		// Iterate every 3 widgets, since the order of widgets is name, world, icon
 		for (int i = 0; i < chatList.getChildren().length; i += 3)
 		{

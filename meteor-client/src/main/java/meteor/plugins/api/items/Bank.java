@@ -14,13 +14,39 @@ import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
-public class Bank {
+public class Bank extends Items {
+	private static final Bank BANK = new Bank();
+
+	@Override
+	protected List<Item> all(Predicate<Item> filter) {
+		List<Item> items = new ArrayList<>();
+		ItemContainer container = Game.getClient().getItemContainer(InventoryID.BANK);
+		if (container == null) {
+			return items;
+		}
+
+		Inventory.cacheItems(container);
+
+		Item[] containerItems = container.getItems();
+		for (int i = 0, containerItemsLength = containerItems.length; i < containerItemsLength; i++) {
+			Item item = containerItems[i];
+			if (item.getId() != -1 && item.getName() != null && !item.getName().equals("null")) {
+				item.setWidgetId(item.calculateWidgetId(WidgetInfo.BANK_ITEM_CONTAINER));
+				item.setSlot(i);
+
+				if (filter.test(item)) {
+					items.add(item);
+				}
+			}
+		}
+
+		return items;
+	}
+
 	private static final int WITHDRAW_MODE_VARBIT = 3958;
 	private static final int QUANTITY_MODE_VARP = 6590;
 	private static final Supplier<Widget> BANK_CAPACITY = () -> Widgets.get(12, 8);
@@ -235,28 +261,7 @@ public class Bank {
 	}
 
 	public static List<Item> getAll(Predicate<Item> filter) {
-		List<Item> items = new ArrayList<>();
-		ItemContainer container = Game.getClient().getItemContainer(InventoryID.BANK);
-		if (container == null) {
-			return items;
-		}
-
-		Inventory.cacheItems(container);
-
-		Item[] containerItems = container.getItems();
-		for (int i = 0, containerItemsLength = containerItems.length; i < containerItemsLength; i++) {
-			Item item = containerItems[i];
-			if (item.getId() != -1 && item.getName() != null && !item.getName().equals("null")) {
-				item.setWidgetId(item.calculateWidgetId(WidgetInfo.BANK_ITEM_CONTAINER));
-				item.setSlot(i);
-
-				if (filter.test(item)) {
-					items.add(item);
-				}
-			}
-		}
-
-		return items;
+		return BANK.all(filter);
 	}
 
 	public static List<Item> getAll() {
@@ -264,75 +269,35 @@ public class Bank {
 	}
 
 	public static List<Item> getAll(int... ids) {
-		return getAll(x -> {
-			for (int id : ids) {
-				if (id == x.getId()) {
-					return true;
-				}
-			}
-
-			return false;
-		});
+		return BANK.all(ids);
 	}
 
 	public static List<Item> getAll(String... names) {
-		return getAll(x -> {
-			if (x.getName() == null) {
-				return false;
-			}
-
-			for (String name : names) {
-				if (name.equals(x.getName())) {
-					return true;
-				}
-			}
-
-			return false;
-		});
+		return BANK.all(names);
 	}
 
 	public static Item getFirst(Predicate<Item> filter) {
-		return getAll(filter).stream().findFirst().orElse(null);
+		return BANK.first(filter);
 	}
 
 	public static Item getFirst(int... ids) {
-		return getFirst(x -> {
-			for (int id : ids) {
-				if (id == x.getId()) {
-					return true;
-				}
-			}
-
-			return false;
-		});
+		return BANK.first(ids);
 	}
 
 	public static Item getFirst(String... names) {
-		return getFirst(x -> {
-			if (x.getName() == null) {
-				return false;
-			}
-
-			for (String name : names) {
-				if (name.equals(x.getName())) {
-					return true;
-				}
-			}
-
-			return false;
-		});
+		return BANK.first(names);
 	}
 
 	public static boolean contains(Predicate<Item> filter) {
-		return getFirst(filter) != null;
+		return BANK.exists(filter);
 	}
 
 	public static boolean contains(int id) {
-		return contains(x -> x.getId() == id);
+		return BANK.exists(id);
 	}
 
 	public static boolean contains(String name) {
-		return contains(x -> x.getName() != null && x.getName().equals(name));
+		return BANK.exists(name);
 	}
 
 	public enum Component {
@@ -375,14 +340,20 @@ public class Bank {
 		}
 
 		public static QuantityMode getCurrent() {
-			return switch (Vars.getBit(QUANTITY_MODE_VARP)) {
-				case 0 -> QuantityMode.ONE;
-				case 1 -> QuantityMode.FIVE;
-				case 2 -> QuantityMode.TEN;
-				case 3 -> QuantityMode.X;
-				case 4 -> QuantityMode.ALL;
-				default -> UNKNOWN;
-			};
+			switch (Vars.getBit(QUANTITY_MODE_VARP)) {
+				case 0:
+					return QuantityMode.ONE;
+				case 1:
+					return QuantityMode.FIVE;
+				case 2:
+					return QuantityMode.TEN;
+				case 3:
+					return QuantityMode.X;
+				case 4:
+					return QuantityMode.ALL;
+				default:
+					return UNKNOWN;
+			}
 		}
 	}
 

@@ -4,7 +4,6 @@ import static net.runelite.api.MenuAction.UNKNOWN;
 import static net.runelite.api.Perspective.LOCAL_TILE_SIZE;
 
 import java.util.*;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.runelite.api.*;
@@ -1239,14 +1238,14 @@ public abstract class ClientMixin implements RSClient {
 
   @Inject
   @Override
-  public NameableContainer<Friend> getFriendContainer()
+  public ChatEntityContainer<Friend> getFriendContainer()
   {
     return getFriendManager().getFriendContainer();
   }
 
   @Inject
   @Override
-  public NameableContainer<Ignore> getIgnoreContainer()
+  public ChatEntityContainer<Ignore> getIgnoreContainer()
   {
     return getFriendManager().getIgnoreContainer();
   }
