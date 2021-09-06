@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.*;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -225,5 +226,31 @@ public class Movement {
 
     public static boolean isStaminaBoosted() {
         return Vars.getBit(STAMINA_VARBIT) == 1;
+    }
+
+    public static int calculateDistance(WorldPoint destination) {
+        List<WorldPoint> path = Walker.buildPath(destination);
+
+        if (path.size() < 2) {
+            return 0;
+        }
+
+        Iterator<WorldPoint> it = path.iterator();
+        WorldPoint prev = it.next();
+        WorldPoint current;
+        int distance = 0;
+
+        // WorldPoint#distanceTo() returns max int when planes are different, but since the pathfinder can traverse
+        // obstacles, we just add one to the distance to account for whatever obstacle is in between the current point
+        // and the next.
+        while (it.hasNext()) {
+            current = it.next();
+            if (prev.getPlane() != current.getPlane()) {
+                distance += 1;
+            } else {
+                distance += Math.max(Math.abs(prev.getX() - current.getX()), Math.abs(prev.getY() - current.getY()));
+            }
+        }
+        return distance;
     }
 }

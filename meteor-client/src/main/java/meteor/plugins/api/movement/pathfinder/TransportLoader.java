@@ -1,6 +1,5 @@
 package meteor.plugins.api.movement.pathfinder;
 
-import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.entities.NPCs;
 import meteor.plugins.api.entities.TileObjects;
 import meteor.plugins.api.game.Skills;
@@ -24,10 +23,11 @@ import java.util.List;
 public class TransportLoader {
     private static final int BUILD_DELAY_SECONDS = 5;
     private static Instant lastBuild = Instant.now().minusSeconds(6);
+    private static List<Transport> LAST_TRANSPORT_LIST = Collections.emptyList();
 
     public static List<Transport> buildTransports() {
         if (lastBuild.plusSeconds(BUILD_DELAY_SECONDS).isAfter(Instant.now())) {
-            return Collections.emptyList();
+            return List.copyOf(LAST_TRANSPORT_LIST);
         }
 
         lastBuild = Instant.now();
@@ -164,7 +164,8 @@ public class TransportLoader {
                 1164,
                 "Well that is a risk I will have to take."));
 
-        return transports;
+        LAST_TRANSPORT_LIST = transports;
+        return List.copyOf(LAST_TRANSPORT_LIST);
     }
 
     public static Transport parseTransportLine(String line) {

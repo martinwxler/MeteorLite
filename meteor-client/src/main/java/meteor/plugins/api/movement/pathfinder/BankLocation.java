@@ -1,7 +1,7 @@
 package meteor.plugins.api.movement.pathfinder;
 
+import meteor.plugins.api.movement.Movement;
 import net.runelite.api.coords.WorldArea;
-import net.runelite.api.coords.WorldPoint;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -54,9 +54,9 @@ public enum BankLocation {
         return area;
     }
 
-    public static BankLocation getNearest(WorldPoint worldPoint) {
+    public static BankLocation getNearest() {
         return Arrays.stream(values())
-                .min(Comparator.comparingInt(x -> x.getArea().distanceTo(worldPoint)))
+                .min(Comparator.comparingInt(x -> Movement.calculateDistance(x.getArea().toWorldPoint())))
                 .orElse(null);
     }
 }
