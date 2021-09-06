@@ -20,6 +20,7 @@ import meteor.plugins.animsmoothing.AnimationSmoothingPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.api.interaction.InteractionPlugin;
 import meteor.plugins.blackjack.BlackjackPlugin;
+import meteor.plugins.coxraidscouter.coxraidscouter;
 import meteor.plugins.entityhider.EntityHiderPlugin;
 import meteor.plugins.hootfighter.HootFighterPlugin;
 import meteor.plugins.api.example.deathevent.DeathEventPlugin;
@@ -220,6 +221,7 @@ public class PluginManager {
 		plugins.add(new ClueScrollPlugin());
 		plugins.add(new CombatLevelPlugin());
 		plugins.add(new ContinueClickerPlugin());
+		plugins.add(new coxraidscouter());
 		plugins.add(new RaidsPlugin());
 		plugins.add(new CoxPlugin());
 		plugins.add(new DagannothKingsPlugin());
