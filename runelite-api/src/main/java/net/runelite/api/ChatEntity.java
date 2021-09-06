@@ -22,19 +22,24 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api.events;
-
-import lombok.Value;
-import net.runelite.api.ChatEntity;
+package net.runelite.api;
 
 /**
- * An event trigger when a player is removed from the friend or ignore list.
+ * Represents a chat entity that has a name.
  */
-@Value
-public class RemovedFriend {
+public interface ChatEntity extends Comparable<ChatEntity> {
 
   /**
-   * The removed friend or ignore entry
+   * The name of the player.
+   *
+   * @return the name
    */
-  private final ChatEntity chatEntity;
+  String getName$api();
+
+  /**
+   * The previous name the player had.
+   *
+   * @return the previous name
+   */
+  String getPrevName();
 }

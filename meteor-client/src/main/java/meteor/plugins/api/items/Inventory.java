@@ -11,9 +11,11 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class Inventory {
+public class Inventory extends Items {
+    private static final Inventory INVENTORY = new Inventory();
 
-    public static List<Item> getAll(Predicate<Item> filter) {
+    @Override
+    protected List<Item> all(Predicate<Item> filter) {
         List<Item> items = new ArrayList<>();
         ItemContainer container = Game.getClient().getItemContainer(InventoryID.INVENTORY);
         if (container == null) {
@@ -36,24 +38,16 @@ public class Inventory {
         return items;
     }
 
+    public static List<Item> getAll(Predicate<Item> filter) {
+        return INVENTORY.all(filter);
+    }
+
     public static List<Item> getAll() {
         return getAll(x -> true);
     }
 
-    public static Item getFirst(Predicate<Item> filter) {
-        return getAll(filter).stream().findFirst().orElse(null);
-    }
-
     public static List<Item> getAll(int... ids) {
-        return getAll(x -> {
-            for (int id : ids) {
-                if (id == x.getId()) {
-                    return true;
-                }
-            }
-
-            return false;
-        });
+        return INVENTORY.all(ids);
     }
 
     public static List<Item> getAll(String... names) {
@@ -72,64 +66,28 @@ public class Inventory {
         });
     }
 
-    public static Item getFirst(int... ids) {
-        return getFirst(x -> {
-            for (int id : ids) {
-                if (id == x.getId()) {
-                    return true;
-                }
-            }
+    public static Item getFirst(Predicate<Item> filter) {
+        return INVENTORY.first(filter);
+    }
 
-            return false;
-        });
+    public static Item getFirst(int... ids) {
+        return INVENTORY.first(ids);
     }
 
     public static Item getFirst(String... names) {
-        return getFirst(x -> {
-            if (x.getName() == null) {
-                return false;
-            }
-
-            for (String name : names) {
-                if (name.equals(x.getName())) {
-                    return true;
-                }
-            }
-
-            return false;
-        });
+        return INVENTORY.first(names);
     }
 
     public static boolean contains(Predicate<Item> filter) {
-        return getFirst(filter) != null;
+        return INVENTORY.exists(filter);
     }
 
-    public static boolean contains(int... ids) {
-        return contains(x -> {
-            for (int id : ids) {
-                if (id == x.getId()) {
-                    return true;
-                }
-            }
-
-            return false;
-        });
+    public static boolean contains(int id) {
+        return INVENTORY.exists(id);
     }
 
-    public static boolean contains(String... names) {
-        return contains(x -> {
-            if (x.getName() == null) {
-                return false;
-            }
-
-            for (String name : names) {
-                if (name.equals(x.getName())) {
-                    return true;
-                }
-            }
-
-            return false;
-        });
+    public static boolean contains(String name) {
+        return INVENTORY.exists(name);
     }
 
     public static void cacheItems(ItemContainer container) {
@@ -147,9 +105,4 @@ public class Inventory {
             });
         }
     }
-
-    public static boolean isFull() {
-        return getAll(x -> true).size() == 28;
-    }
-
 }

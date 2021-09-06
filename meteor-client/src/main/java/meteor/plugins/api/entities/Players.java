@@ -12,56 +12,30 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class Players {
-
-    public static List<Player> getAll(Predicate<Player> filter) {
+public class Players extends Entities<Player> {
+    private static final Players PLAYERS = new Players();
+    @Override
+    protected List<Player> all(Predicate<? super Player> filter) {
         return Game.getClient().getPlayers()
                 .stream()
                 .filter(filter)
                 .collect(Collectors.toList());
     }
 
+    public static List<Player> getAll(Predicate<Player> filter) {
+        return PLAYERS.all(filter);
+    }
+
     public static List<Player> getAll(String... names) {
-        return getAll(x -> {
-            if (x.getName() == null) {
-                return false;
-            }
-
-            for (String name : names) {
-                if (name.equals(x.getName())) {
-                    return true;
-                }
-            }
-
-            return false;
-        });
+        return PLAYERS.all(names);
     }
 
     public static Player getNearest(Predicate<Player> filter) {
-        Player local = Game.getClient().getLocalPlayer();
-        if (local == null) {
-            return null;
-        }
-
-        return getAll(filter).stream()
-                .min(Comparator.comparingInt(t -> t.getWorldLocation().distanceTo(local.getWorldLocation())))
-                .orElse(null);
+        return PLAYERS.nearest(filter);
     }
 
     public static Player getNearest(String... names) {
-        return getNearest(x -> {
-            if (x.getName() == null) {
-                return false;
-            }
-
-            for (String name : names) {
-                if (name.equals(x.getName())) {
-                    return true;
-                }
-            }
-
-            return false;
-        });
+        return PLAYERS.nearest(names);
     }
 
     public static Player getHintArrowed() {

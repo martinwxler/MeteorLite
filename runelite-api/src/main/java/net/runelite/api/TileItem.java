@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * Represents an item inside an {@link ItemLayer}.
  */
-public interface TileItem extends Renderable, Interactable {
+public interface TileItem extends Renderable, SceneEntity {
 
   /**
    * @return the ID of the item

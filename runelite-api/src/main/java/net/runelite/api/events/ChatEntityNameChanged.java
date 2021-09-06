@@ -25,16 +25,16 @@
 package net.runelite.api.events;
 
 import lombok.Value;
-import net.runelite.api.Nameable;
+import net.runelite.api.ChatEntity;
 
 /**
- * An event where a {@link Nameable} has had their name changed.
+ * An event where a {@link ChatEntity} has had their name changed.
  */
 @Value
-public class NameableNameChanged {
+public class ChatEntityNameChanged {
 
   /**
    * The nameable that changed names.
    */
-  Nameable nameable;
+  ChatEntity chatEntity;
 }

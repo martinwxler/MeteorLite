@@ -48,7 +48,6 @@ import net.runelite.api.packets.PacketWriter;
 import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.mapping.Import;
 import org.sponge.util.Logger;
 
 /**
@@ -1245,12 +1244,12 @@ public interface Client extends GameEngine {
   /**
    * Retrieve the nameable container containing friends
    */
-  NameableContainer<Friend> getFriendContainer();
+  ChatEntityContainer<Friend> getFriendContainer();
 
   /**
    * Retrieve the nameable container containing ignores
    */
-  NameableContainer<Ignore> getIgnoreContainer();
+  ChatEntityContainer<Ignore> getIgnoreContainer();
 
   /**
    * Gets the clients saved preferences.

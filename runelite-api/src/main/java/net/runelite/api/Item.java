@@ -33,7 +33,7 @@ import java.util.List;
 import net.runelite.api.widgets.WidgetItem;
 
 @Data
-public class Item implements Interactable {
+public class Item implements Interactable, Identifiable, Nameable {
 	private final int id;
 	private final int quantity;
 
@@ -44,6 +44,7 @@ public class Item implements Interactable {
 	private int actionParam;
 	private int widgetId;
 
+	@Override
 	public String getName() {
 		return client.getItemComposition(getId()).getName().replace('\u00A0', ' ');
 	}
