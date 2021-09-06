@@ -22,7 +22,7 @@ public interface SocketThievingConfig extends Config {
     @Range(textInput = true)
     @ConfigItem(
             keyName = "gumdropFactor",
-            name = "Gumdrop Highlight Factor",
+            name = "Gumdrop Highlight",
             description = "Highlight bat chests in pretty colors idk why this is a text field",
             position = 2
     )

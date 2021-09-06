@@ -5,8 +5,10 @@ import com.sun.javafx.collections.ObservableListWrapper;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -15,6 +17,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import meteor.MeteorLiteClientLauncher;
 import meteor.MeteorLiteClientModule;
 import meteor.config.Button;
@@ -36,6 +39,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import static java.awt.event.KeyEvent.getExtendedKeyCodeForChar;
 import static meteor.ui.controllers.PluginListUI.lastPluginInteracted;
 import static meteor.ui.controllers.PluginListUI.pluginPanels;
 
@@ -135,6 +139,9 @@ public class PluginConfigUI {
 				if (configItemDescriptor.getType() == Button.class) {
 					createButtonNode(descriptor, configContainer, configItemDescriptor);
 				}
+				if (configItemDescriptor.getType() == ModifierlessKeybind.class) {
+					createHotKeyNode(descriptor, configContainer, configItemDescriptor);
+				}
 				if (configItemDescriptor.getType().isEnum()) {
 					createEnumNode(descriptor, configContainer, configItemDescriptor);
 				}
@@ -200,6 +207,42 @@ public class PluginConfigUI {
 		});
 
 		addConfigItemComponents(root, button);
+	}
+
+	private void createHotKeyNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
+		Text name = createText(configItem.name(), Paint.valueOf("WHITE"), configItem.getItem().description());
+		AnchorPane.setTopAnchor(name, 8.0);
+		AnchorPane.setLeftAnchor(name, 8.0);
+
+		ConfigButton button = new ConfigButton(false);;
+		AnchorPane.setTopAnchor(button, 4.0);
+		AnchorPane.setBottomAnchor(button, 4.0);
+		AnchorPane.setRightAnchor(button, 0.0);
+		AnchorPane.setLeftAnchor(button, 190.0);
+		AtomicReference<FontAwesomeIcon> icon = new AtomicReference<>();
+
+		button.setText(configManager.getConfiguration(config.getGroup().value(), configItem.key(), ModifierlessKeybind.class).toString());
+		button.autosize();
+		button.setStyle("-fx-background-color: #252525; -fx-text-fill: CYAN; -jfx-button-type: RAISED;");
+
+		button.pressedProperty().addListener((options, oldValue, pressed) -> {
+			if (!pressed) {
+				return;
+			}
+
+			button.setText("Press any key...");
+			EventHandler<KeyEvent> keyListener = (e) -> {
+				configManager.setConfiguration(config.getGroup().value(), configItem.key(), new ModifierlessKeybind(getExtendedKeyCodeForChar(e.getCharacter().charAt(0)),
+						0));
+				button.setText(e.getCharacter().toUpperCase());
+			};
+			EventHandler<KeyEvent> unregisterListener = (e) -> {
+				button.removeEventHandler(KeyEvent.KEY_TYPED, keyListener);
+			};
+			button.addEventHandler(KeyEvent.KEY_TYPED, keyListener);
+			button.addEventHandler(KeyEvent.KEY_TYPED, unregisterListener);
+		});
+		addConfigItemComponents(root, name, button);
 	}
 
 	private void createEnumNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
