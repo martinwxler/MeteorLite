@@ -23,4 +23,13 @@ public interface InteractionConfig extends Config {
 	default boolean drawMouse() {
 		return false;
 	}
+
+	@ConfigItem(
+					keyName = "debug",
+					name = "Debug actions",
+					description = "Prints out sent actions to console"
+	)
+	default boolean debug() {
+		return false;
+	}
 }

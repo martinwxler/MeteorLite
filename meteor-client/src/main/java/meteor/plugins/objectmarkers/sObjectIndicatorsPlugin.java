@@ -294,7 +294,7 @@ public class sObjectIndicatorsPlugin extends Plugin
 					&& objectPoint.getId() == object.getId())
 			{
 				objects.add(new ColorTileObject(object,
-					client.getObjectDefinition(object.getId()),
+					client.getObjectComposition(object.getId()),
 					objectPoint.getName(),
 					objectPoint.getColor()));
 				break;
@@ -354,7 +354,7 @@ public class sObjectIndicatorsPlugin extends Plugin
 
 		// Menu action EXAMINE_OBJECT sends the transformed object id, not the base id, unlike
 		// all of the GAME_OBJECT_OPTION actions, so check the id against the impostor ids
-		final ObjectComposition comp = client.getObjectDefinition(tileObject.getId());
+		final ObjectComposition comp = client.getObjectComposition(tileObject.getId());
 
 		if (comp.getImpostorIds() != null)
 		{
@@ -410,7 +410,7 @@ public class sObjectIndicatorsPlugin extends Plugin
 		{
 			objectPoints.add(point);
 			objects.add(new ColorTileObject(object,
-				client.getObjectDefinition(object.getId()),
+				client.getObjectComposition(object.getId()),
 				name,
 				color));
 		}
@@ -454,7 +454,7 @@ public class sObjectIndicatorsPlugin extends Plugin
 	@Nullable
 	private ObjectComposition getObjectComposition(int id)
 	{
-		ObjectComposition objectComposition = client.getObjectDefinition(id);
+		ObjectComposition objectComposition = client.getObjectComposition(id);
 		return objectComposition.getImpostorIds() == null ? objectComposition : objectComposition.getImpostor();
 	}
 }

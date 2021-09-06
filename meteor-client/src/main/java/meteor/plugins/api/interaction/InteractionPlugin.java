@@ -2,6 +2,7 @@ package meteor.plugins.api.interaction;
 
 import com.google.inject.Provides;
 import meteor.config.ConfigManager;
+import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.input.MouseManager;
 import meteor.plugins.Plugin;
@@ -42,17 +43,38 @@ public class InteractionPlugin extends Plugin {
 
 	@Inject
 	private Client client;
-	private MenuEntry action;
-	private int mouseClickX;
-	private int mouseClickY;
+	private volatile MenuEntry action;
+	private volatile int mouseClickX = -1;
+	private volatile int mouseClickY = -1;
 
 	@Subscribe
 	public void onInvokeMenuAction(InvokeMenuActionEvent e) {
+		if (config.debug()) {
+			String action = "O=" + e.getOption()
+							+ " | T=" + e.getTarget()
+							+ " | ID=" + e.getId()
+							+ " | OP=" + e.getOpcode()
+							+ " | P0=" + e.getParam0()
+							+ " | P1=" +  e.getParam1();
+			logger.debug("[Bot Action] {}", action);
+		}
+
 		if (config.mouseEvents()) {
+			if (!interactReady()) {
+				action = null;
+				mouseClickX = -1;
+				mouseClickY = -1;
+				logger.error("Interact was not ready (Interacting too fast probably)");
+				return;
+			}
+
 			Point randomPoint = getClickPoint();
 			mouseClickX = randomPoint.x;
 			mouseClickY = randomPoint.y;
-			logger.debug("Sending click to {} {}", mouseClickX, mouseClickY);
+			if (config.debug()) {
+				logger.debug("Sending click to {} {}", mouseClickX, mouseClickY);
+			}
+
 
 			action = new MenuEntry(e.getOption(), e.getTarget(), e.getId(),
 							e.getOpcode(), e.getParam0(), e.getParam1(), false);
@@ -69,38 +91,36 @@ public class InteractionPlugin extends Plugin {
 			e.consume();
 
 			if (action == null) {
-				logger.error("Couldn't send menu action after click");
+				logger.error("Menu replace failed");
 				return;
 			}
 
 			processAction(action);
+			return;
+		}
+
+		if (config.debug()) {
+			String action = "O=" + e.getMenuOption()
+							+ " | T=" + e.getMenuTarget()
+							+ " | ID=" + e.getId()
+							+ " | OP=" + e.getMenuAction().getId()
+							+ " | P0=" + e.getParam0()
+							+ " | P1=" +  e.getParam1();
+			logger.debug("[Manual Action] {}", action);
 		}
 	}
 
-	private void processAction(MenuEntry action) {
-		if (action.getMenuAction() == MenuAction.WALK) {
-			Movement.setDestination(action.getParam0(), action.getParam1());
+	private void processAction(MenuEntry entry) {
+		if (entry.getMenuAction() == MenuAction.WALK) {
+			Movement.setDestination(entry.getParam0(), entry.getParam1());
 		} else {
-			GameThread.invoke(() -> client.invokeMenuAction(action.getOption(), action.getTarget(), action.getId(),
-							action.getMenuAction().getId(), action.getParam0(), action.getParam1()));
+			GameThread.invoke(() -> client.invokeMenuAction(entry.getOption(), entry.getTarget(), entry.getId(),
+							entry.getMenuAction().getId(), entry.getParam0(), entry.getParam1()));
 		}
-	}
 
-	@Provides
-	public InteractionConfig getConfig(ConfigManager configManager) {
-		return configManager.getConfig(InteractionConfig.class);
-	}
-
-	@Override
-	public void startup() {
-		overlayManager.add(overlay);
-		mouseManager.registerMouseListener(overlay);
-	}
-
-	@Override
-	public void shutdown() {
-		overlayManager.remove(overlay);
-		mouseManager.unregisterMouseListener(overlay);
+		action = null;
+		mouseClickX = -1;
+		mouseClickY = -1;
 	}
 
 	private Point getClickPoint() {
@@ -108,6 +128,7 @@ public class InteractionPlugin extends Plugin {
 		Point randomPoint = new Point(Rand.nextInt(2, bounds.width), Rand.nextInt(2, bounds.height));
 		Rectangle minimap = getMinimap();
 		if (minimap != null && minimap.contains(randomPoint)) {
+			logger.error("Click {} was inside minimap", randomPoint);
 			return getClickPoint();
 		}
 
@@ -131,5 +152,26 @@ public class InteractionPlugin extends Plugin {
 		}
 
 		return null;
+	}
+
+	private boolean interactReady() {
+		return mouseClickX == -1 && mouseClickY == -1;
+	}
+
+	@Provides
+	public InteractionConfig getConfig(ConfigManager configManager) {
+		return configManager.getConfig(InteractionConfig.class);
+	}
+
+	@Override
+	public void startup() {
+		overlayManager.add(overlay);
+		mouseManager.registerMouseListener(overlay);
+	}
+
+	@Override
+	public void shutdown() {
+		overlayManager.remove(overlay);
+		mouseManager.unregisterMouseListener(overlay);
 	}
 }

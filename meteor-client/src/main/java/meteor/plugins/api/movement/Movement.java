@@ -43,8 +43,6 @@ public class Movement {
     private static ScheduledExecutorService executor;
 
     private static void setWalkDestination(int sceneX, int sceneY) {
-        logger.debug("Setting destination {} {}", sceneX, sceneY);
-
         int attempts = 0;
 
         do {
@@ -130,7 +128,7 @@ public class Movement {
 
     public static void drawCollisions(Graphics2D graphics2D) {
         Client client = Game.getClient();
-        List<Tile> tiles = Tiles.getTiles();
+        java.util.List<Tile> tiles = Tiles.getTiles();
 
         if (tiles.isEmpty()) {
             return;
@@ -140,7 +138,7 @@ public class Movement {
 
         for (Transport transport : transports) {
             OverlayUtil.fillTile(graphics2D, client, transport.getSource(), TRANSPORT_COLOR);
-            Point center = Perspective.tileCenter(client, transport.getSource());
+            net.runelite.api.Point center = Perspective.tileCenter(client, transport.getSource());
             if (center == null) {
                 continue;
             }
@@ -159,12 +157,13 @@ public class Movement {
         }
 
         for (Tile tile : tiles) {
-            Shape poly = Perspective.getCanvasTilePoly(client, tile.getLocalLocation());
+            Polygon poly = Perspective.getCanvasTilePoly(client, tile.getLocalLocation());
             if (poly == null) {
                 continue;
             }
 
             StringBuilder sb = new StringBuilder("");
+            graphics2D.setColor(Color.WHITE);
             if (!collisionMap.n(tile.getWorldLocation())) {
                 sb.append("n");
             }
@@ -188,6 +187,22 @@ public class Movement {
 
             if (!s.equals("nswe")) {
                 graphics2D.setColor(Color.WHITE);
+                if (s.contains("n")) {
+                    graphics2D.drawLine(poly.xpoints[3], poly.ypoints[3], poly.xpoints[2], poly.ypoints[2]);
+                }
+
+                if (s.contains("s")) {
+                    graphics2D.drawLine(poly.xpoints[0], poly.ypoints[0], poly.xpoints[1], poly.ypoints[1]);
+                }
+
+                if (s.contains("w")) {
+                    graphics2D.drawLine(poly.xpoints[0], poly.ypoints[0], poly.xpoints[3], poly.ypoints[3]);
+                }
+
+                if (s.contains("e")) {
+                    graphics2D.drawLine(poly.xpoints[1], poly.ypoints[1], poly.xpoints[2], poly.ypoints[2]);
+                }
+
                 int stringX = (int)
                         (poly.getBounds().getCenterX() -
                                 graphics2D.getFontMetrics().getStringBounds(s, graphics2D).getWidth() / 2);

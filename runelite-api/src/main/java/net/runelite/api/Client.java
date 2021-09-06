@@ -941,7 +941,7 @@ public interface Client extends GameEngine {
    * @return the corresponding object composition
    * @see ObjectID
    */
-  ObjectComposition getObjectDefinition(int objectId);
+  ObjectComposition getObjectComposition(int objectId);
 
   /**
    * Gets the NPC composition corresponding to an NPCs ID.
@@ -950,7 +950,7 @@ public interface Client extends GameEngine {
    * @return the corresponding NPC composition
    * @see NpcID
    */
-  NPCComposition getNpcDefinition(int npcId);
+  NPCComposition getNpcComposition(int npcId);
 
   /**
    * Gets the {@link StructComposition} for a given struct ID
@@ -2306,4 +2306,16 @@ public interface Client extends GameEngine {
   boolean isLowCpu();
 
   void setLowCpu(boolean enabled);
+
+  void uncacheNPC(int id);
+
+  void uncacheItem(int id);
+
+  void uncacheObject(int id);
+
+  void clearNPCCache();
+
+  void clearItemCache();
+
+  void clearObjectCache();
 }

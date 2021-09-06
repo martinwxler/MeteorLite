@@ -140,7 +140,6 @@ public class HootFighterPlugin extends Plugin {
 					Item alchItem = Inventory.getFirst(x -> x.getName() != null && alchItems.contains(x.getName()));
 					if (alchItem != null) {
 						Magic.cast(alchSpell.getSpell(), alchItem);
-						return;
 					}
 				}
 			}

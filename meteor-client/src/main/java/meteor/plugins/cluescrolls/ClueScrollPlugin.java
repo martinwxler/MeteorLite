@@ -784,7 +784,7 @@ public class ClueScrollPlugin extends Plugin {
         }
 
         // Check impostors
-        final ObjectComposition comp = client.getObjectDefinition(object.getId());
+        final ObjectComposition comp = client.getObjectComposition(object.getId());
         final ObjectComposition impostor =
             comp.getImpostorIds() != null ? comp.getImpostor() : comp;
 
@@ -881,7 +881,7 @@ public class ClueScrollPlugin extends Plugin {
       return;
     }
 
-    final ObjectComposition comp = client.getObjectDefinition(object.getId());
+    final ObjectComposition comp = client.getObjectComposition(object.getId());
     final ObjectComposition impostor = comp.getImpostorIds() != null ? comp.getImpostor() : comp;
 
     for (final String name : objectNames) {

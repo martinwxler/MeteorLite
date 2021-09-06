@@ -13,10 +13,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class TileObjects {
-
     public static List<TileObject> getAll(Predicate<TileObject> filter) {
-        return Tiles.getTiles().stream()
-                .flatMap(tile -> parseTile(tile, filter).stream())
+        return getTileObjects(Tiles.getTiles()).stream()
+                .filter(filter)
                 .collect(Collectors.toList());
     }
 
@@ -116,14 +115,6 @@ public class TileObjects {
 
     private static List<TileObject> parseTile(Tile tile, Predicate<TileObject> pred) {
         Predicate<TileObject> filter = x -> {
-            if (x.getId() == -1) {
-                return false;
-            }
-
-            if (!Game.getClient().isTileObjectValid(tile, x)) {
-                return false;
-            }
-
             if (!x.isDefinitionCached()) {
                 return GameThread.invokeLater(() -> {
                     x.getCachedDefinition(); // cache it
@@ -134,26 +125,56 @@ public class TileObjects {
             return pred.test(x);
         };
 
+        return getTileObjects(tile).stream()
+                .filter(filter)
+                .collect(Collectors.toList());
+    }
+
+    private static List<TileObject> getTileObjects(List<Tile> tiles) {
+        List<TileObject> out = new ArrayList<>();
+        for (Tile tile : tiles) {
+            out.addAll(getTileObjects(tile));
+        }
+
+        List<TileObject> notCached = out.stream()
+                .filter(x -> !x.isDefinitionCached())
+                .collect(Collectors.toList());
+        if (!notCached.isEmpty()) {
+            GameThread.invokeLater(() -> {
+                for (TileObject tileObject : notCached) {
+                    tileObject.getCachedDefinition();
+                }
+
+                return true;
+            });
+        }
+
+        return out;
+    }
+
+    private static List<TileObject> getTileObjects(Tile tile) {
         List<TileObject> out = new ArrayList<>();
         DecorativeObject dec = tile.getDecorativeObject();
-        if (dec != null && filter.test(dec)) {
+        if (dec != null && dec.getId() != -1) {
             out.add(dec);
         }
 
         WallObject wall = tile.getWallObject();
-        if (wall != null && filter.test(wall)) {
+        if (wall != null && wall.getId() != -1) {
             out.add(wall);
         }
 
         GroundObject grnd = tile.getGroundObject();
-        if (grnd != null && filter.test(grnd)) {
+        if (grnd != null && grnd.getId() != -1) {
             out.add(grnd);
         }
 
         GameObject[] gameObjects = tile.getGameObjects();
         if (gameObjects != null) {
             for (GameObject gameObject : gameObjects) {
-                if (gameObject == null || !filter.test(gameObject)) {
+                if (gameObject == null
+                        || !Game.getClient().isTileObjectValid(tile, gameObject)
+                        || gameObject.getId() == -1) {
                     continue;
                 }
 
