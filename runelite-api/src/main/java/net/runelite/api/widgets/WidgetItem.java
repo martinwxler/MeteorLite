@@ -106,26 +106,20 @@ public class WidgetItem implements Interactable {
   }
 
   @Override
-  public String[] getActions() {
+  public String[] getRawActions() {
     return client.getItemComposition(getId()).getInventoryActions();
   }
 
   @Override
-  public List<String> actions() {
-    return Arrays
-        .stream(getActions()).filter(Objects::nonNull).collect(Collectors.toList());
-  }
-
-  @Override
   public void interact(String action) {
-    interact(actions().indexOf(action));
+    interact(getActions().indexOf(action));
   }
 
   @Override
   public int getActionId(int action) {
     switch (action) {
       case 0:
-        if (getActions()[0] == null) {
+        if (getRawActions()[0] == null) {
           return MenuAction.ITEM_USE.getId();
         }
 

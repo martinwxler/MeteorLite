@@ -23,7 +23,8 @@ import java.util.zip.GZIPInputStream;
 public class Walker {
     private static final Logger logger = new Logger("Walker");
     private static final int MAX_INTERACT_DISTANCE = 20;
-    private static final int MIN_TILES_WALKED_IN_STEP = 10;
+    private static final int MIN_TILES_WALKED_IN_STEP = 5;
+    private static final int MAX_TILES_WALKED_IN_STEP = 12;
     private static final int MIN_TILES_WALKED_BEFORE_RECHOOSE = 10;
     private static final int MIN_TILES_LEFT_BEFORE_RECHOOSE = 3;
     private static final int MAX_MIN_ENERGY = 50;
@@ -102,7 +103,7 @@ public class Walker {
             return step(reachablePath.get(reachablePath.size() - 1));
         }
 
-        int targetDistance = MIN_TILES_WALKED_IN_STEP + Rand.nextInt(0, reachablePath.size() - MIN_TILES_WALKED_IN_STEP);
+        int targetDistance =  Rand.nextInt(MIN_TILES_WALKED_IN_STEP, Math.min(reachablePath.size(), MAX_TILES_WALKED_IN_STEP));
         return step(reachablePath.get(targetDistance));
     }
 
@@ -189,14 +190,16 @@ public class Walker {
             if (isDoored(tileA, tileB)) {
                 tileA.getWallObject().interact("Open");
                 logger.debug("Handling door {}", tileA.getWallObject().getWorldLocation());
-                Time.sleep(2000);
+                Time.sleepUntil(() -> tileA.getWallObject() == null
+                        || !tileA.getWallObject().hasAction("Open"), 2000);
                 return true;
             }
 
             if (isDoored(tileB, tileA)) {
                 tileB.getWallObject().interact("Open");
                 logger.debug("Handling door {}", tileB.getWallObject().getWorldLocation());
-                Time.sleep(2000);
+                Time.sleepUntil(() -> tileB.getWallObject() == null
+                        || !tileB.getWallObject().hasAction("Open"), 2000);
                 return true;
             }
         }

@@ -30,8 +30,7 @@ import net.runelite.api.widgets.*;
 
 import java.util.Arrays;
 import java.util.List;
-
-import net.runelite.api.widgets.WidgetItem;
+import java.util.stream.Collectors;
 
 @Data
 public class Item implements Interactable, Identifiable, Nameable {
@@ -51,14 +50,17 @@ public class Item implements Interactable, Identifiable, Nameable {
 	}
 
 	@Override
-	public String[] getActions() {
+	public String[] getRawActions() {
 		if (WidgetInfo.TO_GROUP(widgetId) == WidgetID.INVENTORY_GROUP_ID) {
 			return client.getItemComposition(getId()).getInventoryActions();
 		}
 
 		Widget widget = client.getWidget(widgetId);
 		if (widget != null) {
-			return widget.getActions();
+			Widget itemChild = widget.getChild(slot);
+			if (itemChild != null) {
+				return itemChild.getRawActions();
+			}
 		}
 
 		return null;
@@ -68,7 +70,7 @@ public class Item implements Interactable, Identifiable, Nameable {
 	public int getActionId(int action) {
 		switch (action) {
 			case 0:
-				if (getActions()[0] == null) {
+				if (getRawActions()[0] == null) {
 					return MenuAction.ITEM_USE.getId();
 				}
 
@@ -87,24 +89,21 @@ public class Item implements Interactable, Identifiable, Nameable {
 	}
 
 	@Override
-	public List<String> actions() {
-		return Arrays.asList(getActions());
-	}
-
-	@Override
 	public void interact(String action) {
-		interact(actions().indexOf(action));
+		interact(getActions().indexOf(action));
 	}
 
 	@Override
 	public void interact(int index) {
 		switch (getType()) {
 			case TRADE, TRADE_INVENTORY -> {
-				Widget itemWidget = client.getWidget(widgetId);
-				if (itemWidget == null) {
-					return;
+				Widget widget = client.getWidget(widgetId);
+				if (widget != null) {
+					Widget itemChild = widget.getChild(slot);
+					if (itemChild != null) {
+						itemChild.interact(index);
+					}
 				}
-				itemWidget.interact(index);
 			}
 			case EQUIPMENT -> interact(index, index > 4 ? MenuAction.CC_OP_LOW_PRIORITY.getId()
 							: MenuAction.CC_OP.getId());

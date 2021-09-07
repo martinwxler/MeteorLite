@@ -45,7 +45,7 @@ import net.runelite.api.*;
  * <p>
  * For a more complete idea of what is classified as a widget, see {@link WidgetID}.
  */
-public interface Widget extends Interactable {
+public interface Widget extends Interactable, Identifiable {
 
   /**
    * Gets the widgets ID.
@@ -614,7 +614,7 @@ public interface Widget extends Interactable {
   /**
    * Gets the menu options available on the widget as a sparse array.
    */
-  String[] getActions();
+  String[] getRawActions();
 
   /**
    * Creates a dynamic widget child

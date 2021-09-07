@@ -89,6 +89,10 @@ public class Text
 	 */
 	public static String removeTags(String str, boolean removeLevels)
 	{
+		if (str == null) {
+			return null;
+		}
+
 		if (removeLevels)
 		{
 			int levelIdx =  StringUtils.lastIndexOf(str, "  (level");
@@ -270,6 +274,10 @@ public class Text
 	 */
 	public static String sanitize(String name)
 	{
+		if (name == null) {
+			return null;
+		}
+
 		String cleaned = name.contains("<img") ? name.substring(name.lastIndexOf('>') + 1) : name;
 		return cleaned.replace('\u00A0', ' ');
 	}

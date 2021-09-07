@@ -110,7 +110,7 @@ public class Dialog {
 	public static void enterInput(String input) {
 		Time.sleepUntil(Dialog::isEnterInputOpen, 2000);
 		if (isEnterInputOpen()) {
-			Keyboard.type(input);
+			Keyboard.type(input, true);
 		}
 	}
 

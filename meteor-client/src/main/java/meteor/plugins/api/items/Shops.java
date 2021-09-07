@@ -111,7 +111,7 @@ public class Shops {
 
 		for (Widget item : items) {
 			if (item.getItemId() == itemId) {
-				String action = Arrays.stream(item.getActions())
+				String action = item.getActions().stream()
 								.filter(x -> x != null && x.contains(String.valueOf(amount)))
 								.findFirst()
 								.orElse(null);

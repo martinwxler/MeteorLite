@@ -1,10 +1,5 @@
 package net.runelite.mixins;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.OverheadPrayerChanged;
@@ -15,6 +10,9 @@ import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSModel;
 import net.runelite.rs.api.RSPlayer;
 import net.runelite.rs.api.RSUsername;
+
+import java.awt.*;
+import java.util.ArrayList;
 
 import static net.runelite.api.SkullIcon.*;
 
@@ -248,14 +246,8 @@ public abstract class PlayerMixin implements RSPlayer {
 
   @Inject
   @Override
-  public String[] getActions() {
+  public String[] getRawActions() {
     return client.getPlayerOptions();
-  }
-
-  @Inject
-  @Override
-  public List<String> actions() {
-    return Arrays.asList(getActions());
   }
 
   @Override
@@ -267,7 +259,7 @@ public abstract class PlayerMixin implements RSPlayer {
   @Inject
   @Override
   public void interact(String action) {
-    interact(actions().indexOf(action));
+    interact(getActions().indexOf(action));
   }
 
   @Inject

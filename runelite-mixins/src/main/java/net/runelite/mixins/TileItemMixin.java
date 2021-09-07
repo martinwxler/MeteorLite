@@ -1,15 +1,13 @@
 package net.runelite.mixins;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import net.runelite.api.ItemComposition;
 import net.runelite.api.MenuAction;
-import net.runelite.api.Point;
 import net.runelite.api.Tile;
 import net.runelite.api.coords.LocalPoint;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ItemQuantityChanged;
 import net.runelite.api.mixins.FieldHook;
 import net.runelite.api.mixins.Inject;
@@ -145,19 +143,13 @@ public abstract class TileItemMixin implements RSTileItem {
 
   @Override
   @Inject
-  public List<String> actions() {
-    return Arrays.asList(getActions());
-  }
-
-  @Override
-  @Inject
   public void interact(String action) {
-    interact(actions().indexOf(action));
+    interact(getActions().indexOf(action));
   }
 
   @Inject
   @Override
-  public String[] getActions() {
+  public String[] getRawActions() {
     return getComposition().getGroundActions();
   }
 

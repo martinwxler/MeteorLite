@@ -1,17 +1,11 @@
 package net.runelite.mixins;
 
-import java.awt.Shape;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import net.runelite.api.MenuAction;
 import net.runelite.api.NPCComposition;
 import net.runelite.api.Perspective;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.NpcChanged;
 import net.runelite.api.events.NpcDespawned;
-import net.runelite.api.events.NpcTransformedChanged;
-import net.runelite.api.events.NpcTransformedDespawned;
 import net.runelite.api.mixins.FieldHook;
 import net.runelite.api.mixins.Inject;
 import net.runelite.api.mixins.Mixin;
@@ -21,6 +15,9 @@ import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSModel;
 import net.runelite.rs.api.RSNPC;
 import net.runelite.rs.api.RSNPCComposition;
+
+import java.awt.*;
+import java.util.HashMap;
 
 @Mixin(RSNPC.class)
 public abstract class NPCMixin implements RSNPC {
@@ -145,7 +142,7 @@ public abstract class NPCMixin implements RSNPC {
 
   @Inject
   @Override
-  public String[] getActions()
+  public String[] getRawActions()
   {
     RSNPCComposition composition = transformIfRequired();
     return composition == null ? null : composition.getActions();
@@ -175,27 +172,8 @@ public abstract class NPCMixin implements RSNPC {
 
   @Override
   @Inject
-  public List<String> actions() {
-    List<String> actions = new ArrayList<>();
-    for (String s : getComposition().getActions())
-      if (s != null)
-        actions.add(s);
-    return actions;
-  }
-
-  @Override
-  @Inject
   public void interact(String action) {
-    String[] actions = getComposition().getActions();
-
-    for (int i = 0; i < actions.length; i++) {
-      if (action.equalsIgnoreCase(actions[i])) {
-        interact(i);
-        return;
-      }
-    }
-
-    throw new IllegalArgumentException("action \"" + action + "\" not found on NPC " + getId());
+    interact(getActions().indexOf(action));
   }
 
   @Override

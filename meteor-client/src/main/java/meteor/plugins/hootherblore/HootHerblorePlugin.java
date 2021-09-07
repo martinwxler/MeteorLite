@@ -1,5 +1,6 @@
 package meteor.plugins.hootherblore;
 
+import com.google.inject.Provides;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
@@ -51,7 +52,7 @@ public class HootHerblorePlugin extends Plugin {
 		}
 	}
 
-	@Override
+	@Provides
 	public HootHerbloreConfig getConfig(ConfigManager configManager) {
 		return configManager.getConfig(HootHerbloreConfig.class);
 	}

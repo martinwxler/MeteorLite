@@ -123,7 +123,7 @@ public abstract class TileObjectMixin implements TileObject {
 
   @Inject
   @Override
-  public String[] getActions() {
+  public String[] getRawActions() {
     RSObjectComposition def = getCachedDefinition();
     return def == null ? null : def.getActions();
   }
@@ -160,7 +160,7 @@ public abstract class TileObjectMixin implements TileObject {
   @Override
   @Inject
   public void interact(String action) {
-    interact(actions().indexOf(action));
+    interact(getActions().indexOf(action));
   }
 
   @Override
@@ -181,14 +181,6 @@ public abstract class TileObjectMixin implements TileObject {
         throw new IllegalArgumentException("action = " + action);
     }
   }
-
-  @Override
-  @Inject
-  public List<String> actions() {
-    return Arrays.asList(getActions());
-  }
-
-
 
   @Override
   @Inject
