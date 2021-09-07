@@ -1588,7 +1588,7 @@ public abstract class ClientMixin implements RSClient {
   @Inject
   @Override
   public String getLoginMessage() {
-    if (getLoginIndex() == 12) {
+    if (getLoginIndex() == 14) {
       if (getBanType() == 0) {
         return "Your account has been disabled. Please visit the support page for assistance.";
       }

@@ -10,6 +10,7 @@ import javax.inject.Inject;
 
 public class Game {
     private static final int MEMBER_DAYS_VARP = 1780;
+    private static final int CUTSCENE_VARBIT = 542;
     @Inject
     private static Client client;
 
@@ -49,5 +50,9 @@ public class Game {
 
     public static int getMembershipDays() {
         return Vars.getVarp(MEMBER_DAYS_VARP);
+    }
+
+    public static boolean isInCutscene() {
+        return Vars.getBit(CUTSCENE_VARBIT) > 0;
     }
 }
