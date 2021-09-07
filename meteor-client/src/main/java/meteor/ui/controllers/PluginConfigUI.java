@@ -142,6 +142,9 @@ public class PluginConfigUI {
 				if (configItemDescriptor.getType() == ModifierlessKeybind.class) {
 					createHotKeyNode(descriptor, configContainer, configItemDescriptor);
 				}
+				if (configItemDescriptor.getType() == Keybind.class) {
+					createDefaultKeyBindNode(descriptor, configContainer, configItemDescriptor);
+				}
 				if (configItemDescriptor.getType().isEnum()) {
 					createEnumNode(descriptor, configContainer, configItemDescriptor);
 				}
@@ -222,6 +225,42 @@ public class PluginConfigUI {
 		AtomicReference<FontAwesomeIcon> icon = new AtomicReference<>();
 
 		button.setText(configManager.getConfiguration(config.getGroup().value(), configItem.key(), ModifierlessKeybind.class).toString());
+		button.autosize();
+		button.setStyle("-fx-background-color: #252525; -fx-text-fill: CYAN; -jfx-button-type: RAISED;");
+
+		button.pressedProperty().addListener((options, oldValue, pressed) -> {
+			if (!pressed) {
+				return;
+			}
+
+			button.setText("Press any key...");
+			EventHandler<KeyEvent> keyListener = (e) -> {
+				configManager.setConfiguration(config.getGroup().value(), configItem.key(), new ModifierlessKeybind(getExtendedKeyCodeForChar(e.getCharacter().charAt(0)),
+						0));
+				button.setText(e.getCharacter().toUpperCase());
+			};
+			EventHandler<KeyEvent> unregisterListener = (e) -> {
+				button.removeEventHandler(KeyEvent.KEY_TYPED, keyListener);
+			};
+			button.addEventHandler(KeyEvent.KEY_TYPED, keyListener);
+			button.addEventHandler(KeyEvent.KEY_TYPED, unregisterListener);
+		});
+		addConfigItemComponents(root, name, button);
+	}
+
+	private void createDefaultKeyBindNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
+		Text name = createText(configItem.name(), Paint.valueOf("WHITE"), configItem.getItem().description());
+		AnchorPane.setTopAnchor(name, 8.0);
+		AnchorPane.setLeftAnchor(name, 8.0);
+
+		ConfigButton button = new ConfigButton(false);;
+		AnchorPane.setTopAnchor(button, 4.0);
+		AnchorPane.setBottomAnchor(button, 4.0);
+		AnchorPane.setRightAnchor(button, 0.0);
+		AnchorPane.setLeftAnchor(button, 190.0);
+		AtomicReference<FontAwesomeIcon> icon = new AtomicReference<>();
+
+		button.setText(configManager.getConfiguration(config.getGroup().value(), configItem.key(), Keybind.class).toString());
 		button.autosize();
 		button.setStyle("-fx-background-color: #252525; -fx-text-fill: CYAN; -jfx-button-type: RAISED;");
 
