@@ -125,7 +125,7 @@ public class OneClickThievingPlugin extends Plugin
          if (NPCs.getNearest(config.npcID()) != null) {
             NPC npc = NPCs.getNearest(config.npcID());
             event.setMenuEntry(new MenuEntry("Pickpocket","<col=ffff00>"+npc.getName()+"<col=ff00>  (level-"+npc.getCombatLevel()+")",npc.getIndex(),MenuAction.NPC_THIRD_OPTION.getId(),0,0,false));
-            switch (Arrays.asList(npc.getActions()).indexOf("Pickpocket")) {
+            switch (npc.getActions().indexOf("Pickpocket")) {
                case 0:
                   event.setMenuAction(MenuAction.NPC_FIRST_OPTION);
                   break;

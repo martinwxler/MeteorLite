@@ -27,6 +27,7 @@ package net.runelite.rs.api;
 import java.math.BigInteger;
 import java.util.Map;
 import net.runelite.api.Client;
+import net.runelite.api.IndexedSprite;
 import net.runelite.api.SpritePixels;
 import net.runelite.api.World;
 import net.runelite.api.clan.ClanRank;
@@ -1497,4 +1498,8 @@ public interface RSClient extends RSGameEngine, Client {
   @Import("loadWorlds")
   @Override
   boolean loadWorlds();
+
+  @Import("logoSprite")
+  @Override
+  void setLogoSprite(IndexedSprite indexedSprite);
 }

@@ -201,7 +201,7 @@ public class GrandExchange {
 				continue;
 			}
 
-			if (box.getActions() == null || !box.hasAction("Abort offer")) {
+			if (!box.hasAction("Abort offer")) {
 				continue;
 			}
 

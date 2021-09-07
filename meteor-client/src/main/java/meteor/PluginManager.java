@@ -67,6 +67,7 @@ import meteor.plugins.grotesqueguardians.GrotesqueGuardiansPlugin;
 import meteor.plugins.grounditems.GroundItemsPlugin;
 import meteor.plugins.herbiboars.HerbiboarPlugin;
 import meteor.plugins.hootagility.HootAgilityPlugin;
+import meteor.plugins.hootherblore.HootHerblorePlugin;
 import meteor.plugins.hunter.HunterPlugin;
 import meteor.plugins.implings.ImplingsPlugin;
 import meteor.plugins.inferno.InfernoPlugin;
@@ -248,6 +249,7 @@ public class PluginManager {
 		plugins.add(new HerbiboarPlugin());
 		plugins.add(new HootAgilityPlugin());
 		plugins.add(new HootFighterPlugin());
+		plugins.add(new HootHerblorePlugin());
 		plugins.add(new HunterPlugin());
 		plugins.add(new ImplingsPlugin());
 		plugins.add(new InfernoPlugin());

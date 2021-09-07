@@ -38,7 +38,7 @@ public class TeleportLoader {
 
     public static List<Teleport> buildTeleports() {
         if (lastBuild.plusSeconds(BUILD_DELAY_SECONDS).isAfter(Instant.now())) {
-            return List.copyOf(LAST_TELEPORT_LIST);
+            return LAST_TELEPORT_LIST;
         }
 
         lastBuild = Instant.now();
@@ -149,8 +149,8 @@ public class TeleportLoader {
                 }
             }
         }
-        LAST_TELEPORT_LIST = teleports;
-        return List.copyOf(LAST_TELEPORT_LIST);
+
+        return List.copyOf(LAST_TELEPORT_LIST = teleports);
     }
 
     public static void jewelryTeleport(String target, int... ids) {

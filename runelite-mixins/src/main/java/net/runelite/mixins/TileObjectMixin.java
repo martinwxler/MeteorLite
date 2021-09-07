@@ -16,6 +16,7 @@ import net.runelite.api.mixins.Inject;
 import net.runelite.api.mixins.Mixin;
 import net.runelite.api.mixins.Mixins;
 import net.runelite.api.mixins.Shadow;
+import net.runelite.api.util.Text;
 import net.runelite.rs.api.*;
 
 @Mixins({
@@ -117,12 +118,12 @@ public abstract class TileObjectMixin implements TileObject {
   @Override
   public String getName() {
     RSObjectComposition def = getCachedDefinition();
-    return def == null ? null : def.getName().replace('\u00A0', ' ');
+    return def == null ? null : Text.removeTags(Text.sanitize(def.getName()));
   }
 
   @Inject
   @Override
-  public String[] getActions() {
+  public String[] getRawActions() {
     RSObjectComposition def = getCachedDefinition();
     return def == null ? null : def.getActions();
   }
@@ -159,7 +160,7 @@ public abstract class TileObjectMixin implements TileObject {
   @Override
   @Inject
   public void interact(String action) {
-    interact(actions().indexOf(action));
+    interact(getActions().indexOf(action));
   }
 
   @Override
@@ -180,14 +181,6 @@ public abstract class TileObjectMixin implements TileObject {
         throw new IllegalArgumentException("action = " + action);
     }
   }
-
-  @Override
-  @Inject
-  public List<String> actions() {
-    return Arrays.asList(getActions());
-  }
-
-
 
   @Override
   @Inject

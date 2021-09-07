@@ -2317,4 +2317,6 @@ public interface Client extends GameEngine {
   void clearItemCache();
 
   void clearObjectCache();
+
+  void setLogoSprite(IndexedSprite indexedSprite);
 }

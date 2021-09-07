@@ -425,7 +425,7 @@ public class EntityInspectorOverlay extends Overlay {
 			}
 
 			if (config.actions()) {
-				sb.append("Actions: ").append(Arrays.toString(actor.getActions())).append("\n");
+				sb.append("Actions: ").append(Arrays.toString(actor.getRawActions())).append("\n");
 			}
 
 			if (config.worldLocations()) {
@@ -441,7 +441,7 @@ public class EntityInspectorOverlay extends Overlay {
 			}
 
 			if (config.actions()) {
-				sb.append("Actions: ").append(Arrays.toString(obj.getActions())).append("\n");
+				sb.append("Actions: ").append(Arrays.toString(obj.getRawActions())).append("\n");
 			}
 
 			if (config.worldLocations()) {
@@ -457,7 +457,7 @@ public class EntityInspectorOverlay extends Overlay {
 			}
 
 			if (config.actions()) {
-				sb.append("Actions: ").append(Arrays.toString(tileItem.getActions())).append("\n");
+				sb.append("Actions: ").append(Arrays.toString(tileItem.getRawActions())).append("\n");
 			}
 
 			if (config.worldLocations()) {
