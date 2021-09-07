@@ -10,6 +10,7 @@ import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.OverheadPrayerChanged;
 import net.runelite.api.events.PlayerSkullChanged;
 import net.runelite.api.mixins.*;
+import net.runelite.api.util.Text;
 import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSModel;
 import net.runelite.rs.api.RSPlayer;
@@ -51,7 +52,7 @@ public abstract class PlayerMixin implements RSPlayer {
       return null;
     }
 
-    return name.replace('\u00A0', ' ');
+    return Text.removeTags(Text.sanitize(name));
   }
 
   @Inject

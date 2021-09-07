@@ -25,6 +25,7 @@
 package net.runelite.api;
 
 import lombok.Data;
+import net.runelite.api.util.Text;
 import net.runelite.api.widgets.*;
 
 import java.util.Arrays;
@@ -46,7 +47,7 @@ public class Item implements Interactable, Identifiable, Nameable {
 
 	@Override
 	public String getName() {
-		return client.getItemComposition(getId()).getName().replace('\u00A0', ' ');
+		return Text.removeTags(Text.sanitize(getComposition().getName()));
 	}
 
 	@Override

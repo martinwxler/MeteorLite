@@ -16,6 +16,7 @@ import net.runelite.api.mixins.Inject;
 import net.runelite.api.mixins.Mixin;
 import net.runelite.api.mixins.Mixins;
 import net.runelite.api.mixins.Shadow;
+import net.runelite.api.util.Text;
 import net.runelite.rs.api.*;
 
 @Mixins({
@@ -117,7 +118,7 @@ public abstract class TileObjectMixin implements TileObject {
   @Override
   public String getName() {
     RSObjectComposition def = getCachedDefinition();
-    return def == null ? null : def.getName().replace('\u00A0', ' ');
+    return def == null ? null : Text.removeTags(Text.sanitize(def.getName()));
   }
 
   @Inject

@@ -16,6 +16,7 @@ import net.runelite.api.mixins.FieldHook;
 import net.runelite.api.mixins.Inject;
 import net.runelite.api.mixins.Mixin;
 import net.runelite.api.mixins.Shadow;
+import net.runelite.api.util.Text;
 import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSModel;
 import net.runelite.rs.api.RSNPC;
@@ -131,7 +132,7 @@ public abstract class NPCMixin implements RSNPC {
   public String getName()
   {
     RSNPCComposition composition = transformIfRequired();
-    return composition == null ? null : composition.getName().replace('\u00A0', ' ');
+    return composition == null ? null : Text.removeTags(Text.sanitize(composition.getName()));
   }
 
   @Inject

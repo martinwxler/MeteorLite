@@ -15,6 +15,7 @@ import net.runelite.api.mixins.FieldHook;
 import net.runelite.api.mixins.Inject;
 import net.runelite.api.mixins.Mixin;
 import net.runelite.api.mixins.Shadow;
+import net.runelite.api.util.Text;
 import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSTileItem;
 
@@ -182,7 +183,7 @@ public abstract class TileItemMixin implements RSTileItem {
   @Inject
   @Override
   public String getName() {
-    return getComposition().getName().replace('\u00A0', ' ');
+    return Text.removeTags(Text.sanitize(getComposition().getName()));
   }
 
   @Inject

@@ -49,7 +49,7 @@ public class TransportLoader {
         }
 
         int gold = Inventory.getFirst(995) != null ? Inventory.getFirst(995).getQuantity() : 0;
-        if (gold > 10) {
+        if (gold >= 10) {
             transports.add(objectTransport(
                     new WorldPoint(3267, 3228, 0),
                     new WorldPoint(3268, 3228, 0),
@@ -108,7 +108,7 @@ public class TransportLoader {
             transports.add(itemUseTransport(new WorldPoint(2512, 3466, 0), new WorldPoint(2511, 3463, 0), 954, 2020));
 
             // Crabclaw island
-            if (gold > 10_000) {
+            if (gold >= 10_000) {
                 transports.add(npcTransport(new WorldPoint(1782, 3458, 0), new WorldPoint(1778, 3417, 0), 7483, "Travel"));
             }
 
@@ -164,8 +164,7 @@ public class TransportLoader {
                 1164,
                 "Well that is a risk I will have to take."));
 
-        LAST_TRANSPORT_LIST = transports;
-        return List.copyOf(LAST_TRANSPORT_LIST);
+        return List.copyOf(LAST_TRANSPORT_LIST = transports);
     }
 
     public static Transport parseTransportLine(String line) {
