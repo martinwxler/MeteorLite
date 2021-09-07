@@ -345,7 +345,7 @@ public class ObjectStep extends DetailedQuestStep
 			return;
 		}
 
-		final ObjectComposition comp = client.getObjectDefinition(object.getId());
+		final ObjectComposition comp = client.getObjectComposition(object.getId());
 		final int[] impostorIds = comp.getImpostorIds();
 
 		if (impostorIds != null && comp.getImpostor() != null)

@@ -12,155 +12,136 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class TileObjects {
+public class TileObjects extends Entities<TileObject> {
+	private static final TileObjects TILE_OBJECTS = new TileObjects();
 
-    public static List<TileObject> getAll(Predicate<TileObject> filter) {
-        return Tiles.getTiles().stream()
-                .flatMap(tile -> parseTile(tile, filter).stream())
-                .collect(Collectors.toList());
-    }
+	@Override
+	protected List<TileObject> all(Predicate<? super TileObject> filter) {
+		return getTileObjects(Tiles.getTiles()).stream()
+						.filter(filter)
+						.collect(Collectors.toList());
+	}
 
-    public static List<TileObject> getAll(int... ids) {
-        return getAll(x -> {
-            for (int id : ids) {
-                if (id == x.getId()) {
-                    return true;
-                }
-            }
+	public static List<TileObject> getAll(Predicate<TileObject> filter) {
+		return TILE_OBJECTS.all(filter);
+	}
 
-            return false;
-        });
-    }
+	public static List<TileObject> getAll(int... ids) {
+		return TILE_OBJECTS.all(ids);
+	}
 
-    public static List<TileObject> getAll(String... names) {
-        return getAll(x -> {
-            if (x.getName() == null) {
-                return false;
-            }
+	public static List<TileObject> getAll(String... names) {
+		return TILE_OBJECTS.all(names);
+	}
 
-            for (String name : names) {
-                if (name.equals(x.getName())) {
-                    return true;
-                }
-            }
+	public static TileObject getNearest(Predicate<TileObject> filter) {
+		return TILE_OBJECTS.nearest(filter);
+	}
 
-            return false;
-        });
-    }
+	public static TileObject getNearest(int... ids) {
+		return TILE_OBJECTS.nearest(ids);
+	}
 
-    public static TileObject getNearest(Predicate<TileObject> filter) {
-        Player local = Game.getClient().getLocalPlayer();
-        if (local == null) {
-            return null;
-        }
+	public static TileObject getNearest(String... names) {
+		return TILE_OBJECTS.nearest(names);
+	}
 
-        return getAll(filter).stream()
-                .min(Comparator.comparingInt(t -> t.getWorldLocation().distanceTo(local.getWorldLocation())))
-                .orElse(null);
-    }
+	public static List<TileObject> getAt(LocalPoint localPoint, Predicate<TileObject> filter) {
+		Tile tile = Game.getClient().getScene().getTiles()[Game.getClient().getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
+		if (tile == null) {
+			return Collections.emptyList();
+		}
 
-    public static TileObject getNearest(int... ids) {
-        return getNearest(x -> {
-            for (int id : ids) {
-                if (id == x.getId()) {
-                    return true;
-                }
-            }
+		return parseTile(tile, filter);
+	}
 
-            return false;
-        });
-    }
+	public static List<TileObject> getAt(WorldPoint worldPoint, Predicate<TileObject> filter) {
+		LocalPoint localPoint = LocalPoint.fromWorld(Game.getClient(), worldPoint);
+		if (localPoint == null) {
+			return Collections.emptyList();
+		}
 
-    public static TileObject getNearest(String... names) {
-        return getNearest(x -> {
-            if (x.getName() == null) {
-                return false;
-            }
+		Tile tile = Game.getClient().getScene().getTiles()[Game.getClient().getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
+		if (tile == null) {
+			return Collections.emptyList();
+		}
 
-            for (String name : names) {
-                if (name.equals(x.getName())) {
-                    return true;
-                }
-            }
+		return parseTile(tile, filter);
+	}
 
-            return false;
-        });
-    }
+	public static List<TileObject> getAt(Tile tile, Predicate<TileObject> filter) {
+		return parseTile(tile, filter);
+	}
 
-    public static List<TileObject> getAt(LocalPoint localPoint, Predicate<TileObject> filter) {
-        Tile tile = Game.getClient().getScene().getTiles()[Game.getClient().getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
-        if (tile == null) {
-            return Collections.emptyList();
-        }
+	private static List<TileObject> parseTile(Tile tile, Predicate<TileObject> pred) {
+		Predicate<TileObject> filter = x -> {
+			if (!x.isDefinitionCached()) {
+				return GameThread.invokeLater(() -> {
+					x.getCachedDefinition(); // cache it
+					return pred.test(x);
+				});
+			}
 
-        return parseTile(tile, filter);
-    }
+			return pred.test(x);
+		};
 
-    public static List<TileObject> getAt(WorldPoint worldPoint, Predicate<TileObject> filter) {
-        LocalPoint localPoint = LocalPoint.fromWorld(Game.getClient(), worldPoint);
-        if (localPoint == null) {
-            return Collections.emptyList();
-        }
+		return getTileObjects(tile).stream()
+						.filter(filter)
+						.collect(Collectors.toList());
+	}
 
-        Tile tile = Game.getClient().getScene().getTiles()[Game.getClient().getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
-        if (tile == null) {
-            return Collections.emptyList();
-        }
+	private static List<TileObject> getTileObjects(List<Tile> tiles) {
+		List<TileObject> out = new ArrayList<>();
+		for (Tile tile : tiles) {
+			out.addAll(getTileObjects(tile));
+		}
 
-        return parseTile(tile, filter);
-    }
+		List<TileObject> notCached = out.stream()
+						.filter(x -> !x.isDefinitionCached())
+						.collect(Collectors.toList());
+		if (!notCached.isEmpty()) {
+			GameThread.invokeLater(() -> {
+				for (TileObject tileObject : notCached) {
+					tileObject.getDefinition();
+				}
 
-    public static List<TileObject> getAt(Tile tile, Predicate<TileObject> filter) {
-        return parseTile(tile, filter);
-    }
+				return true;
+			});
+		}
 
-    private static List<TileObject> parseTile(Tile tile, Predicate<TileObject> pred) {
-        Predicate<TileObject> filter = x -> {
-            if (x.getId() == -1) {
-                return false;
-            }
+		return out;
+	}
 
-            if (!Game.getClient().isTileObjectValid(tile, x)) {
-                return false;
-            }
+	private static List<TileObject> getTileObjects(Tile tile) {
+		List<TileObject> out = new ArrayList<>();
+		DecorativeObject dec = tile.getDecorativeObject();
+		if (dec != null && dec.getId() != -1) {
+			out.add(dec);
+		}
 
-            if (!x.isDefinitionCached()) {
-                return GameThread.invokeLater(() -> {
-                    x.getCachedDefinition(); // cache it
-                    return pred.test(x);
-                });
-            }
+		WallObject wall = tile.getWallObject();
+		if (wall != null && wall.getId() != -1) {
+			out.add(wall);
+		}
 
-            return pred.test(x);
-        };
+		GroundObject grnd = tile.getGroundObject();
+		if (grnd != null && grnd.getId() != -1) {
+			out.add(grnd);
+		}
 
-        List<TileObject> out = new ArrayList<>();
-        DecorativeObject dec = tile.getDecorativeObject();
-        if (dec != null && filter.test(dec)) {
-            out.add(dec);
-        }
+		GameObject[] gameObjects = tile.getGameObjects();
+		if (gameObjects != null) {
+			for (GameObject gameObject : gameObjects) {
+				if (gameObject == null
+								|| !Game.getClient().isTileObjectValid(tile, gameObject)
+								|| gameObject.getId() == -1) {
+					continue;
+				}
 
-        WallObject wall = tile.getWallObject();
-        if (wall != null && filter.test(wall)) {
-            out.add(wall);
-        }
+				out.add(gameObject);
+			}
+		}
 
-        GroundObject grnd = tile.getGroundObject();
-        if (grnd != null && filter.test(grnd)) {
-            out.add(grnd);
-        }
-
-        GameObject[] gameObjects = tile.getGameObjects();
-        if (gameObjects != null) {
-            for (GameObject gameObject : gameObjects) {
-                if (gameObject == null || !filter.test(gameObject)) {
-                    continue;
-                }
-
-                out.add(gameObject);
-            }
-        }
-
-        return out;
-    }
+		return out;
+	}
 }

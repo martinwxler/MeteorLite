@@ -22,19 +22,24 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api.events;
-
-import lombok.Value;
-import net.runelite.api.Nameable;
+package net.runelite.api;
 
 /**
- * An event where a {@link Nameable} has had their name changed.
+ * Represents a chat entity that has a name.
  */
-@Value
-public class NameableNameChanged {
+public interface ChatEntity extends Comparable {
 
   /**
-   * The nameable that changed names.
+   * The name of the player.
+   *
+   * @return the name
    */
-  Nameable nameable;
+  String getName$api();
+
+  /**
+   * The previous name the player had.
+   *
+   * @return the previous name
+   */
+  String getPrevName();
 }

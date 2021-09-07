@@ -15,7 +15,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Projectiles {
-
 	public static List<Projectile> getAll(Predicate<Projectile> filter) {
 		return Game.getClient().getProjectiles().stream()
 						.filter(projectile -> projectile != null && filter.test(projectile))
