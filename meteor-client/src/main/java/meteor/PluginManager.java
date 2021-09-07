@@ -101,6 +101,7 @@ import meteor.plugins.oneclickagility.OneClickAgilityPlugin;
 import meteor.plugins.oneclickcustom.OneClickCustomPlugin;
 import meteor.plugins.oneclickdropper.OneClickDropperPlugin;
 import meteor.plugins.oneclickthieving.OneClickThievingPlugin;
+import meteor.plugins.opponentinfo.OpponentInfoPlugin;
 import meteor.plugins.playerattacktimer.PlayerAttackTimerPlugin;
 import meteor.plugins.playerindicators.PlayerIndicatorsPlugin;
 import meteor.plugins.playerindicatorsextended.PlayerIndicatorsExtendedPlugin;
@@ -270,7 +271,7 @@ public class PluginManager {
 		plugins.add(new MouseTooltipPlugin());
 		plugins.add(new MTAPlugin());
 		plugins.add(new NeverLogoutPlugin());
-	    plugins.add(new NightmareHelper());
+	  plugins.add(new NightmareHelper());
 		plugins.add(new NightmarePlugin());
 		plugins.add(new NpcAggroAreaPlugin());
 		plugins.add(new NpcIndicatorsPlugin());
@@ -282,6 +283,7 @@ public class PluginManager {
 		plugins.add(new OneClickCustomPlugin());
 		plugins.add(new OneClickDropperPlugin());
 		plugins.add(new OneClickThievingPlugin());
+		plugins.add(new OpponentInfoPlugin());
 		plugins.add(new PlayerAttackTimerPlugin());
 		plugins.add(new PlayerIndicatorsPlugin());
 		plugins.add(new PohPlugin());
