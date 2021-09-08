@@ -188,18 +188,20 @@ public class Walker {
             }
 
             if (isDoored(tileA, tileB)) {
-                tileA.getWallObject().interact("Open");
-                logger.debug("Handling door {}", tileA.getWallObject().getWorldLocation());
+                WallObject wall = tileA.getWallObject();
+                wall.interact("Open");
+                logger.debug("Handling door {}", wall.getWorldLocation());
                 Time.sleepUntil(() -> tileA.getWallObject() == null
-                        || !tileA.getWallObject().hasAction("Open"), 2000);
+                        || !wall.hasAction("Open"), 2000);
                 return true;
             }
 
             if (isDoored(tileB, tileA)) {
-                tileB.getWallObject().interact("Open");
-                logger.debug("Handling door {}", tileB.getWallObject().getWorldLocation());
+                WallObject wall = tileB.getWallObject();
+                wall.interact("Open");
+                logger.debug("Handling door {}", wall.getWorldLocation());
                 Time.sleepUntil(() -> tileB.getWallObject() == null
-                        || !tileB.getWallObject().hasAction("Open"), 2000);
+                        || !wall.hasAction("Open"), 2000);
                 return true;
             }
         }
