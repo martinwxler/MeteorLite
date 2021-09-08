@@ -4,10 +4,7 @@ import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.Vars;
-import meteor.plugins.api.movement.pathfinder.CollisionMap;
-import meteor.plugins.api.movement.pathfinder.Transport;
-import meteor.plugins.api.movement.pathfinder.TransportLoader;
-import meteor.plugins.api.movement.pathfinder.Walker;
+import meteor.plugins.api.movement.pathfinder.*;
 import meteor.plugins.api.scene.Tiles;
 import meteor.plugins.api.widgets.Widgets;
 import meteor.ui.overlay.OverlayUtil;
@@ -113,8 +110,24 @@ public class Movement {
         walk(locatable.getWorldLocation());
     }
 
-    public static void walkTo(WorldPoint worldPoint) {
-        Walker.walkTo(worldPoint);
+    public static boolean walkTo(WorldPoint worldPoint) {
+        return Walker.walkTo(worldPoint);
+    }
+
+    public static boolean walkTo(Locatable locatable) {
+        return walkTo(locatable.getWorldLocation());
+    }
+
+    public static boolean walkTo(BankLocation bankLocation) {
+        return walkTo(bankLocation.getArea().toWorldPoint());
+    }
+
+    public static boolean walkTo(int x, int y) {
+        return walkTo(x, y, Game.getClient().getPlane());
+    }
+
+    public static boolean walkTo(int x, int y, int plane) {
+        return walkTo(new WorldPoint(x, y, plane));
     }
 
     public static boolean isRunEnabled() {

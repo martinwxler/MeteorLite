@@ -29,6 +29,9 @@ import java.awt.*;
 				cantDisable = true
 )
 public class InteractionPlugin extends Plugin {
+	private static final int MINIMAP_WIDTH = 250;
+	private static final int MINIMAP_HEIGHT = 180;
+
 	@Inject
 	private OverlayManager overlayManager;
 
@@ -49,14 +52,15 @@ public class InteractionPlugin extends Plugin {
 
 	@Subscribe
 	public void onInvokeMenuAction(InvokeMenuActionEvent e) {
+		String debug = "O=" + e.getOption()
+						+ " | T=" + e.getTarget()
+						+ " | ID=" + e.getId()
+						+ " | OP=" + e.getOpcode()
+						+ " | P0=" + e.getParam0()
+						+ " | P1=" +  e.getParam1();
+
 		if (config.debug()) {
-			String action = "O=" + e.getOption()
-							+ " | T=" + e.getTarget()
-							+ " | ID=" + e.getId()
-							+ " | OP=" + e.getOpcode()
-							+ " | P0=" + e.getParam0()
-							+ " | P1=" +  e.getParam1();
-			logger.debug("[Bot Action] {}", action);
+			logger.debug("[Bot Action] {}", debug);
 		}
 
 		if (config.mouseEvents()) {
@@ -64,7 +68,7 @@ public class InteractionPlugin extends Plugin {
 				action = null;
 				mouseClickX = -1;
 				mouseClickY = -1;
-				logger.error("Interact was not ready (Interacting too fast probably)");
+				logger.error("Interact was not ready [{}]", debug);
 				return;
 			}
 
@@ -127,8 +131,8 @@ public class InteractionPlugin extends Plugin {
 		Rectangle bounds = client.getCanvas().getBounds();
 		Point randomPoint = new Point(Rand.nextInt(2, bounds.width), Rand.nextInt(2, bounds.height));
 		Rectangle minimap = getMinimap();
-		if (minimap != null && minimap.contains(randomPoint)) {
-			logger.error("Click {} was inside minimap", randomPoint);
+		if (minimap.contains(randomPoint)) {
+			logger.debug("Click {} was inside minimap", randomPoint);
 			return getClickPoint();
 		}
 
@@ -136,22 +140,8 @@ public class InteractionPlugin extends Plugin {
 	}
 
 	private Rectangle getMinimap() {
-		Widget fixedMinimap = Widgets.get(WidgetInfo.FIXED_VIEWPORT_MINIMAP_DRAW_AREA);
-		if (fixedMinimap != null) {
-			return fixedMinimap.getBounds();
-		}
-
-		Widget resizableMinimap = Widgets.get(WidgetInfo.RESIZABLE_MINIMAP_DRAW_AREA);
-		if (resizableMinimap != null) {
-			return resizableMinimap.getBounds();
-		}
-
-		Widget resizable2Minimap = Widgets.get(WidgetInfo.RESIZABLE_MINIMAP_STONES_DRAW_AREA);
-		if (resizable2Minimap != null) {
-			return resizable2Minimap.getBounds();
-		}
-
-		return null;
+		Rectangle bounds = client.getCanvas().getBounds();
+		return new Rectangle(bounds.width - MINIMAP_WIDTH, 0, MINIMAP_WIDTH, MINIMAP_HEIGHT);
 	}
 
 	private boolean interactReady() {

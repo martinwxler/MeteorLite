@@ -1,5 +1,8 @@
 package meteor.plugins.api.movement.pathfinder;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import meteor.plugins.api.commons.Rand;
 import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.entities.Players;
@@ -11,25 +14,36 @@ import net.runelite.api.Player;
 import net.runelite.api.Tile;
 import net.runelite.api.WallObject;
 import net.runelite.api.coords.WorldPoint;
+import org.jetbrains.annotations.NotNull;
 import org.sponge.util.Logger;
 
 import javax.inject.Singleton;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 @Singleton
 public class Walker {
     private static final Logger logger = new Logger("Walker");
     private static final int MAX_INTERACT_DISTANCE = 20;
-    private static final int MIN_TILES_WALKED_IN_STEP = 5;
-    private static final int MAX_TILES_WALKED_IN_STEP = 12;
+    private static final int MIN_TILES_WALKED_IN_STEP = 7;
+    private static final int MAX_TILES_WALKED_IN_STEP = 14;
     private static final int MIN_TILES_WALKED_BEFORE_RECHOOSE = 10;
     private static final int MIN_TILES_LEFT_BEFORE_RECHOOSE = 3;
     private static final int MAX_MIN_ENERGY = 50;
     private static final int MIN_ENERGY = 5;
     public static final CollisionMap collisionMap;
+    public static final LoadingCache<WorldPoint, List<WorldPoint>> pathcache = CacheBuilder.newBuilder()
+            .expireAfterWrite(5, TimeUnit.MINUTES)
+            .build(new CacheLoader<>() {
+                @Override
+                public List<WorldPoint> load(@NotNull WorldPoint key) {
+                    return buildPath(key);
+                }
+            });
 
     static {
         CollisionMap loaded;
@@ -57,11 +71,22 @@ public class Walker {
 
         Map<WorldPoint, List<Transport>> transports = buildTransportLinks();
         LinkedHashMap<WorldPoint, Teleport> teleports = buildTeleportLinks(destination);
-        List<WorldPoint> startPoints = new ArrayList<>(teleports.keySet());
-        startPoints.add(local.getWorldLocation());
-        List<WorldPoint> path = calculatePath(startPoints, destination, transports);
+        List<WorldPoint> path;
+
+        try {
+            path = pathcache.get(destination);
+        } catch (ExecutionException e) {
+            logger.error("Failed to get cached path", e);
+            return false;
+        }
+
+        if (path == null) {
+            logger.error("Path is null");
+            return false;
+        }
 
         if (path.isEmpty()) {
+            logger.error("Path was empty");
             return false;
         }
 
@@ -74,13 +99,13 @@ public class Walker {
             return false;
         }
 
-        return walkAlong(path, transports);
+        return walkAlong(destination, path, transports);
     }
 
-    public static boolean walkAlong(List<WorldPoint> path, Map<WorldPoint, List<Transport>> transports) {
+    public static boolean walkAlong(WorldPoint destination, List<WorldPoint> path, Map<WorldPoint, List<Transport>> transports) {
         Player local = Players.getLocal();
-        WorldPoint destination = path.get(path.size() - 1);
-        if (local.getWorldLocation().distanceTo(destination) > 0) {
+        WorldPoint nextTile = path.get(path.size() - 1);
+        if (local.getWorldLocation().distanceTo(nextTile) > 0) {
             List<WorldPoint> remainingPath = remainingPath(path);
 
             if (handleTransports(remainingPath, transports)) {
@@ -90,6 +115,8 @@ public class Walker {
             return stepAlong(remainingPath);
         }
 
+        // Refresh the cached path
+        pathcache.refresh(destination);
         return false;
     }
 
@@ -98,13 +125,13 @@ public class Walker {
         if (reachablePath.isEmpty()) {
             return false;
         }
-
-        if (reachablePath.size() - 1 <= MIN_TILES_WALKED_IN_STEP) {
-            return step(reachablePath.get(reachablePath.size() - 1));
+        int nextTileIdx = reachablePath.size() - 1;
+        if (nextTileIdx <= MIN_TILES_WALKED_IN_STEP) {
+            return step(reachablePath.get(nextTileIdx));
         }
 
-        int targetDistance =  Rand.nextInt(MIN_TILES_WALKED_IN_STEP, Math.min(reachablePath.size(), MAX_TILES_WALKED_IN_STEP));
-        return step(reachablePath.get(targetDistance));
+        int targetDistance = Rand.nextInt(MIN_TILES_WALKED_IN_STEP, Math.min(nextTileIdx, MAX_TILES_WALKED_IN_STEP));
+        return step(reachablePath.get(targetDistance - 1));
     }
 
     public static List<WorldPoint> reachablePath(List<WorldPoint> remainingPath) {
