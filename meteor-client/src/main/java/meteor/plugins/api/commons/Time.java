@@ -30,6 +30,11 @@ public class Time {
     }
 
     public static void sleepUntil(BooleanSupplier supplier, int pollingRate, int timeOut) {
+        if (Game.getClient().isClientThread()) {
+            logger.warn("Tried to sleep on client thread!");
+            return;
+        }
+
         long start = System.currentTimeMillis();
         while (!supplier.getAsBoolean()) {
             if (System.currentTimeMillis() > start + timeOut) {
