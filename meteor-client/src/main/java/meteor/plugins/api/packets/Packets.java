@@ -21,12 +21,12 @@ public class Packets {
             queuePacket(Game.getClient().getNameInputPacket(), name);
         }
     }
-    public static void queueClickPacket(int one , int two, int three){
+    public static void queueClickPacket(int mouseinfo , int x, int y){
         PacketWriter writer = Game.getClient().getPacketWriter();
         PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getClickPacket(), writer.getIsaacCipher());
-        packet.getPacketBuffer().writeShort$api(one);
-        packet.getPacketBuffer().writeShort$api(two);
-        packet.getPacketBuffer().writeShort$api(three);
+        packet.getPacketBuffer().writeShort$api(mouseinfo);
+        packet.getPacketBuffer().writeShort$api(x);
+        packet.getPacketBuffer().writeShort$api(y);
         writer.queuePacket(packet);
     }
     public static void queueItemOnItemPacket(int itemId1, int slot1, int itemId2, int slot2) {
