@@ -20,6 +20,7 @@ import meteor.plugins.animsmoothing.AnimationSmoothingPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.api.interaction.InteractionPlugin;
 import meteor.plugins.blackjack.BlackjackPlugin;
+import meteor.plugins.chocogrinder.chocogrinder;
 import meteor.plugins.coxraidscouter.coxraidscouter;
 import meteor.plugins.entityhider.EntityHiderPlugin;
 import meteor.plugins.hootfighter.HootFighterPlugin;
@@ -220,6 +221,7 @@ public class PluginManager {
 		plugins.add(new ChatTimestampPlugin());
 		plugins.add(new ChinManagerPlugin());
 		plugins.add(new ChinLoginPlugin());
+		plugins.add(new chocogrinder());
 		plugins.add(new ClueScrollPlugin());
 		plugins.add(new CombatLevelPlugin());
 		plugins.add(new ContinueClickerPlugin());
