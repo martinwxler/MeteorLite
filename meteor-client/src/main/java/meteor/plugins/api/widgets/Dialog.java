@@ -38,7 +38,7 @@ public class Dialog {
 	public static boolean canContinue() {
 		return GameThread.invokeLater(() -> canContinueNPC() || canContinuePlayer() || canContinueDeath()
 						|| canWeirdContinue() || canWeirderContinue() || canWeirdestContinue() || canContinueTutIsland() || canContinueTutIsland2()
-						|| canContinueTutIsland3());
+						|| canContinueTutIsland3() || canLevelUpContinue());
 	}
 
 	public static boolean canLevelUpContinue() {
@@ -109,7 +109,9 @@ public class Dialog {
 
 	public static void enterInput(String input) {
 		Time.sleepUntil(Dialog::isEnterInputOpen, 2000);
-		Keyboard.type(input);
+		if (isEnterInputOpen()) {
+			Keyboard.type(input, true);
+		}
 	}
 
 	public static void enterInput(int input) {
@@ -172,5 +174,15 @@ public class Dialog {
 		}
 
 		return out;
+	}
+
+	public static void quickProcess(DialogOption... dialogOption) {
+		GameThread.invokeLater(() -> {
+			for (DialogOption option : dialogOption) {
+				option.process();
+			}
+
+			return true;
+		});
 	}
 }

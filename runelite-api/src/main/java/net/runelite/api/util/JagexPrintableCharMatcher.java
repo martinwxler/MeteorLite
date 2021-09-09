@@ -22,29 +22,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api;
+package net.runelite.api.util;
 
-public interface NameableContainer<T extends Nameable> {
+import com.google.common.base.CharMatcher;
 
-  /**
-   * Get the number of members in this container
-   *
-   * @return
-   */
-  int getCount();
-
-  /**
-   * Get the members in this container
-   *
-   * @return
-   */
-  T[] getMembers();
-
-  /**
-   * Find a nameable by name
-   *
-   * @param name the name
-   * @return
-   */
-  T findByName(String name);
+class JagexPrintableCharMatcher extends CharMatcher
+{
+	@Override
+	public boolean matches(char c)
+	{
+		// Characters which are printable
+		return (c >= 32 && c <= 126)
+			|| c == 128
+			|| (c >= 160 && c <= 255);
+	}
 }

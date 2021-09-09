@@ -34,7 +34,7 @@ import net.runelite.api.coords.LocalPoint;
 /**
  * Represents an object on a Tile
  */
-public interface TileObject extends Locatable, Interactable {
+public interface TileObject extends SceneEntity {
 
   long getHash();
 

@@ -25,15 +25,15 @@
 package net.runelite.api;
 
 import lombok.Data;
+import net.runelite.api.util.Text;
 import net.runelite.api.widgets.*;
 
 import java.util.Arrays;
 import java.util.List;
-
-import net.runelite.api.widgets.WidgetItem;
+import java.util.stream.Collectors;
 
 @Data
-public class Item implements Interactable {
+public class Item implements Interactable, Identifiable, Nameable {
 	private final int id;
 	private final int quantity;
 
@@ -44,19 +44,23 @@ public class Item implements Interactable {
 	private int actionParam;
 	private int widgetId;
 
+	@Override
 	public String getName() {
-		return client.getItemComposition(getId()).getName();
+		return Text.removeTags(Text.sanitize(getComposition().getName()));
 	}
 
 	@Override
-	public String[] getActions() {
+	public String[] getRawActions() {
 		if (WidgetInfo.TO_GROUP(widgetId) == WidgetID.INVENTORY_GROUP_ID) {
 			return client.getItemComposition(getId()).getInventoryActions();
 		}
 
 		Widget widget = client.getWidget(widgetId);
 		if (widget != null) {
-			return widget.getActions();
+			Widget itemChild = widget.getChild(slot);
+			if (itemChild != null) {
+				return itemChild.getRawActions();
+			}
 		}
 
 		return null;
@@ -66,7 +70,7 @@ public class Item implements Interactable {
 	public int getActionId(int action) {
 		switch (action) {
 			case 0:
-				if (getActions()[0] == null) {
+				if (getRawActions()[0] == null) {
 					return MenuAction.ITEM_USE.getId();
 				}
 
@@ -85,24 +89,21 @@ public class Item implements Interactable {
 	}
 
 	@Override
-	public List<String> actions() {
-		return Arrays.asList(getActions());
-	}
-
-	@Override
 	public void interact(String action) {
-		interact(actions().indexOf(action));
+		interact(getActions().indexOf(action));
 	}
 
 	@Override
 	public void interact(int index) {
 		switch (getType()) {
 			case TRADE, TRADE_INVENTORY -> {
-				Widget itemWidget = client.getWidget(widgetId);
-				if (itemWidget == null) {
-					return;
+				Widget widget = client.getWidget(widgetId);
+				if (widget != null) {
+					Widget itemChild = widget.getChild(slot);
+					if (itemChild != null) {
+						itemChild.interact(index);
+					}
 				}
-				itemWidget.interact(index);
 			}
 			case EQUIPMENT -> interact(index, index > 4 ? MenuAction.CC_OP_LOW_PRIORITY.getId()
 							: MenuAction.CC_OP.getId());
@@ -116,6 +117,7 @@ public class Item implements Interactable {
 		interact(4);
 	}
 
+	@Override
 	public void interact(int index, int menuAction) {
 		switch (getType()) {
 			case TRADE, TRADE_INVENTORY -> {
@@ -205,5 +207,37 @@ public class Item implements Interactable {
 				default -> UNKNOWN;
 			};
 		}
+	}
+
+	public ItemComposition getComposition() {
+		return client.getItemComposition(getId());
+	}
+
+	public boolean isTradable() {
+		return getComposition().isTradeable();
+	}
+
+	public boolean isStackable() {
+		return getComposition().isStackable();
+	}
+
+	public boolean isMembers() {
+		return getComposition().isMembers();
+	}
+
+	public int getNotedId() {
+		return getComposition().getLinkedNoteId();
+	}
+
+	public boolean isNoted() {
+		return getComposition().getNote() > -1;
+	}
+
+	public boolean isPlaceholder() {
+		return getComposition().getPlaceholderTemplateId() > -1;
+	}
+
+	public int getStorePrice() {
+		return getComposition().getPrice();
 	}
 }

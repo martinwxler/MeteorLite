@@ -48,7 +48,6 @@ import net.runelite.api.packets.PacketWriter;
 import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.mapping.Import;
 import org.sponge.util.Logger;
 
 /**
@@ -941,7 +940,7 @@ public interface Client extends GameEngine {
    * @return the corresponding object composition
    * @see ObjectID
    */
-  ObjectComposition getObjectDefinition(int objectId);
+  ObjectComposition getObjectComposition(int objectId);
 
   /**
    * Gets the NPC composition corresponding to an NPCs ID.
@@ -950,7 +949,7 @@ public interface Client extends GameEngine {
    * @return the corresponding NPC composition
    * @see NpcID
    */
-  NPCComposition getNpcDefinition(int npcId);
+  NPCComposition getNpcComposition(int npcId);
 
   /**
    * Gets the {@link StructComposition} for a given struct ID
@@ -1245,12 +1244,12 @@ public interface Client extends GameEngine {
   /**
    * Retrieve the nameable container containing friends
    */
-  NameableContainer<Friend> getFriendContainer();
+  ChatEntityContainer<Friend> getFriendContainer();
 
   /**
    * Retrieve the nameable container containing ignores
    */
-  NameableContainer<Ignore> getIgnoreContainer();
+  ChatEntityContainer<Ignore> getIgnoreContainer();
 
   /**
    * Gets the clients saved preferences.
@@ -2307,4 +2306,20 @@ public interface Client extends GameEngine {
   boolean isLowCpu();
 
   void setLowCpu(boolean enabled);
+
+  void uncacheNPC(int id);
+
+  void uncacheItem(int id);
+
+  void uncacheObject(int id);
+
+  void clearNPCCache();
+
+  void clearItemCache();
+
+  void clearObjectCache();
+
+  void setLogoSprite(IndexedSprite indexedSprite);
+
+  void processDialog(int widgetUid, int menuIndex);
 }

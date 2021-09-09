@@ -9,6 +9,7 @@ import meteor.config.Config;
 import meteor.config.ConfigGroup;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
+import meteor.plugins.NightmareHelper.NightmareHelper;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDependency;
 import meteor.plugins.achievementdiary.DiaryRequirementsPlugin;
@@ -17,6 +18,11 @@ import meteor.plugins.alchemicalhydra.AlchemicalHydraPlugin;
 import meteor.plugins.ammo.AmmoPlugin;
 import meteor.plugins.animsmoothing.AnimationSmoothingPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
+import meteor.plugins.api.interaction.InteractionPlugin;
+import meteor.plugins.blackjack.BlackjackPlugin;
+import meteor.plugins.coxraidscouter.coxraidscouter;
+import meteor.plugins.entityhider.EntityHiderPlugin;
+import meteor.plugins.hootfighter.HootFighterPlugin;
 import meteor.plugins.api.example.deathevent.DeathEventPlugin;
 import meteor.plugins.api.externals.ExternalManagerPlugin;
 import meteor.plugins.autoclicker.AutoClickerPlugin;
@@ -41,6 +47,7 @@ import meteor.plugins.chatcommands.ChatCommandsPlugin;
 import meteor.plugins.chatfilter.ChatFilterPlugin;
 import meteor.plugins.cluescrolls.ClueScrollPlugin;
 import meteor.plugins.combatlevel.CombatLevelPlugin;
+import meteor.plugins.continueclicker.ContinueClickerPlugin;
 import meteor.plugins.coxhelper.CoxPlugin;
 import meteor.plugins.dagannothkings.DagannothKingsPlugin;
 import meteor.plugins.defaultworld.DefaultWorldPlugin;
@@ -60,6 +67,7 @@ import meteor.plugins.grotesqueguardians.GrotesqueGuardiansPlugin;
 import meteor.plugins.grounditems.GroundItemsPlugin;
 import meteor.plugins.herbiboars.HerbiboarPlugin;
 import meteor.plugins.hootagility.HootAgilityPlugin;
+import meteor.plugins.hootherblore.HootHerblorePlugin;
 import meteor.plugins.hunter.HunterPlugin;
 import meteor.plugins.implings.ImplingsPlugin;
 import meteor.plugins.inferno.InfernoPlugin;
@@ -95,6 +103,7 @@ import meteor.plugins.oneclickagility.OneClickAgilityPlugin;
 import meteor.plugins.oneclickcustom.OneClickCustomPlugin;
 import meteor.plugins.oneclickdropper.OneClickDropperPlugin;
 import meteor.plugins.oneclickthieving.OneClickThievingPlugin;
+import meteor.plugins.opponentinfo.OpponentInfoPlugin;
 import meteor.plugins.playerattacktimer.PlayerAttackTimerPlugin;
 import meteor.plugins.playerindicators.PlayerIndicatorsPlugin;
 import meteor.plugins.playerindicatorsextended.PlayerIndicatorsExtendedPlugin;
@@ -105,6 +114,7 @@ import meteor.plugins.prayer.PrayerPlugin;
 import meteor.plugins.prayerpotdrinker.PrayerPotDrinkerPlugin;
 import meteor.plugins.puzzlesolver.PuzzleSolverPlugin;
 import meteor.plugins.questlist.QuestListPlugin;
+import meteor.plugins.raids.RaidsPlugin;
 import meteor.plugins.randomevents.RandomEventPlugin;
 import meteor.plugins.regenmeter.RegenMeterPlugin;
 import meteor.plugins.reportbutton.ReportButtonPlugin;
@@ -180,7 +190,9 @@ public class PluginManager {
 	public static List<Plugin> plugins = new ArrayList<>();
 
   private void initPlugins() {
-		plugins.add(new ExternalManagerPlugin()); // Leave at the top pls, it's not a regular plugin
+		// Leave at the top pls, these are not regular plugins
+		plugins.add(new ExternalManagerPlugin());
+		plugins.add(new InteractionPlugin());
 
 		plugins.add(new AgilityPlugin());
 		plugins.add(new AlchemicalHydraPlugin());
@@ -193,6 +205,7 @@ public class PluginManager {
 		plugins.add(new BarrowsPlugin());
 		plugins.add(new BetterAntiDragPlugin());
 		plugins.add(new BetterRougesDenPlugin());
+		plugins.add(new BlackjackPlugin());
 		plugins.add(new BlastFurnacePlugin());
 		plugins.add(new BoostsPlugin());
 		plugins.add(new BossTimersPlugin());
@@ -209,6 +222,9 @@ public class PluginManager {
 		plugins.add(new ChinLoginPlugin());
 		plugins.add(new ClueScrollPlugin());
 		plugins.add(new CombatLevelPlugin());
+		plugins.add(new ContinueClickerPlugin());
+		plugins.add(new coxraidscouter());
+		plugins.add(new RaidsPlugin());
 		plugins.add(new CoxPlugin());
 		plugins.add(new DagannothKingsPlugin());
 		plugins.add(new DeathEventPlugin());
@@ -217,6 +233,7 @@ public class PluginManager {
 		plugins.add(new DevToolsPlugin());
 		plugins.add(new DiaryRequirementsPlugin());
 		plugins.add(new DiscordPlugin());
+		plugins.add(new EntityHiderPlugin());
 		plugins.add(new EntityHiderExtendedPlugin());
 		plugins.add(new EntityInspectorPlugin());
 		plugins.add(new EnvironmentAidPlugin());
@@ -231,6 +248,8 @@ public class PluginManager {
 		plugins.add(new sGroundMarkerPlugin());
 		plugins.add(new HerbiboarPlugin());
 		plugins.add(new HootAgilityPlugin());
+		plugins.add(new HootFighterPlugin());
+		plugins.add(new HootHerblorePlugin());
 		plugins.add(new HunterPlugin());
 		plugins.add(new ImplingsPlugin());
 		plugins.add(new InfernoPlugin());
@@ -256,6 +275,7 @@ public class PluginManager {
 		plugins.add(new MouseTooltipPlugin());
 		plugins.add(new MTAPlugin());
 		plugins.add(new NeverLogoutPlugin());
+	  plugins.add(new NightmareHelper());
 		plugins.add(new NightmarePlugin());
 		plugins.add(new NpcAggroAreaPlugin());
 		plugins.add(new NpcIndicatorsPlugin());
@@ -267,6 +287,7 @@ public class PluginManager {
 		plugins.add(new OneClickCustomPlugin());
 		plugins.add(new OneClickDropperPlugin());
 		plugins.add(new OneClickThievingPlugin());
+		plugins.add(new OpponentInfoPlugin());
 		plugins.add(new PlayerAttackTimerPlugin());
 		plugins.add(new PlayerIndicatorsPlugin());
 		plugins.add(new PohPlugin());

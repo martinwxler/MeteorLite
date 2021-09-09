@@ -11,16 +11,29 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-public class NPCs {
+public class NPCs extends Entities<NPC> {
+    private static final NPCs NPCS = new NPCs();
 
-    public static List<NPC> getAll(Predicate<NPC> filter) {
+    @Override
+    protected List<NPC> all(Predicate<? super NPC> filter) {
         List<NPC> out = new ArrayList<>();
-        for (NPC npc : Game.getClient().getNpcs()) {
-            if (npc.isTransformRequired() && !npc.isDefinitionCached()) {
-                GameThread.invokeLater(npc::getName); // Transform and cache it by calling getName
-            }
+        List<NPC> npcs = Game.getClient().getNpcs();
+        List<NPC> uncached = npcs.stream()
+                .filter(x -> x.isTransformRequired() && !x.isDefinitionCached())
+                .collect(Collectors.toList());
+        if (!uncached.isEmpty()) {
+            GameThread.invokeLater(() -> {
+                for (NPC npc : uncached) {
+                    npc.getName(); // Transform and cache it by calling getName
+                }
 
+                return true;
+            });
+        }
+
+        for (NPC npc : npcs) {
             if (filter.test(npc)) {
                 out.add(npc);
             }
@@ -29,70 +42,27 @@ public class NPCs {
         return out;
     }
 
-    public static List<NPC> getAll(int... ids) {
-        return getAll(x -> {
-            for (int id : ids) {
-                if (id == x.getId()) {
-                    return true;
-                }
-            }
+    public static List<NPC> getAll(Predicate<NPC> filter) {
+        return NPCS.all(filter);
+    }
 
-            return false;
-        });
+    public static List<NPC> getAll(int... ids) {
+        return NPCS.all(ids);
     }
 
     public static List<NPC> getAll(String... names) {
-        return getAll(x -> {
-            if (x.getName() == null) {
-                return false;
-            }
-
-            for (String name : names) {
-                if (name.equals(x.getName())) {
-                    return true;
-                }
-            }
-
-            return false;
-        });
+        return NPCS.all(names);
     }
 
     public static NPC getNearest(Predicate<NPC> filter) {
-        Player local = Game.getClient().getLocalPlayer();
-        if (local == null) {
-            return null;
-        }
-
-        return getAll(filter).stream()
-                .min(Comparator.comparingInt(t -> t.getWorldLocation().distanceTo(local.getWorldLocation())))
-                .orElse(null);
+        return NPCS.nearest(filter);
     }
 
     public static NPC getNearest(int... ids) {
-        return getNearest(x -> {
-            for (int id : ids) {
-                if (id == x.getId()) {
-                    return true;
-                }
-            }
-
-            return false;
-        });
+        return NPCS.nearest(ids);
     }
 
     public static NPC getNearest(String... names) {
-        return getNearest(x -> {
-            if (x.getName() == null) {
-                return false;
-            }
-
-            for (String name : names) {
-                if (name.equals(x.getName())) {
-                    return true;
-                }
-            }
-
-            return false;
-        });
+        return NPCS.nearest(names);
     }
 }

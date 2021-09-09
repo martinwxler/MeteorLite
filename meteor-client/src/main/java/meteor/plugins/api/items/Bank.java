@@ -9,18 +9,46 @@ import meteor.plugins.api.widgets.Widgets;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
+import net.runelite.api.Varbits;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
-public class Bank {
+public class Bank extends Items {
+	private static final Bank BANK = new Bank();
+	private static final Supplier<Widget> MAIN_TAB = () -> Widgets.get(12, 10, 10);
+
+	@Override
+	protected List<Item> all(Predicate<Item> filter) {
+		List<Item> items = new ArrayList<>();
+		ItemContainer container = Game.getClient().getItemContainer(InventoryID.BANK);
+		if (container == null) {
+			return items;
+		}
+
+		Inventory.cacheItems(container);
+
+		Item[] containerItems = container.getItems();
+		for (int i = 0, containerItemsLength = containerItems.length; i < containerItemsLength; i++) {
+			Item item = containerItems[i];
+			if (item.getId() != -1 && item.getName() != null && !item.getName().equals("null")) {
+				item.setWidgetId(item.calculateWidgetId(WidgetInfo.BANK_ITEM_CONTAINER));
+				item.setSlot(i);
+
+				if (filter.test(item)) {
+					items.add(item);
+				}
+			}
+		}
+
+		return items;
+	}
+
 	private static final int WITHDRAW_MODE_VARBIT = 3958;
 	private static final int QUANTITY_MODE_VARP = 6590;
 	private static final Supplier<Widget> BANK_CAPACITY = () -> Widgets.get(12, 8);
@@ -30,7 +58,7 @@ public class Bank {
 	public static void setQuantityMode(QuantityMode quantityMode) {
 		if (getQuantityMode() != quantityMode) {
 			Widget component = Widgets.get(quantityMode.widget.groupId, quantityMode.widget.childId);
-			if (component != null && GameThread.invokeLater(() -> !component.isHidden())) {
+			if (Widgets.isVisible(component)) {
 				component.interact(0);
 			}
 		}
@@ -50,7 +78,7 @@ public class Bank {
 
 	public static int getCapacity() {
 		Widget widget = BANK_CAPACITY.get();
-		if (widget != null && GameThread.invokeLater(() -> !widget.isHidden())) {
+		if (Widgets.isVisible(widget)) {
 			return Integer.parseInt(widget.getText());
 		}
 
@@ -59,7 +87,7 @@ public class Bank {
 
 	public static int getOccupiedSlots() {
 		Widget widget = Widgets.get(WidgetInfo.BANK_ITEM_COUNT_TOP);
-		if (widget != null && GameThread.invokeLater(() -> !widget.isHidden())) {
+		if (Widgets.isVisible(widget)) {
 			return Integer.parseInt(widget.getText());
 		}
 
@@ -86,8 +114,7 @@ public class Bank {
 	}
 
 	public static boolean isSettingsOpen() {
-		Widget widget = SETTINGS_CONTAINER.get();
-		return widget != null && GameThread.invokeLater(() -> !widget.isHidden());
+		return Widgets.isVisible(SETTINGS_CONTAINER.get());
 	}
 
 	public static void depositInventory() {
@@ -105,8 +132,7 @@ public class Bank {
 	}
 
 	public static boolean isOpen() {
-		Widget widget = Widgets.get(WidgetInfo.BANK_ITEM_CONTAINER);
-		return widget != null && GameThread.invokeLater(() -> !widget.isHidden());
+		return Widgets.isVisible(Widgets.get(WidgetInfo.BANK_ITEM_CONTAINER));
 	}
 
 	public static boolean isEmpty() {
@@ -171,7 +197,7 @@ public class Bank {
 	}
 
 	public static void withdraw(Predicate<Item> filter, int amount, WithdrawMode withdrawMode) {
-		Item item = getFirst(filter.and(x -> GameThread.invokeLater(() -> Game.getClient().getItemComposition(x.getId()).getPlaceholderTemplateId() == -1)));
+		Item item = getFirst(filter.and(x -> !x.isPlaceholder()));
 
 		if (item == null) {
 			return;
@@ -235,28 +261,7 @@ public class Bank {
 	}
 
 	public static List<Item> getAll(Predicate<Item> filter) {
-		List<Item> items = new ArrayList<>();
-		ItemContainer container = Game.getClient().getItemContainer(InventoryID.BANK);
-		if (container == null) {
-			return items;
-		}
-
-		Inventory.cacheItems(container);
-
-		Item[] containerItems = container.getItems();
-		for (int i = 0, containerItemsLength = containerItems.length; i < containerItemsLength; i++) {
-			Item item = containerItems[i];
-			if (item.getId() != -1 && item.getName() != null && !item.getName().equals("null")) {
-				item.setWidgetId(item.calculateWidgetId(WidgetInfo.BANK_ITEM_CONTAINER));
-				item.setSlot(i);
-
-				if (filter.test(item)) {
-					items.add(item);
-				}
-			}
-		}
-
-		return items;
+		return BANK.all(filter);
 	}
 
 	public static List<Item> getAll() {
@@ -264,75 +269,55 @@ public class Bank {
 	}
 
 	public static List<Item> getAll(int... ids) {
-		return getAll(x -> {
-			for (int id : ids) {
-				if (id == x.getId()) {
-					return true;
-				}
-			}
-
-			return false;
-		});
+		return BANK.all(ids);
 	}
 
 	public static List<Item> getAll(String... names) {
-		return getAll(x -> {
-			if (x.getName() == null) {
-				return false;
-			}
-
-			for (String name : names) {
-				if (name.equals(x.getName())) {
-					return true;
-				}
-			}
-
-			return false;
-		});
+		return BANK.all(names);
 	}
 
 	public static Item getFirst(Predicate<Item> filter) {
-		return getAll(filter).stream().findFirst().orElse(null);
+		return BANK.first(filter);
 	}
 
 	public static Item getFirst(int... ids) {
-		return getFirst(x -> {
-			for (int id : ids) {
-				if (id == x.getId()) {
-					return true;
-				}
-			}
-
-			return false;
-		});
+		return BANK.first(ids);
 	}
 
 	public static Item getFirst(String... names) {
-		return getFirst(x -> {
-			if (x.getName() == null) {
-				return false;
-			}
-
-			for (String name : names) {
-				if (name.equals(x.getName())) {
-					return true;
-				}
-			}
-
-			return false;
-		});
+		return BANK.first(names);
 	}
 
 	public static boolean contains(Predicate<Item> filter) {
-		return getFirst(filter) != null;
+		return BANK.exists(filter);
 	}
 
 	public static boolean contains(int id) {
-		return contains(x -> x.getId() == id);
+		return BANK.exists(id);
 	}
 
 	public static boolean contains(String name) {
-		return contains(x -> x.getName() != null && x.getName().equals(name));
+		return BANK.exists(name);
+	}
+
+	public static boolean hasTabs() {
+		Widget tabContainer = Widgets.get(WidgetInfo.BANK_TAB_CONTAINER);
+		return tabContainer != null && tabContainer.getChild(11) != null && tabContainer.getChild(11).hasAction("Collapse tab");
+	}
+
+	public static void collapseTabs() {
+		Game.getClient().interact(6, 1007, 11, 786442);
+	}
+
+	public static boolean isMainTabOpen() {
+		return Vars.getBit(Varbits.CURRENT_BANK_TAB.getId()) == 0;
+	}
+
+	public static void openMainTab() {
+		Widget mainTab = MAIN_TAB.get();
+		if (Widgets.isVisible(mainTab)) {
+			mainTab.interact(0);
+		}
 	}
 
 	public enum Component {
@@ -375,14 +360,20 @@ public class Bank {
 		}
 
 		public static QuantityMode getCurrent() {
-			return switch (Vars.getBit(QUANTITY_MODE_VARP)) {
-				case 0 -> QuantityMode.ONE;
-				case 1 -> QuantityMode.FIVE;
-				case 2 -> QuantityMode.TEN;
-				case 3 -> QuantityMode.X;
-				case 4 -> QuantityMode.ALL;
-				default -> UNKNOWN;
-			};
+			switch (Vars.getBit(QUANTITY_MODE_VARP)) {
+				case 0:
+					return QuantityMode.ONE;
+				case 1:
+					return QuantityMode.FIVE;
+				case 2:
+					return QuantityMode.TEN;
+				case 3:
+					return QuantityMode.X;
+				case 4:
+					return QuantityMode.ALL;
+				default:
+					return UNKNOWN;
+			}
 		}
 	}
 

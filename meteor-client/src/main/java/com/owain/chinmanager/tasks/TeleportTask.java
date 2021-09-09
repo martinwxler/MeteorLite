@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
+
 import net.runelite.api.Client;
 import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.api.GameState;
@@ -883,7 +883,7 @@ public class TeleportTask implements Task<Void>
 
 			if (bank != null && !bank.getName().contains("Grand"))
 			{
-				ObjectComposition objectComposition = client.getObjectDefinition(bank.getId());
+				ObjectComposition objectComposition = client.getObjectComposition(bank.getId());
 				int[] ids = objectComposition.getImpostorIds();
 
 				if (ids != null && ids.length > 0)
@@ -922,7 +922,7 @@ public class TeleportTask implements Task<Void>
 			else if (banker != null)
 			{
 				int index = 0;
-				for (String action : client.getNpcDefinition(banker.getId()).getActions())
+				for (String action : client.getNpcComposition(banker.getId()).getActions())
 				{
 					if (action != null && action.equalsIgnoreCase("bank"))
 					{

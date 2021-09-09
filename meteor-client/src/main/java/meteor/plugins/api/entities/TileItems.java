@@ -16,126 +16,87 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class TileItems {
-    private static final Logger logger = new Logger("TileItems");
+public class TileItems extends Entities<TileItem> {
+	private static final TileItems TILE_ITEMS = new TileItems();
 
-    public static List<TileItem> getAll(Predicate<TileItem> filter) {
-        return Tiles.getTiles().stream()
-                .flatMap(tile -> parseTile(tile, filter).stream())
-                .collect(Collectors.toList());
-    }
+	@Override
+	protected List<TileItem> all(Predicate<? super TileItem> filter) {
+		return Tiles.getTiles().stream()
+						.flatMap(tile -> parseTile(tile, filter).stream())
+						.collect(Collectors.toList());
+	}
 
-    public static List<TileItem> getAll(int... ids) {
-        return getAll(x -> {
-            for (int id : ids) {
-                if (id == x.getId()) {
-                    return true;
-                }
-            }
+	public static List<TileItem> getAll(Predicate<TileItem> filter) {
+		return TILE_ITEMS.all(filter);
+	}
 
-            return false;
-        });
-    }
+	public static List<TileItem> getAll(int... ids) {
+		return TILE_ITEMS.all(ids);
+	}
 
-    public static List<TileItem> getAll(String... names) {
-        return getAll(x -> {
-            if (x.getName() == null) {
-                return false;
-            }
+	public static List<TileItem> getAll(String... names) {
+		return TILE_ITEMS.all(names);
+	}
 
-            for (String name : names) {
-                if (name.equals(x.getName())) {
-                    return true;
-                }
-            }
+	public static TileItem getNearest(Predicate<TileItem> filter) {
+		return TILE_ITEMS.nearest(filter);
+	}
 
-            return false;
-        });
-    }
+	public static TileItem getNearest(int... ids) {
+		return TILE_ITEMS.nearest(ids);
+	}
 
-    public static TileItem getNearest(Predicate<TileItem> filter) {
-        Player local = Players.getLocal();
-        return getAll(filter).stream()
-                .min(Comparator.comparingInt(t -> t.getTile().getWorldLocation().distanceTo(local.getWorldLocation())))
-                .orElse(null);
-    }
+	public static TileItem getNearest(String... names) {
+		return TILE_ITEMS.nearest(names);
+	}
 
-    public static TileItem getNearest(int... ids) {
-        return getNearest(x -> {
-            for (int id : ids) {
-                if (id == x.getId()) {
-                    return true;
-                }
-            }
+	public static List<TileItem> getAt(LocalPoint localPoint, Predicate<TileItem> filter) {
+		Tile tile = Game.getClient().getScene().getTiles()[Game.getClient().getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
+		if (tile == null) {
+			return Collections.emptyList();
+		}
 
-            return false;
-        });
-    }
+		return parseTile(tile, filter);
+	}
 
-    public static TileItem getNearest(String... names) {
-        return getNearest(x -> {
-            if (x.getName() == null) {
-                return false;
-            }
+	public static List<TileItem> getAt(WorldPoint worldPoint, Predicate<TileItem> filter) {
+		LocalPoint localPoint = LocalPoint.fromWorld(Game.getClient(), worldPoint);
+		if (localPoint == null) {
+			return Collections.emptyList();
+		}
 
-            for (String name : names) {
-                if (name.equals(x.getName())) {
-                    return true;
-                }
-            }
+		Tile tile = Game.getClient().getScene().getTiles()[Game.getClient().getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
+		if (tile == null) {
+			return Collections.emptyList();
+		}
 
-            return false;
-        });
-    }
+		return parseTile(tile, filter);
+	}
 
-    public static List<TileItem> getAt(LocalPoint localPoint, Predicate<TileItem> filter) {
-        Tile tile = Game.getClient().getScene().getTiles()[Game.getClient().getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
-        if (tile == null) {
-            return Collections.emptyList();
-        }
+	public static List<TileItem> getAt(Tile tile, Predicate<TileItem> filter) {
+		return parseTile(tile, filter);
+	}
 
-        return parseTile(tile, filter);
-    }
+	private static List<TileItem> parseTile(Tile tile, Predicate<? super TileItem> pred) {
+		List<TileItem> out = new ArrayList<>();
+		if (tile.getGroundItems() != null) {
+			for (TileItem item : tile.getGroundItems()) {
+				if (item == null || item.getId() == -1) {
+					continue;
+				}
 
-    public static List<TileItem> getAt(WorldPoint worldPoint, Predicate<TileItem> filter) {
-        LocalPoint localPoint = LocalPoint.fromWorld(Game.getClient(), worldPoint);
-        if (localPoint == null) {
-            return Collections.emptyList();
-        }
+				if (!Game.getClient().isItemDefinitionCached(item.getId())) {
+					GameThread.invokeLater(() -> Game.getClient().getItemComposition(item.getId()));
+				}
 
-        Tile tile = Game.getClient().getScene().getTiles()[Game.getClient().getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
-        if (tile == null) {
-            return Collections.emptyList();
-        }
+				if (!pred.test(item)) {
+					continue;
+				}
 
-        return parseTile(tile, filter);
-    }
+				out.add(item);
+			}
+		}
 
-    public static List<TileItem> getAt(Tile tile, Predicate<TileItem> filter) {
-        return parseTile(tile, filter);
-    }
-
-    private static List<TileItem> parseTile(Tile tile, Predicate<TileItem> pred) {
-        List<TileItem> out = new ArrayList<>();
-        if (tile.getGroundItems() != null) {
-            for (TileItem item : tile.getGroundItems()) {
-                if (item == null || item.getId() == -1) {
-                    continue;
-                }
-
-                if (!Game.getClient().isItemDefinitionCached(item.getId())) {
-                    logger.debug("TileItem {} is not cached, going to cache it", item.getId());
-                    GameThread.invokeLater(() -> Game.getClient().getItemComposition(item.getId()));
-                }
-
-                if (!pred.test(item)) {
-                    continue;
-                }
-
-                out.add(item);
-            }
-        }
-
-        return out;
-    }
+		return out;
+	}
 }

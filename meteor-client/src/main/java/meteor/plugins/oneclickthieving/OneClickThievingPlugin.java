@@ -1,6 +1,7 @@
 package meteor.plugins.oneclickthieving;
 
 import com.google.inject.Provides;
+import meteor.plugins.api.entities.NPCs;
 import net.runelite.api.*;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameTick;
@@ -21,6 +22,7 @@ import meteor.plugins.PluginDescriptor;
 import meteor.ui.overlay.OverlayManager;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -119,6 +121,39 @@ public class OneClickThievingPlugin extends Plugin
 
    private void method2(MenuOptionClicked event)
    {
+      if(config.clickOverride()) {
+         if (NPCs.getNearest(config.npcID()) != null) {
+            NPC npc = NPCs.getNearest(config.npcID());
+            event.setMenuEntry(new MenuEntry("Pickpocket","<col=ffff00>"+npc.getName()+"<col=ff00>  (level-"+npc.getCombatLevel()+")",npc.getIndex(),MenuAction.NPC_THIRD_OPTION.getId(),0,0,false));
+            switch (npc.getActions().indexOf("Pickpocket")) {
+               case 0:
+                  event.setMenuAction(MenuAction.NPC_FIRST_OPTION);
+                  break;
+               case 1:
+                  event.setMenuAction(MenuAction.NPC_SECOND_OPTION);
+                  break;
+               case 2:
+                  event.setMenuAction(MenuAction.NPC_THIRD_OPTION);
+                  break;
+               case 3:
+                  event.setMenuAction(MenuAction.NPC_FOURTH_OPTION);
+                  break;
+               case 4:
+                  event.setMenuAction(MenuAction.NPC_FIFTH_OPTION);
+                  break;
+               default:
+                  client.addChatMessage(ChatMessageType.GAMEMESSAGE, "oneClickThieving", "did not find pickpocket option on npc check configs and enable plugin again", null);
+                  event.consume();
+                  this.toggle();
+                  return;
+            }
+         }else{
+            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "oneClickThieving", "npc not found please change the id and enable plugin again", null);
+            event.consume();
+            this.toggle();
+            return;
+         }
+      }
       if (config.disableWalk() && event.getMenuOption().equals("Walk here"))
       {
          event.consume();

@@ -106,4 +106,8 @@ public interface Player extends Actor {
   boolean isIdle();
 
   int getIndex();
+
+  default int getId() {
+    return getPlayerId();
+  }
 }

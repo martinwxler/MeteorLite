@@ -27,9 +27,12 @@ package net.runelite.rs.api;
 import java.math.BigInteger;
 import java.util.Map;
 import net.runelite.api.Client;
+import net.runelite.api.IndexedSprite;
 import net.runelite.api.SpritePixels;
 import net.runelite.api.World;
 import net.runelite.api.clan.ClanRank;
+import net.runelite.api.packets.ClientPacket;
+import net.runelite.api.packets.IsaacCipher;
 import net.runelite.api.widgets.Widget;
 import net.runelite.mapping.Construct;
 import net.runelite.mapping.Export;
@@ -1480,7 +1483,8 @@ public interface RSClient extends RSGameEngine, Client {
   RSPacketWriter getPacketWriter();
 
   @Import("getPacketBufferNode")
-  RSPacketBufferNode createPacket(RSClientPacket packet, RSIsaacCipher isaac);
+  @Override
+  RSPacketBufferNode preparePacket(ClientPacket packet, IsaacCipher isaac);
 
   @Import("Packet_nameInput")
   @Override
@@ -1504,4 +1508,12 @@ public interface RSClient extends RSGameEngine, Client {
   @Import("loadWorlds")
   @Override
   boolean loadWorlds();
+
+  @Import("logoSprite")
+  @Override
+  void setLogoSprite(IndexedSprite indexedSprite);
+
+  @Import("resumePauseWidget")
+  @Override
+  void processDialog(int widgetUid, int menuIndex);
 }

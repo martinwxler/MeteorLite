@@ -24,29 +24,21 @@
  */
 package net.runelite.mixins;
 
+import net.runelite.api.Point;
 import net.runelite.api.*;
 import net.runelite.api.events.WidgetHiddenChanged;
 import net.runelite.api.events.WidgetPositioned;
-import net.runelite.api.mixins.Copy;
-import net.runelite.api.mixins.FieldHook;
-import net.runelite.api.mixins.Inject;
-import net.runelite.api.mixins.Mixin;
-import net.runelite.api.mixins.Replace;
-import net.runelite.api.mixins.Shadow;
+import net.runelite.api.mixins.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.api.widgets.WidgetType;
-import net.runelite.rs.api.RSClient;
-import net.runelite.rs.api.RSModel;
-import net.runelite.rs.api.RSNode;
-import net.runelite.rs.api.RSNodeHashTable;
-import net.runelite.rs.api.RSPlayerComposition;
-import net.runelite.rs.api.RSSequenceDefinition;
-import net.runelite.rs.api.RSWidget;
-import java.awt.Rectangle;
+import net.runelite.rs.api.*;
+
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import static net.runelite.api.widgets.WidgetInfo.TO_CHILD;
 import static net.runelite.api.widgets.WidgetInfo.TO_GROUP;
 
@@ -615,14 +607,8 @@ public abstract class WidgetMixin implements RSWidget
 
   @Inject
   @Override
-  public List<String> actions() {
-    return Arrays.asList(getActions());
-  }
-
-  @Inject
-  @Override
   public void interact(String action) {
-    interact(actions().indexOf(action));
+    interact(getActions().indexOf(action));
   }
 
   @Inject

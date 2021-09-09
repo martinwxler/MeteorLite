@@ -1,6 +1,5 @@
 package meteor.plugins.api.movement.pathfinder;
 
-import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.entities.NPCs;
 import meteor.plugins.api.entities.TileObjects;
 import meteor.plugins.api.game.Skills;
@@ -24,10 +23,11 @@ import java.util.List;
 public class TransportLoader {
     private static final int BUILD_DELAY_SECONDS = 5;
     private static Instant lastBuild = Instant.now().minusSeconds(6);
+    private static List<Transport> LAST_TRANSPORT_LIST = Collections.emptyList();
 
     public static List<Transport> buildTransports() {
         if (lastBuild.plusSeconds(BUILD_DELAY_SECONDS).isAfter(Instant.now())) {
-            return Collections.emptyList();
+            return List.copyOf(LAST_TRANSPORT_LIST);
         }
 
         lastBuild = Instant.now();
@@ -49,7 +49,7 @@ public class TransportLoader {
         }
 
         int gold = Inventory.getFirst(995) != null ? Inventory.getFirst(995).getQuantity() : 0;
-        if (gold > 10) {
+        if (gold >= 10) {
             transports.add(objectTransport(
                     new WorldPoint(3267, 3228, 0),
                     new WorldPoint(3268, 3228, 0),
@@ -108,7 +108,7 @@ public class TransportLoader {
             transports.add(itemUseTransport(new WorldPoint(2512, 3466, 0), new WorldPoint(2511, 3463, 0), 954, 2020));
 
             // Crabclaw island
-            if (gold > 10_000) {
+            if (gold >= 10_000) {
                 transports.add(npcTransport(new WorldPoint(1782, 3458, 0), new WorldPoint(1778, 3417, 0), 7483, "Travel"));
             }
 
@@ -164,7 +164,7 @@ public class TransportLoader {
                 1164,
                 "Well that is a risk I will have to take."));
 
-        return transports;
+        return List.copyOf(LAST_TRANSPORT_LIST = transports);
     }
 
     public static Transport parseTransportLine(String line) {

@@ -4,10 +4,7 @@ import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.Vars;
-import meteor.plugins.api.movement.pathfinder.CollisionMap;
-import meteor.plugins.api.movement.pathfinder.Transport;
-import meteor.plugins.api.movement.pathfinder.TransportLoader;
-import meteor.plugins.api.movement.pathfinder.Walker;
+import meteor.plugins.api.movement.pathfinder.*;
 import meteor.plugins.api.scene.Tiles;
 import meteor.plugins.api.widgets.Widgets;
 import meteor.ui.overlay.OverlayUtil;
@@ -23,6 +20,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.*;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -43,8 +41,6 @@ public class Movement {
     private static ScheduledExecutorService executor;
 
     private static void setWalkDestination(int sceneX, int sceneY) {
-        logger.debug("Setting destination {} {}", sceneX, sceneY);
-
         int attempts = 0;
 
         do {
@@ -72,7 +68,7 @@ public class Movement {
     }
 
     public static void walk(Point point) {
-        setDestination(point.getX(), point.getY());
+        Game.getClient().interact(0, MenuAction.WALK.getId(), point.getX(), point.getY());
     }
 
     public static void walk(WorldPoint worldPoint) {
@@ -107,15 +103,31 @@ public class Movement {
             return;
         }
 
-        setDestination(localPoint.getSceneX(), localPoint.getSceneY());
+        Game.getClient().interact(0, MenuAction.WALK.getId(), localPoint.getSceneX(), localPoint.getSceneY());
     }
 
     public static void walk(Locatable locatable) {
         walk(locatable.getWorldLocation());
     }
 
-    public static void walkTo(WorldPoint worldPoint) {
-        Walker.walkTo(worldPoint);
+    public static boolean walkTo(WorldPoint worldPoint) {
+        return Walker.walkTo(worldPoint);
+    }
+
+    public static boolean walkTo(Locatable locatable) {
+        return walkTo(locatable.getWorldLocation());
+    }
+
+    public static boolean walkTo(BankLocation bankLocation) {
+        return walkTo(bankLocation.getArea().toWorldPoint());
+    }
+
+    public static boolean walkTo(int x, int y) {
+        return walkTo(x, y, Game.getClient().getPlane());
+    }
+
+    public static boolean walkTo(int x, int y, int plane) {
+        return walkTo(new WorldPoint(x, y, plane));
     }
 
     public static boolean isRunEnabled() {
@@ -130,7 +142,7 @@ public class Movement {
 
     public static void drawCollisions(Graphics2D graphics2D) {
         Client client = Game.getClient();
-        List<Tile> tiles = Tiles.getTiles();
+        java.util.List<Tile> tiles = Tiles.getTiles();
 
         if (tiles.isEmpty()) {
             return;
@@ -140,7 +152,7 @@ public class Movement {
 
         for (Transport transport : transports) {
             OverlayUtil.fillTile(graphics2D, client, transport.getSource(), TRANSPORT_COLOR);
-            Point center = Perspective.tileCenter(client, transport.getSource());
+            net.runelite.api.Point center = Perspective.tileCenter(client, transport.getSource());
             if (center == null) {
                 continue;
             }
@@ -153,18 +165,19 @@ public class Movement {
             graphics2D.drawLine(center.getX(), center.getY(), linkCenter.getX(), linkCenter.getY());
         }
 
-        CollisionMap collisionMap = Walker.collisionMap;
+        CollisionMap collisionMap = Walker.COLLISION_MAP;
         if (collisionMap == null) {
             return;
         }
 
         for (Tile tile : tiles) {
-            Shape poly = Perspective.getCanvasTilePoly(client, tile.getLocalLocation());
+            Polygon poly = Perspective.getCanvasTilePoly(client, tile.getLocalLocation());
             if (poly == null) {
                 continue;
             }
 
             StringBuilder sb = new StringBuilder("");
+            graphics2D.setColor(Color.WHITE);
             if (!collisionMap.n(tile.getWorldLocation())) {
                 sb.append("n");
             }
@@ -188,6 +201,22 @@ public class Movement {
 
             if (!s.equals("nswe")) {
                 graphics2D.setColor(Color.WHITE);
+                if (s.contains("n")) {
+                    graphics2D.drawLine(poly.xpoints[3], poly.ypoints[3], poly.xpoints[2], poly.ypoints[2]);
+                }
+
+                if (s.contains("s")) {
+                    graphics2D.drawLine(poly.xpoints[0], poly.ypoints[0], poly.xpoints[1], poly.ypoints[1]);
+                }
+
+                if (s.contains("w")) {
+                    graphics2D.drawLine(poly.xpoints[0], poly.ypoints[0], poly.xpoints[3], poly.ypoints[3]);
+                }
+
+                if (s.contains("e")) {
+                    graphics2D.drawLine(poly.xpoints[1], poly.ypoints[1], poly.xpoints[2], poly.ypoints[2]);
+                }
+
                 int stringX = (int)
                         (poly.getBounds().getCenterX() -
                                 graphics2D.getFontMetrics().getStringBounds(s, graphics2D).getWidth() / 2);
@@ -210,5 +239,31 @@ public class Movement {
 
     public static boolean isStaminaBoosted() {
         return Vars.getBit(STAMINA_VARBIT) == 1;
+    }
+
+    public static int calculateDistance(WorldPoint destination) {
+        List<WorldPoint> path = Walker.buildPath(destination);
+
+        if (path.size() < 2) {
+            return 0;
+        }
+
+        Iterator<WorldPoint> it = path.iterator();
+        WorldPoint prev = it.next();
+        WorldPoint current;
+        int distance = 0;
+
+        // WorldPoint#distanceTo() returns max int when planes are different, but since the pathfinder can traverse
+        // obstacles, we just add one to the distance to account for whatever obstacle is in between the current point
+        // and the next.
+        while (it.hasNext()) {
+            current = it.next();
+            if (prev.getPlane() != current.getPlane()) {
+                distance += 1;
+            } else {
+                distance += Math.max(Math.abs(prev.getX() - current.getX()), Math.abs(prev.getY() - current.getY()));
+            }
+        }
+        return distance;
     }
 }

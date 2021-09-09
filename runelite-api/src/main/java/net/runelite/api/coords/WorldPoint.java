@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.List;
 import lombok.Value;
 import net.runelite.api.Client;
+import net.runelite.api.Locatable;
 import net.runelite.api.Perspective;
 
 /**
@@ -435,5 +436,9 @@ public class WorldPoint {
     graphics.setColor(new Color(0, 0, 0, 50));
     graphics.fill(poly);
     graphics.setStroke(originalStroke);
+  }
+
+  public int distanceTo(Locatable locatable) {
+    return locatable.getWorldLocation().distanceTo(this);
   }
 }

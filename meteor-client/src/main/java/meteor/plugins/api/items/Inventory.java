@@ -11,140 +11,110 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class Inventory {
+public class Inventory extends Items {
+	private static final Inventory INVENTORY = new Inventory();
 
-    public static List<Item> getAll(Predicate<Item> filter) {
-        List<Item> items = new ArrayList<>();
-        ItemContainer container = Game.getClient().getItemContainer(InventoryID.INVENTORY);
-        if (container == null) {
-            return items;
-        }
+	@Override
+	protected List<Item> all(Predicate<Item> filter) {
+		List<Item> items = new ArrayList<>();
+		ItemContainer container = Game.getClient().getItemContainer(InventoryID.INVENTORY);
+		if (container == null) {
+			return items;
+		}
 
-        Inventory.cacheItems(container);
+		Inventory.cacheItems(container);
 
-        for (Item item : container.getItems()) {
-            if (item.getId() != -1 && item.getName() != null && !item.getName().equals("null")) {
-                item.setActionParam(item.getSlot());
-                item.setWidgetId(WidgetInfo.INVENTORY.getPackedId());
+		for (Item item : container.getItems()) {
+			if (item.getId() != -1 && item.getName() != null && !item.getName().equals("null")) {
+				item.setActionParam(item.getSlot());
+				item.setWidgetId(WidgetInfo.INVENTORY.getPackedId());
 
-                if (filter.test(item)) {
-                    items.add(item);
-                }
-            }
-        }
+				if (filter.test(item)) {
+					items.add(item);
+				}
+			}
+		}
 
-        return items;
-    }
+		return items;
+	}
 
-    public static List<Item> getAll() {
-        return getAll(x -> true);
-    }
+	public static List<Item> getAll(Predicate<Item> filter) {
+		return INVENTORY.all(filter);
+	}
 
-    public static Item getFirst(Predicate<Item> filter) {
-        return getAll(filter).stream().findFirst().orElse(null);
-    }
+	public static List<Item> getAll() {
+		return getAll(x -> true);
+	}
 
-    public static List<Item> getAll(int... ids) {
-        return getAll(x -> {
-            for (int id : ids) {
-                if (id == x.getId()) {
-                    return true;
-                }
-            }
+	public static List<Item> getAll(int... ids) {
+		return INVENTORY.all(ids);
+	}
 
-            return false;
-        });
-    }
+	public static List<Item> getAll(String... names) {
+		return getAll(x -> {
+			if (x.getName() == null) {
+				return false;
+			}
 
-    public static List<Item> getAll(String... names) {
-        return getAll(x -> {
-            if (x.getName() == null) {
-                return false;
-            }
+			for (String name : names) {
+				if (name.equals(x.getName())) {
+					return true;
+				}
+			}
 
-            for (String name : names) {
-                if (name.equals(x.getName())) {
-                    return true;
-                }
-            }
+			return false;
+		});
+	}
 
-            return false;
-        });
-    }
+	public static Item getFirst(Predicate<Item> filter) {
+		return INVENTORY.first(filter);
+	}
 
-    public static Item getFirst(int... ids) {
-        return getFirst(x -> {
-            for (int id : ids) {
-                if (id == x.getId()) {
-                    return true;
-                }
-            }
+	public static Item getFirst(int... ids) {
+		return INVENTORY.first(ids);
+	}
 
-            return false;
-        });
-    }
+	public static Item getFirst(String... names) {
+		return INVENTORY.first(names);
+	}
 
-    public static Item getFirst(String... names) {
-        return getFirst(x -> {
-            if (x.getName() == null) {
-                return false;
-            }
+	public static boolean contains(Predicate<Item> filter) {
+		return INVENTORY.exists(filter);
+	}
 
-            for (String name : names) {
-                if (name.equals(x.getName())) {
-                    return true;
-                }
-            }
+	public static boolean contains(int id) {
+		return INVENTORY.exists(id);
+	}
 
-            return false;
-        });
-    }
+	public static boolean contains(String name) {
+		return INVENTORY.exists(name);
+	}
 
-    public static boolean contains(Predicate<Item> filter) {
-        return getFirst(filter) != null;
-    }
+	public static boolean isFull() {
+	    return getFreeSlots() == 0;
+  }
 
-    public static boolean contains(int... ids) {
-        return contains(x -> {
-            for (int id : ids) {
-                if (id == x.getId()) {
-                    return true;
-                }
-            }
+  public static boolean isEmpty() {
+	    return getFreeSlots() == 28;
+  }
 
-            return false;
-        });
-    }
+  public static int getFreeSlots() {
+	    return 28 - getAll().size();
+  }
 
-    public static boolean contains(String... names) {
-        return contains(x -> {
-            if (x.getName() == null) {
-                return false;
-            }
+	public static void cacheItems(ItemContainer container) {
+		List<Item> uncached = Arrays.stream(container.getItems())
+						.filter(x -> !Game.getClient().isItemDefinitionCached(x.getId()))
+						.collect(Collectors.toList());
 
-            for (String name : names) {
-                if (name.equals(x.getName())) {
-                    return true;
-                }
-            }
+		if (!uncached.isEmpty()) {
+			GameThread.invokeLater(() -> {
+				for (Item item : uncached) {
+					Game.getClient().getItemComposition(item.getId());
+				}
 
-            return false;
-        });
-    }
-
-    public static void cacheItems(ItemContainer container) {
-        List<Item> uncached = Arrays.stream(container.getItems())
-                .filter(x -> !Game.getClient().isItemDefinitionCached(x.getId()))
-                .collect(Collectors.toList());
-
-        if (!uncached.isEmpty()) {
-            GameThread.invokeLater(() -> {
-                for (Item item : uncached) {
-                    Game.getClient().getItemComposition(item.getId());
-                }
-
-                return null;
-            });
-        }
-    }
+				return null;
+			});
+		}
+	}
 }

@@ -12,11 +12,11 @@ import net.runelite.api.Point;
 import net.runelite.api.TileObject;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.InvokeMenuActionEvent;
 import net.runelite.api.mixins.Inject;
 import net.runelite.api.mixins.Mixin;
 import net.runelite.api.mixins.Mixins;
 import net.runelite.api.mixins.Shadow;
+import net.runelite.api.util.Text;
 import net.runelite.rs.api.*;
 
 @Mixins({
@@ -42,49 +42,6 @@ public abstract class TileObjectMixin implements TileObject {
   public int getId() {
     long hash = getHash();
     return (int) (hash >>> 17 & 4294967295L);
-  }
-
-  @Inject
-  @Override
-  public String getName() {
-    RSObjectComposition def = getCachedDefinition();
-    return def == null ? null : def.getName();
-  }
-
-  @Inject
-  @Override
-  public String[] getActions() {
-    RSObjectComposition def = getCachedDefinition();
-    return def == null ? null : def.getActions();
-  }
-
-  @Inject
-  @Override
-  public RSObjectComposition getCachedDefinition() {
-    if (objDefCache.containsKey(getId())) {
-      return objDefCache.get(getId());
-    }
-
-    return getDefinition();
-  }
-
-  @Inject
-  @Override
-  public boolean isDefinitionCached() {
-    return objDefCache.containsKey(getId());
-  }
-
-  @Inject
-  @Override
-  public RSObjectComposition getDefinition() {
-    assert client.isClientThread() : "TileObject.getDefinition must be called on client thread " + getId();
-    RSObjectComposition def = client.getRSObjectComposition(getId());
-    if (def != null && def.getImpostorIds() != null) {
-      def = def.getImpostor();
-    }
-
-    objDefCache.put(getId(), def);
-    return def;
   }
 
   @Override
@@ -149,8 +106,61 @@ public abstract class TileObjectMixin implements TileObject {
 
   @Override
   @Inject
+  public Point menuPoint() {
+    if (this instanceof GameObject) {
+      GameObject temp = (GameObject) this;
+      return temp.getSceneMinLocation();
+    }
+    return new Point(getLocalLocation().getSceneX(), getLocalLocation().getSceneY());
+  }
+
+  @Inject
+  @Override
+  public String getName() {
+    RSObjectComposition def = getCachedDefinition();
+    return def == null ? null : Text.removeTags(Text.sanitize(def.getName()));
+  }
+
+  @Inject
+  @Override
+  public String[] getRawActions() {
+    RSObjectComposition def = getCachedDefinition();
+    return def == null ? null : def.getActions();
+  }
+
+  @Inject
+  @Override
+  public RSObjectComposition getCachedDefinition() {
+    if (objDefCache.containsKey(getId())) {
+      return objDefCache.get(getId());
+    }
+
+    return getDefinition();
+  }
+
+  @Inject
+  @Override
+  public boolean isDefinitionCached() {
+    return objDefCache.containsKey(getId());
+  }
+
+  @Inject
+  @Override
+  public RSObjectComposition getDefinition() {
+    assert client.isClientThread() : "TileObject.getDefinition must be called on client thread " + getId();
+    RSObjectComposition def = client.getRSObjectComposition(getId());
+    if (def != null && def.getImpostorIds() != null) {
+      def = def.getImpostor();
+    }
+
+    objDefCache.put(getId(), def);
+    return def;
+  }
+
+  @Override
+  @Inject
   public void interact(String action) {
-    interact(actions().indexOf(action));
+    interact(getActions().indexOf(action));
   }
 
   @Override
@@ -170,22 +180,6 @@ public abstract class TileObjectMixin implements TileObject {
       default:
         throw new IllegalArgumentException("action = " + action);
     }
-  }
-
-  @Override
-  @Inject
-  public List<String> actions() {
-    return Arrays.asList(getActions());
-  }
-
-  @Override
-  @Inject
-  public Point menuPoint() {
-    if (this instanceof GameObject) {
-      GameObject temp = (GameObject) this;
-      return temp.getSceneMinLocation();
-    }
-    return new Point(getLocalLocation().getSceneX(), getLocalLocation().getSceneY());
   }
 
   @Override

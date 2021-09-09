@@ -345,7 +345,7 @@ public class BankingTask implements Task<Void>
 			if (bank != null)
 			{
 				int index = 0;
-				for (String action : client.getObjectDefinition(bank.getId()).getActions())
+				for (String action : client.getObjectComposition(bank.getId()).getActions())
 				{
 					if (action != null && (action.equalsIgnoreCase("bank") || action.equalsIgnoreCase("use")))
 					{
@@ -370,7 +370,7 @@ public class BankingTask implements Task<Void>
 			else if (banker != null)
 			{
 				int index = 0;
-				for (String action : client.getNpcDefinition(banker.getId()).getActions())
+				for (String action : client.getNpcComposition(banker.getId()).getActions())
 				{
 					if (action != null && action.equalsIgnoreCase("bank"))
 					{

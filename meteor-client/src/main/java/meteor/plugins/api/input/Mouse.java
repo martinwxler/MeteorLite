@@ -4,32 +4,56 @@ import meteor.plugins.api.commons.Rand;
 import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.game.Game;
 import net.runelite.api.Client;
+import org.sponge.util.Logger;
 
 import javax.inject.Inject;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 public class Mouse {
-    private static final Supplier<Point> CLICK_POINT_SUPPLIER = () -> new Point(Rand.nextInt(520, 568), Rand.nextInt(55, 70));
+    private static final Logger log = new Logger("Mouse");
+    private static final int MENU_REPLACE_DELAY = 80;
+    public static final Supplier<Point> CLICK_POINT_SUPPLIER = () -> new Point(Rand.nextInt(520, 568), Rand.nextInt(55, 70));
 
     private static boolean exited = true;
+    private static final Executor CLICK_EXECUTOR = Executors.newSingleThreadExecutor();
 
     public static void click(int x, int y, boolean left) {
+        if (Game.getClient().isClientThread()) {
+            CLICK_EXECUTOR.execute(() -> handleClick(x, y, left));
+        } else {
+            handleClick(x, y, left);
+        }
+    }
+
+    private static void handleClick(int x, int y, boolean left) {
+        long start = System.currentTimeMillis();
         Canvas canvas = Game.getClient().getCanvas();
 
         if (exited) {
             entered(x, y, canvas, System.currentTimeMillis());
         }
 
+        moved(x, y, canvas, System.currentTimeMillis());
+        Time.sleep(2, 30);
         pressed(x, y, canvas, System.currentTimeMillis(),left ? MouseEvent.BUTTON1 : MouseEvent.BUTTON3);
-        Time.sleep(1, 66);
+        Time.sleep(2, 30);
         long currTime = System.currentTimeMillis();
         released(x, y, canvas, currTime, left ? MouseEvent.BUTTON1 : MouseEvent.BUTTON3);
         clicked(x, y, canvas, currTime, left ? MouseEvent.BUTTON1 : MouseEvent.BUTTON3);
 
         if (Rand.nextBool() && !exited) {
             exited(x, y, canvas, System.currentTimeMillis());
+        }
+
+        long sleep = MENU_REPLACE_DELAY - (System.currentTimeMillis() - start);
+        if (sleep > 0) {
+            Time.sleep(sleep);
+        } else {
+            Time.sleep(MENU_REPLACE_DELAY);
         }
     }
 
@@ -83,5 +107,11 @@ public class Mouse {
         event.setSource("meteor");
         canvas.dispatchEvent(event);
         exited = false;
+    }
+
+    public static synchronized void moved(int x, int y, Canvas canvas, long time) {
+        MouseEvent event = new MouseEvent(canvas, MouseEvent.MOUSE_MOVED, time, 0, x, y, 0, false);
+        event.setSource("meteor");
+        canvas.dispatchEvent(event);
     }
 }

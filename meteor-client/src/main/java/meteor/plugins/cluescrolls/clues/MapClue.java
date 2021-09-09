@@ -190,7 +190,7 @@ public class MapClue extends ClueScroll implements ObjectClueScroll {
         .build());
 
     if (objectId != -1) {
-      ObjectComposition objectToClick = plugin.getClient().getObjectDefinition(getObjectId());
+      ObjectComposition objectToClick = plugin.getClient().getObjectComposition(getObjectId());
 
       String objectName = "N/A";
 

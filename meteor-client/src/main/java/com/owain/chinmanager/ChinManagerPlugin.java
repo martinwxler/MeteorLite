@@ -1678,7 +1678,7 @@ public class ChinManagerPlugin extends Plugin
 			.filter(Objects::nonNull)
 			.filter(tileObject -> {
 				List<String> actions = Arrays.asList(
-					client.getObjectDefinition(
+					client.getObjectComposition(
 						tileObject.getId()
 					)
 						.getActions()
@@ -1686,7 +1686,7 @@ public class ChinManagerPlugin extends Plugin
 
 				List<String> imposterActions = new ArrayList<>();
 
-				ObjectComposition objectComposition = client.getObjectDefinition(tileObject.getId());
+				ObjectComposition objectComposition = client.getObjectComposition(tileObject.getId());
 				int[] ids = objectComposition.getImpostorIds();
 
 				if (ids != null && ids.length > 0)
@@ -1724,7 +1724,7 @@ public class ChinManagerPlugin extends Plugin
 			.filter(Objects::nonNull)
 			.filter(tileObject -> {
 				List<String> actions = Arrays.asList(
-					client.getObjectDefinition(
+					client.getObjectComposition(
 						tileObject.getId()
 					)
 						.getActions()
@@ -1732,7 +1732,7 @@ public class ChinManagerPlugin extends Plugin
 
 				List<String> imposterActions = new ArrayList<>();
 
-				ObjectComposition objectComposition = client.getObjectDefinition(tileObject.getId());
+				ObjectComposition objectComposition = client.getObjectComposition(tileObject.getId());
 				int[] ids = objectComposition.getImpostorIds();
 
 				if (ids != null && ids.length > 0)
@@ -1770,7 +1770,7 @@ public class ChinManagerPlugin extends Plugin
 			.map(npc -> (NPC) npc)
 			.filter(npc -> {
 				List<String> actions = Arrays.asList(
-					client.getNpcDefinition(
+					client.getNpcComposition(
 						npc.getId()
 					)
 						.getActions()
@@ -1800,7 +1800,7 @@ public class ChinManagerPlugin extends Plugin
 			.filter(Objects::nonNull)
 			.filter(npc -> {
 				List<String> actions = Arrays.asList(
-					client.getNpcDefinition(
+					client.getNpcComposition(
 						npc.getId()
 					)
 						.getActions()

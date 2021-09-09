@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2019, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,19 +22,29 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api.events;
+package net.runelite.api;
 
-import lombok.Value;
-import net.runelite.api.Nameable;
-
-/**
- * An event where a {@link Nameable} has had their name changed.
- */
-@Value
-public class NameableNameChanged {
+public interface ChatEntityContainer<T extends ChatEntity> {
 
   /**
-   * The nameable that changed names.
+   * Get the number of members in this container
+   *
+   * @return
    */
-  Nameable nameable;
+  int getCount();
+
+  /**
+   * Get the members in this container
+   *
+   * @return
+   */
+  T[] getMembers();
+
+  /**
+   * Find a nameable by name
+   *
+   * @param name the name
+   * @return
+   */
+  T findByName(String name);
 }

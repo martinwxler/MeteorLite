@@ -86,7 +86,7 @@ public abstract class TileObjectQuery<EntityType extends TileObject, QueryType> 
     predicate = and(object ->
     {
       for (String action : actions) {
-        String[] objectActions = object.getActions();
+        String[] objectActions = object.getRawActions();
         for (String objectAction : objectActions) {
           if (objectAction != null && objectAction.equals(action)) {
             return true;

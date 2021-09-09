@@ -1,19 +1,18 @@
 package net.runelite.mixins;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.OverheadPrayerChanged;
 import net.runelite.api.events.PlayerSkullChanged;
 import net.runelite.api.mixins.*;
+import net.runelite.api.util.Text;
 import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSModel;
 import net.runelite.rs.api.RSPlayer;
 import net.runelite.rs.api.RSUsername;
+
+import java.awt.*;
+import java.util.ArrayList;
 
 import static net.runelite.api.SkullIcon.*;
 
@@ -51,7 +50,7 @@ public abstract class PlayerMixin implements RSPlayer {
       return null;
     }
 
-    return name.replace('\u00A0', ' ');
+    return Text.removeTags(Text.sanitize(name));
   }
 
   @Inject
@@ -220,6 +219,7 @@ public abstract class PlayerMixin implements RSPlayer {
     return (Polygon[]) polys.toArray(new Polygon[0]);
   }
 
+  @Inject
   @Override
   public int getActionId(int action) {
     switch (action) {
@@ -244,9 +244,10 @@ public abstract class PlayerMixin implements RSPlayer {
     }
   }
 
+  @Inject
   @Override
-  public List<String> actions() {
-    return Arrays.asList(getActions());
+  public String[] getRawActions() {
+    return client.getPlayerOptions();
   }
 
   @Override
@@ -258,7 +259,7 @@ public abstract class PlayerMixin implements RSPlayer {
   @Inject
   @Override
   public void interact(String action) {
-    interact(actions().indexOf(action));
+    interact(getActions().indexOf(action));
   }
 
   @Inject
