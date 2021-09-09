@@ -2,11 +2,13 @@ package meteor.plugins.api.items;
 
 import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.GameThread;
+import meteor.plugins.api.game.Vars;
 import meteor.plugins.api.widgets.Dialog;
 import meteor.plugins.api.widgets.Widgets;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
+import net.runelite.api.VarClientStr;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
@@ -245,5 +247,9 @@ public class Trade {
 
 			return false;
 		});
+	}
+
+	public static String getTradingPlayer() {
+		return Vars.getVarcStr(VarClientStr.DUEL_OPPONENT_NAME);
 	}
 }

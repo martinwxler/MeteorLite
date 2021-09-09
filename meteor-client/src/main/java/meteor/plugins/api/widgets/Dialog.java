@@ -175,4 +175,14 @@ public class Dialog {
 
 		return out;
 	}
+
+	public static void quickProcess(DialogOption... dialogOption) {
+		GameThread.invokeLater(() -> {
+			for (DialogOption option : dialogOption) {
+				option.process();
+			}
+
+			return true;
+		});
+	}
 }

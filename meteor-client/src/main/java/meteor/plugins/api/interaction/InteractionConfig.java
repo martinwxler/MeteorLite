@@ -32,4 +32,13 @@ public interface InteractionConfig extends Config {
 	default boolean debug() {
 		return false;
 	}
+
+	@ConfigItem(
+					keyName = "debugDialog",
+					name = "Debug dialogs",
+					description = "Prints out dialog actions to console"
+	)
+	default boolean debugDialogs() {
+		return false;
+	}
 }

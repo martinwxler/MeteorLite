@@ -165,7 +165,7 @@ public class Movement {
             graphics2D.drawLine(center.getX(), center.getY(), linkCenter.getX(), linkCenter.getY());
         }
 
-        CollisionMap collisionMap = Walker.collisionMap;
+        CollisionMap collisionMap = Walker.COLLISION_MAP;
         if (collisionMap == null) {
             return;
         }

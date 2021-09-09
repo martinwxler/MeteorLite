@@ -1704,4 +1704,10 @@ public abstract class ClientMixin implements RSClient {
   public void clearObjectCache() {
     objDefCache.clear();
   }
+
+  @Inject
+  @MethodHook("resumePauseWidget")
+  public static void onDialogProcessed(int widgetUid, int menuIndex) {
+    client.getCallbacks().post(new DialogProcessed(widgetUid, menuIndex));
+  }
 }

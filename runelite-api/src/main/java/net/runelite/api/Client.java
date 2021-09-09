@@ -2319,4 +2319,6 @@ public interface Client extends GameEngine {
   void clearObjectCache();
 
   void setLogoSprite(IndexedSprite indexedSprite);
+
+  void processDialog(int widgetUid, int menuIndex);
 }
