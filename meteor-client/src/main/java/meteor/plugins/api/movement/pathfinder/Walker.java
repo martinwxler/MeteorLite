@@ -35,8 +35,8 @@ public class Walker {
     private static final int MIN_TILES_LEFT_BEFORE_RECHOOSE = 3;
     private static final int MAX_MIN_ENERGY = 50;
     private static final int MIN_ENERGY = 5;
-    public static final CollisionMap collisionMap;
-    public static final LoadingCache<WorldPoint, List<WorldPoint>> pathcache = CacheBuilder.newBuilder()
+    public static final CollisionMap COLLISION_MAP;
+    public static final LoadingCache<WorldPoint, List<WorldPoint>> PATH_CACHE = CacheBuilder.newBuilder()
             .expireAfterWrite(5, TimeUnit.MINUTES)
             .build(new CacheLoader<>() {
                 @Override
@@ -60,7 +60,7 @@ public class Walker {
             loaded = null;
         }
 
-        collisionMap = loaded;
+        COLLISION_MAP = loaded;
     }
 
     public static boolean walkTo(WorldPoint destination) {
@@ -74,7 +74,7 @@ public class Walker {
         List<WorldPoint> path;
 
         try {
-            path = pathcache.get(destination);
+            path = PATH_CACHE.get(destination);
         } catch (ExecutionException e) {
             logger.error("Failed to get cached path", e);
             return false;
@@ -87,6 +87,12 @@ public class Walker {
 
         if (path.isEmpty()) {
             logger.error("Path was empty");
+            return false;
+        }
+
+        // Refresh path if our direction changed
+        if (!path.contains(Players.getLocal().getWorldLocation())) {
+            PATH_CACHE.refresh(destination);
             return false;
         }
 
@@ -116,7 +122,7 @@ public class Walker {
         }
 
         // Refresh the cached path
-        pathcache.refresh(destination);
+        PATH_CACHE.refresh(destination);
         return false;
     }
 
@@ -130,8 +136,12 @@ public class Walker {
             return step(reachablePath.get(nextTileIdx));
         }
 
-        int targetDistance = Rand.nextInt(MIN_TILES_WALKED_IN_STEP, Math.min(nextTileIdx, MAX_TILES_WALKED_IN_STEP));
-        return step(reachablePath.get(targetDistance - 1));
+        if (nextTileIdx > MAX_TILES_WALKED_IN_STEP) {
+            nextTileIdx = MAX_TILES_WALKED_IN_STEP;
+        }
+
+        int targetDistance = Rand.nextInt(MIN_TILES_WALKED_IN_STEP, nextTileIdx);
+        return step(reachablePath.get(targetDistance));
     }
 
     public static List<WorldPoint> reachablePath(List<WorldPoint> remainingPath) {
@@ -287,11 +297,11 @@ public class Walker {
             WorldPoint destination,
             Map<WorldPoint, List<Transport>> transports
     ) {
-        if (collisionMap == null) {
+        if (COLLISION_MAP == null) {
             return Collections.emptyList();
         }
 
-        return new Pathfinder(collisionMap, transports, startPoints,
+        return new Pathfinder(COLLISION_MAP, transports, startPoints,
                 destination).find();
     }
 

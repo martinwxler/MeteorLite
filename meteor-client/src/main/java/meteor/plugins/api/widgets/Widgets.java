@@ -1,6 +1,7 @@
 package meteor.plugins.api.widgets;
 
 import meteor.plugins.api.game.Game;
+import meteor.plugins.api.game.GameThread;
 import net.runelite.api.Client;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -40,5 +41,9 @@ public class Widgets {
 
     public static Widget fromId(int packedId) {
         return Game.getClient().getWidget(packedId);
+    }
+
+    public static boolean isVisible(Widget widget) {
+        return widget != null && !GameThread.invokeLater(widget::isHidden);
     }
 }

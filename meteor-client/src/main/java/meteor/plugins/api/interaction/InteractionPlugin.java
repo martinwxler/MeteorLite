@@ -2,7 +2,6 @@ package meteor.plugins.api.interaction;
 
 import com.google.inject.Provides;
 import meteor.config.ConfigManager;
-import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.input.MouseManager;
 import meteor.plugins.Plugin;
@@ -11,15 +10,14 @@ import meteor.plugins.api.commons.Rand;
 import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.input.Mouse;
 import meteor.plugins.api.movement.Movement;
-import meteor.plugins.api.widgets.Widgets;
+import meteor.plugins.api.widgets.DialogOption;
 import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.Client;
+import net.runelite.api.events.DialogProcessed;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.events.InvokeMenuActionEvent;
 import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 
 import javax.inject.Inject;
 import java.awt.*;
@@ -60,7 +58,7 @@ public class InteractionPlugin extends Plugin {
 						+ " | P1=" +  e.getParam1();
 
 		if (config.debug()) {
-			logger.debug("[Bot Action] {}", debug);
+			logger.info("[Bot Action] {}", debug);
 		}
 
 		if (config.mouseEvents()) {
@@ -76,7 +74,7 @@ public class InteractionPlugin extends Plugin {
 			mouseClickX = randomPoint.x;
 			mouseClickY = randomPoint.y;
 			if (config.debug()) {
-				logger.debug("Sending click to {} {}", mouseClickX, mouseClickY);
+				logger.info("Sending click to {} {}", mouseClickX, mouseClickY);
 			}
 
 
@@ -110,7 +108,21 @@ public class InteractionPlugin extends Plugin {
 							+ " | OP=" + e.getMenuAction().getId()
 							+ " | P0=" + e.getParam0()
 							+ " | P1=" +  e.getParam1();
-			logger.debug("[Manual Action] {}", action);
+			logger.info("[Manual Action] {}", action);
+		}
+	}
+
+	@Subscribe
+	public void onDialogProcessed(DialogProcessed e) {
+		if (!config.debugDialogs()) {
+			return;
+		}
+
+		DialogOption dialogOption = DialogOption.of(e.getWidgetUid(), e.getIndex());
+		if (dialogOption != null) {
+			logger.info("Dialog processed {}", dialogOption);
+		} else {
+			logger.info("Unknown or unmapped dialog {}", e);
 		}
 	}
 
