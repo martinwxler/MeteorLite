@@ -1954,7 +1954,7 @@ public interface Client extends GameEngine {
   int getItemCount();
 
   /**
-   * Makes all widgets behave as if they are {@link WidgetConfig#WIDGET_USE_TARGET}
+   * Makes all widgets behave as if they are 
    */
   void setAllWidgetsAreOpTargetable(boolean value);
 
@@ -1997,7 +1997,6 @@ public interface Client extends GameEngine {
    * @param pixelWidth   pretty much horizontal scale
    * @param pixelHeight  pretty much vertical scale
    * @param oldWidth     old width
-   * @see net.runelite.client.util.ImageUtil#resizeSprite(Client, SpritePixels, int, int)
    */
   void scaleSprite(int[] canvas, int[] pixels, int color, int pixelX, int pixelY, int canvasIdx,
       int canvasOffset, int newWidth, int newHeight, int pixelWidth, int pixelHeight, int oldWidth);
