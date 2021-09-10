@@ -3379,25 +3379,25 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 				var5.packetBuffer.writeByte(clientType);
 				var5.packetBuffer.writeInt(0);
 				var5.packetBuffer.writeIntME(MouseRecorder.archive10.hash);
-				var5.packetBuffer.method6860(WorldMapRectangle.archive0.hash);
-				var5.packetBuffer.method6860(class260.archive3.hash);
+				var5.packetBuffer.writeInt0123(WorldMapRectangle.archive0.hash);
+				var5.packetBuffer.writeInt0123(class260.archive3.hash);
 				var5.packetBuffer.writeIntME(ReflectionCheck.archive4.hash);
-				var5.packetBuffer.method6860(0);
+				var5.packetBuffer.writeInt0123(0);
 				var5.packetBuffer.writeInt(World.archive8.hash);
 				var5.packetBuffer.writeInt(ApproximateRouteStrategy.archive14.hash);
 				var5.packetBuffer.writeInt(WorldMapSection0.archive15.hash);
 				var5.packetBuffer.method6861(class276.archive6.hash);
-				var5.packetBuffer.method6860(class115.archive2.hash);
+				var5.packetBuffer.writeInt0123(class115.archive2.hash);
 				var5.packetBuffer.writeIntME(ObjectComposition.archive5.hash);
 				var5.packetBuffer.method6861(class28.archive20.hash);
 				var5.packetBuffer.method6861(class391.archive13.hash);
 				var5.packetBuffer.method6861(MenuAction.archive1.hash);
-				var5.packetBuffer.method6860(class318.archive11.hash);
+				var5.packetBuffer.writeInt0123(class318.archive11.hash);
 				var5.packetBuffer.method6861(class120.archive17.hash);
 				var5.packetBuffer.writeIntME(class135.archive7.hash);
-				var5.packetBuffer.method6860(class120.archive18.hash);
-				var5.packetBuffer.method6860(VarcInt.archive9.hash);
-				var5.packetBuffer.method6860(Interpreter.archive19.hash);
+				var5.packetBuffer.writeInt0123(class120.archive18.hash);
+				var5.packetBuffer.writeInt0123(VarcInt.archive9.hash);
+				var5.packetBuffer.writeInt0123(Interpreter.archive19.hash);
 				var5.packetBuffer.writeInt(SecureRandomCallable.archive12.hash);
 				var5.packetBuffer.xteaEncrypt(var12, var7, var5.packetBuffer.offset);
 				var5.packetBuffer.writeLengthShort(var5.packetBuffer.offset - var6);
@@ -3848,7 +3848,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 							}
 
 							var5 = (int)var16;
-							var18 = FriendSystem.getPacketBufferNode(ClientPacket.field2742, packetWriter.isaacCipher);
+							var18 = FriendSystem.getPacketBufferNode(ClientPacket.Packet_clickPacket, packetWriter.isaacCipher);
 							var18.packetBuffer.writeShort((MouseHandler.MouseHandler_lastButton == 2 ? 1 : 0) + (var5 << 1));
 							var18.packetBuffer.writeShort(var4);
 							var18.packetBuffer.writeShort(var3);
@@ -3888,8 +3888,8 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 							field572 = 20;
 							field573 = false;
 							var14 = FriendSystem.getPacketBufferNode(ClientPacket.field2647, packetWriter.isaacCipher);
-							var14.packetBuffer.method6851(camAngleX);
-							var14.packetBuffer.method6951(camAngleY);
+							var14.packetBuffer.writeShortA(camAngleX);
+							var14.packetBuffer.writeShort01(camAngleY);
 							packetWriter.addNode(var14);
 						}
 
@@ -4137,7 +4137,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 								var18.packetBuffer.writeShort(var5);
 								var18.packetBuffer.method6861(0);
 								var18.packetBuffer.method6841(var3);
-								var18.packetBuffer.method6851(var4);
+								var18.packetBuffer.writeShortA(var4);
 								packetWriter.addNode(var18);
 							}
 
@@ -4219,9 +4219,9 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 
 																			PacketBufferNode var28 = FriendSystem.getPacketBufferNode(ClientPacket.field2678, packetWriter.isaacCipher);
 																			var28.packetBuffer.writeIntME(Decimator.dragInventoryWidget.id);
-																			var28.packetBuffer.method6951(dragItemSlotSource);
+																			var28.packetBuffer.writeShort01(dragItemSlotSource);
 																			var28.packetBuffer.method6819(var36);
-																			var28.packetBuffer.method6851(dragItemSlotDestination);
+																			var28.packetBuffer.writeShortA(dragItemSlotDestination);
 																			packetWriter.addNode(var28);
 																		}
 																	} else if (this.shouldLeftClickOpenMenu()) {
@@ -4248,8 +4248,8 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 																PacketBufferNode var44 = FriendSystem.getPacketBufferNode(ClientPacket.field2722, packetWriter.isaacCipher);
 																var44.packetBuffer.writeByte(5);
 																var44.packetBuffer.method6841(KeyHandler.KeyHandler_pressedKeys[82] ? (KeyHandler.KeyHandler_pressedKeys[81] ? 2 : 1) : 0);
-																var44.packetBuffer.method6951(var3 + FloorOverlayDefinition.baseX);
-																var44.packetBuffer.method6852(var4 + class320.baseY);
+																var44.packetBuffer.writeShort01(var3 + FloorOverlayDefinition.baseX);
+																var44.packetBuffer.writeShort01A(var4 + class320.baseY);
 																packetWriter.addNode(var44);
 																Scene.method4193();
 																mouseCrossX = MouseHandler.MouseHandler_lastPressedX;
@@ -5661,7 +5661,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 					PacketBufferNode var52 = FriendSystem.getPacketBufferNode(ClientPacket.field2716, packetWriter.isaacCipher);
 					var52.packetBuffer.method6841(GameEngine.fps);
 					var52.packetBuffer.method6841(var6);
-					var52.packetBuffer.method6860(var17);
+					var52.packetBuffer.writeInt0123(var17);
 					var52.packetBuffer.method6861(var5);
 					packetWriter.addNode(var52);
 					var1.serverPacket = null;
@@ -6439,11 +6439,11 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 					if (draggedOnWidget != null && Message.method1099(clickedWidget) != null) {
 						PacketBufferNode var12 = FriendSystem.getPacketBufferNode(ClientPacket.field2698, packetWriter.isaacCipher);
 						var12.packetBuffer.method6861(clickedWidget.id);
-						var12.packetBuffer.method6951(draggedOnWidget.childIndex);
-						var12.packetBuffer.method6852(clickedWidget.childIndex);
-						var12.packetBuffer.method6852(draggedOnWidget.itemId);
-						var12.packetBuffer.method6852(clickedWidget.itemId);
-						var12.packetBuffer.method6860(draggedOnWidget.id);
+						var12.packetBuffer.writeShort01(draggedOnWidget.childIndex);
+						var12.packetBuffer.writeShort01A(clickedWidget.childIndex);
+						var12.packetBuffer.writeShort01A(draggedOnWidget.itemId);
+						var12.packetBuffer.writeShort01A(clickedWidget.itemId);
+						var12.packetBuffer.writeInt0123(draggedOnWidget.id);
 						packetWriter.addNode(var12);
 					}
 				} else if (this.shouldLeftClickOpenMenu()) {

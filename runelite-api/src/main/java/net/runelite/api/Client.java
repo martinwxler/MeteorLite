@@ -2285,7 +2285,8 @@ public interface Client extends GameEngine {
    * @return the ClientPacket which belongs to this packet
    */
   ClientPacket getTextInputPacket();
-
+  ClientPacket getClickPacket();
+  ClientPacket getItemOnItemPacket();
   void setSelectedSceneTileX(int sceneX);
 
   void setSelectedSceneTileY(int sceneY);

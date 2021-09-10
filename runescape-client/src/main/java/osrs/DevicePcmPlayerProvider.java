@@ -1006,7 +1006,7 @@ public class DevicePcmPlayerProvider implements class45 {
 	@Export("resumePauseWidget")
 	static void resumePauseWidget(int var0, int var1) {
 		PacketBufferNode var2 = FriendSystem.getPacketBufferNode(ClientPacket.field2690, Client.packetWriter.isaacCipher);
-		var2.packetBuffer.method6951(var1);
+		var2.packetBuffer.writeShort01(var1);
 		var2.packetBuffer.writeIntME(var0);
 		Client.packetWriter.addNode(var2);
 	}

@@ -471,7 +471,7 @@ public class WorldMap {
 					var11.packetBuffer.writeShort(var9);
 					var11.packetBuffer.method6861(0);
 					var11.packetBuffer.method6841(var10);
-					var11.packetBuffer.method6851(var13);
+					var11.packetBuffer.writeShortA(var13);
 					Client.packetWriter.addNode(var11);
 				} else {
 					boolean var8 = true;
