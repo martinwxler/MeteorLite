@@ -22,6 +22,7 @@ public class HootHerblorePlugin extends Plugin {
 	@Inject
 	private HootHerbloreConfig config;
 
+	@SuppressWarnings("unused")
 	@Subscribe
 	public void onGameTick(GameTick e) {
 		List<Integer> ids = Arrays.stream(config.herbIds().split(",")).map(Integer::parseInt).collect(Collectors.toList());
@@ -35,7 +36,7 @@ public class HootHerblorePlugin extends Plugin {
 					return;
 				}
 
-				Bank.withdrawAll(x -> ids.contains(x.getId()), Bank.WithdrawMode.ITEM);
+				Bank.withdraw(x -> ids.contains(x.getId()), 27, Bank.WithdrawMode.ITEM);
 				return;
 			}
 

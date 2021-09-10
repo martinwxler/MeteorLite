@@ -4,6 +4,6 @@ import meteor.config.Config;
 import meteor.config.ConfigGroup;
 
 @ConfigGroup("choco grinder")
-public interface chocogrinderConfig extends Config {
+public interface ChocoGrinderConfig extends Config {
 
 }

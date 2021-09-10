@@ -16,10 +16,10 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.WidgetInfo;
 
 @PluginDescriptor(name = "Chocolate grinder", enabledByDefault = false)
-public class chocogrinder extends Plugin {
+public class ChocoGrinder extends Plugin {
     @Provides
-    public chocogrinderConfig getConfig(ConfigManager configManager) {
-        return configManager.getConfig(chocogrinderConfig.class);
+    public ChocoGrinderConfig getConfig(ConfigManager configManager) {
+        return configManager.getConfig(ChocoGrinderConfig.class);
     }
     int gametick =0;
     Item knife;
