@@ -182,6 +182,7 @@ public enum WidgetInfo
   MINIMAP_SPEC_ORB(WidgetID.MINIMAP_GROUP_ID, WidgetID.Minimap.SPEC_ORB),
   MINIMAP_SPEC_CLICKBOX(WidgetID.MINIMAP_GROUP_ID, WidgetID.Minimap.SPEC_CLICKBOX),
   MINIMAP_WORLDMAP_ORB(WidgetID.MINIMAP_GROUP_ID, WidgetID.Minimap.WORLDMAP_ORB),
+  MINIMAP_WIKI_BANNER_PARENT(WidgetID.MINIMAP_GROUP_ID, WidgetID.Minimap.WIKI_BANNER_PARENT),
   MINIMAP_WIKI_BANNER(WidgetID.MINIMAP_GROUP_ID, WidgetID.Minimap.WIKI_BANNER),
   MINIMAP_WORLDMAP_OPTIONS(WidgetID.MINIMAP_GROUP_ID, WidgetID.Minimap.WORLDMAP_OPTIONS),
 
@@ -503,6 +504,7 @@ public enum WidgetInfo
   SPELL_ARCEUUS_HOME_TELEPORT(WidgetID.SPELLBOOK_GROUP_ID, WidgetID.ArceuusSpellBook.ARCEUUS_HOME_TELEPORT),
   SPELL_KOUREND_HOME_TELEPORT(WidgetID.SPELLBOOK_GROUP_ID, WidgetID.StandardSpellBook.KOUREND_HOME_TELEPORT),
 
+  PVP_WILDERNESS_SKULL_CONTAINER(WidgetID.PVP_GROUP_ID, WidgetID.Pvp.WILDERNESS_SKULL_CONTAINER),
   PVP_SKULL_CONTAINER(WidgetID.PVP_GROUP_ID, WidgetID.Pvp.SKULL_CONTAINER),
   PVP_WORLD_SAFE_ZONE(WidgetID.PVP_GROUP_ID, WidgetID.Pvp.SAFE_ZONE),
 
@@ -942,7 +944,7 @@ public enum WidgetInfo
    *
    * @return the ID
    */
-  public int getPackedId()
+  public int getId()
   {
     return groupId << 16 | childId;
   }
@@ -968,7 +970,17 @@ public enum WidgetInfo
   }
 
   /**
-   * Utility method that converts an ID returned by {@link #getPackedId()} back
+   * Gets the packed widget ID.
+   *
+   * @return the packed ID
+   */
+  public int getPackedId()
+  {
+    return groupId << 16 | childId;
+  }
+
+  /**
+   * Utility method that converts an ID returned by {@link #getId()} back
    * to its group ID.
    *
    * @param id passed group-child ID
@@ -980,7 +992,7 @@ public enum WidgetInfo
   }
 
   /**
-   * Utility method that converts an ID returned by {@link #getPackedId()} back
+   * Utility method that converts an ID returned by {@link #getId()} back
    * to its child ID.
    *
    * @param id passed group-child ID

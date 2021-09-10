@@ -118,6 +118,7 @@ import meteor.plugins.raids.RaidsPlugin;
 import meteor.plugins.randomevents.RandomEventPlugin;
 import meteor.plugins.regenmeter.RegenMeterPlugin;
 import meteor.plugins.reportbutton.ReportButtonPlugin;
+import meteor.plugins.resourcepacks.ResourcePacksPlugin;
 import meteor.plugins.rsnhider.RsnHiderPlugin;
 import meteor.plugins.runecraft.RunecraftPlugin;
 import meteor.plugins.runenergy.RunEnergyPlugin;
@@ -298,6 +299,7 @@ public class PluginManager {
 		plugins.add(new QuestListPlugin());
 		plugins.add(new QuestHelperPlugin());
 		plugins.add(new RandomEventPlugin());
+		plugins.add(new ResourcePacksPlugin());
 		plugins.add(new RegenMeterPlugin());
 		plugins.add(new ReportButtonPlugin());
 		plugins.add(new RsnHiderPlugin());

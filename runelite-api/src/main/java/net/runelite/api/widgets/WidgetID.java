@@ -430,6 +430,7 @@ public class WidgetID
     static final int SPEC_ORB = 29;
     static final int SPEC_CLICKBOX = 31;
     static final int WORLDMAP_ORB = 43;
+    static final int WIKI_BANNER_PARENT = 44;
     static final int WIKI_BANNER = 45;
     static final int WORLDMAP_OPTIONS = 48;
   }
@@ -854,6 +855,7 @@ public class WidgetID
   static class Pvp
   {
     static final int KILLDEATH_RATIO = 26;
+    static final int WILDERNESS_SKULL_CONTAINER = 44;
     static final int SKULL_CONTAINER = 45;
     static final int SAFE_ZONE = 47;
     static final int WILDERNESS_LEVEL = 50; // this can also be the Deadman Mode "Protection" text

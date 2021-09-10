@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Tomas Slusny <slusnucky@gmail.com>
+ * Copyright (c) 2018, Ron Young <https://github.com/raiyni>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,54 +23,24 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api;
+package meteor.plugins.resourcepacks;
 
-/**
- * Information about a specific {@link ObjectID}
- */
-public interface ObjectComposition extends ParamHolder {
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import meteor.game.SpriteOverride;
 
-  /**
-   * Gets ID for the object.
-   *
-   * @see ObjectID
-   */
-  int getId();
+@RequiredArgsConstructor
+public enum TabSprites implements SpriteOverride
+{
+	TAB_BACKGROUND(-201, "/meteor/plugins/resourcepacks/tag-tab.png"),
+	TAB_BACKGROUND_ACTIVE(-202, "/meteor/plugins/resourcepacks/tag-tab-active.png"),
+	UP_ARROW(-203, "/meteor/plugins/resourcepacks/up-arrow.png"),
+	DOWN_ARROW(-204, "/meteor/plugins/resourcepacks/down-arrow.png"),
+	NEW_TAB(-205, "/meteor/plugins/resourcepacks/new-tab.png");
 
-  /**
-   * Gets the name of the object.
-   */
-  String getName();
+	@Getter
+	private final int spriteId;
 
-  /**
-   * The 5 menuops this object has when in world. Index 0 corresponds to {@link
-   * MenuAction#GAME_OBJECT_FIRST_OPTION}, Index 2 to {@link MenuAction#GAME_OBJECT_SECOND_OPTION}
-   * and so on.
-   */
-  String[] getActions();
-
-  /**
-   * Gets the index of this object in the {@link Client#getMapScene()} array, or -1 if it has no map
-   * scene icon
-   */
-  int getMapSceneId();
-
-  /**
-   * Gets the index of this object in the {@link Client#getMapIcons()} array, or -1 if it has no
-   * full map icon
-   */
-  int getMapIconId();
-
-  /**
-   * Get the {@link ObjectID}s of objects this can transform into, depending on a {@link Varbits} or
-   * {@link VarPlayer}
-   */
-  int[] getImpostorIds();
-
-  /**
-   * Get the object composition the player's state says this object should transmogrify into.
-   *
-   * @throws NullPointerException if {@link #getImpostorIds()} is null
-   */
-  ObjectComposition getImpostor();
+	@Getter
+	private final String fileName;
 }
