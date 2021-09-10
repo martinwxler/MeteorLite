@@ -16,6 +16,7 @@ import meteor.plugins.resourcepacks.event.ResourcePacksChanged;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.IndexedSprite;
+import net.runelite.api.SpritePixels;
 import net.runelite.api.events.BeforeRender;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.ScriptPostFired;
@@ -29,7 +30,9 @@ import meteor.util.ImageUtil;
 import okhttp3.HttpUrl;
 
 @PluginDescriptor(
-	name = "Resource packs"
+		name = "Resource packs",
+		description = "Change the look of the client",
+		cantDisable = true
 )
 public class ResourcePacksPlugin extends Plugin
 {
@@ -102,10 +105,7 @@ public class ResourcePacksPlugin extends Plugin
 			resourcePacksManager.resetWidgetOverrides();
 			resourcePacksManager.resetCrossSprites();
 		});
-		if (config.allowLoginScreen())
-		{
 			resourcePacksManager.resetLoginScreen();
-		}
 		if (config.allowOverlayColor())
 		{
 			resourcePacksManager.resetOverlayColor();
@@ -152,16 +152,6 @@ public class ResourcePacksPlugin extends Plugin
 						resourcePacksManager.resetCrossSprites();
 					}
 					break;
-				case "allowLoginScreen":
-					if (config.allowLoginScreen())
-					{
-						clientThread.invokeLater(resourcePacksManager::updateAllOverrides);
-					}
-					else
-					{
-						resourcePacksManager.resetLoginScreen();
-					}
-					break;
 			}
 		}
 		else if (event.getGroup().equals("banktags") && event.getKey().equals("useTabs"))
@@ -182,8 +172,31 @@ public class ResourcePacksPlugin extends Plugin
 		if (e.getGameState() == GameState.UNKNOWN || Game.isOnLoginScreen()) {
 			IndexedSprite sprite = client.createIndexedSprite();
 			client.setLogoSprite(sprite);
-		}
+			IndexedSprite loginBoxSprite = ImageUtil.getImageIndexedSprite(ImageUtil.loadImageResource(ResourcePacksPlugin.class, "titlebox.png"), client);
+			client.setLoginBoxSprite(loginBoxSprite);
 
+			IndexedSprite loginButtonSprite = ImageUtil.getImageIndexedSprite(ImageUtil.loadImageResource(ResourcePacksPlugin.class, "titlebutton.png"), client);
+			client.setLoginButtonSprite(loginButtonSprite);
+
+			IndexedSprite worldButtonSprite = ImageUtil.getImageIndexedSprite(ImageUtil.loadImageResource(ResourcePacksPlugin.class, "sl_button.png"), client);
+			client.setLoginWorldsButtonSprite(worldButtonSprite);
+
+			IndexedSprite optionSprite = ImageUtil.getImageIndexedSprite(ImageUtil.loadImageResource(ResourcePacksPlugin.class, "options_radio_buttons4.png"), client);
+			client.setOptionSprite(optionSprite);
+
+			IndexedSprite optionSprite1 = ImageUtil.getImageIndexedSprite(ImageUtil.loadImageResource(ResourcePacksPlugin.class, "options_radio_buttons4.png"), client);
+			client.setOptionSprite1(optionSprite1);
+
+			IndexedSprite optionSprite2 = ImageUtil.getImageIndexedSprite(ImageUtil.loadImageResource(ResourcePacksPlugin.class, "mod_icon.png"), client);
+			client.setOptionSprite2(optionSprite2);
+
+			IndexedSprite optionSprite3 = ImageUtil.getImageIndexedSprite(ImageUtil.loadImageResource(ResourcePacksPlugin.class, "mod_icon.png"), client);
+			client.setOptionSprite3(optionSprite3);
+
+			client.getTitleMuteSprites()[0] = ImageUtil.getImageIndexedSprite(ImageUtil.loadImageResource(ResourcePacksPlugin.class, "title_mute.png"), client);
+			client.getTitleMuteSprites()[1] = ImageUtil.getImageIndexedSprite(ImageUtil.loadImageResource(ResourcePacksPlugin.class, "title_mute.1.png"), client);
+
+		}
 		if (e.getGameState() != GameState.LOGIN_SCREEN)
 		{
 			return;

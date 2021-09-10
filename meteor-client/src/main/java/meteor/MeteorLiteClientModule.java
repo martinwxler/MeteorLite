@@ -80,6 +80,7 @@ import meteor.util.ExecutorServiceExceptionLogger;
 import meteor.util.NonScheduledExecutorServiceExceptionLogger;
 import meteor.util.WorldUtil;
 import net.runelite.api.Client;
+import net.runelite.api.Constants;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.hooks.Callbacks;
 import net.runelite.http.api.chat.ChatClient;
@@ -93,11 +94,12 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
   public static String uuid = UUID.randomUUID().toString();
   public static JFrame mainWindow;
 
-  private static final int GAME_WINDOW_MIN_WIDTH = 765;
-  private static final int GAME_WINDOW_MIN_HEIGHT = 503;
+  public static final int TOOLBAR_HEIGHT = 33;
+  public static final int RIGHT_PANEL_WIDTH = 350;
 
-  private static final int TOOLBAR_HEIGHT = 33;
-  private static final int RIGHT_PANEL_LENGTH = 350;
+  private static final int CLIENT_WIDTH = Constants.GAME_FIXED_WIDTH + (Constants.GAME_FIXED_WIDTH - 749);
+  private static final int CLIENT_HEIGHT = Constants.GAME_FIXED_HEIGHT + (Constants.GAME_FIXED_HEIGHT - 464) + TOOLBAR_HEIGHT;
+  private static final Dimension CLIENT_SIZE = new Dimension(CLIENT_WIDTH, CLIENT_HEIGHT);
 
   @Inject
   private EventBus eventBus;
@@ -244,20 +246,20 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
     overlayManager.add(tooltipOverlay.get());
 
     applet = (Applet) client;
-    applet.setMinimumSize(new Dimension(GAME_WINDOW_MIN_WIDTH, GAME_WINDOW_MIN_HEIGHT));
+    applet.setMinimumSize(Constants.GAME_FIXED_SIZE);
     setAppletConfiguration(applet);
 
     //Early init game panel so gpu doesn't eat shit when enabling
     JPanel gamePanel = new JPanel();
     rootPanel.setLayout(new BorderLayout());
-    gamePanel.setMinimumSize(new Dimension(GAME_WINDOW_MIN_WIDTH, GAME_WINDOW_MIN_HEIGHT));
+    gamePanel.setMinimumSize(Constants.GAME_FIXED_SIZE);
     toolbarRoot = FXMLLoader.load(
             Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("toolbar.fxml")));
 
     gamePanel.setLayout(new BorderLayout());
     gamePanel.add(applet, BorderLayout.CENTER);
     rootPanel.add(gamePanel, BorderLayout.CENTER);
-    rootPanel.setMinimumSize(new Dimension(GAME_WINDOW_MIN_WIDTH, GAME_WINDOW_MIN_HEIGHT));
+    rootPanel.setMinimumSize(Constants.GAME_FIXED_SIZE);
 
     configManager.load();
     pluginManager.startInternalPlugins();
@@ -282,7 +284,7 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
 
     pluginsPanelVisible = !pluginsPanelVisible;
     if (pluginsPanelVisible) {
-      mainWindow.setMinimumSize(new Dimension(GAME_WINDOW_MIN_WIDTH + (GAME_WINDOW_MIN_WIDTH - 749) + RIGHT_PANEL_LENGTH, GAME_WINDOW_MIN_HEIGHT + (GAME_WINDOW_MIN_HEIGHT - 464) + TOOLBAR_HEIGHT));
+      mainWindow.setMinimumSize(new Dimension(CLIENT_WIDTH + RIGHT_PANEL_WIDTH, CLIENT_HEIGHT));
       mainWindow.validate();
     } else {
       setMinimumFrameSize();
@@ -293,7 +295,7 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
     // The numbers 749 and 464 come from the main windows content pane when the min size is set to the osrs client resolution (765x503).
     // So we adjust the main window to be large enough to fit those bounds inside the content pane.
       boolean resize = mainWindow.getSize().equals(mainWindow.getMinimumSize());
-      mainWindow.setMinimumSize(new Dimension(GAME_WINDOW_MIN_WIDTH + (GAME_WINDOW_MIN_WIDTH - 749), GAME_WINDOW_MIN_HEIGHT + (GAME_WINDOW_MIN_HEIGHT - 464) + TOOLBAR_HEIGHT));
+      mainWindow.setMinimumSize(CLIENT_SIZE);
       if (resize) {
         mainWindow.setSize(mainWindow.getMinimumSize());
       }

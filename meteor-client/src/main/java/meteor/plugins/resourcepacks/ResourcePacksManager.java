@@ -506,6 +506,12 @@ public class ResourcePacksManager
 
 	void overrideSprites()
 	{
+		SpritePixels loginscreensprite = ImageUtil.getImageSpritePixels(ImageUtil.loadImageResource(ResourcePacksPlugin.class, "background.png"), client);
+		if (loginscreensprite != null)
+		{
+			client.setLoginScreen(loginscreensprite);
+		}
+
 		String currentPackPath = getCurrentPackPath();
 		SpriteOverride.getOverrides().asMap().forEach((key, collection) -> {
 			if (!Files.isDirectory(Paths.get(currentPackPath + File.separator + key.name().toLowerCase())) ||
@@ -519,16 +525,9 @@ public class ResourcePacksManager
 			{
 
 				SpritePixels spritePixels = getSpritePixels(spriteOverride, currentPackPath);
-				if (config.allowLoginScreen() && spriteOverride == SpriteOverride.LOGIN_SCREEN_BACKGROUND)
+				if (spriteOverride == SpriteOverride.LOGIN_SCREEN_BACKGROUND)
 				{
-					if (spritePixels != null)
-					{
-						client.setLoginScreen(spritePixels);
-					}
-					else
-					{
-						resetLoginScreen();
-					}
+					continue;
 				}
 				if (spritePixels == null)
 				{

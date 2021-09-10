@@ -43,14 +43,15 @@ import org.sponge.util.Logger;
 public class WorldClient
 {
 	private final OkHttpClient client;
-	private Logger log = new Logger("WorldClient");
+	private Logger log = new Logger("worlds");
+
 	public WorldResult lookupWorlds() throws IOException
 	{
 		HttpUrl url = RuneLiteAPI.getApiBase().newBuilder()
 			.addPathSegment("worlds.js")
 			.build();
 
-		log.debug("Requesting URI: {}", url);
+		log.debug("Built URI: {}", url);
 
 		Request request = new Request.Builder()
 			.url(url)

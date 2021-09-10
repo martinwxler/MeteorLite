@@ -1,5 +1,6 @@
 package osrs;
 
+import net.runelite.mapping.Export;
 import net.runelite.mapping.ObfuscatedName;
 import net.runelite.mapping.ObfuscatedSignature;
 
@@ -9,7 +10,8 @@ public class class275 {
 	@ObfuscatedSignature(
 		descriptor = "Loi;"
 	)
-	static IndexedSprite field3281;
+	@Export("loginWorldsButton")
+	static IndexedSprite loginWorldsButton;
 
 	static {
 		Math.sqrt(8192.0D);
