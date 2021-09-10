@@ -30,7 +30,9 @@ import meteor.util.ImageUtil;
 import okhttp3.HttpUrl;
 
 @PluginDescriptor(
-	name = "Resource packs"
+		name = "Resource packs",
+		description = "Change the look of the client",
+		cantDisable = true
 )
 public class ResourcePacksPlugin extends Plugin
 {
