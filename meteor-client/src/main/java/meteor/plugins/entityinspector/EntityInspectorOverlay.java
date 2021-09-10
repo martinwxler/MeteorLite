@@ -1,5 +1,6 @@
 package meteor.plugins.entityinspector;
 
+import java.awt.Font;
 import meteor.plugins.api.entities.*;
 import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.movement.Movement;

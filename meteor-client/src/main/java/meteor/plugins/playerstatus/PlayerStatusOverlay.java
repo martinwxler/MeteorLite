@@ -24,6 +24,7 @@
  */
 package meteor.plugins.playerstatus;
 
+import java.awt.Font;
 import meteor.game.ItemManager;
 import meteor.game.SpriteManager;
 import meteor.plugins.playerstatus.gametimer.GameIndicator;

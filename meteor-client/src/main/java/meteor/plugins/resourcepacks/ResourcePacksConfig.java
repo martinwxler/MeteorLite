@@ -83,19 +83,8 @@ public interface ResourcePacksConfig extends Config
 	}
 
 	@ConfigItem(
-		keyName = "allowLoginScreen",
-		name = "Allow login screen to be changed",
-		description = "Gives permissions for resource packs to change your login screen",
-		position = 5
-	)
-	default boolean allowLoginScreen()
-	{
-		return true;
-	}
-
-	@ConfigItem(
 		keyName = "allowOverlayColor",
-		name = "Allow overlay color to be changed",
+		name = "Overlay Color",
 		description = "Gives permissions for resource packs to change your overlays color",
 		position = 6
 	)
@@ -106,7 +95,7 @@ public interface ResourcePacksConfig extends Config
 
 	@ConfigItem(
 		keyName = "allowSpellsPrayers",
-		name = "Allow spells/prayers to be changed",
+		name = "Spells/Prayers",
 		description = "Gives permissions for resource packs to change your spells and prayers icons",
 		position = 7
 	)
@@ -117,7 +106,7 @@ public interface ResourcePacksConfig extends Config
 
 	@ConfigItem(
 		keyName = "allowCrossSprites",
-		name = "Allow mouse click sprite to be changed",
+		name = "Mouse clicks",
 		description = "Allows the cross/mouse click sprites to be changed (This won't work if you have cross sprites enabled in Interface styles)",
 		position = 8
 	)
@@ -150,7 +139,7 @@ public interface ResourcePacksConfig extends Config
 
 	@ConfigItem(
 		keyName = "colorPackOverlay",
-		name = "Allows color current pack to change overlays",
+		name = "Color current pack",
 		description = "This option will only work if color current pack is enabled and a color is assigned",
 		position = 11,
 		section = experimentalOptions

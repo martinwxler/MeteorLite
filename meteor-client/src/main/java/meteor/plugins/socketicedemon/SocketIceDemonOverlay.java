@@ -1,5 +1,6 @@
 package meteor.plugins.socketicedemon;
 
+import java.awt.Font;
 import meteor.ui.FontManager;
 import meteor.ui.overlay.*;
 import net.runelite.api.Point;

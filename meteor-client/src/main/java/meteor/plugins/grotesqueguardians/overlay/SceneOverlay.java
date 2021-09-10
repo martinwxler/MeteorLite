@@ -27,6 +27,7 @@
 
 package meteor.plugins.grotesqueguardians.overlay;
 
+import java.awt.Font;
 import meteor.ui.overlay.outline.OPRSModelOutlineRenderer;
 import net.runelite.api.Point;
 import net.runelite.api.*;

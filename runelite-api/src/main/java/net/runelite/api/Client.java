@@ -2321,5 +2321,21 @@ public interface Client extends GameEngine {
 
   void setLogoSprite(IndexedSprite indexedSprite);
 
+  void setLoginBoxSprite(IndexedSprite indexedSprite);
+
+  void setLoginButtonSprite(IndexedSprite indexedSprite);
+
+  void setLoginWorldsButtonSprite(IndexedSprite indexedSprite);
+
+  void setOptionSprite (IndexedSprite indexedSprite);
+
+  void setOptionSprite1 (IndexedSprite indexedSprite);
+
+  void setOptionSprite2 (IndexedSprite indexedSprite);
+
+  void setOptionSprite3 (IndexedSprite indexedSprite);
+
+  IndexedSprite[] getTitleMuteSprites();
+
   void processDialog(int widgetUid, int menuIndex);
 }

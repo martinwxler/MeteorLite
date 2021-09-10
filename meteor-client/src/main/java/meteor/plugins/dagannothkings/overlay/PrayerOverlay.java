@@ -27,6 +27,7 @@
  */
 package meteor.plugins.dagannothkings.overlay;
 
+import java.awt.Font;
 import net.runelite.api.Point;
 import net.runelite.api.*;
 import net.runelite.api.widgets.Widget;

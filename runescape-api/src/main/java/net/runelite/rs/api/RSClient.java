@@ -1513,6 +1513,38 @@ public interface RSClient extends RSGameEngine, Client {
   @Override
   void setLogoSprite(IndexedSprite indexedSprite);
 
+  @Import("titleboxSprite")
+  @Override
+  void setLoginBoxSprite (IndexedSprite indexedSprite);
+
+  @Import("titlebuttonSprite")
+  @Override
+  void setLoginButtonSprite (IndexedSprite indexedSprite);
+
+  @Import("loginWorldsButton")
+  @Override
+  void setLoginWorldsButtonSprite (IndexedSprite indexedSprite);
+
+  @Import("title_muteSprite")
+  @Override
+  RSIndexedSprite[] getTitleMuteSprites();
+
+  @Import("optionSprite")
+  @Override
+  void setOptionSprite (IndexedSprite indexedSprite);
+
+  @Import("options_buttons_0Sprite")
+  @Override
+  void setOptionSprite1 (IndexedSprite indexedSprite);
+
+  @Import("options_buttons_2Sprite")
+  @Override
+  void setOptionSprite2 (IndexedSprite indexedSprite);
+
+  @Import("optionEnabledSprite")
+  @Override
+  void setOptionSprite3 (IndexedSprite indexedSprite);
+
   @Import("resumePauseWidget")
   @Override
   void processDialog(int widgetUid, int menuIndex);
