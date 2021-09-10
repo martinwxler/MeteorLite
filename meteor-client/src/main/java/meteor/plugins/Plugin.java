@@ -25,6 +25,8 @@ import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.Client;
 import org.sponge.util.Logger;
 
+import static meteor.MeteorLiteClientModule.RIGHT_PANEL_WIDTH;
+
 public class Plugin implements Module {
 
   public Logger logger = new Logger("");
@@ -89,7 +91,7 @@ public class Plugin implements Module {
       e.printStackTrace();
     }
 
-    MeteorLiteClientModule.updateRightPanel(configRoot, 370);
+    MeteorLiteClientModule.updateRightPanel(configRoot, RIGHT_PANEL_WIDTH);
   }
 
   public void unload() {
