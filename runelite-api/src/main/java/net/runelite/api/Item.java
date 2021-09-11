@@ -49,16 +49,24 @@ public class Item implements Interactable, Identifiable, Nameable {
 
 	@Override
 	public String[] getRawActions() {
-		if (WidgetInfo.TO_GROUP(widgetId) == WidgetID.INVENTORY_GROUP_ID) {
+		if (getType() == Type.INVENTORY) {
 			return client.getItemComposition(getId()).getInventoryActions();
 		}
 
+
+
 		Widget widget = client.getWidget(widgetId);
 		if (widget != null) {
+			if (getType() == Type.EQUIPMENT) {
+				return widget.getRawActions();
+			}
+
 			Widget itemChild = widget.getChild(slot);
 			if (itemChild != null) {
 				return itemChild.getRawActions();
 			}
+
+			return widget.getRawActions();
 		}
 
 		return null;
