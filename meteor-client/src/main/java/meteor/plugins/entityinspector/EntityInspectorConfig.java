@@ -272,6 +272,17 @@ public interface EntityInspectorConfig extends Config {
 		return false;
 	}
 
+	@ConfigItem(
+					keyName = "packets",
+					name = "Packets",
+					description = "Packets",
+					position = 202,
+					section = others
+	)
+	default boolean packets() {
+		return false;
+	}
+
 	@ConfigSection(
 					name = "Utils",
 					keyName = "utils",
