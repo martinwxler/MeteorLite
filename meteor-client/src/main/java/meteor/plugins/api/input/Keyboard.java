@@ -9,6 +9,39 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 
 public class Keyboard {
+    public static void pressed(int keyCode) {
+        pressed(keyCode, KeyEvent.CHAR_UNDEFINED);
+    }
+
+    public static void pressed(int keyCode, char keyChar) {
+        Canvas canvas = Game.getClient().getCanvas();
+        long time = System.currentTimeMillis();
+        KeyEvent event = new KeyEvent(canvas, KeyEvent.KEY_PRESSED, time, 0, keyCode, keyChar, KeyEvent.KEY_LOCATION_STANDARD);
+        canvas.dispatchEvent(event);
+    }
+
+    public static void typed(int keyCode) {
+        typed(keyCode, KeyEvent.CHAR_UNDEFINED);
+    }
+
+    public static void typed(int keyCode, char keyChar) {
+        Canvas canvas = Game.getClient().getCanvas();
+        long time = System.currentTimeMillis();
+        KeyEvent event = new KeyEvent(canvas, KeyEvent.KEY_TYPED, time, 0, keyCode, keyChar, KeyEvent.KEY_LOCATION_UNKNOWN);
+        canvas.dispatchEvent(event);
+    }
+
+    public static void released(int keyCode) {
+        released(keyCode, KeyEvent.CHAR_UNDEFINED);
+    }
+
+    public static void released(int keyCode, char keyChar) {
+        Canvas canvas = Game.getClient().getCanvas();
+        long time = System.currentTimeMillis();
+        KeyEvent event = new KeyEvent(canvas, KeyEvent.KEY_RELEASED, time, 0, keyCode, keyChar, KeyEvent.KEY_LOCATION_STANDARD);
+        canvas.dispatchEvent(event);
+    }
+
     public static void type(char c) {
         Canvas canvas = Game.getClient().getCanvas();
         long time = System.currentTimeMillis();
@@ -34,6 +67,7 @@ public class Keyboard {
     public static void type(int number) {
         type(String.valueOf(number));
     }
+
     public static void type(String text) {
         type(text, false);
     }

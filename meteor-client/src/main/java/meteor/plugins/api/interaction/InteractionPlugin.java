@@ -63,9 +63,6 @@ public class InteractionPlugin extends Plugin {
 
 		if (config.mouseEvents()) {
 			if (!interactReady()) {
-				action = null;
-				mouseClickX = -1;
-				mouseClickY = -1;
 				logger.error("Interact was not ready [{}]", debug);
 				return;
 			}
@@ -90,6 +87,11 @@ public class InteractionPlugin extends Plugin {
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked e) {
 		if (config.mouseEvents() && e.getCanvasX() == mouseClickX && e.getCanvasY() == mouseClickY) {
+			// Don't re-process automated actions
+			if (e.isAutomated()) {
+				return;
+			}
+
 			e.consume();
 
 			if (action == null) {
@@ -98,6 +100,9 @@ public class InteractionPlugin extends Plugin {
 			}
 
 			processAction(action);
+			action = null;
+			mouseClickX = -1;
+			mouseClickY = -1;
 			return;
 		}
 
@@ -133,10 +138,6 @@ public class InteractionPlugin extends Plugin {
 			GameThread.invoke(() -> client.invokeMenuAction(entry.getOption(), entry.getTarget(), entry.getId(),
 							entry.getMenuAction().getId(), entry.getParam0(), entry.getParam1()));
 		}
-
-		action = null;
-		mouseClickX = -1;
-		mouseClickY = -1;
 	}
 
 	private Point getClickPoint() {
