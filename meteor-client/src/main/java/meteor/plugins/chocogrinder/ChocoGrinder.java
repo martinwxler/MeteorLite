@@ -9,6 +9,8 @@ import meteor.plugins.api.entities.TileObjects;
 import meteor.plugins.api.game.Game;
 import meteor.plugins.api.items.Bank;
 import meteor.plugins.api.items.Inventory;
+import meteor.plugins.api.packets.ItemPackets;
+import meteor.plugins.api.packets.MousePackets;
 import meteor.plugins.api.packets.Packets;
 import net.runelite.api.*;
 import net.runelite.api.events.ChatMessage;
@@ -40,10 +42,10 @@ public class ChocoGrinder extends Plugin {
         }
         client.setClientMouseLastPressedMillis(client.getMouseLastPressedMillis());
         int mouseInfo = (mousePressedTime << 1) + (1);
-        Packets.queueClickPacket(mouseInfo,0,0);
+        MousePackets.queueClickPacket(mouseInfo,0,0);
     }
     public void itemOnItemPacket(int id1,int slot1,int id2, int slot2){
-        Packets.queueItemOnItemPacket(id1,slot1,id2,slot2);
+        ItemPackets.queueItemOnItemPacket(id1,slot1,id2,slot2);
     }
     @Subscribe
     public void onGameTick(GameTick event) throws InterruptedException {

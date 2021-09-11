@@ -9,6 +9,7 @@ import meteor.plugins.PluginDescriptor;
 import meteor.plugins.api.items.Inventory;
 import meteor.plugins.api.magic.Ancient;
 import meteor.plugins.api.magic.Magic;
+import meteor.plugins.api.packets.DialogPackets;
 import meteor.plugins.api.packets.Packets;
 import meteor.plugins.api.widgets.Prayers;
 import meteor.plugins.api.widgets.Tab;
@@ -339,7 +340,7 @@ public class PvPKeys extends Plugin {
         {
             /*
             Prayers.toggle(Prayer.RIGOUR);*/
-            Packets.Dialog.sendNumberInput(10);
+            DialogPackets.sendNumberInput(10);
         }
     };
     private final HotkeyListener piety = new HotkeyListener(() -> config.Piety())

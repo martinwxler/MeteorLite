@@ -29,8 +29,6 @@ import net.runelite.api.util.Text;
 import net.runelite.api.widgets.*;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 public class Item implements Interactable, Identifiable, Nameable {
@@ -194,7 +192,23 @@ public class Item implements Interactable, Identifiable, Nameable {
 	}
 
 	public enum Type {
-		INVENTORY, EQUIPMENT, BANK, BANK_INVENTORY, TRADE, TRADE_INVENTORY, UNKNOWN;
+		INVENTORY(InventoryID.INVENTORY),
+		EQUIPMENT(InventoryID.EQUIPMENT),
+		BANK(InventoryID.BANK),
+		BANK_INVENTORY(InventoryID.INVENTORY),
+		TRADE(InventoryID.TRADE),
+		TRADE_INVENTORY(InventoryID.INVENTORY),
+		UNKNOWN(null);
+
+		private final InventoryID inventoryID;
+
+		Type(InventoryID inventoryID) {
+			this.inventoryID = inventoryID;
+		}
+
+		public InventoryID getInventoryID() {
+			return inventoryID;
+		}
 
 		private static Type get(int widgetId) {
 			return switch (WidgetInfo.TO_GROUP(widgetId)) {
