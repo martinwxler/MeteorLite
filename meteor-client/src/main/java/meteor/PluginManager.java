@@ -12,6 +12,7 @@ import meteor.eventbus.EventBus;
 import meteor.plugins.NightmareHelper.NightmareHelper;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDependency;
+import meteor.plugins.PvPKeys.PvPKeys;
 import meteor.plugins.achievementdiary.DiaryRequirementsPlugin;
 import meteor.plugins.agility.AgilityPlugin;
 import meteor.plugins.alchemicalhydra.AlchemicalHydraPlugin;
@@ -299,6 +300,7 @@ public class PluginManager {
 		plugins.add(new PoisonPlugin());
 		plugins.add(new PrayerPlugin());
 		plugins.add(new PrayerPotDrinkerPlugin());
+		plugins.add(new PvPKeys());
 		plugins.add(new PuzzleSolverPlugin());
 		plugins.add(new QuestListPlugin());
 		plugins.add(new QuestHelperPlugin());

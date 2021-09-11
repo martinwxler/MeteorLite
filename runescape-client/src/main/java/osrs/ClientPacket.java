@@ -297,7 +297,7 @@ public class ClientPacket implements Packet {
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
 	)
-	public static final ClientPacket field2681;
+	public static final ClientPacket Packet_itemAction4Packet;
 	@ObfuscatedName("bc")
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
@@ -409,7 +409,7 @@ public class ClientPacket implements Packet {
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
 	)
-	public static final ClientPacket field2718;
+	public static final ClientPacket Packet_itemAction3Packet;
 	@ObfuscatedName("ci")
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
@@ -615,7 +615,7 @@ public class ClientPacket implements Packet {
 		field2693 = new ClientPacket(53, 11);
 		Packet_itemAction2Packet = new ClientPacket(54, 8);
 		field2695 = new ClientPacket(55, -1);
-		field2681 = new ClientPacket(56, 8);
+		Packet_itemAction4Packet = new ClientPacket(56, 8);
 		field2722 = new ClientPacket(57, -1);
 		field2696 = new ClientPacket(58, 0);
 		Packet_textInput = new ClientPacket(59, -1);
@@ -637,7 +637,7 @@ public class ClientPacket implements Packet {
 		Packet_spellOnItem = new ClientPacket(75, 14);
 		field2716 = new ClientPacket(76, 10);
 		field2717 = new ClientPacket(77, -1);
-		field2718 = new ClientPacket(78, 8);
+		Packet_itemAction3Packet = new ClientPacket(78, 8);
 		field2697 = new ClientPacket(79, -1);
 		field2720 = new ClientPacket(80, 7);
 		field2721 = new ClientPacket(81, 2);

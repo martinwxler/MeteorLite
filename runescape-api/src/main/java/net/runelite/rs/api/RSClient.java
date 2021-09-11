@@ -1514,6 +1514,14 @@ public interface RSClient extends RSGameEngine, Client {
   @Override
   RSClientPacket getItemAction2Packet();
 
+  @Import("Packet_itemAction3Packet")
+  @Override
+  RSClientPacket getItemAction3Packet();
+
+  @Import("Packet_itemAction4Packet")
+  @Override
+  RSClientPacket getItemAction4Packet();
+
   @Import("Packet_itemAction5Packet")
   @Override
   RSClientPacket getItemAction5Packet();

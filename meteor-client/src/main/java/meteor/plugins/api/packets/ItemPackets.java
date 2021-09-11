@@ -16,6 +16,8 @@ public class ItemPackets {
 		switch (index) {
 			case 0 -> itemFirstOption(item);
 			case 1 -> itemSecondOption(item);
+			case 2 -> itemThirdOption(item);
+			case 3 -> itemFourthOption(item);
 			case 4 -> itemFifthOption(item);
 		}
 	}
@@ -26,6 +28,12 @@ public class ItemPackets {
 
 	public static void itemSecondOption(Item item) {
 		queueItemAction2Packet(item.getWidgetId(), item.getId(), item.getSlot());
+	}
+	public static void itemThirdOption(Item item) {
+		queueItemAction3Packet(item.getWidgetId(), item.getId(), item.getSlot());
+	}
+	public static void itemFourthOption(Item item) {
+		queueItemAction4Packet(item.getWidgetId(), item.getId(), item.getSlot());
 	}
 
 	public static void itemFifthOption(Item item) {
@@ -49,6 +57,22 @@ public class ItemPackets {
 		packet.getPacketBuffer().writeShort01A$api(itemSlot);
 		writer.queuePacket(packet);
 	}
+	public static void queueItemAction3Packet(int inventoryID, int itemID, int itemSlot){
+		PacketWriter writer = Game.getClient().getPacketWriter();
+		PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getItemAction3Packet(), writer.getIsaacCipher());
+		packet.getPacketBuffer().writeShort01A$api(itemSlot);
+		packet.getPacketBuffer().writeIntME$api(inventoryID);
+		packet.getPacketBuffer().writeShort$api(itemID);
+		writer.queuePacket(packet);
+	}
+	public static void queueItemAction4Packet(int inventoryID, int itemID, int itemSlot){
+		PacketWriter writer = Game.getClient().getPacketWriter();
+		PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getItemAction4Packet(), writer.getIsaacCipher());
+		packet.getPacketBuffer().writeShort$api(itemSlot);
+		packet.getPacketBuffer().writeShort01A$api(itemID);
+		packet.getPacketBuffer().writeInt2$api(inventoryID);
+		writer.queuePacket(packet);
+	}
 
 	public static void queueItemAction2Packet(int inventoryID, int itemID, int itemSlot) {
 		PacketWriter writer = Game.getClient().getPacketWriter();
@@ -58,7 +82,7 @@ public class ItemPackets {
 		packet.getPacketBuffer().writeInt$api(inventoryID);
 		writer.queuePacket(packet);
 	}
-
+	
 	public static void queueItemAction5Packet(int inventoryID, int itemID, int itemSlot) {
 		PacketWriter writer = Game.getClient().getPacketWriter();
 		PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getItemAction5Packet(), writer.getIsaacCipher());

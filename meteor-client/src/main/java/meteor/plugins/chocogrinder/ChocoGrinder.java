@@ -67,32 +67,20 @@ public class ChocoGrinder extends Plugin {
             clickPacket();
             Bank.withdrawAll(1973,Bank.WithdrawMode.ITEM);
             for (int i = 0; i < 8; i++) {
-                //client.setSelectedItemWidget(WidgetInfo.INVENTORY.getPackedId());
-                //client.setSelectedItemSlot(knife.getSlot());
-                //client.setSelectedItemID(knife.getId());
                 clickPacket();
                 itemOnItemPacket(1973,26,946,27);
-                //client.invokeMenuAction("","",1973, MenuAction.ITEM_USE_ON_WIDGET_ITEM.getId(),26,9764864);
             }
         }
         if(gametick==1){
             for (int i = 0; i < 10; i++) {
-                //client.setSelectedItemWidget(WidgetInfo.INVENTORY.getPackedId());
-                //client.setSelectedItemSlot(knife.getSlot());
-                //client.setSelectedItemID(knife.getId());
                 clickPacket();
                 itemOnItemPacket(1973,26,946,27);
-                //client.invokeMenuAction("","",1973, MenuAction.ITEM_USE_ON_WIDGET_ITEM.getId(),26,9764864);
             }
         }
         if(gametick==2){
             for (int i = 0; i < 9; i++) {
-                //client.setSelectedItemWidget(WidgetInfo.INVENTORY.getPackedId());
-                //client.setSelectedItemSlot(knife.getSlot());
-                //client.setSelectedItemID(knife.getId());
                 clickPacket();
                 itemOnItemPacket(1973,26,946,27);
-                //client.invokeMenuAction("","",1973, MenuAction.ITEM_USE_ON_WIDGET_ITEM.getId(),26,9764864);
             }
             TileObject bank = TileObjects.getNearest(x -> x.hasAction("Bank") && x.hasAction("Collect"));
             if (bank != null) {
