@@ -2289,6 +2289,7 @@ public interface Client extends GameEngine {
   ClientPacket getItemActionPacket();
   ClientPacket getSpellOnItemPacket();
   ClientPacket getItemAction2Packet();
+  ClientPacket getItemAction5Packet();
   void setSelectedSceneTileX(int sceneX);
 
   void setSelectedSceneTileY(int sceneY);
