@@ -421,6 +421,10 @@ public class EntityInspectorOverlay extends Overlay {
 
 	private void appendCommonFields(StringBuilder sb, Interactable interactable) {
 		if (interactable instanceof Actor actor) {
+			if (interactable instanceof NPC && config.ids()) {
+				sb.append("ID: ").append(actor.getId()).append("\n");
+			}
+
 			if (config.names()) {
 				sb.append("Name: ").append(actor.getName()).append("\n");
 			}
