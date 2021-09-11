@@ -23,7 +23,8 @@ public class ClientPacket implements Packet {
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
 	)
-	public static final ClientPacket field2642;
+	@Export("Packet_itemAction2Packet")
+	public static final ClientPacket Packet_itemAction2Packet;
 	@ObfuscatedName("k")
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
@@ -250,7 +251,8 @@ public class ClientPacket implements Packet {
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
 	)
-	public static final ClientPacket field2708;
+	@Export("Packet_itemAction")
+	public static final ClientPacket Packet_itemAction;
 	@ObfuscatedName("az")
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
@@ -391,7 +393,8 @@ public class ClientPacket implements Packet {
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
 	)
-	public static final ClientPacket field2745;
+	@Export("Packet_spellOnItem")
+	public static final ClientPacket Packet_spellOnItem;
 	@ObfuscatedName("by")
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
@@ -558,7 +561,7 @@ public class ClientPacket implements Packet {
 	static {
 		field2723 = new ClientPacket(0, -1);
 		field2730 = new ClientPacket(1, -2);
-		field2642 = new ClientPacket(2, 8);
+		Packet_itemAction2Packet = new ClientPacket(2, 8);
 		field2643 = new ClientPacket(3, 15);
 		field2698 = new ClientPacket(4, 16);
 		field2645 = new ClientPacket(5, -1);
@@ -603,7 +606,7 @@ public class ClientPacket implements Packet {
 		field2729 = new ClientPacket(44, 7);
 		field2741 = new ClientPacket(45, 3);
 		field2686 = new ClientPacket(46, 3);
-		field2708 = new ClientPacket(47, 8);
+		Packet_itemAction = new ClientPacket(47, 8);
 		field2688 = new ClientPacket(48, 4);
 		field2689 = new ClientPacket(49, -1);
 		field2746 = new ClientPacket(50, 2);
@@ -631,7 +634,7 @@ public class ClientPacket implements Packet {
 		field2653 = new ClientPacket(72, 7);
 		field2684 = new ClientPacket(73, 0);
 		field2714 = new ClientPacket(74, -1);
-		field2745 = new ClientPacket(75, 14);
+		Packet_spellOnItem = new ClientPacket(75, 14);
 		field2716 = new ClientPacket(76, 10);
 		field2717 = new ClientPacket(77, -1);
 		field2718 = new ClientPacket(78, 8);

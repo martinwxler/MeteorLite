@@ -208,7 +208,7 @@ public class IgnoreList extends UserList {
 					var9.packetBuffer.writeShort(var3);
 					var9.packetBuffer.method6841(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
 					var9.packetBuffer.writeShort01A(class92.selectedItemId);
-					var9.packetBuffer.method6861(Tiles.selectedItemWidget);
+					var9.packetBuffer.writeInt2(Tiles.selectedItemWidget);
 					var9.packetBuffer.writeShort01A(DesktopPlatformInfoProvider.selectedItemSlot);
 					Client.packetWriter.addNode(var9);
 				}
@@ -344,7 +344,7 @@ public class IgnoreList extends UserList {
 					Client.destinationY = var1;
 					var8 = FriendSystem.getPacketBufferNode(ClientPacket.field2640, Client.packetWriter.isaacCipher);
 					var8.packetBuffer.writeShort01(class320.baseY + var1);
-					var8.packetBuffer.method6861(Tiles.selectedItemWidget);
+					var8.packetBuffer.writeInt2(Tiles.selectedItemWidget);
 					var8.packetBuffer.writeShort01A(var0 + FloorOverlayDefinition.baseX);
 					var8.packetBuffer.writeShort01A(DesktopPlatformInfoProvider.selectedItemSlot);
 					var8.packetBuffer.writeShort01(var3);
@@ -521,7 +521,7 @@ public class IgnoreList extends UserList {
 								FriendsChat.field3934 = class87.getWidget(var1);
 								Client.field593 = var0;
 							} else if (var2 == 32) {
-								var8 = FriendSystem.getPacketBufferNode(ClientPacket.field2745, Client.packetWriter.isaacCipher);
+								var8 = FriendSystem.getPacketBufferNode(ClientPacket.Packet_spellOnItem, Client.packetWriter.isaacCipher);
 								var8.packetBuffer.writeIntME(WorldMapEvent.selectedSpellWidget);
 								var8.packetBuffer.writeShort(Client.selectedSpellChildIndex);
 								var8.packetBuffer.writeInt(var1);
@@ -532,7 +532,7 @@ public class IgnoreList extends UserList {
 								FriendsChat.field3934 = class87.getWidget(var1);
 								Client.field593 = var0;
 							} else if (var2 == 33) {
-								var8 = FriendSystem.getPacketBufferNode(ClientPacket.field2708, Client.packetWriter.isaacCipher);
+								var8 = FriendSystem.getPacketBufferNode(ClientPacket.Packet_itemAction, Client.packetWriter.isaacCipher);
 								var8.packetBuffer.writeIntME(var1);
 								var8.packetBuffer.writeShort(var3);
 								var8.packetBuffer.writeShort01A(var0);
@@ -562,15 +562,15 @@ public class IgnoreList extends UserList {
 								var8 = FriendSystem.getPacketBufferNode(ClientPacket.field2681, Client.packetWriter.isaacCipher);
 								var8.packetBuffer.writeShort(var0);
 								var8.packetBuffer.writeShort01A(var3);
-								var8.packetBuffer.method6861(var1);
+								var8.packetBuffer.writeInt2(var1);
 								Client.packetWriter.addNode(var8);
 								Client.field727 = 0;
 								FriendsChat.field3934 = class87.getWidget(var1);
 								Client.field593 = var0;
 							} else if (var2 == 37) {
-								var8 = FriendSystem.getPacketBufferNode(ClientPacket.field2642, Client.packetWriter.isaacCipher);
+								var8 = FriendSystem.getPacketBufferNode(ClientPacket.Packet_itemAction2Packet, Client.packetWriter.isaacCipher);
 								var8.packetBuffer.writeShort(var3);
-								var8.packetBuffer.method6861(var1);
+								var8.packetBuffer.writeInt2(var1);
 								var8.packetBuffer.writeShort01A(var0);
 								Client.packetWriter.addNode(var8);
 								Client.field727 = 0;
@@ -615,7 +615,7 @@ public class IgnoreList extends UserList {
 									var8 = FriendSystem.getPacketBufferNode(ClientPacket.field2734, Client.packetWriter.isaacCipher);
 									var8.packetBuffer.writeShort(var3);
 									var8.packetBuffer.writeShort(var0);
-									var8.packetBuffer.method6861(var1);
+									var8.packetBuffer.writeInt2(var1);
 									Client.packetWriter.addNode(var8);
 									Client.field727 = 0;
 									FriendsChat.field3934 = class87.getWidget(var1);

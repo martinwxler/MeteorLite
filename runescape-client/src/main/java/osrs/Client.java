@@ -3386,14 +3386,14 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 				var5.packetBuffer.writeInt(World.archive8.hash);
 				var5.packetBuffer.writeInt(ApproximateRouteStrategy.archive14.hash);
 				var5.packetBuffer.writeInt(WorldMapSection0.archive15.hash);
-				var5.packetBuffer.method6861(class276.archive6.hash);
+				var5.packetBuffer.writeInt2(class276.archive6.hash);
 				var5.packetBuffer.writeInt0123(class115.archive2.hash);
 				var5.packetBuffer.writeIntME(ObjectComposition.archive5.hash);
-				var5.packetBuffer.method6861(class28.archive20.hash);
-				var5.packetBuffer.method6861(class391.archive13.hash);
-				var5.packetBuffer.method6861(MenuAction.archive1.hash);
+				var5.packetBuffer.writeInt2(class28.archive20.hash);
+				var5.packetBuffer.writeInt2(class391.archive13.hash);
+				var5.packetBuffer.writeInt2(MenuAction.archive1.hash);
 				var5.packetBuffer.writeInt0123(class318.archive11.hash);
-				var5.packetBuffer.method6861(class120.archive17.hash);
+				var5.packetBuffer.writeInt2(class120.archive17.hash);
 				var5.packetBuffer.writeIntME(class135.archive7.hash);
 				var5.packetBuffer.writeInt0123(class120.archive18.hash);
 				var5.packetBuffer.writeInt0123(VarcInt.archive9.hash);
@@ -4135,7 +4135,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 								var5 = class129.localPlayer.pathY[0] + class320.baseY;
 								var18 = FriendSystem.getPacketBufferNode(ClientPacket.field2707, packetWriter.isaacCipher);
 								var18.packetBuffer.writeShort(var5);
-								var18.packetBuffer.method6861(0);
+								var18.packetBuffer.writeInt2(0);
 								var18.packetBuffer.method6841(var3);
 								var18.packetBuffer.writeShortA(var4);
 								packetWriter.addNode(var18);
@@ -5662,7 +5662,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 					var52.packetBuffer.method6841(GameEngine.fps);
 					var52.packetBuffer.method6841(var6);
 					var52.packetBuffer.writeInt0123(var17);
-					var52.packetBuffer.method6861(var5);
+					var52.packetBuffer.writeInt2(var5);
 					packetWriter.addNode(var52);
 					var1.serverPacket = null;
 					return true;
@@ -6438,7 +6438,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 
 					if (draggedOnWidget != null && Message.method1099(clickedWidget) != null) {
 						PacketBufferNode var12 = FriendSystem.getPacketBufferNode(ClientPacket.field2698, packetWriter.isaacCipher);
-						var12.packetBuffer.method6861(clickedWidget.id);
+						var12.packetBuffer.writeInt2(clickedWidget.id);
 						var12.packetBuffer.writeShort01(draggedOnWidget.childIndex);
 						var12.packetBuffer.writeShort01A(clickedWidget.childIndex);
 						var12.packetBuffer.writeShort01A(draggedOnWidget.itemId);
