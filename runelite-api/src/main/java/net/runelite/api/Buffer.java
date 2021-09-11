@@ -42,6 +42,10 @@ public interface Buffer extends Node {
 
   void writeMedium$api(int var1);
 
+  void writeIntME$api(int var1);
+
+  void writeInt2$api(int var1);
+
   void writeInt$api(int var1);
 
   void writeLong$api(long var1);

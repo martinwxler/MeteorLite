@@ -29,6 +29,32 @@ public class Packets {
         packet.getPacketBuffer().writeShort$api(y);
         writer.queuePacket(packet);
     }
+    public static void queueItemActionPacket(int inventoryID, int itemID, int itemSlot){
+        PacketWriter writer = Game.getClient().getPacketWriter();
+        PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getItemActionPacket(), writer.getIsaacCipher());
+        packet.getPacketBuffer().writeIntME$api(inventoryID);
+        packet.getPacketBuffer().writeShort$api(itemID);
+        packet.getPacketBuffer().writeShort01A$api(itemSlot);
+        writer.queuePacket(packet);
+    }
+    public static void queueSpellOnItemPacket(int spellWidgetID, int spellWidgetIndex, int inventoryID, int itemID, int itemIndex){
+        PacketWriter writer = Game.getClient().getPacketWriter();
+        PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getSpellOnItemPacket(), writer.getIsaacCipher());
+        packet.getPacketBuffer().writeIntME$api(spellWidgetID);
+        packet.getPacketBuffer().writeShort$api(spellWidgetIndex);
+        packet.getPacketBuffer().writeInt$api(inventoryID);
+        packet.getPacketBuffer().writeShort01A$api(itemID);
+        packet.getPacketBuffer().writeShort01$api(itemIndex);
+        writer.queuePacket(packet);
+    }
+    public static void queueItemAction2Packet(int itemID, int inventoryID, int itemSlot){
+        PacketWriter writer = Game.getClient().getPacketWriter();
+        PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getItemAction2Packet(), writer.getIsaacCipher());
+        packet.getPacketBuffer().writeShort$api(itemID);
+        packet.getPacketBuffer().writeInt2$api(inventoryID);
+        packet.getPacketBuffer().writeShort01A$api(itemSlot);
+        writer.queuePacket(packet);
+    }
     public static void queueItemOnItemPacket(int itemId1, int slot1, int itemId2, int slot2) {
         PacketWriter writer = Game.getClient().getPacketWriter();
         PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getItemOnItemPacket(), writer.getIsaacCipher());
@@ -43,7 +69,6 @@ public class Packets {
     public static void queuePacket(ClientPacket clientPacket, Object... data) {
         PacketWriter writer = Game.getClient().getPacketWriter();
         PacketBufferNode packet = Game.getClient().preparePacket(clientPacket, writer.getIsaacCipher());
-
         for (Object o : data) {
             if (o instanceof Byte) {
                 packet.getPacketBuffer().writeByte$api((int) o);
