@@ -16,7 +16,7 @@ public class SpellPackets {
 		}
 
 		queueSpellOnItemPacket(spellWidget.getId(), spellWidget.getIndex(),
-						item.getWidgetId(), item.getId(), item.getSlot());
+						item.getType().getInventoryID().getId(), item.getId(), item.getSlot());
 	}
 
 	public static void queueSpellOnItemPacket(int spellWidgetID, int spellWidgetIndex, int inventoryID, int itemID, int itemIndex) {
