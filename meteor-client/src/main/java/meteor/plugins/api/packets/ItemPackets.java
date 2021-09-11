@@ -7,13 +7,29 @@ import net.runelite.api.packets.PacketBufferNode;
 import net.runelite.api.packets.PacketWriter;
 import net.runelite.api.widgets.WidgetInfo;
 
+import java.util.List;
+
 public class ItemPackets {
-	public static void itemAction1(Item item) {
-		queueItemActionPacket(item.getType().getInventoryID().getId(), item.getId(), item.getSlot());
+	public static void itemAction(Item item, String action) {
+		List<String> actions = item.getActions();
+		int index = actions.indexOf(action);
+		switch (index) {
+			case 0 -> itemFirstOption(item);
+			case 1 -> itemSecondOption(item);
+			case 4 -> itemFifthOption(item);
+		}
 	}
 
-	public static void itemAction2(Item item) {
-		queueItemAction2Packet(item.getType().getInventoryID().getId(), item.getId(), item.getSlot());
+	public static void itemFirstOption(Item item) {
+		queueItemActionPacket(item.getWidgetId(), item.getId(), item.getSlot());
+	}
+
+	public static void itemSecondOption(Item item) {
+		queueItemAction2Packet(item.getWidgetId(), item.getId(), item.getSlot());
+	}
+
+	public static void itemFifthOption(Item item) {
+		queueItemAction5Packet(item.getWidgetId(), item.getId(), item.getSlot());
 	}
 
 	public static void useItemOnItem(Item item, Item item2) {
@@ -37,6 +53,15 @@ public class ItemPackets {
 	public static void queueItemAction2Packet(int inventoryID, int itemID, int itemSlot) {
 		PacketWriter writer = Game.getClient().getPacketWriter();
 		PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getItemAction2Packet(), writer.getIsaacCipher());
+		packet.getPacketBuffer().writeShortA$api(itemSlot);
+		packet.getPacketBuffer().writeShort$api(itemID);
+		packet.getPacketBuffer().writeInt$api(inventoryID);
+		writer.queuePacket(packet);
+	}
+
+	public static void queueItemAction5Packet(int inventoryID, int itemID, int itemSlot) {
+		PacketWriter writer = Game.getClient().getPacketWriter();
+		PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getItemAction5Packet(), writer.getIsaacCipher());
 		packet.getPacketBuffer().writeShort$api(itemID);
 		packet.getPacketBuffer().writeInt2$api(inventoryID);
 		packet.getPacketBuffer().writeShort01A$api(itemSlot);

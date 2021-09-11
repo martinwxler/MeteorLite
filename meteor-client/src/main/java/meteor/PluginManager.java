@@ -18,7 +18,7 @@ import meteor.plugins.alchemicalhydra.AlchemicalHydraPlugin;
 import meteor.plugins.ammo.AmmoPlugin;
 import meteor.plugins.animsmoothing.AnimationSmoothingPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
-import meteor.plugins.api.example.simpleoneclick.HootOneClickPlugin;
+import meteor.plugins.api.example.simpleoneclick.SimpleOneClickPlugin;
 import meteor.plugins.api.interaction.InteractionPlugin;
 import meteor.plugins.blackjack.BlackjackPlugin;
 import meteor.plugins.chocogrinder.ChocoGrinder;
@@ -197,6 +197,8 @@ public class PluginManager {
 		plugins.add(new ExternalManagerPlugin());
 		plugins.add(new InteractionPlugin());
 
+		plugins.add(new SimpleOneClickPlugin());
+
 		plugins.add(new AgilityPlugin());
 		plugins.add(new AlchemicalHydraPlugin());
 		plugins.add(new AmmoPlugin());
@@ -254,7 +256,6 @@ public class PluginManager {
 		plugins.add(new HootAgilityPlugin());
 		plugins.add(new HootFighterPlugin());
 		plugins.add(new HootHerblorePlugin());
-		plugins.add(new HootOneClickPlugin());
 		plugins.add(new HunterPlugin());
 		plugins.add(new ImplingsPlugin());
 		plugins.add(new InfernoPlugin());
