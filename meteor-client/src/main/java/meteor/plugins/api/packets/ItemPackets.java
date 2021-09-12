@@ -49,6 +49,14 @@ public class ItemPackets {
 		queueItemOnItemPacket(item.getId(), item.getSlot(), item2.getId(), item2.getSlot());
 	}
 
+	public static void queueBankItemActionPacket(int inventoryID, int itemID, int itemSlot){
+		PacketWriter writer = Game.getClient().getPacketWriter();
+		PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getBankItemActionPacket(), writer.getIsaacCipher());
+		packet.getPacketBuffer().writeInt$api(inventoryID);
+		packet.getPacketBuffer().writeShort$api(itemSlot);
+		packet.getPacketBuffer().writeShort$api(itemID);
+		writer.queuePacket(packet);
+	}
 	public static void queueItemActionPacket(int inventoryID, int itemID, int itemSlot) {
 		PacketWriter writer = Game.getClient().getPacketWriter();
 		PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getItemActionPacket(), writer.getIsaacCipher());

@@ -9,21 +9,13 @@ import meteor.plugins.PluginDescriptor;
 import meteor.plugins.api.items.Inventory;
 import meteor.plugins.api.magic.Ancient;
 import meteor.plugins.api.magic.Magic;
-import meteor.plugins.api.packets.DialogPackets;
-import meteor.plugins.api.packets.Packets;
 import meteor.plugins.api.widgets.Prayers;
 import meteor.plugins.api.widgets.Tab;
 import meteor.plugins.api.widgets.Tabs;
 import meteor.util.HotkeyListener;
-import net.runelite.api.Actor;
-import net.runelite.api.GameState;
-import net.runelite.api.Prayer;
+import net.runelite.api.*;
 import net.runelite.api.events.InteractingChanged;
-import net.runelite.api.events.PacketSent;
-import net.runelite.api.packets.PacketBufferNode;
-
 import javax.inject.Inject;
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -338,9 +330,7 @@ public class PvPKeys extends Plugin {
         @Override
         public void hotkeyPressed()
         {
-            /*
-            Prayers.toggle(Prayer.RIGOUR);*/
-            DialogPackets.sendNumberInput(10);
+            Prayers.toggle(Prayer.RIGOUR);
         }
     };
     private final HotkeyListener piety = new HotkeyListener(() -> config.Piety())
@@ -359,7 +349,7 @@ public class PvPKeys extends Plugin {
             if(lasttarget!=null){
                 target.interact(0);
             }
-        }
+           }
     };
     @Subscribe
     public void onInteractingChanged(InteractingChanged event){

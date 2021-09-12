@@ -1529,6 +1529,11 @@ public interface RSClient extends RSGameEngine, Client {
   @Import("Packet_itemOnItemPacket")
   @Override
   RSClientPacket getItemOnItemPacket();
+
+  @Import("Packet_bankItemActionPacket")
+  @Override
+  RSClientPacket getBankItemActionPacket();
+
   @Import("loadWorlds")
   @Override
   boolean loadWorlds();

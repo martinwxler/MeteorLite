@@ -479,7 +479,7 @@ public class ClientPacket implements Packet {
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
 	)
-	public static final ClientPacket field2644;
+	public static final ClientPacket Packet_bankItemActionPacket;
 	@ObfuscatedName("cm")
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
@@ -651,7 +651,7 @@ public class ClientPacket implements Packet {
 		field2719 = new ClientPacket(89, 0);
 		field2713 = new ClientPacket(90, 3);
 		field2731 = new ClientPacket(91, -2);
-		field2644 = new ClientPacket(92, 8);
+		Packet_bankItemActionPacket = new ClientPacket(92, 8);
 		field2692 = new ClientPacket(93, -1);
 		field2744 = new ClientPacket(94, -1);
 		field2660 = new ClientPacket(95, 3);

@@ -25,6 +25,7 @@ import meteor.plugins.blackjack.BlackjackPlugin;
 import meteor.plugins.chocogrinder.ChocoGrinder;
 import meteor.plugins.coxraidscouter.coxraidscouter;
 import meteor.plugins.entityhider.EntityHiderPlugin;
+import meteor.plugins.gearhelper.GearHelperPlugin;
 import meteor.plugins.hootfighter.HootFighterPlugin;
 import meteor.plugins.api.example.deathevent.DeathEventPlugin;
 import meteor.plugins.api.externals.ExternalManagerPlugin;
@@ -247,6 +248,7 @@ public class PluginManager {
 		plugins.add(new FishingPlugin());
 		plugins.add(new FpsPlugin());
 		plugins.add(new GauntletPlugin());
+		plugins.add(new GearHelperPlugin());
 		plugins.add(new GpuPlugin());
 		plugins.add(new GrotesqueGuardiansPlugin());
 		plugins.add(new GroundItemsPlugin());
