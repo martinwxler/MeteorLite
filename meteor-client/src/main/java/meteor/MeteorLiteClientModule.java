@@ -18,6 +18,7 @@ import java.applet.AudioClip;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -100,6 +101,8 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
   private static final int CLIENT_WIDTH = Constants.GAME_FIXED_WIDTH + (Constants.GAME_FIXED_WIDTH - 749);
   private static final int CLIENT_HEIGHT = Constants.GAME_FIXED_HEIGHT + (Constants.GAME_FIXED_HEIGHT - 464) + TOOLBAR_HEIGHT;
   private static final Dimension CLIENT_SIZE = new Dimension(CLIENT_WIDTH, CLIENT_HEIGHT);
+
+  private static Cursor defaultCursor;
 
   @Inject
   private EventBus eventBus;
@@ -632,6 +635,44 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
     return configManager.getConfig(ChatColorConfig.class);
   }
 
+  public static void setCursor(final BufferedImage image, final String name)
+  {
+    if (mainWindow == null)
+    {
+      return;
+    }
+
+    final java.awt.Point hotspot = new java.awt.Point(0, 0);
+    final Cursor cursorAwt = Toolkit.getDefaultToolkit().createCustomCursor(image, hotspot, name);
+    defaultCursor = cursorAwt;
+    setCursor(cursorAwt);
+  }
+
+  public static Cursor getCurrentCursor()
+  {
+    return mainWindow.getCursor();
+  }
+
+  public static Cursor getDefaultCursor()
+  {
+    return defaultCursor != null ? defaultCursor : Cursor.getDefaultCursor();
+  }
+
+  public static void setCursor(final Cursor cursor)
+  {
+    mainWindow.setCursor(cursor);
+  }
+
+  public static void resetCursor()
+  {
+    if (mainWindow == null)
+    {
+      return;
+    }
+
+    defaultCursor = null;
+    mainWindow.setCursor(Cursor.getDefaultCursor());
+  }
   @Provides
   @Singleton
   ChatClient provideChatClient(OkHttpClient okHttpClient)

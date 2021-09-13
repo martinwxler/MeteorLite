@@ -53,6 +53,7 @@ import meteor.task.Scheduler;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayRenderer;
 import meteor.ui.overlay.infobox.InfoBoxManager;
+import meteor.util.DrawManager;
 import meteor.util.RSTimeUnit;
 import net.runelite.api.BufferProvider;
 import net.runelite.api.Client;
@@ -101,6 +102,7 @@ public class Hooks implements Callbacks {
   private Dimension lastStretchedDimensions;
   private VolatileImage stretchedImage;
   private Graphics2D stretchedGraphics;
+  private final DrawManager drawManager;
   private long lastCheck;
   private boolean ignoreNextNpcUpdate;
   private boolean shouldProcessGameTick;
@@ -116,7 +118,8 @@ public class Hooks implements Callbacks {
       KeyManager keyManager,
       InfoBoxManager infoBoxManager,
       ChatMessageManager chatMessageManager,
-      Scheduler scheduler
+      Scheduler scheduler,
+      DrawManager drawManager
   ) {
     Hooks.client = client;
     this.clientThread = clientThread;
@@ -127,6 +130,7 @@ public class Hooks implements Callbacks {
     this.keyManager = keyManager;
     this.infoBoxManager = infoBoxManager;
     this.chatMessageManager = chatMessageManager;
+    this.drawManager = drawManager;
     this.scheduler = scheduler;
     eventBus.register(this);
   }
@@ -344,7 +348,7 @@ public class Hooks implements Callbacks {
 
     // finalImage is backed by the client buffer which will change soon. make a copy
     // so that callbacks can safely use it later from threads.
-    //drawManager.processDrawComplete(() -> copy(finalImage));
+    drawManager.processDrawComplete(() -> copy(finalImage));
   }
 
   @Override
