@@ -55,7 +55,7 @@ public interface ResourcePacksConfig extends Config
 	)
 	default String resourcePackPath()
 	{
-		return "";
+		return "Your file path goes here";
 	}
 
 	@ConfigItem(
@@ -67,7 +67,7 @@ public interface ResourcePacksConfig extends Config
 	)
 	default String resourcePack2Path()
 	{
-		return "";
+		return "Your file path goes here";
 	}
 
 	@ConfigItem(
@@ -79,7 +79,7 @@ public interface ResourcePacksConfig extends Config
 	)
 	default String resourcePack3Path()
 	{
-		return "";
+		return "Your file path goes here";
 	}
 
 	@ConfigItem(

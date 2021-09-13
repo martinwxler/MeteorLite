@@ -30,9 +30,9 @@ import meteor.util.ImageUtil;
 import okhttp3.HttpUrl;
 
 @PluginDescriptor(
-		name = "Resource packs",
+		name = "MeteorLite Login Screen",
 		description = "Change the look of the client",
-		cantDisable = true
+		enabledByDefault = false
 )
 public class ResourcePacksPlugin extends Plugin
 {
