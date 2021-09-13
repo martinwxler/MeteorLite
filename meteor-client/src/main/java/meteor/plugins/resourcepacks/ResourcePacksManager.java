@@ -38,7 +38,6 @@ import javax.inject.Singleton;
 import lombok.Getter;
 import static meteor.plugins.resourcepacks.ResourcePacksPlugin.GITHUB;
 import static meteor.plugins.resourcepacks.ResourcePacksPlugin.OVERLAY_COLOR_CONFIG;
-import static osrs.Client.logger;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.plugins.resourcepacks.event.ResourcePacksChanged;
 import meteor.plugins.resourcepacks.hub.ResourcePackManifest;
@@ -219,13 +218,11 @@ public class ResourcePacksManager
 				catch (IOException e)
 				{
 					resourcePacks.remove(manifest);
-					logger.error("Unable to download resource pack \"{}\"", manifest.getInternalName(), e);
 				}
 			}
 		}
 		catch (IOException e)
 		{
-			logger.error("Unable to download resource packs", e);
 			return;
 		}
 		for (ResourcePackManifest ex : resourcePacks)
@@ -237,7 +234,6 @@ public class ResourcePacksManager
 		Collection<ResourcePackManifest> remove = loadedPacks.values();
 		for (ResourcePackManifest rem : remove)
 		{
-			logger.info("Removing pack \"{}\"", rem.getInternalName());
 			Set<String> packs = new HashSet<>(getInstalledResourcePacks());
 			if (packs.remove(rem.getInternalName()))
 			{
@@ -308,7 +304,6 @@ public class ResourcePacksManager
 		Set<String> packs = new HashSet<>(getInstalledResourcePacks());
 		if (packs.add(internalName))
 		{
-			logger.debug("Installing: " + internalName);
 			configManager.setConfiguration(ResourcePacksConfig.GROUP_NAME, ResourcePacksConfig.HUB_RESOURCEPACKS, Text.toCSV(packs));
 			configManager.setConfiguration(ResourcePacksConfig.GROUP_NAME, "resourcePack", ResourcePacksConfig.ResourcePack.HUB);
 
@@ -324,7 +319,6 @@ public class ResourcePacksManager
 		Set<String> packs = new HashSet<>(getInstalledResourcePacks());
 		if (packs.remove(internalName))
 		{
-			logger.debug("Removing: " + internalName);
 			configManager.setConfiguration(ResourcePacksConfig.GROUP_NAME, ResourcePacksConfig.HUB_RESOURCEPACKS, Text.toCSV(packs));
 			if (config.selectedHubPack() != null && config.selectedHubPack().equals(internalName))
 			{
@@ -485,7 +479,6 @@ public class ResourcePacksManager
 		File spriteFile = new File(currentPackPath + File.separator + folder + File.separator + name + ".png");
 		if (!spriteFile.exists())
 		{
-			logger.debug("Sprite doesn't exist (" + spriteFile.getPath() + "): ");
 			return null;
 		}
 		try
@@ -499,19 +492,12 @@ public class ResourcePacksManager
 		}
 		catch (RuntimeException | IOException ex)
 		{
-			logger.debug("Unable to find image (" + spriteFile.getPath() + "): ");
 		}
 		return null;
 	}
 
 	void overrideSprites()
 	{
-		SpritePixels loginscreensprite = ImageUtil.getImageSpritePixels(ImageUtil.loadImageResource(ResourcePacksPlugin.class, "background.png"), client);
-		if (loginscreensprite != null)
-		{
-			client.setLoginScreen(loginscreensprite);
-		}
-
 		String currentPackPath = getCurrentPackPath();
 		SpriteOverride.getOverrides().asMap().forEach((key, collection) -> {
 			if (!Files.isDirectory(Paths.get(currentPackPath + File.separator + key.name().toLowerCase())) ||
@@ -590,7 +576,6 @@ public class ResourcePacksManager
 		}
 		catch (IOException e)
 		{
-			logger.debug("Color properties not found");
 			resetOverlayColor();
 			return;
 		}

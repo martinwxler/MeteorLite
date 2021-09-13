@@ -55,7 +55,7 @@ public interface ResourcePacksConfig extends Config
 	)
 	default String resourcePackPath()
 	{
-		return "Your file path goes here";
+		return "";
 	}
 
 	@ConfigItem(
@@ -67,7 +67,7 @@ public interface ResourcePacksConfig extends Config
 	)
 	default String resourcePack2Path()
 	{
-		return "Your file path goes here";
+		return "";
 	}
 
 	@ConfigItem(
@@ -79,7 +79,18 @@ public interface ResourcePacksConfig extends Config
 	)
 	default String resourcePack3Path()
 	{
-		return "Your file path goes here";
+		return "";
+	}
+
+	@ConfigItem(
+			keyName = "allowLoginScreen",
+			name = "Allow login screen to be changed",
+			description = "Gives permissions for resource packs to change your login screen",
+			position = 5
+	)
+	default boolean allowLoginScreen()
+	{
+		return true;
 	}
 
 	@ConfigItem(
