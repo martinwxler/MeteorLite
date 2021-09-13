@@ -66,6 +66,7 @@ public class MeteorLoginScreenPlugin extends Plugin {
 			client.setOptionSprite1(getIndexedSprite("options_radio_buttons4.png"));
 			client.setOptionSprite2(getIndexedSprite("mod_icon.png"));
 			client.setOptionSprite3(getIndexedSprite("mod_icon.png"));
+
 			client.getTitleMuteSprites()[0] = getIndexedSprite("title_mute.png");
 			client.getTitleMuteSprites()[1] = getIndexedSprite("title_mute.1.png");
 		}
