@@ -58,4 +58,13 @@ public interface RSScene extends Scene {
 
   @Import("removeGameObject")
   void removeGameObject(GameObject gameObject);
+
+  byte[][][] getUnderlayIds();
+  void setUnderlayIds(byte[][][] underlayIds);
+
+  byte[][][] getOverlayIds();
+  void setOverlayIds(byte[][][] overlayIds);
+
+  byte[][][] getTileShapes();
+  void setTileShapes(byte[][][] tileShapes);
 }

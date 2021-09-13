@@ -116,4 +116,15 @@ public interface Model extends Renderable {
   boolean isClickable();
 
   void drawFace$api(int face);
+
+  float[] getFaceTextureUVCoordinates();
+
+  int[] getVertexNormalsX();
+  void setVertexNormalsX(int[] vertexNormalsX);
+
+  int[] getVertexNormalsY();
+  void setVertexNormalsY(int[] vertexNormalsY);
+
+  int[] getVertexNormalsZ();
+  void setVertexNormalsZ(int[] vertexNormalsZ);
 }

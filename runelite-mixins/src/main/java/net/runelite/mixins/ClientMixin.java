@@ -1710,4 +1710,24 @@ public abstract class ClientMixin implements RSClient {
   public static void onDialogProcessed(int widgetUid, int menuIndex) {
     client.getCallbacks().post(new DialogProcessed(widgetUid, menuIndex));
   }
+
+  @Inject
+  @FieldHook("rndHue")
+  public static void rndHue(int idx)
+  {
+    int rndHue = client.getRndHue();
+
+    if (rndHue >= -8 && rndHue <= 8)
+    {
+      RSScene scene = client.getScene();
+
+      byte[][][] underlays = client.getTileUnderlays();
+      byte[][][] overlays = client.getTileOverlays();
+      byte[][][] tileShapes = client.getTileShapes();
+
+      scene.setUnderlayIds(Arrays.copyOf(underlays, underlays.length));
+      scene.setOverlayIds(Arrays.copyOf(overlays, overlays.length));
+      scene.setTileShapes(Arrays.copyOf(tileShapes, tileShapes.length));
+    }
+  }
 }

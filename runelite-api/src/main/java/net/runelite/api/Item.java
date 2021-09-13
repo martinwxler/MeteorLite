@@ -146,6 +146,13 @@ public class Item implements Interactable, Identifiable, Nameable {
 		client.interact(identifier, opcode, param0, param1);
 	}
 
+	public void useOn(TileItem object) {
+		client.setSelectedItemWidget(widgetId);
+		client.setSelectedItemSlot(getSlot());
+		client.setSelectedItemID(getId());
+		object.interact(0, MenuAction.ITEM_USE_ON_GROUND_ITEM.getId());
+	}
+
 	public void useOn(TileObject object) {
 		client.setSelectedItemWidget(widgetId);
 		client.setSelectedItemSlot(getSlot());
