@@ -92,6 +92,7 @@ import meteor.plugins.menuentrymodifier.MenuEntryModifierPlugin;
 import meteor.plugins.menuentryswapper.MenuEntrySwapperPlugin;
 import meteor.plugins.menuentryswapperextended.MenuEntrySwapperExtendedPlugin;
 import meteor.plugins.meteor.loginscreen.MeteorLoginScreenPlugin;
+import meteor.plugins.meteor.meteorlite.MeteorLitePlugin;
 import meteor.plugins.minimap.MinimapPlugin;
 import meteor.plugins.mining.MiningPlugin;
 import meteor.plugins.motherlode.MotherlodePlugin;
@@ -197,6 +198,7 @@ public class PluginManager {
 
   private void initPlugins() {
 		// Leave at the top pls, these are not regular plugins
+	  	plugins.add(new MeteorLitePlugin());
 		plugins.add(new ExternalManagerPlugin());
 		plugins.add(new MeteorInteractionPlugin());
 

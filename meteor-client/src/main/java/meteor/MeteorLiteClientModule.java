@@ -15,10 +15,7 @@ import java.applet.Applet;
 import java.applet.AppletContext;
 import java.applet.AppletStub;
 import java.applet.AudioClip;
-import java.awt.BorderLayout;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
@@ -43,6 +40,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import com.google.inject.util.Providers;
 import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -71,6 +70,7 @@ import meteor.plugins.api.game.*;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.itemstats.ItemStatChangesService;
 import meteor.plugins.itemstats.ItemStatChangesServiceImpl;
+import meteor.plugins.meteor.meteorlite.MeteorLiteConfig;
 import meteor.ui.controllers.ToolbarFXMLController;
 import meteor.ui.overlay.OverlayManager;
 import meteor.ui.overlay.WidgetOverlay;
@@ -136,7 +136,7 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
   @Inject
   private DiscordService discordService;
 
-
+  private static MeteorLiteConfig meteorLiteConfig;
 
   private static Map<String, String> properties;
   private static Map<String, String> parameters;
@@ -263,6 +263,15 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
 
     configManager.load();
     pluginManager.startInternalPlugins();
+
+    // preload plugins scene, needs to be after pluginManager.startInternalPlugins() is called.
+    pluginsRootScene = new Scene(FXMLLoader.load(
+            Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("plugins.fxml"))), 350, 800);
+    rightPanel.setScene(pluginsRootScene);
+
+    // This is shit, but needs to be done until UI is reworked
+    meteorLiteConfig = (MeteorLiteConfig) PluginManager.getInstance("MeteorLite").getConfig(configManager);
+
     log.info(
             ANSI_YELLOW + "OSRS instance started in " + (System.currentTimeMillis() - startTime) + " ms"
                     + ANSI_RESET);
@@ -274,40 +283,76 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
     if (pluginsPanelVisible) {
       rightPanel.setVisible(false);
     } else {
-      // Load plugins if not loaded yet
-      if (pluginsRootScene == null) {
-        showPlugins();
-      }
-
       rightPanel.setVisible(true);
     }
 
     pluginsPanelVisible = !pluginsPanelVisible;
     if (pluginsPanelVisible) {
-      mainWindow.setMinimumSize(new Dimension(CLIENT_WIDTH + RIGHT_PANEL_WIDTH, CLIENT_HEIGHT));
-      mainWindow.validate();
+      try {
+        // if maximized, dont resize
+        if (mainWindow.getExtendedState() == JFrame.MAXIMIZED_BOTH) {
+          return;
+        }
+
+        // if panel would extend past screen, dont resize
+        Dimension currentSize = mainWindow.getSize();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        if (currentSize.getWidth() + RIGHT_PANEL_WIDTH > screenSize.getWidth()) {
+          return;
+        }
+
+        // If resizing the game would go below the minimum size, always extend panel.
+        if (mainWindow.getWidth() < CLIENT_WIDTH + RIGHT_PANEL_WIDTH) {
+          mainWindow.setSize(new Dimension(mainWindow.getWidth() + RIGHT_PANEL_WIDTH, mainWindow.getHeight()));
+          return;
+        }
+
+        if (meteorLiteConfig.resizeGame()) {
+          return;
+        }
+
+        // if current client size is less than window size, but showing the panel would go past the screen, set size equal to screen size.
+        Dimension newClientSize = new Dimension(mainWindow.getWidth() + RIGHT_PANEL_WIDTH, mainWindow.getHeight());
+        if (newClientSize.getWidth() > screenSize.getWidth()) {
+          newClientSize = screenSize;
+          mainWindow.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        }
+        mainWindow.setSize(newClientSize);
+      } finally {
+        mainWindow.setMinimumSize(new Dimension(CLIENT_WIDTH + RIGHT_PANEL_WIDTH, CLIENT_HEIGHT));
+        mainWindow.validate();
+      }
     } else {
       setMinimumFrameSize();
     }
   }
 
   private static void setMinimumFrameSize() {
-    // The numbers 749 and 464 come from the main windows content pane when the min size is set to the osrs client resolution (765x503).
-    // So we adjust the main window to be large enough to fit those bounds inside the content pane.
-      boolean resize = mainWindow.getSize().equals(mainWindow.getMinimumSize());
-      mainWindow.setMinimumSize(CLIENT_SIZE);
-      if (resize) {
-        mainWindow.setSize(mainWindow.getMinimumSize());
-      }
-      mainWindow.validate();
-  }
+    // if resize game is checked, and we are at the minimum size, still resize.
+    boolean resize = mainWindow.getMinimumSize().equals(mainWindow.getSize());
+    mainWindow.setMinimumSize(CLIENT_SIZE);
 
-  public static void showPlugins() throws IOException {
-    if (pluginsRootScene == null) {
-      pluginsRootScene = new Scene(FXMLLoader.load(
-              Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("plugins.fxml"))), 350, 800);
+    // if maximized, dont resize
+    if (mainWindow.getExtendedState() == JFrame.MAXIMIZED_BOTH) {
+      return;
     }
 
+    // if size is the same as screen size, dont resize
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    if (mainWindow.getSize().equals(screenSize)) {
+      return;
+    }
+
+    if (!meteorLiteConfig.resizeGame()) {
+      mainWindow.setSize(new Dimension(mainWindow.getWidth() - RIGHT_PANEL_WIDTH, mainWindow.getHeight()));
+    }
+    if (resize) {
+      mainWindow.setSize(mainWindow.getMinimumSize());
+    }
+    mainWindow.validate();
+  }
+
+  public static void showPlugins() {
     if (rightPanel.getScene() == null || !rightPanel.getScene().equals(pluginsRootScene)) {
       rightPanel.setScene(pluginsRootScene);
     }

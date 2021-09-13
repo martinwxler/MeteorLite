@@ -26,6 +26,7 @@ import meteor.plugins.Plugin;
 import meteor.ui.components.Category;
 import meteor.ui.components.ConfigButton;
 import meteor.ui.components.ConfigSectionPane;
+import meteor.ui.components.ConfigToggleButton;
 import meteor.ui.components.PluginToggleButton;
 import net.runelite.api.Client;
 import net.runelite.api.events.ConfigButtonClicked;
@@ -156,31 +157,18 @@ public class PluginConfigUI {
 	}
 
 	private void createButtonNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
-		ConfigButton button = new ConfigButton(configItem.getIcon().canToggle());
+		JFXButton button;
+		if (configItem.getIcon().canToggle()) {
+			button = new ConfigToggleButton();
+		} else {
+			button = new ConfigButton(configItem.name(), configItem.getIcon().value());
+		}
 
 		AnchorPane.setTopAnchor(button, 4.0);
 		AnchorPane.setBottomAnchor(button, 4.0);
 		AnchorPane.setRightAnchor(button, 40.0);
 		AnchorPane.setLeftAnchor(button, 40.0);
-		AtomicReference<FontAwesomeIcon> icon = new AtomicReference<>();
 
-		if (button.isToggleable()) {
-			if (button.isToggled()) {
-				icon.set(configItem.getIcon().stop());
-				button.setText("Stop");
-			} else {
-				icon.set(configItem.getIcon().start());
-				button.setText("Start");
-			}
-		} else {
-			icon.set(configItem.getIcon().value());
-			button.setText(configItem.name());
-		}
-
-		FontAwesomeIconView buttonIcon = new FontAwesomeIconView(icon.get());
-		buttonIcon.setSize("16");
-		buttonIcon.setFill(javafx.scene.paint.Color.valueOf("CYAN"));
-		button.setGraphic(buttonIcon);
 		button.autosize();
 		button.setStyle("-fx-background-color: #252525; -fx-text-fill: CYAN; -jfx-button-type: RAISED;");
 
@@ -189,24 +177,11 @@ public class PluginConfigUI {
 				return;
 			}
 
-			button.toggle();
-
-			if (button.isToggleable()) {
-				if (button.isToggled()) {
-					icon.set(configItem.getIcon().start());
-					button.setText("Start");
-					client.getCallbacks().post(new ConfigButtonClicked(config.getGroup().value(), configItem.key()));
-					return;
-				}
-
-				icon.set(configItem.getIcon().stop());
-				button.setText("Stop");
-				client.getCallbacks().post(new ConfigButtonClicked(config.getGroup().value(), configItem.key()));
-				return;
+			if (button instanceof ConfigToggleButton) {
+				((ConfigToggleButton) button).toggle();
 			}
 
 			client.getCallbacks().post(new ConfigButtonClicked(config.getGroup().value(), configItem.key()));
-			icon.set(configItem.getIcon().value());
 		});
 
 		addConfigItemComponents(root, button);
@@ -217,14 +192,12 @@ public class PluginConfigUI {
 		AnchorPane.setTopAnchor(name, 8.0);
 		AnchorPane.setLeftAnchor(name, 8.0);
 
-		ConfigButton button = new ConfigButton(false);;
+		ConfigButton button = new ConfigButton(configManager.getConfiguration(config.getGroup().value(), configItem.key(), ModifierlessKeybind.class).toString());
 		AnchorPane.setTopAnchor(button, 4.0);
 		AnchorPane.setBottomAnchor(button, 4.0);
 		AnchorPane.setRightAnchor(button, 0.0);
 		AnchorPane.setLeftAnchor(button, 190.0);
-		AtomicReference<FontAwesomeIcon> icon = new AtomicReference<>();
 
-		button.setText(configManager.getConfiguration(config.getGroup().value(), configItem.key(), ModifierlessKeybind.class).toString());
 		button.autosize();
 		button.setStyle("-fx-background-color: #252525; -fx-text-fill: CYAN; -jfx-button-type: RAISED;");
 
@@ -253,14 +226,12 @@ public class PluginConfigUI {
 		AnchorPane.setTopAnchor(name, 8.0);
 		AnchorPane.setLeftAnchor(name, 8.0);
 
-		ConfigButton button = new ConfigButton(false);;
+		ConfigButton button = new ConfigButton(configManager.getConfiguration(config.getGroup().value(), configItem.key(), Keybind.class).toString());
 		AnchorPane.setTopAnchor(button, 4.0);
 		AnchorPane.setBottomAnchor(button, 4.0);
 		AnchorPane.setRightAnchor(button, 0.0);
 		AnchorPane.setLeftAnchor(button, 190.0);
-		AtomicReference<FontAwesomeIcon> icon = new AtomicReference<>();
 
-		button.setText(configManager.getConfiguration(config.getGroup().value(), configItem.key(), Keybind.class).toString());
 		button.autosize();
 		button.setStyle("-fx-background-color: #252525; -fx-text-fill: CYAN; -jfx-button-type: RAISED;");
 
