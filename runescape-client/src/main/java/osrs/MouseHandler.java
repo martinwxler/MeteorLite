@@ -480,7 +480,7 @@ public class MouseHandler implements MouseListener, MouseMotionListener, FocusLi
 					}
 
 					if (var0 == 9) {
-						var7 = FriendSystem.getPacketBufferNode(ClientPacket.field2644, Client.packetWriter.isaacCipher);
+						var7 = FriendSystem.getPacketBufferNode(ClientPacket.Packet_bankItemActionPacket, Client.packetWriter.isaacCipher);
 						var7.packetBuffer.writeInt(var1);
 						var7.packetBuffer.writeShort(var2);
 						var7.packetBuffer.writeShort(var3);

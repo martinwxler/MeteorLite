@@ -2286,10 +2286,13 @@ public interface Client extends GameEngine {
   ClientPacket getTextInputPacket();
   ClientPacket getClickPacket();
   ClientPacket getItemOnItemPacket();
-  ClientPacket getItemActionPacket();
   ClientPacket getSpellOnItemPacket();
+  ClientPacket getItemActionPacket();
   ClientPacket getItemAction2Packet();
+  ClientPacket getItemAction3Packet();
+  ClientPacket getItemAction4Packet();
   ClientPacket getItemAction5Packet();
+  ClientPacket getBankItemActionPacket();
   void setSelectedSceneTileX(int sceneX);
 
   void setSelectedSceneTileY(int sceneY);

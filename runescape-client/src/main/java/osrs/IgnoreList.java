@@ -550,7 +550,7 @@ public class IgnoreList extends UserList {
 								FriendsChat.field3934 = class87.getWidget(var1);
 								Client.field593 = var0;
 							} else if (var2 == 35) {
-								var8 = FriendSystem.getPacketBufferNode(ClientPacket.field2718, Client.packetWriter.isaacCipher);
+								var8 = FriendSystem.getPacketBufferNode(ClientPacket.Packet_itemAction3Packet, Client.packetWriter.isaacCipher);
 								var8.packetBuffer.writeShort01A(var0);
 								var8.packetBuffer.writeIntME(var1);
 								var8.packetBuffer.writeShort(var3);
@@ -559,7 +559,7 @@ public class IgnoreList extends UserList {
 								FriendsChat.field3934 = class87.getWidget(var1);
 								Client.field593 = var0;
 							} else if (var2 == 36) {
-								var8 = FriendSystem.getPacketBufferNode(ClientPacket.field2681, Client.packetWriter.isaacCipher);
+								var8 = FriendSystem.getPacketBufferNode(ClientPacket.Packet_itemAction4Packet, Client.packetWriter.isaacCipher);
 								var8.packetBuffer.writeShort(var0);
 								var8.packetBuffer.writeShort01A(var3);
 								var8.packetBuffer.writeInt2(var1);

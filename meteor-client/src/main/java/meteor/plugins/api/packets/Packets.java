@@ -4,7 +4,6 @@ import meteor.plugins.api.game.Game;
 import net.runelite.api.packets.ClientPacket;
 import net.runelite.api.packets.PacketBufferNode;
 import net.runelite.api.packets.PacketWriter;
-import net.runelite.api.widgets.WidgetInfo;
 
 public class Packets {
     public static void queuePacket(ClientPacket clientPacket, Object... data) {
