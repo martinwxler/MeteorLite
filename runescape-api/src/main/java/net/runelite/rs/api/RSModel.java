@@ -176,5 +176,16 @@ public interface RSModel extends RSRenderable, Model {
 
   float[][] getFaceTextureVCoordinates();
 
-  void setFaceTextureVCoordinates(float[][] rl$faceTextureVCoordinates);
+  void setFaceTextureUVCoordinates(float[] faceTextureUVCoordinates);
+
+  int[] getVertexNormalsX();
+  void setVertexNormalsX(int[] vertexNormalsX);
+
+  int[] getVertexNormalsY();
+  void setVertexNormalsY(int[] vertexNormalsY);
+
+  int[] getVertexNormalsZ();
+  void setVertexNormalsZ(int[] vertexNormalsZ);
+
+  float[] getFaceTextureUVCoordinates();
 }

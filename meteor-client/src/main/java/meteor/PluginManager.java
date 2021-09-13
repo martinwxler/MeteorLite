@@ -66,7 +66,6 @@ import meteor.plugins.fightcave.FightCavePlugin;
 import meteor.plugins.fishing.FishingPlugin;
 import meteor.plugins.fps.FpsPlugin;
 import meteor.plugins.gauntlet.GauntletPlugin;
-import meteor.plugins.gpu.GpuPlugin;
 import meteor.plugins.grotesqueguardians.GrotesqueGuardiansPlugin;
 import meteor.plugins.grounditems.GroundItemsPlugin;
 import meteor.plugins.herbiboars.HerbiboarPlugin;
@@ -173,6 +172,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarFile;
+import rs117.hd.GpuHDPlugin;
 
 public class PluginManager {
 	private static final Logger logger = new Logger("PluginManager");
@@ -250,7 +250,8 @@ public class PluginManager {
 		plugins.add(new FpsPlugin());
 		plugins.add(new GauntletPlugin());
 		plugins.add(new GearHelperPlugin());
-		plugins.add(new GpuPlugin());
+		//plugins.add(new GpuPlugin());
+		plugins.add(new GpuHDPlugin());
 		plugins.add(new GrotesqueGuardiansPlugin());
 		plugins.add(new GroundItemsPlugin());
 		plugins.add(new sGroundMarkerPlugin());

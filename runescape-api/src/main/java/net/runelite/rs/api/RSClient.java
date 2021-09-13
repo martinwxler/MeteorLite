@@ -1616,4 +1616,16 @@ public interface RSClient extends RSGameEngine, Client {
 
   @Import("loginTitleMessage")
   void setLoginTitleMessage(String message);
+
+  @Import("rndHue")
+  int getRndHue();
+
+  @Import("Tiles_underlays")
+  byte[][][] getTileUnderlays();
+
+  @Import("Tiles_overlays")
+  byte[][][] getTileOverlays();
+
+  @Import("Tiles_shapes")
+  byte[][][] getTileShapes();
 }

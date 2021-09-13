@@ -78,6 +78,15 @@ public abstract class SceneMixin implements RSScene {
   private static int rl$drawDistance;
 
   @Inject
+  private static byte[][][] rl$underlayIds;
+
+  @Inject
+  private static byte[][][] rl$overlayIds;
+
+  @Inject
+  private static byte[][][] rl$tileShapes;
+
+  @Inject
   private static void setTargetTile(int targetX, int targetY) {
     client.setSelectedSceneTileX(targetX);
     client.setSelectedSceneTileY(targetY);
@@ -854,5 +863,47 @@ public abstract class SceneMixin implements RSScene {
     if (!client.isGpu() || client.getOccluderEnabled()) {
       rs$occlude();
     }
+  }
+
+  @Inject
+  @Override
+  public byte[][][] getUnderlayIds()
+  {
+    return rl$underlayIds;
+  }
+
+  @Inject
+  @Override
+  public void setUnderlayIds(byte[][][] underlayIds)
+  {
+    rl$underlayIds = underlayIds;
+  }
+
+  @Inject
+  @Override
+  public byte[][][] getOverlayIds()
+  {
+    return rl$overlayIds;
+  }
+
+  @Inject
+  @Override
+  public void setOverlayIds(byte[][][] overlayIds)
+  {
+    rl$overlayIds = overlayIds;
+  }
+
+  @Inject
+  @Override
+  public byte[][][] getTileShapes()
+  {
+    return rl$tileShapes;
+  }
+
+  @Inject
+  @Override
+  public void setTileShapes(byte[][][] tileShapes)
+  {
+    rl$tileShapes = tileShapes;
   }
 }
