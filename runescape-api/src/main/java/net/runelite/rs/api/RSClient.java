@@ -1632,4 +1632,7 @@ public interface RSClient extends RSGameEngine, Client {
 
   @Import("Tiles_shapes")
   byte[][][] getTileShapes();
+
+  @Import("Scene_tilesDeque")
+  RSNodeDeque getTilesDeque();
 }

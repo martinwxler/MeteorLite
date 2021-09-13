@@ -81,4 +81,9 @@ public interface Scene {
 
   byte[][][] getTileShapes();
   void setTileShapes(byte[][][] tileShapes);
+
+  void generateHouses();
+
+  void setRoofRemovalMode(int flags);
+
 }

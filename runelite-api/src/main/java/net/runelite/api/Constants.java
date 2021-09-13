@@ -122,4 +122,24 @@ public class Constants {
    * Height of a standard item sprite
    */
   public static final int ITEM_SPRITE_HEIGHT = 32;
+
+  /**
+   * Flag for roof removal to remove the roofs above the player's current position.
+   */
+  public static final int ROOF_FLAG_POSITION = 1;
+
+  /**
+   * Flag for roof removal to remove the roofs above the currently hovered tile.
+   */
+  public static final int ROOF_FLAG_HOVERED = 2;
+
+  /**
+   * Flag for roof removal to remove the roofs above the player's destination tile.
+   */
+  public static final int ROOF_FLAG_DESTINATION = 4;
+
+  /**
+   * Flag for roof removal to remove the roofs that are above any tile between the camera and the player.
+   */
+  public static final int ROOF_FLAG_BETWEEN = 8;
 }

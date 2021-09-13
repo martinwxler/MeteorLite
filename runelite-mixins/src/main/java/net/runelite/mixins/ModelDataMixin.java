@@ -58,6 +58,7 @@ public abstract class ModelDataMixin implements RSModelData
   @SuppressWarnings("InfiniteRecursion")
   public Model copy$light(int ambient, int contrast, int var3, int var4, int var5)
   {
+
     Model model = copy$light(ambient, contrast, var3, var4, var5);
     if (model == null)
     {
