@@ -230,6 +230,8 @@ public interface Client extends GameEngine {
    */
   int getLoginIndex();
 
+  void setLoginIndex(int index);
+
   /**
    * Gets the account type of the logged in player.
    *

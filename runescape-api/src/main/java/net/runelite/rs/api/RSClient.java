@@ -302,6 +302,10 @@ public interface RSClient extends RSGameEngine, Client {
   @Override
   int getLoginIndex();
 
+  @Import("loginIndex")
+  @Override
+  void setLoginIndex(int index);
+
   @Import("playerMenuActions")
   @Override
   String[] getPlayerOptions();

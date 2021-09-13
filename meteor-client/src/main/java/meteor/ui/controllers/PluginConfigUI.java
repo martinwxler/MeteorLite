@@ -2,13 +2,11 @@ package meteor.ui.controllers;
 
 import com.jfoenix.controls.*;
 import com.sun.javafx.collections.ObservableListWrapper;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.Scene;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -17,13 +15,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import meteor.MeteorLiteClientLauncher;
 import meteor.MeteorLiteClientModule;
 import meteor.config.Button;
 import meteor.config.*;
 import meteor.plugins.Plugin;
-import meteor.ui.components.Category;
 import meteor.ui.components.ConfigButton;
 import meteor.ui.components.ConfigSectionPane;
 import meteor.ui.components.ConfigToggleButton;
@@ -37,12 +33,10 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static java.awt.event.KeyEvent.getExtendedKeyCodeForChar;
 import static meteor.ui.controllers.PluginListUI.lastPluginInteracted;
-import static meteor.ui.controllers.PluginListUI.pluginPanels;
 
 public class PluginConfigUI {
 
@@ -129,7 +123,11 @@ public class PluginConfigUI {
 					createBooleanNode(descriptor, configContainer, configItemDescriptor);
 				}
 				if (configItemDescriptor.getType() == String.class) {
-					createStringNode(descriptor, configContainer, configItemDescriptor);
+					if (configItemDescriptor.getItem().textField()) {
+						createStringNode(descriptor, configContainer, configItemDescriptor);
+					} else {
+						createStringAreaNode(descriptor, configContainer, configItemDescriptor);
+					}
 				}
 				if (configItemDescriptor.getType() == Color.class) {
 					createColorPickerNode(descriptor, configContainer, configItemDescriptor);
@@ -313,7 +311,7 @@ public class PluginConfigUI {
 		addConfigItemComponents(root, name, textField);
 	}
 
-	private void createStringNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor descriptor) {
+	private void createStringAreaNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor descriptor) {
 		Text name = createText(descriptor.name(), Paint.valueOf("WHITE"), descriptor.getItem().description());
 		AnchorPane.setLeftAnchor(name, 8.0);
 		AnchorPane.setTopAnchor(name, 8.0);
@@ -334,6 +332,25 @@ public class PluginConfigUI {
 		addConfigItemComponents(root, name, textArea);
 	}
 
+	private void createStringNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor descriptor) {
+		Text name = createText(descriptor.name(), Paint.valueOf("WHITE"), descriptor.getItem().description());
+		AnchorPane.setLeftAnchor(name, 8.0);
+		AnchorPane.setTopAnchor(name, 8.0);
+
+		TextField textfield = descriptor.getItem().secret() ? new JFXPasswordField() : new JFXTextField();
+		AnchorPane.setLeftAnchor(textfield, 8.0);
+		AnchorPane.setRightAnchor(textfield, 8.0);
+		AnchorPane.setTopAnchor(textfield, 34.0);
+		AnchorPane.setBottomAnchor(textfield, 8.0);
+		textfield.setFont(Font.font(18));
+
+		textfield.setText(configManager.getConfiguration(config.getGroup().value(), descriptor.key(), String.class));
+		textfield.getStylesheets().add("css/plugins/jfx-textfield.css");
+		textfield.setStyle("-jfx-focus-color: CYAN;");
+		textfield.textProperty().addListener((observable, oldValue, newValue) -> updateConfigItemValue(config, descriptor, newValue));
+
+		addConfigItemComponents(root, name, textfield);
+	}
 
 	private void createBooleanNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor descriptor) {
 		Text name = createText(descriptor.name(), Paint.valueOf("WHITE"), descriptor.getItem().description());

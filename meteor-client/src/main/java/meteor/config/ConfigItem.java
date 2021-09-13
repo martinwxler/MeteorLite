@@ -73,6 +73,8 @@ public @interface ConfigItem {
 
   String disabledByValue() default "";
 
+  boolean textField() default false;
+
   /**
    * Use this to indicate the enum class that is going to be used in the multiple select config.
    * This implementation made debugging problems with multiple selects a lot easier

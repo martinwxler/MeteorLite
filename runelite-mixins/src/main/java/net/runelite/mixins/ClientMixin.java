@@ -1730,4 +1730,10 @@ public abstract class ClientMixin implements RSClient {
       scene.setTileShapes(Arrays.copyOf(tileShapes, tileShapes.length));
     }
   }
+
+  @Inject
+  @FieldHook("loginIndex")
+  public static void loginIndex(int idx) {
+    client.getCallbacks().post(new LoginStateChanged(client.getLoginIndex()));
+  }
 }

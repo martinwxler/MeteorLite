@@ -20,6 +20,7 @@ import meteor.plugins.ammo.AmmoPlugin;
 import meteor.plugins.animsmoothing.AnimationSmoothingPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.api.example.simpleoneclick.HootOneClickPlugin;
+import meteor.plugins.autologin.AutoLoginPlugin;
 import meteor.plugins.meteor.interaction.MeteorInteractionPlugin;
 import meteor.plugins.blackjack.BlackjackPlugin;
 import meteor.plugins.chocogrinder.ChocoGrinder;
@@ -207,6 +208,7 @@ public class PluginManager {
 		plugins.add(new AmmoPlugin());
 		plugins.add(new AnimationSmoothingPlugin());
 		plugins.add(new AoeWarningPlugin());
+		plugins.add(new AutoLoginPlugin());
 		plugins.add(new BankPlugin());
 		plugins.add(new BankTagsPlugin());
 		plugins.add(new BAPlugin());
