@@ -102,7 +102,8 @@ public class MeteorLoginScreenPlugin extends Plugin {
 	}
 
 	private void cacheDefaultSprites() {
-		defaultLoginScreen = client.getLoginScreen();
+		defaultLoginScreen = ImageUtil.getImageSpritePixels(ImageUtil.loadImageResource(
+				MeteorLoginScreenPlugin.class, "normal.jpg"), client);
 		DEFAULT_SPRITES.putIfAbsent("logosprite", client.getLogoSprite());
 		DEFAULT_SPRITES.putIfAbsent("loginbox", client.getLoginBoxSprite());
 		DEFAULT_SPRITES.putIfAbsent("loginbutton", client.getLoginButtonSprite());
