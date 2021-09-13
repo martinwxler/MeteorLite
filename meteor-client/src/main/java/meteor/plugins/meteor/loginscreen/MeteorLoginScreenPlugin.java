@@ -58,7 +58,7 @@ public class MeteorLoginScreenPlugin extends Plugin {
 	public void onGameStateChanged(GameStateChanged e) {
 		if (e.getGameState() == GameState.UNKNOWN || e.getGameState() == GameState.LOGGING_IN || Game.isOnLoginScreen()) {
 			cacheDefaultSprites();
-			client.setLogoSprite(getIndexedSprite("logo.png"));
+			client.setLogoSprite(client.createIndexedSprite());
 			client.setLoginBoxSprite(getIndexedSprite("titlebox.png"));
 			client.setLoginButtonSprite(getIndexedSprite("titlebutton.png"));
 			client.setLoginWorldsButtonSprite(getIndexedSprite("sl_button.png"));
