@@ -63,6 +63,17 @@ public abstract class LoginScreenMixin implements RSClient
 
 		loginScreenBackground = background;
 		client.clearLoginScreen(false);
+		if (client.getGameState() == GameState.LOGIN_SCREEN)
+		{
+			try
+			{
+				client.setGameState(GameState.UNKNOWN);
+			}
+			finally
+			{
+				client.setGameState(GameState.LOGIN_SCREEN);
+			}
+		}
 	}
 
 	@Inject
