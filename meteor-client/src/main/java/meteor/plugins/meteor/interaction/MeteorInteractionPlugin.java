@@ -1,4 +1,4 @@
-package meteor.plugins.api.interaction;
+package meteor.plugins.meteor.interaction;
 
 import com.google.inject.Provides;
 import meteor.config.ConfigManager;
@@ -24,9 +24,10 @@ import java.awt.*;
 
 @PluginDescriptor(
 				name = "Interaction Manager",
-				cantDisable = true
+				cantDisable = true,
+				enabledByDefault = false
 )
-public class InteractionPlugin extends Plugin {
+public class MeteorInteractionPlugin extends Plugin {
 	private static final int MINIMAP_WIDTH = 250;
 	private static final int MINIMAP_HEIGHT = 180;
 
@@ -37,10 +38,10 @@ public class InteractionPlugin extends Plugin {
 	private MouseManager mouseManager;
 
 	@Inject
-	private InteractionConfig config;
+	private MeteorInteractionConfig config;
 
 	@Inject
-	private InteractionOverlay overlay;
+	private MeteorInteractionOverlay overlay;
 
 	@Inject
 	private Client client;
@@ -162,8 +163,8 @@ public class InteractionPlugin extends Plugin {
 	}
 
 	@Provides
-	public InteractionConfig getConfig(ConfigManager configManager) {
-		return configManager.getConfig(InteractionConfig.class);
+	public MeteorInteractionConfig getConfig(ConfigManager configManager) {
+		return configManager.getConfig(MeteorInteractionConfig.class);
 	}
 
 	@Override

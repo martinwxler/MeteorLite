@@ -40,6 +40,9 @@ public class ApproximateRouteStrategy extends RouteStrategy {
 	@Export("menuY")
 	static int menuY;
 
+	static int loginTitleColor = 16776960;
+	static String loginTitleMessage = "Welcome to RuneScape";
+
 	ApproximateRouteStrategy() {
 	}
 
@@ -334,11 +337,11 @@ public class ApproximateRouteStrategy extends RouteStrategy {
 			if (Client.gameState == 20) {
 				Login.titleboxSprite.drawAt(Login.loginBoxX + 180 - Login.titleboxSprite.subWidth / 2, 271 - Login.titleboxSprite.subHeight / 2);
 				var31 = 201;
-				var0.drawCentered(Login.Login_response1, Login.loginBoxX + 180, var31, 0x00FFFF, 0);
+				var0.drawCentered(Login.Login_response1, Login.loginBoxX + 180, var31, loginTitleColor, 0);
 				var32 = var31 + 15;
-				var0.drawCentered(Login.Login_response2, Login.loginBoxX + 180, var32, 0x00FFFF, 0);
+				var0.drawCentered(Login.Login_response2, Login.loginBoxX + 180, var32, loginTitleColor, 0);
 				var32 += 15;
-				var0.drawCentered(Login.Login_response3, Login.loginBoxX + 180, var32, 0x00FFFF, 0);
+				var0.drawCentered(Login.Login_response3, Login.loginBoxX + 180, var32, loginTitleColor, 0);
 				var32 += 15;
 				var32 += 7;
 				if (Login.loginIndex != 4 && Login.loginIndex != 10) {
@@ -364,7 +367,7 @@ public class ApproximateRouteStrategy extends RouteStrategy {
 				short var23;
 				if (Login.loginIndex == 0) {
 					var31 = 251;
-					var0.drawCentered("Welcome to MeteorLite", Login.loginBoxX + 180, var31, 0x00FFFF, 0);
+					var0.drawCentered(loginTitleMessage, Login.loginBoxX + 180, var31, loginTitleColor, 0);
 					var32 = var31 + 30;
 					var4 = Login.loginBoxX + 180 - 80;
 					var23 = 291;
@@ -374,7 +377,7 @@ public class ApproximateRouteStrategy extends RouteStrategy {
 					Login.titlebuttonSprite.drawAt(var4 - 73, var23 - 20);
 					var0.drawLines("Existing User", var4 - 73, var23 - 20, 144, 40, 16777215, 0, 1, 1, 0);
 				} else if (Login.loginIndex == 1) {
-					var0.drawCentered(Login.Login_response0, Login.loginBoxX + 180, 201, 0x00FFFF, 0);
+					var0.drawCentered(Login.Login_response0, Login.loginBoxX + 180, 201, loginTitleColor, 0);
 					var31 = 236;
 					var0.drawCentered(Login.Login_response1, Login.loginBoxX + 180, var31, 16777215, 0);
 					var32 = var31 + 15;
@@ -391,11 +394,11 @@ public class ApproximateRouteStrategy extends RouteStrategy {
 					var0.drawCentered("Cancel", var4, var23 + 5, 16777215, 0);
 				} else if (Login.loginIndex == 2) {
 					var31 = 201;
-					var0.drawCentered(Login.Login_response1, class11.loginBoxCenter, var31, 0x00FFFF, 0);
+					var0.drawCentered(Login.Login_response1, class11.loginBoxCenter, var31, loginTitleColor, 0);
 					var32 = var31 + 15;
-					var0.drawCentered(Login.Login_response2, class11.loginBoxCenter, var32, 0x00FFFF, 0);
+					var0.drawCentered(Login.Login_response2, class11.loginBoxCenter, var32, loginTitleColor, 0);
 					var32 += 15;
-					var0.drawCentered(Login.Login_response3, class11.loginBoxCenter, var32, 0x00FFFF, 0);
+					var0.drawCentered(Login.Login_response3, class11.loginBoxCenter, var32, loginTitleColor, 0);
 					var32 += 15;
 					var32 += 7;
 					var0.draw("Login: ", class11.loginBoxCenter - 110, var32, 16777215, 0);
@@ -404,13 +407,13 @@ public class ApproximateRouteStrategy extends RouteStrategy {
 					for (var5 = AbstractWorldMapData.method3800(); var0.stringWidth(var5) > var33; var5 = var5.substring(1)) {
 					}
 
-					var0.draw(AbstractFont.escapeBrackets(var5) + (Login.currentLoginField == 0 & Client.cycle % 40 < 20 ? class54.colorStartTag(0x00FFFF) + "|" : ""), class11.loginBoxCenter - 70, var32, 16777215, 0);
+					var0.draw(AbstractFont.escapeBrackets(var5) + (Login.currentLoginField == 0 & Client.cycle % 40 < 20 ? class54.colorStartTag(loginTitleColor) + "|" : ""), class11.loginBoxCenter - 70, var32, 16777215, 0);
 					var32 += 15;
 
 					for (var6 = GraphicsObject.method1866(Login.Login_password); var0.stringWidth(var6) > var33; var6 = var6.substring(1)) {
 					}
 
-					var0.draw("Password: " + var6 + (Login.currentLoginField == 1 & Client.cycle % 40 < 20 ? class54.colorStartTag(0x00FFFF) + "|" : ""), class11.loginBoxCenter - 108, var32, 16777215, 0);
+					var0.draw("Password: " + var6 + (Login.currentLoginField == 1 & Client.cycle % 40 < 20 ? class54.colorStartTag(loginTitleColor) + "|" : ""), class11.loginBoxCenter - 108, var32, 16777215, 0);
 					var32 += 15;
 					var31 = 277;
 					var7 = class11.loginBoxCenter + -117;
@@ -420,7 +423,7 @@ public class ApproximateRouteStrategy extends RouteStrategy {
 							: ModelData0.options_buttons_0Sprite);
 					var26.drawAt(var7, var31);
 					var7 = var7 + var26.subWidth + 5;
-					var1.draw("Remember username", var7, var31 + 13, 0x00FFFF, 0);
+					var1.draw("Remember username", var7, var31 + 13, loginTitleColor, 0);
 					var7 = class11.loginBoxCenter + 24;
 					boolean var13 = VarbitComposition.clientPreferences.hideUsername;
 					boolean var14 = Login.field904;
@@ -428,7 +431,7 @@ public class ApproximateRouteStrategy extends RouteStrategy {
 							: ModelData0.options_buttons_0Sprite);
 					var12.drawAt(var7, var31);
 					var7 = var7 + var12.subWidth + 5;
-					var1.draw("Hide username", var7, var31 + 13, 0x00FFFF, 0);
+					var1.draw("Hide username", var7, var31 + 13, loginTitleColor, 0);
 					var32 = var31 + 15;
 					int var15 = class11.loginBoxCenter - 80;
 					short var16 = 321;
@@ -451,11 +454,11 @@ public class ApproximateRouteStrategy extends RouteStrategy {
 					var1.drawCentered(LoginScreenAnimation.field1167, class11.loginBoxCenter, var31, 16777215, 0);
 				} else if (Login.loginIndex == 3) {
 					var31 = 201;
-					var0.drawCentered("Invalid credentials.", Login.loginBoxX + 180, var31, 0x00FFFF, 0);
+					var0.drawCentered("Invalid credentials.", Login.loginBoxX + 180, var31, loginTitleColor, 0);
 					var32 = var31 + 20;
-					var1.drawCentered("For accounts created after 24th November 2010, please use your", Login.loginBoxX + 180, var32, 0x00FFFF, 0);
+					var1.drawCentered("For accounts created after 24th November 2010, please use your", Login.loginBoxX + 180, var32, loginTitleColor, 0);
 					var32 += 15;
-					var1.drawCentered("email address to login. Otherwise please login with your username.", Login.loginBoxX + 180, var32, 0x00FFFF, 0);
+					var1.drawCentered("email address to login. Otherwise please login with your username.", Login.loginBoxX + 180, var32, loginTitleColor, 0);
 					var32 += 15;
 					var4 = Login.loginBoxX + 180;
 					var23 = 276;
@@ -468,7 +471,7 @@ public class ApproximateRouteStrategy extends RouteStrategy {
 				} else {
 					short var8;
 					if (Login.loginIndex == 4) {
-						var0.drawCentered("Authenticator", Login.loginBoxX + 180, 201, 0x00FFFF, 0);
+						var0.drawCentered("Authenticator", Login.loginBoxX + 180, 201, loginTitleColor, 0);
 						var31 = 236;
 						var0.drawCentered(Login.Login_response1, Login.loginBoxX + 180, var31, 16777215, 0);
 						var32 = var31 + 15;
@@ -476,11 +479,11 @@ public class ApproximateRouteStrategy extends RouteStrategy {
 						var32 += 15;
 						var0.drawCentered(Login.Login_response3, Login.loginBoxX + 180, var32, 16777215, 0);
 						var32 += 15;
-						var0.draw("PIN: " + GraphicsObject.method1866(AbstractWorldMapIcon.otp) + (Client.cycle % 40 < 20 ? class54.colorStartTag(0x00FFFF) + "|" : ""), Login.loginBoxX + 180 - 108, var32, 16777215, 0);
+						var0.draw("PIN: " + GraphicsObject.method1866(AbstractWorldMapIcon.otp) + (Client.cycle % 40 < 20 ? class54.colorStartTag(loginTitleColor) + "|" : ""), Login.loginBoxX + 180 - 108, var32, 16777215, 0);
 						var32 -= 8;
-						var0.draw("Trust this computer", Login.loginBoxX + 180 - 9, var32, 0x00FFFF, 0);
+						var0.draw("Trust this computer", Login.loginBoxX + 180 - 9, var32, loginTitleColor, 0);
 						var32 += 15;
-						var0.draw("for 30 days: ", Login.loginBoxX + 180 - 9, var32, 0x00FFFF, 0);
+						var0.draw("for 30 days: ", Login.loginBoxX + 180 - 9, var32, loginTitleColor, 0);
 						var4 = Login.loginBoxX + 180 - 9 + var0.stringWidth("for 30 days: ") + 15;
 						var45 = var32 - var0.ascent;
 						IndexedSprite var34;
@@ -501,13 +504,13 @@ public class ApproximateRouteStrategy extends RouteStrategy {
 						var0.drawCentered("Cancel", var7, var8 + 5, 16777215, 0);
 						var1.drawCentered("<u=ff>Can't Log In?</u>", Login.loginBoxX + 180, var8 + 36, 255, 0);
 					} else if (Login.loginIndex == 5) {
-						var0.drawCentered("Forgotten your password?", Login.loginBoxX + 180, 201, 0x00FFFF, 0);
+						var0.drawCentered("Forgotten your password?", Login.loginBoxX + 180, 201, loginTitleColor, 0);
 						var31 = 221;
-						var2.drawCentered(Login.Login_response1, Login.loginBoxX + 180, var31, 0x00FFFF, 0);
+						var2.drawCentered(Login.Login_response1, Login.loginBoxX + 180, var31, loginTitleColor, 0);
 						var32 = var31 + 15;
-						var2.drawCentered(Login.Login_response2, Login.loginBoxX + 180, var32, 0x00FFFF, 0);
+						var2.drawCentered(Login.Login_response2, Login.loginBoxX + 180, var32, loginTitleColor, 0);
 						var32 += 15;
-						var2.drawCentered(Login.Login_response3, Login.loginBoxX + 180, var32, 0x00FFFF, 0);
+						var2.drawCentered(Login.Login_response3, Login.loginBoxX + 180, var32, loginTitleColor, 0);
 						var32 += 15;
 						var32 += 14;
 						var0.draw("Username/email: ", Login.loginBoxX + 180 - 145, var32, 16777215, 0);
@@ -516,7 +519,7 @@ public class ApproximateRouteStrategy extends RouteStrategy {
 						for (var5 = AbstractWorldMapData.method3800(); var0.stringWidth(var5) > var33; var5 = var5.substring(1)) {
 						}
 
-						var0.draw(AbstractFont.escapeBrackets(var5) + (Client.cycle % 40 < 20 ? class54.colorStartTag(0x00FFFF) + "|" : ""), Login.loginBoxX + 180 - 34, var32, 16777215, 0);
+						var0.draw(AbstractFont.escapeBrackets(var5) + (Client.cycle % 40 < 20 ? class54.colorStartTag(loginTitleColor) + "|" : ""), Login.loginBoxX + 180 - 34, var32, 16777215, 0);
 						var32 += 15;
 						var25 = Login.loginBoxX + 180 - 80;
 						short var36 = 321;
@@ -529,11 +532,11 @@ public class ApproximateRouteStrategy extends RouteStrategy {
 						var1.drawCentered("Still having trouble logging in?", class11.loginBoxCenter, var36, 268435455, 0);
 					} else if (Login.loginIndex == 6) {
 						var31 = 201;
-						var0.drawCentered(Login.Login_response1, Login.loginBoxX + 180, var31, 0x00FFFF, 0);
+						var0.drawCentered(Login.Login_response1, Login.loginBoxX + 180, var31, loginTitleColor, 0);
 						var32 = var31 + 15;
-						var0.drawCentered(Login.Login_response2, Login.loginBoxX + 180, var32, 0x00FFFF, 0);
+						var0.drawCentered(Login.Login_response2, Login.loginBoxX + 180, var32, loginTitleColor, 0);
 						var32 += 15;
-						var0.drawCentered(Login.Login_response3, Login.loginBoxX + 180, var32, 0x00FFFF, 0);
+						var0.drawCentered(Login.Login_response3, Login.loginBoxX + 180, var32, loginTitleColor, 0);
 						var32 += 15;
 						var4 = Login.loginBoxX + 180;
 						var23 = 321;
@@ -541,11 +544,11 @@ public class ApproximateRouteStrategy extends RouteStrategy {
 						var0.drawCentered("Back", var4, var23 + 5, 16777215, 0);
 					} else if (Login.loginIndex == 7) {
 						var31 = 216;
-						var0.drawCentered("Your date of birth isn't set.", Login.loginBoxX + 180, var31, 0x00FFFF, 0);
+						var0.drawCentered("Your date of birth isn't set.", Login.loginBoxX + 180, var31, loginTitleColor, 0);
 						var32 = var31 + 15;
-						var2.drawCentered("Please verify your account status by", Login.loginBoxX + 180, var32, 0x00FFFF, 0);
+						var2.drawCentered("Please verify your account status by", Login.loginBoxX + 180, var32, loginTitleColor, 0);
 						var32 += 15;
-						var2.drawCentered("setting your date of birth.", Login.loginBoxX + 180, var32, 0x00FFFF, 0);
+						var2.drawCentered("setting your date of birth.", Login.loginBoxX + 180, var32, loginTitleColor, 0);
 						var32 += 15;
 						var4 = Login.loginBoxX + 180 - 80;
 						var23 = 321;
@@ -556,11 +559,11 @@ public class ApproximateRouteStrategy extends RouteStrategy {
 						var0.drawCentered("Back", var4, var23 + 5, 16777215, 0);
 					} else if (Login.loginIndex == 8) {
 						var31 = 216;
-						var0.drawCentered("Sorry, but your account is not eligible to play.", Login.loginBoxX + 180, var31, 0x00FFFF, 0);
+						var0.drawCentered("Sorry, but your account is not eligible to play.", Login.loginBoxX + 180, var31, loginTitleColor, 0);
 						var32 = var31 + 15;
-						var2.drawCentered("For more information, please take a look at", Login.loginBoxX + 180, var32, 0x00FFFF, 0);
+						var2.drawCentered("For more information, please take a look at", Login.loginBoxX + 180, var32, loginTitleColor, 0);
 						var32 += 15;
-						var2.drawCentered("our privacy policy.", Login.loginBoxX + 180, var32, 0x00FFFF, 0);
+						var2.drawCentered("our privacy policy.", Login.loginBoxX + 180, var32, loginTitleColor, 0);
 						var32 += 15;
 						var4 = Login.loginBoxX + 180 - 80;
 						var23 = 321;
@@ -571,11 +574,11 @@ public class ApproximateRouteStrategy extends RouteStrategy {
 						var0.drawCentered("Back", var4, var23 + 5, 16777215, 0);
 					} else if (Login.loginIndex == 9) {
 						var31 = 221;
-						var0.drawCentered(Login.Login_response1, Login.loginBoxX + 180, var31, 0x00FFFF, 0);
+						var0.drawCentered(Login.Login_response1, Login.loginBoxX + 180, var31, loginTitleColor, 0);
 						var32 = var31 + 25;
-						var0.drawCentered(Login.Login_response2, Login.loginBoxX + 180, var32, 0x00FFFF, 0);
+						var0.drawCentered(Login.Login_response2, Login.loginBoxX + 180, var32, loginTitleColor, 0);
 						var32 += 25;
-						var0.drawCentered(Login.Login_response3, Login.loginBoxX + 180, var32, 0x00FFFF, 0);
+						var0.drawCentered(Login.Login_response3, Login.loginBoxX + 180, var32, loginTitleColor, 0);
 						var4 = Login.loginBoxX + 180;
 						var23 = 311;
 						Login.titlebuttonSprite.drawAt(var4 - 73, var23 - 20);
@@ -583,7 +586,7 @@ public class ApproximateRouteStrategy extends RouteStrategy {
 					} else if (Login.loginIndex == 10) {
 						var32 = Login.loginBoxX + 180;
 						var33 = 209;
-						var0.drawCentered("Welcome to MeteorLite", Login.loginBoxX + 180, var33, 0x00FFFF, 0);
+						var0.drawCentered(loginTitleMessage, Login.loginBoxX + 180, var33, loginTitleColor, 0);
 						var4 = var33 + 20;
 						UserComparator8.field1312.drawAt(var32 - 109, var4);
 						class14.field69.drawAt(var32 - 48, var4 + 18);
@@ -633,11 +636,11 @@ public class ApproximateRouteStrategy extends RouteStrategy {
 							SecureRandomFuture.Login_promptCredentials(false);
 						}
 
-						var0.drawCentered(var24, Login.loginBoxX + 180, var31, 0x00FFFF, 0);
+						var0.drawCentered(var24, Login.loginBoxX + 180, var31, loginTitleColor, 0);
 						var32 = var31 + 15;
-						var2.drawCentered(var5, Login.loginBoxX + 180, var32, 0x00FFFF, 0);
+						var2.drawCentered(var5, Login.loginBoxX + 180, var32, loginTitleColor, 0);
 						var32 += 15;
-						var2.drawCentered(var6, Login.loginBoxX + 180, var32, 0x00FFFF, 0);
+						var2.drawCentered(var6, Login.loginBoxX + 180, var32, loginTitleColor, 0);
 						var32 += 15;
 						var7 = Login.loginBoxX + 180;
 						var8 = 276;

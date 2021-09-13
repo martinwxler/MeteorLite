@@ -1296,6 +1296,7 @@ public interface RSClient extends RSGameEngine, Client {
   void setStopTimeMs(long time);
 
   @Import("clearLoginScreen")
+  @Override
   void clearLoginScreen(boolean shouldClear);
 
   @Import("leftTitleSprite")
@@ -1574,7 +1575,45 @@ public interface RSClient extends RSGameEngine, Client {
   @Override
   void setOptionSprite3 (IndexedSprite indexedSprite);
 
+  @Import("logoSprite")
+  @Override
+  RSIndexedSprite getLogoSprite();
+
+  @Import("titleboxSprite")
+  @Override
+  RSIndexedSprite getLoginBoxSprite();
+
+  @Import("titlebuttonSprite")
+  @Override
+  RSIndexedSprite getLoginButtonSprite();
+
+  @Import("loginWorldsButton")
+  @Override
+  RSIndexedSprite getLoginWorldsButtonSprite();
+
+  @Import("optionSprite")
+  @Override
+  RSIndexedSprite getOptionSprite();
+
+  @Import("options_buttons_0Sprite")
+  @Override
+  RSIndexedSprite getOptionSprite1();
+
+  @Import("options_buttons_2Sprite")
+  @Override
+  RSIndexedSprite getOptionSprite2();
+
+  @Import("optionEnabledSprite")
+  @Override
+  RSIndexedSprite getOptionSprite3();
+
   @Import("resumePauseWidget")
   @Override
   void processDialog(int widgetUid, int menuIndex);
+
+  @Import("loginTitleColor")
+  void setLoginTitleColor(int colorHex);
+
+  @Import("loginTitleMessage")
+  void setLoginTitleMessage(String message);
 }

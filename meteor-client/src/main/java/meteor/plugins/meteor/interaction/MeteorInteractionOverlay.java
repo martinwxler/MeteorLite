@@ -1,4 +1,4 @@
-package meteor.plugins.api.interaction;
+package meteor.plugins.meteor.interaction;
 
 import meteor.input.MouseListener;
 import meteor.ui.overlay.*;
@@ -7,14 +7,14 @@ import javax.inject.Inject;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 
-public class InteractionOverlay extends Overlay implements MouseListener {
-	private final InteractionConfig config;
+public class MeteorInteractionOverlay extends Overlay implements MouseListener {
+	private final MeteorInteractionConfig config;
 
 	private Point lastClick;
 	private Point lastMove;
 
 	@Inject
-	public InteractionOverlay(InteractionConfig config) {
+	public MeteorInteractionOverlay(MeteorInteractionConfig config) {
 		this.config = config;
 
 		setPosition(OverlayPosition.DYNAMIC);

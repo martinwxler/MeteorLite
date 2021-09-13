@@ -2085,6 +2085,8 @@ public interface Client extends GameEngine {
    */
   void setLoginScreen(SpritePixels pixels);
 
+  SpritePixels getLoginScreen();
+
   /**
    * Sets whether the flames on the login screen should be rendered
    */
@@ -2284,6 +2286,7 @@ public interface Client extends GameEngine {
    * @return the ClientPacket which belongs to this packet
    */
   ClientPacket getTextInputPacket();
+
   ClientPacket getClickPacket();
   ClientPacket getItemOnItemPacket();
   ClientPacket getSpellOnItemPacket();
@@ -2293,6 +2296,7 @@ public interface Client extends GameEngine {
   ClientPacket getItemAction4Packet();
   ClientPacket getItemAction5Packet();
   ClientPacket getBankItemActionPacket();
+
   void setSelectedSceneTileX(int sceneX);
 
   void setSelectedSceneTileY(int sceneY);
@@ -2333,15 +2337,37 @@ public interface Client extends GameEngine {
 
   void setLoginWorldsButtonSprite(IndexedSprite indexedSprite);
 
-  void setOptionSprite (IndexedSprite indexedSprite);
+  void setOptionSprite(IndexedSprite indexedSprite);
 
-  void setOptionSprite1 (IndexedSprite indexedSprite);
+  void setOptionSprite1(IndexedSprite indexedSprite);
 
-  void setOptionSprite2 (IndexedSprite indexedSprite);
+  void setOptionSprite2(IndexedSprite indexedSprite);
 
-  void setOptionSprite3 (IndexedSprite indexedSprite);
+  void setOptionSprite3(IndexedSprite indexedSprite);
 
   IndexedSprite[] getTitleMuteSprites();
 
+  IndexedSprite getLogoSprite();
+
+  IndexedSprite getLoginBoxSprite();
+
+  IndexedSprite getLoginButtonSprite();
+
+  IndexedSprite getLoginWorldsButtonSprite();
+
+  IndexedSprite getOptionSprite();
+
+  IndexedSprite getOptionSprite1();
+
+  IndexedSprite getOptionSprite2();
+
+  IndexedSprite getOptionSprite3();
+
   void processDialog(int widgetUid, int menuIndex);
+
+  void setLoginTitleColor(int colorHex);
+
+  void setLoginTitleMessage(String message);
+
+  void clearLoginScreen(boolean shouldClear);
 }
