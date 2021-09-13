@@ -25,13 +25,7 @@ import net.runelite.api.events.GameStateChanged;
 public class MeteorLiteLoginScreenPlugin extends Plugin {
 
   @Inject
-  private ConfigManager configManager;
-
-  @Inject
   private ClientThread clientThread;
-
-  @Inject
-  private MeteorLiteLoginScreenConfig config;
 
   @Inject
   private ScheduledExecutorService executor;
@@ -43,68 +37,36 @@ public class MeteorLiteLoginScreenPlugin extends Plugin {
 
   @Override
   public void startup() {
-    client.setLogoSprite(client.createIndexedSprite());
-
     executor.submit(() -> {
-      clientThread.invokeLater(this::updateAllOverrides);
+      clientThread.invokeLater(this::overrideSprites);
     });
   }
 
-  @Override
-  public void shutdown() {
-
+  private IndexedSprite getIndexedSprite(String imageName) {
+    return ImageUtil.getImageIndexedSprite(
+        ImageUtil.loadImageResource(MeteorLiteLoginScreenPlugin.class, imageName),
+        client
+    );
   }
 
   @Subscribe
   public void onGameStateChanged(GameStateChanged e) {
-    if (e.getGameState() == GameState.UNKNOWN || Game.isOnLoginScreen()) {
-      IndexedSprite sprite = client.createIndexedSprite();
-      client.setLogoSprite(sprite);
-
-      IndexedSprite loginBoxSprite = ImageUtil.getImageIndexedSprite
-      (ImageUtil.loadImageResource(MeteorLiteLoginScreenPlugin.class, "titlebox.png"), client);
-      client.setLoginBoxSprite(loginBoxSprite);
-
-      IndexedSprite loginButtonSprite = ImageUtil.getImageIndexedSprite
-      (ImageUtil.loadImageResource(MeteorLiteLoginScreenPlugin.class, "titlebutton.png"), client);
-      client.setLoginButtonSprite(loginButtonSprite);
-
-      IndexedSprite worldButtonSprite = ImageUtil.getImageIndexedSprite
-      (ImageUtil.loadImageResource(MeteorLiteLoginScreenPlugin.class, "sl_button.png"), client);
-      client.setLoginWorldsButtonSprite(worldButtonSprite);
-
-      IndexedSprite optionSprite = ImageUtil.getImageIndexedSprite
-      (ImageUtil.loadImageResource(MeteorLiteLoginScreenPlugin.class, "options_radio_buttons4.png"), client);
-      client.setOptionSprite(optionSprite);
-
-      IndexedSprite optionSprite1 = ImageUtil.getImageIndexedSprite
-      (ImageUtil.loadImageResource(MeteorLiteLoginScreenPlugin.class, "options_radio_buttons4.png"), client);
-      client.setOptionSprite1(optionSprite1);
-
-      IndexedSprite optionSprite2 = ImageUtil.getImageIndexedSprite
-      (ImageUtil.loadImageResource(MeteorLiteLoginScreenPlugin.class, "mod_icon.png"), client);
-      client.setOptionSprite2(optionSprite2);
-
-      IndexedSprite optionSprite3 = ImageUtil.getImageIndexedSprite
-      (ImageUtil.loadImageResource(MeteorLiteLoginScreenPlugin.class, "mod_icon.png"), client);
-      client.setOptionSprite3(optionSprite3);
-
-      client.getTitleMuteSprites()[0] = ImageUtil.getImageIndexedSprite
-      (ImageUtil.loadImageResource(MeteorLiteLoginScreenPlugin.class, "title_mute.png"), client);
-      client.getTitleMuteSprites()[1] = ImageUtil.getImageIndexedSprite
-      (ImageUtil.loadImageResource(MeteorLiteLoginScreenPlugin.class, "title_mute.1.png"), client);
-
-    }
-    if (e.getGameState() != GameState.LOGIN_SCREEN) {
-      return;
+    if (e.getGameState() == GameState.UNKNOWN || e.getGameState() == GameState.LOGGING_IN || Game.isOnLoginScreen())
+    {
+        client.setLogoSprite(client.createIndexedSprite());
+        client.setLoginBoxSprite(getIndexedSprite("titlebox.png"));
+        client.setLoginButtonSprite(getIndexedSprite("titlebutton.png"));
+        client.setLoginWorldsButtonSprite(getIndexedSprite("sl_button.png"));
+        client.setOptionSprite(getIndexedSprite("options_radio_buttons4.png"));
+        client.setOptionSprite1(getIndexedSprite("options_radio_buttons4.png"));
+        client.setOptionSprite2(getIndexedSprite("mod_icon.png"));
+        client.setOptionSprite3(getIndexedSprite("mod_icon.png"));
+        client.getTitleMuteSprites()[0] = getIndexedSprite("title_mute.png");
+        client.getTitleMuteSprites()[1] = getIndexedSprite("title_mute.1.png");
     }
   }
 
-  void updateAllOverrides() {
-    overrideSprites();
-  }
-
-  void overrideSprites() {
+  private void overrideSprites() {
     SpritePixels loginscreensprite = ImageUtil.getImageSpritePixels(ImageUtil.loadImageResource(
         MeteorLiteLoginScreenPlugin.class, "background.png"), client);
     if (loginscreensprite != null) {
