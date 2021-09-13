@@ -1,11 +1,11 @@
-package meteor.plugins.api.interaction;
+package meteor.plugins.meteor.interaction;
 
 import meteor.config.Config;
 import meteor.config.ConfigGroup;
 import meteor.config.ConfigItem;
 
 @ConfigGroup("interaction")
-public interface InteractionConfig extends Config {
+public interface MeteorInteractionConfig extends Config {
 	@ConfigItem(
 					keyName = "mouseEvents",
 					name = "Mouse events",

@@ -20,7 +20,7 @@ import meteor.plugins.ammo.AmmoPlugin;
 import meteor.plugins.animsmoothing.AnimationSmoothingPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.api.example.simpleoneclick.HootOneClickPlugin;
-import meteor.plugins.api.interaction.InteractionPlugin;
+import meteor.plugins.meteor.interaction.MeteorInteractionPlugin;
 import meteor.plugins.blackjack.BlackjackPlugin;
 import meteor.plugins.chocogrinder.ChocoGrinder;
 import meteor.plugins.coxraidscouter.coxraidscouter;
@@ -91,7 +91,7 @@ import meteor.plugins.lowdetail.LowDetailPlugin;
 import meteor.plugins.menuentrymodifier.MenuEntryModifierPlugin;
 import meteor.plugins.menuentryswapper.MenuEntrySwapperPlugin;
 import meteor.plugins.menuentryswapperextended.MenuEntrySwapperExtendedPlugin;
-import meteor.plugins.meteorliteloginscreen.MeteorLiteLoginScreenPlugin;
+import meteor.plugins.meteor.loginscreen.MeteorLoginScreenPlugin;
 import meteor.plugins.minimap.MinimapPlugin;
 import meteor.plugins.mining.MiningPlugin;
 import meteor.plugins.motherlode.MotherlodePlugin;
@@ -198,7 +198,7 @@ public class PluginManager {
   private void initPlugins() {
 		// Leave at the top pls, these are not regular plugins
 		plugins.add(new ExternalManagerPlugin());
-		plugins.add(new InteractionPlugin());
+		plugins.add(new MeteorInteractionPlugin());
 
 		plugins.add(new AgilityPlugin());
 		plugins.add(new AlchemicalHydraPlugin());
@@ -278,7 +278,7 @@ public class PluginManager {
 		plugins.add(new MenuEntryModifierPlugin());
 		plugins.add(new MenuEntrySwapperPlugin());
 		plugins.add(new MenuEntrySwapperExtendedPlugin());
-		plugins.add(new MeteorLiteLoginScreenPlugin());
+		plugins.add(new MeteorLoginScreenPlugin());
 		plugins.add(new MinimapPlugin());
 		plugins.add(new MiningPlugin());
 		plugins.add(new MotherlodePlugin());

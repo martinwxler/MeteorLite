@@ -65,14 +65,18 @@ public class HootOneClickPlugin extends Plugin {
 		if (opcode == MenuAction.CC_OP.getId()) {
 			if (e.getParam1() == WidgetInfo.BANK_ITEM_CONTAINER.getPackedId()) {
 				Item item = Bank.getFirst(x -> x.getSlot() == e.getParam0());
-				if (weed(e, item)) return;
+				if (weed(e, item)) {
+					return;
+				}
 
 				return;
 			}
 
 			if (e.getParam1() == WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER.getPackedId()) {
 				Item item = Bank.getInventory(x -> x.getSlot() == e.getParam0()).stream().findFirst().orElse(null);
-				if (weed(e, item)) return;
+				if (weed(e, item)) {
+					return;
+				}
 			}
 
 			return;

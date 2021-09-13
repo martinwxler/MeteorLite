@@ -31,6 +31,7 @@ import net.runelite.api.mixins.Inject;
 import net.runelite.api.mixins.Mixin;
 import net.runelite.api.mixins.Shadow;
 import net.runelite.rs.api.RSClient;
+import net.runelite.rs.api.RSSpritePixels;
 
 @Mixin(RSClient.class)
 public abstract class LoginScreenMixin implements RSClient
@@ -74,6 +75,11 @@ public abstract class LoginScreenMixin implements RSClient
 				client.setGameState(GameState.LOGIN_SCREEN);
 			}
 		}
+	}
+
+	@Inject
+	public SpritePixels getLoginScreen() {
+		return loginScreenBackground;
 	}
 
 	@Inject
