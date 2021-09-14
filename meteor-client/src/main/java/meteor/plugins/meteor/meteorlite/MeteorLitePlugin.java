@@ -10,8 +10,7 @@ import javax.inject.Inject;
 
 @PluginDescriptor(
         name = "MeteorLite",
-        cantDisable = true,
-        enabledByDefault = true
+        cantDisable = true
 )
 public class MeteorLitePlugin extends Plugin {
 
