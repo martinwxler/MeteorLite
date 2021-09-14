@@ -87,11 +87,6 @@ public class MeteorInteractionPlugin extends Plugin {
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked e) {
 		if (config.mouseEvents() && e.getCanvasX() == mouseClickX && e.getCanvasY() == mouseClickY) {
-			// Don't re-process automated actions
-			if (e.isAutomated()) {
-				return;
-			}
-
 			e.consume();
 
 			if (action == null) {

@@ -1736,4 +1736,26 @@ public abstract class ClientMixin implements RSClient {
   public static void loginIndex(int idx) {
     client.getCallbacks().post(new LoginStateChanged(client.getLoginIndex()));
   }
+
+  @Inject
+  @FieldHook("grandExchangeOffers")
+  public static void onGrandExchangeOffersChanged(int idx)
+  {
+    if (idx == -1)
+    {
+      return;
+    }
+
+    GrandExchangeOffer internalOffer = client.getGrandExchangeOffers()[idx];
+
+    if (internalOffer == null)
+    {
+      return;
+    }
+
+    GrandExchangeOfferChanged offerChangedEvent = new GrandExchangeOfferChanged();
+    offerChangedEvent.setOffer(internalOffer);
+    offerChangedEvent.setSlot(idx);
+    client.getCallbacks().post(offerChangedEvent);
+  }
 }
