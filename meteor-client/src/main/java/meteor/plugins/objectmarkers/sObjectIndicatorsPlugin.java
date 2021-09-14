@@ -77,8 +77,7 @@ import meteor.ui.overlay.OverlayManager;
 @PluginDescriptor(
 		name = "Object Markers",
 		description = "Enable marking of objects using the Shift key",
-		tags = {"overlay", "objects", "mark", "marker"},
-		enabledByDefault = false
+		tags = {"overlay", "objects", "mark", "marker"}
 )
 public class sObjectIndicatorsPlugin extends Plugin
 {

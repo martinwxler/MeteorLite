@@ -76,7 +76,8 @@ import static net.runelite.api.SpriteID.TAB_QUESTS_BROWN_RAIDING_PARTY;
 @PluginDescriptor(
 	name = "Chambers Of Xeric",
 	description = "Show helpful information for the Chambers of Xeric raid",
-	tags = {"combat", "raid", "overlay", "pve", "pvm", "bosses", "cox"}
+	tags = {"combat", "raid", "overlay", "pve", "pvm", "bosses", "cox"},
+	enabledByDefault = false
 )
 public class RaidsPlugin extends Plugin
 {

@@ -61,7 +61,8 @@ import net.runelite.api.events.WallObjectSpawned;
 @PluginDescriptor(
 	name = "Better Rogues' Den",
 	description = "Mark tiles and clickboxes to help traverse the maze",
-	tags = {"agility", "maze", "minigame", "overlay", "thieving"}
+	tags = {"agility", "maze", "minigame", "overlay", "thieving"},
+	enabledByDefault = false
 )
 public class BetterRougesDenPlugin extends Plugin
 {

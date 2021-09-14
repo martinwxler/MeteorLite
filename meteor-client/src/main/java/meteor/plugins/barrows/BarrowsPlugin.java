@@ -56,8 +56,7 @@ import java.time.temporal.ChronoUnit;
 
 @PluginDescriptor(
 	name = "Barrows Brothers",
-	description = "Show helpful information for the Barrows minigame",
-	enabledByDefault = true
+	description = "Show helpful information for the Barrows minigame"
 )
 public class BarrowsPlugin extends Plugin
 {

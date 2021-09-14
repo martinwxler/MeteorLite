@@ -1783,7 +1783,11 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 		// Texture on UI
 		drawUi(overlayColor, canvasHeight, canvasWidth);
 
-		glDrawable.swapBuffers();
+		try {
+			glDrawable.swapBuffers();
+		} catch (Exception e) {
+			//ignore
+		}
 	}
 
 	private float[] makeProjectionMatrix(float w, float h, float n)

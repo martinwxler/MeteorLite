@@ -16,7 +16,8 @@ import javax.inject.Inject;
 
 @PluginDescriptor(
 				name = "Entity Inspector",
-				description = "Shows entity information"
+				description = "Shows entity information",
+				enabledByDefault = false
 )
 public class EntityInspectorPlugin extends Plugin {
 	@Inject

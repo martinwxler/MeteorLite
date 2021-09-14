@@ -53,7 +53,8 @@ import java.util.regex.Pattern;
 @PluginDescriptor(
 	name = "Kourend Library",
 	description = "Show where the books are found in the Kourend Library",
-	tags = {"arceuus", "magic", "runecrafting", "overlay", "panel"}
+	tags = {"arceuus", "magic", "runecrafting", "overlay", "panel"},
+	enabledByDefault = false
 )
 public class KourendLibraryPlugin extends Plugin
 {

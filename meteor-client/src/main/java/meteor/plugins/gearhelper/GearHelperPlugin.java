@@ -20,7 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 
 @PluginDescriptor(
-        name = "Gear Helper"
+        name = "Gear Helper",
+        enabledByDefault = false
 )
 public class GearHelperPlugin extends Plugin {
     @Inject

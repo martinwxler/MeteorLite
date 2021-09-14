@@ -24,15 +24,15 @@
  */
 package net.runelite.api;
 
-import java.util.List;
 import net.runelite.api.model.Triangle;
 import net.runelite.api.model.Vertex;
+
+import java.util.List;
 
 /**
  * Represents the model of an object.
  */
 public interface Model extends Renderable {
-
   /**
    * Gets a list of all vertices of the model.
    *
@@ -117,7 +117,7 @@ public interface Model extends Renderable {
 
   void drawFace$api(int face);
 
-  float[] getFaceTextureUVCoordinates();
+  void setFaceTextureUVCoordinates(float[] faceTextureUVCoordinates);
 
   int[] getVertexNormalsX();
   void setVertexNormalsX(int[] vertexNormalsX);
@@ -127,4 +127,6 @@ public interface Model extends Renderable {
 
   int[] getVertexNormalsZ();
   void setVertexNormalsZ(int[] vertexNormalsZ);
+
+  float[] getFaceTextureUVCoordinates();
 }

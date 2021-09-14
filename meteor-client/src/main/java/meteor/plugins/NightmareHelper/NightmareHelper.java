@@ -38,7 +38,8 @@ import meteor.plugins.PluginDescriptor;
 @PluginDescriptor(
         name = "Nightmare Auto Pray",
         description = "Auto prayer for nightmare and Phosani",
-        tags = {}
+        tags = {},
+        enabledByDefault = false
 )
 public class NightmareHelper extends Plugin {
     NPC nm;

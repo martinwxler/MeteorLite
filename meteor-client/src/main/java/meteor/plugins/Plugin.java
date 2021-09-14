@@ -11,13 +11,10 @@ import javax.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
 import meteor.MeteorLiteClientModule;
+import meteor.PluginManager;
 import meteor.config.Config;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
-import meteor.plugins.voidutils.OSRSUtils;
-import meteor.plugins.voidutils.tasks.PriorityTask;
-import meteor.plugins.voidutils.tasks.Task;
-import meteor.plugins.voidutils.tasks.TaskSet;
 import meteor.task.Scheduler;
 import meteor.ui.components.PluginToggleButton;
 import meteor.ui.controllers.PluginListUI;
@@ -33,9 +30,6 @@ public class Plugin implements Module {
 
   @Inject
   public Client client;
-
-  @Inject
-  public OSRSUtils osrs;
 
   @Inject
   public EventBus eventBus;
@@ -57,8 +51,6 @@ public class Plugin implements Module {
 
   @Inject
   public OverlayManager overlayManager;
-
-  public TaskSet tasks = new TaskSet(this);
 
   public Plugin() {
     logger.name = this.getClass().getAnnotation(PluginDescriptor.class).name();
@@ -126,6 +118,40 @@ public class Plugin implements Module {
   }
 
   public void toggle() {
+    boolean conflict = false;
+    for (Class<?> p : PluginManager.conflicts.keySet())
+      if (p == getClass()) {
+        conflict = true;
+        break;
+      }
+    for (Class<?> p : PluginManager.conflicts.values())
+      if (p == getClass()) {
+        conflict = true;
+        break;
+      }
+
+      if (conflict) {
+        Class<? extends Plugin> conflictingClass = null;
+        for (Class<? extends Plugin> p : PluginManager.conflicts.keySet()) {
+          if (p == this.getClass()) {
+            conflictingClass = PluginManager.conflicts.get(p);
+            break;
+          }
+        }
+        if (conflictingClass == null) {
+          for (Class<? extends Plugin> p : PluginManager.conflicts.keySet()) {
+            if (PluginManager.conflicts.get(p) == this.getClass()) {
+              conflictingClass = p;
+              break;
+            }
+          }
+        }
+        if (conflictingClass != null) {
+          Plugin instance = PluginManager.getInstance(conflictingClass);
+          if (instance.isEnabled())
+            instance.toggle();
+        }
+      }
     toggle(!enabled);
   }
 
@@ -139,25 +165,4 @@ public class Plugin implements Module {
   public void shutDown() {
 
   }
-
-  public <T extends Task> T getTask(Class<? extends Task> type) {
-    for (Task t : tasks.tasks) {
-      if (type.isInstance(t))
-      {
-        return (T) t;
-      }
-    }
-    return null;
-  }
-
-  public <T extends PriorityTask> T getPriorityTask(Class<? extends Task> type) {
-    for (Task t : tasks.tasks) {
-      if (type.isInstance(t))
-      {
-        return (T) t;
-      }
-    }
-    return null;
-  }
-
 }

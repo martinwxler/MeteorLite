@@ -22,7 +22,8 @@ import okhttp3.HttpUrl;
 
 @PluginDescriptor(
 		name = "Resource Packs",
-		description = "Change the look of the client"
+		description = "Change the look of the client",
+		enabledByDefault = false
 )
 public class ResourcePacksPlugin extends Plugin
 {

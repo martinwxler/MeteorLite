@@ -8,6 +8,7 @@ import net.runelite.api.Player;
 import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 
 import java.util.Arrays;
@@ -144,6 +145,59 @@ public class Combat {
 			return Arrays.stream(values()).filter(x -> x.index == index)
 							.findFirst()
 							.orElse(UNKNOWN);
+		}
+	}
+
+	public static boolean isPrayerTabOpen() {
+		WidgetInfo tabInfo;
+		if (Game.getClient().isResized())
+			tabInfo = WidgetInfo.RESIZABLE_VIEWPORT_PRAYER_TAB;
+		else
+			tabInfo = WidgetInfo.FIXED_VIEWPORT_PRAYER_TAB;
+		Supplier<Widget> prayTabSupplier = () -> Widgets.get(tabInfo.getGroupId(), tabInfo.getChildId());
+		Widget prayTab = prayTabSupplier.get();
+		if (prayTab != null)
+			return !prayTabSupplier.get().isHidden();
+		return false;
+	}
+
+	public static void openPrayerTab() {
+		WidgetInfo tabInfo;
+		if (Game.getClient().isResized())
+			tabInfo = WidgetInfo.RESIZABLE_VIEWPORT_PRAYER_TAB;
+		else
+			tabInfo = WidgetInfo.FIXED_VIEWPORT_PRAYER_TAB;
+		Supplier<Widget> prayTabSupplier = () -> Widgets.get(tabInfo.getGroupId(), tabInfo.getChildId());
+		Widget prayTab = prayTabSupplier.get();
+		if (prayTab != null) {
+			prayTab.interact(0);
+		}
+	}
+
+	public static boolean isPrayerActive(WidgetInfo prayer) {
+		Supplier<Widget> praySupplier = () -> Widgets.get(prayer.getGroupId(), prayer.getChildId());
+
+		Widget pray = praySupplier.get();
+		if (pray != null) {
+			return pray.isHidden();
+		}
+
+		return false;
+	}
+
+	public static void togglePrayer(WidgetInfo prayer) {
+		if (!isPrayerTabOpen()) {
+			openPrayerTab();
+		}
+
+		Supplier<Widget> praySupplier = () -> Widgets.get(prayer.getGroupId(), prayer.getChildId());
+
+		Widget pray = praySupplier.get();
+		if (pray != null) {
+			if (pray.hasAction("Activate"))
+				pray.interact("Activate");
+			else if (pray.hasAction("Deactivate"))
+				pray.interact("Deactivate");
 		}
 	}
 }

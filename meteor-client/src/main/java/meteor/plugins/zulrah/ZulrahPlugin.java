@@ -19,6 +19,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import meteor.plugins.api.game.Combat;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
@@ -54,12 +55,14 @@ import meteor.ui.overlay.OverlayManager;
 import meteor.ui.overlay.infobox.Counter;
 import meteor.ui.overlay.infobox.InfoBoxManager;
 import meteor.util.ImageUtil;
+import net.runelite.api.widgets.WidgetInfo;
 import org.sponge.util.Logger;
 
 @PluginDescriptor(
    name = "Zulrah",
    description = "All-in-One tool to help during the Zulrah fight",
-   tags = {"zulrah", "zul", "andra", "snakeling", "zhuri/nicole", "girls rule boys drool"} //cringe
+   tags = {"zulrah", "zul", "andra", "snakeling", "zhuri/nicole", "girls rule boys drool"},
+   enabledByDefault = false//cringe
 )
 public class ZulrahPlugin extends Plugin implements KeyListener {
    private static final Logger log = Logger.getLogger(ZulrahPlugin.class);
@@ -476,5 +479,14 @@ public class ZulrahPlugin extends Plugin implements KeyListener {
       ZULRAH_IMAGES[0] = ImageUtil.getResourceStreamFromClass(ZulrahPlugin.class, "zulrah_range.png");
       ZULRAH_IMAGES[1] = ImageUtil.getResourceStreamFromClass(ZulrahPlugin.class, "zulrah_melee.png");
       ZULRAH_IMAGES[2] = ImageUtil.getResourceStreamFromClass(ZulrahPlugin.class, "zulrah_magic.png");
+   }
+
+   @Subscribe
+   public void testingGameTick(GameTick event) {
+      if (Combat.isPrayerActive(WidgetInfo.PRAYER_AUGURY)) {
+         logger.debug("aug active");
+      } else {
+         Combat.togglePrayer(WidgetInfo.PRAYER_RIGOUR);
+      }
    }
 }

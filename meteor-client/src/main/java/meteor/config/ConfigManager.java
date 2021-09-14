@@ -637,10 +637,11 @@ public class ConfigManager {
     if (group == null) {
       return;
     }
+
     if (getConfiguration(group.value(), "pluginEnabled") == null) {
       if (plugin.getClass().getAnnotation(PluginDescriptor.class) != null) {
-        log.debug("should have set default");
-        setConfiguration(group.value(), "pluginEnabled", plugin.getClass().getAnnotation(PluginDescriptor.class).enabledByDefault());
+        boolean enabledByDefault = plugin.getClass().getAnnotation(PluginDescriptor.class).enabledByDefault();
+        setConfiguration(group.value(), "pluginEnabled", enabledByDefault);
       }
     }
 

@@ -39,7 +39,8 @@ import net.runelite.api.events.GameTick;
 @PluginDescriptor(
     name = "Never Logout",
     description = "Prevents automatic session logout",
-    tags = {"actions", "overlay"}
+    tags = {"actions", "overlay"},
+    enabledByDefault = false
 )
 public class NeverLogoutPlugin extends Plugin {
 

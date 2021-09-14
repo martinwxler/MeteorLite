@@ -25,7 +25,7 @@ import java.util.concurrent.ScheduledExecutorService;
 @PluginDescriptor(
         name = "World Map Walker",
         description = "Right click anywhere within the World Map to walk there",
-        enabledByDefault = true
+        enabledByDefault = false
 )
 @Singleton
 public class WorldMapWalkerPlugin extends Plugin {

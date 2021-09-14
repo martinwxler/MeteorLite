@@ -5,10 +5,12 @@ import com.google.inject.*;
 import com.owain.chinLogin.ChinLoginPlugin;
 import com.owain.chinmanager.ChinManagerPlugin;
 import com.questhelper.QuestHelperPlugin;
+import java.util.HashMap;
 import meteor.config.Config;
 import meteor.config.ConfigGroup;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
+import meteor.eventbus.Subscribe;
 import meteor.plugins.NightmareHelper.NightmareHelper;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDependency;
@@ -21,6 +23,7 @@ import meteor.plugins.animsmoothing.AnimationSmoothingPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.api.example.simpleoneclick.HootOneClickPlugin;
 import meteor.plugins.autologin.AutoLoginPlugin;
+import meteor.plugins.gpu.GpuPlugin;
 import meteor.plugins.meteor.interaction.MeteorInteractionPlugin;
 import meteor.plugins.blackjack.BlackjackPlugin;
 import meteor.plugins.chocogrinder.ChocoGrinder;
@@ -153,10 +156,6 @@ import meteor.plugins.timers.TimersPlugin;
 import meteor.plugins.timestamp.ChatTimestampPlugin;
 import meteor.plugins.tithefarm.TitheFarmPlugin;
 import meteor.plugins.vetion.VetionPlugin;
-import meteor.plugins.void3tFishing.Void3tFishingPlugin;
-import meteor.plugins.void3tteaks.Void3tTeaksPlugin;
-import meteor.plugins.voidpowerchop.VoidPowerChop;
-import meteor.plugins.voidpowermine.VoidPowerMine;
 import meteor.plugins.vorkath.VorkathPlugin;
 import meteor.plugins.woodcutting.WoodcuttingPlugin;
 import meteor.plugins.worldmap.WorldMapPlugin;
@@ -165,6 +164,8 @@ import meteor.plugins.xpdrop.XpDropPlugin;
 import meteor.plugins.xpglobes.XpGlobesPlugin;
 import meteor.plugins.xptracker.XpTrackerPlugin;
 import meteor.plugins.zulrah.ZulrahPlugin;
+import net.runelite.api.GameState;
+import net.runelite.api.events.GameStateChanged;
 import org.sponge.util.Logger;
 
 import java.io.File;
@@ -179,6 +180,7 @@ import rs117.hd.GpuHDPlugin;
 public class PluginManager {
 	private static final Logger logger = new Logger("PluginManager");
 	public static final File EXTERNALS_DIR = new File(MeteorLiteClientLauncher.METEOR_DIR, "externals");
+	public static HashMap<Class<? extends Plugin>, Class<? extends Plugin>> conflicts = new HashMap<>();
 
 	@Inject
 	private EventBus eventBus;
@@ -199,10 +201,9 @@ public class PluginManager {
 
   private void initPlugins() {
 		// Leave at the top pls, these are not regular plugins
-	  	plugins.add(new MeteorLitePlugin());
+	  plugins.add(new MeteorLitePlugin());
 		plugins.add(new ExternalManagerPlugin());
 		plugins.add(new MeteorInteractionPlugin());
-
 		plugins.add(new AgilityPlugin());
 		plugins.add(new AlchemicalHydraPlugin());
 		plugins.add(new AmmoPlugin());
@@ -254,7 +255,7 @@ public class PluginManager {
 		plugins.add(new FpsPlugin());
 		plugins.add(new GauntletPlugin());
 		plugins.add(new GearHelperPlugin());
-		//plugins.add(new GpuPlugin());
+		plugins.add(new GpuPlugin());
 		plugins.add(new GpuHDPlugin());
 		plugins.add(new GrotesqueGuardiansPlugin());
 		plugins.add(new GroundItemsPlugin());
@@ -347,10 +348,6 @@ public class PluginManager {
 		plugins.add(new TimersPlugin());
 		plugins.add(new TitheFarmPlugin());
 		plugins.add(new VetionPlugin());
-		plugins.add(new Void3tFishingPlugin());
-		plugins.add(new Void3tTeaksPlugin());
-		plugins.add(new VoidPowerMine());
-		plugins.add(new VoidPowerChop());
 		plugins.add(new VorkathPlugin());
 		plugins.add(new WoodcuttingPlugin());
 		plugins.add(new WorldMapPlugin());
@@ -363,9 +360,14 @@ public class PluginManager {
 
 	public void startInternalPlugins() {
 		initPlugins();
+		registerConflicts();
 		for (Plugin plugin : plugins) {
 			startPlugin(plugin);
 		}
+	}
+
+	private void registerConflicts() {
+		conflicts.put(GpuPlugin.class, GpuHDPlugin.class);
 	}
 
 	public void startPlugin(Plugin plugin) {
@@ -402,7 +404,7 @@ public class PluginManager {
 			if (Config.class.isAssignableFrom(type)) {
 				Config config = (Config) plugin.getInjector().getInstance(key);
 				finalConfig = config;
-				configManager.setDefaultConfiguration(plugin, config, false);
+				configManager.setDefaultConfiguration(plugin, finalConfig, false);
 			}
 		}
 
@@ -490,5 +492,12 @@ public class PluginManager {
 			if (p.getName().equals(name))
 				return p;
 		return null;
+	}
+
+	@Subscribe
+	public void onGameStateChanged(GameStateChanged event) {
+  	if (GameState.LOGIN_SCREEN.equals(event.getGameState()))
+  		if (getInstance(EntityInspectorPlugin.class).isEnabled())
+  				getInstance(EntityInspectorPlugin.class).toggle();
 	}
 }

@@ -28,8 +28,8 @@ import java.awt.Shape;
 import net.runelite.api.Model;
 import net.runelite.mapping.Import;
 
-public interface RSModel extends RSRenderable, Model {
-
+public interface RSModel extends RSRenderable, Model
+{
   @Import("verticesCount")
   @Override
   int getVerticesCount();
@@ -162,8 +162,7 @@ public interface RSModel extends RSRenderable, Model {
   @Override
   void drawFace$api(int face);
 
-  void interpolateFrames(RSFrames frames, int frameId, RSFrames nextFrames, int nextFrameId,
-      int interval, int intervalCount);
+  void interpolateFrames(RSFrames frames, int frameId, RSFrames nextFrames, int nextFrameId, int interval, int intervalCount);
 
   /**
    * Compute the convex hull of this model
@@ -171,11 +170,10 @@ public interface RSModel extends RSRenderable, Model {
   Shape getConvexHull(int localX, int localY, int orientation, int tileHeight);
 
   float[][] getFaceTextureUCoordinates();
-
   void setFaceTextureUCoordinates(float[][] rl$faceTextureUCoordinates);
 
   float[][] getFaceTextureVCoordinates();
-
+  void setFaceTextureVCoordinates(float[][] rl$faceTextureVCoordinates);
   void setFaceTextureUVCoordinates(float[] faceTextureUVCoordinates);
 
   int[] getVertexNormalsX();
