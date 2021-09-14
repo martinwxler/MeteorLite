@@ -70,6 +70,7 @@ public class OneClickCustomPlugin extends Plugin
     @Subscribe
     private void onClientTick(ClientTick event)
     {
+
         if (config.fishingSpot() && checkForNPCObject()==null)
         {
             return;
