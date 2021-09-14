@@ -551,7 +551,6 @@ public class PluginListUI {
 
     if (!category.name.equals("MeteorLite")) {
       if (getPluginPosition(category, p.getName()) > 0) {
-        new Logger("").debug(getPluginPosition(category, p.getName()));
         CategoryMenuItem moveUpMenuItem = new CategoryMenuItem(category, p, "Move up");
         moveUpMenuItem.setStyle("-fx-background-color: #121212; -fx-text-fill: cyan;");
         moveUpMenuItem.setOnAction((event) -> {

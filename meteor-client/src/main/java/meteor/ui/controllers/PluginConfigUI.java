@@ -506,7 +506,6 @@ public class PluginConfigUI {
 
 	private int checkIntInput(ConfigItemDescriptor descriptor, String input) {
 		if (input == null || input.isBlank()) {
-			System.out.println("input is blank or null");
 			return Integer.MIN_VALUE;
 		}
 
