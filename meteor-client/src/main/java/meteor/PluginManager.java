@@ -109,6 +109,7 @@ import meteor.plugins.npcunaggroarea.NpcAggroAreaPlugin;
 import meteor.plugins.oneclick.OneClickPlugin;
 import meteor.plugins.oneclick3t4g.OneClick3t4g;
 import meteor.plugins.oneclickagility.OneClickAgilityPlugin;
+import meteor.plugins.oneclickboner.OneClickBonerPlugin;
 import meteor.plugins.oneclickcustom.OneClickCustomPlugin;
 import meteor.plugins.oneclickdropper.OneClickDropperPlugin;
 import meteor.plugins.oneclickthieving.OneClickThievingPlugin;
@@ -204,6 +205,7 @@ public class PluginManager {
 	  plugins.add(new MeteorLitePlugin());
 		plugins.add(new ExternalManagerPlugin());
 		plugins.add(new MeteorInteractionPlugin());
+
 		plugins.add(new AgilityPlugin());
 		plugins.add(new AlchemicalHydraPlugin());
 		plugins.add(new AmmoPlugin());
@@ -300,6 +302,7 @@ public class PluginManager {
 		plugins.add(new OneClickPlugin());
 		plugins.add(new OneClick3t4g());
 		plugins.add(new OneClickAgilityPlugin());
+		plugins.add(new OneClickBonerPlugin());
 		plugins.add(new OneClickCustomPlugin());
 		plugins.add(new OneClickDropperPlugin());
 		plugins.add(new OneClickThievingPlugin());

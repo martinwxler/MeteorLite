@@ -268,7 +268,7 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
     pluginManager.startInternalPlugins();
 
     // preload plugins scene, needs to be after pluginManager.startInternalPlugins() is called.
-    pluginsRootScene = new Scene(FXMLLoader.load(
+    pluginsRootScene = new Scene(pluginsRoot = FXMLLoader.load(
             Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("plugins.fxml"))), 350, 800);
     rightPanel.setScene(pluginsRootScene);
 
@@ -356,13 +356,14 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
   }
 
   public static void showPlugins() {
-    if (rightPanel.getScene() == null || !rightPanel.getScene().equals(pluginsRootScene)) {
-      rightPanel.setScene(pluginsRootScene);
-    }
+//    if (rightPanel.getScene() == null || !rightPanel.getScene().equals(pluginsRootScene)) {
+//      rightPanel.setScene(pluginsRootScene);
+//    }
+    rightPanel.getScene().setRoot(pluginsRoot);
   }
 
   public static void updateRightPanel(Parent root, int width) {
-    rightPanel.setScene(new Scene(root, width, 800));
+    rightPanel.getScene().setRoot(root);
   }
 
   public static void setupJavaFXComponents(Applet applet) throws IOException {

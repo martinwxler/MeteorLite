@@ -511,8 +511,7 @@ public class ConfigManager {
 
     eventBus.post(configChanged);
 
-    if (client.getGameState() == GameState.LOGGED_IN)
-    saveProperties();
+		saveProperties();
   }
 
   public void setConfiguration(String groupName, String profile, String key, Object value) {

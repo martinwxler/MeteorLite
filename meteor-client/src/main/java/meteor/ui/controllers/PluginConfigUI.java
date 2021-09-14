@@ -19,6 +19,9 @@ import meteor.MeteorLiteClientLauncher;
 import meteor.MeteorLiteClientModule;
 import meteor.config.Button;
 import meteor.config.*;
+import meteor.eventbus.EventBus;
+import meteor.eventbus.Subscribe;
+import meteor.eventbus.events.PluginChanged;
 import meteor.plugins.Plugin;
 import meteor.ui.components.ConfigButton;
 import meteor.ui.components.ConfigSectionPane;
@@ -64,20 +67,27 @@ public class PluginConfigUI {
 	@Inject
 	private ConfigManager configManager;
 
+	@Inject
+	private EventBus eventBus;
+
 	private PluginToggleButton toggleButton;
 
 	@FXML
 	public void initialize() {
 		MeteorLiteClientModule.instanceInjectorStatic.injectMembers(this);
 		plugin = lastPluginInteracted;
+		eventBus.register(this);
 		pluginTitle.setText(plugin.getName());
 		configManager = MeteorLiteClientLauncher.mainClientInstance.instanceInjector.getInstance(ConfigManager.class);
 
-		toggleButton = PluginListUI.configGroupPluginMap
-						.get(plugin.getConfig(configManager).getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class).value());
-		if (toggleButton != null) {
-			titlePanel.getChildren().add(toggleButton);
-		}
+		toggleButton = new PluginToggleButton(plugin);
+		toggleButton.setSize(6);
+		toggleButton.setSelected(plugin.enabled);
+		AnchorPane.setTopAnchor(toggleButton, 2.0);
+		AnchorPane.setBottomAnchor(toggleButton, 2.0);
+		AnchorPane.setRightAnchor(toggleButton, 8.0);
+		toggleButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> plugin.toggle());
+		titlePanel.getChildren().add(toggleButton);
 
 		initSections();
 		initConfigs();
@@ -207,7 +217,7 @@ public class PluginConfigUI {
 			button.setText("Press any key...");
 			EventHandler<KeyEvent> keyListener = (e) -> {
 				configManager.setConfiguration(config.getGroup().value(), configItem.key(), new ModifierlessKeybind(getExtendedKeyCodeForChar(e.getCharacter().charAt(0)),
-						0));
+								0));
 				button.setText(e.getCharacter().toUpperCase());
 			};
 			EventHandler<KeyEvent> unregisterListener = (e) -> {
@@ -241,7 +251,7 @@ public class PluginConfigUI {
 			button.setText("Press any key...");
 			EventHandler<KeyEvent> keyListener = (e) -> {
 				configManager.setConfiguration(config.getGroup().value(), configItem.key(), new ModifierlessKeybind(getExtendedKeyCodeForChar(e.getCharacter().charAt(0)),
-						0));
+								0));
 				button.setText(e.getCharacter().toUpperCase());
 			};
 			EventHandler<KeyEvent> unregisterListener = (e) -> {
@@ -417,20 +427,13 @@ public class PluginConfigUI {
 
 		textField.setFont(Font.font(18));
 		textField.setText(configManager.getConfiguration(config.getGroup().value(), descriptor.key(), String.class));
-		textField.addEventHandler(KeyEvent.KEY_TYPED, (e) ->
-		{
-			int min = 0;
-			if (descriptor.getRange() != null) {
-				min = descriptor.getRange().min();
-			}
-
-			if (isInputValidInteger(descriptor, textField.getText())) {
-				updateConfigItemValue(config, descriptor, Integer.parseInt(textField.getText()));
-			} else {
-				textField.setText("" + min);
-				updateConfigItemValue(config, descriptor, min);
+		textField.textProperty().addListener((obs, oldValue, newValue) -> {
+			int inputValue = checkInput(descriptor, newValue);
+			if (inputValue != Integer.MIN_VALUE) {
+				updateConfigItemValue(config, descriptor, inputValue);
 			}
 		});
+
 		textField.setStyle("-jfx-focus-color: CYAN;");
 		textField.getStylesheets().add("css/plugins/jfx-textfield.css");
 
@@ -470,25 +473,29 @@ public class PluginConfigUI {
 		addConfigItemComponents(root, name, colorPicker);
 	}
 
-	private boolean isInputValidInteger(ConfigItemDescriptor descriptor, String input) {
+	private int checkInput(ConfigItemDescriptor descriptor, String input) {
+		if (input == null || input.isBlank()) {
+			System.out.println("input is blank or null");
+			return Integer.MIN_VALUE;
+		}
+
 		int i;
 		try {
 			i = Integer.parseInt(input);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return false;
+			return Integer.MIN_VALUE;
 		}
 
-		if (descriptor.getRange() == null)
-			return true;
+		Range range = descriptor.getRange();
+		if (range == null) {
+			return i;
+		}
+		if (i >= range.min() && i <= range.max()) {
+			return i;
+		}
 
-		if (descriptor.getRange().max() < i)
-			return false;
-
-		if (descriptor.getRange().min() > i)
-			return false;
-
-		return true;
+		return Integer.MIN_VALUE;
 	}
 
 	private boolean isInputValidDouble(ConfigItemDescriptor descriptor, String input) {
@@ -567,7 +574,15 @@ public class PluginConfigUI {
 
 	@FXML
 	protected void closeConfig(MouseEvent event) throws IOException {
-		PluginListUI.INSTANCE.refreshPlugins();
+//		PluginListUI.INSTANCE.refreshPlugins();
+
 		MeteorLiteClientModule.showPlugins();
+	}
+
+	@Subscribe
+	public void onPluginChanged(PluginChanged e) {
+		if (e.getPlugin().equals(plugin)) {
+			toggleButton.setSelected(e.isLoaded());
+		}
 	}
 }

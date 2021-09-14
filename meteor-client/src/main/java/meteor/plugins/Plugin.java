@@ -8,6 +8,8 @@ import java.util.Objects;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javax.inject.Inject;
+
+import javafx.scene.layout.AnchorPane;
 import lombok.Getter;
 import lombok.Setter;
 import meteor.MeteorLiteClientModule;
@@ -15,6 +17,7 @@ import meteor.PluginManager;
 import meteor.config.Config;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
+import meteor.eventbus.events.PluginChanged;
 import meteor.task.Scheduler;
 import meteor.ui.components.PluginToggleButton;
 import meteor.ui.controllers.PluginListUI;
@@ -60,7 +63,7 @@ public class Plugin implements Module {
   public void shutdown() { }
   
   public void updateConfig() { }
-  public void resetConfiguration(){ }
+  public void resetConfiguration() { }
 
   @Override
   public void configure(Binder binder) { }
@@ -74,13 +77,16 @@ public class Plugin implements Module {
     return config;
   }
 
+  private Parent configRoot = null;
+
   public void showConfig() {
-    Parent configRoot = null;
-    try {
-      configRoot = FXMLLoader.load(Objects.requireNonNull(ClassLoader.getSystemClassLoader()
-              .getResource("plugin-config.fxml")));
-    } catch (IOException e) {
-      e.printStackTrace();
+    if (configRoot == null) {
+      try {
+        configRoot = FXMLLoader.load(Objects.requireNonNull(ClassLoader.getSystemClassLoader()
+                .getResource("plugin-config.fxml")));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
 
     MeteorLiteClientModule.updateRightPanel(configRoot, RIGHT_PANEL_WIDTH);
@@ -93,6 +99,8 @@ public class Plugin implements Module {
   }
 
   public void toggle(boolean on) {
+
+
     if (!on) {
       shutdown();
       setEnabled(false);
@@ -115,6 +123,7 @@ public class Plugin implements Module {
     }
 
     PluginListUI.overrideToggleListener = false;
+    eventBus.post(new PluginChanged(this, enabled));
   }
 
   public void toggle() {

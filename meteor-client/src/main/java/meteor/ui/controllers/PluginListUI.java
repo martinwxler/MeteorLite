@@ -32,6 +32,7 @@ import meteor.ui.components.Category;
 import meteor.ui.components.CategoryMenuItem;
 import meteor.ui.components.PluginConfigButton;
 import meteor.ui.components.PluginToggleButton;
+import net.runelite.api.Client;
 import org.sponge.util.Logger;
 
 import javax.inject.Inject;
@@ -67,6 +68,7 @@ public class PluginListUI {
 
   @Inject
   private EventBus eventBus;
+
   public static ArrayList<Category> categories = new ArrayList<>();
 
   @FXML
@@ -480,10 +482,8 @@ public class PluginListUI {
         cog.setFill(Paint.valueOf("CYAN"));
         cog.setSize("18");
         configButton.setGraphic(cog);
-        PluginToggleButton finalToggleButton1 = toggleButton;
         configButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
           lastPluginInteracted = p;
-          pluginPanel.getChildren().remove(finalToggleButton1);
           p.showConfig();
           pluginsPanelVisible = !pluginsPanelVisible;
         });
