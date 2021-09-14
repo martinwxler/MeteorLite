@@ -72,71 +72,46 @@ public class HootOneClickPlugin extends Plugin {
 
 		if (!gameObjectConfigs.isEmpty() && GAME_OBJECT_OPCODES.contains(opcode)) {
 			TileObject obj = TileObjects.getNearest(e.getId());
-			if (obj != null && gameObjectConfigs.containsKey(obj.getName())) {
-				String replaced = gameObjectConfigs.get(obj.getName());
-				e.consume();
-				if (isUseOn(replaced)) {
-					Item usedItem = getUsedItem(replaced);
-					if (usedItem != null) {
-						usedItem.useOn(obj);
-					}
-
-					return;
-				}
-
-				obj.interact(replaced);
+			if (replace(gameObjectConfigs, obj, e)) {
+				return;
 			}
-
-			return;
 		}
 
 		if (!npcConfigs.isEmpty() && NPC_OPCODES.contains(opcode)) {
 			NPC npc = NPCs.getNearest(x -> x.getIndex() == e.getId());
-			if (npc != null && npcConfigs.containsKey(npc.getName())) {
-				String replaced = npcConfigs.get(npc.getName());
-				e.consume();
-				if (isUseOn(replaced)) {
-					Item usedItem = getUsedItem(replaced);
-					if (usedItem != null) {
-						usedItem.useOn(npc);
-					}
-
-					return;
-				}
-
-				npc.interact(replaced);
+			if (replace(npcConfigs, npc, e)) {
+				return;
 			}
-
-			return;
 		}
 
 		if (!groundItemConfigs.isEmpty() && GROUND_ITEM_OPCODES.contains(opcode)) {
 			TileItem item = TileItems.getNearest(e.getId());
-			if (item != null && groundItemConfigs.containsKey(item.getName())) {
-				String replaced = groundItemConfigs.get(item.getName());
-				e.consume();
-				if (isUseOn(replaced)) {
-					Item usedItem = getUsedItem(replaced);
-					if (usedItem != null) {
-						usedItem.useOn(item);
-					}
-
-					return;
-				}
-
-				item.interact(replaced);
+			if (replace(groundItemConfigs, item, e)) {
+				return;
 			}
+		}
 
-			return;
+		if (!itemConfigs.isEmpty() && ITEM_OPCODES.contains(opcode)) {
+			Item item = Inventory.getFirst(e.getId());
+			if (replace(itemConfigs, item, e)) {
+				return;
+			}
+		}
+
+		if (!playerConfigs.isEmpty() && PLAYER_OPCODES.contains(opcode)) {
+			Player player = Players.getNearest(x -> x.getIndex() == e.getId());
+			if (replace(playerConfigs, player, e)) {
+				return;
+			}
 		}
 
 		if (!widgetConfigs.isEmpty() && WIDGET_OPCODES.contains(opcode)) {
 			String action = Text.removeTags(e.getMenuOption()) + " " + Text.removeTags(e.getMenuTarget());
-			logger.debug(action);
 			Widget widget = Widgets.fromId(e.getParam1());
 			if (widget != null && widgetConfigs.containsKey(action)) {
 				String replaced = widgetConfigs.get(action);
 				e.consume();
+
 				if (isUseOn(replaced)) {
 					Item usedItem = getUsedItem(replaced);
 					if (usedItem != null) {
@@ -148,52 +123,32 @@ public class HootOneClickPlugin extends Plugin {
 
 				widget.interact(replaced);
 			}
+		}
+	}
 
-			return;
+	private <T extends Interactable> boolean replace(Map<String, String> replacements, T t, MenuOptionClicked event) {
+		if (!(t instanceof Nameable target)) {
+			return false;
 		}
 
-		if (!itemConfigs.isEmpty() && ITEM_OPCODES.contains(opcode)) {
-			Item item = Inventory.getFirst(e.getId());
+		if (!replacements.containsKey(target.getName())) {
+			return false;
+		}
 
-			System.out.println(item);
+		event.consume();
 
-			if (item != null && itemConfigs.containsKey(item.getName())) {
-				logger.debug(item.getName());
-
-				String replaced = itemConfigs.get(item.getName());
-				e.consume();
-				if (isUseOn(replaced)) {
-					Item usedItem = getUsedItem(replaced);
-					if (usedItem != null) {
-						usedItem.useOn(item);
-					}
-
-					return;
-				}
-
-				item.interact(replaced);
+		String replaced = replacements.get(target.getName());
+		if (isUseOn(replaced)) {
+			Item usedItem = getUsedItem(replaced);
+			if (usedItem != null) {
+				usedItem.useOn(t);
 			}
 
-			return;
+			return true;
 		}
 
-		if (!playerConfigs.isEmpty() && PLAYER_OPCODES.contains(opcode)) {
-			Player player = Players.getNearest(x -> x.getIndex() == e.getId());
-			if (player != null && playerConfigs.containsKey(player.getName())) {
-				String replaced = playerConfigs.get(player.getName());
-				e.consume();
-				if (isUseOn(replaced)) {
-					Item usedItem = getUsedItem(replaced);
-					if (usedItem != null) {
-						usedItem.useOn(player);
-					}
-
-					return;
-				}
-
-				player.interact(replaced);
-			}
-		}
+		t.interact(replaced);
+		return true;
 	}
 
 	private Item getUsedItem(String replacement) {
@@ -205,9 +160,18 @@ public class HootOneClickPlugin extends Plugin {
 	}
 
 	private void parseConfigs(String text, Map<String, String> configs) {
+		if (text.isBlank()) {
+			return;
+		}
+
 		String[] items = text.split(",");
+
 		for (String i : items) {
 			String[] pairs = i.split(":");
+			if (pairs.length < 2) {
+				continue;
+			}
+
 			configs.put(pairs[0], pairs[1]);
 		}
 	}

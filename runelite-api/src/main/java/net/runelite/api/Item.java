@@ -146,6 +146,32 @@ public class Item implements Interactable, Identifiable, Nameable {
 		client.interact(identifier, opcode, param0, param1);
 	}
 
+	public void useOn(Interactable entity) {
+		if (entity instanceof TileItem tileItem) {
+			useOn(tileItem);
+			return;
+		}
+
+		if (entity instanceof TileObject tileObject) {
+			useOn(tileObject);
+			return;
+		}
+
+		if (entity instanceof Item item) {
+			useOn(item);
+			return;
+		}
+
+		if (entity instanceof Actor actor) {
+			useOn(actor);
+			return;
+		}
+
+		if (entity instanceof Widget widget) {
+			useOn(widget);
+		}
+	}
+
 	public void useOn(TileItem object) {
 		client.setSelectedItemWidget(widgetId);
 		client.setSelectedItemSlot(getSlot());
