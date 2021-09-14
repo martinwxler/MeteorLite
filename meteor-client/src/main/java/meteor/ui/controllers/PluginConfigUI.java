@@ -118,6 +118,8 @@ public class PluginConfigUI {
 				ConfigSectionPane sectionBox = sections.get(configItemDescriptor.getItem().section());
 				Pane configContainer = sectionBox != null ? sectionBox.getContainer() : createNode();
 
+				configContainer.setVisible(!configItemDescriptor.getItem().hidden());
+
 				if (configItemDescriptor.getType() == int.class) {
 					if (configItemDescriptor.getRange() != null) {
 						if (configItemDescriptor.getRange().textInput()) {
@@ -129,9 +131,11 @@ public class PluginConfigUI {
 						createIntegerSliderNode(descriptor, configContainer, configItemDescriptor);
 					}
 				}
+
 				if (configItemDescriptor.getType() == boolean.class) {
 					createBooleanNode(descriptor, configContainer, configItemDescriptor);
 				}
+
 				if (configItemDescriptor.getType() == String.class) {
 					if (configItemDescriptor.getItem().textField()) {
 						createStringNode(descriptor, configContainer, configItemDescriptor);
@@ -139,24 +143,31 @@ public class PluginConfigUI {
 						createStringAreaNode(descriptor, configContainer, configItemDescriptor);
 					}
 				}
+
 				if (configItemDescriptor.getType() == Color.class) {
 					createColorPickerNode(descriptor, configContainer, configItemDescriptor);
 				}
+
 				if (configItemDescriptor.getType() == double.class) {
 					createdDoubleTextNode(descriptor, configContainer, configItemDescriptor);
 				}
+
 				if (configItemDescriptor.getType() == Button.class) {
 					createButtonNode(descriptor, configContainer, configItemDescriptor);
 				}
+
 				if (configItemDescriptor.getType() == ModifierlessKeybind.class) {
 					createHotKeyNode(descriptor, configContainer, configItemDescriptor);
 				}
+
 				if (configItemDescriptor.getType() == Keybind.class) {
 					createDefaultKeyBindNode(descriptor, configContainer, configItemDescriptor);
 				}
+
 				if (configItemDescriptor.getType().isEnum()) {
 					createEnumNode(descriptor, configContainer, configItemDescriptor);
 				}
+
 				if (!configContainer.getChildren().isEmpty() && !configList.getChildren().contains(configContainer)) {
 					configList.getChildren().add(configContainer);
 				}
@@ -185,14 +196,14 @@ public class PluginConfigUI {
 				return;
 			}
 
-			if (button instanceof ConfigToggleButton) {
-				((ConfigToggleButton) button).toggle();
+			if (button instanceof ConfigToggleButton cfg) {
+				cfg.toggle();
 			}
 
 			client.getCallbacks().post(new ConfigButtonClicked(config.getGroup().value(), configItem.key()));
 		});
 
-		addConfigItemComponents(root, button);
+		addConfigItemComponents(root,  button);
 	}
 
 	private void createHotKeyNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
@@ -226,6 +237,7 @@ public class PluginConfigUI {
 			button.addEventHandler(KeyEvent.KEY_TYPED, keyListener);
 			button.addEventHandler(KeyEvent.KEY_TYPED, unregisterListener);
 		});
+
 		addConfigItemComponents(root, name, button);
 	}
 
@@ -260,7 +272,8 @@ public class PluginConfigUI {
 			button.addEventHandler(KeyEvent.KEY_TYPED, keyListener);
 			button.addEventHandler(KeyEvent.KEY_TYPED, unregisterListener);
 		});
-		addConfigItemComponents(root, name, button);
+
+		addConfigItemComponents(root,  name, button);
 	}
 
 	private void createEnumNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
@@ -291,7 +304,7 @@ public class PluginConfigUI {
 			updateConfigItemValue(config, configItem, newValue.name());
 		});
 
-		addConfigItemComponents(root, name, comboBox);
+		addConfigItemComponents(root,  name, comboBox);
 	}
 
 	private void createdDoubleTextNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
@@ -300,23 +313,22 @@ public class PluginConfigUI {
 		AnchorPane.setLeftAnchor(name, 8.0);
 
 		JFXTextField textField = new JFXTextField();
-
 		AnchorPane.setLeftAnchor(textField, 200.0);
 		AnchorPane.setRightAnchor(textField, 8.0);
 
 		textField.setFont(Font.font(18));
 		textField.setText(configManager.getConfiguration(config.getGroup().value(), configItem.key(), String.class));
-		textField.addEventHandler(KeyEvent.KEY_TYPED, (e) ->
-		{
-			if (isInputValidDouble(configItem, textField.getText()))
-				updateConfigItemValue(config, configItem, Double.parseDouble(textField.getText()));
-			else {
-				textField.clear();
-				textField.setText("0.0");
-				updateConfigItemValue(config, configItem, 0.0);
+		textField.textProperty().addListener((obs, oldValue, newValue) -> {
+			double inputValue = checkDoubleInput(configItem, newValue);
+			if (inputValue != Double.MIN_VALUE) {
+				updateConfigItemValue(config, configItem, inputValue);
 			}
 		});
+
 		textField.getStylesheets().add("css/plugins/jfx-textfield.css");
+
+		name.setVisible(!configItem.getItem().hidden());
+		textField.setVisible(!configItem.getItem().hidden());
 
 		addConfigItemComponents(root, name, textField);
 	}
@@ -339,6 +351,9 @@ public class PluginConfigUI {
 		textArea.setStyle("-jfx-focus-color: CYAN;");
 		textArea.textProperty().addListener((observable, oldValue, newValue) -> updateConfigItemValue(config, descriptor, newValue));
 
+		name.setVisible(!descriptor.getItem().hidden());
+		textArea.setVisible(!descriptor.getItem().hidden());
+
 		addConfigItemComponents(root, name, textArea);
 	}
 
@@ -358,6 +373,9 @@ public class PluginConfigUI {
 		textfield.getStylesheets().add("css/plugins/jfx-textfield.css");
 		textfield.setStyle("-jfx-focus-color: CYAN;");
 		textfield.textProperty().addListener((observable, oldValue, newValue) -> updateConfigItemValue(config, descriptor, newValue));
+
+		name.setVisible(!descriptor.getItem().hidden());
+		textfield.setVisible(!descriptor.getItem().hidden());
 
 		addConfigItemComponents(root, name, textfield);
 	}
@@ -382,6 +400,9 @@ public class PluginConfigUI {
 		toggleButton.setStyle("-fx-text-fill: CYAN;");
 		toggleButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> updateConfigItemValue(config, descriptor, toggleButton.isSelected()));
 
+		name.setVisible(!descriptor.getItem().hidden());
+		toggleButton.setVisible(!descriptor.getItem().hidden());
+
 		addConfigItemComponents(root, name, toggleButton);
 	}
 
@@ -401,6 +422,7 @@ public class PluginConfigUI {
 			min = descriptor.getRange().min();
 			max = descriptor.getRange().max();
 		}
+
 		slider.setValue(configManager.getConfiguration(config.getGroup().value(), descriptor.key(), Double.class));
 		slider.setMax(max);
 		slider.setMin(min);
@@ -410,6 +432,9 @@ public class PluginConfigUI {
 		slider.setShowTickMarks(true);
 		slider.setShowTickLabels(true);
 		slider.addEventHandler(MouseEvent.MOUSE_DRAGGED, (e) -> updateConfigItemValue(config, descriptor, (int) slider.getValue()));
+
+		name.setVisible(!descriptor.getItem().hidden());
+		slider.setVisible(!descriptor.getItem().hidden());
 
 		addConfigItemComponents(root, name, slider);
 	}
@@ -428,7 +453,7 @@ public class PluginConfigUI {
 		textField.setFont(Font.font(18));
 		textField.setText(configManager.getConfiguration(config.getGroup().value(), descriptor.key(), String.class));
 		textField.textProperty().addListener((obs, oldValue, newValue) -> {
-			int inputValue = checkInput(descriptor, newValue);
+			int inputValue = checkIntInput(descriptor, newValue);
 			if (inputValue != Integer.MIN_VALUE) {
 				updateConfigItemValue(config, descriptor, inputValue);
 			}
@@ -436,6 +461,9 @@ public class PluginConfigUI {
 
 		textField.setStyle("-jfx-focus-color: CYAN;");
 		textField.getStylesheets().add("css/plugins/jfx-textfield.css");
+
+		name.setVisible(!descriptor.getItem().hidden());
+		textField.setVisible(!descriptor.getItem().hidden());
 
 		addConfigItemComponents(root, name, textField);
 	}
@@ -470,10 +498,13 @@ public class PluginConfigUI {
 			updateConfigItemValue(config, configItem, colorToSet);
 		});
 
+		name.setVisible(!configItem.getItem().hidden());
+		colorPicker.setVisible(!configItem.getItem().hidden());
+
 		addConfigItemComponents(root, name, colorPicker);
 	}
 
-	private int checkInput(ConfigItemDescriptor descriptor, String input) {
+	private int checkIntInput(ConfigItemDescriptor descriptor, String input) {
 		if (input == null || input.isBlank()) {
 			System.out.println("input is blank or null");
 			return Integer.MIN_VALUE;
@@ -491,6 +522,7 @@ public class PluginConfigUI {
 		if (range == null) {
 			return i;
 		}
+
 		if (i >= range.min() && i <= range.max()) {
 			return i;
 		}
@@ -498,25 +530,28 @@ public class PluginConfigUI {
 		return Integer.MIN_VALUE;
 	}
 
-	private boolean isInputValidDouble(ConfigItemDescriptor descriptor, String input) {
-		double d;
-		try {
-			d = Double.parseDouble(input);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
+	private double checkDoubleInput(ConfigItemDescriptor descriptor, String input) {
+		if (input == null || input.isBlank()) {
+			return Double.MIN_VALUE;
 		}
 
-		if (descriptor.getRange() == null)
-			return true;
+		double i;
+		try {
+			i = Double.parseDouble(input);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Double.MIN_VALUE;
+		}
 
-		if (descriptor.getRange().max() < Double.MIN_VALUE)
-			return false;
+		Range range = descriptor.getRange();
+		if (range == null) {
+			return i;
+		}
+		if (i >= range.min() && i <= range.max()) {
+			return i;
+		}
 
-		if (descriptor.getRange().min() > Double.MAX_VALUE)
-			return false;
-
-		return true;
+		return Double.MIN_VALUE;
 	}
 
 	private void updateConfigItemValue(ConfigDescriptor config, ConfigItemDescriptor configItem, Object value) {
