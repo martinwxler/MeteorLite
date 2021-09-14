@@ -24,8 +24,7 @@ import java.awt.*;
 
 @PluginDescriptor(
 				name = "Interaction Manager",
-				cantDisable = true,
-				enabledByDefault = false
+				cantDisable = true
 )
 public class MeteorInteractionPlugin extends Plugin {
 	private static final int MINIMAP_WIDTH = 250;
