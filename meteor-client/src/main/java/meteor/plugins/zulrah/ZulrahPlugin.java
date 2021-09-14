@@ -480,13 +480,4 @@ public class ZulrahPlugin extends Plugin implements KeyListener {
       ZULRAH_IMAGES[1] = ImageUtil.getResourceStreamFromClass(ZulrahPlugin.class, "zulrah_melee.png");
       ZULRAH_IMAGES[2] = ImageUtil.getResourceStreamFromClass(ZulrahPlugin.class, "zulrah_magic.png");
    }
-
-   @Subscribe
-   public void testingGameTick(GameTick event) {
-      if (Combat.isPrayerActive(WidgetInfo.PRAYER_AUGURY)) {
-         logger.debug("aug active");
-      } else {
-         Combat.togglePrayer(WidgetInfo.PRAYER_RIGOUR);
-      }
-   }
 }
