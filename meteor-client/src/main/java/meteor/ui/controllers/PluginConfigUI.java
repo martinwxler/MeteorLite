@@ -1,5 +1,6 @@
 package meteor.ui.controllers;
 
+import com.google.common.base.Splitter;
 import com.jfoenix.controls.*;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.collections.ObservableList;
@@ -46,9 +47,6 @@ public class PluginConfigUI {
 	private static final Logger logger = new Logger("PluginConfigController");
 
 	@FXML
-	private AnchorPane rootPanel;
-
-	@FXML
 	private AnchorPane titlePanel;
 
 	@FXML
@@ -89,6 +87,13 @@ public class PluginConfigUI {
 		toggleButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> plugin.toggle());
 		titlePanel.getChildren().add(toggleButton);
 
+		rebuild();
+	}
+
+	private void rebuild() {
+		sections.clear();
+		configList.getChildren().clear();
+
 		initSections();
 		initConfigs();
 	}
@@ -117,8 +122,6 @@ public class PluginConfigUI {
 							.collect(Collectors.toList())) {
 				ConfigSectionPane sectionBox = sections.get(configItemDescriptor.getItem().section());
 				Pane configContainer = sectionBox != null ? sectionBox.getContainer() : createNode();
-
-				configContainer.setVisible(!configItemDescriptor.getItem().hidden());
 
 				if (configItemDescriptor.getType() == int.class) {
 					if (configItemDescriptor.getRange() != null) {
@@ -203,7 +206,7 @@ public class PluginConfigUI {
 			client.getCallbacks().post(new ConfigButtonClicked(config.getGroup().value(), configItem.key()));
 		});
 
-		addConfigItemComponents(root,  button);
+		addConfigItemComponents(config, configItem, root, button);
 	}
 
 	private void createHotKeyNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
@@ -238,7 +241,7 @@ public class PluginConfigUI {
 			button.addEventHandler(KeyEvent.KEY_TYPED, unregisterListener);
 		});
 
-		addConfigItemComponents(root, name, button);
+		addConfigItemComponents(config, configItem, root, name, button);
 	}
 
 	private void createDefaultKeyBindNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
@@ -273,7 +276,7 @@ public class PluginConfigUI {
 			button.addEventHandler(KeyEvent.KEY_TYPED, unregisterListener);
 		});
 
-		addConfigItemComponents(root,  name, button);
+		addConfigItemComponents(config, configItem, root, name, button);
 	}
 
 	private void createEnumNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
@@ -304,7 +307,7 @@ public class PluginConfigUI {
 			updateConfigItemValue(config, configItem, newValue.name());
 		});
 
-		addConfigItemComponents(root,  name, comboBox);
+		addConfigItemComponents(config, configItem, root, name, comboBox);
 	}
 
 	private void createdDoubleTextNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
@@ -327,10 +330,7 @@ public class PluginConfigUI {
 
 		textField.getStylesheets().add("css/plugins/jfx-textfield.css");
 
-		name.setVisible(!configItem.getItem().hidden());
-		textField.setVisible(!configItem.getItem().hidden());
-
-		addConfigItemComponents(root, name, textField);
+		addConfigItemComponents(config, configItem, root, name, textField);
 	}
 
 	private void createStringAreaNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor descriptor) {
@@ -351,10 +351,7 @@ public class PluginConfigUI {
 		textArea.setStyle("-jfx-focus-color: CYAN;");
 		textArea.textProperty().addListener((observable, oldValue, newValue) -> updateConfigItemValue(config, descriptor, newValue));
 
-		name.setVisible(!descriptor.getItem().hidden());
-		textArea.setVisible(!descriptor.getItem().hidden());
-
-		addConfigItemComponents(root, name, textArea);
+		addConfigItemComponents(config, descriptor, root, name, textArea);
 	}
 
 	private void createStringNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor descriptor) {
@@ -374,10 +371,7 @@ public class PluginConfigUI {
 		textfield.setStyle("-jfx-focus-color: CYAN;");
 		textfield.textProperty().addListener((observable, oldValue, newValue) -> updateConfigItemValue(config, descriptor, newValue));
 
-		name.setVisible(!descriptor.getItem().hidden());
-		textfield.setVisible(!descriptor.getItem().hidden());
-
-		addConfigItemComponents(root, name, textfield);
+		addConfigItemComponents(config, descriptor, root, name, textfield);
 	}
 
 	private void createBooleanNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor descriptor) {
@@ -398,12 +392,14 @@ public class PluginConfigUI {
 		}
 		toggleButton.setSelected(enabled);
 		toggleButton.setStyle("-fx-text-fill: CYAN;");
-		toggleButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> updateConfigItemValue(config, descriptor, toggleButton.isSelected()));
+		toggleButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
+			updateConfigItemValue(config, descriptor, toggleButton.isSelected());
+			if (hidesOtherConfigs(descriptor)) {
+				rebuild();
+			}
+		});
 
-		name.setVisible(!descriptor.getItem().hidden());
-		toggleButton.setVisible(!descriptor.getItem().hidden());
-
-		addConfigItemComponents(root, name, toggleButton);
+		addConfigItemComponents(config, descriptor, root, name, toggleButton);
 	}
 
 	private void createIntegerSliderNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor descriptor) {
@@ -433,10 +429,7 @@ public class PluginConfigUI {
 		slider.setShowTickLabels(true);
 		slider.addEventHandler(MouseEvent.MOUSE_DRAGGED, (e) -> updateConfigItemValue(config, descriptor, (int) slider.getValue()));
 
-		name.setVisible(!descriptor.getItem().hidden());
-		slider.setVisible(!descriptor.getItem().hidden());
-
-		addConfigItemComponents(root, name, slider);
+		addConfigItemComponents(config, descriptor, root, name, slider);
 	}
 
 	private void createIntegerTextNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor descriptor) {
@@ -462,10 +455,7 @@ public class PluginConfigUI {
 		textField.setStyle("-jfx-focus-color: CYAN;");
 		textField.getStylesheets().add("css/plugins/jfx-textfield.css");
 
-		name.setVisible(!descriptor.getItem().hidden());
-		textField.setVisible(!descriptor.getItem().hidden());
-
-		addConfigItemComponents(root, name, textField);
+		addConfigItemComponents(config, descriptor, root, name, textField);
 	}
 
 	private void createColorPickerNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
@@ -498,10 +488,7 @@ public class PluginConfigUI {
 			updateConfigItemValue(config, configItem, colorToSet);
 		});
 
-		name.setVisible(!configItem.getItem().hidden());
-		colorPicker.setVisible(!configItem.getItem().hidden());
-
-		addConfigItemComponents(root, name, colorPicker);
+		addConfigItemComponents(config, configItem, root, name, colorPicker);
 	}
 
 	private int checkIntInput(ConfigItemDescriptor descriptor, String input) {
@@ -570,12 +557,20 @@ public class PluginConfigUI {
 		return section;
 	}
 
-	private void addConfigItemComponents(Pane root, Node... nodes) {
+	private void addConfigItemComponents(ConfigDescriptor cd, ConfigItemDescriptor cid, Pane root, Node... nodes) {
 		if (root instanceof VBox) {
 			Pane pane = createNode();
 			pane.getChildren().addAll(nodes);
+			if (!hideUnhide(cd, cid)) {
+				return;
+			}
+
 			root.getChildren().add(pane);
 		} else {
+			if (!hideUnhide(cd, cid)) {
+				return;
+			}
+
 			root.getChildren().addAll(nodes);
 		}
 	}
@@ -604,6 +599,69 @@ public class PluginConfigUI {
 		}
 
 		return label;
+	}
+
+	private boolean hidesOtherConfigs(ConfigItemDescriptor cid) {
+		Config config = plugin.getConfig(configManager);
+		ConfigDescriptor descriptor = configManager.getConfigDescriptor(config);
+		for (ConfigItemDescriptor item : descriptor.getItems()) {
+				if (item.getItem().hide().contains(cid.key()) || item.getItem().unhide().contains(cid.key())) {
+					return true;
+				}
+		}
+
+		return false;
+	}
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	private boolean hideUnhide(ConfigDescriptor cd, ConfigItemDescriptor cid) {
+		boolean unhide = cid.getItem().hidden();
+		boolean hide = !cid.getItem().hide().isEmpty();
+
+		if (unhide || hide) {
+			boolean show = false;
+
+			List<String> itemHide = Splitter
+							.onPattern("\\|\\|")
+							.trimResults()
+							.omitEmptyStrings()
+							.splitToList(String.format("%s || %s", cid.getItem().unhide(), cid.getItem().hide()));
+
+			for (ConfigItemDescriptor cid2 : cd.getItems()) {
+				if (itemHide.contains(cid2.getItem().keyName())) {
+					if (cid2.getType() == boolean.class) {
+						show = Boolean.parseBoolean(configManager.getConfiguration(cd.getGroup().value(), cid2.getItem().keyName()));
+					} else if (cid2.getType().isEnum()) {
+						Class<? extends Enum> type = (Class<? extends Enum>) cid2.getType();
+						try {
+							Enum selectedItem = Enum.valueOf(type, configManager.getConfiguration(cd.getGroup().value(), cid2.getItem().keyName()));
+							if (!cid.getItem().unhideValue().equals("")) {
+								List<String> unhideValue = Splitter
+												.onPattern("\\|\\|")
+												.trimResults()
+												.omitEmptyStrings()
+												.splitToList(cid.getItem().unhideValue());
+
+								show = unhideValue.contains(selectedItem.toString());
+							} else if (!cid.getItem().hideValue().equals("")) {
+								List<String> hideValue = Splitter
+												.onPattern("\\|\\|")
+												.trimResults()
+												.omitEmptyStrings()
+												.splitToList(cid.getItem().hideValue());
+
+								show = !hideValue.contains(selectedItem.toString());
+							}
+						} catch (IllegalArgumentException ignored) {
+						}
+					}
+				}
+			}
+
+			return (!unhide || show) && (!hide || !show);
+		}
+
+		return true;
 	}
 
 	@FXML
