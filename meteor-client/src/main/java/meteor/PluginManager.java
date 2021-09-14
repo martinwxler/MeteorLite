@@ -165,6 +165,7 @@ import meteor.plugins.xpdrop.XpDropPlugin;
 import meteor.plugins.xpglobes.XpGlobesPlugin;
 import meteor.plugins.xptracker.XpTrackerPlugin;
 import meteor.plugins.zulrah.ZulrahPlugin;
+import meteor.ui.controllers.PluginListUI;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
 import org.sponge.util.Logger;
@@ -176,6 +177,8 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
+
 import rs117.hd.GpuHDPlugin;
 
 public class PluginManager {
@@ -424,6 +427,14 @@ public class PluginManager {
 		List<Plugin> externals = loadPluginsFromDir(EXTERNALS_DIR);
 		plugins.stream().filter(Plugin::isExternal).forEach(Plugin::unload);
 		plugins.removeIf(Plugin::isExternal);
+
+		// Temp solution for externals
+		PluginListUI.categories.stream()
+				.filter(c -> c.name.equals("MeteorLite"))
+				.findAny()
+				.get().plugins.addAll(0, externals.stream()
+						.map(Plugin::getName)
+						.collect(Collectors.toList()));
 
 		for (Plugin external : externals) {
 			plugins.add(external);
