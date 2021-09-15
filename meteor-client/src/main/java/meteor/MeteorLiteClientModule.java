@@ -42,7 +42,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import com.google.inject.util.Providers;
 import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -71,7 +70,7 @@ import meteor.plugins.api.game.*;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.itemstats.ItemStatChangesService;
 import meteor.plugins.itemstats.ItemStatChangesServiceImpl;
-import meteor.plugins.meteor.meteorlite.MeteorLiteConfig;
+import meteor.plugins.meteorlite.MeteorLiteConfig;
 import meteor.ui.controllers.ToolbarFXMLController;
 import meteor.ui.overlay.OverlayManager;
 import meteor.ui.overlay.WidgetOverlay;

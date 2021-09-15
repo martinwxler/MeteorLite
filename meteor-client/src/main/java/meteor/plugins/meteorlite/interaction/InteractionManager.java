@@ -1,49 +1,36 @@
-package meteor.plugins.meteor.interaction;
+package meteor.plugins.meteorlite.interaction;
 
-import com.google.inject.Provides;
-import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
-import meteor.input.MouseManager;
-import meteor.plugins.Plugin;
-import meteor.plugins.PluginDescriptor;
 import meteor.plugins.api.commons.Rand;
 import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.input.Mouse;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.widgets.DialogOption;
-import meteor.ui.overlay.OverlayManager;
+import meteor.plugins.meteorlite.MeteorLiteConfig;
 import net.runelite.api.Client;
-import net.runelite.api.events.DialogProcessed;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
+import net.runelite.api.events.DialogProcessed;
 import net.runelite.api.events.InvokeMenuActionEvent;
 import net.runelite.api.events.MenuOptionClicked;
+import org.sponge.util.Logger;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.awt.*;
 
-@PluginDescriptor(
-				name = "Interaction Manager",
-				cantDisable = true
-)
-public class MeteorInteractionPlugin extends Plugin {
+@Singleton
+public class InteractionManager {
+	private static final Logger logger = new Logger("Interaction Manager");
 	private static final int MINIMAP_WIDTH = 250;
 	private static final int MINIMAP_HEIGHT = 180;
 
 	@Inject
-	private OverlayManager overlayManager;
-
-	@Inject
-	private MouseManager mouseManager;
-
-	@Inject
-	private MeteorInteractionConfig config;
-
-	@Inject
-	private MeteorInteractionOverlay overlay;
+	private MeteorLiteConfig config;
 
 	@Inject
 	private Client client;
+
 	private volatile MenuEntry action;
 	private volatile int mouseClickX = -1;
 	private volatile int mouseClickY = -1;
@@ -57,7 +44,7 @@ public class MeteorInteractionPlugin extends Plugin {
 						+ " | P0=" + e.getParam0()
 						+ " | P1=" +  e.getParam1();
 
-		if (config.debug()) {
+		if (config.debugInteractions()) {
 			logger.info("[Bot Action] {}", debug);
 		}
 
@@ -70,7 +57,7 @@ public class MeteorInteractionPlugin extends Plugin {
 			Point randomPoint = getClickPoint();
 			mouseClickX = randomPoint.x;
 			mouseClickY = randomPoint.y;
-			if (config.debug()) {
+			if (config.debugInteractions()) {
 				logger.info("Sending click to {} {}", mouseClickX, mouseClickY);
 			}
 
@@ -101,7 +88,7 @@ public class MeteorInteractionPlugin extends Plugin {
 			return;
 		}
 
-		if (config.debug()) {
+		if (config.debugInteractions()) {
 			String action = "O=" + e.getMenuOption()
 							+ " | T=" + e.getMenuTarget()
 							+ " | ID=" + e.getId()
@@ -154,22 +141,5 @@ public class MeteorInteractionPlugin extends Plugin {
 
 	private boolean interactReady() {
 		return mouseClickX == -1 && mouseClickY == -1;
-	}
-
-	@Provides
-	public MeteorInteractionConfig getConfig(ConfigManager configManager) {
-		return configManager.getConfig(MeteorInteractionConfig.class);
-	}
-
-	@Override
-	public void startup() {
-		overlayManager.add(overlay);
-		mouseManager.registerMouseListener(overlay);
-	}
-
-	@Override
-	public void shutdown() {
-		overlayManager.remove(overlay);
-		mouseManager.unregisterMouseListener(overlay);
 	}
 }

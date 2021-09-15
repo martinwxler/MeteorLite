@@ -1,63 +1,61 @@
-package meteor.plugins.meteor.loginscreen;
-
-import com.google.inject.Provides;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ScheduledExecutorService;
-import javax.inject.Inject;
+package meteor.plugins.meteorlite.loginscreen;
 
 import meteor.callback.ClientThread;
-import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
-import meteor.eventbus.events.ConfigChanged;
-import meteor.plugins.Plugin;
-import meteor.plugins.PluginDescriptor;
 import meteor.plugins.api.game.Game;
+import meteor.plugins.meteorlite.MeteorLiteConfig;
+import meteor.plugins.meteorlite.MeteorLitePlugin;
 import meteor.util.ImageUtil;
+import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.IndexedSprite;
 import net.runelite.api.SpritePixels;
 import net.runelite.api.events.GameStateChanged;
 
-@PluginDescriptor(
-				name = "MeteorLite Login Screen",
-				description = "Change the look of the client",
-				enabledByDefault = false
-)
-public class MeteorLoginScreenPlugin extends Plugin {
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
+
+@Singleton
+public class MeteorLiteLoginScreen {
+	@Inject
+	private Client client;
+
 	@Inject
 	private ClientThread clientThread;
 
 	@Inject
 	private ScheduledExecutorService executor;
 
+	@Inject
+	private MeteorLiteConfig config;
+
 	private static final Map<String, IndexedSprite> DEFAULT_SPRITES = new HashMap<>();
 	private SpritePixels defaultLoginScreen;
 
-	@Provides
-	public MeteorLoginScreenConfig getConfig(ConfigManager configManager) {
-		return configManager.getConfig(MeteorLoginScreenConfig.class);
-	}
-
-	@Override
-	public void startup() {
+	public void customize() {
 		client.setLoginTitleColor(0x00FFFF);
 		client.setLoginTitleMessage("Welcome to MeteorLite");
 		executor.submit(() -> clientThread.invokeLater(this::overrideSprites));
 	}
 
-	@Override
-	public void shutdown() {
-		executor.submit(() -> clientThread.invokeLater(this::resetLoginScreen));
+	public void reset() {
 		client.setLoginTitleColor(16776960);
 		client.setLoginTitleMessage("Welcome to RuneScape");
+		executor.submit(() -> clientThread.invokeLater(this::resetLoginScreen));
 	}
 
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged e) {
 		if (e.getGameState() == GameState.UNKNOWN || e.getGameState() == GameState.LOGGING_IN || Game.isOnLoginScreen()) {
 			cacheDefaultSprites();
+
+			if (!config.meteorLoginScreen()) {
+				return;
+			}
+
 			client.setLogoSprite(client.createIndexedSprite());
 			client.setLoginBoxSprite(getIndexedSprite("titlebox.png"));
 			client.setLoginButtonSprite(getIndexedSprite("titlebutton.png"));
@@ -74,14 +72,14 @@ public class MeteorLoginScreenPlugin extends Plugin {
 
 	private IndexedSprite getIndexedSprite(String imageName) {
 		return ImageUtil.getImageIndexedSprite(
-						ImageUtil.loadImageResource(MeteorLoginScreenPlugin.class, imageName),
+						ImageUtil.loadImageResource(MeteorLitePlugin.class, imageName),
 						client
 		);
 	}
 
 	private void overrideSprites() {
 		SpritePixels loginscreensprite = ImageUtil.getImageSpritePixels(ImageUtil.loadImageResource(
-						MeteorLoginScreenPlugin.class, "background.png"), client);
+						MeteorLitePlugin.class, "background.png"), client);
 		if (loginscreensprite != null) {
 			client.setLoginScreen(loginscreensprite);
 		}
@@ -103,7 +101,7 @@ public class MeteorLoginScreenPlugin extends Plugin {
 
 	private void cacheDefaultSprites() {
 		defaultLoginScreen = ImageUtil.getImageSpritePixels(ImageUtil.loadImageResource(
-				MeteorLoginScreenPlugin.class, "normal.jpg"), client);
+						MeteorLitePlugin.class, "normal.jpg"), client);
 		DEFAULT_SPRITES.putIfAbsent("logosprite", client.getLogoSprite());
 		DEFAULT_SPRITES.putIfAbsent("loginbox", client.getLoginBoxSprite());
 		DEFAULT_SPRITES.putIfAbsent("loginbutton", client.getLoginButtonSprite());
