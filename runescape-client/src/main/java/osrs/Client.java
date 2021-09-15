@@ -4135,7 +4135,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 								var18 = FriendSystem.getPacketBufferNode(ClientPacket.field2707, packetWriter.isaacCipher);
 								var18.packetBuffer.writeShort(var5);
 								var18.packetBuffer.writeInt2(0);
-								var18.packetBuffer.method6841(var3);
+								var18.packetBuffer.writeByte01(var3);
 								var18.packetBuffer.writeShortA(var4);
 								packetWriter.addNode(var18);
 							}
@@ -4244,9 +4244,9 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 															if (Scene.shouldSendWalk()) {
 																var3 = Scene.Scene_selectedX;
 																var4 = Scene.Scene_selectedY;
-																PacketBufferNode var44 = FriendSystem.getPacketBufferNode(ClientPacket.field2722, packetWriter.isaacCipher);
+																PacketBufferNode var44 = FriendSystem.getPacketBufferNode(ClientPacket.Packet_walkPacket, packetWriter.isaacCipher);
 																var44.packetBuffer.writeByte(5);
-																var44.packetBuffer.method6841(KeyHandler.KeyHandler_pressedKeys[82] ? (KeyHandler.KeyHandler_pressedKeys[81] ? 2 : 1) : 0);
+																var44.packetBuffer.writeByte01(KeyHandler.KeyHandler_pressedKeys[82] ? (KeyHandler.KeyHandler_pressedKeys[81] ? 2 : 1) : 0);
 																var44.packetBuffer.writeShort01(var3 + FloorOverlayDefinition.baseX);
 																var44.packetBuffer.writeShort01A(var4 + class320.baseY);
 																packetWriter.addNode(var44);
@@ -5658,8 +5658,8 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 					var5 = var3.readInt();
 					var6 = class260.getGcDuration();
 					PacketBufferNode var52 = FriendSystem.getPacketBufferNode(ClientPacket.field2716, packetWriter.isaacCipher);
-					var52.packetBuffer.method6841(GameEngine.fps);
-					var52.packetBuffer.method6841(var6);
+					var52.packetBuffer.writeByte01(GameEngine.fps);
+					var52.packetBuffer.writeByte01(var6);
 					var52.packetBuffer.writeInt0123(var17);
 					var52.packetBuffer.writeInt2(var5);
 					packetWriter.addNode(var52);

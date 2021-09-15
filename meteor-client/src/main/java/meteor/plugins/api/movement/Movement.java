@@ -1,10 +1,10 @@
 package meteor.plugins.api.movement;
 
-import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.Vars;
 import meteor.plugins.api.movement.pathfinder.*;
+import meteor.plugins.api.packets.MovementPackets;
 import meteor.plugins.api.scene.Tiles;
 import meteor.plugins.api.widgets.Widgets;
 import meteor.ui.overlay.OverlayUtil;
@@ -16,16 +16,11 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import org.sponge.util.Logger;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.awt.*;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
-@Singleton
 public class Movement {
     private static final Logger logger = new Logger("Movement");
     private static final Color TILE_BLOCKED_COLOR = new Color(0, 128, 255, 128);
@@ -34,34 +29,22 @@ public class Movement {
     private static final int STAMINA_VARBIT = 25;
     private static final int RUN_VARP = 173;
 
-    @Inject
-    private static Client client;
-
-    @Inject
-    private static ScheduledExecutorService executor;
 
     private static void setWalkDestination(int sceneX, int sceneY) {
-        int attempts = 0;
+        logger.debug("Setting destination {} {}", sceneX, sceneY);
 
-        do {
-            client.setSelectedSceneTileX(sceneX);
-            client.setSelectedSceneTileY(sceneY);
-            client.setViewportWalking(true);
-            Time.sleep(25);
-        } while (client.getLocalDestinationLocation() == null && attempts++ < 10);
+        MovementPackets.sendMovement(sceneX, sceneY, Movement.isRunEnabled());
+        Game.getClient().setDestinationX(sceneX);
+        Game.getClient().setDestinationY(sceneY);
     }
 
     public static void setDestination(int sceneX, int sceneY) {
-        if (client.isClientThread()) {
-            executor.schedule(() -> setWalkDestination(sceneX, sceneY), 25, TimeUnit.MILLISECONDS);
-        } else {
-            setWalkDestination(sceneX, sceneY);
-        }
+        setWalkDestination(sceneX, sceneY);
     }
 
     public static boolean isWalking() {
         Player local = Players.getLocal();
-        LocalPoint destination = client.getLocalDestinationLocation();
+        LocalPoint destination = Game.getClient().getLocalDestinationLocation();
         return local.isMoving()
                 && destination != null
                 && destination.distanceTo(local.getLocalLocation()) > 4;
@@ -72,7 +55,7 @@ public class Movement {
     }
 
     public static void walk(WorldPoint worldPoint) {
-        Player local = client.getLocalPlayer();
+        Player local = Game.getClient().getLocalPlayer();
         if (local == null) {
             return;
         }
@@ -97,7 +80,7 @@ public class Movement {
             walkPoint = nearestInScene.getWorldLocation();
         }
 
-        LocalPoint localPoint = LocalPoint.fromWorld(client, walkPoint);
+        LocalPoint localPoint = LocalPoint.fromWorld(Game.getClient(), walkPoint);
         if (localPoint == null) {
             logger.debug("Couldn't convert destination point to local");
             return;
@@ -131,13 +114,13 @@ public class Movement {
     }
 
     public static boolean isRunEnabled() {
-        return client.getVarpValue(RUN_VARP) == 1;
+        return Game.getClient().getVarpValue(RUN_VARP) == 1;
     }
 
     public static void drawPath(Graphics2D graphics2D, WorldPoint destination) {
         Walker.buildPath(destination)
-                .forEach(tile -> tile.outline(client, graphics2D, Color.RED, null));
-        destination.outline(client, graphics2D, Color.GREEN, "Destination");
+                .forEach(tile -> tile.outline(Game.getClient(), graphics2D, Color.RED, null));
+        destination.outline(Game.getClient(), graphics2D, Color.GREEN, "Destination");
     }
 
     public static void drawCollisions(Graphics2D graphics2D) {

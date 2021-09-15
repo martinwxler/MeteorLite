@@ -3,6 +3,7 @@ package meteor.plugins.meteorlite;
 import com.google.inject.Provides;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
+import meteor.eventbus.events.ConfigChanged;
 import meteor.events.ExternalsReloaded;
 import meteor.input.MouseManager;
 import meteor.plugins.Plugin;
@@ -41,12 +42,6 @@ public class MeteorLitePlugin extends Plugin {
     @Override
     public void updateConfig() {
         Logger.setDebugEnabled(config.debugEnabled());
-
-        if (config.meteorLoginScreen()) {
-            meteorLiteLoginScreen.customize();
-        } else {
-            meteorLiteLoginScreen.reset();
-        }
     }
 
     @Override
@@ -58,6 +53,12 @@ public class MeteorLitePlugin extends Plugin {
 
         if (config.externalsLoadOnStartup()) {
             Game.getClient().getCallbacks().post(new ExternalsReloaded());
+        }
+
+        if (config.meteorLoginScreen()) {
+            meteorLiteLoginScreen.setCustom();
+        } else {
+            meteorLiteLoginScreen.setDefault();
         }
     }
 
@@ -74,11 +75,25 @@ public class MeteorLitePlugin extends Plugin {
         if (!event.getGroup().equals("MeteorLite")) {
             return;
         }
-        if (!event.getKey().equals("reloadExternals")) {
+
+        if (event.getKey().equals("reloadExternals")) {
+            Game.getClient().getCallbacks().post(new ExternalsReloaded());
+        }
+    }
+
+    @Subscribe
+    public void onConfigChanged(ConfigChanged event) {
+        if (!event.getGroup().equals("MeteorLite")) {
             return;
         }
 
-        Game.getClient().getCallbacks().post(new ExternalsReloaded());
+        if (event.getKey().equals("meteorLoginScreen")) {
+            if (config.meteorLoginScreen()) {
+                meteorLiteLoginScreen.setCustom();
+            } else {
+                meteorLiteLoginScreen.setDefault();
+            }
+        }
     }
 
     @Provides

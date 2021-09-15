@@ -51,10 +51,9 @@ public class AutoLoginPlugin extends Plugin {
 	}
 
 	private void login() {
-		GameThread.invoke(() -> {
-			client.setUsername(config.username());
-			client.setPassword(config.password());
-			client.setGameState(GameState.LOGGING_IN);
-		});
+		client.setUsername(config.username());
+		client.setPassword(config.password());
+		Keyboard.sendEnter();
+		Keyboard.sendEnter();
 	}
 }

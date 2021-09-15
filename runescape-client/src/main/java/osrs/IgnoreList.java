@@ -164,7 +164,7 @@ public class IgnoreList extends UserList {
 			var8.packetBuffer.writeShort01(var3);
 			var8.packetBuffer.writeShortA(class320.baseY + var1);
 			var8.packetBuffer.writeShort01(var0 + FloorOverlayDefinition.baseX);
-			var8.packetBuffer.method6841(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
+			var8.packetBuffer.writeByte01(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
 			Client.packetWriter.addNode(var8);
 		} else if (var2 == 5) {
 			Client.mouseCrossX = var6;
@@ -174,7 +174,7 @@ public class IgnoreList extends UserList {
 			Client.destinationX = var0;
 			Client.destinationY = var1;
 			var8 = FriendSystem.getPacketBufferNode(ClientPacket.field2732, Client.packetWriter.isaacCipher);
-			var8.packetBuffer.method6841(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
+			var8.packetBuffer.writeByte01(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
 			var8.packetBuffer.writeShort01A(var3);
 			var8.packetBuffer.writeShort01A(class320.baseY + var1);
 			var8.packetBuffer.writeShort01(var0 + FloorOverlayDefinition.baseX);
@@ -188,7 +188,7 @@ public class IgnoreList extends UserList {
 			Client.destinationY = var1;
 			var8 = FriendSystem.getPacketBufferNode(ClientPacket.field2710, Client.packetWriter.isaacCipher);
 			var8.packetBuffer.writeShort01A(var0 + FloorOverlayDefinition.baseX);
-			var8.packetBuffer.method6841(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
+			var8.packetBuffer.writeByte01(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
 			var8.packetBuffer.writeShort01(var3);
 			var8.packetBuffer.writeShortA(class320.baseY + var1);
 			Client.packetWriter.addNode(var8);
@@ -206,7 +206,7 @@ public class IgnoreList extends UserList {
 					Client.destinationY = var1;
 					var9 = FriendSystem.getPacketBufferNode(ClientPacket.field2680, Client.packetWriter.isaacCipher);
 					var9.packetBuffer.writeShort(var3);
-					var9.packetBuffer.method6841(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
+					var9.packetBuffer.writeByte01(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
 					var9.packetBuffer.writeShort01A(class92.selectedItemId);
 					var9.packetBuffer.writeInt2(Tiles.selectedItemWidget);
 					var9.packetBuffer.writeShort01A(DesktopPlatformInfoProvider.selectedItemSlot);
@@ -401,7 +401,7 @@ public class IgnoreList extends UserList {
 					Client.destinationX = var0;
 					Client.destinationY = var1;
 					var8 = FriendSystem.getPacketBufferNode(ClientPacket.field2659, Client.packetWriter.isaacCipher);
-					var8.packetBuffer.method6841(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
+					var8.packetBuffer.writeByte01(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
 					var8.packetBuffer.writeShortA(class320.baseY + var1);
 					var8.packetBuffer.writeShortA(var3);
 					var8.packetBuffer.writeShort(var0 + FloorOverlayDefinition.baseX);
@@ -648,7 +648,7 @@ public class IgnoreList extends UserList {
 										Client.destinationX = var0;
 										Client.destinationY = var1;
 										var9 = FriendSystem.getPacketBufferNode(ClientPacket.field2670, Client.packetWriter.isaacCipher);
-										var9.packetBuffer.method6841(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
+										var9.packetBuffer.writeByte01(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
 										var9.packetBuffer.writeShortA(var3);
 										Client.packetWriter.addNode(var9);
 									}
@@ -676,7 +676,7 @@ public class IgnoreList extends UserList {
 										Client.destinationX = var0;
 										Client.destinationY = var1;
 										var9 = FriendSystem.getPacketBufferNode(ClientPacket.field2651, Client.packetWriter.isaacCipher);
-										var9.packetBuffer.method6841(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
+										var9.packetBuffer.writeByte01(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
 										var9.packetBuffer.writeShortA(var3);
 										Client.packetWriter.addNode(var9);
 									}
@@ -719,7 +719,7 @@ public class IgnoreList extends UserList {
 										Client.destinationY = var1;
 										var9 = FriendSystem.getPacketBufferNode(ClientPacket.field2657, Client.packetWriter.isaacCipher);
 										var9.packetBuffer.writeShort(var3);
-										var9.packetBuffer.method6841(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
+										var9.packetBuffer.writeByte01(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
 										Client.packetWriter.addNode(var9);
 									}
 								} else if (var2 == 50) {

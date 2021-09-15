@@ -2298,6 +2298,7 @@ public interface Client extends GameEngine {
   ClientPacket getItemAction4Packet();
   ClientPacket getItemAction5Packet();
   ClientPacket getBankItemActionPacket();
+  ClientPacket getWalkPacket();
 
   void setSelectedSceneTileX(int sceneX);
 
@@ -2372,4 +2373,8 @@ public interface Client extends GameEngine {
   void setLoginTitleMessage(String message);
 
   void clearLoginScreen(boolean shouldClear);
+
+  void setDestinationX(int sceneX);
+
+  void setDestinationY(int sceneY);
 }

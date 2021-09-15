@@ -627,6 +627,12 @@ public interface RSClient extends RSGameEngine, Client {
   @Import("destinationY")
   int getDestinationY();
 
+  @Import("destinationX")
+  void setDestinationX(int sceneX);
+
+  @Import("destinationY")
+  void setDestinationY(int sceneY);
+
   @Import("soundEffects")
   RSSoundEffect[] getAudioEffects();
 
@@ -1538,6 +1544,10 @@ public interface RSClient extends RSGameEngine, Client {
   @Import("Packet_bankItemActionPacket")
   @Override
   RSClientPacket getBankItemActionPacket();
+
+  @Import("Packet_walkPacket")
+  @Override
+  RSClientPacket getWalkPacket();
 
   @Import("loadWorlds")
   @Override

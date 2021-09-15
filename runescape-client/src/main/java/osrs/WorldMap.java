@@ -470,7 +470,7 @@ public class WorldMap {
 					PacketBufferNode var11 = FriendSystem.getPacketBufferNode(ClientPacket.field2707, Client.packetWriter.isaacCipher);
 					var11.packetBuffer.writeShort(var9);
 					var11.packetBuffer.writeInt2(0);
-					var11.packetBuffer.method6841(var10);
+					var11.packetBuffer.writeByte01(var10);
 					var11.packetBuffer.writeShortA(var13);
 					Client.packetWriter.addNode(var11);
 				} else {

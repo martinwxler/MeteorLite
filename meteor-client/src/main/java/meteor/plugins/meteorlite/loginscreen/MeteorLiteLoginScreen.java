@@ -35,13 +35,13 @@ public class MeteorLiteLoginScreen {
 	private static final Map<String, IndexedSprite> DEFAULT_SPRITES = new HashMap<>();
 	private SpritePixels defaultLoginScreen;
 
-	public void customize() {
+	public void setCustom() {
 		client.setLoginTitleColor(0x00FFFF);
 		client.setLoginTitleMessage("Welcome to MeteorLite");
 		executor.submit(() -> clientThread.invokeLater(this::overrideSprites));
 	}
 
-	public void reset() {
+	public void setDefault() {
 		client.setLoginTitleColor(16776960);
 		client.setLoginTitleMessage("Welcome to RuneScape");
 		executor.submit(() -> clientThread.invokeLater(this::resetLoginScreen));
@@ -65,8 +65,11 @@ public class MeteorLiteLoginScreen {
 			client.setOptionSprite2(getIndexedSprite("mod_icon.png"));
 			client.setOptionSprite3(getIndexedSprite("mod_icon.png"));
 
-			client.getTitleMuteSprites()[0] = getIndexedSprite("title_mute.png");
-			client.getTitleMuteSprites()[1] = getIndexedSprite("title_mute.1.png");
+			IndexedSprite[] muteSprites = client.getTitleMuteSprites();
+			if (muteSprites != null) {
+				muteSprites[0] = getIndexedSprite("title_mute.png");
+				muteSprites[1] = getIndexedSprite("title_mute.1.png");
+			}
 		}
 	}
 
@@ -95,8 +98,11 @@ public class MeteorLiteLoginScreen {
 		client.setOptionSprite1(DEFAULT_SPRITES.get("optionsprite1"));
 		client.setOptionSprite2(DEFAULT_SPRITES.get("optionsprite2"));
 		client.setOptionSprite3(DEFAULT_SPRITES.get("optionsprite3"));
-		client.getTitleMuteSprites()[0] = DEFAULT_SPRITES.get("mutesprite");
-		client.getTitleMuteSprites()[1] = DEFAULT_SPRITES.get("mutesprite1");
+		IndexedSprite[] muteSprites = client.getTitleMuteSprites();
+		if (muteSprites != null) {
+			muteSprites[0] = DEFAULT_SPRITES.get("mutesprite");
+			muteSprites[1] = DEFAULT_SPRITES.get("mutesprite1");
+		}
 	}
 
 	private void cacheDefaultSprites() {
@@ -110,7 +116,10 @@ public class MeteorLiteLoginScreen {
 		DEFAULT_SPRITES.putIfAbsent("optionsprite1", client.getOptionSprite1());
 		DEFAULT_SPRITES.putIfAbsent("optionsprite2", client.getOptionSprite2());
 		DEFAULT_SPRITES.putIfAbsent("optionsprite3", client.getOptionSprite3());
-		DEFAULT_SPRITES.putIfAbsent("mutesprite", client.getTitleMuteSprites()[0]);
-		DEFAULT_SPRITES.putIfAbsent("mutesprite1", client.getTitleMuteSprites()[1]);
+		IndexedSprite[] muteSprites = client.getTitleMuteSprites();
+		if (muteSprites != null) {
+			DEFAULT_SPRITES.putIfAbsent("mutesprite", muteSprites[0]);
+			DEFAULT_SPRITES.putIfAbsent("mutesprite1", muteSprites[1]);
+		}
 	}
 }

@@ -581,7 +581,6 @@ public class MeteorLiteClientModule extends AbstractModule implements AppletStub
 
     requestStaticInjection(
             GameThread.class,
-            Movement.class,
             Game.class
     );
   }
