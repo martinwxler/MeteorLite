@@ -25,10 +25,7 @@ import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.PluginChanged;
 import meteor.plugins.Plugin;
-import meteor.ui.components.ConfigButton;
-import meteor.ui.components.SectionPane;
-import meteor.ui.components.ConfigToggleButton;
-import meteor.ui.components.PluginToggleButton;
+import meteor.ui.components.*;
 import net.runelite.api.Client;
 import net.runelite.api.events.ConfigButtonClicked;
 import org.sponge.util.Logger;
@@ -81,7 +78,6 @@ public class PluginConfigUI {
 
 		if (plugin.isToggleable()) {
 			toggleButton = new PluginToggleButton(plugin);
-			toggleButton.setSize(6);
 			toggleButton.setSelected(plugin.enabled);
 			AnchorPane.setTopAnchor(toggleButton, 2.0);
 			AnchorPane.setBottomAnchor(toggleButton, 2.0);
@@ -300,7 +296,6 @@ public class PluginConfigUI {
 		JFXComboBox<Enum<?>> comboBox = new JFXComboBox<>(observableList);
 		comboBox.setValue(currentToSet);
 
-		AnchorPane.setLeftAnchor(comboBox, 200.0);
 		AnchorPane.setRightAnchor(comboBox, 8.0);
 		AnchorPane.setTopAnchor(comboBox, 8.0);
 		AnchorPane.setBottomAnchor(comboBox, 8.0);
@@ -322,7 +317,7 @@ public class PluginConfigUI {
 		AnchorPane.setLeftAnchor(textField, 200.0);
 		AnchorPane.setRightAnchor(textField, 8.0);
 
-		textField.setFont(Font.font(18));
+		textField.setFont(Font.font(MeteorLiteClientModule.METEOR_FONT_SIZE));
 		textField.setText(configManager.getConfiguration(config.getGroup().value(), configItem.key(), String.class));
 		textField.textProperty().addListener((obs, oldValue, newValue) -> {
 			double inputValue = checkDoubleInput(configItem, newValue);
@@ -346,7 +341,7 @@ public class PluginConfigUI {
 		AnchorPane.setRightAnchor(textArea, 8.0);
 		AnchorPane.setTopAnchor(textArea, 34.0);
 		AnchorPane.setBottomAnchor(textArea, 8.0);
-		textArea.setFont(Font.font(18));
+		textArea.setFont(Font.font(MeteorLiteClientModule.METEOR_FONT_SIZE));
 
 		textArea.setWrapText(true);
 		textArea.setText(configManager.getConfiguration(config.getGroup().value(), descriptor.key(), String.class));
@@ -367,7 +362,7 @@ public class PluginConfigUI {
 		AnchorPane.setRightAnchor(textfield, 8.0);
 		AnchorPane.setTopAnchor(textfield, 34.0);
 		AnchorPane.setBottomAnchor(textfield, 8.0);
-		textfield.setFont(Font.font(18));
+		textfield.setFont(Font.font(MeteorLiteClientModule.METEOR_FONT_SIZE));
 
 		textfield.setText(configManager.getConfiguration(config.getGroup().value(), descriptor.key(), String.class));
 		textfield.getStylesheets().add("css/plugins/jfx-textfield.css");
@@ -386,7 +381,6 @@ public class PluginConfigUI {
 		AnchorPane.setTopAnchor(toggleButton, 2.0);
 		AnchorPane.setBottomAnchor(toggleButton, 2.0);
 		AnchorPane.setRightAnchor(toggleButton, 8.0);
-		toggleButton.setSize(6);
 
 		Object o = configManager.getConfiguration(config.getGroup().value(), descriptor.key(), descriptor.getType());
 		boolean enabled = false;
@@ -446,7 +440,7 @@ public class PluginConfigUI {
 		AnchorPane.setLeftAnchor(textField, 200.0);
 		AnchorPane.setRightAnchor(textField, 8.0);
 
-		textField.setFont(Font.font(18));
+		textField.setFont(Font.font(MeteorLiteClientModule.METEOR_FONT_SIZE));
 		textField.setText(configManager.getConfiguration(config.getGroup().value(), descriptor.key(), String.class));
 		textField.textProperty().addListener((obs, oldValue, newValue) -> {
 			int inputValue = checkIntInput(descriptor, newValue);
@@ -578,11 +572,9 @@ public class PluginConfigUI {
 		}
 	}
 
-	private Text createText(String text, Paint color, String tooltipText) {
-		Text label = new Text();
-		label.setText(text);
+	private MeteorText createText(String text, Paint color, String tooltipText) {
+		MeteorText label = new MeteorText(text);
 		label.setFill(color);
-		label.setFont(Font.font(18));
 
 		if (tooltipText != null) {
 			JFXTooltip tooltip = new JFXTooltip();

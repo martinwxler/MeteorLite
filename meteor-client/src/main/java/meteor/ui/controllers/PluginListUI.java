@@ -27,10 +27,7 @@ import meteor.eventbus.Subscribe;
 import meteor.events.ExternalsReloaded;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
-import meteor.ui.components.Category;
-import meteor.ui.components.CategoryMenuItem;
-import meteor.ui.components.PluginConfigButton;
-import meteor.ui.components.PluginToggleButton;
+import meteor.ui.components.*;
 import org.sponge.util.Logger;
 
 import javax.inject.Inject;
@@ -394,7 +391,6 @@ public class PluginListUI {
 
     if (!p.getClass().getAnnotation(PluginDescriptor.class).cantDisable()) {
       toggleButton = new PluginToggleButton(p);
-      toggleButton.setSize(6);
       AnchorPane.setTopAnchor(toggleButton, 2.0);
       AnchorPane.setBottomAnchor(toggleButton, 2.0);
       AnchorPane.setRightAnchor(toggleButton, 8.0);
@@ -438,8 +434,8 @@ public class PluginListUI {
         AnchorPane.setBottomAnchor(configButton, 4.0);
 
         FontAwesomeIconView cog = new FontAwesomeIconView(FontAwesomeIcon.COG);
-        cog.setFill(Paint.valueOf("CYAN"));
-        cog.setSize("18");
+        cog.setFill(MeteorLiteClientModule.METEOR_FONT_COLOR);
+        cog.setSize(String.valueOf(MeteorLiteClientModule.METEOR_FONT_SIZE));
         configButton.setGraphic(cog);
         configButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
           lastPluginInteracted = p;
@@ -449,13 +445,12 @@ public class PluginListUI {
       }
     }
 
-    Text pluginName = new Text();
-    pluginName.setText(p.getClass().getAnnotation(PluginDescriptor.class).name());
-    pluginName.setFill(Paint.valueOf("WHITE"));
+    Text pluginName = new MeteorText(p);
+
     AnchorPane.setLeftAnchor(pluginName, 8.0);
     AnchorPane.setTopAnchor(pluginName, 8.0);
     AnchorPane.setBottomAnchor(pluginName, 8.0);
-    pluginName.setFont(Font.font(18));
+
 
     if (p.getClass().getAnnotation(PluginDescriptor.class).description().length() > 0) {
       JFXTooltip tooltip = new JFXTooltip();

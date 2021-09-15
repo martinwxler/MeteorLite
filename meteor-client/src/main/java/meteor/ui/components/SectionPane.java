@@ -5,6 +5,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import meteor.MeteorLiteClientModule;
 
 public class SectionPane {
 	private final VBox container;
@@ -18,8 +19,8 @@ public class SectionPane {
 		container = new VBox();
 		titledPane = new TitledPane();
 		title = new Text(name);
-		title.setFill(Paint.valueOf("AQUA"));
-		title.setFont(Font.font(18));
+		title.setFill(MeteorLiteClientModule.METEOR_FONT_COLOR);
+		title.setFont(Font.font(MeteorLiteClientModule.METEOR_FONT_SIZE));
 		titledPane.setGraphic(title);
 
 		titledPane.setContent(container);

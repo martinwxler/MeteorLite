@@ -15,7 +15,7 @@
       </Text>
       <FontAwesomeIconView fill="AQUA" glyphName="PLUG" size="18" AnchorPane.leftAnchor="125.0" AnchorPane.rightAnchor="125.0" AnchorPane.topAnchor="12.0">
          <font>
-            <Font name="FontAwesome" size="18.0" />
+            <Font name="FontAwesome" size="14.0" />
          </font>
       </FontAwesomeIconView>
       <FontAwesomeIconView fx:id="addCategory" fill="AQUA" glyphName="PLUS_SQUARE" size="28" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="8.0">

@@ -54,6 +54,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+import javafx.scene.paint.Paint;
 import meteor.callback.Hooks;
 import meteor.chat.ChatMessageManager;
 import meteor.config.ChatColorConfig;
@@ -90,6 +91,8 @@ import okhttp3.OkHttpClient;
 import org.sponge.util.Logger;
 
 public class MeteorLiteClientModule extends AbstractModule implements AppletStub, AppletContext {
+  public static int METEOR_FONT_SIZE = 14;
+  public static Paint METEOR_FONT_COLOR = Paint.valueOf("AQUA");
 
   public static String uuid = UUID.randomUUID().toString();
   public static JFrame mainWindow;

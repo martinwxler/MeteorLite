@@ -10,5 +10,6 @@ public class PluginToggleButton extends JFXToggleButton {
   public PluginToggleButton(Plugin plugin)
   {
     this.plugin = plugin;
+    setSize(5);
   }
 }
