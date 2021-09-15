@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -25,7 +26,7 @@ import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.PluginChanged;
 import meteor.plugins.Plugin;
 import meteor.ui.components.ConfigButton;
-import meteor.ui.components.ConfigSectionPane;
+import meteor.ui.components.SectionPane;
 import meteor.ui.components.ConfigToggleButton;
 import meteor.ui.components.PluginToggleButton;
 import net.runelite.api.Client;
@@ -55,7 +56,7 @@ public class PluginConfigUI {
 	@FXML
 	private Text pluginTitle;
 
-	private final Map<String, ConfigSectionPane> sections = new HashMap<>();
+	private final Map<String, SectionPane> sections = new HashMap<>();
 
 	private Plugin plugin;
 
@@ -78,14 +79,16 @@ public class PluginConfigUI {
 		pluginTitle.setText(plugin.getName());
 		configManager = MeteorLiteClientLauncher.mainClientInstance.instanceInjector.getInstance(ConfigManager.class);
 
-		toggleButton = new PluginToggleButton(plugin);
-		toggleButton.setSize(6);
-		toggleButton.setSelected(plugin.enabled);
-		AnchorPane.setTopAnchor(toggleButton, 2.0);
-		AnchorPane.setBottomAnchor(toggleButton, 2.0);
-		AnchorPane.setRightAnchor(toggleButton, 8.0);
-		toggleButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> plugin.toggle());
-		titlePanel.getChildren().add(toggleButton);
+		if (plugin.isToggleable()) {
+			toggleButton = new PluginToggleButton(plugin);
+			toggleButton.setSize(6);
+			toggleButton.setSelected(plugin.enabled);
+			AnchorPane.setTopAnchor(toggleButton, 2.0);
+			AnchorPane.setBottomAnchor(toggleButton, 2.0);
+			AnchorPane.setRightAnchor(toggleButton, 8.0);
+			toggleButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> plugin.toggle());
+			titlePanel.getChildren().add(toggleButton);
+		}
 
 		rebuild();
 	}
@@ -106,9 +109,9 @@ public class PluginConfigUI {
 						.sorted(Comparator.comparingInt(ConfigSectionDescriptor::position))
 						.collect(Collectors.toList())) {
 			ConfigSection section = csd.getSection();
-			ConfigSectionPane sectionBox = createSection(section);
-			configList.getChildren().add(sectionBox.getTitledPane());
-			sectionBox.getTitledPane().setExpanded(!section.closedByDefault());
+			SectionPane sectionBox = createSection(section);
+			configList.getChildren().add(sectionBox.getRootPane());
+			sectionBox.getRootPane().setExpanded(!section.closedByDefault());
 		}
 	}
 
@@ -120,7 +123,7 @@ public class PluginConfigUI {
 			for (ConfigItemDescriptor configItemDescriptor : descriptor.getItems().stream()
 							.sorted(Comparator.comparingInt(ConfigItemDescriptor::position))
 							.collect(Collectors.toList())) {
-				ConfigSectionPane sectionBox = sections.get(configItemDescriptor.getItem().section());
+				SectionPane sectionBox = sections.get(configItemDescriptor.getItem().section());
 				Pane configContainer = sectionBox != null ? sectionBox.getContainer() : createNode();
 
 				if (configItemDescriptor.getType() == int.class) {
@@ -551,8 +554,8 @@ public class PluginConfigUI {
 		return node;
 	}
 
-	public ConfigSectionPane createSection(ConfigSection configSection) {
-		ConfigSectionPane section = new ConfigSectionPane(configSection.name());
+	public SectionPane createSection(ConfigSection configSection) {
+		SectionPane section = new SectionPane(configSection.name());
 		sections.put(section.getName(), section);
 		return section;
 	}
@@ -673,7 +676,7 @@ public class PluginConfigUI {
 
 	@Subscribe
 	public void onPluginChanged(PluginChanged e) {
-		if (e.getPlugin().equals(plugin)) {
+		if (toggleButton != null && e.getPlugin().equals(plugin)) {
 			toggleButton.setSelected(e.isLoaded());
 		}
 	}

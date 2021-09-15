@@ -6,11 +6,10 @@ import com.jfoenix.controls.JFXTooltip;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.fxml.FXML;
-import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.input.MouseButton;
+import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -32,7 +31,6 @@ import meteor.ui.components.Category;
 import meteor.ui.components.CategoryMenuItem;
 import meteor.ui.components.PluginConfigButton;
 import meteor.ui.components.PluginToggleButton;
-import net.runelite.api.Client;
 import org.sponge.util.Logger;
 
 import javax.inject.Inject;
@@ -43,6 +41,7 @@ import java.util.Map;
 import static meteor.MeteorLiteClientModule.pluginsPanelVisible;
 
 public class PluginListUI {
+  private static final String MAIN_CATEGORY_NAME = "Plugins";
 
   @FXML
   private FontAwesomeIconView addCategory;
@@ -91,30 +90,31 @@ public class PluginListUI {
 
     if (categoriesConfigArray != null) {
       for (String name : categoriesConfigArray) {
-        if (name.length() > 0) {
-          Category category = new Category(name);
-          String categoryPluginsConfig = configManager.getConfiguration("category", name);
+        if (name.length() <= 0) {
+          continue;
+        }
 
-          if (categoryPluginsConfig != null) {
-            String[] categoryPlugins = categoryPluginsConfig.split(",");
-            for (String s : categoryPlugins) {
-              if (!s.equals("")) {
-                category.plugins.add(s);
-              }
+        Category category = new Category(name);
+        String categoryPluginsConfig = configManager.getConfiguration("category", name);
+
+        if (categoryPluginsConfig != null) {
+          String[] categoryPlugins = categoryPluginsConfig.split(",");
+          for (String s : categoryPlugins) {
+            if (!s.equals("")) {
+              category.plugins.add(s);
             }
           }
-
-          categories.add(category);
         }
+
+        categories.add(category);
       }
     }
 
-    Category all = new Category("MeteorLite");
+    Category all = new Category(MAIN_CATEGORY_NAME);
     for (Plugin p : PluginManager.plugins) {
       all.plugins.add(p.getName());
     }
 
-    all.open = true;
     categories.add(all);
 
     saveCategories();
@@ -128,7 +128,7 @@ public class PluginListUI {
     for (Category c : categories) {
       StringBuilder pluginsConfig = new StringBuilder();
 
-      if (!c.name.equals("MeteorLite")) {
+      if (!c.name.equals(MAIN_CATEGORY_NAME)) {
         int k = 0;
 
         for (String p : c.plugins) {
@@ -153,37 +153,14 @@ public class PluginListUI {
     configManager.setConfiguration("meteorlite", "categories", categoriesConfig.toString());
     configManager.saveProperties(true);
   }
-
+  
   public void refreshPlugins() {
+    categories.forEach(Category::clear);
     pluginList.getChildren().clear();
     pluginPanels.clear();
     configGroupPluginMap.clear();
 
     for (Category c : categories) {
-      AnchorPane categoryPanel = new AnchorPane();
-      categoryPanel.setStyle("-fx-border-color: transparent;");
-      FontAwesomeIconView tick;
-      if (!c.open) {
-        tick = new FontAwesomeIconView(FontAwesomeIcon.ANGLE_RIGHT);
-      } else {
-        tick = new FontAwesomeIconView(FontAwesomeIcon.ANGLE_DOWN);
-      }
-
-      tick.setFill(Paint.valueOf("CYAN"));
-      tick.setSize("28");
-      AnchorPane.setLeftAnchor(tick, 8.0);
-      AnchorPane.setTopAnchor(tick, 8.0);
-      AnchorPane.setBottomAnchor(tick, 8.0);
-
-      categoryPanel.setStyle("-fx-background-color: #212121; -fx-border-style: solid;  -fx-border-color: #121212; -fx-border-width: 1;");
-      categoryPanel.getStylesheets().add("css/plugins/jfx-contextmenu.css");
-      Text categoryName = new Text();
-      categoryName.setText(c.name);
-      categoryName.setFill(Paint.valueOf("CYAN"));
-      AnchorPane.setLeftAnchor(categoryName, 44.0);
-      AnchorPane.setTopAnchor(categoryName, 8.0);
-      categoryName.setFont(Font.font(18));
-
       ContextMenu contextMenu = new ContextMenu();
       contextMenu.setStyle("-fx-highlight-fill: #424242");
       int position = getCategoryPosition(c);
@@ -212,7 +189,7 @@ public class PluginListUI {
         contextMenu.getItems().add(moveDown);
       }
 
-      if (!c.name.equals("MeteorLite")) {
+      if (!c.name.equals(MAIN_CATEGORY_NAME)) {
         contextMenu.setStyle("-fx-background-color: #121212;");
         CategoryMenuItem moveDown = new CategoryMenuItem(c, null, "Remove");
         moveDown.setStyle("-fx-background-color: #121212; -fx-text-fill: cyan; -fx-highlight-fill: #424242");
@@ -223,28 +200,17 @@ public class PluginListUI {
         contextMenu.getItems().add(moveDown);
       }
 
-      categoryPanel.getChildren().add(tick);
-      categoryPanel.getChildren().add(categoryName);
-      categoryPanel.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-        if (e.getButton() == MouseButton.PRIMARY) {
-          c.open = !c.open;
-          refreshPlugins();
-        } else if (e.getButton() == MouseButton.SECONDARY) {
-          Bounds bounds = categoryName.getBoundsInLocal();
-          Bounds screenBounds = categoryName.localToScreen(bounds);
-          contextMenu.show(categoryName, screenBounds.getMinX() + 150, screenBounds.getMinY() + 20);
-        }
-      });
+      TitledPane titlePane = c.getTitlePane();
+      Text title = c.getSectionPane().getTitle();
+      title.setOnContextMenuRequested(e -> contextMenu.show(titlePane, e.getScreenX(), e.getScreenY()));
 
-      pluginList.getChildren().add(categoryPanel);
+      pluginList.getChildren().add(titlePane);
 
-      if (c.open) {
-        for (String s : c.plugins) {
-          Plugin p = PluginManager.getInstance(s);
+      for (String s : c.plugins) {
+        Plugin p = PluginManager.getInstance(s);
 
-          if (p != null) {
-            addPlugin(p, c);
-          }
+        if (p != null) {
+          addPlugin(p, c);
         }
       }
     }
@@ -305,14 +271,7 @@ public class PluginListUI {
   }
 
   private void remove(Category category) {
-    ArrayList<Category> temp = new ArrayList<>();
-    for (Category c : categories) {
-      if (!c.name.equals(category.name)) {
-        temp.add(c);
-      }
-    }
-
-    categories = temp;
+    categories.remove(category);
     saveCategories();
     refreshPlugins();
   }
@@ -521,9 +480,10 @@ public class PluginListUI {
     ContextMenu contextMenu = new ContextMenu();
     contextMenu.setStyle("-fx-background-color: #121212;");
     for (Category c : categories) {
-      if (c.name.equals("MeteorLite")) {
+      if (c.name.equals(MAIN_CATEGORY_NAME)) {
         continue;
       }
+
       if (!c.plugins.contains(p.getName())) {
         CategoryMenuItem menuItem = new CategoryMenuItem(c, p, "Add : " + c.name);
         menuItem.setStyle("-fx-background-color: #121212; -fx-text-fill: cyan;");
@@ -549,7 +509,7 @@ public class PluginListUI {
       }
     }
 
-    if (!category.name.equals("MeteorLite")) {
+    if (!category.name.equals(MAIN_CATEGORY_NAME)) {
       if (getPluginPosition(category, p.getName()) > 0) {
         CategoryMenuItem moveUpMenuItem = new CategoryMenuItem(category, p, "Move up");
         moveUpMenuItem.setStyle("-fx-background-color: #121212; -fx-text-fill: cyan;");
@@ -575,12 +535,11 @@ public class PluginListUI {
       }
     }
 
-    pluginPanel.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      Bounds bounds = pluginPanel.getBoundsInLocal();
-      Bounds screenBounds = pluginPanel.localToScreen(bounds);
-      contextMenu.show(pluginName, screenBounds.getMinX() + 150, screenBounds.getMinY() + 20);
+    pluginName.setOnContextMenuRequested( e -> {
+      contextMenu.show(pluginName, e.getScreenX(), e.getScreenY());
     });
-    pluginList.getChildren().add(pluginPanel);
+
+    category.addNode(pluginPanel);
   }
 
   @Subscribe

@@ -9,7 +9,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javax.inject.Inject;
 
-import javafx.scene.layout.AnchorPane;
 import lombok.Getter;
 import lombok.Setter;
 import meteor.MeteorLiteClientModule;
@@ -56,7 +55,7 @@ public class Plugin implements Module {
   public OverlayManager overlayManager;
 
   public Plugin() {
-    logger.name = this.getClass().getAnnotation(PluginDescriptor.class).name();
+    logger.name = getDescriptor().name();
   }
 
   public void startup() { }
@@ -68,8 +67,12 @@ public class Plugin implements Module {
   @Override
   public void configure(Binder binder) { }
 
+  public PluginDescriptor getDescriptor() {
+    return getClass().getAnnotation(PluginDescriptor.class);
+  }
+
   public String getName() {
-    return getClass().getAnnotation(PluginDescriptor.class).name();
+    return getDescriptor().name();
   }
 
   public Config getConfig(ConfigManager configManager)
@@ -99,8 +102,6 @@ public class Plugin implements Module {
   }
 
   public void toggle(boolean on) {
-
-
     if (!on) {
       shutdown();
       setEnabled(false);
@@ -161,6 +162,7 @@ public class Plugin implements Module {
             instance.toggle();
         }
       }
+
     toggle(!enabled);
   }
 
@@ -173,5 +175,9 @@ public class Plugin implements Module {
 
   public void shutDown() {
 
+  }
+
+  public boolean isToggleable() {
+    return !getDescriptor().cantDisable();
   }
 }
