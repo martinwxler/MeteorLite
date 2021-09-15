@@ -165,6 +165,7 @@ import meteor.plugins.xpdrop.XpDropPlugin;
 import meteor.plugins.xpglobes.XpGlobesPlugin;
 import meteor.plugins.xptracker.XpTrackerPlugin;
 import meteor.plugins.zulrah.ZulrahPlugin;
+import meteor.ui.components.Category;
 import meteor.ui.controllers.PluginListUI;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
@@ -429,14 +430,15 @@ public class PluginManager {
 		plugins.removeIf(Plugin::isExternal);
 
 		// Temp solution for externals
-		PluginListUI.categories.stream()
+		Category cat = PluginListUI.categories.stream()
 				.filter(c -> c.name.equals("MeteorLite"))
 				.findAny()
-				.get().plugins.addAll(0, externals.stream()
-						.map(Plugin::getName)
-						.collect(Collectors.toList()));
+				.get();
 
 		for (Plugin external : externals) {
+			if (!cat.plugins.contains(external.getName())) {
+				cat.plugins.add(0, external.getName());
+			}
 			plugins.add(external);
 			startPlugin(external);
 		}
