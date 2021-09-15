@@ -441,7 +441,7 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 				modelBufferSmall = new GpuIntBuffer();
 				modelBuffer = new GpuIntBuffer();
 
-				if (log.isDebugEnabled())
+				if (Logger.isDebugEnabled())
 				{
 					System.setProperty("jogl.debug", "true");
 				}
@@ -467,7 +467,7 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 						glDrawable.setRealized(true);
 
 						glContext = glDrawable.createContext(null);
-						if (log.isDebugEnabled())
+						if (Logger.isDebugEnabled())
 						{
 							// Debug config on context needs to be set before .makeCurrent call
 							glContext.enableGLDebugMessage(true);
@@ -493,7 +493,7 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 					this.gl = glContext.getGL().getGL4();
 					gl.setSwapInterval(0);
 
-					if (log.isDebugEnabled())
+					if (Logger.isDebugEnabled())
 					{
 						gl.glEnable(gl.GL_DEBUG_OUTPUT);
 

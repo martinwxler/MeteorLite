@@ -638,8 +638,9 @@ public class ConfigManager {
     }
 
     if (getConfiguration(group.value(), "pluginEnabled") == null) {
-      if (plugin.getClass().getAnnotation(PluginDescriptor.class) != null) {
-        boolean enabledByDefault = plugin.getClass().getAnnotation(PluginDescriptor.class).enabledByDefault();
+      PluginDescriptor descriptor = plugin.getClass().getAnnotation(PluginDescriptor.class);
+      if (descriptor != null) {
+        boolean enabledByDefault = descriptor.enabledByDefault() || descriptor.cantDisable();
         setConfiguration(group.value(), "pluginEnabled", enabledByDefault);
       }
     }

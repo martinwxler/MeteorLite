@@ -463,7 +463,7 @@ public abstract class ClientMixin implements RSClient {
       return;
     }
 
-    client.getLogger().info(
+    client.getLogger().debug(
             "|MenuAction|: MenuOption={} MenuTarget={} Id={} Opcode={}/{} Param0={} Param1={} CanvasX={} CanvasY={}",
             menuOptionClicked.getMenuOption(), menuOptionClicked.getMenuTarget(), menuOptionClicked.getId(),
             menuOptionClicked.getMenuAction(), opcode + (decremented ? 2000 : 0),

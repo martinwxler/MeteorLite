@@ -14,4 +14,13 @@ public interface MeteorLiteConfig extends Config {
     default boolean resizeGame() {
         return false;
     }
+
+    @ConfigItem(
+            keyName = "debugEnabled",
+            name = "Enable debug logs",
+            description = "Enables printing of debug logs"
+    )
+    default boolean debugEnabled() {
+        return false;
+    }
 }
