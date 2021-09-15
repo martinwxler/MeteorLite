@@ -14,7 +14,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import meteor.MeteorLiteClientLauncher;
@@ -378,10 +377,8 @@ public class PluginListUI {
   }
 
   private void addPlugin(Plugin p, Category category) {
-    AnchorPane pluginPanel = new AnchorPane();
+    PanelItem pluginPanel = new PanelItem();
     pluginPanels.put(p, pluginPanel);
-    pluginPanel.setStyle("-fx-border-color: transparent;");
-    pluginPanel.setStyle("-fx-background-color: #212121; -fx-border-style: solid;  -fx-border-color: #121212; -fx-border-width: 1;");
 
     String configGroup = p.getConfig(configManager).getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class).value();
     PluginToggleButton toggleButton = null;
@@ -445,12 +442,12 @@ public class PluginListUI {
       }
     }
 
-    Text pluginName = new MeteorText(p);
+    MeteorText pluginName = new MeteorText(p);
+    pluginName.setFill(Paint.valueOf("WHITE"));
 
     AnchorPane.setLeftAnchor(pluginName, 8.0);
     AnchorPane.setTopAnchor(pluginName, 8.0);
     AnchorPane.setBottomAnchor(pluginName, 8.0);
-
 
     if (p.getClass().getAnnotation(PluginDescriptor.class).description().length() > 0) {
       JFXTooltip tooltip = new JFXTooltip();

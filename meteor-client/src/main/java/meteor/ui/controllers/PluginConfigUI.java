@@ -120,7 +120,7 @@ public class PluginConfigUI {
 							.sorted(Comparator.comparingInt(ConfigItemDescriptor::position))
 							.collect(Collectors.toList())) {
 				SectionPane sectionBox = sections.get(configItemDescriptor.getItem().section());
-				Pane configContainer = sectionBox != null ? sectionBox.getContainer() : createNode();
+				Pane configContainer = sectionBox != null ? sectionBox.getContainer() : new PanelItem();
 
 				if (configItemDescriptor.getType() == int.class) {
 					if (configItemDescriptor.getRange() != null) {
@@ -542,12 +542,6 @@ public class PluginConfigUI {
 		lastPluginInteracted.updateConfig();
 	}
 
-	private AnchorPane createNode() {
-		AnchorPane node = new AnchorPane();
-		node.setStyle("-fx-background-color: #212121; -fx-border-style: solid;  -fx-border-color: #121212; -fx-border-width: 1;");
-		return node;
-	}
-
 	public SectionPane createSection(ConfigSection configSection) {
 		SectionPane section = new SectionPane(configSection.name());
 		sections.put(section.getName(), section);
@@ -556,7 +550,7 @@ public class PluginConfigUI {
 
 	private void addConfigItemComponents(ConfigDescriptor cd, ConfigItemDescriptor cid, Pane root, Node... nodes) {
 		if (root instanceof VBox) {
-			Pane pane = createNode();
+			Pane pane = new PanelItem();
 			pane.getChildren().addAll(nodes);
 			if (!hideUnhide(cd, cid)) {
 				return;
