@@ -21,7 +21,9 @@ import meteor.eventbus.events.ConfigChanged;
 import meteor.eventbus.events.OverlayMenuClicked;
 import meteor.game.ItemManager;
 import meteor.plugins.Plugin;
+import meteor.plugins.PluginDependency;
 import meteor.plugins.PluginDescriptor;
+import meteor.plugins.xptracker.XpTrackerPlugin;
 import meteor.plugins.xptracker.XpTrackerService;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayManager;
@@ -63,6 +65,7 @@ import net.runelite.api.events.WallObjectSpawned;
     description = "Show helpful information about agility courses and obstacles",
     tags = {"grace", "marks", "overlay", "shortcuts", "skilling", "traps", "sepulchre",}
 )
+@PluginDependency(XpTrackerPlugin.class)
 public class AgilityPlugin extends Plugin {
 
   private static final int AGILITY_ARENA_REGION_ID = 11157;

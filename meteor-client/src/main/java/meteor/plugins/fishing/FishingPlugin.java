@@ -42,7 +42,9 @@ import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.OverlayMenuClicked;
 import meteor.game.FishingSpot;
 import meteor.plugins.Plugin;
+import meteor.plugins.PluginDependency;
 import meteor.plugins.PluginDescriptor;
+import meteor.plugins.xptracker.XpTrackerPlugin;
 import meteor.ui.overlay.OverlayManager;
 import meteor.ui.overlay.OverlayMenuEntry;
 import net.runelite.api.Actor;
@@ -74,7 +76,7 @@ import net.runelite.api.widgets.WidgetInfo;
     description = "Show fishing stats and mark fishing spots",
     tags = {"overlay", "skilling"}
 )
-@Singleton
+@PluginDependency(XpTrackerPlugin.class)
 public class FishingPlugin extends Plugin {
 
   private static final int TRAWLER_SHIP_REGION_NORMAL = 7499;

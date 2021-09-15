@@ -72,6 +72,8 @@ import meteor.plugins.api.movement.Movement;
 import meteor.plugins.itemstats.ItemStatChangesService;
 import meteor.plugins.itemstats.ItemStatChangesServiceImpl;
 import meteor.plugins.meteorlite.MeteorLiteConfig;
+import meteor.plugins.xptracker.XpTrackerService;
+import meteor.plugins.xptracker.XpTrackerServiceImpl;
 import meteor.ui.controllers.ToolbarFXMLController;
 import meteor.ui.overlay.OverlayManager;
 import meteor.ui.overlay.WidgetOverlay;

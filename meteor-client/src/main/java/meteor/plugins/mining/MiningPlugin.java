@@ -28,6 +28,8 @@ import com.google.inject.Provides;
 import lombok.AccessLevel;
 import lombok.Getter;
 import meteor.eventbus.events.OverlayMenuClicked;
+import meteor.plugins.PluginDependency;
+import meteor.plugins.xptracker.XpTrackerPlugin;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
@@ -55,6 +57,7 @@ import static net.runelite.api.ObjectID.*;
 	tags = {"overlay", "skilling", "timers"},
 	enabledByDefault = false
 )
+@PluginDependency(XpTrackerPlugin.class)
 public class MiningPlugin extends Plugin
 {
 	private static final Pattern MINING_PATERN = Pattern.compile(

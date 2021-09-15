@@ -30,7 +30,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-class XpTrackerServiceImpl implements XpTrackerService
+public class XpTrackerServiceImpl implements XpTrackerService
 {
 	private final XpTrackerPlugin plugin;
 
