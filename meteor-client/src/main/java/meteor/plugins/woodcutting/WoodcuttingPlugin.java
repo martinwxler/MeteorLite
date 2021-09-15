@@ -28,6 +28,8 @@ import com.google.inject.Provides;
 import lombok.AccessLevel;
 import lombok.Getter;
 import meteor.eventbus.events.OverlayMenuClicked;
+import meteor.plugins.PluginDependency;
+import meteor.plugins.xptracker.XpTrackerPlugin;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
@@ -54,6 +56,7 @@ import java.util.regex.Pattern;
 	tags = {"birds", "nest", "notifications", "overlay", "skilling", "wc"},
 	enabledByDefault = false
 )
+@PluginDependency(XpTrackerPlugin.class)
 public class WoodcuttingPlugin extends Plugin
 {
 	private static final Pattern WOOD_CUT_PATTERN = Pattern.compile("You get (?:some|an)[\\w ]+(?:logs?|mushrooms)\\.");
