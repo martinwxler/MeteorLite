@@ -60,6 +60,7 @@ import meteor.plugins.chocogrinder.ChocoGrinder;
 import meteor.plugins.cluescrolls.ClueScrollPlugin;
 import meteor.plugins.combatlevel.CombatLevelPlugin;
 import meteor.plugins.continueclicker.ContinueClickerPlugin;
+import meteor.plugins.cooking.CookingPlugin;
 import meteor.plugins.coxhelper.CoxPlugin;
 import meteor.plugins.coxraidscouter.coxraidscouter;
 import meteor.plugins.dagannothkings.DagannothKingsPlugin;
@@ -237,6 +238,7 @@ public class PluginManager {
 		plugins.add(new ClueScrollPlugin());
 		plugins.add(new CombatLevelPlugin());
 		plugins.add(new ContinueClickerPlugin());
+		plugins.add(new CookingPlugin());
 		plugins.add(new coxraidscouter());
 		plugins.add(new RaidsPlugin());
 		plugins.add(new CoxPlugin());
