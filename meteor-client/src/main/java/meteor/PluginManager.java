@@ -146,6 +146,7 @@ import meteor.plugins.runecraft.RunecraftPlugin;
 import meteor.plugins.runenergy.RunEnergyPlugin;
 import meteor.plugins.runepouch.RunepouchPlugin;
 import meteor.plugins.slayer.SlayerPlugin;
+import meteor.plugins.smelting.SmeltingPlugin;
 import meteor.plugins.smithing.SmithingPlugin;
 import meteor.plugins.socket.SocketPlugin;
 import meteor.plugins.socketDPS.SocketDpsCounterPlugin;
@@ -328,6 +329,7 @@ public class PluginManager {
 		plugins.add(new RunepouchPlugin());
 		plugins.add(new RunecraftPlugin());
 		plugins.add(new SlayerPlugin());
+		plugins.add(new SmeltingPlugin());
 		plugins.add(new SmithingPlugin());
 		plugins.add(new SocketPlugin());
 		plugins.add(new SocketBossTimersPlugin());
