@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Jordan Zomerlei <https://github.com/JZomerlei>
+ * Copyright (c) 2019, Stephen <stepzhu@umich.edu>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,16 +22,20 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.mining;
+package meteor.plugins.smelting;
 
+import static net.runelite.api.AnimationID.SMITHING_CANNONBALL;
+import static net.runelite.api.AnimationID.SMITHING_SMELTING;
+import static net.runelite.api.MenuAction.RUNELITE_OVERLAY;
+import static net.runelite.api.MenuAction.RUNELITE_OVERLAY_CONFIG;
 import static meteor.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.time.Duration;
+import java.time.Instant;
 import javax.inject.Inject;
-import net.runelite.api.AnimationID;
 import net.runelite.api.Client;
-import net.runelite.api.MenuAction;
 import net.runelite.api.Skill;
 import meteor.plugins.xptracker.XpTrackerService;
 import meteor.ui.overlay.OverlayMenuEntry;
@@ -40,70 +44,90 @@ import meteor.ui.overlay.OverlayPosition;
 import meteor.ui.overlay.components.LineComponent;
 import meteor.ui.overlay.components.TitleComponent;
 
-class MiningOverlay extends OverlayPanel
+class SmeltingOverlay extends OverlayPanel
 {
-	static final String MINING_RESET = "Reset";
+	private static final int SMELT_TIMEOUT = 7;
+	static final String SMELTING_RESET = "Reset";
 
 	private final Client client;
-	private final MiningPlugin plugin;
-	private final MiningConfig config;
+	private final SmeltingPlugin plugin;
 	private final XpTrackerService xpTrackerService;
 
 	@Inject
-	private MiningOverlay(final Client client, final MiningPlugin plugin, final MiningConfig config, XpTrackerService xpTrackerService)
+	SmeltingOverlay(Client client, SmeltingPlugin plugin, XpTrackerService xpTrackerService)
 	{
 		super(plugin);
-		setPosition(OverlayPosition.TOP_LEFT);
 		this.client = client;
 		this.plugin = plugin;
-		this.config = config;
 		this.xpTrackerService = xpTrackerService;
-		getMenuEntries().add(new OverlayMenuEntry(MenuAction.RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Mining overlay"));
-		getMenuEntries().add(new OverlayMenuEntry(MenuAction.RUNELITE_OVERLAY, MINING_RESET, "Mining overlay"));
+		setPosition(OverlayPosition.TOP_LEFT);
+		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Smelting overlay"));
+		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY, SMELTING_RESET, "Smelting overlay"));
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		MiningSession session = plugin.getSession();
-		if (session == null || session.getLastMined() == null || !config.showMiningStats())
+		SmeltingSession session = plugin.getSession();
+		if (session == null)
 		{
 			return null;
 		}
 
-		Pickaxe pickaxe = plugin.getPickaxe();
-		if (pickaxe != null && (pickaxe.matchesMiningAnimation(client.getLocalPlayer()) || client.getLocalPlayer().getAnimation() == AnimationID.DENSE_ESSENCE_CHIPPING))
+		if (isSmelting() || Duration.between(session.getLastItemSmelted(), Instant.now()).getSeconds() < SMELT_TIMEOUT)
 		{
 			panelComponent.getChildren().add(TitleComponent.builder()
-				.text("Mining")
-				.color(Color.GREEN)
-				.build());
+					.text("Smelting")
+					.color(Color.GREEN)
+					.build());
 		}
 		else
 		{
 			panelComponent.getChildren().add(TitleComponent.builder()
-				.text("NOT mining")
-				.color(Color.RED)
-				.build());
+					.text("NOT smelting")
+					.color(Color.RED)
+					.build());
 		}
 
-		int actions = xpTrackerService.getActions(Skill.MINING);
+		int actions = xpTrackerService.getActions(Skill.SMITHING);
 		if (actions > 0)
 		{
-			panelComponent.getChildren().add(LineComponent.builder()
-				.left("Total mined:")
-				.right(Integer.toString(actions))
-				.build());
-
+			if (plugin.getSession().getBarsSmelted() > 0)
+			{
+				panelComponent.getChildren().add(LineComponent.builder()
+						.left("Bars:")
+						.right(Integer.toString(session.getBarsSmelted()))
+						.build());
+			}
+			if (plugin.getSession().getCannonBallsSmelted() > 0)
+			{
+				panelComponent.getChildren().add(LineComponent.builder()
+						.left("Cannonballs:")
+						.right(Integer.toString(session.getCannonBallsSmelted()))
+						.build());
+			}
 			if (actions > 2)
 			{
 				panelComponent.getChildren().add(LineComponent.builder()
-					.left("Mined/hr:")
-					.right(Integer.toString(xpTrackerService.getActionsHr(Skill.MINING)))
-					.build());
+						.left("Actions/hr:")
+						.right(Integer.toString(xpTrackerService.getActionsHr(Skill.SMITHING)))
+						.build());
 			}
 		}
 
 		return super.render(graphics);
+
+	}
+
+	private boolean isSmelting()
+	{
+		switch (client.getLocalPlayer().getAnimation())
+		{
+			case SMITHING_SMELTING:
+			case SMITHING_CANNONBALL:
+				return true;
+			default:
+				return false;
+		}
 	}
 }

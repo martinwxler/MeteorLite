@@ -24,20 +24,21 @@
  */
 package meteor.plugins.woodcutting;
 
+import static net.runelite.api.MenuAction.RUNELITE_OVERLAY;
+import static net.runelite.api.MenuAction.RUNELITE_OVERLAY_CONFIG;
+import static meteor.ui.overlay.OverlayManager.OPTION_CONFIGURE;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.Skill;
+import meteor.plugins.xptracker.XpTrackerService;
 import meteor.ui.overlay.OverlayMenuEntry;
 import meteor.ui.overlay.OverlayPanel;
 import meteor.ui.overlay.OverlayPosition;
 import meteor.ui.overlay.components.LineComponent;
 import meteor.ui.overlay.components.TitleComponent;
-
-import javax.inject.Inject;
-import java.awt.*;
-
-import static net.runelite.api.MenuAction.RUNELITE_OVERLAY;
-import static net.runelite.api.MenuAction.RUNELITE_OVERLAY_CONFIG;
-import static meteor.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 
 class WoodcuttingOverlay extends OverlayPanel
 {
@@ -46,15 +47,17 @@ class WoodcuttingOverlay extends OverlayPanel
 	private final Client client;
 	private final WoodcuttingPlugin plugin;
 	private final WoodcuttingConfig config;
+	private final XpTrackerService xpTrackerService;
 
 	@Inject
-	private WoodcuttingOverlay(Client client, WoodcuttingPlugin plugin, WoodcuttingConfig config)
+	private WoodcuttingOverlay(Client client, WoodcuttingPlugin plugin, WoodcuttingConfig config, XpTrackerService xpTrackerService)
 	{
 		super(plugin);
 		setPosition(OverlayPosition.TOP_LEFT);
 		this.client = client;
 		this.plugin = plugin;
 		this.config = config;
+		this.xpTrackerService = xpTrackerService;
 		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Woodcutting overlay"));
 		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY, WOODCUTTING_RESET, "Woodcutting overlay"));
 	}
@@ -88,6 +91,24 @@ class WoodcuttingOverlay extends OverlayPanel
 				.color(Color.RED)
 				.build());
 		}
+
+		int actions = xpTrackerService.getActions(Skill.WOODCUTTING);
+		if (actions > 0)
+		{
+			panelComponent.getChildren().add(LineComponent.builder()
+				.left("Logs cut:")
+				.right(Integer.toString(actions))
+				.build());
+
+			if (actions > 2)
+			{
+				panelComponent.getChildren().add(LineComponent.builder()
+					.left("Logs/hr:")
+					.right(Integer.toString(xpTrackerService.getActionsHr(Skill.WOODCUTTING)))
+					.build());
+			}
+		}
+
 		return super.render(graphics);
 	}
 
