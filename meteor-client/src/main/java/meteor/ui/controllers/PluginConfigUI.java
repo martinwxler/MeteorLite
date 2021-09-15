@@ -210,8 +210,6 @@ public class PluginConfigUI {
 
 	private void createHotKeyNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
 		Text name = createText(configItem.name(), Paint.valueOf("WHITE"), configItem.getItem().description());
-		AnchorPane.setTopAnchor(name, 8.0);
-		AnchorPane.setLeftAnchor(name, 8.0);
 
 		ConfigButton button = new ConfigButton(configManager.getConfiguration(config.getGroup().value(), configItem.key(), ModifierlessKeybind.class).toString());
 		AnchorPane.setTopAnchor(button, 4.0);
@@ -245,8 +243,6 @@ public class PluginConfigUI {
 
 	private void createDefaultKeyBindNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
 		Text name = createText(configItem.name(), Paint.valueOf("WHITE"), configItem.getItem().description());
-		AnchorPane.setTopAnchor(name, 8.0);
-		AnchorPane.setLeftAnchor(name, 8.0);
 
 		ConfigButton button = new ConfigButton(configManager.getConfiguration(config.getGroup().value(), configItem.key(), Keybind.class).toString());
 		AnchorPane.setTopAnchor(button, 4.0);
@@ -280,8 +276,6 @@ public class PluginConfigUI {
 
 	private void createEnumNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
 		Text name = createText(configItem.name(), Paint.valueOf("WHITE"), configItem.getItem().description());
-		AnchorPane.setTopAnchor(name, 8.0);
-		AnchorPane.setLeftAnchor(name, 8.0);
 
 		Class<? extends Enum> type = (Class<? extends Enum>) configItem.getType();
 		Enum<?> currentConfigEnum = Enum.valueOf(type, configManager.getConfiguration(config.getGroup().value(), configItem.key()));
@@ -297,8 +291,7 @@ public class PluginConfigUI {
 		comboBox.setValue(currentToSet);
 
 		AnchorPane.setRightAnchor(comboBox, 8.0);
-		AnchorPane.setTopAnchor(comboBox, 8.0);
-		AnchorPane.setBottomAnchor(comboBox, 8.0);
+		AnchorPane.setTopAnchor(comboBox, 0.0);
 
 		comboBox.getStylesheets().add("css/plugins/jfx-combobox.css");
 		comboBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
@@ -310,8 +303,6 @@ public class PluginConfigUI {
 
 	private void createdDoubleTextNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
 		Text name = createText(configItem.name(), Paint.valueOf("WHITE"), configItem.getItem().description());
-		AnchorPane.setTopAnchor(name, 8.0);
-		AnchorPane.setLeftAnchor(name, 8.0);
 
 		JFXTextField textField = new JFXTextField();
 		AnchorPane.setLeftAnchor(textField, 200.0);
@@ -333,13 +324,11 @@ public class PluginConfigUI {
 
 	private void createStringAreaNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor descriptor) {
 		Text name = createText(descriptor.name(), Paint.valueOf("WHITE"), descriptor.getItem().description());
-		AnchorPane.setLeftAnchor(name, 8.0);
-		AnchorPane.setTopAnchor(name, 8.0);
 
 		JFXTextArea textArea = new JFXTextArea();
-		AnchorPane.setLeftAnchor(textArea, 8.0);
-		AnchorPane.setRightAnchor(textArea, 8.0);
-		AnchorPane.setTopAnchor(textArea, 34.0);
+		AnchorPane.setLeftAnchor(textArea, 0.0);
+		AnchorPane.setRightAnchor(textArea, 0.0);
+		AnchorPane.setTopAnchor(textArea, 24.0);
 		AnchorPane.setBottomAnchor(textArea, 8.0);
 		textArea.setFont(Font.font(MeteorLiteClientModule.METEOR_FONT_SIZE));
 
@@ -354,12 +343,10 @@ public class PluginConfigUI {
 
 	private void createStringNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor descriptor) {
 		Text name = createText(descriptor.name(), Paint.valueOf("WHITE"), descriptor.getItem().description());
-		AnchorPane.setLeftAnchor(name, 8.0);
-		AnchorPane.setTopAnchor(name, 8.0);
 
 		TextField textfield = descriptor.getItem().secret() ? new JFXPasswordField() : new JFXTextField();
-		AnchorPane.setLeftAnchor(textfield, 8.0);
-		AnchorPane.setRightAnchor(textfield, 8.0);
+		AnchorPane.setLeftAnchor(textfield, 0.0);
+		AnchorPane.setRightAnchor(textfield, 0.0);
 		AnchorPane.setTopAnchor(textfield, 34.0);
 		AnchorPane.setBottomAnchor(textfield, 8.0);
 		textfield.setFont(Font.font(MeteorLiteClientModule.METEOR_FONT_SIZE));
@@ -374,8 +361,6 @@ public class PluginConfigUI {
 
 	private void createBooleanNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor descriptor) {
 		Text name = createText(descriptor.name(), Paint.valueOf("WHITE"), descriptor.getItem().description());
-		AnchorPane.setLeftAnchor(name, 8.0);
-		AnchorPane.setTopAnchor(name, 8.0);
 
 		PluginToggleButton toggleButton = new PluginToggleButton(plugin);
 		AnchorPane.setTopAnchor(toggleButton, 2.0);
@@ -401,11 +386,9 @@ public class PluginConfigUI {
 
 	private void createIntegerSliderNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor descriptor) {
 		Text name = createText(descriptor.name(), Paint.valueOf("WHITE"), descriptor.getItem().description());
-		AnchorPane.setTopAnchor(name, 8.0);
-		AnchorPane.setLeftAnchor(name, 8.0);
 
 		JFXSlider slider = new JFXSlider();
-		AnchorPane.setLeftAnchor(slider, 8.0);
+		AnchorPane.setLeftAnchor(slider, 0.0);
 		AnchorPane.setTopAnchor(slider, 34.0);
 		AnchorPane.setRightAnchor(slider, 8.0);
 
@@ -431,12 +414,10 @@ public class PluginConfigUI {
 
 	private void createIntegerTextNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor descriptor) {
 		Text name = createText(descriptor.name(), Paint.valueOf("WHITE"), descriptor.getItem().description());
-		AnchorPane.setTopAnchor(name, 8.0);
-		AnchorPane.setLeftAnchor(name, 8.0);
 
 		JFXTextField textField = new JFXTextField();
-		AnchorPane.setTopAnchor(textField, 8.0);
-		AnchorPane.setBottomAnchor(textField, 8.0);
+		AnchorPane.setTopAnchor(textField, 1.0);
+//		AnchorPane.setBottomAnchor(textField, 1.0);
 		AnchorPane.setLeftAnchor(textField, 200.0);
 		AnchorPane.setRightAnchor(textField, 8.0);
 
@@ -457,12 +438,10 @@ public class PluginConfigUI {
 
 	private void createColorPickerNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
 		Text name = createText(configItem.name(), Paint.valueOf("WHITE"), configItem.getItem().description());
-		AnchorPane.setTopAnchor(name, 8.0);
-		AnchorPane.setLeftAnchor(name, 8.0);
 
 		JFXColorPicker colorPicker = new JFXColorPicker();
-		AnchorPane.setTopAnchor(colorPicker, 8.0);
-		AnchorPane.setBottomAnchor(colorPicker, 8.0);
+		AnchorPane.setTopAnchor(colorPicker, 1.0);
+		AnchorPane.setBottomAnchor(colorPicker, 1.0);
 		AnchorPane.setLeftAnchor(colorPicker, 200.0);
 		AnchorPane.setRightAnchor(colorPicker, 8.0);
 
@@ -568,6 +547,9 @@ public class PluginConfigUI {
 
 	private MeteorText createText(String text, Paint color, String tooltipText) {
 		MeteorText label = new MeteorText(text);
+		AnchorPane.setTopAnchor(label, 3.0);
+		AnchorPane.setBottomAnchor(label, 3.0);
+		AnchorPane.setLeftAnchor(label, 4.0);
 		label.setFill(color);
 
 		if (tooltipText != null) {

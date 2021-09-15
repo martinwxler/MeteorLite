@@ -388,8 +388,7 @@ public class PluginListUI {
 
     if (!p.getClass().getAnnotation(PluginDescriptor.class).cantDisable()) {
       toggleButton = new PluginToggleButton(p);
-      AnchorPane.setTopAnchor(toggleButton, 2.0);
-      AnchorPane.setBottomAnchor(toggleButton, 2.0);
+      AnchorPane.setTopAnchor(toggleButton, 6.0);
       AnchorPane.setRightAnchor(toggleButton, 8.0);
 
       PluginToggleButton finalToggleButton = toggleButton;
@@ -402,7 +401,6 @@ public class PluginListUI {
         }
       });
 
-      toggleButton.setStyle("-fx-text-fill: CYAN;");
       try {
         if (p.getConfig(configManager).getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class) != null) {
           configGroupPluginMap.put(p.getConfig(configManager).getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class).value(), toggleButton);
@@ -427,8 +425,7 @@ public class PluginListUI {
     if (p.getConfig(MeteorLiteClientLauncher.mainClientInstance.instanceInjector.getInstance(ConfigManager.class)) != null) {
       if (p.getConfig(MeteorLiteClientLauncher.mainClientInstance.instanceInjector.getInstance(ConfigManager.class)).getClass().getDeclaredMethods().length > 4) {
         AnchorPane.setRightAnchor(configButton, 48.0);
-        AnchorPane.setTopAnchor(configButton, 4.0);
-        AnchorPane.setBottomAnchor(configButton, 4.0);
+        AnchorPane.setTopAnchor(configButton, 0.0);
 
         FontAwesomeIconView cog = new FontAwesomeIconView(FontAwesomeIcon.COG);
         cog.setFill(MeteorLiteClientModule.METEOR_FONT_COLOR);
@@ -445,9 +442,8 @@ public class PluginListUI {
     MeteorText pluginName = new MeteorText(p);
     pluginName.setFill(Paint.valueOf("WHITE"));
 
-    AnchorPane.setLeftAnchor(pluginName, 8.0);
-    AnchorPane.setTopAnchor(pluginName, 8.0);
-    AnchorPane.setBottomAnchor(pluginName, 8.0);
+    AnchorPane.setLeftAnchor(pluginName, 2.0);
+    AnchorPane.setTopAnchor(pluginName, 0.0);
 
     if (p.getClass().getAnnotation(PluginDescriptor.class).description().length() > 0) {
       JFXTooltip tooltip = new JFXTooltip();
@@ -461,7 +457,6 @@ public class PluginListUI {
           tooltip.hide();
       });
     }
-
 
     pluginPanel.getChildren().add(pluginName);
     pluginPanel.getChildren().add(configButton); //Order matters here! Very Important! uwu
