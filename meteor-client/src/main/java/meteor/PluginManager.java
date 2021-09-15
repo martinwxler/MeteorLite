@@ -72,6 +72,7 @@ import meteor.plugins.entityhider.EntityHiderPlugin;
 import meteor.plugins.entityhiderextended.EntityHiderExtendedPlugin;
 import meteor.plugins.entityinspector.EntityInspectorPlugin;
 import meteor.plugins.environmentaid.EnvironmentAidPlugin;
+import meteor.plugins.examine.ExaminePlugin;
 import meteor.plugins.fairyring.FairyRingPlugin;
 import meteor.plugins.fightcave.FightCavePlugin;
 import meteor.plugins.fishing.FishingPlugin;
@@ -254,6 +255,7 @@ public class PluginManager {
 		plugins.add(new EntityHiderExtendedPlugin());
 		plugins.add(new EntityInspectorPlugin());
 		plugins.add(new EnvironmentAidPlugin());
+		plugins.add(new ExaminePlugin());
 		plugins.add(new FairyRingPlugin());
 		plugins.add(new FightCavePlugin());
 		plugins.add(new FishingPlugin());
