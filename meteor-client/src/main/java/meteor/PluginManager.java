@@ -141,6 +141,7 @@ import meteor.plugins.socketicedemon.SocketIceDemonPlugin;
 import meteor.plugins.socketplanks.SocketPlanksPlugin;
 import meteor.plugins.socketthieving.SocketThievingPlugin;
 import meteor.plugins.sotetseg.SotetsegPlugin;
+import meteor.plugins.specbar.SpecBarPlugin;
 import meteor.plugins.specialcounterextended.SpecialCounterExtendedPlugin;
 import meteor.plugins.groundmarkers.sGroundMarkerPlugin;
 import meteor.plugins.objectmarkers.sObjectIndicatorsPlugin;
@@ -333,6 +334,7 @@ public class PluginManager {
 		plugins.add(new PlayerStatusPlugin());
 		plugins.add(new SotetsegPlugin());
 		plugins.add(new SpecialCounterExtendedPlugin());
+		plugins.add(new SpecBarPlugin());
 		plugins.add(new SocketThievingPlugin());
 		plugins.add(new AutoClickerPlugin());
 		plugins.add(new AutoLogHop());
