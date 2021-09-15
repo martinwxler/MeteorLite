@@ -62,7 +62,7 @@ class SceneUploader
 	private Client client;
 
 	@Inject
-	private GpuHDPlugin gpuHDPlugin;
+	private GpuHDPlugin hdPlugin;
 
 	@Inject
 	ProceduralGenerator proceduralGenerator;
@@ -392,7 +392,7 @@ class SceneUploader
 				neColor = proceduralGenerator.vertexTerrainColor.getOrDefault(neVertexKey, neColor);
 				nwColor = proceduralGenerator.vertexTerrainColor.getOrDefault(nwVertexKey, nwColor);
 
-				if (gpuHDPlugin.configGroundTextures)
+				if (hdPlugin.configGroundTextures)
 				{
 					swMaterial = proceduralGenerator.vertexTerrainTexture.getOrDefault(swVertexKey, swMaterial);
 					seMaterial = proceduralGenerator.vertexTerrainTexture.getOrDefault(seVertexKey, seMaterial);
@@ -425,7 +425,7 @@ class SceneUploader
 					neColor = HDUtils.colorHSLToInt(proceduralGenerator.recolorUnderlay(underlay, HDUtils.colorIntToHSL(neColor)));
 				}
 
-				if (gpuHDPlugin.configGroundTextures)
+				if (hdPlugin.configGroundTextures)
 				{
 					swMaterial = groundMaterial.getRandomMaterial(tileZ, baseX + tileX, baseY + tileY);
 					seMaterial = groundMaterial.getRandomMaterial(tileZ, baseX + tileX + 1, baseY + tileY);
@@ -543,7 +543,7 @@ class SceneUploader
 		int nwVertexKey = vertexKeys[2];
 		int neVertexKey = vertexKeys[3];
 
-		if (gpuHDPlugin.configWaterEffects == WaterEffects.ALL && proceduralGenerator.tileIsWater[tileZ][tileX][tileY])
+		if (hdPlugin.configWaterEffects == WaterEffects.ALL && proceduralGenerator.tileIsWater[tileZ][tileX][tileY])
 		{
 			// underwater terrain
 
@@ -569,7 +569,7 @@ class SceneUploader
 			Material nwMaterial = Material.NONE;
 			Material neMaterial = Material.NONE;
 
-			if (gpuHDPlugin.configGroundTextures)
+			if (hdPlugin.configGroundTextures)
 			{
 				GroundMaterial groundMaterial = GroundMaterial.UNDERWATER_GENERIC;
 
@@ -735,7 +735,7 @@ class SceneUploader
 				colorB = proceduralGenerator.vertexTerrainColor.getOrDefault(vertexKeyB, colorB);
 				colorC = proceduralGenerator.vertexTerrainColor.getOrDefault(vertexKeyC, colorC);
 
-				if (gpuHDPlugin.configGroundTextures)
+				if (hdPlugin.configGroundTextures)
 				{
 					materialA = proceduralGenerator.vertexTerrainTexture.getOrDefault(vertexKeyA, materialA);
 					materialB = proceduralGenerator.vertexTerrainTexture.getOrDefault(vertexKeyB, materialB);
@@ -767,7 +767,7 @@ class SceneUploader
 					colorC = HDUtils.colorHSLToInt(proceduralGenerator.recolorUnderlay(underlay, HDUtils.colorIntToHSL(colorC)));
 				}
 
-				if (gpuHDPlugin.configGroundTextures)
+				if (hdPlugin.configGroundTextures)
 				{
 					materialA = groundMaterial.getRandomMaterial(tileZ, baseX + tileX + (int) Math.floor((float) localVertices[0][0] / Perspective.LOCAL_TILE_SIZE), baseY + tileY + (int) Math.floor((float) localVertices[0][1] / Perspective.LOCAL_TILE_SIZE));
 					materialB = groundMaterial.getRandomMaterial(tileZ, baseX + tileX + (int) Math.floor((float) localVertices[1][0] / Perspective.LOCAL_TILE_SIZE), baseY + tileY + (int) Math.floor((float) localVertices[1][1] / Perspective.LOCAL_TILE_SIZE));
@@ -853,7 +853,7 @@ class SceneUploader
 			return new int[]{bufferLength, uvBufferLength, underwaterTerrain};
 		}
 
-		if (gpuHDPlugin.configWaterEffects == WaterEffects.ALL && proceduralGenerator.tileIsWater[tileZ][tileX][tileY])
+		if (hdPlugin.configWaterEffects == WaterEffects.ALL && proceduralGenerator.tileIsWater[tileZ][tileX][tileY])
 		{
 			underwaterTerrain = 1;
 
@@ -884,7 +884,7 @@ class SceneUploader
 				int depthB = proceduralGenerator.vertexUnderwaterDepth.getOrDefault(vertexKeyB, 0);
 				int depthC = proceduralGenerator.vertexUnderwaterDepth.getOrDefault(vertexKeyC, 0);
 
-				if (gpuHDPlugin.configGroundTextures)
+				if (hdPlugin.configGroundTextures)
 				{
 					GroundMaterial groundMaterial = GroundMaterial.UNDERWATER_GENERIC;
 
@@ -1170,7 +1170,7 @@ class SceneUploader
 			}
 		}
 
-		if (gpuHDPlugin.configTzhaarHD && objectProperties != null && objectProperties.getTzHaarRecolorType() != TzHaarRecolorType.NONE)
+		if (hdPlugin.configTzhaarHD && objectProperties != null && objectProperties.getTzHaarRecolorType() != TzHaarRecolorType.NONE)
 		{
 			int[][] tzHaarRecolored = proceduralGenerator.recolorTzHaar(objectProperties, vertexY[triangleA], vertexY[triangleB], vertexY[triangleC], packedAlphaPriority, objectType, color1H, color1S, color1L, color2H, color2S, color2L, color3H, color3S, color3L);
 			color1H = tzHaarRecolored[0][0];
@@ -1253,7 +1253,7 @@ class SceneUploader
 		}
 		else if (objectProperties != null && objectProperties.getMaterial() != Material.NONE)
 		{
-			material = gpuHDPlugin.configObjectTextures ? objectProperties.getMaterial() : Material.NONE;
+			material = hdPlugin.configObjectTextures ? objectProperties.getMaterial() : Material.NONE;
 			int packedTextureData = packTextureData(Material.getIndex(material), false);
 
 			uvBuffer.ensureCapacity(12);

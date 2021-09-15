@@ -43,7 +43,7 @@ class HDUtils
 	private SceneUploader sceneUploader;
 
 	@Inject
-	private GpuHDPlugin gpuHDPlugin;
+	private GpuHDPlugin hdPlugin;
 
 	@Inject
 	private ProceduralGenerator proceduralGenerator;

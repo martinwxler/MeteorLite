@@ -62,7 +62,8 @@ import jogamp.nativewindow.SurfaceScaleUtils;
 import jogamp.nativewindow.jawt.x11.X11JAWTWindow;
 import jogamp.nativewindow.macosx.OSXUtil;
 import jogamp.newt.awt.NewtFactoryAWT;
-import lombok.extern.slf4j.Slf4j;
+import meteor.PluginManager;
+import meteor.util.DrawManager;
 import net.runelite.api.BufferProvider;
 import net.runelite.api.Client;
 import net.runelite.api.DecorativeObject;
@@ -91,6 +92,7 @@ import net.runelite.api.events.GroundObjectDespawned;
 import net.runelite.api.events.GroundObjectSpawned;
 import net.runelite.api.events.ItemDespawned;
 import net.runelite.api.events.ItemSpawned;
+import net.runelite.api.events.NpcChanged;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.ProjectileMoved;
@@ -115,6 +117,7 @@ import static rs117.hd.GLUtil.glGenRenderbuffer;
 import static rs117.hd.GLUtil.glGenTexture;
 import static rs117.hd.GLUtil.glGenVertexArrays;
 import static rs117.hd.GLUtil.glGetInteger;
+import org.sponge.util.Logger;
 import rs117.hd.config.LevelOfDetail;
 import rs117.hd.config.AntiAliasingMode;
 import rs117.hd.config.FogDepthMode;
@@ -129,13 +132,13 @@ import meteor.util.OSType;
 import org.jocl.CL;
 import static org.jocl.CL.CL_MEM_READ_ONLY;
 import static org.jocl.CL.CL_MEM_WRITE_ONLY;
+import static org.jocl.CL.clCreateFromGLBuffer;
 
 @PluginDescriptor(
 	name = "GPU HD (beta)",
 	description = "117 GPU renderer with a suite of graphical enhancements",
 	tags = {"hd", "high", "detail", "graphics", "shaders", "textures"}
 )
-@Slf4j
 public class GpuHDPlugin extends Plugin implements DrawCallbacks
 {
 	// This is the maximum number of triangles the compute shaders support
@@ -151,9 +154,13 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 	private static final int MATERIAL_PROPERTIES_COUNT = 12;
 	private static final int LIGHT_PROPERTIES_COUNT = 8;
 	private static final int SCALAR_BYTES = 4;
+	Logger log = Logger.getLogger(getClass());
 
 	@Inject
 	private Client client;
+	
+	@Inject
+	private OpenCLManager openCLManager;
 
 	@Inject
 	private ClientThread clientThread;
@@ -174,7 +181,21 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 	private SceneUploader sceneUploader;
 
 	@Inject
+	private DrawManager drawManager;
+
+	@Inject
+	private PluginManager pluginManager;
+
+	@Inject
 	private ProceduralGenerator proceduralGenerator;
+	
+	enum ComputeMode
+	{
+		OPENGL,
+		OPENCL,
+	}
+	
+	private ComputeMode computeMode = ComputeMode.OPENGL;
 
 	private Canvas canvas;
 	private JAWTWindow jawtWindow;
@@ -407,6 +428,8 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 				{
 					return false;
 				}
+				
+				computeMode = OSType.getOSType() == OSType.MacOS ? ComputeMode.OPENCL : ComputeMode.OPENGL;
 
 				canvas.setIgnoreRepaint(true);
 
@@ -528,7 +551,7 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 			catch (Throwable e)
 			{
 				log.error("Error starting HD plugin", e);
-				shutDown();
+				shutdown();
 			}
 			return true;
 		});
@@ -548,6 +571,8 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 
 			invokeOnMainThread(() ->
 			{
+				openCLManager.cleanup();
+				
 				if (gl != null)
 				{
 					if (textureArrayId != -1)
@@ -640,9 +665,17 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 		glProgram = PROGRAM.compile(gl, template);
 		glUiProgram = UI_PROGRAM.compile(gl, template);
 		glShadowProgram = SHADOW_PROGRAM.compile(gl, template);
-		glComputeProgram = COMPUTE_PROGRAM.compile(gl, template);
-		glSmallComputeProgram = SMALL_COMPUTE_PROGRAM.compile(gl, template);
-		glUnorderedComputeProgram = UNORDERED_COMPUTE_PROGRAM.compile(gl, template);
+		
+		if (computeMode == ComputeMode.OPENCL)
+		{
+			openCLManager.init(gl);
+		}
+		else
+		{
+			glComputeProgram = COMPUTE_PROGRAM.compile(gl, template);
+			glSmallComputeProgram = SMALL_COMPUTE_PROGRAM.compile(gl, template);
+			glUnorderedComputeProgram = UNORDERED_COMPUTE_PROGRAM.compile(gl, template);
+		}
 
 		initUniforms();
 
@@ -1136,6 +1169,24 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 			null,
 			GL_STREAM_DRAW,
 			CL_MEM_WRITE_ONLY);
+		
+		if (computeMode == ComputeMode.OPENCL)
+		{
+			// The docs for clEnqueueAcquireGLObjects say all pending GL operations must be completed before calling
+			// clEnqueueAcquireGLObjects, and recommends calling glFinish() as the only portable way to do that.
+			// However no issues have been observed from not calling it, and so will leave disabled for now.
+			// gl.glFinish();
+
+			openCLManager.compute(
+				unorderedModels, smallModels, largeModels,
+				sceneVertexBuffer, sceneUvBuffer,
+				tmpVertexBuffer, tmpUvBuffer,
+				tmpModelBufferUnordered, tmpModelBufferSmall, tmpModelBufferLarge,
+				tmpOutBuffer, tmpOutUvBuffer,
+				uniformBuffer,
+				tmpOutNormalBuffer, sceneNormalBuffer, tmpNormalBuffer);
+			return;
+		}
 
 		/*
 		 * Compute is split into three separate programs: 'unordered', 'small', and 'large'
@@ -1346,7 +1397,7 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 			// We inject code in the game engine mixin to prevent the client from doing canvas replacement,
 			// so this should not ever be hit
 			log.warn("Canvas invalidated!");
-			shutDown();
+			shutdown();
 			startUp();
 			return;
 		}
@@ -1398,7 +1449,7 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 				final int samples = forcedAASamples != 0 ? forcedAASamples :
 					Math.min(antiAliasingMode.getSamples(), maxSamples);
 
-				log.debug("AA samples: {}, max samples: {}, forced samples: {}", samples, maxSamples, forcedAASamples);
+				//log.debug("AA samples: {}, max samples: {}, forced samples: {}", samples, maxSamples, forcedAASamples);
 
 				initAAFbo(stretchedCanvasWidth, stretchedCanvasHeight, samples);
 
@@ -1475,7 +1526,14 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 			int vertexBuffer, uvBuffer, normalBuffer;
 
 			// Before reading the SSBOs written to from postDrawScene() we must insert a barrier
-			gl.glMemoryBarrier(gl.GL_SHADER_STORAGE_BARRIER_BIT);
+			if (computeMode == ComputeMode.OPENCL)
+			{
+				openCLManager.finish();
+			}
+			else
+			{
+				gl.glMemoryBarrier(gl.GL_SHADER_STORAGE_BARRIER_BIT);
+			}
 
 			// Draw using the output buffer of the compute
 			vertexBuffer = tmpOutBuffer.glBufferId;
@@ -1788,8 +1846,11 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 		try {
 			glDrawable.swapBuffers();
 		} catch (Exception e) {
-			//ignore
+			shutdown();
+			return;
 		}
+
+		drawManager.processDrawComplete(this::screenshot);
 	}
 
 	private float[] makeProjectionMatrix(float w, float h, float n)
@@ -2345,10 +2406,30 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 		gl.glBindBuffer(target, glBuffer.glBufferId);
 		if (size > glBuffer.size)
 		{
-			log.trace("Buffer resize: {} {} -> {}", glBuffer, glBuffer.size, size);
+			//log.trace("Buffer resize: {} {} -> {}", glBuffer, glBuffer.size, size);
 
 			glBuffer.size = size;
 			gl.glBufferData(target, size, data, usage);
+			
+			if (computeMode == ComputeMode.OPENCL)
+			{
+				// cleanup previous buffer
+				if (glBuffer.cl_mem != null)
+				{
+					CL.clReleaseMemObject(glBuffer.cl_mem);
+				}
+				
+				// allocate new
+				if (size == 0)
+				{
+					// opencl does not allow 0-size gl buffers, it will segfault on macos
+					glBuffer.cl_mem = null;
+				}
+				else
+				{
+					glBuffer.cl_mem = clCreateFromGLBuffer(openCLManager.context, clFlags, glBuffer.glBufferId, null);
+				}
+			}
 		}
 		else if (data != null)
 		{
@@ -2375,15 +2456,9 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 	}
 
 	@Subscribe
-	public void onItemDespawned(ItemDespawned itemDespawned)
+	public void onNpcChanged(NpcChanged npcChanged)
 	{
-		lightManager.removeGroundItemLight(itemDespawned);
-	}
-
-	@Subscribe
-	public void onItemSpawned(ItemSpawned itemSpawned)
-	{
-		lightManager.addGroundItemLight(itemSpawned);
+		lightManager.updateNpcChanged(npcChanged);
 	}
 
 	@Subscribe
@@ -2476,5 +2551,17 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 	{
 		GroundObject groundObject = groundObjectDespawned.getGroundObject();
 		lightManager.removeObjectLight(groundObject);
+	}
+
+	@Subscribe
+	public void onItemDespawned(ItemDespawned itemDespawned)
+	{
+		lightManager.removeGroundItemLight(itemDespawned);
+	}
+
+	@Subscribe
+	public void onItemSpawned(ItemSpawned itemSpawned)
+	{
+		lightManager.addGroundItemLight(itemSpawned);
 	}
 }

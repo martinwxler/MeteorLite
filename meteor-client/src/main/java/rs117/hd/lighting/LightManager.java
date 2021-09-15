@@ -62,7 +62,7 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ItemDespawned;
 import net.runelite.api.events.ItemSpawned;
 import net.runelite.api.events.NpcDespawned;
-import org.sponge.util.Logger;
+import net.runelite.api.events.NpcChanged;
 import rs117.hd.GpuHDPlugin;
 import rs117.hd.HdPluginConfig;
 import rs117.hd.HDUtils;
@@ -78,7 +78,7 @@ public class LightManager
 	private Client client;
 
 	@Inject
-	private GpuHDPlugin gpuHDPlugin;
+	private GpuHDPlugin hdPlugin;
 
 	@Inject
 	private ConfigManager configManager;
@@ -210,9 +210,9 @@ public class LightManager
 			return;
 		}
 
-		int camX = gpuHDPlugin.camTarget[0];
-		int camY = gpuHDPlugin.camTarget[1];
-		int camZ = gpuHDPlugin.camTarget[2];
+		int camX = hdPlugin.camTarget[0];
+		int camY = hdPlugin.camTarget[1];
+		int camZ = hdPlugin.camTarget[2];
 
 		Iterator<Light> lightIterator = sceneLights.iterator();
 
@@ -237,7 +237,7 @@ public class LightManager
 				light.y = (int) light.projectile.getY();
 				light.z = (int) light.projectile.getZ();
 
-				light.visible = gpuHDPlugin.configProjectileLights;
+				light.visible = hdPlugin.configProjectileLights;
 			}
 
 			if (light.tileItem != null) {
@@ -317,7 +317,7 @@ public class LightManager
 
 					light.visible = light.npc.getModel$api() != null;
 
-					if (!gpuHDPlugin.configNpcLights)
+					if (!hdPlugin.configNpcLights)
 					{
 						light.visible = false;
 					}
@@ -546,6 +546,11 @@ public class LightManager
 		}
 	}
 
+	public void updateNpcChanged(NpcChanged npcChanged)
+	{
+		removeNpcLight(npcChanged);
+		addNpcLight(npcChanged.getNpc());
+	}
 
 	public ArrayList<Light> getVisibleLights(int maxDistance, int maxLights)
 	{
@@ -642,78 +647,14 @@ public class LightManager
 		sceneLights.add(light);
 	}
 
-	private static int rgb(int r, int g, int b)
-	{
-		return (r << 16) | (g << 8) | b;
-	}
-
 	public void removeNpcLight(NpcDespawned npcDespawned)
 	{
 		sceneLights.removeIf(light -> light.npc == npcDespawned.getNpc());
 	}
 
-	public void addGroundItemLight(ItemSpawned itemSpawned) {
-		Color lowValueColor = configManager.getConfiguration("grounditems", "lowValueColor", Color.class);
-		Color mediumValueColor = configManager.getConfiguration("grounditems", "mediumValueColor", Color.class);
-		Color highValueColor = configManager.getConfiguration("grounditems", "highValueColor", Color.class);
-		Color insaneValueColor = configManager.getConfiguration("grounditems", "insaneValueColor", Color.class);
-		int lowValuePrice = configManager.getConfiguration("grounditems", "lowValuePrice", Integer.class);
-		int mediumValuePrice = configManager.getConfiguration("grounditems", "mediumValuePrice", Integer.class);
-		int highValuePrice = configManager.getConfiguration("grounditems", "highValuePrice", Integer.class);
-		int insaneValuePrice = configManager.getConfiguration("grounditems", "insaneValuePrice", Integer.class);
-
-		GroundItemsPlugin groundItemsPlugin = PluginManager.getInstance(GroundItemsPlugin.class);
-		for (GroundItem groundItem : groundItemsPlugin.collectedGroundItems.values()) {
-			if (itemSpawned.getItem().getId() == groundItem.getItemId())
-				if (groundItem.getLocation().distanceTo(itemSpawned.getTile().getWorldLocation()) == 0) {
-
-					// prevent duplicate lights being spawned for the same GroundItem
-					for (Light light : sceneLights)
-					{
-						if (light.tileItem == groundItem)
-						{
-							return;
-						}
-					}
-
-					int haPrice = groundItem.getHaPrice();
-					int gePrice = groundItem.getGePrice();
-					int topValue = Math.max(haPrice, gePrice);
-					Color finalColor = null;
-
-					if (topValue > insaneValuePrice)
-						finalColor = insaneValueColor;
-					else if (topValue > highValuePrice)
-						finalColor = highValueColor;
-					else if (topValue > mediumValuePrice)
-						finalColor = mediumValueColor;
-					else if (topValue > lowValuePrice)
-						finalColor = lowValueColor;
-
-					if (finalColor == null)
-						return;
-
-					GroundItemLight itemLight = new GroundItemLight(25, Alignment.CENTER, 320, 14f, rgb(finalColor.getRed(), finalColor.getGreen(), finalColor.getBlue()),
-							LightType.FLICKER, 0);
-
-					int rgb = itemLight.getRgb();
-					int r = rgb >>> 16;
-					int g = (rgb >> 8) & 0xff;
-					int b = rgb & 0xff;
-					LocalPoint localPoint = LocalPoint.fromWorld(client, groundItem.getLocation());
-					Light light = new Light(localPoint.getX(), localPoint.getY(), groundItem.getLocation().getPlane(),
-							itemLight.getHeight(), itemLight.getAlignment(), itemLight.getSize(), itemLight.getStrength(), new int[]{r, g, b}, itemLight.getLightType(), 0, itemLight.getRange(), 0);
-					light.tileItem = itemSpawned.getItem();
-					light.visible = false;
-
-					sceneLights.add(light);
-				}
-		}
-	}
-
-	public void removeGroundItemLight(ItemDespawned itemDespawned)
+	public void removeNpcLight(NpcChanged npcChanged)
 	{
-		sceneLights.removeIf(light -> light.tileItem == itemDespawned.getItem());
+		sceneLights.removeIf(light -> light.npc == npcChanged.getNpc());
 	}
 
 	public void addObjectLight(TileObject tileObject, int plane)
@@ -1041,5 +982,71 @@ public class LightManager
 		}
 
 		log.debug("loaded {} lights from file", allLights.size());
+	}
+
+	public void addGroundItemLight(ItemSpawned itemSpawned) {
+		Color lowValueColor = configManager.getConfiguration("grounditems", "lowValueColor", Color.class);
+		Color mediumValueColor = configManager.getConfiguration("grounditems", "mediumValueColor", Color.class);
+		Color highValueColor = configManager.getConfiguration("grounditems", "highValueColor", Color.class);
+		Color insaneValueColor = configManager.getConfiguration("grounditems", "insaneValueColor", Color.class);
+		int lowValuePrice = configManager.getConfiguration("grounditems", "lowValuePrice", Integer.class);
+		int mediumValuePrice = configManager.getConfiguration("grounditems", "mediumValuePrice", Integer.class);
+		int highValuePrice = configManager.getConfiguration("grounditems", "highValuePrice", Integer.class);
+		int insaneValuePrice = configManager.getConfiguration("grounditems", "insaneValuePrice", Integer.class);
+
+		GroundItemsPlugin groundItemsPlugin = PluginManager.getInstance(GroundItemsPlugin.class);
+		for (GroundItem groundItem : groundItemsPlugin.collectedGroundItems.values()) {
+			if (itemSpawned.getItem().getId() == groundItem.getItemId())
+				if (groundItem.getLocation().distanceTo(itemSpawned.getTile().getWorldLocation()) == 0) {
+
+					// prevent duplicate lights being spawned for the same GroundItem
+					for (Light light : sceneLights)
+					{
+						if (light.tileItem == groundItem)
+						{
+							return;
+						}
+					}
+
+					int haPrice = groundItem.getHaPrice();
+					int gePrice = groundItem.getGePrice();
+					int topValue = Math.max(haPrice, gePrice);
+					Color finalColor = null;
+
+					if (topValue > insaneValuePrice)
+						finalColor = insaneValueColor;
+					else if (topValue > highValuePrice)
+						finalColor = highValueColor;
+					else if (topValue > mediumValuePrice)
+						finalColor = mediumValueColor;
+					else if (topValue > lowValuePrice)
+						finalColor = lowValueColor;
+
+					if (finalColor == null)
+						return;
+
+					int rgb = rgb(finalColor.getRed(), finalColor.getGreen(), finalColor.getBlue());
+					int r = rgb >>> 16;
+					int g = (rgb >> 8) & 0xff;
+					int b = rgb & 0xff;
+					LocalPoint localPoint = LocalPoint.fromWorld(client, groundItem.getLocation());
+					Light light = new Light(localPoint.getX(), localPoint.getY(), groundItem.getLocation().getPlane(),
+							25, Alignment.CENTER, 320, 14f, new int[]{r, g, b}, LightType.FLICKER, 0, 0, 0);
+					light.tileItem = itemSpawned.getItem();
+					light.visible = false;
+
+					sceneLights.add(light);
+				}
+		}
+	}
+
+	public void removeGroundItemLight(ItemDespawned itemDespawned)
+	{
+		sceneLights.removeIf(light -> light.tileItem == itemDespawned.getItem());
+	}
+
+	private static int rgb(int r, int g, int b)
+	{
+		return (r << 16) | (g << 8) | b;
 	}
 }

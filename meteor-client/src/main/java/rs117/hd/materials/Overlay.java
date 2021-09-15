@@ -180,6 +180,8 @@ public enum Overlay
 	SHAYZIEN_COMBAT_RING_FLOOR_2(37, Area.SHAYZIEN_COMBAT_RING, GroundMaterial.CARPET, new Properties().setBlended(false)),
 	SHAYZIEN_COMBAT_RING_FLOOR_3(72, Area.SHAYZIEN_COMBAT_RING, GroundMaterial.CARPET, new Properties().setBlended(false)),
 	SHAYZIEN_COMBAT_RING_FLOOR_4(73, Area.SHAYZIEN_COMBAT_RING, GroundMaterial.CARPET, new Properties().setBlended(false)),
+	MESS_HALL_KITCHEN_TILE_1(30, Area.MESS_HALL_KITCHEN, GroundMaterial.MARBLE_1_SEMIGLOSS, new Properties().setBlended(false)),
+	MESS_HALL_KITCHEN_TILE_2(99, Area.MESS_HALL_KITCHEN, GroundMaterial.MARBLE_2_SEMIGLOSS, new Properties().setBlended(false)),
 	// Chambers of Xeric
 	MOUNT_QUIDAMORTEM_SYMBOL(-93, Area.MOUNT_QUIDAMORTEM, GroundMaterial.DIRT, new Properties().setBlended(false)),
 	// Kebos Lowlands
@@ -258,6 +260,7 @@ public enum Overlay
 	OVERLAY_23(23, GroundMaterial.DIRT),
 	OVERLAY_25(25, GroundMaterial.SAND),
 	OVERLAY_26(26, GroundMaterial.SAND),
+	OVERLAY_27(27, GroundMaterial.BRICK_BROWN, new Properties().setBlended(false)),
 	OVERLAY_28(28, GroundMaterial.BRICK, new Properties().setBlended(false)),
 	OVERLAY_29(29, GroundMaterial.GRASS_1),
 	OVERLAY_30(30, GroundMaterial.SNOW_2),
@@ -265,6 +268,7 @@ public enum Overlay
 	OVERLAY_33(33, GroundMaterial.SNOW_2),
 	OVERLAY_35(35, GroundMaterial.WOOD_PLANKS_1),
 	OVERLAY_41(41, WaterType.WATER),
+	OVERLAY_46(46, GroundMaterial.BRICK_BROWN, new Properties().setBlended(false)),
 	OVERLAY_49(49, GroundMaterial.VARIED_DIRT),
 	OVERLAY_52(52, GroundMaterial.WOOD_PLANKS_1),
 	OVERLAY_60(60, GroundMaterial.DIRT),

@@ -18,6 +18,7 @@ public class Logger {
   public String name;
   public String plugin;
   String format = "%-35s%s%n";
+  boolean debugOutput = false;
 
   public Logger(String name) {
     this.name = name;
@@ -95,5 +96,9 @@ public class Logger {
     }
 
     printColorMessage(ansiColor, finalMessage);
+  }
+
+  public boolean isDebugEnabled() {
+    return debugOutput;
   }
 }
