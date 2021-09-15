@@ -40,6 +40,10 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
+import meteor.PluginManager;
+import meteor.config.ConfigManager;
+import meteor.plugins.grounditems.GroundItem;
+import meteor.plugins.grounditems.GroundItemsPlugin;
 import net.runelite.api.Client;
 import net.runelite.api.Constants;
 import net.runelite.api.DecorativeObject;
@@ -50,11 +54,15 @@ import net.runelite.api.NPC;
 import net.runelite.api.Perspective;
 import net.runelite.api.Projectile;
 import net.runelite.api.Tile;
+import net.runelite.api.TileItem;
 import net.runelite.api.TileObject;
 import net.runelite.api.WallObject;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.ItemDespawned;
+import net.runelite.api.events.ItemSpawned;
 import net.runelite.api.events.NpcDespawned;
+import org.sponge.util.Logger;
 import rs117.hd.GpuHDPlugin;
 import rs117.hd.HdPluginConfig;
 import rs117.hd.HDUtils;
@@ -71,6 +79,9 @@ public class LightManager
 
 	@Inject
 	private GpuHDPlugin gpuHDPlugin;
+
+	@Inject
+	private ConfigManager configManager;
 
 	ArrayList<Light> allLights = new ArrayList<>();
 	ArrayList<Light> sceneLights = new ArrayList<>();
@@ -164,6 +175,7 @@ public class LightManager
 		public Projectile projectile = null;
 		public NPC npc = null;
 		public TileObject object = null;
+		public TileItem tileItem = null;
 
 		public Light(int worldX, int worldY, int plane, int height, Alignment alignment, int size, float strength, int[] color, LightType type, float duration, float range, int fadeInDuration)
 		{
@@ -226,6 +238,27 @@ public class LightManager
 				light.z = (int) light.projectile.getZ();
 
 				light.visible = gpuHDPlugin.configProjectileLights;
+			}
+
+			if (light.tileItem != null) {
+				LocalPoint localPoint = LocalPoint.fromWorld(client, light.tileItem.getWorldLocation());
+				if (localPoint != null) {
+					light.x = localPoint.getX();
+					light.y = localPoint.getY();
+					// Interpolate between tile heights based on specific scene coordinates.
+					float lerpX = (light.x % Perspective.LOCAL_TILE_SIZE) / (float) Perspective.LOCAL_TILE_SIZE;
+					float lerpY = (light.y % Perspective.LOCAL_TILE_SIZE) / (float) Perspective.LOCAL_TILE_SIZE;
+					int baseTileX = (int) Math.floor(light.x / (float) Perspective.LOCAL_TILE_SIZE);
+					int baseTileY = (int) Math.floor(light.y / (float) Perspective.LOCAL_TILE_SIZE);
+					float heightNorth = HDUtils.lerp(client.getTileHeights()[light.tileItem.getWorldLocation().getPlane()][baseTileX][baseTileY + 1], client.getTileHeights()[light.tileItem.getWorldLocation().getPlane()][baseTileX + 1][baseTileY + 1], lerpX);
+					float heightSouth = HDUtils.lerp(client.getTileHeights()[light.tileItem.getWorldLocation().getPlane()][baseTileX][baseTileY], client.getTileHeights()[light.tileItem.getWorldLocation().getPlane()][baseTileX + 1][baseTileY], lerpX);
+					float tileHeight = HDUtils.lerp(heightSouth, heightNorth, lerpY);
+					light.z = (int) tileHeight - 1 - light.height;
+
+					light.visible = true;
+				}
+				else
+					light.visible = false;
 			}
 
 			if (light.npc != null)
@@ -609,9 +642,78 @@ public class LightManager
 		sceneLights.add(light);
 	}
 
+	private static int rgb(int r, int g, int b)
+	{
+		return (r << 16) | (g << 8) | b;
+	}
+
 	public void removeNpcLight(NpcDespawned npcDespawned)
 	{
 		sceneLights.removeIf(light -> light.npc == npcDespawned.getNpc());
+	}
+
+	public void addGroundItemLight(ItemSpawned itemSpawned) {
+		Color lowValueColor = configManager.getConfiguration("grounditems", "lowValueColor", Color.class);
+		Color mediumValueColor = configManager.getConfiguration("grounditems", "mediumValueColor", Color.class);
+		Color highValueColor = configManager.getConfiguration("grounditems", "highValueColor", Color.class);
+		Color insaneValueColor = configManager.getConfiguration("grounditems", "insaneValueColor", Color.class);
+		int lowValuePrice = configManager.getConfiguration("grounditems", "lowValuePrice", Integer.class);
+		int mediumValuePrice = configManager.getConfiguration("grounditems", "mediumValuePrice", Integer.class);
+		int highValuePrice = configManager.getConfiguration("grounditems", "highValuePrice", Integer.class);
+		int insaneValuePrice = configManager.getConfiguration("grounditems", "insaneValuePrice", Integer.class);
+
+		GroundItemsPlugin groundItemsPlugin = PluginManager.getInstance(GroundItemsPlugin.class);
+		for (GroundItem groundItem : groundItemsPlugin.collectedGroundItems.values()) {
+			if (itemSpawned.getItem().getId() == groundItem.getItemId())
+				if (groundItem.getLocation().distanceTo(itemSpawned.getTile().getWorldLocation()) == 0) {
+
+					// prevent duplicate lights being spawned for the same GroundItem
+					for (Light light : sceneLights)
+					{
+						if (light.tileItem == groundItem)
+						{
+							return;
+						}
+					}
+
+					int haPrice = groundItem.getHaPrice();
+					int gePrice = groundItem.getGePrice();
+					int topValue = Math.max(haPrice, gePrice);
+					Color finalColor = null;
+
+					if (topValue > insaneValuePrice)
+						finalColor = insaneValueColor;
+					else if (topValue > highValuePrice)
+						finalColor = highValueColor;
+					else if (topValue > mediumValuePrice)
+						finalColor = mediumValueColor;
+					else if (topValue > lowValuePrice)
+						finalColor = lowValueColor;
+
+					if (finalColor == null)
+						return;
+
+					GroundItemLight itemLight = new GroundItemLight(25, Alignment.CENTER, 320, 14f, rgb(finalColor.getRed(), finalColor.getGreen(), finalColor.getBlue()),
+							LightType.FLICKER, 0);
+
+					int rgb = itemLight.getRgb();
+					int r = rgb >>> 16;
+					int g = (rgb >> 8) & 0xff;
+					int b = rgb & 0xff;
+					LocalPoint localPoint = LocalPoint.fromWorld(client, groundItem.getLocation());
+					Light light = new Light(localPoint.getX(), localPoint.getY(), groundItem.getLocation().getPlane(),
+							itemLight.getHeight(), itemLight.getAlignment(), itemLight.getSize(), itemLight.getStrength(), new int[]{r, g, b}, itemLight.getLightType(), 0, itemLight.getRange(), 0);
+					light.tileItem = itemSpawned.getItem();
+					light.visible = false;
+
+					sceneLights.add(light);
+				}
+		}
+	}
+
+	public void removeGroundItemLight(ItemDespawned itemDespawned)
+	{
+		sceneLights.removeIf(light -> light.tileItem == itemDespawned.getItem());
 	}
 
 	public void addObjectLight(TileObject tileObject, int plane)

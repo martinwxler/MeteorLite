@@ -89,6 +89,8 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GroundObjectChanged;
 import net.runelite.api.events.GroundObjectDespawned;
 import net.runelite.api.events.GroundObjectSpawned;
+import net.runelite.api.events.ItemDespawned;
+import net.runelite.api.events.ItemSpawned;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.ProjectileMoved;
@@ -2370,6 +2372,18 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 	public void onNpcDespawned(NpcDespawned npcDespawned)
 	{
 		lightManager.removeNpcLight(npcDespawned);
+	}
+
+	@Subscribe
+	public void onItemDespawned(ItemDespawned itemDespawned)
+	{
+		lightManager.removeGroundItemLight(itemDespawned);
+	}
+
+	@Subscribe
+	public void onItemSpawned(ItemSpawned itemSpawned)
+	{
+		lightManager.addGroundItemLight(itemSpawned);
 	}
 
 	@Subscribe

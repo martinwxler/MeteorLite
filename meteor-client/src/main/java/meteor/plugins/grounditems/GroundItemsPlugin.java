@@ -117,7 +117,7 @@ public class GroundItemsPlugin extends Plugin {
       ColorUtil.wrapWithColorTag("Telekinetic Grab", Color.GREEN) + ColorUtil
           .prependColorTag(" -> ", Color.WHITE);
   @Getter
-  private final Table<WorldPoint, Integer, GroundItem> collectedGroundItems = HashBasedTable
+  public final Table<WorldPoint, Integer, GroundItem> collectedGroundItems = HashBasedTable
       .create();
   private final Queue<Integer> droppedItemQueue = EvictingQueue
       .create(16); // recently dropped items
