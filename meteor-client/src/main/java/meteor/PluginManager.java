@@ -24,6 +24,8 @@ import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.api.example.simpleoneclick.HootOneClickPlugin;
 import meteor.plugins.autologin.AutoLoginPlugin;
 import meteor.plugins.gpu.GpuPlugin;
+import meteor.plugins.inventorytags.InventoryTagsPlugin;
+import meteor.plugins.meteor.interaction.MeteorInteractionPlugin;
 import meteor.plugins.blackjack.BlackjackPlugin;
 import meteor.plugins.chocogrinder.ChocoGrinder;
 import meteor.plugins.coxraidscouter.coxraidscouter;
@@ -31,6 +33,7 @@ import meteor.plugins.entityhider.EntityHiderPlugin;
 import meteor.plugins.gearhelper.GearHelperPlugin;
 import meteor.plugins.hootfighter.HootFighterPlugin;
 import meteor.plugins.api.example.deathevent.DeathEventPlugin;
+import meteor.plugins.api.externals.ExternalManagerPlugin;
 import meteor.plugins.autoclicker.AutoClickerPlugin;
 import meteor.plugins.autologhop.AutoLogHop;
 import meteor.plugins.autorun.AutoRun;
@@ -92,7 +95,8 @@ import meteor.plugins.lowdetail.LowDetailPlugin;
 import meteor.plugins.menuentrymodifier.MenuEntryModifierPlugin;
 import meteor.plugins.menuentryswapper.MenuEntrySwapperPlugin;
 import meteor.plugins.menuentryswapperextended.MenuEntrySwapperExtendedPlugin;
-import meteor.plugins.meteorlite.MeteorLitePlugin;
+import meteor.plugins.meteor.loginscreen.MeteorLoginScreenPlugin;
+import meteor.plugins.meteor.meteorlite.MeteorLitePlugin;
 import meteor.plugins.minimap.MinimapPlugin;
 import meteor.plugins.mining.MiningPlugin;
 import meteor.plugins.motherlode.MotherlodePlugin;
@@ -200,6 +204,8 @@ public class PluginManager {
   private void initPlugins() {
 		// Leave at the top pls, these are not regular plugins
 	  plugins.add(new MeteorLitePlugin());
+		plugins.add(new ExternalManagerPlugin());
+		plugins.add(new MeteorInteractionPlugin());
 
 		plugins.add(new AgilityPlugin());
 		plugins.add(new AlchemicalHydraPlugin());
@@ -267,6 +273,7 @@ public class PluginManager {
 		plugins.add(new InfernoPlugin());
 		plugins.add(new InteractHighlightPlugin());
 		plugins.add(new InventoryGridPlugin());
+		plugins.add(new InventoryTagsPlugin());
 		plugins.add(new ItemChargePlugin());
 		plugins.add(new ItemIdentificationPlugin());
 		plugins.add(new ItemPricesPlugin());
@@ -281,6 +288,7 @@ public class PluginManager {
 		plugins.add(new MenuEntryModifierPlugin());
 		plugins.add(new MenuEntrySwapperPlugin());
 		plugins.add(new MenuEntrySwapperExtendedPlugin());
+		plugins.add(new MeteorLoginScreenPlugin());
 		plugins.add(new MinimapPlugin());
 		plugins.add(new MiningPlugin());
 		plugins.add(new MotherlodePlugin());
