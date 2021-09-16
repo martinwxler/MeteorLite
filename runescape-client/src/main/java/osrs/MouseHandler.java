@@ -416,15 +416,18 @@ public class MouseHandler implements MouseListener, MouseMotionListener, FocusLi
 				if (Decimator.method1050(Decimator.getWidgetFlags(var5), var0 - 1)) {
 					PacketBufferNode var7;
 					if (var0 == 1) {
-						var7 = FriendSystem.getPacketBufferNode(ClientPacket.field2679, Client.packetWriter.isaacCipher);
+						var7 = FriendSystem.getPacketBufferNode(ClientPacket.Packet_widgetActionPacket, Client.packetWriter.isaacCipher);
 						var7.packetBuffer.writeInt(var1);
+						System.out.println(var1);
 						var7.packetBuffer.writeShort(var2);
+						System.out.println(var2);
 						var7.packetBuffer.writeShort(var3);
+						System.out.println(var3);
 						Client.packetWriter.addNode(var7);
 					}
 
 					if (var0 == 2) {
-						var7 = FriendSystem.getPacketBufferNode(ClientPacket.field2735, Client.packetWriter.isaacCipher);
+						var7 = FriendSystem.getPacketBufferNode(ClientPacket.Packet_widgetAction2Packet, Client.packetWriter.isaacCipher);
 						var7.packetBuffer.writeInt(var1);
 						var7.packetBuffer.writeShort(var2);
 						var7.packetBuffer.writeShort(var3);

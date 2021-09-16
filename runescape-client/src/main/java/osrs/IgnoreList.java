@@ -160,7 +160,7 @@ public class IgnoreList extends UserList {
 			Client.mouseCrossState = 0;
 			Client.destinationX = var0;
 			Client.destinationY = var1;
-			var8 = FriendSystem.getPacketBufferNode(ClientPacket.field2653, Client.packetWriter.isaacCipher);
+			var8 = FriendSystem.getPacketBufferNode(ClientPacket.Packet_gameObjectAction2Packet, Client.packetWriter.isaacCipher);
 			var8.packetBuffer.writeShort01(var3);
 			var8.packetBuffer.writeShortA(class320.baseY + var1);
 			var8.packetBuffer.writeShort01(var0 + FloorOverlayDefinition.baseX);
@@ -238,7 +238,7 @@ public class IgnoreList extends UserList {
 					Client.mouseCrossState = 0;
 					Client.destinationX = var0;
 					Client.destinationY = var1;
-					var9 = FriendSystem.getPacketBufferNode(ClientPacket.field2706, Client.packetWriter.isaacCipher);
+					var9 = FriendSystem.getPacketBufferNode(ClientPacket.Packet_NPCActionPacket, Client.packetWriter.isaacCipher);
 					var9.packetBuffer.writeByte(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
 					var9.packetBuffer.writeShort01(var3);
 					Client.packetWriter.addNode(var9);
@@ -266,7 +266,7 @@ public class IgnoreList extends UserList {
 					Client.mouseCrossState = 0;
 					Client.destinationX = var0;
 					Client.destinationY = var1;
-					var9 = FriendSystem.getPacketBufferNode(ClientPacket.field2660, Client.packetWriter.isaacCipher);
+					var9 = FriendSystem.getPacketBufferNode(ClientPacket.Packet_NPCAction3Packet, Client.packetWriter.isaacCipher);
 					var9.packetBuffer.writeShort01(var3);
 					var9.packetBuffer.writeByte(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
 					Client.packetWriter.addNode(var9);

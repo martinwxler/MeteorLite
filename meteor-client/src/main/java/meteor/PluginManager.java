@@ -68,6 +68,7 @@ import meteor.plugins.defaultworld.DefaultWorldPlugin;
 import meteor.plugins.demonicgorilla.DemonicGorillaPlugin;
 import meteor.plugins.devtools.DevToolsPlugin;
 import meteor.plugins.discord.DiscordPlugin;
+import meteor.plugins.eeelfisher.EEelFisherPlugin;
 import meteor.plugins.entityhider.EntityHiderPlugin;
 import meteor.plugins.entityhiderextended.EntityHiderExtendedPlugin;
 import meteor.plugins.entityinspector.EntityInspectorPlugin;
@@ -252,6 +253,7 @@ public class PluginManager {
 		plugins.add(new DevToolsPlugin());
 		plugins.add(new DiaryRequirementsPlugin());
 		plugins.add(new DiscordPlugin());
+		plugins.add(new EEelFisherPlugin());
 		plugins.add(new EntityHiderPlugin());
 		plugins.add(new EntityHiderExtendedPlugin());
 		plugins.add(new EntityInspectorPlugin());
@@ -299,7 +301,7 @@ public class PluginManager {
 		plugins.add(new MouseTooltipPlugin());
 		plugins.add(new MTAPlugin());
 		plugins.add(new NeverLogoutPlugin());
-	  plugins.add(new NightmareHelper());
+	  	plugins.add(new NightmareHelper());
 		plugins.add(new NightmarePlugin());
 		plugins.add(new NpcAggroAreaPlugin());
 		plugins.add(new NpcIndicatorsPlugin());
