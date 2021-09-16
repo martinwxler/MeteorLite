@@ -63,7 +63,7 @@ public class EEelFisherPlugin extends Plugin {
         }
         if(crushing){
             crushingtime++;
-            if(crushingtime>28){
+            if(crushingtime>84){
                 crushing=false;
             }
             return;
