@@ -29,17 +29,12 @@ public class Movement {
     private static final int STAMINA_VARBIT = 25;
     private static final int RUN_VARP = 173;
 
+    public static void setDestination(int worldX, int worldY) {
+        logger.debug("Setting destination {} {}", worldX, worldY);
 
-    private static void setWalkDestination(int sceneX, int sceneY) {
-        logger.debug("Setting destination {} {}", sceneX, sceneY);
-
-        MovementPackets.sendMovement(sceneX, sceneY, Movement.isRunEnabled());
-        Game.getClient().setDestinationX(sceneX);
-        Game.getClient().setDestinationY(sceneY);
-    }
-
-    public static void setDestination(int sceneX, int sceneY) {
-        setWalkDestination(sceneX, sceneY);
+        MovementPackets.sendMovement(worldX, worldY, Movement.isRunEnabled());
+        Game.getClient().setDestinationX(worldX - Game.getClient().getBaseX());
+        Game.getClient().setDestinationY(worldY - Game.getClient().getBaseY());
     }
 
     public static boolean isWalking() {
@@ -80,13 +75,7 @@ public class Movement {
             walkPoint = nearestInScene.getWorldLocation();
         }
 
-        LocalPoint localPoint = LocalPoint.fromWorld(Game.getClient(), walkPoint);
-        if (localPoint == null) {
-            logger.debug("Couldn't convert destination point to local");
-            return;
-        }
-
-        Game.getClient().interact(0, MenuAction.WALK.getId(), localPoint.getSceneX(), localPoint.getSceneY());
+        Game.getClient().interact(0, MenuAction.WALK.getId(), walkPoint.getX(), walkPoint.getY());
     }
 
     public static void walk(Locatable locatable) {
