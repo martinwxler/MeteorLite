@@ -33,6 +33,8 @@ public class EEelFisherPlugin extends Plugin {
 
     boolean crushing = false;
 
+    int crushingtime = 0;
+
     private ScheduledExecutorService executor;
 
     Random rand = new Random();
@@ -51,6 +53,7 @@ public class EEelFisherPlugin extends Plugin {
         crushing = false;
         tickDelay = 0;
         executor = Executors.newSingleThreadScheduledExecutor();
+        crushingtime = 0;
     }
 
     @Subscribe
@@ -58,6 +61,14 @@ public class EEelFisherPlugin extends Plugin {
         if (client.getGameState() != GameState.LOGGED_IN) {
             return;
         }
+        if(crushing){
+            crushingtime++;
+            if(crushingtime>28){
+                crushing=false;
+            }
+            return;
+        }
+        crushingtime =0;
         if (tickDelay > 0) {
             tickDelay--;
             return;
