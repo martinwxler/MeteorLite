@@ -104,10 +104,18 @@ public class EEelFisherPlugin extends Plugin {
             }
 
             if (!crushing) {
-                MousePackets.queueClickPacket(0, 0);
-                ItemPackets.useItemOnItem(Inventory.getFirst("Knife", "Hammer"), Inventory.getFirst("Infernal eel", "Sacred eel"));
-                crushing = true;
-                return;
+                if(config.location()==FishingType.ZULRAH){
+                    MousePackets.queueClickPacket(0, 0);
+                    ItemPackets.useItemOnItem(Inventory.getFirst("Knife"), Inventory.getFirst("Sacred eel"));
+                    crushing = true;
+                    return;
+                }
+                if(config.location()==FishingType.INFERNAL){
+                    MousePackets.queueClickPacket(0, 0);
+                    ItemPackets.useItemOnItem(Inventory.getFirst("Hammer"), Inventory.getFirst("Infernal eel"));
+                    crushing = true;
+                    return;
+                }
             }
 
             if (Inventory.getFirst("Infernal eel", "Sacred eel") == null) {
