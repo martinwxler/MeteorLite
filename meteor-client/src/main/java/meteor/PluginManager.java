@@ -425,17 +425,13 @@ public class PluginManager {
 		List<Plugin> externals = loadPluginsFromDir(EXTERNALS_DIR);
 		plugins.stream().filter(Plugin::isExternal).forEach(Plugin::unload);
 		plugins.removeIf(Plugin::isExternal);
-
-		// Temp solution for externals
-		Category cat = PluginListUI.categories.stream()
-				.filter(c -> c.name.equals("MeteorLite"))
-				.findAny()
-				.get();
+		Category category = PluginListUI.INSTANCE.findOrCreateCategory(PluginListUI.EXTERNAL_CATEGORY_NAME);
 
 		for (Plugin external : externals) {
-			if (!cat.plugins.contains(external.getName())) {
-				cat.plugins.add(0, external.getName());
+			if (!category.plugins.contains(external.getName())) {
+				category.plugins.add(0, external.getName());
 			}
+
 			plugins.add(external);
 			startPlugin(external);
 		}
