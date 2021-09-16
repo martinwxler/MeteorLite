@@ -127,7 +127,7 @@ public class OneClickBonerPlugin extends Plugin {
 		TileObject x = TileObjects.getNearest(4525);
 		if (x != null) {
 			event.setId(x.getId());
-			event.setMenuAction(MenuAction.GAME_OBJECT_SECOND_OPTION);
+			event.setMenuAction(MenuAction.GAME_OBJECT_FIRST_OPTION);
 			event.setParam0(x.menuPoint().getX());
 			event.setParam1(x.menuPoint().getY());
 		}

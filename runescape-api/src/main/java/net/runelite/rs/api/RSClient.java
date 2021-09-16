@@ -1505,6 +1505,18 @@ public interface RSClient extends RSGameEngine, Client {
   @Override
   RSClientPacket getItemActionPacket();
 
+  @Import("Packet_NPCAction3Packet")
+  @Override
+  RSClientPacket getNPCAction3Packet();
+
+  @Import("Packet_gameObjectAction2Packet")
+  @Override
+  RSClientPacket getGameObjectAction2Packet();
+
+  @Import("Packet_NPCActionPacket")
+  @Override
+  RSClientPacket getNPCActionPacket();
+
   @Import("Packet_spellOnItem")
   @Override
   RSClientPacket getSpellOnItemPacket();
@@ -1516,6 +1528,14 @@ public interface RSClient extends RSGameEngine, Client {
   @Import("Packet_textInput")
   @Override
   RSClientPacket getTextInputPacket();
+
+  @Import("Packet_widgetActionPacket")
+  @Override
+  RSClientPacket getWidgetActionPacket();
+
+  @Import("Packet_widgetAction2Packet")
+  @Override
+  RSClientPacket getWidgetAction2Packet();
 
   @Import("Packet_clickPacket")
   @Override
