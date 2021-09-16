@@ -409,21 +409,14 @@ public class PluginManager {
 		Injector pluginInjector = parent.createChildInjector(pluginModule);
 		pluginInjector.injectMembers(plugin);
 		plugin.setInjector(pluginInjector);
-		Config finalConfig = null;
 		for (Key<?> key : plugin.getInjector().getBindings().keySet()) {
 			Class<?> type = key.getTypeLiteral().getRawType();
 			if (Config.class.isAssignableFrom(type)) {
-				Config config = (Config) plugin.getInjector().getInstance(key);
-				finalConfig = config;
-				configManager.setDefaultConfiguration(plugin, finalConfig, false);
+				configManager.setDefaultConfiguration(plugin, plugin.getInjector().getInstance(key), false);
 			}
 		}
 
-		if (finalConfig == null) {
-			return;
-		}
-
-		if (Boolean.parseBoolean(configManager.getConfiguration(finalConfig.getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class).value(), "pluginEnabled"))) {
+		if (Boolean.parseBoolean(configManager.getConfiguration(plugin.getClass().getSimpleName(), "pluginEnabled"))) {
 			plugin.toggle();
 		}
 	}

@@ -117,7 +117,7 @@ public class Plugin implements Module {
     updateConfig();
 
     PluginListUI.overrideToggleListener = true;
-    for (PluginToggleButton ptb : PluginListUI.configGroupPluginMap.values()) {
+    for (PluginToggleButton ptb : PluginListUI.toggleButtons.values()) {
       if (ptb.plugin == this) {
         ptb.setSelected(enabled);
       }

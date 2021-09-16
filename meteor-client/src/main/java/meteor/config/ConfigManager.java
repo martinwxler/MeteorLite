@@ -631,23 +631,24 @@ public class ConfigManager {
    */
   public void setDefaultConfiguration(Plugin plugin, Object config, boolean override) {
     Class<?> clazz = config.getClass().getInterfaces()[0];
-    ConfigGroup group = clazz.getAnnotation(ConfigGroup.class);
 
-    if (group == null) {
-      return;
-    }
-
-    String enabledConfig = getConfiguration(group.value(), "pluginEnabled");
+    String enabledConfig = getConfiguration(plugin.getClass().getSimpleName(), "pluginEnabled");
     PluginDescriptor descriptor = plugin.getClass().getAnnotation(PluginDescriptor.class);
     if (enabledConfig == null) {
       if (descriptor != null) {
         boolean enabledByDefault = descriptor.enabledByDefault() || descriptor.cantDisable();
-        setConfiguration(group.value(), "pluginEnabled", enabledByDefault);
+        setConfiguration(plugin.getClass().getSimpleName(), "pluginEnabled", enabledByDefault);
       }
     }
 
     if (enabledConfig != null && descriptor.disabledOnStartup()) {
-      setConfiguration(group.value(), "pluginEnabled", false);
+      setConfiguration(plugin.getClass().getSimpleName(), "pluginEnabled", false);
+    }
+
+    ConfigGroup group = clazz.getAnnotation(ConfigGroup.class);
+
+    if (group == null) {
+      return;
     }
 
     for (Method method : getAllDeclaredInterfaceMethods(clazz)) {
