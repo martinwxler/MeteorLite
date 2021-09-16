@@ -637,12 +637,17 @@ public class ConfigManager {
       return;
     }
 
-    if (getConfiguration(group.value(), "pluginEnabled") == null) {
-      PluginDescriptor descriptor = plugin.getClass().getAnnotation(PluginDescriptor.class);
+    String enabledConfig = getConfiguration(group.value(), "pluginEnabled");
+    PluginDescriptor descriptor = plugin.getClass().getAnnotation(PluginDescriptor.class);
+    if (enabledConfig == null) {
       if (descriptor != null) {
         boolean enabledByDefault = descriptor.enabledByDefault() || descriptor.cantDisable();
         setConfiguration(group.value(), "pluginEnabled", enabledByDefault);
       }
+    }
+
+    if (enabledConfig != null && descriptor.disabledOnStartup()) {
+      setConfiguration(group.value(), "pluginEnabled", false);
     }
 
     for (Method method : getAllDeclaredInterfaceMethods(clazz)) {
