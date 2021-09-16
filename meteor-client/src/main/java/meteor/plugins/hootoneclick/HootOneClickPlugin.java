@@ -1,4 +1,4 @@
-package meteor.plugins.api.example.simpleoneclick;
+package meteor.plugins.hootoneclick;
 
 import com.google.inject.Inject;
 import com.google.inject.Provides;
@@ -11,14 +11,12 @@ import meteor.plugins.api.entities.NPCs;
 import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.entities.TileItems;
 import meteor.plugins.api.entities.TileObjects;
-import meteor.plugins.api.items.Bank;
 import meteor.plugins.api.items.Inventory;
 import meteor.plugins.api.widgets.Widgets;
 import meteor.util.Text;
 import net.runelite.api.*;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 
 import java.util.HashMap;
 import java.util.List;

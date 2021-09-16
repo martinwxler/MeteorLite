@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.jar.JarFile;
-import java.util.stream.Collectors;
+
 import meteor.config.Config;
 import meteor.config.ConfigGroup;
 import meteor.config.ConfigManager;
@@ -33,7 +33,7 @@ import meteor.plugins.ammo.AmmoPlugin;
 import meteor.plugins.animsmoothing.AnimationSmoothingPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.api.example.deathevent.DeathEventPlugin;
-import meteor.plugins.api.example.simpleoneclick.HootOneClickPlugin;
+import meteor.plugins.hootoneclick.HootOneClickPlugin;
 import meteor.plugins.autoclicker.AutoClickerPlugin;
 import meteor.plugins.autologhop.AutoLogHop;
 import meteor.plugins.autologin.AutoLoginPlugin;

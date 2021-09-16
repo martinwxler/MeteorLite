@@ -25,7 +25,10 @@
 package meteor.plugins.examine;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
+import meteor.config.Config;
+import meteor.config.ConfigManager;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.ItemComposition;
@@ -354,5 +357,10 @@ public class ExaminePlugin extends Plugin
 				.runeLiteFormattedMessage(message.build())
 				.build());
 		}
+	}
+
+	@Provides
+	public ExamineConfig getConfig(ConfigManager configManager) {
+		return configManager.getConfig(ExamineConfig.class);
 	}
 }

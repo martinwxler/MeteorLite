@@ -1,4 +1,4 @@
-package meteor.plugins.api.example.simpleoneclick;
+package meteor.plugins.hootoneclick;
 
 import meteor.config.Config;
 import meteor.config.ConfigGroup;
