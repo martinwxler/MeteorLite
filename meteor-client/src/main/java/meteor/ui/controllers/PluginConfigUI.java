@@ -476,7 +476,6 @@ public class PluginConfigUI {
 		try {
 			i = Integer.parseInt(input);
 		} catch (Exception e) {
-			e.printStackTrace();
 			return Integer.MIN_VALUE;
 		}
 
@@ -501,7 +500,6 @@ public class PluginConfigUI {
 		try {
 			i = Double.parseDouble(input);
 		} catch (Exception e) {
-			e.printStackTrace();
 			return Double.MIN_VALUE;
 		}
 
