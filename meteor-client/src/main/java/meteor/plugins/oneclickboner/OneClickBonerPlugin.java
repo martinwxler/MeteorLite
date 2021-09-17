@@ -38,7 +38,7 @@ public class OneClickBonerPlugin extends Plugin {
 
 	@Subscribe
 	public void onClientTick(ClientTick event) {
-		client.insertMenuItem("One Click Boner", "", 0, 0, 0, 0, false);
+		client.insertMenuItem("One Click Boner", "", MenuAction.UNKNOWN.getId(), 0, 0, 0, false);
 	}
 
 	@Subscribe
@@ -73,6 +73,7 @@ public class OneClickBonerPlugin extends Plugin {
 		if (phials != null) {
 			if (noted == null) {
 				toggle();
+				event.consume();
 				return;
 			}
 
@@ -89,7 +90,7 @@ public class OneClickBonerPlugin extends Plugin {
 				if (advertisement != null) {
 					event.setMenuEntry(new MenuEntry("", "", 29091, MenuAction.GAME_OBJECT_THIRD_OPTION.getId(), advertisement.getLocalLocation().getSceneX(), advertisement.getLocalLocation().getSceneY(), false));
 				}
-
+				consumeCheck(event);
 				return;
 			}
 
@@ -100,11 +101,12 @@ public class OneClickBonerPlugin extends Plugin {
 				event.setParam0(x.menuPoint().getX());
 				event.setParam1(x.menuPoint().getY());
 			}
-
+			consumeCheck(event);
 			return;
 		}
 
 		if (TileObjects.getNearest("Altar") == null) {
+			consumeCheck(event);
 			return;
 		}
 
@@ -120,7 +122,7 @@ public class OneClickBonerPlugin extends Plugin {
 				event.setParam0(x.menuPoint().getX());
 				event.setParam1(x.menuPoint().getY());
 			}
-
+			consumeCheck(event);
 			return;
 		}
 
@@ -130,6 +132,13 @@ public class OneClickBonerPlugin extends Plugin {
 			event.setMenuAction(MenuAction.GAME_OBJECT_FIRST_OPTION);
 			event.setParam0(x.menuPoint().getX());
 			event.setParam1(x.menuPoint().getY());
+			return;
+		}
+		consumeCheck(event);
+	}
+	public void consumeCheck(MenuOptionClicked event){
+		if(event.getMenuAction()== MenuAction.UNKNOWN){
+			event.consume();
 		}
 	}
 }
