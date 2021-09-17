@@ -161,7 +161,7 @@ public class Injector extends InjectData implements InjectTaskHandler {
 
     //inject(new AddPlayerToMenu(this));
 
-    //validate(new InjectorValidator(this));
+    validate(new InjectorValidator(this));
 
     //transform(new SourceChanger(this));
   }

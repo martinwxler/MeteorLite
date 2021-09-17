@@ -3,6 +3,7 @@ package net.runelite.mixins;
 import static net.runelite.api.MenuAction.UNKNOWN;
 import static net.runelite.api.Perspective.LOCAL_TILE_SIZE;
 
+import java.math.BigInteger;
 import java.util.*;
 import javax.annotation.Nullable;
 
@@ -1757,5 +1758,17 @@ public abstract class ClientMixin implements RSClient {
     offerChangedEvent.setOffer(internalOffer);
     offerChangedEvent.setSlot(idx);
     client.getCallbacks().post(offerChangedEvent);
+  }
+
+  @Inject
+  @Override
+  public void setModulus(BigInteger modulus) {
+
+  }
+
+  @Inject
+  @Override
+  public void playMusicTrack(int var0, RSAbstractArchive var1, int var2, int var3, int var4, boolean var5) {
+
   }
 }
