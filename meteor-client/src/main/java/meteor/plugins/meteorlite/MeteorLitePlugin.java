@@ -95,9 +95,4 @@ public class MeteorLitePlugin extends Plugin {
             }
         }
     }
-
-    @Provides
-    public MeteorLiteConfig getConfig(ConfigManager configManager) {
-        return configManager.getConfig(MeteorLiteConfig.class);
-    }
 }

@@ -7,7 +7,6 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Accordion;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -25,6 +24,7 @@ import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.PluginChanged;
 import meteor.plugins.Plugin;
+import meteor.ui.MeteorUI;
 import meteor.ui.components.*;
 import net.runelite.api.Client;
 import net.runelite.api.events.ConfigButtonClicked;
@@ -66,15 +66,17 @@ public class PluginConfigUI {
 	@Inject
 	private EventBus eventBus;
 
+	@Inject
+	private MeteorUI meteorUI;
+
 	private PluginToggleButton toggleButton;
 
 	@FXML
 	public void initialize() {
-		MeteorLiteClientModule.instanceInjectorStatic.injectMembers(this);
+		MeteorLiteClientLauncher.injector.injectMembers(this);
 		plugin = lastPluginInteracted;
 		eventBus.register(this);
 		pluginTitle.setText(plugin.getName());
-		configManager = MeteorLiteClientLauncher.mainClientInstance.instanceInjector.getInstance(ConfigManager.class);
 
 		if (plugin.isToggleable()) {
 			toggleButton = new PluginToggleButton(plugin);
@@ -635,9 +637,7 @@ public class PluginConfigUI {
 
 	@FXML
 	protected void closeConfig(MouseEvent event) throws IOException {
-//		PluginListUI.INSTANCE.refreshPlugins();
-
-		MeteorLiteClientModule.showPlugins();
+		meteorUI.showPlugins();
 	}
 
 	@Subscribe

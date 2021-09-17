@@ -384,7 +384,7 @@ public class PluginManager {
 	}
 
 	public void startPlugin(Plugin plugin) {
-		Injector parent = meteorLiteClientModule.instanceInjector;
+		Injector parent = MeteorLiteClientLauncher.injector;
 		List<Module> depModules = new ArrayList<>();
 		if (plugin.getClass().getAnnotation(PluginDependency.class) != null) {
 			Class<? extends Plugin> depClass = plugin.getClass().getAnnotation(PluginDependency.class).value();
