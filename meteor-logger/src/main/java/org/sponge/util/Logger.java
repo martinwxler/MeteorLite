@@ -109,4 +109,19 @@ public class Logger {
   public static boolean isDebugEnabled() {
     return debugOutput;
   }
+
+  public static String generateError(String s) {
+    if (s.length() < 5)
+      return "";
+    String[] lines = s.split(" at ");
+    StringBuilder output = new StringBuilder();
+    if (lines.length > 0) {
+      for (String line : lines) {
+        if (line.length() < 10)
+          continue;
+        output.append(line.replace("\n", "")).append("\n");
+      }
+    }
+     return ANSI_RED + output + ANSI_RESET;
+  }
 }

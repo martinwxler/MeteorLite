@@ -737,12 +737,17 @@ public class ResourcePacksManager
 						continue;
 					}
 
-					Widget arrayWidget = widgetToOverride.getChild(arrayId);
-					if (arrayWidget == null || arrayWidget.getTextColor() == -1 || arrayWidget.getTextColor() == property)
-					{
-						continue;
+					try {
+						Widget arrayWidget = widgetToOverride.getChild(arrayId);
+						if (arrayWidget == null || arrayWidget.getTextColor() == -1 || arrayWidget.getTextColor() == property)
+						{
+							continue;
+						}
+						arrayWidget.setTextColor(property);
+					} catch (Exception e) {
+						//ignore
 					}
-					arrayWidget.setTextColor(property);
+
 				}
 			}
 			else
