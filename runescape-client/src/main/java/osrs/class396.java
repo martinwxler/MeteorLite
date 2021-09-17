@@ -141,13 +141,13 @@ public final class class396 {
 									class129.fontPlain12.drawRightAligned("Fps:" + GameEngine.fps, var12 + var10.width, var13, 16776960, -1);
 									var13 += 15;
 									Runtime var42 = Runtime.getRuntime();
-									var20 = (int)((var42.totalMemory() - var42.freeMemory()) / 1024L);
+									var20 = (int)((var42.totalMemory() - var42.freeMemory()) / 1024L / 1024L);
 									var21 = 16776960;
-									if (var20 > 327680 && !Client.isLowDetail) {
+									if (var20 > (var42.totalMemory() / 10) * 9 && !Client.isLowDetail) {
 										var21 = 16711680;
 									}
 
-									class129.fontPlain12.drawRightAligned("Mem:" + var20 + "k", var12 + var10.width, var13, var21, -1);
+									class129.fontPlain12.drawRightAligned("Mem: " + var20 + "/" + (int)(var42.maxMemory() / 1024L / 1024L) + " MB", var12 + var10.width, var13, var21, -1);
 									var13 += 15;
 								}
 								continue;

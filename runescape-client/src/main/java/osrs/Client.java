@@ -1350,7 +1350,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 		field675 = -1;
 		field496 = -1L;
 		hadFocus = true;
-		displayFps = false;
+		displayFps = true;
 		rebootTimer = 0;
 		hintArrowType = 0;
 		hintArrowNpcIndex = 0;

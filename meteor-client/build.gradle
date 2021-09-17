@@ -129,6 +129,7 @@ shadowJar {
     minimize()
     applicationDefaultJvmArgs = [
             "-noverify",
+            "-Xmx512m",
             "-Dprism.allowhidpi=false",
             "-Dsun.awt.noerasebackground=true",
             "--add-modules=javafx.media",
