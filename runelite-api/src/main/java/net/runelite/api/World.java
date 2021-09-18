@@ -111,7 +111,7 @@ public interface World {
     return getTypes().contains(WorldType.MEMBERS);
   }
 
-  default boolean isPvp() {
+  default boolean isAllPkWorld() {
     return WorldType.isAllPKWorld(getTypes());
   }
 
@@ -128,6 +128,6 @@ public interface World {
   }
 
   default boolean isNormal() {
-    return !isPvp() && !isSkillTotal() && !isTournament() && !isLeague();
+    return !isAllPkWorld() && !isSkillTotal() && !isTournament() && !isLeague();
   }
 }
