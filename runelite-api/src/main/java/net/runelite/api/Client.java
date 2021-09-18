@@ -151,7 +151,7 @@ public interface Client extends GameEngine {
    * @return the message node for the message
    */
   MessageNode addChatMessage(ChatMessageType type, String name, String message, String sender,
-      boolean postEvent);
+                             boolean postEvent);
 
   /**
    * Gets the current game state.
@@ -419,7 +419,7 @@ public interface Client extends GameEngine {
    */
   @Nullable
   SpritePixels createItemSprite(int itemId, int quantity, int border, int shadowColor,
-      int stackable, boolean noted, int scale);
+                                int stackable, boolean noted, int scale);
 
   /**
    * Loads and creates the sprite images of the passed archive and file IDs.
@@ -1842,7 +1842,7 @@ public interface Client extends GameEngine {
   int getRasterizer3D_clipMidY2();
 
   void checkClickbox(Model model, int orientation, int pitchSin, int pitchCos, int yawSin,
-      int yawCos, int x, int y, int z, long hash);
+                     int yawCos, int x, int y, int z, long hash);
 
   /**
    * Get the if1 widget whose item is being dragged
@@ -1892,7 +1892,7 @@ public interface Client extends GameEngine {
   void setRenderSelf(boolean enabled);
 
   void invokeMenuAction(String option, String target, int identifier, int opcode, int param0,
-      int param1);
+                        int param1);
 
   MouseRecorder getMouseRecorder();
 
@@ -1964,7 +1964,7 @@ public interface Client extends GameEngine {
    * Adds a MenuEntry to the current menu.
    */
   void insertMenuItem(String action, String target, int opcode, int identifier, int argument1,
-      int argument2, boolean forceLeftClick);
+                      int argument2, boolean forceLeftClick);
 
   void setSelectedItemID(int id);
 
@@ -2001,7 +2001,7 @@ public interface Client extends GameEngine {
    * @param oldWidth     old width
    */
   void scaleSprite(int[] canvas, int[] pixels, int color, int pixelX, int pixelY, int canvasIdx,
-      int canvasOffset, int newWidth, int newHeight, int pixelWidth, int pixelHeight, int oldWidth);
+                   int canvasOffset, int newWidth, int newHeight, int pixelWidth, int pixelHeight, int oldWidth);
 
   /**
    * Get the MenuEntry at client.getMenuOptionCount() - 1
@@ -2382,4 +2382,8 @@ public interface Client extends GameEngine {
   void setDestinationX(int sceneX);
 
   void setDestinationY(int sceneY);
+
+  boolean isWorldSelectOpen();
+
+  void setWorldSelectOpen(boolean open);
 }

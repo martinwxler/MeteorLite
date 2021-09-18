@@ -332,7 +332,7 @@ public interface RSClient extends RSGameEngine, Client {
 
   @Import("containsBounds")
   boolean containsBounds(int var0, int var1, int var2, int var3, int var4, int var5, int var6,
-      int var7);
+                         int var7);
 
   @Import("checkClick")
   boolean isCheckClick();
@@ -446,11 +446,11 @@ public interface RSClient extends RSGameEngine, Client {
 
   @Import("getItemSprite")
   RSSpritePixels createRSItemSprite(int itemId, int quantity, int thickness, int borderColor,
-      int stackable, boolean noted);
+                                    int stackable, boolean noted);
 
   @Import("menuAction")
   void sendMenuAction(int n2, int n3, int n4, int n5, String string, String string2, int n6,
-      int n7);
+                      int n7);
 
   @Import("SpriteBuffer_decode")
   void decodeSprite(byte[] data);
@@ -1071,7 +1071,7 @@ public interface RSClient extends RSGameEngine, Client {
 
   @Import("Rasterizer2D_fillRectangleGradientAlpha")
   void rasterizerDrawGradientAlpha(int x, int y, int w, int h, int rgbTop, int rgbBottom,
-      int alphaTop, int alphaBottom);
+                                   int alphaTop, int alphaBottom);
 
   @Import("Rasterizer2D_fillRectangleAlpha")
   void rasterizerFillRectangleAlpha(int x, int y, int w, int h, int rgb, int a);
@@ -1169,7 +1169,7 @@ public interface RSClient extends RSGameEngine, Client {
   @Import("insertMenuItem")
   @Override
   void insertMenuItem(String action, String target, int opcode, int identifier, int argument1,
-      int argument2, boolean forceLeftClick);
+                      int argument2, boolean forceLeftClick);
 
   @Import("selectedItemId")
   @Override
@@ -1210,7 +1210,7 @@ public interface RSClient extends RSGameEngine, Client {
   @Import("Sprite_drawScaled")
   @Override
   void scaleSprite(int[] canvas, int[] pixels, int color, int pixelX, int pixelY, int canvasIdx,
-      int canvasOffset, int newWidth, int newHeight, int pixelWidth, int pixelHeight, int oldWidth);
+                   int canvasOffset, int newWidth, int newHeight, int pixelWidth, int pixelHeight, int oldWidth);
 
   /**
    * This sets the login screen to where it asks for username/pass
@@ -1449,7 +1449,7 @@ public interface RSClient extends RSGameEngine, Client {
 
   @Construct
   RSSceneTilePaint createSceneTilePaint(int swColor, int seColor, int neColor, int nwColor,
-      int texture, int rgb, boolean isFlat);
+                                        int texture, int rgb, boolean isFlat);
 
   @Import("crossWorldMessageIds")
   long[] getCrossWorldMessageIds();
@@ -1665,4 +1665,12 @@ public interface RSClient extends RSGameEngine, Client {
 
   @Import("Scene_tilesDeque")
   RSNodeDeque getTilesDeque();
+
+  @Import("worldSelectOpen")
+  @Override
+  boolean isWorldSelectOpen();
+
+  @Import("worldSelectOpen")
+  @Override
+  void setWorldSelectOpen(boolean open);
 }
