@@ -301,7 +301,7 @@ public class PluginManager {
 		plugins.add(new MouseTooltipPlugin());
 		plugins.add(new MTAPlugin());
 		plugins.add(new NeverLogoutPlugin());
-	  	plugins.add(new NightmareHelper());
+	  plugins.add(new NightmareHelper());
 		plugins.add(new NightmarePlugin());
 		plugins.add(new NpcAggroAreaPlugin());
 		plugins.add(new NpcIndicatorsPlugin());

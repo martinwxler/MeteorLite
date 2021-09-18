@@ -12,6 +12,7 @@ import meteor.config.RuneLiteConfig;
 import meteor.discord.DiscordService;
 import meteor.eventbus.DeferredEventBus;
 import meteor.eventbus.EventBus;
+import meteor.eventbus.events.ClientPreLaunch;
 import meteor.game.WorldService;
 import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.GameThread;
@@ -101,6 +102,8 @@ public class MeteorLiteClientModule extends AbstractModule {
     MeteorLiteClientLauncher.injector.injectMembers(client);
     eventBus.register(this);
 
+    client.getCallbacks().post(ClientPreLaunch.INSTANCE);
+
     discordService.init();
 
     Collection<WidgetOverlay> overlays = WidgetOverlay.createOverlays(client);
@@ -143,44 +146,6 @@ public class MeteorLiteClientModule extends AbstractModule {
             GameThread.class,
             Game.class
     );
-  }
-
-  private void setWorld(int cliWorld)
-  {
-    int correctedWorld = cliWorld < 300 ? cliWorld + 300 : cliWorld;
-
-    if (correctedWorld <= 300 || client.getWorld() == correctedWorld)
-    {
-      return;
-    }
-
-    final WorldResult worldResult = worldService.getWorlds();
-
-    if (worldResult == null)
-    {
-      log.warn("Failed to lookup worlds.");
-      return;
-    }
-
-    final World world = worldResult.findWorld(correctedWorld);
-
-    if (world != null)
-    {
-      final net.runelite.api.World rsWorld = client.createWorld();
-      rsWorld.setActivity(world.getActivity());
-      rsWorld.setAddress(world.getAddress());
-      rsWorld.setId(world.getId());
-      rsWorld.setPlayerCount(world.getPlayers());
-      rsWorld.setLocation(world.getLocation());
-      rsWorld.setTypes(WorldUtil.toWorldTypes(world.getTypes()));
-
-      client.changeWorld(rsWorld);
-      log.debug("Applied new world {}", correctedWorld);
-    }
-    else
-    {
-      log.warn("World {} not found.", correctedWorld);
-    }
   }
 
   public void loadJagexConfiguration() throws IOException {
