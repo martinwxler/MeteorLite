@@ -23,7 +23,7 @@ import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-@PluginDescriptor(name = "E Eel Fisher", enabledByDefault = false, description = "fishes infernal or sacred eels for you", disabledOnStartup = true)
+@PluginDescriptor(name = "E Eel Fisher", enabledByDefault = false, description = "fishes infernal or sacred eels for you. version 1.1", disabledOnStartup = true)
 public class EEelFisherPlugin extends Plugin {
     @Inject
     EEelFisherConfig config;
@@ -65,8 +65,8 @@ public class EEelFisherPlugin extends Plugin {
             crushingtime++;
             if(crushingtime>84){
                 crushing=false;
+                return;
             }
-            return;
         }
         crushingtime =0;
         if (tickDelay > 0) {
