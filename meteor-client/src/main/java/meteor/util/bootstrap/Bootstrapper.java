@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.util.Objects;
 import org.sponge.util.Logger;
 
 import java.io.*;
@@ -19,6 +20,7 @@ public class Bootstrapper {
     private static File outputDir = new File("./build/bootstrap/");
     private static File updateOutput = new File("./build/bootstrap/bootstrap-meteorlite.json");
     private static final File bootstrapShadowJar = new File("./build/bootstrap/meteorlite.jar");
+    private static final File libsDir = new File("./build/libs/");
 
     private static Logger log = new Logger("Bootstrapper");
 
@@ -36,7 +38,9 @@ public class Bootstrapper {
         int patch = Integer.parseInt(vers[2]);
         currentVer = vers[0] + "." + vers[1] + "." + patch;
         update.version = vers[0] + "." + vers[1] + "." + (patch + 1);
-        shadowJar = new File("./build/libs/meteor-client-" + currentVer + "-all.jar");
+        for (File f : Objects.requireNonNull(libsDir.listFiles()))
+            if (f.getName().contains("-all"))
+                shadowJar = f;
         md5Digest = MessageDigest.getInstance("MD5");
         processFile(shadowJar);
         saveBootstrap();
@@ -69,7 +73,7 @@ public class Bootstrapper {
         try {
             if (bootstrapShadowJar.exists())
                 bootstrapShadowJar.delete();
-            Files.copy(new File("./build/libs/meteor-client-" + currentVer + "-all.jar").toPath(), bootstrapShadowJar.toPath());
+            Files.copy(shadowJar.toPath(), bootstrapShadowJar.toPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
