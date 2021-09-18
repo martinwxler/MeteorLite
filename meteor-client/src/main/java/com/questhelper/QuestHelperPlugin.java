@@ -57,6 +57,7 @@ import javax.inject.Named;
 
 import lombok.Getter;
 import lombok.Setter;
+import meteor.MeteorLiteClientLauncher;
 import meteor.MeteorLiteClientModule;
 import meteor.eventbus.events.ClientShutdown;
 import meteor.eventbus.events.ConfigChanged;
@@ -804,7 +805,7 @@ public class QuestHelperPlugin extends Plugin
 				binder.bind(clazz).toInstance(questHelper);
 				binder.install(questHelper);
 			};
-			Injector questInjector = MeteorLiteClientModule.instanceInjectorStatic.createChildInjector(questModule);
+			Injector questInjector = MeteorLiteClientLauncher.injector.createChildInjector(questModule);
 			questInjector.injectMembers(questHelper);
 			questHelper.setInjector(questInjector);
 			questHelper.setQuest(quest);

@@ -19,14 +19,13 @@ import javafx.stage.Stage;
 import meteor.MeteorLiteClientLauncher;
 import meteor.MeteorLiteClientModule;
 import meteor.PluginManager;
-import meteor.config.Config;
-import meteor.config.ConfigGroup;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.events.ExternalsReloaded;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
+import meteor.ui.MeteorUI;
 import meteor.ui.components.*;
 
 import javax.inject.Inject;
@@ -34,8 +33,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
-import static meteor.MeteorLiteClientModule.pluginsPanelVisible;
 
 public class PluginListUI {
 	private static final String MAIN_CATEGORY_NAME = "Plugins";
@@ -70,7 +67,7 @@ public class PluginListUI {
 
 	@FXML
 	public void initialize() {
-		MeteorLiteClientModule.instanceInjectorStatic.injectMembers(this);
+		MeteorLiteClientLauncher.injector.injectMembers(this);
 		eventBus.register(this);
 		INSTANCE = this;
 		categories.clear();
@@ -422,8 +419,8 @@ public class PluginListUI {
 		}
 
 		PluginConfigButton configButton = new PluginConfigButton(p);
-		if (p.getConfig(MeteorLiteClientLauncher.mainClientInstance.instanceInjector.getInstance(ConfigManager.class)) != null) {
-			if (p.getConfig(MeteorLiteClientLauncher.mainClientInstance.instanceInjector.getInstance(ConfigManager.class)).getClass().getDeclaredMethods().length > 4) {
+		if (p.getConfig(MeteorLiteClientLauncher.injector.getInstance(ConfigManager.class)) != null) {
+			if (p.getConfig(MeteorLiteClientLauncher.injector.getInstance(ConfigManager.class)).getClass().getDeclaredMethods().length > 4) {
 				AnchorPane.setRightAnchor(configButton, 48.0);
 				AnchorPane.setTopAnchor(configButton, 0.0);
 
@@ -434,7 +431,7 @@ public class PluginListUI {
 				configButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
 					lastPluginInteracted = p;
 					p.showConfig();
-					pluginsPanelVisible = !pluginsPanelVisible;
+					MeteorUI.pluginsPanelVisible = !MeteorUI.pluginsPanelVisible;
 				});
 			}
 		}

@@ -45,7 +45,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.swing.SwingUtilities;
-import lombok.extern.slf4j.Slf4j;
+
 import meteor.MeteorLiteClientModule;
 import meteor.config.RuneLiteConfig;
 import meteor.eventbus.EventBus;
@@ -55,6 +55,7 @@ import meteor.input.KeyManager;
 import meteor.input.MouseAdapter;
 import meteor.input.MouseManager;
 import meteor.ui.JagexColors;
+import meteor.ui.MeteorUI;
 import meteor.util.ColorUtil;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -86,6 +87,7 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
   private final Client client;
   private final OverlayManager overlayManager;
   private final RuneLiteConfig runeLiteConfig;
+  private final MeteorUI meteorUI;
 
   // Overlay movement variables
   private final Point overlayOffset = new Point();
@@ -113,15 +115,16 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
 
   @Inject
   private OverlayRenderer(
-      final Client client,
-      final OverlayManager overlayManager,
-      final RuneLiteConfig runeLiteConfig,
-      final MouseManager mouseManager,
-      final KeyManager keyManager,
-      final EventBus eventBus) {
+          final Client client,
+          final OverlayManager overlayManager,
+          final RuneLiteConfig runeLiteConfig,
+          final MouseManager mouseManager,
+          final KeyManager keyManager,
+          final EventBus eventBus, MeteorUI meteorUI) {
     this.client = client;
     this.overlayManager = overlayManager;
     this.runeLiteConfig = runeLiteConfig;
+    this.meteorUI = meteorUI;
     keyManager.registerKeyListener(this, getClass());
     mouseManager.registerMouseListener(this);
     eventBus.register(this);
@@ -381,7 +384,7 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
       overlayOffset.setLocation(offset);
 
       inOverlayResizingMode = currentManagedOverlay != null && currentManagedOverlay.isResizable()
-          && MeteorLiteClientModule.getCurrentCursor() != MeteorLiteClientModule.getDefaultCursor();
+          && meteorUI.getCurrentCursor() != meteorUI.getDefaultCursor();
       inOverlayDraggingMode = !inOverlayResizingMode;
       startedMovingOverlay = true;
       currentManagedBounds = new Rectangle(currentManagedOverlay.getBounds());
@@ -407,7 +410,7 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
     }
 
     if (currentManagedOverlay == null || !currentManagedOverlay.isResizable()) {
-      MeteorLiteClientModule.setCursor(MeteorLiteClientModule.getDefaultCursor());
+      meteorUI.setCursor(meteorUI.getDefaultCursor());
       return mouseEvent;
     }
 
@@ -417,32 +420,32 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
 
     switch (outcode) {
       case Rectangle.OUT_TOP:
-        MeteorLiteClientModule.setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
+        meteorUI.setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
         break;
       case Rectangle.OUT_TOP | Rectangle.OUT_LEFT:
-        MeteorLiteClientModule.setCursor(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
+        meteorUI.setCursor(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
         break;
       case Rectangle.OUT_LEFT:
-        MeteorLiteClientModule.setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
+        meteorUI.setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
         break;
       case Rectangle.OUT_LEFT | Rectangle.OUT_BOTTOM:
-        MeteorLiteClientModule.setCursor(Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR));
+        meteorUI.setCursor(Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR));
         break;
       case Rectangle.OUT_BOTTOM:
-        MeteorLiteClientModule.setCursor(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
+        meteorUI.setCursor(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
         break;
       case Rectangle.OUT_BOTTOM | Rectangle.OUT_RIGHT:
-        MeteorLiteClientModule.setCursor(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
+        meteorUI.setCursor(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
         break;
       case Rectangle.OUT_RIGHT:
-        MeteorLiteClientModule.setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
+        meteorUI.setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
         break;
       case Rectangle.OUT_RIGHT | Rectangle.OUT_TOP:
-        MeteorLiteClientModule.setCursor(Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR));
+        meteorUI.setCursor(Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR));
         break;
       default:
         // center
-        MeteorLiteClientModule.setCursor(MeteorLiteClientModule.getDefaultCursor());
+        meteorUI.setCursor(meteorUI.getDefaultCursor());
     }
 
     return mouseEvent;
@@ -509,7 +512,7 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
       int width = currentManagedBounds.width;
       int height = currentManagedBounds.height;
 
-      switch (MeteorLiteClientModule.getCurrentCursor().getType()) {
+      switch (meteorUI.getCurrentCursor().getType()) {
         case Cursor.N_RESIZE_CURSOR:
           y += top;
           height -= top;
@@ -735,7 +738,7 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
     currentManagedOverlay = null;
     dragTargetOverlay = null;
     currentManagedBounds = null;
-    MeteorLiteClientModule.setCursor(MeteorLiteClientModule.getDefaultCursor());
+    meteorUI.setCursor(meteorUI.getDefaultCursor());
   }
 
   private boolean shouldInvalidateBounds() {
