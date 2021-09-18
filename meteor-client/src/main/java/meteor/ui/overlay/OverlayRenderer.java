@@ -52,7 +52,7 @@ import meteor.input.KeyListener;
 import meteor.input.KeyManager;
 import meteor.input.MouseAdapter;
 import meteor.input.MouseManager;
-import meteor.plugins.meteorlite.MeteorLiteConfig;
+import meteor.config.MeteorLiteConfig;
 import meteor.ui.JagexColors;
 import meteor.ui.MeteorUI;
 import meteor.util.ColorUtil;

@@ -6,7 +6,7 @@ import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.input.Mouse;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.widgets.DialogOption;
-import meteor.plugins.meteorlite.MeteorLiteConfig;
+import meteor.config.MeteorLiteConfig;
 import net.runelite.api.Client;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;

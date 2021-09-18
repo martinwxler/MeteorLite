@@ -13,7 +13,7 @@ import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
-import meteor.plugins.meteorlite.MeteorLiteConfig;
+import meteor.config.MeteorLiteConfig;
 import net.runelite.api.GameState;
 import net.runelite.api.events.BeforeRender;
 import net.runelite.api.events.GameStateChanged;

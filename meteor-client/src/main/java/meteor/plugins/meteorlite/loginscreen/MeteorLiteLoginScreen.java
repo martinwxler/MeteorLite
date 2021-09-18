@@ -3,7 +3,7 @@ package meteor.plugins.meteorlite.loginscreen;
 import meteor.callback.ClientThread;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.api.game.Game;
-import meteor.plugins.meteorlite.MeteorLiteConfig;
+import meteor.config.MeteorLiteConfig;
 import meteor.plugins.meteorlite.MeteorLitePlugin;
 import meteor.util.ImageUtil;
 import net.runelite.api.Client;

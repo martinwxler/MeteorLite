@@ -9,6 +9,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
+
 import javafx.application.Application;
 import javafx.stage.Stage;
 import meteor.util.LoggerStream;
@@ -34,7 +36,7 @@ public class MeteorLiteClientLauncher extends Application implements Module {
   public static Injector injector; //this is so bad
 
   @Override
-  public void start(Stage primaryStage) throws IOException {
+  public void start(Stage primaryStage) throws IOException, InterruptedException, InvocationTargetException {
     try {
       consoleStream = System.out;
       errorFileStream = new LoggerStream(new FileOutputStream(ERROR_LOG));

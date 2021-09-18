@@ -419,7 +419,7 @@ public class ConfigManager {
 
         parent.mkdirs();
 
-        File tempFile = File.createTempFile("runelite", null, parent);
+        File tempFile = File.createTempFile(MeteorLiteConfig.GROUP_NAME, null, parent);
 
         try (FileOutputStream out = new FileOutputStream(tempFile)) {
           out.getChannel().lock();
@@ -757,7 +757,7 @@ public class ConfigManager {
 
   private synchronized void migrateConfig() {
     String migrationKey = "profileMigrationDone";
-    if (getConfiguration("runelite", migrationKey) != null) {
+    if (getConfiguration(MeteorLiteConfig.GROUP_NAME, migrationKey) != null) {
       return;
     }
 
@@ -830,7 +830,7 @@ public class ConfigManager {
     if (changes.get() > 0) {
       //log.info("migrated {} config keys", changes);
     }
-    setConfiguration("runelite", migrationKey, 1);
+    setConfiguration(MeteorLiteConfig.GROUP_NAME, migrationKey, 1);
   }
 
   /**

@@ -1,7 +1,7 @@
 package meteor.plugins.meteorlite.interaction;
 
 import meteor.input.MouseListener;
-import meteor.plugins.meteorlite.MeteorLiteConfig;
+import meteor.config.MeteorLiteConfig;
 import meteor.ui.overlay.*;
 
 import javax.inject.Inject;

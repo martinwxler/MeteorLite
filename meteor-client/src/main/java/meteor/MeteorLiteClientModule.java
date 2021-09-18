@@ -17,7 +17,7 @@ import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.GameThread;
 import meteor.plugins.itemstats.ItemStatChangesService;
 import meteor.plugins.itemstats.ItemStatChangesServiceImpl;
-import meteor.plugins.meteorlite.MeteorLiteConfig;
+import meteor.config.MeteorLiteConfig;
 import meteor.ui.MeteorUI;
 import meteor.ui.overlay.OverlayManager;
 import meteor.ui.overlay.WidgetOverlay;
@@ -40,6 +40,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -89,7 +90,7 @@ public class MeteorLiteClientModule extends AbstractModule {
   public static Map<String, String> properties;
   public static Map<String, String> parameters;
 
-  public void start() throws IOException {
+  public void start() throws IOException, InterruptedException, InvocationTargetException {
     long startTime = System.currentTimeMillis();
 
     loadJagexConfiguration();

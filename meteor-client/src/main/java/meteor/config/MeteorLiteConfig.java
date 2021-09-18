@@ -1,7 +1,5 @@
-package meteor.plugins.meteorlite;
+package meteor.config;
 
-import meteor.config.*;
-import meteor.config.Button;
 import meteor.ui.ContainableFrame;
 import meteor.ui.overlay.components.ComponentConstants;
 import meteor.util.OSType;

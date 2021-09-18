@@ -39,7 +39,7 @@ import lombok.Getter;
 import static meteor.plugins.resourcepacks.ResourcePacksPlugin.GITHUB;
 import static meteor.plugins.resourcepacks.ResourcePacksPlugin.OVERLAY_COLOR_CONFIG;
 import meteor.eventbus.events.ConfigChanged;
-import meteor.plugins.meteorlite.MeteorLiteConfig;
+import meteor.config.MeteorLiteConfig;
 import meteor.plugins.resourcepacks.event.ResourcePacksChanged;
 import meteor.plugins.resourcepacks.hub.ResourcePackManifest;
 import meteor.plugins.resourcepacks.hub.ResourcePacksClient;

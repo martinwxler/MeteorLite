@@ -11,8 +11,9 @@ import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ClientShutdown;
+import meteor.eventbus.events.ConfigChanged;
 import meteor.events.ExternalsReloaded;
-import meteor.plugins.meteorlite.MeteorLiteConfig;
+import meteor.config.MeteorLiteConfig;
 import meteor.ui.controllers.ToolbarFXMLController;
 import net.runelite.api.Client;
 import net.runelite.api.Constants;
@@ -32,6 +33,7 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.InvalidParameterException;
@@ -45,8 +47,6 @@ import static meteor.MeteorLiteClientModule.properties;
 @Singleton
 public class MeteorUI extends ContainableFrame implements AppletStub, AppletContext {
 	private static final Logger log = new Logger("MeteorUI");
-	private static final String CONFIG_GROUP = "runelite";
-	private static final String PLUS_CONFIG_GROUP = "runelite";
 	private static final String CONFIG_CLIENT_BOUNDS = "clientBounds";
 	private static final String CONFIG_CLIENT_MAXIMIZED = "clientMaximized";
 	private static final String CONFIG_OPACITY = "enableOpacity";
@@ -74,20 +74,22 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 
 	@Inject
 	private PluginManager pluginManager;
-	
+
 	@Inject
 	private ConfigManager configManager;
-	
+
 	@Inject
-	private MeteorLiteConfig meteorLiteConfig;
+	private MeteorLiteConfig config;
 
 	@Inject
 	private Client client;
+
+	private Dimension lastClientSize;
 	private final JFXPanel rightPanel = new JFXPanel();
 	private Scene pluginsRootScene;
 	public static boolean pluginsPanelVisible = false;
 
-	public void init() throws IOException {
+	public void init() throws IOException, InterruptedException, InvocationTargetException {
 		applet.setMinimumSize(Constants.GAME_FIXED_SIZE);
 		setAppletConfiguration(applet);
 
@@ -95,8 +97,12 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 		JPanel gamePanel = new JPanel();
 		rootPanel.setLayout(new BorderLayout());
 		gamePanel.setMinimumSize(Constants.GAME_FIXED_SIZE);
-		toolbarRoot = FXMLLoader.load(
-						Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("toolbar.fxml")));
+		try {
+			toolbarRoot = FXMLLoader.load(
+							Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("toolbar.fxml")));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		gamePanel.setLayout(new BorderLayout());
 		gamePanel.add(applet, BorderLayout.CENTER);
@@ -107,11 +113,142 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 		pluginManager.startInternalPlugins();
 
 		// preload plugins scene, needs to be after pluginManager.startInternalPlugins() is called.
-		pluginsRootScene = new Scene(pluginsRoot = FXMLLoader.load(
-						Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("plugins.fxml"))), 350, 800);
+		try {
+			pluginsRootScene = new Scene(pluginsRoot = FXMLLoader.load(
+							Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("plugins.fxml"))), 350, 800);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		rightPanel.setScene(pluginsRootScene);
 
 		setupJavaFXComponents(applet);
+
+		updateFrameConfig(true);
+		setWindowBounds();
+	}
+
+	private void setWindowBounds() {
+		if (config.rememberScreenBounds()) {
+			try {
+				Rectangle clientBounds = configManager.getConfiguration(
+								MeteorLiteConfig.GROUP_NAME, CONFIG_CLIENT_BOUNDS, Rectangle.class);
+				if (clientBounds != null) {
+					revalidateMinimumSize();
+					setLocation(clientBounds.getLocation());
+					setSize(clientBounds.getSize());
+				} else {
+					setLocationRelativeTo(getOwner());
+				}
+
+				if (configManager.getConfiguration(MeteorLiteConfig.GROUP_NAME, CONFIG_CLIENT_MAXIMIZED) != null) {
+					setExtendedState(JFrame.MAXIMIZED_BOTH);
+				}
+			} catch (Exception ex) {
+				log.warn("Failed to set window bounds", ex);
+				setLocationRelativeTo(getOwner());
+			}
+		} else {
+			setLocationRelativeTo(getOwner());
+		}
+
+		// If the frame is well hidden (e.g. unplugged 2nd screen),
+		// we want to move it back to default position as it can be
+		// hard for the user to reposition it themselves otherwise.
+		Rectangle clientBounds = getBounds();
+		Rectangle screenBounds = getGraphicsConfiguration().getBounds();
+		if (clientBounds.x + clientBounds.width - CLIENT_WELL_HIDDEN_MARGIN < screenBounds.getX() ||
+						clientBounds.x + CLIENT_WELL_HIDDEN_MARGIN > screenBounds.getX() + screenBounds.getWidth() ||
+						clientBounds.y + CLIENT_WELL_HIDDEN_MARGIN_TOP < screenBounds.getY() ||
+						clientBounds.y + CLIENT_WELL_HIDDEN_MARGIN > screenBounds.getY() + screenBounds.getHeight()) {
+			setLocationRelativeTo(getOwner());
+		}
+
+		setVisible(true);
+	}
+
+	private void shutdownClient() {
+		log.info("Shutting down client");
+		saveClientBoundsConfig();
+		ClientShutdown csev = new ClientShutdown();
+		eventBus.post(csev);
+		new Thread(() ->
+		{
+			if (applet != null) {
+				int clientShutdownWaitMS;
+				if (applet instanceof Client) {
+					((Client) applet).stopNow();
+					clientShutdownWaitMS = 1000;
+				} else {
+					applet.stop();
+					setVisible(false);
+					clientShutdownWaitMS = 6000;
+				}
+
+				try {
+					Thread.sleep(clientShutdownWaitMS);
+				} catch (InterruptedException ignored) {
+				}
+			}
+			System.exit(0);
+		}, "MeteorLite Shutdown").start();
+	}
+
+	private void saveClientBoundsConfig() {
+		if ((getExtendedState() & JFrame.MAXIMIZED_BOTH) != 0) {
+			configManager.setConfiguration(MeteorLiteConfig.GROUP_NAME, CONFIG_CLIENT_MAXIMIZED, true);
+		} else {
+			final Rectangle bounds = getBounds();
+			configManager.unsetConfiguration(MeteorLiteConfig.GROUP_NAME, CONFIG_CLIENT_MAXIMIZED);
+			configManager.setConfiguration(MeteorLiteConfig.GROUP_NAME, CONFIG_CLIENT_BOUNDS, bounds);
+		}
+	}
+
+	private void updateFrameConfig(boolean updateResizable) {
+		if (isAlwaysOnTopSupported()) {
+			setAlwaysOnTop(config.gameAlwaysOnTop());
+		}
+
+		if (updateResizable) {
+			setResizable(!config.lockWindowSize());
+		}
+
+		setExpandResizeType(config.automaticResizeType());
+
+		ContainableFrame.Mode containMode = config.containInScreen();
+		if (containMode == ContainableFrame.Mode.ALWAYS) {
+			// When native window decorations are enabled we don't have a way to receive window move events
+			// so we can't contain to screen always.
+			containMode = ContainableFrame.Mode.RESIZING;
+		}
+
+		setContainedInScreen(containMode);
+
+		if (!config.rememberScreenBounds()) {
+			configManager.unsetConfiguration(MeteorLiteConfig.GROUP_NAME, CONFIG_CLIENT_MAXIMIZED);
+			configManager.unsetConfiguration(MeteorLiteConfig.GROUP_NAME, CONFIG_CLIENT_BOUNDS);
+		}
+
+		if (applet == null) {
+			return;
+		}
+
+		// The upper bounds are defined by the applet's max size
+		// The lower bounds are defined by the client's fixed size
+		int width = Math.max(Math.min(config.gameSize().width, 7680), Constants.GAME_FIXED_WIDTH);
+		int height = Math.max(Math.min(config.gameSize().height, 2160), Constants.GAME_FIXED_HEIGHT);
+		final Dimension size = new Dimension(width, height);
+
+		if (!size.equals(lastClientSize)) {
+			lastClientSize = size;
+			applet.setSize(size);
+			applet.setPreferredSize(size);
+			applet.getParent().setPreferredSize(size);
+			applet.getParent().setSize(size);
+
+			if (isVisible()) {
+				pack();
+			}
+		}
 	}
 
 	public void toggleRightPanel() throws IOException {
@@ -142,7 +279,7 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 					return;
 				}
 
-				if (meteorLiteConfig.resizeGame()) {
+				if (config.resizeGame()) {
 					return;
 				}
 
@@ -178,7 +315,7 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 			return;
 		}
 
-		if (!meteorLiteConfig.resizeGame()) {
+		if (!config.resizeGame()) {
 			setSize(new Dimension(getWidth() - RIGHT_PANEL_WIDTH, getHeight()));
 		}
 		if (resize) {
@@ -195,7 +332,7 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 		rightPanel.getScene().setRoot(root);
 	}
 
-	public void setupJavaFXComponents(Applet applet) throws IOException {
+	public void setupJavaFXComponents(Applet applet) {
 		setMinimumFrameSize();
 		JFXPanel toolbarPanel = new JFXPanel();
 		toolbarPanel.setSize(1280, 100);
@@ -209,14 +346,13 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 		rootPanel.add(rightPanel, BorderLayout.EAST);
 		add(rootPanel);
 		rootPanel.setVisible(true);
-		setVisible(true);
-		setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
+//			setVisible(true);
+//		setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent event) {
-				ClientShutdown shutdown = new ClientShutdown();
-				eventBus.post(shutdown);
+				shutdownClient();
 			}
 		});
 		applet.init();
@@ -245,33 +381,41 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 		return applet;
 	}
 
-	public void setCursor(final BufferedImage image, final String name)
-	{
+	public void setCursor(final BufferedImage image, final String name) {
 		final java.awt.Point hotspot = new java.awt.Point(0, 0);
 		final Cursor cursorAwt = Toolkit.getDefaultToolkit().createCustomCursor(image, hotspot, name);
 		defaultCursor = cursorAwt;
 		setCursor(cursorAwt);
 	}
 
-	public Cursor getCurrentCursor()
-	{
+	public Cursor getCurrentCursor() {
 		return getCursor();
 	}
 
-	public Cursor getDefaultCursor()
-	{
+	public Cursor getDefaultCursor() {
 		return defaultCursor != null ? defaultCursor : Cursor.getDefaultCursor();
 	}
 
-	public void setCursor(final Cursor cursor)
-	{
+	public void setCursor(final Cursor cursor) {
 		super.setCursor(cursor);
 	}
 
-	public void resetCursor()
-	{
+	public void resetCursor() {
 		defaultCursor = null;
 		super.setCursor(Cursor.getDefaultCursor());
+	}
+
+	@Subscribe
+	private void onConfigChanged(ConfigChanged event) {
+		if (!event.getGroup().equals(MeteorLiteConfig.GROUP_NAME)
+						&& !(event.getKey().equals(CONFIG_OPACITY) ||
+						event.getKey().equals(CONFIG_OPACITY_AMOUNT)) ||
+						event.getKey().equals(CONFIG_CLIENT_MAXIMIZED) ||
+						event.getKey().equals(CONFIG_CLIENT_BOUNDS)) {
+			return;
+		}
+
+		SwingUtilities.invokeLater(() -> updateFrameConfig(event.getKey().equals("lockWindowSize")));
 	}
 
 	@Subscribe

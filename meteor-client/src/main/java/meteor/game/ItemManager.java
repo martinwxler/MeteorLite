@@ -186,7 +186,7 @@ import lombok.Value;
 import meteor.callback.ClientThread;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
-import meteor.plugins.meteorlite.MeteorLiteConfig;
+import meteor.config.MeteorLiteConfig;
 import meteor.util.AsyncBufferedImage;
 import net.runelite.api.Client;
 import net.runelite.api.Constants;

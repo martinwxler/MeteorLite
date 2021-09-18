@@ -1,8 +1,8 @@
 package meteor.plugins.meteorlite;
 
-import com.google.inject.Provides;
 import meteor.config.Config;
 import meteor.config.ConfigManager;
+import meteor.config.MeteorLiteConfig;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.events.ExternalsReloaded;
@@ -82,7 +82,7 @@ public class MeteorLitePlugin extends Plugin {
 
     @Subscribe
     public void onConfigButtonClicked(ConfigButtonClicked event) {
-        if (!event.getGroup().equals("MeteorLite")) {
+        if (!event.getGroup().equals(MeteorLiteConfig.GROUP_NAME)) {
             return;
         }
 
@@ -93,7 +93,7 @@ public class MeteorLitePlugin extends Plugin {
 
     @Subscribe
     public void onConfigChanged(ConfigChanged event) {
-        if (!event.getGroup().equals("MeteorLite")) {
+        if (!event.getGroup().equals(MeteorLiteConfig.GROUP_NAME)) {
             return;
         }
 

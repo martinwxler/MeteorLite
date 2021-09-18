@@ -44,7 +44,7 @@ import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.eventbus.events.InfoBoxMenuClicked;
-import meteor.plugins.meteorlite.MeteorLiteConfig;
+import meteor.config.MeteorLiteConfig;
 import meteor.ui.overlay.OverlayManager;
 import meteor.ui.overlay.OverlayMenuEntry;
 import meteor.ui.overlay.components.ComponentOrientation;
@@ -132,7 +132,7 @@ public class InfoBoxManager {
 
   @Subscribe
   public void onConfigChanged(ConfigChanged event) {
-    if (event.getGroup().equals("runelite") && event.getKey().equals("infoBoxSize")) {
+    if (event.getGroup().equals(MeteorLiteConfig.GROUP_NAME) && event.getKey().equals("infoBoxSize")) {
       layers.values().forEach(l -> l.getInfoBoxes().forEach(this::updateInfoBoxImage));
     }
   }
