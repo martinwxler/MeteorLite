@@ -8,7 +8,6 @@ import meteor.callback.Hooks;
 import meteor.chat.ChatMessageManager;
 import meteor.config.ChatColorConfig;
 import meteor.config.ConfigManager;
-import meteor.config.RuneLiteConfig;
 import meteor.discord.DiscordService;
 import meteor.eventbus.DeferredEventBus;
 import meteor.eventbus.EventBus;
@@ -26,12 +25,9 @@ import meteor.ui.overlay.tooltip.TooltipOverlay;
 import meteor.ui.overlay.worldmap.WorldMapOverlay;
 import meteor.util.ExecutorServiceExceptionLogger;
 import meteor.util.NonScheduledExecutorServiceExceptionLogger;
-import meteor.util.WorldUtil;
 import net.runelite.api.Client;
 import net.runelite.api.hooks.Callbacks;
 import net.runelite.http.api.chat.ChatClient;
-import net.runelite.http.api.worlds.World;
-import net.runelite.http.api.worlds.WorldResult;
 import okhttp3.OkHttpClient;
 import org.sponge.util.Logger;
 
@@ -228,12 +224,6 @@ public class MeteorLiteClientModule extends AbstractModule {
   @Singleton
   Client provideClient(@Nullable Applet applet) {
     return applet instanceof Client ? (Client) applet : null;
-  }
-
-  @Provides
-  @Singleton
-  RuneLiteConfig provideConfig(ConfigManager configManager) {
-    return configManager.getConfig(RuneLiteConfig.class);
   }
 
   @Provides

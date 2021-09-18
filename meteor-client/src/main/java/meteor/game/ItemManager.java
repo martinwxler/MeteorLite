@@ -184,9 +184,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.Value;
 import meteor.callback.ClientThread;
-import meteor.config.RuneLiteConfig;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
+import meteor.plugins.meteorlite.MeteorLiteConfig;
 import meteor.util.AsyncBufferedImage;
 import net.runelite.api.Client;
 import net.runelite.api.Constants;
@@ -282,7 +282,7 @@ public class ItemManager {
   private final Client client;
   private final ClientThread clientThread;
   private final ItemClient itemClient;
-  private final RuneLiteConfig runeLiteConfig;
+  private final MeteorLiteConfig meteorConfig;
   private final LoadingCache<ImageKey, AsyncBufferedImage> itemImages;
   private final LoadingCache<Integer, ItemComposition> itemCompositions;
   private final LoadingCache<OutlineKey, BufferedImage> itemOutlines;
@@ -293,11 +293,11 @@ public class ItemManager {
   @Inject
   public ItemManager(Client client, ScheduledExecutorService scheduledExecutorService,
       ClientThread clientThread,
-      OkHttpClient okHttpClient, EventBus eventBus, RuneLiteConfig runeLiteConfig) {
+      OkHttpClient okHttpClient, EventBus eventBus, MeteorLiteConfig meteorConfig) {
     this.client = client;
     this.clientThread = clientThread;
     this.itemClient = new ItemClient(okHttpClient);
-    this.runeLiteConfig = runeLiteConfig;
+    this.meteorConfig = meteorConfig;
 
     loadPrices();
     loadStats();
@@ -398,7 +398,7 @@ public class ItemManager {
    * @return item price
    */
   public int getItemPrice(int itemID) {
-    return getItemPriceWithSource(itemID, runeLiteConfig.useWikiItemPrices());
+    return getItemPriceWithSource(itemID, meteorConfig.useWikiItemPrices());
   }
 
   /**

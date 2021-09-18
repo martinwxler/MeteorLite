@@ -36,10 +36,10 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import lombok.Getter;
 import lombok.NonNull;
-import meteor.config.RuneLiteConfig;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.InfoBoxMenuClicked;
+import meteor.plugins.meteorlite.MeteorLiteConfig;
 import meteor.ui.overlay.Overlay;
 import meteor.ui.overlay.OverlayMenuEntry;
 import meteor.ui.overlay.OverlayPanel;
@@ -61,7 +61,7 @@ public class InfoBoxOverlay extends OverlayPanel {
   private final InfoBoxManager infoboxManager;
   private final TooltipManager tooltipManager;
   private final Client client;
-  private final RuneLiteConfig config;
+  private final MeteorLiteConfig config;
   private final EventBus eventBus;
   private final String name;
   @Getter
@@ -73,7 +73,7 @@ public class InfoBoxOverlay extends OverlayPanel {
       InfoBoxManager infoboxManager,
       TooltipManager tooltipManager,
       Client client,
-      RuneLiteConfig config,
+      MeteorLiteConfig config,
       EventBus eventBus,
       String name,
       @NonNull ComponentOrientation orientation) {

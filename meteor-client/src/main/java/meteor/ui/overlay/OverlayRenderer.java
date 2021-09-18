@@ -46,14 +46,13 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.swing.SwingUtilities;
 
-import meteor.MeteorLiteClientModule;
-import meteor.config.RuneLiteConfig;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.input.KeyListener;
 import meteor.input.KeyManager;
 import meteor.input.MouseAdapter;
 import meteor.input.MouseManager;
+import meteor.plugins.meteorlite.MeteorLiteConfig;
 import meteor.ui.JagexColors;
 import meteor.ui.MeteorUI;
 import meteor.util.ColorUtil;
@@ -86,7 +85,7 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
   private static final Color MOVING_OVERLAY_RESIZING_COLOR = new Color(255, 0, 255, 200);
   private final Client client;
   private final OverlayManager overlayManager;
-  private final RuneLiteConfig runeLiteConfig;
+  private final MeteorLiteConfig meteorConfig;
   private final MeteorUI meteorUI;
 
   // Overlay movement variables
@@ -117,13 +116,13 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
   private OverlayRenderer(
           final Client client,
           final OverlayManager overlayManager,
-          final RuneLiteConfig runeLiteConfig,
+          final MeteorLiteConfig meteorConfig,
           final MouseManager mouseManager,
           final KeyManager keyManager,
           final EventBus eventBus, MeteorUI meteorUI) {
     this.client = client;
     this.overlayManager = overlayManager;
-    this.runeLiteConfig = runeLiteConfig;
+    this.meteorConfig = meteorConfig;
     this.meteorUI = meteorUI;
     keyManager.registerKeyListener(this, getClass());
     mouseManager.registerMouseListener(this);
@@ -149,7 +148,7 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
     }
 
     final boolean shift = client.isKeyPressed(KeyCode.KC_SHIFT);
-    if (!shift && runeLiteConfig.menuEntryShift()) {
+    if (!shift && meteorConfig.menuEntryShift()) {
       return;
     }
 
@@ -685,11 +684,11 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
 
     // Set font based on configuration
     if (position == OverlayPosition.DYNAMIC || position == OverlayPosition.DETACHED) {
-      graphics.setFont(runeLiteConfig.fontType().getFont());
+      graphics.setFont(meteorConfig.fontType().getFont());
     } else if (position == OverlayPosition.TOOLTIP) {
-      graphics.setFont(runeLiteConfig.tooltipFontType().getFont());
+      graphics.setFont(meteorConfig.tooltipFontType().getFont());
     } else {
-      graphics.setFont(runeLiteConfig.interfaceFontType().getFont());
+      graphics.setFont(meteorConfig.interfaceFontType().getFont());
     }
 
     graphics.translate(point.x, point.y);

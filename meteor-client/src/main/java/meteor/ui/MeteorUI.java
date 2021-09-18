@@ -8,7 +8,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import meteor.PluginManager;
 import meteor.config.ConfigManager;
-import meteor.config.RuneLiteConfig;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ClientShutdown;
@@ -71,9 +70,6 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 	private Applet applet;
 
 	@Inject
-	private RuneLiteConfig config;
-
-	@Inject
 	private EventBus eventBus;
 
 	@Inject
@@ -87,11 +83,8 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 
 	@Inject
 	private Client client;
-
-	public static BorderLayout borderLayout = new BorderLayout();
-	private static boolean toolbarVisible = true;
-	private static JFXPanel rightPanel = new JFXPanel();
-	private static Scene pluginsRootScene;
+	private final JFXPanel rightPanel = new JFXPanel();
+	private Scene pluginsRootScene;
 	public static boolean pluginsPanelVisible = false;
 
 	public void init() throws IOException {
