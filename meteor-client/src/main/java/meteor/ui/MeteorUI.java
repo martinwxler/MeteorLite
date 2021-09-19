@@ -355,6 +355,7 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 				shutdownClient();
 			}
 		});
+		applet.setSize(Constants.GAME_FIXED_WIDTH, Constants.GAME_FIXED_HEIGHT);
 		applet.init();
 		applet.start();
 	}
