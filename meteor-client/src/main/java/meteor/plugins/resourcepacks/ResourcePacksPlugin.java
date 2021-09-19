@@ -9,11 +9,11 @@ import lombok.Setter;
 import meteor.MeteorLiteClientLauncher;
 import meteor.callback.ClientThread;
 import meteor.config.ConfigManager;
-import meteor.config.RuneLiteConfig;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
+import meteor.config.MeteorLiteConfig;
 import net.runelite.api.GameState;
 import net.runelite.api.events.BeforeRender;
 import net.runelite.api.events.GameStateChanged;
@@ -161,7 +161,7 @@ public class ResourcePacksPlugin extends Plugin
 			clientThread.invoke(resourcePacksManager::reloadBankTagSprites);
 		}
 		else if (config.allowOverlayColor() && !ignoreOverlayConfig &&
-			event.getGroup().equals(RuneLiteConfig.GROUP_NAME) && event.getKey().equals(OVERLAY_COLOR_CONFIG))
+			event.getGroup().equals(MeteorLiteConfig.GROUP_NAME) && event.getKey().equals(OVERLAY_COLOR_CONFIG))
 		{
 			configManager.setConfiguration(ResourcePacksConfig.GROUP_NAME, ResourcePacksConfig.ORIGINAL_OVERLAY_COLOR,
 				event.getNewValue());

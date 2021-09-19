@@ -25,6 +25,7 @@
 package meteor.plugins.defaultworld;
 
 import com.google.inject.Provides;
+import meteor.eventbus.events.ClientPreLaunch;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
@@ -70,6 +71,13 @@ public class DefaultWorldPlugin extends Plugin
 	{
 		worldChangeRequired = true;
 		changeWorld(worldCache);
+	}
+
+	@Subscribe
+	public void onClientPreLaunch(ClientPreLaunch event)
+	{
+		worldChangeRequired = true;
+		applyWorld();
 	}
 
 	@Provides

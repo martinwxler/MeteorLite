@@ -301,7 +301,7 @@ public class PluginManager {
 		plugins.add(new MouseTooltipPlugin());
 		plugins.add(new MTAPlugin());
 		plugins.add(new NeverLogoutPlugin());
-	  	plugins.add(new NightmareHelper());
+	  plugins.add(new NightmareHelper());
 		plugins.add(new NightmarePlugin());
 		plugins.add(new NpcAggroAreaPlugin());
 		plugins.add(new NpcIndicatorsPlugin());
@@ -384,7 +384,7 @@ public class PluginManager {
 	}
 
 	public void startPlugin(Plugin plugin) {
-		Injector parent = meteorLiteClientModule.instanceInjector;
+		Injector parent = MeteorLiteClientLauncher.injector;
 		List<Module> depModules = new ArrayList<>();
 		if (plugin.getClass().getAnnotation(PluginDependency.class) != null) {
 			Class<? extends Plugin> depClass = plugin.getClass().getAnnotation(PluginDependency.class).value();

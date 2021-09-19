@@ -41,7 +41,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import meteor.config.ConfigGroup;
-import meteor.config.RuneLiteConfig;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.OverlayMenuClicked;
@@ -84,8 +83,6 @@ public class OverlayManager {
   private static final String OVERLAY_CONFIG_PREFERRED_LOCATION = "_preferredLocation";
   private static final String OVERLAY_CONFIG_PREFERRED_POSITION = "_preferredPosition";
   private static final String OVERLAY_CONFIG_PREFERRED_SIZE = "_preferredSize";
-  private static final String RUNELITE_CONFIG_GROUP_NAME = RuneLiteConfig.class
-      .getAnnotation(ConfigGroup.class).value();
   /**
    * Insertion-order sorted set of overlays All access to this must be guarded by a lock on this
    * OverlayManager

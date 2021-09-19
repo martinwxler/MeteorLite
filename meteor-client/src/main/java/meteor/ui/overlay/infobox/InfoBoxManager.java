@@ -40,11 +40,11 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import meteor.config.ConfigManager;
-import meteor.config.RuneLiteConfig;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.eventbus.events.InfoBoxMenuClicked;
+import meteor.config.MeteorLiteConfig;
 import meteor.ui.overlay.OverlayManager;
 import meteor.ui.overlay.OverlayMenuEntry;
 import meteor.ui.overlay.components.ComponentOrientation;
@@ -74,7 +74,7 @@ public class InfoBoxManager {
 
   private final Map<String, InfoBoxOverlay> layers = new ConcurrentHashMap<>();
 
-  private final RuneLiteConfig runeLiteConfig;
+  private final MeteorLiteConfig meteorConfig;
   private final TooltipManager tooltipManager;
   private final Client client;
   private final EventBus eventBus;
@@ -83,13 +83,13 @@ public class InfoBoxManager {
 
   @Inject
   private InfoBoxManager(
-      final RuneLiteConfig runeLiteConfig,
+      final MeteorLiteConfig meteorConfig,
       final TooltipManager tooltipManager,
       final Client client,
       final EventBus eventBus,
       final OverlayManager overlayManager,
       final ConfigManager configManager) {
-    this.runeLiteConfig = runeLiteConfig;
+    this.meteorConfig = meteorConfig;
     this.tooltipManager = tooltipManager;
     this.client = client;
     this.eventBus = eventBus;
@@ -132,7 +132,7 @@ public class InfoBoxManager {
 
   @Subscribe
   public void onConfigChanged(ConfigChanged event) {
-    if (event.getGroup().equals("runelite") && event.getKey().equals("infoBoxSize")) {
+    if (event.getGroup().equals(MeteorLiteConfig.GROUP_NAME) && event.getKey().equals("infoBoxSize")) {
       layers.values().forEach(l -> l.getInfoBoxes().forEach(this::updateInfoBoxImage));
     }
   }
@@ -226,7 +226,7 @@ public class InfoBoxManager {
     BufferedImage resultImage = image;
     final double width = image.getWidth(null);
     final double height = image.getHeight(null);
-    final double size = Math.max(2, runeLiteConfig
+    final double size = Math.max(2, meteorConfig
         .infoBoxSize()); // Limit size to 2 as that is minimum size not causing breakage
 
     if (size < width || size < height) {
@@ -256,7 +256,7 @@ public class InfoBoxManager {
     if (orientation == null) {
       if (name.equals(DEFAULT_LAYER)) {
         // Fall back to old orientation config option
-        orientation = runeLiteConfig.infoBoxVertical() ? ComponentOrientation.VERTICAL
+        orientation = meteorConfig.infoBoxVertical() ? ComponentOrientation.VERTICAL
             : ComponentOrientation.HORIZONTAL;
         setOrientation(name, orientation);
       } else {
@@ -269,7 +269,7 @@ public class InfoBoxManager {
         this,
         tooltipManager,
         client,
-        runeLiteConfig,
+            meteorConfig,
         eventBus,
         name,
         orientation);

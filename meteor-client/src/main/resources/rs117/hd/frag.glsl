@@ -236,7 +236,7 @@ void main() {
             waterFresnelAmount = 1.0;
             waterSurfaceColor = vec3(1, 1, 1);
             waterFoamColor = vec3(176, 164, 146);
-            waterHasFoam = 1;
+            waterHasFoam = 0;
             waterDuration = 1;
             waterNormalMap1 = 236;
             waterNormalMap2 = 236;

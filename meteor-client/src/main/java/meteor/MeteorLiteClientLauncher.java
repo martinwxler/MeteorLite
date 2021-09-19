@@ -9,6 +9,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
+
 import javafx.application.Application;
 import javafx.stage.Stage;
 import meteor.util.LoggerStream;
@@ -28,13 +30,13 @@ public class MeteorLiteClientLauncher extends Application implements Module {
   public static PrintStream consoleStream = null;
   public static LoggerStream verboseFileStream = null;
   public static LoggerStream errorFileStream = null;
-  public static MeteorLiteClientModule mainClientInstance;
-  public static Injector mainInjectorInstance;
 
   public static Client clientInstance; // This is reserved for the Sponge Mixins Agent
 
+  public static Injector injector; //this is so bad
+
   @Override
-  public void start(Stage primaryStage) throws IOException {
+  public void start(Stage primaryStage) throws IOException, InterruptedException, InvocationTargetException {
     try {
       consoleStream = System.out;
       errorFileStream = new LoggerStream(new FileOutputStream(ERROR_LOG));
@@ -45,24 +47,14 @@ public class MeteorLiteClientLauncher extends Application implements Module {
     } catch (FileNotFoundException ex) {
       ex.printStackTrace();
     }
-    mainInjectorInstance = Guice.createInjector(meteorLite());
-    mainInjectorInstance.injectMembers(meteorLite());
-    mainClientInstance = getNewOSRSInstance();
-    mainClientInstance.start();
-    //MeteorLiteClientModule secondInstance = getNewOSRSInstance();
-    //secondInstance.start();
-  }
 
-  private MeteorLiteClientModule getNewOSRSInstance() {
-    return new MeteorLiteClientModule();
+    MeteorLiteClientModule module = new MeteorLiteClientModule();
+    injector = Guice.createInjector(module);
+    module.start();
   }
 
   @Override
   public void configure(Binder binder) {
 
-  }
-
-  public MeteorLiteClientLauncher meteorLite() {
-    return this;
   }
 }

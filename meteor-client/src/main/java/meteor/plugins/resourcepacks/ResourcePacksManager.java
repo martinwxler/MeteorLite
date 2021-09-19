@@ -39,6 +39,7 @@ import lombok.Getter;
 import static meteor.plugins.resourcepacks.ResourcePacksPlugin.GITHUB;
 import static meteor.plugins.resourcepacks.ResourcePacksPlugin.OVERLAY_COLOR_CONFIG;
 import meteor.eventbus.events.ConfigChanged;
+import meteor.config.MeteorLiteConfig;
 import meteor.plugins.resourcepacks.event.ResourcePacksChanged;
 import meteor.plugins.resourcepacks.hub.ResourcePackManifest;
 import meteor.plugins.resourcepacks.hub.ResourcePacksClient;
@@ -48,7 +49,6 @@ import net.runelite.api.SpritePixels;
 import net.runelite.api.widgets.Widget;
 import meteor.callback.ClientThread;
 import meteor.config.ConfigManager;
-import meteor.config.RuneLiteConfig;
 import meteor.eventbus.EventBus;
 import meteor.game.SpriteManager;
 import meteor.util.ColorUtil;
@@ -91,7 +91,7 @@ public class ResourcePacksManager
 	private EventBus eventBus;
 
 	@Inject
-	private RuneLiteConfig runeLiteConfig;
+	private MeteorLiteConfig meteorConfig;
 
 	public void refreshPlugins()
 	{
@@ -590,7 +590,7 @@ public class ResourcePacksManager
 	{
 		if (configManager.getConfiguration(ResourcePacksConfig.GROUP_NAME, ResourcePacksConfig.ORIGINAL_OVERLAY_COLOR) == null)
 		{
-			configManager.setConfiguration(ResourcePacksConfig.GROUP_NAME, ResourcePacksConfig.ORIGINAL_OVERLAY_COLOR, runeLiteConfig.overlayBackgroundColor());
+			configManager.setConfiguration(ResourcePacksConfig.GROUP_NAME, ResourcePacksConfig.ORIGINAL_OVERLAY_COLOR, meteorConfig.overlayBackgroundColor());
 		}
 		ResourcePacksPlugin.setIgnoreOverlayConfig(true);
 		Color overlayColor = ColorUtil.fromHex(colorProperties.getProperty("overlay_color"));
@@ -599,7 +599,7 @@ public class ResourcePacksManager
 			overlayColor = config.colorPack();
 		}
 
-		configManager.setConfiguration(RuneLiteConfig.GROUP_NAME, OVERLAY_COLOR_CONFIG, overlayColor);
+		configManager.setConfiguration(MeteorLiteConfig.GROUP_NAME, OVERLAY_COLOR_CONFIG, overlayColor);
 		ResourcePacksPlugin.setIgnoreOverlayConfig(false);
 	}
 
@@ -607,7 +607,7 @@ public class ResourcePacksManager
 	{
 		if (configManager.getConfiguration(ResourcePacksConfig.GROUP_NAME, ResourcePacksConfig.ORIGINAL_OVERLAY_COLOR) != null)
 		{
-			configManager.setConfiguration(RuneLiteConfig.GROUP_NAME, OVERLAY_COLOR_CONFIG,
+			configManager.setConfiguration(MeteorLiteConfig.GROUP_NAME, OVERLAY_COLOR_CONFIG,
 				configManager.getConfiguration(ResourcePacksConfig.GROUP_NAME, ResourcePacksConfig.ORIGINAL_OVERLAY_COLOR));
 			configManager.unsetConfiguration(ResourcePacksConfig.GROUP_NAME, ResourcePacksConfig.ORIGINAL_OVERLAY_COLOR);
 		}

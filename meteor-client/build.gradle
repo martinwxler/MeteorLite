@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'org.meteorlite'
-version '1.0.35'
+version '1.0.36'
 
 repositories {
     mavenCentral()
@@ -129,6 +129,7 @@ shadowJar {
     minimize()
     applicationDefaultJvmArgs = [
             "-noverify",
+            "-Xmx512m",
             "-Dprism.allowhidpi=false",
             "-Dsun.awt.noerasebackground=true",
             "--add-modules=javafx.media",

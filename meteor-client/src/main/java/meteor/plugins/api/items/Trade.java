@@ -79,30 +79,45 @@ public class Trade {
 		}
 	}
 
-	public static void offer(Item item, int quantity) {
+	public static void offer(Predicate<Item> filter, int quantity) {
+		Item item = Trade.getInventory(filter).stream().findFirst().orElse(null);
 		if (item == null) {
 			return;
 		}
 
 		switch (quantity) {
-			case 1 -> item.interact("Offer");
-			case 5 -> item.interact("Offer-5");
-			case 10 -> item.interact("Offer-10");
-			default -> {
+			case 1:
+				item.interact("Offer");
+				break;
+			case 5:
+				item.interact("Offer-5");
+				break;
+			case 10:
+				item.interact("Offer-10");
+				break;
+			default:
 				if (quantity > item.getQuantity()) {
 					item.interact("Offer-All");
 				} else {
 					item.interact("Offer-X");
 					Dialog.enterInput(quantity);
 				}
-			}
+				break;
 		}
+	}
+
+	public static void offer(int id, int quantity) {
+		offer(x -> x.getId() == id, quantity);
+	}
+
+	public static void offer(String name, int quantity) {
+		offer(x -> x.getName() != null && x.getName().equals(name), quantity);
 	}
 
 	/**
 	 * Pass true as first parameter if you want to get the other side's items
 	 */
-	public static List<Item> getItems(boolean theirs, Predicate<Item> filter) {
+	public static List<Item> getAll(boolean theirs, Predicate<Item> filter) {
 		List<Item> items = new ArrayList<>();
 		ItemContainer container = Game.getClient().getItemContainer(theirs ? InventoryID.TRADEOTHER : InventoryID.TRADE);
 		if (container == null) {
@@ -153,16 +168,12 @@ public class Trade {
 		return items;
 	}
 
-	public static List<Item> getItems(boolean theirs) {
-		return getItems(theirs, x -> true);
+	public static List<Item> getAll(boolean theirs) {
+		return getAll(theirs, x -> true);
 	}
 
-	public static Item getFirst(boolean theirs, Predicate<Item> filter) {
-		return getItems(theirs, filter).stream().findFirst().orElse(null);
-	}
-
-	public static List<Item> getItems(boolean theirs, int... ids) {
-		return getItems(theirs, x -> {
+	public static List<Item> getAll(boolean theirs, int... ids) {
+		return getAll(theirs, x -> {
 			for (int id : ids) {
 				if (id == x.getId()) {
 					return true;
@@ -173,8 +184,8 @@ public class Trade {
 		});
 	}
 
-	public static List<Item> getItems(boolean theirs, String... names) {
-		return getItems(theirs, x -> {
+	public static List<Item> getAll(boolean theirs, String... names) {
+		return getAll(theirs, x -> {
 			if (x.getName() == null) {
 				return false;
 			}
@@ -187,6 +198,10 @@ public class Trade {
 
 			return false;
 		});
+	}
+
+	public static Item getFirst(boolean theirs, Predicate<Item> filter) {
+		return getAll(theirs, filter).stream().findFirst().orElse(null);
 	}
 
 	public static Item getFirst(boolean theirs, int... ids) {

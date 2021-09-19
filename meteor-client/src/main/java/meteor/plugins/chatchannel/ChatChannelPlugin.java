@@ -423,7 +423,7 @@ public class ChatChannelPlugin extends Plugin
 		}
 		message
 			.append("] ")
-			.append(textColor, member.getName$api() + activityMessage);
+			.append(textColor, member.getName() + activityMessage);
 
 		final String messageString = message.build();
 		final MessageNode line = client.addChatMessage(ChatMessageType.FRIENDSCHATNOTIFICATION, "", messageString, "");

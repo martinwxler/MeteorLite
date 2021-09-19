@@ -65,7 +65,10 @@ public enum VarClientInt {
 
   INVENTORY_TAB(171),
 
-  WORLD_MAP_SEARCH_FOCUSED(190);
+  WORLD_MAP_SEARCH_FOCUSED(190),
 
+  DISPLAY_NAME_INPUT(435),
+
+  ;
   private final int index;
 }

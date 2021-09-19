@@ -34,7 +34,7 @@ public interface ChatEntity extends Comparable {
    *
    * @return the name
    */
-  String getName$api();
+  String getName();
 
   /**
    * The previous name the player had.

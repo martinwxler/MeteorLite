@@ -189,9 +189,9 @@ public abstract class ClientMixin implements RSClient {
   @MethodHook("drawInterface")
   @Inject
   public static void preRenderWidgetLayer(Widget[] widgets, int parentId, int minX, int minY,
-      int maxX, int maxY, int x, int y, int var8) {
+                                          int maxX, int maxY, int x, int y, int var8) {
     @SuppressWarnings("unchecked") HashTable<WidgetNode> componentTable = client
-        .getComponentTable();
+            .getComponentTable();
 
     for (int i = 0; i < widgets.length; i++) {
       RSWidget widget = (RSWidget) widgets[i];
@@ -209,20 +209,20 @@ public abstract class ClientMixin implements RSClient {
       widget.setRenderY(renderY);
 
       if (widget.getType() == WidgetType.RECTANGLE && renderX == client.getViewportXOffset()
-          && renderY == client.getViewportYOffset()
-          && widget.getWidth() == client.getViewportWidth() && widget.getHeight() == client
-          .getViewportHeight()
-          && widget.getOpacity() > 0 && widget.isFilled() && widget.getFillMode().getOrdinal() == 0
-          && client.isGpu()) {
+              && renderY == client.getViewportYOffset()
+              && widget.getWidth() == client.getViewportWidth() && widget.getHeight() == client
+              .getViewportHeight()
+              && widget.getOpacity() > 0 && widget.isFilled() && widget.getFillMode().getOrdinal() == 0
+              && client.isGpu()) {
         int tc = widget.getTextColor();
         int alpha = widget.getOpacity() & 0xFF;
         int inverseAlpha = 256 - alpha;
         int vpc = viewportColor;
         int c1 =
-            (inverseAlpha * (tc & 0xFF00FF) >> 8 & 0xFF00FF) + (inverseAlpha * (tc & 0x00FF00) >> 8
-                & 0x00FF00);
+                (inverseAlpha * (tc & 0xFF00FF) >> 8 & 0xFF00FF) + (inverseAlpha * (tc & 0x00FF00) >> 8
+                        & 0x00FF00);
         int c2 =
-            (alpha * (vpc & 0xFF00FF) >> 8 & 0xFF00FF) + (alpha * (vpc & 0x00FF00) >> 8 & 0x00FF00);
+                (alpha * (vpc & 0xFF00FF) >> 8 & 0xFF00FF) + (alpha * (vpc & 0x00FF00) >> 8 & 0x00FF00);
         int outAlpha = inverseAlpha + ((vpc >>> 24) * (255 - inverseAlpha) * 0x8081 >>> 23);
         viewportColor = outAlpha << 24 | c1 + c2;
         widget.setHidden(true);
@@ -247,7 +247,7 @@ public abstract class ClientMixin implements RSClient {
   @Inject
   @MethodHook(value = "drawInterface", end = true)
   public static void postRenderWidgetLayer(Widget[] widgets, int parentId, int minX, int minY,
-      int maxX, int maxY, int x, int y, int var8) {
+                                           int maxX, int maxY, int x, int y, int var8) {
     Callbacks callbacks = client.getCallbacks();
     int oldSize = widgetItems.size();
 
@@ -263,7 +263,7 @@ public abstract class ClientMixin implements RSClient {
         final int renderY = y + widget.getRelativeY();
         if (renderX >= minX && renderX <= maxX && renderY >= minY && renderY <= maxY) {
           WidgetItem widgetItem = new WidgetItem(client, widget.getItemId(), widget.getItemQuantity(), -1,
-              widget.getBounds(), widget, null);
+                  widget.getBounds(), widget, null);
           widgetItems.add(widgetItem);
         }
       } else if (type == WidgetType.INVENTORY) {
@@ -334,13 +334,13 @@ public abstract class ClientMixin implements RSClient {
       {
         oldXp = 0;
       }
-			int level = client.getRealSkillLevel(updatedSkill);
+      int level = client.getRealSkillLevel(updatedSkill);
       StatChanged statChanged = new StatChanged(
-          updatedSkill,
-          newXp,
-          level,
-          client.getBoostedSkillLevel(updatedSkill),
-          newXp - oldXp
+              updatedSkill,
+              newXp,
+              level,
+              client.getBoostedSkillLevel(updatedSkill),
+              newXp - oldXp
       );
       if (oldXp == 0 && newXp > 0) {
         oldXp = newXp;
@@ -348,23 +348,23 @@ public abstract class ClientMixin implements RSClient {
       }
 
       client.getCallbacks().post(statChanged);
-			experienceGained(oldXp, newXp, level, updatedSkill);
+      experienceGained(oldXp, newXp, level, updatedSkill);
     }
   }
 
   @Inject
   public static void experienceGained(int oldExp, int currentExp, int skillLevel, Skill updatedSkill) {
-		if (currentExp > oldExp) {
-			ExperienceGained experienceGained = new ExperienceGained(
-							updatedSkill,
-							oldExp,
-							currentExp,
-							skillLevel
-			);
+    if (currentExp > oldExp) {
+      ExperienceGained experienceGained = new ExperienceGained(
+              updatedSkill,
+              oldExp,
+              currentExp,
+              skillLevel
+      );
 
-			client.getCallbacks().post(experienceGained);
-			oldXpMap.put(updatedSkill, currentExp);
-		}
+      client.getCallbacks().post(experienceGained);
+      oldXpMap.put(updatedSkill, currentExp);
+    }
   }
 
   @FieldHook("changedSkills")
@@ -379,11 +379,11 @@ public abstract class ClientMixin implements RSClient {
     Skill[] skills = Skill.values();
     if (skillIdx >= 0 && skillIdx < skills.length - 1) {
       StatChanged statChanged = new StatChanged(
-          skills[skillIdx],
-          client.getSkillExperiences()[skillIdx],
-          client.getRealSkillLevels()[skillIdx],
-          client.getBoostedSkillLevels()[skillIdx],
-          0
+              skills[skillIdx],
+              client.getSkillExperiences()[skillIdx],
+              client.getRealSkillLevels()[skillIdx],
+              client.getBoostedSkillLevels()[skillIdx],
+              0
       );
       client.getCallbacks().post(statChanged);
     }
@@ -407,13 +407,13 @@ public abstract class ClientMixin implements RSClient {
 
     if (newCount == oldCount + 1) {
       MenuEntryAdded event = new MenuEntryAdded(
-          options[oldCount],
-          targets[oldCount],
-          identifiers[oldCount],
-          opcodes[oldCount],
-          arguments1[oldCount],
-          arguments2[oldCount],
-          forceLeftClick[oldCount]
+              options[oldCount],
+              targets[oldCount],
+              identifiers[oldCount],
+              opcodes[oldCount],
+              arguments1[oldCount],
+              arguments2[oldCount],
+              forceLeftClick[oldCount]
       );
 
       client.getCallbacks().post(event);
@@ -433,7 +433,7 @@ public abstract class ClientMixin implements RSClient {
   @Copy("menuAction")
   @Replace("menuAction")
   static void copy$menuAction(int param0, int param1, int opcode, int id, String option,
-      String target, int canvasX, int canvasY) {
+                              String target, int canvasX, int canvasY) {
     /*
      * The RuneScape client may deprioritize an action in the menu by incrementing the opcode with 2000,
      * undo it here so we can get the correct opcode
@@ -472,11 +472,11 @@ public abstract class ClientMixin implements RSClient {
     );
 
     copy$menuAction(menuOptionClicked.getActionParam(), menuOptionClicked.getWidgetId(),
-        menuOptionClicked.getMenuAction() == UNKNOWN ? opcode
-            : menuOptionClicked.getMenuAction().getId(),
-        menuOptionClicked.getId(), menuOptionClicked.getMenuOption(),
-        menuOptionClicked.getMenuTarget(),
-        canvasX, canvasY);
+            menuOptionClicked.getMenuAction() == UNKNOWN ? opcode
+                    : menuOptionClicked.getMenuAction().getId(),
+            menuOptionClicked.getId(), menuOptionClicked.getMenuOption(),
+            menuOptionClicked.getMenuTarget(),
+            canvasX, canvasY);
   }
 
   @Override
@@ -1537,7 +1537,7 @@ public abstract class ClientMixin implements RSClient {
   @Override
   public void interact(final int identifier, final int opcode, final int param0, final int param1) {
     client.getCallbacks()
-        .post(new InvokeMenuActionEvent("", "", identifier, opcode, param0, param1));
+            .post(new InvokeMenuActionEvent("", "", identifier, opcode, param0, param1));
   }
 
   @Inject
@@ -1762,6 +1762,22 @@ public abstract class ClientMixin implements RSClient {
 
   @Inject
   @Override
+  public void addFriend(String friend)
+  {
+    RSFriendSystem friendSystem = getFriendManager();
+    friendSystem.addFriend$api(friend);
+  }
+
+  @Inject
+  @Override
+  public void removeFriend(String friend)
+  {
+    RSFriendSystem friendSystem = getFriendManager();
+    friendSystem.removeFriend$api(friend);
+  }
+
+  @Inject
+  @Override
   public void setModulus(BigInteger modulus) {
 
   }
@@ -1770,5 +1786,25 @@ public abstract class ClientMixin implements RSClient {
   @Override
   public void playMusicTrack(int var0, RSAbstractArchive var1, int var2, int var3, int var4, boolean var5) {
 
+  }
+
+  @Inject
+  @Override
+  public int getTotalLevel()
+  {
+    int totalLevel = 0;
+
+    int[] realLevels = client.getRealSkillLevels();
+    int lastSkillIdx = Skill.CONSTRUCTION.ordinal();
+
+    for (int i = 0; i < realLevels.length; i++)
+    {
+      if (i <= lastSkillIdx)
+      {
+        totalLevel += realLevels[i];
+      }
+    }
+
+    return totalLevel;
   }
 }

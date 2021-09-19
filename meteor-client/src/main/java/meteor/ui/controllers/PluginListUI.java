@@ -20,14 +20,15 @@ import meteor.MeteorLiteClientLauncher;
 import meteor.MeteorLiteClientModule;
 import meteor.PluginManager;
 import meteor.config.Config;
-import meteor.config.ConfigGroup;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.events.ExternalsReloaded;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
+import meteor.ui.MeteorUI;
 import meteor.ui.components.*;
+import org.sponge.util.Logger;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -35,9 +36,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static meteor.MeteorLiteClientModule.pluginsPanelVisible;
-
 public class PluginListUI {
+	private static final Logger log = new Logger("PluginListUI");
 	private static final String MAIN_CATEGORY_NAME = "Plugins";
 	public static final String EXTERNAL_CATEGORY_NAME = "Externals";
 
@@ -70,7 +70,7 @@ public class PluginListUI {
 
 	@FXML
 	public void initialize() {
-		MeteorLiteClientModule.instanceInjectorStatic.injectMembers(this);
+		MeteorLiteClientLauncher.injector.injectMembers(this);
 		eventBus.register(this);
 		INSTANCE = this;
 		categories.clear();
@@ -422,21 +422,20 @@ public class PluginListUI {
 		}
 
 		PluginConfigButton configButton = new PluginConfigButton(p);
-		if (p.getConfig(MeteorLiteClientLauncher.mainClientInstance.instanceInjector.getInstance(ConfigManager.class)) != null) {
-			if (p.getConfig(MeteorLiteClientLauncher.mainClientInstance.instanceInjector.getInstance(ConfigManager.class)).getClass().getDeclaredMethods().length > 4) {
-				AnchorPane.setRightAnchor(configButton, 48.0);
-				AnchorPane.setTopAnchor(configButton, 0.0);
+		Config pluginConfig = p.getConfig(configManager);
+		if (pluginConfig != null && pluginConfig.getClass().getDeclaredMethods().length > 4) {
+			AnchorPane.setRightAnchor(configButton, 48.0);
+			AnchorPane.setTopAnchor(configButton, 0.0);
 
-				FontAwesomeIconView cog = new FontAwesomeIconView(FontAwesomeIcon.COG);
-				cog.setFill(MeteorLiteClientModule.METEOR_FONT_COLOR);
-				cog.setSize(String.valueOf(MeteorLiteClientModule.METEOR_FONT_SIZE));
-				configButton.setGraphic(cog);
-				configButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-					lastPluginInteracted = p;
-					p.showConfig();
-					pluginsPanelVisible = !pluginsPanelVisible;
-				});
-			}
+			FontAwesomeIconView cog = new FontAwesomeIconView(FontAwesomeIcon.COG);
+			cog.setFill(MeteorLiteClientModule.METEOR_FONT_COLOR);
+			cog.setSize(String.valueOf(MeteorLiteClientModule.METEOR_FONT_SIZE));
+			configButton.setGraphic(cog);
+			configButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
+				lastPluginInteracted = p;
+				p.showConfig();
+				MeteorUI.pluginsPanelVisible = !MeteorUI.pluginsPanelVisible;
+			});
 		}
 
 		MeteorText pluginName = new MeteorText(p);

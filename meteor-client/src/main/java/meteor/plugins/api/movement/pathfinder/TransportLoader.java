@@ -191,13 +191,17 @@ public class TransportLoader {
             int openedId
     ) {
         return new Transport(source, destination, Integer.MAX_VALUE, 0, () -> {
-            TileObject openedTrapdoor = TileObjects.getNearest(x -> x.getWorldLocation() == source && x.getId() == openedId);
+            TileObject openedTrapdoor = TileObjects.getNearest(
+                    x -> x.getId() == openedId && x.getWorldLocation().distanceTo(source) < 10
+            );
             if (openedTrapdoor != null) {
                 openedTrapdoor.interact(0);
                 return;
             }
 
-            TileObject closedTrapdoor = TileObjects.getNearest(x -> x.getWorldLocation() == source && x.getId() == closedId);
+            TileObject closedTrapdoor = TileObjects.getNearest(
+                    x -> x.getId() == closedId && x.getWorldLocation().distanceTo(source) < 10
+            );
             if (closedTrapdoor != null) {
                 closedTrapdoor.interact(0);
             }
@@ -215,7 +219,9 @@ public class TransportLoader {
             if (item == null) {
                 return;
             }
-            TileObject obj = TileObjects.getNearest(objId);
+            TileObject obj = TileObjects.getNearest(
+                    x -> x.getId() == objId && x.getWorldLocation().distanceTo(source) < 10
+            );
             if (obj != null) {
                 item.useOn(obj);
             }
@@ -270,7 +276,9 @@ public class TransportLoader {
             String action
     ) {
         return new Transport(source, destination, Integer.MAX_VALUE, 0, () -> {
-            TileObject obj = TileObjects.getNearest(objId);
+            TileObject obj = TileObjects.getNearest(
+                    x -> x.getId() == objId && x.getWorldLocation().distanceTo(source) < 10
+            );
             if (obj != null) {
                 obj.interact(action);
             }
@@ -298,7 +306,9 @@ public class TransportLoader {
                 return;
             }
 
-            TileObject obj = TileObjects.getNearest(objId);
+            TileObject obj = TileObjects.getNearest(
+                    x -> x.getId() == objId && x.getWorldLocation().distanceTo(source) < 10
+            );
             if (obj != null) {
                 obj.interact(action);
             }

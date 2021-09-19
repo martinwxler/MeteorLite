@@ -51,6 +51,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import lombok.Value;
+import meteor.config.MeteorLiteConfig;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.Experience;
@@ -78,7 +79,6 @@ import meteor.chat.ChatCommandManager;
 import meteor.chat.ChatMessageBuilder;
 import meteor.chat.ChatMessageManager;
 import meteor.config.ConfigManager;
-import meteor.config.RuneLiteConfig;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ChatInput;
 import meteor.game.ItemManager;
@@ -199,7 +199,7 @@ public class ChatCommandsPlugin extends Plugin
 	private ChatClient chatClient;
 
 	@Inject
-	private RuneLiteConfig runeLiteConfig;
+	private MeteorLiteConfig meteorConfig;
 
 	@Inject
 	private Gson gson;
@@ -1284,7 +1284,7 @@ public class ChatCommandsPlugin extends Plugin
 			ItemPrice item = retrieveFromList(results, search);
 
 			int itemId = item.getId();
-			int itemPrice = runeLiteConfig.useWikiItemPrices() && item.getWikiPrice() > 0 ? item.getWikiPrice() : item.getPrice();
+			int itemPrice = meteorConfig.useWikiItemPrices() && item.getWikiPrice() > 0 ? item.getWikiPrice() : item.getPrice();
 
 			final ChatMessageBuilder builder = new ChatMessageBuilder()
 				.append(ChatColorType.NORMAL)

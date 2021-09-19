@@ -18,13 +18,12 @@ import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.events.PluginChanged;
 import meteor.task.Scheduler;
+import meteor.ui.MeteorUI;
 import meteor.ui.components.PluginToggleButton;
 import meteor.ui.controllers.PluginListUI;
 import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.Client;
 import org.sponge.util.Logger;
-
-import static meteor.MeteorLiteClientModule.RIGHT_PANEL_WIDTH;
 
 public class Plugin implements Module {
 
@@ -53,6 +52,9 @@ public class Plugin implements Module {
 
   @Inject
   public OverlayManager overlayManager;
+
+  @Inject
+  private MeteorUI meteorUI;
 
   public Plugin() {
     logger.name = getDescriptor().name();
@@ -92,7 +94,7 @@ public class Plugin implements Module {
       }
     }
 
-    MeteorLiteClientModule.updateRightPanel(configRoot, RIGHT_PANEL_WIDTH);
+    meteorUI.updateRightPanel(configRoot, MeteorUI.RIGHT_PANEL_WIDTH);
   }
 
   public void unload() {
