@@ -34,7 +34,7 @@ public class Friends {
 	public static List<Friend> getAll(int... worlds) {
 		return getAll(x -> {
 			for (int world : worlds) {
-				if (world == x.getWorld()) {
+				if (world == x.getCurrentWorld()) {
 					return true;
 				}
 			}
@@ -68,7 +68,7 @@ public class Friends {
 	public static Friend getFirst(int... worlds) {
 		return getFirst(x -> {
 			for (int world : worlds) {
-				if (world == x.getWorld()) {
+				if (world == x.getCurrentWorld()) {
 					return true;
 				}
 			}

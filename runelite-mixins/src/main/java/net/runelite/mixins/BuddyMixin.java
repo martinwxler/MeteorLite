@@ -8,7 +8,7 @@ import net.runelite.rs.api.RSBuddy;
 public abstract class BuddyMixin implements RSBuddy {
 	@Inject
 	@Override
-	public int getWorld() {
+	public int getCurrentWorld() {
 		return getWorld$api();
 	}
 }
