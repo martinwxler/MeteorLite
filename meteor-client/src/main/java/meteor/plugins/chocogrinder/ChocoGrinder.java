@@ -5,13 +5,12 @@ import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
+import meteor.plugins.api.entities.NPCs;
 import meteor.plugins.api.entities.TileObjects;
 import meteor.plugins.api.game.Game;
 import meteor.plugins.api.items.Bank;
 import meteor.plugins.api.items.Inventory;
-import meteor.plugins.api.packets.ItemPackets;
-import meteor.plugins.api.packets.MousePackets;
-import meteor.plugins.api.packets.Packets;
+import meteor.plugins.api.packets.*;
 import net.runelite.api.*;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameTick;
@@ -59,13 +58,13 @@ public class ChocoGrinder extends Plugin {
         if(gametick==0){
             if(!Inventory.getAll(1975).isEmpty()) {
                 clickPacket();
-                Bank.depositInventory();
+                WidgetPackets.queueWidgetAction2Packet(983043,1975,0);
             }
             if(Bank.getFirst(1973).getQuantity()<27){
                 this.toggle();
             }
             clickPacket();
-            Bank.withdrawAll(1973,Bank.WithdrawMode.ITEM);
+            WidgetPackets.queueWidgetActionPacket(786444,1973,0);
             for (int i = 0; i < 8; i++) {
                 clickPacket();
                 itemOnItemPacket(1973,26,946,27);
@@ -82,10 +81,10 @@ public class ChocoGrinder extends Plugin {
                 clickPacket();
                 itemOnItemPacket(1973,26,946,27);
             }
-            TileObject bank = TileObjects.getNearest(x -> x.hasAction("Bank") && x.hasAction("Collect"));
+            NPC bank = NPCs.getNearest("Banker");
             if (bank != null) {
                 clickPacket();
-                bank.interact("Bank");
+                NPCPackets.queueNPCAction3Packet(bank.getIndex(),0);
             }
         }
         gametick++;
