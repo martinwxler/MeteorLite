@@ -125,6 +125,8 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 
 		updateFrameConfig(true);
 		setWindowBounds();
+
+		setVisible(true);
 	}
 
 	private void setWindowBounds() {
@@ -162,8 +164,6 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 						clientBounds.y + CLIENT_WELL_HIDDEN_MARGIN > screenBounds.getY() + screenBounds.getHeight()) {
 			setLocationRelativeTo(getOwner());
 		}
-
-		setVisible(true);
 	}
 
 	private void shutdownClient() {
@@ -346,8 +346,7 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 		rootPanel.add(rightPanel, BorderLayout.EAST);
 		add(rootPanel);
 		rootPanel.setVisible(true);
-//			setVisible(true);
-//		setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
+
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
 			@Override

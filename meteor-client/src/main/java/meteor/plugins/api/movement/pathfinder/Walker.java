@@ -301,6 +301,8 @@ public class Walker {
             return Collections.emptyList();
         }
 
+        logger.debug("Calculating path towards {}", destination);
+
         return new Pathfinder(COLLISION_MAP, transports, startPoints,
                 destination).find();
     }
