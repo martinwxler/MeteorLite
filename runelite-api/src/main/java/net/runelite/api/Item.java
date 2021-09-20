@@ -115,7 +115,7 @@ public class Item implements Interactable, Identifiable, EntityNameable {
 							: MenuAction.CC_OP.getId());
 			case BANK, BANK_INVENTORY -> interact(index, MenuAction.CC_OP.getId());
 			case INVENTORY -> interact(getId(), getActionId(index));
-			case UNKNOWN -> throw new IllegalStateException("Couldn't detect Item type for itemId: " + getId());
+			case UNKNOWN -> client.getLogger().error("Couldn't determine item type for: {}, widgetid: {}", id, widgetId);
 		}
 	}
 
@@ -137,7 +137,7 @@ public class Item implements Interactable, Identifiable, EntityNameable {
 			case BANK -> interact(index, menuAction, getSlot(), WidgetInfo.BANK_ITEM_CONTAINER.getPackedId());
 			case BANK_INVENTORY -> interact(index, menuAction, getSlot(), WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER.getPackedId());
 			case INVENTORY -> interact(getId(), menuAction, actionParam, widgetId);
-			case UNKNOWN -> throw new IllegalStateException("Couldn't detect Item type for itemId: " + getId());
+			case UNKNOWN -> client.getLogger().error("Couldn't determine item type for: {}, widgetid: {}", id, widgetId);
 		}
 	}
 

@@ -30,8 +30,6 @@ public class Movement {
     private static final int RUN_VARP = 173;
 
     public static void setDestination(int worldX, int worldY) {
-        logger.debug("Setting destination {} {}", worldX, worldY);
-
         MovementPackets.sendMovement(worldX, worldY, Movement.isRunEnabled());
         Game.getClient().setDestinationX(worldX - Game.getClient().getBaseX());
         Game.getClient().setDestinationY(worldY - Game.getClient().getBaseY());
@@ -56,10 +54,7 @@ public class Movement {
         }
 
         WorldPoint walkPoint = worldPoint;
-        Tile destinationTile = Tiles.getTiles(t -> t.getWorldLocation().equals(worldPoint))
-                .stream()
-                .findFirst()
-                .orElse(null);
+        Tile destinationTile = Tiles.getAt(worldPoint);
         // Check if tile is in loaded client scene
         if (destinationTile == null) {
             logger.debug("Destination {} is not in scene", worldPoint);

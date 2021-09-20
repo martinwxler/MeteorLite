@@ -191,19 +191,15 @@ public class TransportLoader {
             int openedId
     ) {
         return new Transport(source, destination, Integer.MAX_VALUE, 0, () -> {
-            TileObject openedTrapdoor = TileObjects.getNearest(
-                    x -> x.getId() == openedId && x.getWorldLocation().distanceTo(source) < 10
-            );
+            TileObject openedTrapdoor = TileObjects.getFirstSurrounding(source, 5, openedId);
             if (openedTrapdoor != null) {
                 openedTrapdoor.interact(0);
                 return;
             }
 
-            TileObject closedTrapdoor = TileObjects.getNearest(
-                    x -> x.getId() == closedId && x.getWorldLocation().distanceTo(source) < 10
-            );
-            if (closedTrapdoor != null) {
-                closedTrapdoor.interact(0);
+            TileObject closedTrapDoor = TileObjects.getFirstSurrounding(source, 5, closedId);
+            if (closedTrapDoor != null) {
+                closedTrapDoor.interact(0);
             }
         });
     }
@@ -219,11 +215,10 @@ public class TransportLoader {
             if (item == null) {
                 return;
             }
-            TileObject obj = TileObjects.getNearest(
-                    x -> x.getId() == objId && x.getWorldLocation().distanceTo(source) < 10
-            );
-            if (obj != null) {
-                item.useOn(obj);
+
+            TileObject transport = TileObjects.getFirstSurrounding(source, 5, objId);
+            if (transport != null) {
+                item.useOn(transport);
             }
         });
     }
@@ -275,14 +270,10 @@ public class TransportLoader {
             int objId,
             String action
     ) {
-        return new Transport(source, destination, Integer.MAX_VALUE, 0, () -> {
-            TileObject obj = TileObjects.getNearest(
-                    x -> x.getId() == objId && x.getWorldLocation().distanceTo(source) < 10
-            );
-            if (obj != null) {
-                obj.interact(action);
-            }
-        });
+        return new Transport(source, destination, Integer.MAX_VALUE, 0, () ->
+                TileObjects.getSurrounding(source, 5, x -> x.getId() == objId).stream()
+                        .findFirst()
+                        .ifPresent(obj -> obj.interact(action)));
     }
 
     public static Transport objectDialogTransport(
@@ -306,11 +297,9 @@ public class TransportLoader {
                 return;
             }
 
-            TileObject obj = TileObjects.getNearest(
-                    x -> x.getId() == objId && x.getWorldLocation().distanceTo(source) < 10
-            );
-            if (obj != null) {
-                obj.interact(action);
+            TileObject transport = TileObjects.getFirstSurrounding(source, 5, objId);
+            if (transport != null) {
+                transport.interact(action);
             }
         });
     }
