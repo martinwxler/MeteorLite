@@ -24,6 +24,7 @@
  */
 package meteor.plugins.hiscore;
 
+import static meteor.ui.MeteorUI.lastButtonPressed;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ObjectArrays;
 import com.google.inject.Provides;
@@ -122,11 +123,11 @@ public class HiscorePlugin extends Plugin
 	@Subscribe
 	public void onToolbarButtonClicked(ToolbarButtonClicked event) {
 		if (event.getName().equals("Hiscores")) {
-			try {
-				ui.updateRightPanel(hiscoreScene);
+			if (lastButtonPressed.equals(event.getName()))
 				ui.toggleRightPanel();
-			} catch (IOException e) {
-				e.printStackTrace();
+			else {
+				ui.updateRightPanel(hiscoreScene);
+				lastButtonPressed = event.getName();
 			}
 		}
 	}

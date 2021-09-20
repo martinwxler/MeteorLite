@@ -68,6 +68,9 @@ public class PluginListUI {
 
 	public static ArrayList<Category> categories = new ArrayList<>();
 
+	@Inject
+	private MeteorUI ui;
+
 	@FXML
 	public void initialize() {
 		MeteorLiteClientLauncher.injector.injectMembers(this);
@@ -434,7 +437,7 @@ public class PluginListUI {
 			configButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
 				lastPluginInteracted = p;
 				p.showConfig();
-				MeteorUI.pluginsPanelVisible = !MeteorUI.pluginsPanelVisible;
+				ui.showRightPanel();
 			});
 		}
 
