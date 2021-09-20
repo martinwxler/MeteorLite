@@ -85,8 +85,8 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 	private Client client;
 
 	private Dimension lastClientSize;
-	private final JFXPanel rightPanel = new JFXPanel();
-	private Scene pluginsRootScene;
+	public final JFXPanel rightPanel = new JFXPanel();
+	public Scene pluginsRootScene;
 	public static boolean pluginsPanelVisible = false;
 
 	public void init() throws IOException, InterruptedException, InvocationTargetException {
@@ -251,8 +251,12 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 		}
 	}
 
+	public boolean isRightPanelVisible() {
+		return rightPanel.isVisible();
+	}
+
 	public void toggleRightPanel() throws IOException {
-		if (pluginsPanelVisible) {
+		if (rightPanel.isVisible()) {
 			rightPanel.setVisible(false);
 		} else {
 			rightPanel.setVisible(true);
@@ -325,11 +329,11 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 	}
 
 	public void showPlugins() {
-		rightPanel.getScene().setRoot(pluginsRoot);
+		rightPanel.setScene(pluginsRootScene);
 	}
 
-	public void updateRightPanel(Parent root, int width) {
-		rightPanel.getScene().setRoot(root);
+	public void updateRightPanel(Scene root) {
+		rightPanel.setScene(root);
 	}
 
 	public void setupJavaFXComponents(Applet applet) {

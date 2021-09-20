@@ -50,6 +50,10 @@ public class ToolbarController {
     staticAP.getChildren().add(button);
   }
 
+  public static void removeButton(ToolbarButton button) {
+    staticAP.getChildren().remove(button);
+  }
+
   public static double getNextButtonPos() {
     double newButtonLayoutX = AnchorPane.getRightAnchor(staticPB) + PLUGINS_BUTTON_WIDTH + DEFAULT_SPACING;
     JFXButton lastButton = staticPB;
@@ -64,6 +68,8 @@ public class ToolbarController {
 
   @FXML
   protected void handlePluginsPressed(ActionEvent event) throws IOException {
-    meteorUI.toggleRightPanel();
+    meteorUI.rightPanel.setScene(meteorUI.pluginsRootScene);
+    if (!meteorUI.isRightPanelVisible() || meteorUI.getRightPanel() == meteorUI.pluginsRootScene)
+      meteorUI.toggleRightPanel();
   }
 }

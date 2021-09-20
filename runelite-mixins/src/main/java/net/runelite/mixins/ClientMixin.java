@@ -1,5 +1,13 @@
 package net.runelite.mixins;
 
+import static net.runelite.api.MenuAction.PLAYER_EIGTH_OPTION;
+import static net.runelite.api.MenuAction.PLAYER_FIFTH_OPTION;
+import static net.runelite.api.MenuAction.PLAYER_FIRST_OPTION;
+import static net.runelite.api.MenuAction.PLAYER_FOURTH_OPTION;
+import static net.runelite.api.MenuAction.PLAYER_SECOND_OPTION;
+import static net.runelite.api.MenuAction.PLAYER_SEVENTH_OPTION;
+import static net.runelite.api.MenuAction.PLAYER_SIXTH_OPTION;
+import static net.runelite.api.MenuAction.PLAYER_THIRD_OPTION;
 import static net.runelite.api.MenuAction.UNKNOWN;
 import static net.runelite.api.Perspective.LOCAL_TILE_SIZE;
 
@@ -1806,5 +1814,23 @@ public abstract class ClientMixin implements RSClient {
     }
 
     return totalLevel;
+  }
+
+  @FieldHook("playerMenuActions")
+  @Inject
+  public static void playerOptionsChanged(int idx)
+  {
+    // Reset the menu opcode
+    MenuAction[] playerActions = {PLAYER_FIRST_OPTION, PLAYER_SECOND_OPTION, PLAYER_THIRD_OPTION, PLAYER_FOURTH_OPTION,
+        PLAYER_FIFTH_OPTION, PLAYER_SIXTH_OPTION, PLAYER_SEVENTH_OPTION, PLAYER_EIGTH_OPTION};
+    if (idx >= 0 && idx < playerActions.length)
+    {
+      MenuAction playerAction = playerActions[idx];
+      client.getPlayerMenuTypes()[idx] = playerAction.getId();
+    }
+
+    PlayerMenuOptionsChanged optionsChanged = new PlayerMenuOptionsChanged();
+    optionsChanged.setIndex(idx);
+    client.getCallbacks().post(optionsChanged);
   }
 }
