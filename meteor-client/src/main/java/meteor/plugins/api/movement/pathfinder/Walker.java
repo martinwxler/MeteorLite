@@ -91,19 +91,20 @@ public class Walker {
             return false;
         }
 
-        // Refresh path if our direction changed
-        if (!local.isAnimating() && !path.contains(local.getWorldLocation())) {
-            logger.debug("Direction changed, resetting cached path towards {}", destination);
-            PATH_CACHE.refresh(destination);
-            return false;
-        }
-
         WorldPoint startPosition = path.get(0);
         Teleport teleport = teleports.get(startPosition);
 
         if (teleport != null) {
+            logger.debug("Casting teleport {}", teleport);
             teleport.getHandler().run();
             Time.sleep(5000);
+            return false;
+        }
+
+        // Refresh path if our direction changed
+        if (!local.isAnimating() && !path.contains(local.getWorldLocation())) {
+            logger.debug("Direction changed, resetting cached path towards {}", destination);
+            PATH_CACHE.refresh(destination);
             return false;
         }
 
