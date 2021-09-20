@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="toolbarBackground" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="33.0" prefWidth="1203.0" style="-fx-background-color: #212121; -fx-border-style: solid; -fx-border-color: #121212; -fx-border-width: 3;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="meteor.ui.controllers.ToolbarFXMLController">
+<AnchorPane fx:id="toolbar" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="33.0" prefWidth="1203.0" style="-fx-background-color: #212121; -fx-border-style: solid; -fx-border-color: #121212; -fx-border-width: 3;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="meteor.ui.controllers.ToolbarController">
   <ImageView fitHeight="25.0" fitWidth="24.0" layoutX="2.0" layoutY="2.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="4.0" AnchorPane.topAnchor="2.0">
     <image>
       <Image url="@MeteorLite_icon.png" />

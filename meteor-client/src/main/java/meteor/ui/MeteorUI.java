@@ -14,7 +14,7 @@ import meteor.eventbus.events.ClientShutdown;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.events.ExternalsReloaded;
 import meteor.config.MeteorLiteConfig;
-import meteor.ui.controllers.ToolbarFXMLController;
+import meteor.ui.controllers.ToolbarController;
 import net.runelite.api.Client;
 import net.runelite.api.Constants;
 import net.runelite.api.events.GameTick;
@@ -431,9 +431,9 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 		}
 
 		if (client.getLocalPlayer().isIdle())
-			ToolbarFXMLController.idleButtonInstance.setVisible(true);
+			ToolbarController.idleButtonInstance.setVisible(true);
 		else
-			ToolbarFXMLController.idleButtonInstance.setVisible(false);
+			ToolbarController.idleButtonInstance.setVisible(false);
 	}
 
 	@Provides

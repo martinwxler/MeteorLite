@@ -4,7 +4,6 @@ import static meteor.MeteorLiteClientLauncher.consoleStream;
 import static meteor.MeteorLiteClientLauncher.verboseFileStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import meteor.MeteorLiteClientLauncher;
 import org.jetbrains.annotations.NotNull;
 import org.sponge.util.Logger;
 
