@@ -2386,4 +2386,8 @@ public interface Client extends GameEngine {
   boolean isWorldSelectOpen();
 
   void setWorldSelectOpen(boolean open);
+
+  void setWindowedMode(int mode);
+
+  int getWindowedMode();
 }
