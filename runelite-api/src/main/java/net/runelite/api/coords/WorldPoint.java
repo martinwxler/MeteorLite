@@ -103,9 +103,9 @@ public class WorldPoint {
    */
   public static WorldPoint fromLocal(Client client, int x, int y, int plane) {
     return new WorldPoint(
-        (x >>> Perspective.LOCAL_COORD_BITS) + client.getBaseX(),
-        (y >>> Perspective.LOCAL_COORD_BITS) + client.getBaseY(),
-        plane
+            (x >>> Perspective.LOCAL_COORD_BITS) + client.getBaseX(),
+            (y >>> Perspective.LOCAL_COORD_BITS) + client.getBaseY(),
+            plane
     );
   }
 
@@ -184,12 +184,12 @@ public class WorldPoint {
         int templateChunkY = (chunkData >> 3 & 0x7FF) * CHUNK_SIZE;
         int templateChunkX = (chunkData >> 14 & 0x3FF) * CHUNK_SIZE;
         if (worldPoint.getX() >= templateChunkX && worldPoint.getX() < templateChunkX + CHUNK_SIZE
-            && worldPoint.getY() >= templateChunkY
-            && worldPoint.getY() < templateChunkY + CHUNK_SIZE) {
+                && worldPoint.getY() >= templateChunkY
+                && worldPoint.getY() < templateChunkY + CHUNK_SIZE) {
           WorldPoint p = new WorldPoint(
-              client.getBaseX() + x * CHUNK_SIZE + (worldPoint.getX() & (CHUNK_SIZE - 1)),
-              client.getBaseY() + y * CHUNK_SIZE + (worldPoint.getY() & (CHUNK_SIZE - 1)),
-              worldPoint.getPlane());
+                  client.getBaseX() + x * CHUNK_SIZE + (worldPoint.getX() & (CHUNK_SIZE - 1)),
+                  client.getBaseY() + y * CHUNK_SIZE + (worldPoint.getY() & (CHUNK_SIZE - 1)),
+                  worldPoint.getPlane());
           p = rotate(p, rotation);
           worldPoints.add(p);
         }
@@ -215,7 +215,7 @@ public class WorldPoint {
         return new WorldPoint(chunkX + y, chunkY + (CHUNK_SIZE - 1 - x), point.getPlane());
       case 2:
         return new WorldPoint(chunkX + (CHUNK_SIZE - 1 - x), chunkY + (CHUNK_SIZE - 1 - y),
-            point.getPlane());
+                point.getPlane());
       case 3:
         return new WorldPoint(chunkX + (CHUNK_SIZE - 1 - y), chunkY + x, point.getPlane());
     }
@@ -227,9 +227,9 @@ public class WorldPoint {
    */
   public static WorldPoint fromScene(Client client, int x, int y, int plane) {
     return new WorldPoint(
-        x + client.getBaseX(),
-        y + client.getBaseY(),
-        plane
+            x + client.getBaseX(),
+            y + client.getBaseY(),
+            plane
     );
   }
 
@@ -242,13 +242,13 @@ public class WorldPoint {
    * @return
    */
   public static boolean isInZone(WorldPoint lowerBound, WorldPoint upperBound,
-      WorldPoint userLocation) {
+                                 WorldPoint userLocation) {
     return userLocation.getX() >= lowerBound.getX()
-        && userLocation.getX() <= upperBound.getX()
-        && userLocation.getY() >= lowerBound.getY()
-        && userLocation.getY() <= upperBound.getY()
-        && userLocation.getPlane() >= lowerBound.getPlane()
-        && userLocation.getPlane() <= upperBound.getPlane();
+            && userLocation.getX() <= upperBound.getX()
+            && userLocation.getY() >= lowerBound.getY()
+            && userLocation.getY() <= upperBound.getY()
+            && userLocation.getPlane() >= lowerBound.getPlane()
+            && userLocation.getPlane() <= upperBound.getPlane();
   }
 
   /**
@@ -256,9 +256,9 @@ public class WorldPoint {
    */
   public static WorldPoint fromRegion(int regionId, int regionX, int regionY, int plane) {
     return new WorldPoint(
-        ((regionId >>> 8) << 6) + regionX,
-        ((regionId & 0xff) << 6) + regionY,
-        plane);
+            ((regionId >>> 8) << 6) + regionX,
+            ((regionId & 0xff) << 6) + regionY,
+            plane);
   }
 
   private static int getRegionOffset(final int position) {
@@ -293,6 +293,10 @@ public class WorldPoint {
    */
   public WorldPoint dz(int dz) {
     return new WorldPoint(x, y, plane + dz);
+  }
+
+  public WorldPoint translate(int dx, int dy) {
+    return new WorldPoint(x + dx, y + dy, plane);
   }
 
   /**

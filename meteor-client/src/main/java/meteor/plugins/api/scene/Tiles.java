@@ -4,8 +4,9 @@ import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.game.Game;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldPoint;
+import org.sponge.util.Logger;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.*;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.function.Predicate;
 
 @Singleton
 public class Tiles {
+    private static final Logger log = new Logger("Tiles");
     private static final int MAX_RANGE = 50;
     public static List<Tile> getTiles(Predicate<Tile> filter) {
         List<Tile> out = new ArrayList<>();
@@ -35,6 +37,25 @@ public class Tiles {
 
     public static List<Tile> getTiles() {
         return getTiles(x -> true);
+    }
+
+    public static Tile getAt(WorldPoint worldPoint) {
+        return getAt(worldPoint.getX(), worldPoint.getY(), worldPoint.getPlane());
+    }
+
+    public static Tile getAt(LocalPoint localPoint) {
+        return Game.getClient().getScene().getTiles()[Game.getClient().getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
+    }
+
+    public static Tile getAt(int worldX, int worldY, int plane) {
+        if (!WorldPoint.isInScene(Game.getClient(), worldX, worldY)) {
+            return null;
+        }
+
+        int x = worldX - Game.getClient().getBaseX();
+        int y = worldY - Game.getClient().getBaseY();
+
+        return Game.getClient().getScene().getTiles()[plane][x][y];
     }
 
     public static Tile getHoveredTile() {

@@ -4,10 +4,8 @@ import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.scene.Tiles;
 import net.runelite.api.*;
-import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 
-import javax.inject.Inject;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -46,22 +44,59 @@ public class TileObjects extends Entities<TileObject> {
 		return TILE_OBJECTS.nearest(names);
 	}
 
-	public static List<TileObject> getAt(LocalPoint localPoint, Predicate<TileObject> filter) {
-		Tile tile = Game.getClient().getScene().getTiles()[Game.getClient().getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
-		if (tile == null) {
-			return Collections.emptyList();
-		}
+	public static List<TileObject> getAt(int worldX, int worldY, int plane, int... ids) {
+		return getAt(Tiles.getAt(worldX, worldY, plane), ids);
+	}
 
-		return parseTile(tile, filter);
+	public static List<TileObject> getAt(int worldX, int worldY, int plane, String... names) {
+		return getAt(Tiles.getAt(worldX, worldY, plane), names);
+	}
+
+	public static List<TileObject> getAt(int worldX, int worldY, int plane, Predicate<TileObject> filter) {
+		return getAt(Tiles.getAt(worldX, worldY, plane), filter);
 	}
 
 	public static List<TileObject> getAt(WorldPoint worldPoint, Predicate<TileObject> filter) {
-		LocalPoint localPoint = LocalPoint.fromWorld(Game.getClient(), worldPoint);
-		if (localPoint == null) {
-			return Collections.emptyList();
-		}
+		return getAt(worldPoint.getX(), worldPoint.getY(), worldPoint.getPlane(), filter);
+	}
 
-		Tile tile = Game.getClient().getScene().getTiles()[Game.getClient().getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
+	public static List<TileObject> getAt(WorldPoint worldPoint, int... ids) {
+		return getAt(worldPoint.getX(), worldPoint.getY(), worldPoint.getPlane(), ids);
+	}
+
+	public static List<TileObject> getAt(WorldPoint worldPoint, String... names) {
+		return getAt(worldPoint.getX(), worldPoint.getY(), worldPoint.getPlane(), names);
+	}
+
+	public static List<TileObject> getAt(Tile tile, int... ids) {
+		return getAt(tile, x -> {
+			for (int id : ids) {
+				if (id == x.getId()) {
+					return true;
+				}
+			}
+
+			return false;
+		});
+	}
+
+	public static List<TileObject> getAt(Tile tile, String... names) {
+		return getAt(tile, x -> {
+			if (x.getName() == null) {
+				return false;
+			}
+
+			for (String name : names) {
+				if (name.equals(x.getName())) {
+					return true;
+				}
+			}
+
+			return false;
+		});
+	}
+
+	public static List<TileObject> getAt(Tile tile, Predicate<TileObject> filter) {
 		if (tile == null) {
 			return Collections.emptyList();
 		}
@@ -69,8 +104,120 @@ public class TileObjects extends Entities<TileObject> {
 		return parseTile(tile, filter);
 	}
 
-	public static List<TileObject> getAt(Tile tile, Predicate<TileObject> filter) {
-		return parseTile(tile, filter);
+	public static TileObject getFirstAt(int worldX, int worldY, int plane, int... ids) {
+		return getAt(worldX, worldY, plane, ids).stream().findFirst().orElse(null);
+	}
+
+	public static TileObject getFirstAt(int worldX, int worldY, int plane, String... names) {
+		return getAt(worldX, worldY, plane, names).stream().findFirst().orElse(null);
+	}
+
+	public static TileObject getFirstAt(int worldX, int worldY, int plane, Predicate<TileObject> filter) {
+		return getAt(worldX, worldY, plane, filter).stream().findFirst().orElse(null);
+	}
+
+	public static TileObject getFirstAt(WorldPoint worldPoint, int... ids) {
+		return getAt(worldPoint, ids).stream().findFirst().orElse(null);
+	}
+
+	public static TileObject getFirstAt(WorldPoint worldPoint, String... names) {
+		return getAt(worldPoint, names).stream().findFirst().orElse(null);
+	}
+
+	public static TileObject getFirstAt(WorldPoint worldPoint, Predicate<TileObject> filter) {
+		return getAt(worldPoint, filter).stream().findFirst().orElse(null);
+	}
+
+	public static TileObject getFirstAt(Tile tile, int... ids) {
+		return getAt(tile, ids).stream().findFirst().orElse(null);
+	}
+
+	public static TileObject getFirstAt(Tile tile, String... names) {
+		return getAt(tile, names).stream().findFirst().orElse(null);
+	}
+
+	public static TileObject getFirstAt(Tile tile, Predicate<TileObject> filter) {
+		return getAt(tile, filter).stream().findFirst().orElse(null);
+	}
+
+	public static TileObject getFirstSurrounding(int worldX, int worldY, int plane, int radius, int... ids) {
+		return getSurrounding(worldX, worldY, plane, radius, ids).stream().findFirst().orElse(null);
+	}
+
+	public static TileObject getFirstSurrounding(int worldX, int worldY, int plane, int radius, String... names) {
+		return getSurrounding(worldX, worldY, plane, radius, names).stream().findFirst().orElse(null);
+	}
+
+	public static TileObject getFirstSurrounding(int worldX, int worldY, int plane, int radius, Predicate<TileObject> filter) {
+		return getSurrounding(worldX, worldY, plane, radius, filter).stream().findFirst().orElse(null);
+	}
+
+	public static TileObject getFirstSurrounding(WorldPoint worldPoint, int radius, int... ids) {
+		return getSurrounding(worldPoint, radius, ids).stream().findFirst().orElse(null);
+	}
+
+	public static TileObject getFirstSurrounding(WorldPoint worldPoint, int radius, String... names) {
+		return getSurrounding(worldPoint, radius, names).stream().findFirst().orElse(null);
+	}
+
+	public static TileObject getFirstSurrounding(WorldPoint worldPoint, int radius, Predicate<TileObject> filter) {
+		return getSurrounding(worldPoint, radius, filter).stream().findFirst().orElse(null);
+	}
+
+	public static List<TileObject> getSurrounding(int worldX, int worldY, int plane, int radius, int... ids) {
+		return getSurrounding(worldX, worldY, plane, radius, x -> {
+			for (int id : ids) {
+				if (id == x.getId()) {
+					return true;
+				}
+			}
+
+			return false;
+		});
+	}
+
+	public static List<TileObject> getSurrounding(int worldX, int worldY, int plane, int radius, String... names) {
+		return getSurrounding(worldX, worldY, plane, radius, x -> {
+			if (x.getName() == null) {
+				return false;
+			}
+
+			for (String name : names) {
+				if (name.equals(x.getName())) {
+					return true;
+				}
+			}
+
+			return false;
+		});
+	}
+
+	public static List<TileObject> getSurrounding(int worldX, int worldY, int plane, int radius, Predicate<TileObject> filter) {
+		List<TileObject> out = new ArrayList<>();
+		for (int x = -radius; x < radius; x++) {
+			for (int y = -radius; y < radius; y++) {
+				Tile tile = Tiles.getAt(worldX + x, worldY + y, plane);
+				if (tile == null) {
+					continue;
+				}
+
+				out.addAll(getAt(tile, filter));
+			}
+		}
+
+		return out;
+	}
+
+	public static List<TileObject> getSurrounding(WorldPoint worldPoint, int radius, int... ids) {
+		return getSurrounding(worldPoint.getX(), worldPoint.getY(), worldPoint.getPlane(), radius, ids);
+	}
+
+	public static List<TileObject> getSurrounding(WorldPoint worldPoint, int radius, String... names) {
+		return getSurrounding(worldPoint.getX(), worldPoint.getY(), worldPoint.getPlane(), radius, names);
+	}
+
+	public static List<TileObject> getSurrounding(WorldPoint worldPoint, int radius, Predicate<TileObject> filter) {
+		return getSurrounding(worldPoint.getX(), worldPoint.getY(), worldPoint.getPlane(), radius, filter);
 	}
 
 	private static List<TileObject> parseTile(Tile tile, Predicate<TileObject> pred) {

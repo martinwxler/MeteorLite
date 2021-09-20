@@ -1,5 +1,6 @@
 package meteor.ui.controllers;
 
+import static meteor.ui.MeteorUI.lastButtonPressed;
 import com.jfoenix.controls.JFXButton;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -67,9 +68,14 @@ public class ToolbarController {
   }
 
   @FXML
-  protected void handlePluginsPressed(ActionEvent event) throws IOException {
-    meteorUI.rightPanel.setScene(meteorUI.pluginsRootScene);
-    if (!meteorUI.isRightPanelVisible() || meteorUI.getRightPanel() == meteorUI.pluginsRootScene)
+  protected void handlePluginsPressed(ActionEvent event) {
+    if (lastButtonPressed.equals("Plugins"))
       meteorUI.toggleRightPanel();
+    else {
+      meteorUI.rightPanel.setScene(meteorUI.pluginsRootScene);
+      meteorUI.showRightPanel();
+    }
+
+    lastButtonPressed = "Plugins";
   }
 }

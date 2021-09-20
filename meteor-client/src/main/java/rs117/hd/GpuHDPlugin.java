@@ -188,7 +188,10 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 
 	@Inject
 	private ProceduralGenerator proceduralGenerator;
-	
+
+	@Inject
+	private ConfigManager configManager;
+
 	enum ComputeMode
 	{
 		OPENGL,
@@ -387,6 +390,7 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 
 	// Config settings used very frequently - thousands/frame
 	public boolean configGroundTextures = false;
+	public boolean configGroundBlending = false;
 	public WaterEffects configWaterEffects = WaterEffects.ALL;
 	public LevelOfDetail configLevelOfDetail = LevelOfDetail.FULL;
 	public boolean configObjectTextures = true;
@@ -404,7 +408,10 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 	@Override
 	public void startup()
 	{
+		convertOldBrightnessConfig();
+
 		configGroundTextures = config.groundTextures();
+		configGroundBlending = config.groundBlending();
 		configWaterEffects = config.waterEffects();
 		configLevelOfDetail = config.levelOfDetail();
 		configObjectTextures = config.objectTextures();
@@ -441,7 +448,7 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 				modelBufferSmall = new GpuIntBuffer();
 				modelBuffer = new GpuIntBuffer();
 
-				if (Logger.isDebugEnabled())
+				if (log.isDebugEnabled())
 				{
 					System.setProperty("jogl.debug", "true");
 				}
@@ -450,6 +457,19 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 
 				invokeOnMainThread(() ->
 				{
+					// Get and display the device and driver used by the GPU plugin
+					GLDrawable dummyDrawable = GLDrawableFactory.getFactory(GLProfile.getDefault())
+						.createDummyDrawable(GLProfile.getDefaultDevice(), true, new GLCapabilities(GLProfile.getDefault()), null);
+					dummyDrawable.setRealized(true);
+					GLContext versionContext = dummyDrawable.createContext(null);
+					versionContext.makeCurrent();
+					// Due to probable JOGL spaghetti, calling .getGL() once results in versionGL being set to null
+					// I have no idea exactly why the second call works, but it results in the correct GL being gotten.
+					GL versionGL = versionContext.getGL().getGL();
+					log.info("Using device: {}", versionGL.glGetString(GL.GL_RENDERER));
+					log.info("Using driver: {}", versionGL.glGetString(GL.GL_VERSION));
+					versionContext.destroy();
+
 					GLProfile glProfile = GLProfile.get(GLProfile.GL4);
 
 					GLCapabilities glCaps = new GLCapabilities(glProfile);
@@ -467,7 +487,7 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 						glDrawable.setRealized(true);
 
 						glContext = glDrawable.createContext(null);
-						if (Logger.isDebugEnabled())
+						if (log.isDebugEnabled())
 						{
 							// Debug config on context needs to be set before .makeCurrent call
 							glContext.enableGLDebugMessage(true);
@@ -493,7 +513,7 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 					this.gl = glContext.getGL().getGL4();
 					gl.setSwapInterval(0);
 
-					if (Logger.isDebugEnabled())
+					if (log.isDebugEnabled())
 					{
 						gl.glEnable(gl.GL_DEBUG_OUTPUT);
 
@@ -1709,7 +1729,7 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 
 			// get ambient light strength from either the config or the current area
 			float ambientStrength = environmentManager.currentAmbientStrength;
-			ambientStrength *= config.brightness().getAmount();
+			ambientStrength *= (double)config.brightness() / 20;
 			gl.glUniform1f(uniAmbientStrength, ambientStrength);
 
 			// and ambient color
@@ -1718,7 +1738,7 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 
 			// get light light strength from either the config or the current area
 			float lightStrength = environmentManager.currentDirectionalStrength;
-			lightStrength *= config.brightness().getAmount();
+			lightStrength *= (double)config.brightness() / 20;
 			gl.glUniform1f(uniLightStrength, lightStrength);
 
 			// and light color
@@ -2078,6 +2098,10 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 				configGroundTextures = config.groundTextures();
 				reloadScene();
 				break;
+			case "groundBlending":
+				configGroundBlending = config.groundBlending();
+				reloadScene();
+				break;
 			case "waterEffects":
 				configWaterEffects = config.waterEffects();
 				reloadScene();
@@ -2434,6 +2458,35 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 		else if (data != null)
 		{
 			gl.glBufferSubData(target, 0, size, data);
+		}
+	}
+
+	//Sets the new brightness setting from the old brightness setting.
+	//This can be removed later on when most people have updated the plugin
+	private void convertOldBrightnessConfig()
+	{
+		try
+		{
+			String oldBrightnessValue = configManager.getConfiguration("hd", "brightness");
+
+			if (!oldBrightnessValue.equals("set"))
+			{
+				String[][] newBrightnessValues = {{"LOWEST", "10"}, {"LOWER", "15"}, {"DEFAULT", "20"}, {"HIGHER", "25"}, {"HIGHEST", "30"}};
+				for (String[] newValue : newBrightnessValues)
+				{
+					if (newValue[0].equals(oldBrightnessValue))
+					{
+						configManager.setConfiguration("hd", "brightness2", newValue[1]);
+						break;
+					}
+				}
+
+				configManager.setConfiguration("hd", "brightness", "set");
+			}
+		}
+		catch (Exception e)
+		{
+			//Happens if people don't have the old brightness setting, then it doesn't need converting anyway.
 		}
 	}
 

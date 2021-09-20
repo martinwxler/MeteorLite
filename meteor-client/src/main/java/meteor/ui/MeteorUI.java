@@ -87,7 +87,8 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 	private Dimension lastClientSize;
 	public final JFXPanel rightPanel = new JFXPanel();
 	public Scene pluginsRootScene;
-	public static boolean pluginsPanelVisible = false;
+	public static boolean rightPanelVisible = false;
+	public static String lastButtonPressed = "";
 
 	public void init() throws IOException, InterruptedException, InvocationTargetException {
 		applet.setMinimumSize(Constants.GAME_FIXED_SIZE);
@@ -252,18 +253,18 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 	}
 
 	public boolean isRightPanelVisible() {
-		return rightPanel.isVisible();
+		return rightPanelVisible;
 	}
 
-	public void toggleRightPanel() throws IOException {
-		if (rightPanel.isVisible()) {
+	public void toggleRightPanel() {
+		if (rightPanelVisible) {
 			rightPanel.setVisible(false);
 		} else {
 			rightPanel.setVisible(true);
 		}
 
-		pluginsPanelVisible = !pluginsPanelVisible;
-		if (pluginsPanelVisible) {
+		rightPanelVisible = !rightPanelVisible;
+		if (rightPanelVisible) {
 			try {
 				// if maximized, dont resize
 				if (getExtendedState() == JFrame.MAXIMIZED_BOTH) {
@@ -328,12 +329,23 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 		validate();
 	}
 
+	public void showRightPanel() {
+		if (!rightPanelVisible) {
+			rightPanel.setVisible(true);
+			rightPanelVisible = true;
+		}
+	}
+
 	public void showPlugins() {
 		rightPanel.setScene(pluginsRootScene);
+		showRightPanel();
+		validate();
 	}
 
 	public void updateRightPanel(Scene root) {
 		rightPanel.setScene(root);
+		showRightPanel();
+		validate();
 	}
 
 	public void setupJavaFXComponents(Applet applet) {

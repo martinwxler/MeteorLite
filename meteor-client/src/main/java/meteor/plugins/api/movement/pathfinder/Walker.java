@@ -41,6 +41,7 @@ public class Walker {
             .build(new CacheLoader<>() {
                 @Override
                 public List<WorldPoint> load(@NotNull WorldPoint key) {
+                    logger.debug("Loading path to {}", key);
                     return buildPath(key);
                 }
             });
@@ -91,7 +92,8 @@ public class Walker {
         }
 
         // Refresh path if our direction changed
-        if (!path.contains(Players.getLocal().getWorldLocation())) {
+        if (!local.isAnimating() && !path.contains(local.getWorldLocation())) {
+            logger.debug("Direction changed, resetting cached path towards {}", destination);
             PATH_CACHE.refresh(destination);
             return false;
         }
@@ -110,8 +112,14 @@ public class Walker {
 
     public static boolean walkAlong(WorldPoint destination, List<WorldPoint> path, Map<WorldPoint, List<Transport>> transports) {
         Player local = Players.getLocal();
-        WorldPoint nextTile = path.get(path.size() - 1);
-        if (local.getWorldLocation().distanceTo(nextTile) > 0) {
+        WorldPoint endTile = path.get(path.size() - 1);
+
+        if (!endTile.equals(destination) && endTile.distanceTo(destination) > 5) {
+            logger.debug("Destination {} was not in path, recalculating", destination);
+            PATH_CACHE.refresh(destination);
+        }
+
+        if (local.getWorldLocation().distanceTo(endTile) > 0) {
             List<WorldPoint> remainingPath = remainingPath(path);
 
             if (handleTransports(remainingPath, transports)) {
@@ -121,8 +129,6 @@ public class Walker {
             return stepAlong(remainingPath);
         }
 
-        // Refresh the cached path
-        PATH_CACHE.refresh(destination);
         return false;
     }
 
@@ -148,7 +154,7 @@ public class Walker {
         Player local = Players.getLocal();
         List<WorldPoint> out = new ArrayList<>();
         for (WorldPoint p : remainingPath) {
-            Tile tile = Tiles.getTiles(x -> x.getWorldLocation().equals(p)).stream().findFirst().orElse(null);
+            Tile tile = Tiles.getAt(p);
             if (tile == null) {
                 break;
             }
@@ -202,7 +208,7 @@ public class Walker {
 
             WorldPoint a = path.get(i);
             WorldPoint b = path.get(i + 1);
-            Tile tileA = Tiles.getTiles(x -> x.getWorldLocation().equals(a)).stream().findFirst().orElse(null);
+            Tile tileA = Tiles.getAt(a);
             if (tileA == null) {
                 return false;
             }
@@ -219,7 +225,7 @@ public class Walker {
                 }
             }
 
-            Tile tileB = Tiles.getTiles(x -> x.getWorldLocation().equals(b)).stream().findFirst().orElse(null);
+            Tile tileB = Tiles.getAt(b);
             if (tileB == null) {
                 return false;
             }
