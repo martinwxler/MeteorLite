@@ -33,6 +33,7 @@ import meteor.plugins.ammo.AmmoPlugin;
 import meteor.plugins.animsmoothing.AnimationSmoothingPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.api.example.deathevent.DeathEventPlugin;
+import meteor.plugins.hiscore.HiscorePlugin;
 import meteor.plugins.hootoneclick.HootOneClickPlugin;
 import meteor.plugins.autoclicker.AutoClickerPlugin;
 import meteor.plugins.autologhop.AutoLogHop;
@@ -105,9 +106,8 @@ import meteor.plugins.leftclickcast.LeftClickCastPlugin;
 import meteor.plugins.lizardmenshaman.LizardmanShamanPlugin;
 import meteor.plugins.lowcpu.LowCpuPlugin;
 import meteor.plugins.lowdetail.LowDetailPlugin;
-import meteor.plugins.menuentrymodifier.MenuEntryModifierPlugin;
 import meteor.plugins.menuentryswapper.MenuEntrySwapperPlugin;
-import meteor.plugins.menuentryswapperextended.MenuEntrySwapperExtendedPlugin;
+import meteor.plugins.menuentryswappercustom.MenuEntrySwapperCustomPlugin;
 import meteor.plugins.meteorlite.MeteorLitePlugin;
 import meteor.plugins.minimap.MinimapPlugin;
 import meteor.plugins.mining.MiningPlugin;
@@ -199,6 +199,7 @@ public class PluginManager {
 
 	@Inject
 	private MeteorLiteClientModule meteorLiteClientModule;
+	public boolean startedPlugins;
 
 	PluginManager() {
 		if (!EXTERNALS_DIR.exists()) {
@@ -271,6 +272,7 @@ public class PluginManager {
 		plugins.add(new GroundItemsPlugin());
 		plugins.add(new sGroundMarkerPlugin());
 		plugins.add(new HerbiboarPlugin());
+		plugins.add(new HiscorePlugin());
 		plugins.add(new HootAgilityPlugin());
 		plugins.add(new HootFighterPlugin());
 		plugins.add(new HootHerblorePlugin());
@@ -292,9 +294,8 @@ public class PluginManager {
 		plugins.add(new LizardmanShamanPlugin());
 		plugins.add(new LowCpuPlugin());
 		plugins.add(new LowDetailPlugin());
-		plugins.add(new MenuEntryModifierPlugin());
 		plugins.add(new MenuEntrySwapperPlugin());
-		plugins.add(new MenuEntrySwapperExtendedPlugin());
+		plugins.add(new MenuEntrySwapperCustomPlugin());
 		plugins.add(new MinimapPlugin());
 		plugins.add(new MiningPlugin());
 		plugins.add(new MotherlodePlugin());
@@ -377,6 +378,7 @@ public class PluginManager {
 		for (Plugin plugin : plugins) {
 			startPlugin(plugin);
 		}
+		startedPlugins = true;
 	}
 
 	private void registerConflicts() {
