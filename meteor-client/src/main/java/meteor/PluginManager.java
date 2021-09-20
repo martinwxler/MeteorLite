@@ -199,6 +199,7 @@ public class PluginManager {
 
 	@Inject
 	private MeteorLiteClientModule meteorLiteClientModule;
+	public boolean startedPlugins;
 
 	PluginManager() {
 		if (!EXTERNALS_DIR.exists()) {
@@ -377,6 +378,7 @@ public class PluginManager {
 		for (Plugin plugin : plugins) {
 			startPlugin(plugin);
 		}
+		startedPlugins = true;
 	}
 
 	private void registerConflicts() {

@@ -15,9 +15,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 import javax.inject.Inject;
 import meteor.MeteorLiteClientLauncher;
-import meteor.ui.components.ConfigToggleButton;
 import meteor.ui.components.ToolbarButton;
-import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.http.api.hiscore.HiscoreClient;
 import net.runelite.http.api.hiscore.HiscoreEndpoint;
 import okhttp3.OkHttpClient;
@@ -35,10 +33,11 @@ public class HiscoreController {
 
   public static ArrayList<ToolbarButton> buttons = new ArrayList<>();
   public static AnchorPane staticAP;
-  JFXTextField searchBox;
+  public static JFXTextField searchBox;
   private static final int MAX_USERNAME_LENGTH = 12;
   private boolean loading = false;
-  private HiscoreEndpoint selectedEndPoint;
+  public static HiscoreEndpoint endpoint;
+  public static HiscoreController INSTANCE;
   private JFXButton attackButton;
   private JFXButton strengthButton;
   private JFXButton hitpointsButton;
@@ -75,6 +74,7 @@ public class HiscoreController {
     MeteorLiteClientLauncher.injector.injectMembers(this);
     staticAP = hiscorePanel;
     hiscoreClient = new HiscoreClient(okHttpClient);
+    INSTANCE = this;
 
     Text panelName = new Text("Hiscore Lookup");
     panelName.setFill(Paint.valueOf("CYAN"));
@@ -125,7 +125,7 @@ public class HiscoreController {
       if (!pressed) {
         return;
       }
-      selectedEndPoint = HiscoreEndpoint.NORMAL;
+      endpoint = HiscoreEndpoint.NORMAL;
 
       if (!loading)
       lookup();
@@ -143,7 +143,7 @@ public class HiscoreController {
       if (!pressed) {
         return;
       }
-      selectedEndPoint = HiscoreEndpoint.IRONMAN;
+      endpoint = HiscoreEndpoint.IRONMAN;
 
       if (!loading)
       lookup();
@@ -161,7 +161,7 @@ public class HiscoreController {
       if (!pressed) {
         return;
       }
-      selectedEndPoint = HiscoreEndpoint.HARDCORE_IRONMAN;
+      endpoint = HiscoreEndpoint.HARDCORE_IRONMAN;
 
       if (!loading)
       lookup();
@@ -179,7 +179,7 @@ public class HiscoreController {
       if (!pressed) {
         return;
       }
-      selectedEndPoint = HiscoreEndpoint.ULTIMATE_IRONMAN;
+      endpoint = HiscoreEndpoint.ULTIMATE_IRONMAN;
 
       if (!loading)
       lookup();
@@ -197,7 +197,7 @@ public class HiscoreController {
       if (!pressed) {
         return;
       }
-      selectedEndPoint = HiscoreEndpoint.DEADMAN;
+      endpoint = HiscoreEndpoint.DEADMAN;
 
       if (!loading)
       lookup();
@@ -216,7 +216,7 @@ public class HiscoreController {
         return;
       }
 
-      selectedEndPoint = HiscoreEndpoint.LEAGUE;
+      endpoint = HiscoreEndpoint.LEAGUE;
       if (!loading)
       lookup();
     });
@@ -519,7 +519,7 @@ public class HiscoreController {
     return lookup.replace('\u00A0', ' ');
   }
 
-  private void lookup()
+  public void lookup()
   {
     resetButtons();
     final String lookup = sanitize(searchBox.getText());
@@ -540,12 +540,12 @@ public class HiscoreController {
     loading = true;
 
     // if for some reason no endpoint was selected, default to normal
-    if (selectedEndPoint == null)
+    if (endpoint == null)
     {
-      selectedEndPoint = HiscoreEndpoint.NORMAL;
+      endpoint = HiscoreEndpoint.NORMAL;
     }
 
-    hiscoreClient.lookupAsync(lookup, selectedEndPoint).whenCompleteAsync((result, ex) ->
+    hiscoreClient.lookupAsync(lookup, endpoint).whenCompleteAsync((result, ex) ->
         Platform.runLater(() ->
         {
           if (!sanitize(searchBox.getText()).equals(lookup))

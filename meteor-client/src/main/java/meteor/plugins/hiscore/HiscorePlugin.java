@@ -24,6 +24,8 @@
  */
 package meteor.plugins.hiscore;
 
+import static meteor.plugins.hiscore.HiscoreController.INSTANCE;
+import static meteor.plugins.hiscore.HiscoreController.searchBox;
 import static meteor.ui.MeteorUI.lastButtonPressed;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ObjectArrays;
@@ -35,6 +37,7 @@ import java.util.EnumSet;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javax.annotation.Nullable;
@@ -48,12 +51,14 @@ import meteor.ui.components.ToolbarButton;
 import meteor.ui.controllers.ToolbarController;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
+import net.runelite.api.GameState;
 import net.runelite.api.IconID;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.Player;
 import net.runelite.api.WorldType;
 import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.VarbitChanged;
@@ -128,6 +133,17 @@ public class HiscorePlugin extends Plugin
 			else {
 				ui.updateRightPanel(hiscoreScene);
 				lastButtonPressed = event.getName();
+			}
+		}
+	}
+
+	@Subscribe
+	public void onGameStateChanged(GameStateChanged event) {
+		if (event.getGameState() == GameState.LOGGED_IN) {
+			menuManager.get().removePlayerMenuItem(LOOKUP);
+			if (config.playerOption())
+			{
+				menuManager.get().addPlayerMenuItem(LOOKUP);
 			}
 		}
 	}
@@ -268,13 +284,13 @@ public class HiscorePlugin extends Plugin
 
 	private void lookupPlayer(String playerName, HiscoreEndpoint endpoint)
 	{
-		SwingUtilities.invokeLater(() ->
+		Platform.runLater(() ->
 		{
-			if (!navButton.isPressed())
-			{
-				navButton.getOnSelect().run();
-			}
-			//hiscorePanel.lookup(playerName, endpoint);
+			ui.updateRightPanel(hiscoreScene);
+			lastButtonPressed = "Hiscores";
+			searchBox.setText(playerName);
+			HiscoreController.endpoint = endpoint;
+			INSTANCE.lookup();
 		});
 	}
 
