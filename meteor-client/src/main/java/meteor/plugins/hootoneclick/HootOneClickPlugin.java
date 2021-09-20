@@ -125,7 +125,7 @@ public class HootOneClickPlugin extends Plugin {
 	}
 
 	private <T extends Interactable> boolean replace(Map<String, String> replacements, T t, MenuOptionClicked event) {
-		if (!(t instanceof Nameable target)) {
+		if (!(t instanceof EntityNameable target)) {
 			return false;
 		}
 

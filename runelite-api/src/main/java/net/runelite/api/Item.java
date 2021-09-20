@@ -31,7 +31,7 @@ import net.runelite.api.widgets.*;
 import java.util.Arrays;
 
 @Data
-public class Item implements Interactable, Identifiable {
+public class Item implements Interactable, Identifiable, EntityNameable {
 	private final int id;
 	private final int quantity;
 
@@ -42,6 +42,7 @@ public class Item implements Interactable, Identifiable {
 	private int actionParam;
 	private int widgetId;
 
+	@Override
 	public String getName() {
 		return Text.removeTags(Text.sanitize(getComposition().getName()));
 	}
