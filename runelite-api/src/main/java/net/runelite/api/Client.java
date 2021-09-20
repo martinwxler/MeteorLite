@@ -1246,12 +1246,12 @@ public interface Client extends GameEngine {
   /**
    * Retrieve the nameable container containing friends
    */
-  ChatEntityContainer<Friend> getFriendContainer();
+  NameableContainer<Friend> getFriendContainer();
 
   /**
    * Retrieve the nameable container containing ignores
    */
-  ChatEntityContainer<Ignore> getIgnoreContainer();
+  NameableContainer<Ignore> getIgnoreContainer();
 
   /**
    * Gets the clients saved preferences.

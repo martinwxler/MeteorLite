@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2019, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,22 +24,26 @@
  */
 package net.runelite.api;
 
-/**
- * Represents a chat entity that has a name.
- */
-public interface ChatEntity extends Comparable {
+public interface NameableContainer<T extends Nameable> {
+    /**
+     * Get the number of members in this container
+     *
+     * @return
+     */
+    int getCount();
 
-  /**
-   * The name of the player.
-   *
-   * @return the name
-   */
-  String getName();
+    /**
+     * Get the members in this container
+     *
+     * @return
+     */
+    T[] getMembers();
 
-  /**
-   * The previous name the player had.
-   *
-   * @return the previous name
-   */
-  String getPrevName();
+    /**
+     * Find a nameable by name
+     *
+     * @param name the name
+     * @return
+     */
+    T findByName(String name);
 }

@@ -27,6 +27,7 @@ package meteor.plugins.chatchannel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import net.runelite.api.ChatPlayer;
+import net.runelite.api.Nameable;
 
 @Value
 @AllArgsConstructor
@@ -41,6 +42,6 @@ class MemberActivity
 
 	private ActivityType activityType;
 	private ChatType chatType;
-	private ChatPlayer member;
+	private Nameable member;
 	private Integer tick;
 }

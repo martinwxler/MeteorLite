@@ -1239,14 +1239,14 @@ public abstract class ClientMixin implements RSClient {
 
   @Inject
   @Override
-  public ChatEntityContainer<Friend> getFriendContainer()
+  public NameableContainer<Friend> getFriendContainer()
   {
     return getFriendManager().getFriendContainer();
   }
 
   @Inject
   @Override
-  public ChatEntityContainer<Ignore> getIgnoreContainer()
+  public NameableContainer<Ignore> getIgnoreContainer()
   {
     return getFriendManager().getIgnoreContainer();
   }

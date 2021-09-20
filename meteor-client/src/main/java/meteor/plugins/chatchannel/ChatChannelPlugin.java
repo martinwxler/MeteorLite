@@ -95,7 +95,7 @@ public class ChatChannelPlugin extends Plugin
 	 * queue of temporary messages added to the client
 	 */
 	private final Deque<MemberJoinMessage> joinMessages = new ArrayDeque<>();
-	private final Map<ChatPlayer, MemberActivity> activityBuffer = new LinkedHashMap<>();
+	private final Map<Nameable, MemberActivity> activityBuffer = new LinkedHashMap<>();
 	private int joinedTick;
 
 	private boolean kickConfirmed = false;
@@ -248,7 +248,7 @@ public class ChatChannelPlugin extends Plugin
 		}
 	}
 
-	private void queueJoin(ChatPlayer member, MemberActivity.ChatType chatType)
+	private void queueJoin(Nameable member, MemberActivity.ChatType chatType)
 	{
 		// attempt to filter out world hopping joins
 		if (!activityBuffer.containsKey(member))
@@ -263,7 +263,7 @@ public class ChatChannelPlugin extends Plugin
 		}
 	}
 
-	private void queueLeave(ChatPlayer member, MemberActivity.ChatType chatType)
+	private void queueLeave(Nameable member, MemberActivity.ChatType chatType)
 	{
 		if (!activityBuffer.containsKey(member))
 		{
@@ -787,7 +787,7 @@ public class ChatChannelPlugin extends Plugin
 			return;
 		}
 
-		ChatEntityContainer<Ignore> ignoreContainer = client.getIgnoreContainer();
+		NameableContainer<Ignore> ignoreContainer = client.getIgnoreContainer();
 		// Iterate every 3 widgets, since the order of widgets is name, world, icon
 		for (int i = 0; i < chatList.getChildren().length; i += 3)
 		{
