@@ -29,7 +29,9 @@ public interface TheatreConfig extends Config
 			name = "Maiden",
 			description = "Maiden's Configuration",
 			position = 1,
-			keyName = "maidenSection"
+			keyName = "maidenSection",
+			closedByDefault = true
+
 	)
 	String maidenSection = "Maiden";
 
@@ -37,7 +39,8 @@ public interface TheatreConfig extends Config
 			name = "Bloat",
 			description = "Bloat's Configuration",
 			position = 2,
-			keyName = "bloatSection"
+			keyName = "bloatSection",
+			closedByDefault = true
 	)
 	String bloatSection = "Bloat";
 
@@ -45,7 +48,8 @@ public interface TheatreConfig extends Config
 			name = "Nylocas",
 			description = "Nylocas' Configuration",
 			position = 3,
-			keyName = "nylocasSection"
+			keyName = "nylocasSection",
+			closedByDefault = true
 	)
 	String nylocasSection = "Nylocas";
 
@@ -53,7 +57,8 @@ public interface TheatreConfig extends Config
 			name = "Sotetseg",
 			description = "Sotetseg's Configuration",
 			position = 4,
-			keyName = "sotetsegSection"
+			keyName = "sotetsegSection",
+			closedByDefault = true
 	)
 	String sotetsegSection = "Sotetseg";
 
@@ -61,7 +66,8 @@ public interface TheatreConfig extends Config
 			name = "Xarpus",
 			description = "Xarpus's Configuration",
 			position = 5,
-			keyName = "xarpusSection"
+			keyName = "xarpusSection",
+			closedByDefault = true
 	)
 	String xarpusSection = "Xarpus";
 
@@ -69,7 +75,8 @@ public interface TheatreConfig extends Config
 			name = "Verzik",
 			description = "Verzik's Configuration",
 			position = 6,
-			keyName = "verzikSection"
+			keyName = "verzikSection",
+			closedByDefault = true
 	)
 	String verzikSection = "Verzik";
 

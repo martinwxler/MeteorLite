@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2019, Alan Baumgartner <https://github.com/alanbaumgartner>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,43 +22,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.menuentryswapperextended.util;
+package meteor.plugins.menuentryswapper.util;
 
-import com.google.common.base.Splitter;
-import java.util.Map;
-
-public class CustomSwapParse
+public enum GamesNecklaceMode
 {
-	public static boolean parse(String value)
+	OFF("Off"),
+	BURTHORPE("Burthorpe"),
+	BARBARIAN_OUTPOST("Barbarian Outpost"),
+	CORPOREAL_BEAST("Corporeal Beast"),
+	TEARS_OF_GUTHIX("Tears of Guthix"),
+	WINTER("Wintertodt Camp");
+
+	private final String name;
+
+	GamesNecklaceMode(String name)
 	{
-		try
-		{
-			final StringBuilder sb = new StringBuilder();
+		this.name = name;
+	}
 
-			for (String str : value.split("\n"))
-			{
-				if (!str.startsWith("//"))
-				{
-					sb.append(str).append("\n");
-				}
-			}
-
-			final Splitter NEWLINE_SPLITTER = Splitter
-				.on("\n")
-				.omitEmptyStrings()
-				.trimResults();
-
-			final Map<String, String> tmp = NEWLINE_SPLITTER.withKeyValueSeparator(':').split(sb);
-
-			for (String str : tmp.values())
-			{
-				Integer.parseInt(str.trim());
-			}
-			return true;
-		}
-		catch (Exception ex)
-		{
-			return false;
-		}
+	@Override
+	public String toString()
+	{
+		return name;
 	}
 }

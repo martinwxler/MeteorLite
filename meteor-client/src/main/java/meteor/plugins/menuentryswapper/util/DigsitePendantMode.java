@@ -23,20 +23,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.menuentryswapperextended.util;
+package meteor.plugins.menuentryswapper.util;
 
-public enum XericsTalismanMode
+public enum DigsitePendantMode
 {
 	OFF("Off"),
-	XERICS_LOOKOUT("Xeric's Look-out"),
-	XERICS_GLADE("Xeric's Glade"),
-	XERICS_INFERNO("Xeric's Inferno"),
-	XERICS_HEART("Xeric's Heart");
-//	XERICS_HONOUR("Xeric's Honour");
+	DIGSITE("Digsite"),
+	FOSSIL_ISLAND("Fossil Island"),
+	LITHKREN("Lithkren Dungeon");
 
 	private final String name;
 
-	XericsTalismanMode(String name)
+	DigsitePendantMode(String name)
 	{
 		this.name = name;
 	}

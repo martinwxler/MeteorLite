@@ -23,19 +23,20 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.menuentryswapperextended.util;
+package meteor.plugins.menuentryswapper.util;
 
-public enum CombatBraceletMode
+public enum XericsTalismanMode
 {
 	OFF("Off"),
-	WARRIORS_GUILD("Warriors' Guild"),
-	CHAMPIONS_GUILD("Champions' Guild"),
-	EDGEVILLE_MONASTERY("Edgeville Monastery"),
-	RANGING_GUILD("Ranging Guild");
+	XERICS_LOOKOUT("Xeric's Look-out"),
+	XERICS_GLADE("Xeric's Glade"),
+	XERICS_INFERNO("Xeric's Inferno"),
+	XERICS_HEART("Xeric's Heart");
+//	XERICS_HONOUR("Xeric's Honour");
 
 	private final String name;
 
-	CombatBraceletMode(String name)
+	XericsTalismanMode(String name)
 	{
 		this.name = name;
 	}

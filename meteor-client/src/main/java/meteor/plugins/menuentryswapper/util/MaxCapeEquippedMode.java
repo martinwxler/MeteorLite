@@ -1,4 +1,4 @@
-package meteor.plugins.menuentryswapperextended.util;
+package meteor.plugins.menuentryswapper.util;
 
 public enum MaxCapeEquippedMode
 {

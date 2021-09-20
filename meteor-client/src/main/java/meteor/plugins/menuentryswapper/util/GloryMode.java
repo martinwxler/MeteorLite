@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2018, https://openosrs.com
- * Copyright (c) 2018, Kyle <https://github.com/kyleeld>
+ * Copyright (c) 2019, Alan Baumgartner <https://github.com/alanbaumgartner>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,21 +22,19 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.menuentryswapperextended.util;
+package meteor.plugins.menuentryswapper.util;
 
-public enum SkillsNecklaceMode
+public enum GloryMode
 {
 	OFF("Off"),
-	FISHING_GUILD("Fishing Guild"),
-	MINING_GUILD("Mining Guild"),
-	CRAFTING_GUILD("Crafting Guild"),
-	COOKING_GUILD("Cooking Guild"),
-	WOODCUTTING_GUILD("Woodcutting Guild"),
-	FARMING_GUILD("Farming Guild");
+	EDGEVILLE("Edgeville"),
+	KARAMJA("Karamja"),
+	DRAYNOR_VILLAGE("Draynor Village"),
+	AL_KHARID("Al Kharid");
 
 	private final String name;
 
-	SkillsNecklaceMode(String name)
+	GloryMode(String name)
 	{
 		this.name = name;
 	}

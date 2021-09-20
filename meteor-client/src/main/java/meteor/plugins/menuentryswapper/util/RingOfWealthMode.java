@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2019, Alan Baumgartner <https://github.com/alanbaumgartner>
+ * Copyright (c) 2018, https://openosrs.com
+ * Copyright (c) 2018, Kyle <https://github.com/kyleeld>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,18 +23,19 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.menuentryswapperextended.util;
+package meteor.plugins.menuentryswapper.util;
 
-public enum DuelingRingMode
+public enum RingOfWealthMode
 {
 	OFF("Off"),
-	DUEL_ARENA("Duel Arena"),
-	CASTLE_WARS("Castle Wars"),
-	FEROX_ENCLAVE("Ferox Enclave");
+	MISCELLANIA("Miscellania"),
+	GRAND_EXCHANGE("Grand Exchange"),
+	FALADOR("Falador"),
+	DONDAKAN("Dondakan");
 
 	private final String name;
 
-	DuelingRingMode(String name)
+	RingOfWealthMode(String name)
 	{
 		this.name = name;
 	}

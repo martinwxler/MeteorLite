@@ -1,6 +1,6 @@
-package meteor.plugins.menuentryswapperextended.util;
+package meteor.plugins.menuentryswapper.util;
 
-public enum ConstructionCapeMode
+public enum CraftingCapeMode
 {
 	OFF("None"),
 	INVENTORY("Inventory"),
@@ -9,7 +9,7 @@ public enum ConstructionCapeMode
 
 	private final String name;
 
-	ConstructionCapeMode(String name)
+	CraftingCapeMode(String name)
 	{
 		this.name = name;
 	}

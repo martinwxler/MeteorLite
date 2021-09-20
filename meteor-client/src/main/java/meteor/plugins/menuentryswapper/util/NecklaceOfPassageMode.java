@@ -23,18 +23,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.menuentryswapperextended.util;
+package meteor.plugins.menuentryswapper.util;
 
-public enum BurningAmuletMode
+public enum NecklaceOfPassageMode
 {
 	OFF("Off"),
-	CHAOS_TEMPLE("Chaos Temple"),
-	BANDIT_CAMP("Bandit Camp"),
-	LAVA_MAZE("Lava Maze");
+	WIZARDS_TOWER("Wizards' Tower"),
+	THE_OUTPOST("The Outpost"),
+	EAGLES_EYRIE("Eagles' Eyrie");
 
 	private final String name;
 
-	BurningAmuletMode(String name)
+	NecklaceOfPassageMode(String name)
 	{
 		this.name = name;
 	}

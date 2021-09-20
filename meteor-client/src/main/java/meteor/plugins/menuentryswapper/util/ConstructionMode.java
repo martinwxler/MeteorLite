@@ -1,8 +1,8 @@
-package meteor.plugins.menuentryswapperextended.util;
+package meteor.plugins.menuentryswapper.util;
 
-import lombok.Getter;
 import java.util.Arrays;
 import java.util.List;
+import lombok.Getter;
 
 @Getter
 public enum ConstructionMode

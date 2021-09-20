@@ -22,19 +22,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.menuentryswapperextended.util;
+package meteor.plugins.menuentryswapper.util;
 
-public enum GloryMode
+public enum DuelingRingMode
 {
 	OFF("Off"),
-	EDGEVILLE("Edgeville"),
-	KARAMJA("Karamja"),
-	DRAYNOR_VILLAGE("Draynor Village"),
-	AL_KHARID("Al Kharid");
+	DUEL_ARENA("Duel Arena"),
+	CASTLE_WARS("Castle Wars"),
+	FEROX_ENCLAVE("Ferox Enclave");
 
 	private final String name;
 
-	GloryMode(String name)
+	DuelingRingMode(String name)
 	{
 		this.name = name;
 	}

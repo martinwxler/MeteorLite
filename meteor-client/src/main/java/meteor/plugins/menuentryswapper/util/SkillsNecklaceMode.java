@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2019, Owain van Brakel <https://github.com/Owain94>
+ * Copyright (c) 2018, https://openosrs.com
+ * Copyright (c) 2018, Kyle <https://github.com/kyleeld>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,56 +23,28 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.menuentryswapperextended.util;
+package meteor.plugins.menuentryswapper.util;
 
-import com.google.common.base.Splitter;
-import java.util.List;
-import javax.inject.Singleton;
-
-@Singleton
-public class PrioParse
+public enum SkillsNecklaceMode
 {
-	public static boolean parse(String value)
+	OFF("Off"),
+	FISHING_GUILD("Fishing Guild"),
+	MINING_GUILD("Mining Guild"),
+	CRAFTING_GUILD("Crafting Guild"),
+	COOKING_GUILD("Cooking Guild"),
+	WOODCUTTING_GUILD("Woodcutting Guild"),
+	FARMING_GUILD("Farming Guild");
+
+	private final String name;
+
+	SkillsNecklaceMode(String name)
 	{
-		if (value.equals(""))
-		{
-			return true;
-		}
+		this.name = name;
+	}
 
-		try
-		{
-			final StringBuilder sb = new StringBuilder();
-
-			for (String str : value.split("\n"))
-			{
-				if (!str.startsWith("//"))
-				{
-					sb.append(str).append("\n");
-				}
-			}
-
-			final Splitter NEWLINE_SPLITTER = Splitter
-				.on("\n")
-				.omitEmptyStrings()
-				.trimResults();
-
-			final List<String> tmp = NEWLINE_SPLITTER.splitToList(sb);
-
-			for (String s : tmp)
-			{
-				final String[] strings = s.split(",");
-
-				if (strings.length <= 1)
-				{
-					return false;
-				}
-			}
-
-			return tmp.size() > 0;
-		}
-		catch (Exception ex)
-		{
-			return false;
-		}
+	@Override
+	public String toString()
+	{
+		return name;
 	}
 }
