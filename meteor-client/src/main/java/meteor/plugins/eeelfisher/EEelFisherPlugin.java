@@ -9,6 +9,7 @@ import meteor.plugins.PluginDescriptor;
 import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.coords.RectangularArea;
 import meteor.plugins.api.entities.NPCs;
+import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.items.Inventory;
 import meteor.plugins.api.packets.*;
 import net.runelite.api.Client;
@@ -57,7 +58,7 @@ public class EEelFisherPlugin extends Plugin {
     }
 
     @Subscribe
-    public void onGameTick(GameTick e) {
+    private void onGameTick(GameTick e) {
         if (client.getGameState() != GameState.LOGGED_IN) {
             return;
         }
@@ -77,6 +78,7 @@ public class EEelFisherPlugin extends Plugin {
         do {
             double val = rand.nextGaussian() * config.tickDelayDeviation() + config.tickDelayAVG();
             delay = (int) Math.round(val);
+
         } while (delay <= config.tickDelayMin() || delay >= config.tickDelayMax());
         tickDelay = delay;
         if (client.getLocalPlayer().getInteracting() != null || client.getLocalPlayer().isMoving()) {
@@ -86,10 +88,10 @@ public class EEelFisherPlugin extends Plugin {
             Time.sleep(millisecondDelay());
             if (Inventory.getFreeSlots() != 0 && !crushing) {
                 NPC fishingSpot = NPCs.getNearest(x -> x.getName() != null && x.getName().contains("Fishing spot"));
-                if (fishingSpot != null) {
-                    MousePackets.queueClickPacket(0, 0);
-                    NPCPackets.queueNPCActionPacket(fishingSpot.getIndex(), 0);
-                    return;
+                if (fishingSpot != null&&fishingSpot.distanceTo(Players.getLocal().getWorldLocation())<20) {
+                        MousePackets.queueClickPacket(0, 0);
+                        NPCPackets.queueNPCActionPacket(fishingSpot.getIndex(), 0);
+                        return;
                 }
                 try {
                     if (config.location() == FishingType.ZULRAH) {
