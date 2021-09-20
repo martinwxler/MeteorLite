@@ -29,18 +29,26 @@ import meteor.config.ConfigGroup;
 import meteor.config.ConfigItem;
 import meteor.config.ConfigSection;
 import meteor.plugins.menuentryswapper.util.BurningAmuletMode;
+import meteor.plugins.menuentryswapper.util.BuyMode;
 import meteor.plugins.menuentryswapper.util.CombatBraceletMode;
 import meteor.plugins.menuentryswapper.util.ConstructionMode;
 import meteor.plugins.menuentryswapper.util.DuelingRingMode;
+import meteor.plugins.menuentryswapper.util.FairyRingMode;
+import meteor.plugins.menuentryswapper.util.GEItemCollectMode;
 import meteor.plugins.menuentryswapper.util.GamesNecklaceMode;
 import meteor.plugins.menuentryswapper.util.ConstructionCapeMode;
 import meteor.plugins.menuentryswapper.util.GloryMode;
 import meteor.plugins.menuentryswapper.util.CraftingCapeMode;
 import meteor.plugins.menuentryswapper.util.DigsitePendantMode;
+import meteor.plugins.menuentryswapper.util.HouseAdvertisementMode;
+import meteor.plugins.menuentryswapper.util.HouseMode;
 import meteor.plugins.menuentryswapper.util.MagicCapeMode;
 import meteor.plugins.menuentryswapper.util.MaxCapeEquippedMode;
 import meteor.plugins.menuentryswapper.util.NecklaceOfPassageMode;
 import meteor.plugins.menuentryswapper.util.RingOfWealthMode;
+import meteor.plugins.menuentryswapper.util.SellMode;
+import meteor.plugins.menuentryswapper.util.ShiftDepositMode;
+import meteor.plugins.menuentryswapper.util.ShiftWithdrawMode;
 import meteor.plugins.menuentryswapper.util.SkillsNecklaceMode;
 import meteor.plugins.menuentryswapper.util.XericsTalismanMode;
 
@@ -50,9 +58,33 @@ public interface MenuEntrySwapperConfig extends Config {
   String GROUP = "menuentryswapper";
 
   @ConfigSection(
+      name = "Custom Swaps",
+      description = "Configuration for custom Swaps",
+      position = 0,
+      closedByDefault = true
+  )
+  String customSwapsSection = "Custom Swaps";
+
+  @ConfigSection(
+      name = "[Shift Click] Custom Swaps",
+      description = "Configuration for shift click custom Swaps",
+      position = 1,
+      closedByDefault = true
+  )
+  String shiftCustomSwapsSection = "[Shift Click] Custom Swaps";
+
+  @ConfigSection(
+      name = "Remove Options",
+      description = "Configuration for removing swaps",
+      position = 2,
+      closedByDefault = true
+  )
+  String removeSwapsSection = "Remove Options";
+
+  @ConfigSection(
       name = "Item Swaps",
       description = "All options that swap item menu entries",
-      position = 0,
+      position = 3,
       closedByDefault = true
   )
   String itemSection = "Item Swaps";
@@ -60,7 +92,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigSection(
       name = "NPC Swaps",
       description = "All options that swap NPC menu entries",
-      position = 1,
+      position = 4,
       closedByDefault = true
   )
   String npcSection = "NPC Swaps";
@@ -68,7 +100,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigSection(
       name = "Object Swaps",
       description = "All options that swap object menu entries",
-      position = 2,
+      position = 5,
       closedByDefault = true
   )
   String objectSection = "Object Swaps";
@@ -76,7 +108,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigSection(
       name = "UI Swaps",
       description = "All options that swap entries in the UI (except Items)",
-      position = 3,
+      position = 6,
       closedByDefault = true
   )
   String uiSection = "UI Swaps";
@@ -84,7 +116,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigSection(
       name = "Skilling",
       description = "",
-      position = 4,
+      position = 7,
       keyName = "skillingSection",
       closedByDefault = true
   )
@@ -93,7 +125,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigSection(
       name = "Teleportation",
       description = "",
-      position = 5,
+      position = 8,
       keyName = "teleportationSection",
       closedByDefault = true
   )
@@ -102,7 +134,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigSection(
       name = "Right Click Options",
       description = "",
-      position = 6,
+      position = 9,
       keyName = "rightClickOptionsSection",
       closedByDefault = true
   )
@@ -112,7 +144,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigSection(
       name = "PvM",
       description = "",
-      position = 7,
+      position = 10,
       keyName = "pvmSection",
       closedByDefault = true
   )
@@ -1166,6 +1198,98 @@ public interface MenuEntrySwapperConfig extends Config {
   default String hideCastIgnoredCoX()
   {
     return "cure other, energy transfer, heal other, vengeance other";
+  }
+
+  //------------------------------------------------------------//
+  // Custom Swaps
+  //------------------------------------------------------------//
+
+  @ConfigItem(
+      name = "Custom Swaps Toggle",
+      keyName = "customSwapsToggle",
+      description = "Toggles the use of the Custom Swaps",
+      section = customSwapsSection,
+      position = 3
+  )
+  default boolean customSwapsToggle() {
+    return false;
+  }
+
+  @ConfigItem(
+      name = "Custom Swaps",
+      keyName = "customSwapsStr",
+      description = "",
+      section = customSwapsSection,
+      position = 4
+  )
+  default String customSwapsString() {
+    return "";
+  }
+
+  @ConfigItem(
+      name = "Bank Custom Swaps",
+      keyName = "bankCustomSwapsStr",
+      description = "",
+      section = customSwapsSection,
+      position = 5
+  )
+  default String bankCustomSwapsString() {
+    return "";
+  }
+
+  @ConfigItem(
+      name = "Shift - Custom Swaps Toggle",
+      keyName = "shiftCustomSwapsToggle",
+      description = "Toggles the use of the Shift Custom Swaps",
+      section = shiftCustomSwapsSection,
+      position = 6
+  )
+  default boolean shiftCustomSwapsToggle() {
+    return false;
+  }
+
+  @ConfigItem(
+      name = "Shift - Custom Swaps",
+      keyName = "shiftCustomSwapsStr",
+      description = "",
+      section = shiftCustomSwapsSection,
+      position = 7
+  )
+  default String shiftCustomSwapsString() {
+    return "";
+  }
+
+  @ConfigItem(
+      name = "Shift - Bank Custom Swaps",
+      keyName = "bankShiftCustomSwapsStr",
+      description = "",
+      section = shiftCustomSwapsSection,
+      position = 8
+  )
+  default String bankShiftCustomSwapsString() {
+    return "";
+  }
+
+  @ConfigItem(
+      name = "Remove Options Toggle",
+      keyName = "removeOptionsToggle",
+      description = "Toggles the use of the removing options",
+      section = removeSwapsSection,
+      position = 9
+  )
+  default boolean removeOptionsToggle() {
+    return false;
+  }
+
+  @ConfigItem(
+      name = "Remove Options",
+      keyName = "removeOptionsStr",
+      description = "",
+      section = removeSwapsSection,
+      position = 10
+  )
+  default String removeOptionsString() {
+    return "";
   }
 
   enum ArdougneCloakMode {

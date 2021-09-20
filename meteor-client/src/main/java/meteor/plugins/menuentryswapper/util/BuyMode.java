@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Adam <Adam@sigterm.info>
+ * Copyright (c) 2020, Sam <dasistkeinnamen@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.menuentryswapper;
+package meteor.plugins.menuentryswapper.util;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-@Getter
-@RequiredArgsConstructor
-public enum HouseAdvertisementMode {
-  VIEW("View"),
-  ADD_HOUSE("Add-House"),
-  VISIT_LAST("Visit-Last");
-
-  private final String name;
-
-  @Override
-  public String toString() {
-    return name;
-  }
+public enum BuyMode {
+  OFF,
+  BUY_1,
+  BUY_5,
+  BUY_10,
+  BUY_50
 }

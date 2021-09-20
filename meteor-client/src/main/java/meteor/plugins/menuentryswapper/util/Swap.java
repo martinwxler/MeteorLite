@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Ethan <http://github.com/shmeeps>
+ * Copyright (c) 2020, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,23 +22,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.menuentryswapper;
+package meteor.plugins.menuentryswapper.util;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import lombok.Value;
 
-@Getter
-@RequiredArgsConstructor
-public enum FairyRingMode {
-  ZANARIS("Zanaris"),
-  LAST_DESTINATION("Last-Destination"),
-  CONFIGURE("Configure"),
-  OFF("Off");
+@Value
+public class Swap {
 
-  private final String name;
-
-  @Override
-  public String toString() {
-    return name;
-  }
+  private Predicate<String> optionPredicate;
+  private Predicate<String> targetPredicate;
+  private String swappedOption;
+  private Supplier<Boolean> enabled;
+  private boolean strict;
 }

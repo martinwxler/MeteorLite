@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Rami <https://github.com/Rami-J>
+ * Copyright (c) 2018, Ethan <http://github.com/shmeeps>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,18 +22,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.menuentryswapper;
+package meteor.plugins.menuentryswapper.util;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum GEItemCollectMode {
-  DEFAULT("Default"),
-  ITEMS("Collect-items"),
-  NOTES("Collect-notes"),
-  BANK("Bank");
+public enum FairyRingMode {
+  ZANARIS("Zanaris"),
+  LAST_DESTINATION("Last-Destination"),
+  CONFIGURE("Configure"),
+  OFF("Off");
 
   private final String name;
 

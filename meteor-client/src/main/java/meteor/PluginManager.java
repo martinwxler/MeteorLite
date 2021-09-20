@@ -107,7 +107,6 @@ import meteor.plugins.lizardmenshaman.LizardmanShamanPlugin;
 import meteor.plugins.lowcpu.LowCpuPlugin;
 import meteor.plugins.lowdetail.LowDetailPlugin;
 import meteor.plugins.menuentryswapper.MenuEntrySwapperPlugin;
-import meteor.plugins.menuentryswappercustom.MenuEntrySwapperCustomPlugin;
 import meteor.plugins.meteorlite.MeteorLitePlugin;
 import meteor.plugins.minimap.MinimapPlugin;
 import meteor.plugins.mining.MiningPlugin;
@@ -294,7 +293,6 @@ public class PluginManager {
 		plugins.add(new LowCpuPlugin());
 		plugins.add(new LowDetailPlugin());
 		plugins.add(new MenuEntrySwapperPlugin());
-		plugins.add(new MenuEntrySwapperCustomPlugin());
 		plugins.add(new MinimapPlugin());
 		plugins.add(new MiningPlugin());
 		plugins.add(new MotherlodePlugin());

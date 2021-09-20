@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Adam <Adam@sigterm.info>
+ * Copyright (c) 2019, Rami <https://github.com/Rami-J>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,18 +22,23 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.menuentryswapper;
+package meteor.plugins.menuentryswapper.util;
 
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import lombok.Value;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@Value
-public class Swap {
+@Getter
+@RequiredArgsConstructor
+public enum GEItemCollectMode {
+  DEFAULT("Default"),
+  ITEMS("Collect-items"),
+  NOTES("Collect-notes"),
+  BANK("Bank");
 
-  private Predicate<String> optionPredicate;
-  private Predicate<String> targetPredicate;
-  private String swappedOption;
-  private Supplier<Boolean> enabled;
-  private boolean strict;
+  private final String name;
+
+  @Override
+  public String toString() {
+    return name;
+  }
 }
