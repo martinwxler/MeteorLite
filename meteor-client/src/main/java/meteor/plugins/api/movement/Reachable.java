@@ -1,10 +1,7 @@
 package meteor.plugins.api.movement;
 
 import meteor.plugins.api.game.Game;
-import net.runelite.api.Client;
-import net.runelite.api.CollisionData;
-import net.runelite.api.Locatable;
-import net.runelite.api.Player;
+import net.runelite.api.*;
 import net.runelite.api.coords.Direction;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
@@ -85,7 +82,7 @@ public class Reachable {
 
             if (targetObject != null
                     && targetObject.getWorldLocation().equals(neighbour)
-                    && !isWalled(dir, getCollisionFlag(current))) {
+                    && (!isWalled(dir, getCollisionFlag(current)) || targetObject instanceof WallObject)) {
                 out.add(neighbour);
                 continue;
             }

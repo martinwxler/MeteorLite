@@ -18,10 +18,10 @@ public class LoggerStream extends PrintStream {
   @Override
   public void println(String s) {
     if (error) {
-      verboseFileStream.print(Logger.generateError(s));
+      verboseFileStream.println(Logger.generateError(s));
       super.print(s);
     } else {
-      consoleStream.print(s);
+      consoleStream.println(s);
       super.print(s);
     }
   }

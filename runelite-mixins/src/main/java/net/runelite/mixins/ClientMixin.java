@@ -466,6 +466,9 @@ public abstract class ClientMixin implements RSClient {
     // Do not forward automated interaction events to eventbus
     if (!menuOptionClicked.isAutomated()) {
       client.getCallbacks().post(menuOptionClicked);
+    } else {
+      canvasX = client.getMouseLastPressedX();
+      canvasY = client.getMouseLastPressedY();
     }
 
     if (menuOptionClicked.isConsumed()) {

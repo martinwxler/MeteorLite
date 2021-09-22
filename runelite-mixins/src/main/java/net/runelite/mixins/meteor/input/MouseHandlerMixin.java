@@ -130,4 +130,32 @@ public abstract class MouseHandlerMixin implements RSMouseHandler {
       }
     }
   }
+
+  @Override
+  @Inject
+  public void sendClick(int x, int y, int button) {
+    int btn = button;
+    if (button == 1) {
+      btn = 1337;
+    }
+    client.setFocused(true);
+    setIdleCycles(0);
+    setLastPressedX(x);
+    setLastPressedY(y);
+    setLastPressedMillis(client.getCurrentTime());
+    setLastButton(btn);
+    if (getLastButton() != 0) {
+      setCurrentButton(button);
+    }
+  }
+
+  @Override
+  @Inject
+  public void sendMovement(int x, int y) {
+    client.setFocused(true);
+    setIdleCycles(0);
+    setCurrentX(x);
+    setCurrentY(y);
+    setCurrentMillis(System.currentTimeMillis());
+  }
 }

@@ -427,7 +427,7 @@ public class WorldMap {
 		garbageValue = "2124376606"
 	)
 	public void method6365(int var1, int var2, boolean var3, boolean var4) {
-		long var5 = Occluder.method4335();
+		long var5 = Occluder.getServerTime();
 		this.method6354(var1, var2, var4, var5);
 		if (this.hasTarget() || !var4 && !var3) {
 			this.method6523();
@@ -554,7 +554,7 @@ public class WorldMap {
 	final void setWorldMapPosition(int var1, int var2, boolean var3) {
 		this.centerTileX = var1;
 		this.centerTileY = var2;
-		Occluder.method4335();
+		Occluder.getServerTime();
 		if (var3) {
 			this.method6523();
 		}

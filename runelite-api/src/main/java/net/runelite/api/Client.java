@@ -1956,7 +1956,7 @@ public interface Client extends GameEngine {
   int getItemCount();
 
   /**
-   * Makes all widgets behave as if they are 
+   * Makes all widgets behave as if they are
    */
   void setAllWidgetsAreOpTargetable(boolean value);
 
@@ -2213,6 +2213,8 @@ public interface Client extends GameEngine {
    */
   void setCameraYawTarget(int cameraYawTarget);
 
+  void setCameraPitchTarget(int pitch);
+
   boolean getOccluderEnabled();
 
   void setOccluderEnabled(boolean enabled);
@@ -2390,4 +2392,16 @@ public interface Client extends GameEngine {
   void setWindowedMode(int mode);
 
   int getWindowedMode();
+
+  MouseHandler getMouseHandler();
+
+  long getCurrentTime();
+
+  boolean isFocused();
+
+  void setFocused(boolean focused);
+
+  void setClickCrossX(int x);
+
+  void setClickCrossY(int y);
 }

@@ -1622,7 +1622,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 	)
 	@Export("resizeGame")
 	protected final void resizeGame() {
-		field705 = Occluder.method4335() + 500L;
+		field705 = Occluder.getServerTime() + 500L;
 		this.resizeJS();
 		if (rootInterface != -1) {
 			this.resizeRoot(true);
@@ -2785,7 +2785,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 			UserComparator10.pcmPlayer0.tryDiscard();
 		}
 
-		if ((gameState == 10 || gameState == 20 || gameState == 30) && field705 != 0L && Occluder.method4335() > field705) {
+		if ((gameState == 10 || gameState == 20 || gameState == 30) && field705 != 0L && Occluder.getServerTime() > field705) {
 			ReflectionCheck.setWindowedMode(class12.getWindowedMode());
 		}
 
@@ -3005,7 +3005,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 						var1.writeInt(199);
 						class1.js5Socket.write(var1.array, 0, 5);
 						++js5ConnectState;
-						JagexCache.field1558 = Occluder.method4335();
+						JagexCache.field1558 = Occluder.getServerTime();
 					}
 
 					if (js5ConnectState == 3) {
@@ -3017,7 +3017,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 							}
 
 							++js5ConnectState;
-						} else if (Occluder.method4335() - JagexCache.field1558 > 30000L) {
+						} else if (Occluder.getServerTime() - JagexCache.field1558 > 30000L) {
 							this.js5Error(-2);
 							return;
 						}
@@ -3084,7 +3084,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 										}
 
 										NetCache.NetCache_loadTime = 0;
-										KeyHandler.field149 = Occluder.method4335();
+										KeyHandler.field149 = Occluder.getServerTime();
 										HealthBar.js5SocketTask = null;
 										class1.js5Socket = null;
 										js5ConnectState = 0;
@@ -3825,7 +3825,8 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 						}
 
 						PacketBufferNode var18;
-						if (MouseHandler.MouseHandler_lastButton == 1 || !Script.mouseCam && MouseHandler.MouseHandler_lastButton == 4 || MouseHandler.MouseHandler_lastButton == 2) {
+						if (MouseHandler.MouseHandler_lastButton == 1337 // Meteor
+										|| MouseHandler.MouseHandler_lastButton == 1 || !Script.mouseCam && MouseHandler.MouseHandler_lastButton == 4 || MouseHandler.MouseHandler_lastButton == 2) {
 							long var16 = MouseHandler.MouseHandler_lastPressedTimeMillis - mouseLastLastPressedTimeMillis;
 							if (var16 > 32767L) {
 								var16 = 32767L;
@@ -3858,7 +3859,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 							var14 = FriendSystem.getPacketBufferNode(ClientPacket.field2730, packetWriter.isaacCipher);
 							var14.packetBuffer.writeShort(0);
 							var15 = var14.packetBuffer.offset;
-							long var19 = Occluder.method4335();
+							long var19 = Occluder.getServerTime();
 
 							for (var5 = 0; var5 < KeyHandler.field114; ++var5) {
 								long var21 = var19 - field716;
@@ -5983,7 +5984,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 				if (ServerPacket.field2778 == var1.serverPacket) {
 					var59 = var3.readUnsignedByte() == 1;
 					if (var59) {
-						MenuAction.field861 = Occluder.method4335() - var3.readLong();
+						MenuAction.field861 = Occluder.getServerTime() - var3.readLong();
 						class117.grandExchangeEvents = new GrandExchangeEvents(var3, true);
 					} else {
 						class117.grandExchangeEvents = null;

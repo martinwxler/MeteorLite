@@ -5,11 +5,13 @@ import meteor.plugins.api.commons.Rand;
 import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.input.Mouse;
 import meteor.plugins.api.movement.Movement;
+import meteor.plugins.api.packets.MousePackets;
 import meteor.plugins.api.widgets.DialogOption;
 import meteor.config.MeteorLiteConfig;
 import net.runelite.api.Client;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
+import net.runelite.api.MouseHandler;
 import net.runelite.api.events.DialogProcessed;
 import net.runelite.api.events.InvokeMenuActionEvent;
 import net.runelite.api.events.MenuOptionClicked;
@@ -42,7 +44,7 @@ public class InteractionManager {
 						+ " | ID=" + e.getId()
 						+ " | OP=" + e.getOpcode()
 						+ " | P0=" + e.getParam0()
-						+ " | P1=" +  e.getParam1();
+						+ " | P1=" + e.getParam1();
 
 		if (config.debugInteractions()) {
 			logger.info("[Bot Action] {}", debug);
@@ -50,7 +52,7 @@ public class InteractionManager {
 
 		if (config.mouseEvents()) {
 			if (!interactReady()) {
-				logger.error("Interact was not ready [{}]", debug);
+				logger.error("Interact was not ready {} {}", mouseClickX, mouseClickY);
 				return;
 			}
 
@@ -61,12 +63,18 @@ public class InteractionManager {
 				logger.info("Sending click to {} {}", mouseClickX, mouseClickY);
 			}
 
-
 			action = new MenuEntry(e.getOption(), e.getTarget(), e.getId(),
 							e.getOpcode(), e.getParam0(), e.getParam1(), false);
 
 			Mouse.click(mouseClickX, mouseClickY, true);
 		} else {
+			// Spoof mouse
+			MouseHandler mouseHandler = client.getMouseHandler();
+			Point randomPoint = getClickPoint();
+			mouseClickX = randomPoint.x;
+			mouseClickY = randomPoint.y;
+			mouseHandler.sendMovement(mouseClickX, mouseClickY);
+			mouseHandler.sendClick(mouseClickX, mouseClickY);
 			processAction(e);
 		}
 	}
@@ -82,9 +90,7 @@ public class InteractionManager {
 			}
 
 			processAction(action);
-			action = null;
-			mouseClickX = -1;
-			mouseClickY = -1;
+			reset();
 			return;
 		}
 
@@ -94,9 +100,11 @@ public class InteractionManager {
 							+ " | ID=" + e.getId()
 							+ " | OP=" + e.getMenuAction().getId()
 							+ " | P0=" + e.getParam0()
-							+ " | P1=" +  e.getParam1();
+							+ " | P1=" + e.getParam1();
 			logger.info("[Manual Action] {}", action);
 		}
+
+		reset();
 	}
 
 	@Subscribe
@@ -137,6 +145,12 @@ public class InteractionManager {
 	private Rectangle getMinimap() {
 		Rectangle bounds = client.getCanvas().getBounds();
 		return new Rectangle(bounds.width - MINIMAP_WIDTH, 0, MINIMAP_WIDTH, MINIMAP_HEIGHT);
+	}
+
+	private void reset() {
+		action = null;
+		mouseClickX = -1;
+		mouseClickY = -1;
 	}
 
 	private boolean interactReady() {
