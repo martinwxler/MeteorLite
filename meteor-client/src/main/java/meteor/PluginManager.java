@@ -411,11 +411,9 @@ public class PluginManager {
 		Injector pluginInjector = parent.createChildInjector(pluginModule);
 		pluginInjector.injectMembers(plugin);
 		plugin.setInjector(pluginInjector);
-		for (Key<?> key : plugin.getInjector().getBindings().keySet()) {
-			Class<?> type = key.getTypeLiteral().getRawType();
-			if (Config.class.isAssignableFrom(type)) {
-				configManager.setDefaultConfiguration(plugin, plugin.getInjector().getInstance(key), false);
-			}
+		Config config = plugin.getConfig(configManager);
+		if (config != null) {
+			configManager.setDefaultConfiguration(plugin, config, false);
 		}
 
 		if (Boolean.parseBoolean(configManager.getConfiguration(plugin.getClass().getSimpleName(), "pluginEnabled"))) {

@@ -53,9 +53,6 @@ public class MeteorLitePlugin extends Plugin {
 
     @Override
     public void startup() {
-        // Not sure yet if there's a better way to do this
-        configManager.setDefaultConfiguration(this, meteorLiteConfig, false);
-
         overlayManager.add(interactionOverlay);
         mouseManager.registerMouseListener(interactionOverlay);
         eventBus.register(interactionManager);
