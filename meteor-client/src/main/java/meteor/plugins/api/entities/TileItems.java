@@ -197,8 +197,8 @@ public class TileItems extends Entities<TileItem> {
 
 	public static List<TileItem> getSurrounding(int worldX, int worldY, int plane, int radius, Predicate<TileItem> filter) {
 		List<TileItem> out = new ArrayList<>();
-		for (int x = -radius; x < radius; x++) {
-			for (int y = -radius; y < radius; y++) {
+		for (int x = -radius; x <= radius; x++) {
+			for (int y = -radius; y <= radius; y++) {
 				Tile tile = Tiles.getAt(worldX + x, worldY + y, plane);
 				if (tile == null) {
 					continue;

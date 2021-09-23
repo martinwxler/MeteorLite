@@ -126,6 +126,6 @@ public class MenuOptionClicked
   }
 
   public boolean isAutomated() {
-    return canvasX == -1 && canvasY == -1;
+    return menuOption != null && menuOption.equals("Automated");
   }
 }

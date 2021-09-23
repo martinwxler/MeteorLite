@@ -1891,8 +1891,13 @@ public interface Client extends GameEngine {
 
   void setRenderSelf(boolean enabled);
 
-  void invokeMenuAction(String option, String target, int identifier, int opcode, int param0,
-                        int param1);
+  default void invokeMenuAction(String option, String target, int identifier, int opcode, int param0,
+                                int param1) {
+    invokeMenuAction(option, target, identifier, opcode, param0, param1, -1, -1);
+  }
+
+  void invokeMenuAction(String option, String target, int identifier, int opcode, int param0, int param1,
+                        int screenX, int screenY);
 
   MouseRecorder getMouseRecorder();
 
