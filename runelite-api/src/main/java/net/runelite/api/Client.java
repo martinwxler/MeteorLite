@@ -2205,6 +2205,12 @@ public interface Client extends GameEngine {
   @Nullable
   ClanSettings getGuestClanSettings();
 
+  /**
+   * Hides graphics objects
+   * @param graphicsObject
+   */
+  void setHiddenGraphicsObjects(Set<Integer> graphicsObject);
+
 
   /**
    * Set the target camera yaw
