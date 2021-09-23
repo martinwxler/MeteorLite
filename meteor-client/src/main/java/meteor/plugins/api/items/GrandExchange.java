@@ -204,7 +204,7 @@ public class GrandExchange {
 			}
 
 			Widget abortBox = box.getChild(2);
-			if (abortBox == null || abortBox.hasAction("Abort offer") || GameThread.invokeLater(abortBox::isHidden)) {
+			if (abortBox == null || !abortBox.hasAction("Abort offer") || GameThread.invokeLater(abortBox::isHidden)) {
 				continue;
 			}
 
