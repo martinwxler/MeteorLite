@@ -31,6 +31,7 @@ import net.runelite.rs.api.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Mixin(RSScene.class)
 public abstract class EntityHiderMixin implements RSScene
@@ -89,6 +90,10 @@ public abstract class EntityHiderMixin implements RSScene
 	@Shadow("hiddenNpcIndices")
 	private static List<Integer> hiddenNpcIndices;
 
+	@Shadow("hiddenGraphicsObjects")
+	private static Set<Integer> hiddenGraphicsObjects;
+
+
 	@Copy("newGameObject")
 	@Replace("newGameObject")
 	boolean copy$addEntityMarker(int var1, int var2, int var3, int var4, int var5, int x, int y, int var8, RSRenderable entity, int var10, boolean var11, long var12, int var13)
@@ -107,7 +112,7 @@ public abstract class EntityHiderMixin implements RSScene
 		}
 
 		return shouldDraw &&
-			copy$addEntityMarker(var1, var2, var3, var4, var5, x, y, var8, entity, var10, var11, var12, var13);
+				copy$addEntityMarker(var1, var2, var3, var4, var5, x, y, var8, entity, var10, var11, var12, var13);
 	}
 
 	@Copy("drawActor2d")
@@ -218,6 +223,15 @@ public abstract class EntityHiderMixin implements RSScene
 		{
 			return !hideProjectiles;
 		}
+		else if (entity instanceof RSGraphicsObject)
+		{
+			RSGraphicsObject graphicsObject = (RSGraphicsObject) entity;
+			if (hiddenGraphicsObjects.contains(graphicsObject.getId()))
+			{
+				return false;
+			}
+		}
+
 
 		return true;
 	}
