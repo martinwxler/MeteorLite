@@ -135,6 +135,12 @@ public abstract class MouseHandlerMixin implements RSMouseHandler {
   @Inject
   public void sendClick(int x, int y, int button) {
     int btn = button;
+    /*
+     * Set the button to 1337 so the client doesn't process it as click in the next cycle.
+     * Adding an extra condition in osrs/Client.java L: 3828 where checking for lastButton == 1337 makes it so that
+     * both the mouserecorder and the click packet are properly sent. If rev updates remove this added condition,
+     * make sure to re-add it.
+     */
     if (button == 1) {
       btn = 1337;
     }
