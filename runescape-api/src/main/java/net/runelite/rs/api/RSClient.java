@@ -1681,4 +1681,28 @@ public interface RSClient extends RSGameEngine, Client {
   @Import("getWindowedMode")
   @Override
   int getWindowedMode();
+
+  @Import("MouseHandler_instance")
+  @Override
+  RSMouseHandler getMouseHandler();
+
+  @Import("getServerTime")
+  @Override
+  long getCurrentTime();
+
+  @Import("hasFocus")
+  @Override
+  boolean isFocused();
+
+  @Import("volatileFocus")
+  @Override
+  void setFocused(boolean focused);
+
+  @Import("mouseCrossX")
+  @Override
+  void setClickCrossX(int x);
+
+  @Import("mouseCrossY")
+  @Override
+  void setClickCrossY(int y);
 }

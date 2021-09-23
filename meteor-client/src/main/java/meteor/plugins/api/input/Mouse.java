@@ -3,10 +3,8 @@ package meteor.plugins.api.input;
 import meteor.plugins.api.commons.Rand;
 import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.game.Game;
-import net.runelite.api.Client;
 import org.sponge.util.Logger;
 
-import javax.inject.Inject;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.concurrent.Executor;

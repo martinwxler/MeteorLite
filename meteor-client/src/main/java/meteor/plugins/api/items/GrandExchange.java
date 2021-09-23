@@ -171,7 +171,7 @@ public class GrandExchange {
 			return;
 		}
 
-		for (int i = 7; i < 14; i++) {
+		for (int i = 7; i < 15; i++) {
 			Widget box = geRoot.get(i);
 			if (box == null) {
 				continue;
@@ -197,18 +197,14 @@ public class GrandExchange {
 			return;
 		}
 
-		for (int i = 7; i < 14; i++) {
+		for (int i = 7; i < 15; i++) {
 			Widget box = geRoot.get(i);
 			if (box == null) {
 				continue;
 			}
 
-			if (!box.hasAction("Abort offer")) {
-				continue;
-			}
-
 			Widget abortBox = box.getChild(2);
-			if (abortBox == null || GameThread.invokeLater(abortBox::isHidden)) {
+			if (abortBox == null || !abortBox.hasAction("Abort offer") || GameThread.invokeLater(abortBox::isHidden)) {
 				continue;
 			}
 

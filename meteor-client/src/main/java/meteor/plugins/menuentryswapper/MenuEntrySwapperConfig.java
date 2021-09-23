@@ -841,7 +841,20 @@ public interface MenuEntrySwapperConfig extends Config {
   )
   default GamesNecklaceMode getGamesNecklaceMode()
   {
-    return GamesNecklaceMode.BURTHORPE;
+    return GamesNecklaceMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "swapDuelingRing",
+      name = "Dueling Ring",
+      description = "Swap the left click 'remove' option with the desired teleport location on a worn Ring of Dueling.",
+      position = 3,
+      section = teleportationSection,
+      disabledBy  = "swapDuelRingLavas"
+  )
+  default boolean getDuelingRing()
+  {
+    return false;
   }
 
   @ConfigItem(
@@ -855,7 +868,7 @@ public interface MenuEntrySwapperConfig extends Config {
   )
   default DuelingRingMode getDuelingRingMode()
   {
-    return  DuelingRingMode.DUEL_ARENA;
+    return  DuelingRingMode.OFF;
   }
 
   @ConfigItem(
@@ -881,7 +894,7 @@ public interface MenuEntrySwapperConfig extends Config {
   )
   default GloryMode getGloryMode()
   {
-    return GloryMode.EDGEVILLE;
+    return GloryMode.OFF;
   }
 
   @ConfigItem(
@@ -907,7 +920,7 @@ public interface MenuEntrySwapperConfig extends Config {
   )
   default SkillsNecklaceMode getSkillsNecklaceMode()
   {
-    return SkillsNecklaceMode.FARMING_GUILD;
+    return SkillsNecklaceMode.OFF;
   }
 
   @ConfigItem(
@@ -933,7 +946,7 @@ public interface MenuEntrySwapperConfig extends Config {
   )
   default NecklaceOfPassageMode getNecklaceofPassageMode()
   {
-    return NecklaceOfPassageMode.WIZARDS_TOWER;
+    return NecklaceOfPassageMode.OFF;
   }
 
   @ConfigItem(
@@ -959,7 +972,7 @@ public interface MenuEntrySwapperConfig extends Config {
   )
   default DigsitePendantMode getDigsitePendantMode()
   {
-    return DigsitePendantMode.FOSSIL_ISLAND;
+    return DigsitePendantMode.OFF;
   }
 
   @ConfigItem(
@@ -985,7 +998,7 @@ public interface MenuEntrySwapperConfig extends Config {
   )
   default CombatBraceletMode getCombatBraceletMode()
   {
-    return  CombatBraceletMode.WARRIORS_GUILD;
+    return  CombatBraceletMode.OFF;
   }
 
   @ConfigItem(
@@ -1011,7 +1024,7 @@ public interface MenuEntrySwapperConfig extends Config {
   )
   default BurningAmuletMode getBurningAmuletMode()
   {
-    return  BurningAmuletMode.BANDIT_CAMP;
+    return  BurningAmuletMode.OFF;
   }
 
   @ConfigItem(
@@ -1037,7 +1050,7 @@ public interface MenuEntrySwapperConfig extends Config {
   )
   default XericsTalismanMode getXericsTalismanMode()
   {
-    return XericsTalismanMode.XERICS_LOOKOUT;
+    return XericsTalismanMode.OFF;
   }
 
   @ConfigItem(
@@ -1063,7 +1076,7 @@ public interface MenuEntrySwapperConfig extends Config {
   )
   default RingOfWealthMode getRingofWealthMode()
   {
-    return RingOfWealthMode.GRAND_EXCHANGE;
+    return RingOfWealthMode.OFF;
   }
 
   @ConfigItem(

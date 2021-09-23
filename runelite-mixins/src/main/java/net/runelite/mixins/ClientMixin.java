@@ -466,6 +466,9 @@ public abstract class ClientMixin implements RSClient {
     // Do not forward automated interaction events to eventbus
     if (!menuOptionClicked.isAutomated()) {
       client.getCallbacks().post(menuOptionClicked);
+    } else {
+      canvasX = client.getMouseLastPressedX();
+      canvasY = client.getMouseLastPressedY();
     }
 
     if (menuOptionClicked.isConsumed()) {
@@ -1543,9 +1546,13 @@ public abstract class ClientMixin implements RSClient {
 
   @Inject
   @Override
-  public void interact(final int identifier, final int opcode, final int param0, final int param1) {
-    client.getCallbacks()
-            .post(new InvokeMenuActionEvent("", "", identifier, opcode, param0, param1));
+  public void interact(final int identifier, final int opcode, final int param0, final int param1,
+                       final int screenX, final int screenY) {
+    InvokeMenuActionEvent event = new InvokeMenuActionEvent("", "", identifier, opcode, param0, param1);
+    event.clickX = screenX;
+    event.clickY = screenY;
+
+    client.getCallbacks().post(event);
   }
 
   @Inject
@@ -1822,7 +1829,7 @@ public abstract class ClientMixin implements RSClient {
   {
     // Reset the menu opcode
     MenuAction[] playerActions = {PLAYER_FIRST_OPTION, PLAYER_SECOND_OPTION, PLAYER_THIRD_OPTION, PLAYER_FOURTH_OPTION,
-        PLAYER_FIFTH_OPTION, PLAYER_SIXTH_OPTION, PLAYER_SEVENTH_OPTION, PLAYER_EIGTH_OPTION};
+            PLAYER_FIFTH_OPTION, PLAYER_SIXTH_OPTION, PLAYER_SEVENTH_OPTION, PLAYER_EIGTH_OPTION};
     if (idx >= 0 && idx < playerActions.length)
     {
       MenuAction playerAction = playerActions[idx];

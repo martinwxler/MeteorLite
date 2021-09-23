@@ -28,6 +28,9 @@ import net.runelite.api.MenuEntry;
 
 public class InvokeMenuActionEvent extends MenuEntry
 {
+	public int clickX;
+	public int clickY;
+
 	public InvokeMenuActionEvent(String option, String target, int identifier, int opcode, int param0, int param1) {
 		super(option, target, identifier, opcode, param0, param1, false);
 	}

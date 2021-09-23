@@ -46,9 +46,8 @@ public enum Rune {
         }
 
         Item rune = Inventory.getFirst(x -> x.getName() != null && x.getName().contains("rune") &&
-                        Arrays.stream(values())
-                                .anyMatch(r -> Arrays.stream(r.runeNames)
-                                        .anyMatch(name -> x.getId() == runeId || x.getName().contains(name))));
+                Arrays.stream(runeNames)
+                        .anyMatch(name -> x.getId() == runeId || x.getName().contains(name)));
         if (rune == null) {
             return 0;
         }
