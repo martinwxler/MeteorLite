@@ -81,7 +81,7 @@ public class Reachable {
 
             if (targetObject != null
                     && targetObject.getWorldLocation().equals(neighbour)
-                    && !isWalled(dir, getCollisionFlag(current))) {
+                    && (!isWalled(dir, getCollisionFlag(current)) || targetObject instanceof WallObject)) {
                 out.add(neighbour);
                 continue;
             }

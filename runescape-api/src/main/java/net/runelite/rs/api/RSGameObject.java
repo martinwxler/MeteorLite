@@ -1,10 +1,9 @@
 package net.runelite.rs.api;
 
 import net.runelite.api.GameObject;
-import net.runelite.api.WallObject;
 import net.runelite.mapping.Import;
 
-public interface RSGameObject extends WallObject, GameObject {
+public interface RSGameObject extends GameObject {
 
   @Import("renderable")
   RSRenderable getRenderable();
