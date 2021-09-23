@@ -3,6 +3,7 @@ package net.runelite.mixins;
 import net.runelite.api.MenuAction;
 import net.runelite.api.NPCComposition;
 import net.runelite.api.Perspective;
+import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.NpcChanged;
 import net.runelite.api.events.NpcDespawned;
@@ -75,8 +76,8 @@ public abstract class NPCMixin implements RSNPC {
 
     int size = getComposition().getSize();
     LocalPoint tileHeightPoint = new LocalPoint(
-        size * Perspective.LOCAL_HALF_TILE_SIZE - Perspective.LOCAL_HALF_TILE_SIZE + getX(),
-        size * Perspective.LOCAL_HALF_TILE_SIZE - Perspective.LOCAL_HALF_TILE_SIZE + getY());
+            size * Perspective.LOCAL_HALF_TILE_SIZE - Perspective.LOCAL_HALF_TILE_SIZE + getX(),
+            size * Perspective.LOCAL_HALF_TILE_SIZE - Perspective.LOCAL_HALF_TILE_SIZE + getY());
 
     int tileHeight = Perspective.getTileHeight(client, tileHeightPoint, client.getPlane());
 
@@ -204,7 +205,11 @@ public abstract class NPCMixin implements RSNPC {
   @Override
   @Inject
   public void interact(int identifier, int opcode, int param0, int param1) {
-    client.interact(identifier, opcode, param0, param1);
+    Point screenCoords = getScreenCoords();
+    int x = screenCoords != null ? screenCoords.getX() : -1;
+    int y = screenCoords != null ? screenCoords.getY() : -1;
+
+    client.interact(identifier, opcode, param0, param1, x, y);
   }
 
   @Inject
@@ -223,5 +228,10 @@ public abstract class NPCMixin implements RSNPC {
   @Override
   public String toString() {
     return getIndex() + ": " + getName() + " (" + getId() + ") at " + getWorldLocation();
+  }
+
+  @Inject
+  private Point getScreenCoords() {
+    return Perspective.localToCanvas(client, getLocalLocation(), client.getPlane());
   }
 }

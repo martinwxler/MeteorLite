@@ -1,6 +1,7 @@
 package net.runelite.mixins;
 
 import net.runelite.api.*;
+import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.OverheadPrayerChanged;
 import net.runelite.api.events.PlayerSkullChanged;
@@ -62,7 +63,7 @@ public abstract class PlayerMixin implements RSPlayer {
     }
 
     int tileHeight = Perspective
-        .getTileHeight(client, new LocalPoint(getX(), getY()), client.getPlane());
+            .getTileHeight(client, new LocalPoint(getX(), getY()), client.getPlane());
 
     return model.getConvexHull(getX(), getY(), getOrientation(), tileHeight);
   }
@@ -77,7 +78,7 @@ public abstract class PlayerMixin implements RSPlayer {
   @Override
   public boolean isIdle() {
     return (getIdlePoseAnimation() == getPoseAnimation() && getAnimation() == -1)
-        && (getInteracting() == null || getInteracting().isDead());
+            && (getInteracting() == null || getInteracting().isDead());
   }
 
   @Inject
@@ -271,6 +272,15 @@ public abstract class PlayerMixin implements RSPlayer {
   @Inject
   @Override
   public void interact(int identifier, int opcode, int param0, int param1) {
-    client.interact(identifier, opcode, param0, param1);
+    Point screenCoords = getScreenCoords();
+    int x = screenCoords != null ? screenCoords.getX() : -1;
+    int y = screenCoords != null ? screenCoords.getY() : -1;
+
+    client.interact(identifier, opcode, param0, param1, x, y);
+  }
+
+  @Inject
+  private Point getScreenCoords() {
+    return Perspective.localToCanvas(client, getLocalLocation(), client.getPlane());
   }
 }

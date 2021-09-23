@@ -20,11 +20,11 @@ import net.runelite.api.util.Text;
 import net.runelite.rs.api.*;
 
 @Mixins({
-    @Mixin(RSWallDecoration.class),
-    @Mixin(RSGameObject.class),
-    @Mixin(RSFloorDecoration.class),
-    @Mixin(RSItemLayer.class),
-    @Mixin(RSBoundaryObject.class)
+        @Mixin(RSWallDecoration.class),
+        @Mixin(RSGameObject.class),
+        @Mixin(RSFloorDecoration.class),
+        @Mixin(RSItemLayer.class),
+        @Mixin(RSBoundaryObject.class)
 })
 public abstract class TileObjectMixin implements TileObject {
 
@@ -89,7 +89,7 @@ public abstract class TileObjectMixin implements TileObject {
     }
 
     return Perspective
-        .getCanvasTileAreaPoly(client, getLocalLocation(), sizeX, sizeY, getPlane(), 0);
+            .getCanvasTileAreaPoly(client, getLocalLocation(), sizeX, sizeY, getPlane(), 0);
   }
 
   @Override
@@ -191,7 +191,11 @@ public abstract class TileObjectMixin implements TileObject {
   @Inject
   @Override
   public void interact(int identifier, int opcode, int param0, int param1) {
-    client.interact(identifier, opcode, param0, param1);
+    Point screenCoords = getCanvasLocation();
+    int x = screenCoords != null ? screenCoords.getX() : -1;
+    int y = screenCoords != null ? screenCoords.getY() : -1;
+
+    client.interact(identifier, opcode, param0, param1, x, y);
   }
 
   @Inject

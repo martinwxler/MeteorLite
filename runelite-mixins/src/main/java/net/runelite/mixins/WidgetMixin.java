@@ -38,6 +38,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static net.runelite.api.widgets.WidgetInfo.TO_CHILD;
 import static net.runelite.api.widgets.WidgetInfo.TO_GROUP;
@@ -626,7 +627,8 @@ public abstract class WidgetMixin implements RSWidget
   @Inject
   @Override
   public void interact(int identifier, int opcode, int param0, int param1) {
-    client.interact(identifier, opcode, param0, param1);
+    Point coords = getScreenCoords();
+    client.interact(identifier, opcode, param0, param1, coords.getX(), coords.getY());
   }
 
   @Inject
@@ -643,5 +645,16 @@ public abstract class WidgetMixin implements RSWidget
       default:
         throw new IllegalArgumentException("Widget: no identifier for " + actionIndex);
     }
+  }
+
+  @Inject
+  private Point getScreenCoords() {
+    Rectangle bounds = getBounds();
+    if (bounds != null) {
+      ThreadLocalRandom random = ThreadLocalRandom.current();
+      return new Point(random.nextInt(bounds.x, bounds.x + bounds.width), random.nextInt(bounds.y, bounds.y + bounds.height));
+    }
+
+    return getCanvasLocation();
   }
 }

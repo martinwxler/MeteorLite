@@ -11,7 +11,6 @@ import javax.inject.Singleton;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Singleton
 public class Reachable {
     private static final int MAX_ATTEMPTED_TILES = 1000;
 
@@ -82,7 +81,7 @@ public class Reachable {
 
             if (targetObject != null
                     && targetObject.getWorldLocation().equals(neighbour)
-                    && (!isWalled(dir, getCollisionFlag(current)) || targetObject instanceof WallObject)) {
+                    && !isWalled(dir, getCollisionFlag(current))) {
                 out.add(neighbour);
                 continue;
             }

@@ -28,10 +28,15 @@ import lombok.Data;
 import net.runelite.api.util.Text;
 import net.runelite.api.widgets.*;
 
+import java.awt.*;
 import java.util.Arrays;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Data
 public class Item implements Interactable, Identifiable, EntityNameable {
+	private static final ThreadLocalRandom random = ThreadLocalRandom.current();
+
 	private final int id;
 	private final int quantity;
 
@@ -52,8 +57,6 @@ public class Item implements Interactable, Identifiable, EntityNameable {
 		if (getType() == Type.INVENTORY) {
 			return client.getItemComposition(getId()).getInventoryActions();
 		}
-
-
 
 		Widget widget = client.getWidget(widgetId);
 		if (widget != null) {
@@ -143,7 +146,8 @@ public class Item implements Interactable, Identifiable, EntityNameable {
 
 	@Override
 	public void interact(int identifier, int opcode, int param0, int param1) {
-		client.interact(identifier, opcode, param0, param1);
+		Point screenLoc = getScreenCoords();
+		client.interact(identifier, opcode, param0, param1, screenLoc.getX(), screenLoc.getY());
 	}
 
 	public void useOn(Interactable entity) {
@@ -294,5 +298,29 @@ public class Item implements Interactable, Identifiable, EntityNameable {
 
 	public int getStorePrice() {
 		return getComposition().getPrice();
+	}
+
+	private Point getScreenCoords() {
+		Widget widget = client.getWidget(widgetId);
+		if (widget == null) {
+			return new Point(-1, -1);
+		}
+
+		if (getType() != Type.EQUIPMENT) {
+			Widget slot = widget.getChild(getSlot());
+			if (slot != null) {
+				Rectangle bounds = slot.getBounds();
+				if (bounds != null) {
+					return new Point(random.nextInt(bounds.x, bounds.x + bounds.width), random.nextInt(bounds.y, bounds.y + bounds.height));
+				}
+			}
+		}
+
+		Rectangle bounds = widget.getBounds();
+		if (bounds != null) {
+			return new Point(random.nextInt(bounds.x, bounds.x + bounds.width), random.nextInt(bounds.y, bounds.y + bounds.height));
+		}
+
+		return widget.getCanvasLocation();
 	}
 }

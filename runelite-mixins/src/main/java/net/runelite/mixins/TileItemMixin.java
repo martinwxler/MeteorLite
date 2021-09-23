@@ -4,9 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import net.runelite.api.ItemComposition;
-import net.runelite.api.MenuAction;
-import net.runelite.api.Tile;
+import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.ItemQuantityChanged;
 import net.runelite.api.mixins.FieldHook;
@@ -64,7 +62,7 @@ public abstract class TileItemMixin implements RSTileItem {
   public void quantityChanged(int quantity) {
     if (rl$sceneX != -1) {
       ItemQuantityChanged itemQuantityChanged = new ItemQuantityChanged(this, getTile(),
-          getQuantity(), quantity);
+              getQuantity(), quantity);
       client.getCallbacks().post(itemQuantityChanged);
     }
   }
@@ -156,7 +154,11 @@ public abstract class TileItemMixin implements RSTileItem {
   @Inject
   @Override
   public void interact(int identifier, int opcode, int param0, int param1) {
-    client.interact(identifier, opcode, param0, param1);
+    Point screenCoords = getScreenCoords();
+    int x = screenCoords != null ? screenCoords.getX() : -1;
+    int y = screenCoords != null ? screenCoords.getY() : -1;
+
+    client.interact(identifier, opcode, param0, param1, x, y);
   }
 
   @Inject
@@ -223,5 +225,10 @@ public abstract class TileItemMixin implements RSTileItem {
   @Override
   public String[] getInventoryActions() {
     return getComposition().getInventoryActions();
+  }
+
+  @Inject
+  private Point getScreenCoords() {
+    return Perspective.localToCanvas(client, getLocalLocation(), client.getPlane());
   }
 }
