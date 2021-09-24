@@ -74,20 +74,6 @@ public interface Scene {
   void removeGameObject(GameObject gameObject);
 
   /**
-   * Remove a game object from the scene
-   * @param plane
-   * @param x
-   * @param y
-   */
-  void removeGameObject(int plane, int x, int y);
-
-  /**
-   * Remove a game object from the scene
-   * @param wallObject
-   */
-  void removeWallObject(WallObject wallObject);
-
-  /**
    * Remove a wall object from the scene
    * @param plane
    * @param x
@@ -97,23 +83,11 @@ public interface Scene {
 
   /**
    * Remove a decorative object from the scene
-   * @param decorativeObject
-   */
-  void removeDecorativeObject(DecorativeObject decorativeObject);
-
-  /**
-   * Remove a decorative object from the scene
    * @param plane
    * @param x
    * @param y
    */
   void removeDecorativeObject(int plane, int x, int y);
-
-  /**
-   * Remove a ground object from the scene
-   * @param groundObject
-   */
-  void removeGroundObject(GroundObject groundObject);
 
   /**
    * Remove a ground object from the scene
