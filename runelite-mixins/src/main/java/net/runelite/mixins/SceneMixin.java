@@ -979,6 +979,8 @@ public abstract class SceneMixin implements RSScene {
     }
   }
 
+
+
   @Inject
   @Override
   public void setRoofRemovalMode(int roofRemovalMode) {

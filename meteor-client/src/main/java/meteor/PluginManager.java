@@ -118,6 +118,7 @@ import meteor.plugins.nightmare.NightmarePlugin;
 import meteor.plugins.npcindicators.NpcIndicatorsPlugin;
 import meteor.plugins.npcstatus.NpcStatusPlugin;
 import meteor.plugins.npcunaggroarea.NpcAggroAreaPlugin;
+import meteor.plugins.objecthider.ObjectHiderPlugin;
 import meteor.plugins.objectmarkers.sObjectIndicatorsPlugin;
 import meteor.plugins.oneclick.OneClickPlugin;
 import meteor.plugins.oneclick3t4g.OneClick3t4g;
@@ -305,6 +306,7 @@ public class PluginManager {
 		plugins.add(new NpcAggroAreaPlugin());
 		plugins.add(new NpcIndicatorsPlugin());
 		plugins.add(new NpcStatusPlugin());
+		plugins.add(new ObjectHiderPlugin());
 		plugins.add(new sObjectIndicatorsPlugin());
 		plugins.add(new OneClickPlugin());
 		plugins.add(new OneClick3t4g());

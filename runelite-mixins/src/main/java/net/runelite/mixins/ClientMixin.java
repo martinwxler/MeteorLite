@@ -466,9 +466,6 @@ public abstract class ClientMixin implements RSClient {
     // Do not forward automated interaction events to eventbus
     if (!menuOptionClicked.isAutomated()) {
       client.getCallbacks().post(menuOptionClicked);
-    } else {
-      canvasX = client.getMouseLastPressedX();
-      canvasY = client.getMouseLastPressedY();
     }
 
     if (menuOptionClicked.isConsumed()) {
@@ -492,12 +489,11 @@ public abstract class ClientMixin implements RSClient {
 
   @Override
   @Inject
-  public void invokeMenuAction(String option, String target, int identifier, int opcode, int param0, int param1)
+  public void invokeMenuAction(String option, String target, int identifier, int opcode, int param0, int param1, int screenX, int screenY)
   {
     assert isClientThread() : "invokeMenuAction must be called on client thread";
 
-    // X and Y are not sent to the servers, so if invoke is called, send -1 and -1
-    client.sendMenuAction(param0, param1, opcode, identifier, option, target, -1, -1);
+    client.sendMenuAction(param0, param1, opcode, identifier, option, target, screenX, screenY);
   }
 
   @Inject
@@ -1548,7 +1544,7 @@ public abstract class ClientMixin implements RSClient {
   @Override
   public void interact(final int identifier, final int opcode, final int param0, final int param1,
                        final int screenX, final int screenY) {
-    InvokeMenuActionEvent event = new InvokeMenuActionEvent("", "", identifier, opcode, param0, param1);
+    InvokeMenuActionEvent event = new InvokeMenuActionEvent(identifier, opcode, param0, param1);
     event.clickX = screenX;
     event.clickY = screenY;
 

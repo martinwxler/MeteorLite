@@ -56,7 +56,7 @@ public class InteractionManager {
 				return;
 			}
 
-			Point randomPoint = getClickPoint();
+			Point randomPoint = getClickPoint(e);
 			mouseClickX = randomPoint.x;
 			mouseClickY = randomPoint.y;
 			if (config.debugInteractions()) {
@@ -70,12 +70,12 @@ public class InteractionManager {
 		} else {
 			// Spoof mouse
 			MouseHandler mouseHandler = client.getMouseHandler();
-			Point randomPoint = getClickPoint();
+			Point randomPoint = getClickPoint(e);
 			mouseClickX = randomPoint.x;
 			mouseClickY = randomPoint.y;
 			mouseHandler.sendMovement(mouseClickX, mouseClickY);
 			mouseHandler.sendClick(mouseClickX, mouseClickY);
-			processAction(e);
+			processAction(e, mouseClickX, mouseClickY);
 		}
 	}
 
@@ -89,7 +89,7 @@ public class InteractionManager {
 				return;
 			}
 
-			processAction(action);
+			processAction(action, mouseClickX, mouseClickY);
 			reset();
 			return;
 		}
@@ -121,25 +121,44 @@ public class InteractionManager {
 		}
 	}
 
-	private void processAction(MenuEntry entry) {
+	private void processAction(MenuEntry entry, int x, int y) {
 		if (entry.getMenuAction() == MenuAction.WALK) {
 			Movement.setDestination(entry.getParam0(), entry.getParam1());
 		} else {
 			GameThread.invoke(() -> client.invokeMenuAction(entry.getOption(), entry.getTarget(), entry.getId(),
-							entry.getMenuAction().getId(), entry.getParam0(), entry.getParam1()));
+							entry.getMenuAction().getId(), entry.getParam0(), entry.getParam1(), x, y));
 		}
 	}
 
-	private Point getClickPoint() {
+	private Point getClickPoint(InvokeMenuActionEvent e) {
+		if (config.interactType() == InteractType.OFF_SCREEN) {
+			return new Point(0, 0);
+		}
+
+		if (e.clickX != -1 && e.clickY != -1 && config.interactType() == InteractType.CLICKBOXES) {
+			Point clickPoint = new Point(e.clickX, e.clickY);
+			if (!clickInsideMinimap(clickPoint)) {
+				return clickPoint;
+			}
+		}
+
 		Rectangle bounds = client.getCanvas().getBounds();
 		Point randomPoint = new Point(Rand.nextInt(2, bounds.width), Rand.nextInt(2, bounds.height));
-		Rectangle minimap = getMinimap();
-		if (minimap.contains(randomPoint)) {
-			logger.debug("Click {} was inside minimap", randomPoint);
-			return getClickPoint();
+		if (clickInsideMinimap(randomPoint)) {
+			return getClickPoint(e);
 		}
 
 		return randomPoint;
+	}
+
+	private boolean clickInsideMinimap(Point point) {
+		Rectangle minimap = getMinimap();
+		if (minimap.contains(point)) {
+			logger.debug("Click {} was inside minimap", point);
+			return true;
+		}
+
+		return false;
 	}
 
 	private Rectangle getMinimap() {

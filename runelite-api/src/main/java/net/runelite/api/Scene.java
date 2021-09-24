@@ -73,6 +73,30 @@ public interface Scene {
    */
   void removeGameObject(GameObject gameObject);
 
+  /**
+   * Remove a wall object from the scene
+   * @param plane
+   * @param x
+   * @param y
+   */
+  void removeWallObject(int plane, int x, int y);
+
+  /**
+   * Remove a decorative object from the scene
+   * @param plane
+   * @param x
+   * @param y
+   */
+  void removeDecorativeObject(int plane, int x, int y);
+
+  /**
+   * Remove a ground object from the scene
+   * @param plane
+   * @param x
+   * @param y
+   */
+  void removeGroundObject(int plane, int x, int y);
+
   byte[][][] getUnderlayIds();
   void setUnderlayIds(byte[][][] underlayIds);
 

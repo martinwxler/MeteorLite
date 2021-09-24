@@ -29,9 +29,7 @@ import net.runelite.api.mixins.Inject;
 import net.runelite.api.mixins.Mixin;
 import net.runelite.rs.api.RSClient;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Mixin(RSClient.class)
 public abstract class EntityHiderBridgeMixin implements RSClient
@@ -86,6 +84,10 @@ public abstract class EntityHiderBridgeMixin implements RSClient
 
 	@Inject
 	public static List<Integer> hiddenNpcIndices = new ArrayList<>();
+
+	@Inject
+	public static Set<Integer> hiddenGraphicsObjects = new HashSet<>();
+
 
 	@Inject
 	@Override
@@ -191,6 +193,11 @@ public abstract class EntityHiderBridgeMixin implements RSClient
 	{
 		hideDeadNPCs = state;
 	}
+
+	@Inject
+	@Override
+	public void setHiddenGraphicsObjects(Set<Integer> graphicsObject)
+	{ hiddenGraphicsObjects = graphicsObject; }
 
 	@Inject
 	@Override

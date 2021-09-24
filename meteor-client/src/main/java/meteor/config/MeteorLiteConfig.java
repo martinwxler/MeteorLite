@@ -1,5 +1,6 @@
 package meteor.config;
 
+import meteor.plugins.meteorlite.interaction.InteractType;
 import meteor.ui.ContainableFrame;
 import meteor.ui.overlay.components.ComponentConstants;
 import meteor.util.OSType;
@@ -110,6 +111,17 @@ public interface MeteorLiteConfig extends Config {
     )
     default boolean mouseEvents() {
         return false;
+    }
+
+    @ConfigItem(
+            keyName = "interactType",
+            name = "Interact click type",
+            description = "Type of clicks to send to the server",
+            section = interactionManager,
+            position = 0
+    )
+    default InteractType interactType() {
+        return InteractType.CLICKBOXES;
     }
 
     @ConfigItem(

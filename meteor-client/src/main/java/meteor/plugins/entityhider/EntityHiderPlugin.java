@@ -26,14 +26,20 @@
 package meteor.plugins.entityhider;
 
 import com.google.inject.Provides;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
+import meteor.util.Text;
 import net.runelite.api.Client;
 
 import javax.inject.Inject;
+import net.runelite.api.GameState;
+import net.runelite.api.events.GameStateChanged;
 
 @PluginDescriptor(
 	name = "Entity Hider",
@@ -59,14 +65,39 @@ public class EntityHiderPlugin extends Plugin
 	public void startUp()
 	{
 		updateConfig();
+		Text.fromCSV(config.hideNPCsNames()).forEach(client::addHiddenNpcName);
 	}
 
 	@Subscribe
-	public void onConfigChanged(ConfigChanged e)
-	{
-		if (e.getGroup().equals(EntityHiderConfig.GROUP))
-		{
+	public void onConfigChanged(ConfigChanged event) {
+		if (event.getGroup().equals(EntityHiderConfig.GROUP)) {
 			updateConfig();
+
+			if (event.getOldValue() == null || event.getNewValue() == null) {
+				return;
+			}
+
+			if (event.getKey().equals("hideNPCsNames")) {
+				List<String> oldList = Text.fromCSV(event.getOldValue());
+				List<String> newList = Text.fromCSV(event.getNewValue());
+
+				List<String> removed = oldList.stream().filter(s -> !newList.contains(s)).collect(
+						Collectors.toCollection(ArrayList::new));
+				List<String> added = newList.stream().filter(s -> !oldList.contains(s)).collect(
+						Collectors.toCollection(ArrayList::new));
+
+				removed.forEach(client::removeHiddenNpcName);
+				added.forEach(client::addHiddenNpcName);
+			}
+		}
+	}
+
+	@Subscribe
+	public void onGameStateChanged(GameStateChanged event)
+	{
+		if (event.getGameState() == GameState.LOGGED_IN)
+		{
+			client.setIsHidingEntities(true);
 		}
 	}
 
