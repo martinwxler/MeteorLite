@@ -35,6 +35,17 @@ public interface EntityHiderConfig extends Config
 	String GROUP = "entityhider";
 
 	@ConfigItem(
+			position = 0,
+			keyName = "hideNPCsNames",
+			name = "Hide Specific NPCs",
+			description = "Configures whether or not other players are hidden"
+	)
+	default String hideNPCsNames()
+	{
+		return "";
+	}
+
+	@ConfigItem(
 		position = 1,
 		keyName = "hidePlayers",
 		name = "Hide Others",
