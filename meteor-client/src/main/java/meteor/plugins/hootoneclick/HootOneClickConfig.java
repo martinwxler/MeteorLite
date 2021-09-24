@@ -18,7 +18,7 @@ public interface HootOneClickConfig extends Config {
 	@ConfigItem(
 					keyName = "gameObjects",
 					name = "Config",
-					description = "Syntax = ObjectName:ReplacedAction,Object2:ReplacedAction",
+					description = "Usage = ObjectName:ReplacedAction,Object2:Use ItemName",
 					section = gameObjs,
 					position = 0
 	)
@@ -37,7 +37,7 @@ public interface HootOneClickConfig extends Config {
 	@ConfigItem(
 					keyName = "npcs",
 					name = "Config",
-					description = "Syntax = ObjectName:ReplacedAction,Object2:ReplacedAction",
+					description = "Usage = ObjectName:ReplacedAction,Object2:Use ItemName",
 					section = npcs,
 					position = 1
 	)
@@ -56,7 +56,7 @@ public interface HootOneClickConfig extends Config {
 	@ConfigItem(
 					keyName = "groundItems",
 					name = "Config",
-					description = "Syntax = ObjectName:ReplacedAction,Object2:ReplacedAction",
+					description = "Usage = ObjectName:ReplacedAction,Object2:Use ItemName",
 					section = groundItems,
 					position = 2
 	)
@@ -75,7 +75,7 @@ public interface HootOneClickConfig extends Config {
 	@ConfigItem(
 					keyName = "widgets",
 					name = "Config",
-					description = "Syntax = ObjectName:ReplacedAction,Object2:ReplacedAction",
+					description = "Usage = WidgetAction:ReplacedAction,WidgetAction:Use ItemName",
 					section = widgets,
 					position = 3
 	)
@@ -94,7 +94,7 @@ public interface HootOneClickConfig extends Config {
 	@ConfigItem(
 					keyName = "items",
 					name = "Config",
-					description = "Syntax = ObjectName:ReplacedAction,Object2:ReplacedAction",
+					description = "Usage = ObjectName:ReplacedAction,Object2:Use ItemName",
 					section = items,
 					position = 4
 	)
@@ -113,11 +113,31 @@ public interface HootOneClickConfig extends Config {
 	@ConfigItem(
 					keyName = "players",
 					name = "Config",
-					description = "Syntax = ObjectName:ReplacedAction,Object2:ReplacedAction",
+					description = "Usage = ObjectName:ReplacedAction,Object2:Use ItemName",
 					section = players,
 					position = 5
 	)
 	default String playerConfig() {
 		return "";
+	}
+
+	@ConfigItem(
+					keyName = "exactEntityNames",
+					name = "Use exact entity names",
+					description = "Check for exact entity names",
+					position = 0
+	)
+	default boolean exactEntityNames() {
+		return true;
+	}
+
+	@ConfigItem(
+					keyName = "exactItemNames",
+					name = "Use exact used item names",
+					description = "Check for exact item names for items to use",
+					position = 1
+	)
+	default boolean exactItemNames() {
+		return true;
 	}
 }

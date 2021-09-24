@@ -311,14 +311,22 @@ public class Item implements Interactable, Identifiable, EntityNameable {
 			if (slot != null) {
 				Rectangle bounds = slot.getBounds();
 				if (bounds != null) {
-					return new Point(random.nextInt(bounds.x, bounds.x + bounds.width), random.nextInt(bounds.y, bounds.y + bounds.height));
+					try {
+						return new Point(random.nextInt(bounds.x, bounds.x + bounds.width), random.nextInt(bounds.y, bounds.y + bounds.height));
+					} catch (IllegalArgumentException e) {
+						return new Point(-1, -1);
+					}
 				}
 			}
 		}
 
 		Rectangle bounds = widget.getBounds();
 		if (bounds != null) {
-			return new Point(random.nextInt(bounds.x, bounds.x + bounds.width), random.nextInt(bounds.y, bounds.y + bounds.height));
+			try {
+				return new Point(random.nextInt(bounds.x, bounds.x + bounds.width), random.nextInt(bounds.y, bounds.y + bounds.height));
+			} catch (IllegalArgumentException e) {
+				return new Point(-1, -1);
+			}
 		}
 
 		return widget.getCanvasLocation();

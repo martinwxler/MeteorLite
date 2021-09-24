@@ -652,7 +652,11 @@ public abstract class WidgetMixin implements RSWidget
     Rectangle bounds = getBounds();
     if (bounds != null) {
       ThreadLocalRandom random = ThreadLocalRandom.current();
-      return new Point(random.nextInt(bounds.x, bounds.x + bounds.width), random.nextInt(bounds.y, bounds.y + bounds.height));
+      try {
+        return new Point(random.nextInt(bounds.x, bounds.x + bounds.width), random.nextInt(bounds.y, bounds.y + bounds.height));
+      } catch (IllegalArgumentException e) {
+        return new Point(-1, -1);
+      }
     }
 
     return getCanvasLocation();

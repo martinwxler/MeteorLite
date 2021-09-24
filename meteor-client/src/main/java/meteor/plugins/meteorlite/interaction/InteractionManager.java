@@ -135,6 +135,10 @@ public class InteractionManager {
 			return new Point(0, 0);
 		}
 
+		if (config.interactType() == InteractType.MOUSE_POS) {
+			return new Point(client.getMouseHandler().getCurrentX(), client.getMouseHandler().getCurrentY());
+		}
+
 		if (e.clickX != -1 && e.clickY != -1 && config.interactType() == InteractType.CLICKBOXES) {
 			Point clickPoint = new Point(e.clickX, e.clickY);
 			if (!clickInsideMinimap(clickPoint)) {
