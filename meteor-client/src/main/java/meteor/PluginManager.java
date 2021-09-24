@@ -34,6 +34,7 @@ import meteor.plugins.animsmoothing.AnimationSmoothingPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.api.example.deathevent.DeathEventPlugin;
 import meteor.plugins.hiscore.HiscorePlugin;
+import meteor.plugins.hiscorewise.HiscoreWisePlugin;
 import meteor.plugins.hootoneclick.HootOneClickPlugin;
 import meteor.plugins.autoclicker.AutoClickerPlugin;
 import meteor.plugins.autologhop.AutoLogHop;
@@ -272,6 +273,7 @@ public class PluginManager {
 		plugins.add(new sGroundMarkerPlugin());
 		plugins.add(new HerbiboarPlugin());
 		plugins.add(new HiscorePlugin());
+		plugins.add(new HiscoreWisePlugin());
 		plugins.add(new HootAgilityPlugin());
 		plugins.add(new HootFighterPlugin());
 		plugins.add(new HootHerblorePlugin());
