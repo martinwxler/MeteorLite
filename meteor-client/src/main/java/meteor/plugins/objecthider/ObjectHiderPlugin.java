@@ -156,63 +156,65 @@ public class ObjectHiderPlugin extends Plugin
   private void hide()
   {
     Scene scene = client.getScene();
-    Tile[][] tiles = scene.getTiles()[0];
+    Tile[][][] tiles = scene.getTiles();
 
-    for (int x = 0; x < Constants.SCENE_SIZE; ++x)
-    {
-      for (int y = 0; y < Constants.SCENE_SIZE; ++y)
+    for (int z = 0; z < 3; ++z){
+      for (int x = 0; x < Constants.SCENE_SIZE; ++x)
       {
-        Tile tile = tiles[x][y];
-        if (tile == null)
+        for (int y = 0; y < Constants.SCENE_SIZE; ++y)
         {
-          continue;
-        }
-
-        GameObject[] gameObjects = tile.getGameObjects();
-        DecorativeObject decorativeObject = tile.getDecorativeObject();
-        WallObject wallObject = tile.getWallObject();
-        GroundObject groundObject = tile.getGroundObject();
-
-        for (GameObject gameObject : gameObjects)
-        {
-          if (gameObject != null)
+          Tile tile = tiles[z][x][y];
+          if (tile == null)
           {
-            if (config.hideAllGameObjects() || objectIds.contains(gameObject.getId()) ||
-                (!objectNames.isEmpty() && objectNames.contains(client.getObjectComposition(gameObject.getId()).getName().toLowerCase()))
-            )
+            continue;
+          }
+
+          GameObject[] gameObjects = tile.getGameObjects();
+          DecorativeObject decorativeObject = tile.getDecorativeObject();
+          WallObject wallObject = tile.getWallObject();
+          GroundObject groundObject = tile.getGroundObject();
+
+          for (GameObject gameObject : gameObjects)
+          {
+            if (gameObject != null)
             {
-              scene.removeGameObject(gameObject);
+              if (config.hideAllGameObjects() || objectIds.contains(gameObject.getId()) ||
+                  (!objectNames.isEmpty() && objectNames.contains(client.getObjectComposition(gameObject.getId()).getName().toLowerCase()))
+              )
+              {
+                scene.removeGameObject(z, x, y);
+              }
             }
           }
-        }
 
-        if (decorativeObject != null)
-        {
-          if (config.hideAllDecorativeObjects() || objectIds.contains(decorativeObject.getId()) ||
-              (!objectNames.isEmpty() && objectNames.contains(client.getObjectComposition(decorativeObject.getId()).getName().toLowerCase()))
-          )
+          if (decorativeObject != null)
           {
-            scene.removeDecorativeObject(client.getPlane(), x, y);
+            if (config.hideAllDecorativeObjects() || objectIds.contains(decorativeObject.getId()) ||
+                (!objectNames.isEmpty() && objectNames.contains(client.getObjectComposition(decorativeObject.getId()).getName().toLowerCase()))
+            )
+            {
+              scene.removeDecorativeObject(z, x, y);
+            }
           }
-        }
 
-        if (wallObject != null)
-        {
-          if (config.hideAllWallObjects() || objectIds.contains(wallObject.getId()) ||
-              (!objectNames.isEmpty() && objectNames.contains(client.getObjectComposition(wallObject.getId()).getName().toLowerCase()))
-          )
+          if (wallObject != null)
           {
-            scene.removeWallObject(client.getPlane(), x, y);
+            if (config.hideAllWallObjects() || objectIds.contains(wallObject.getId()) ||
+                (!objectNames.isEmpty() && objectNames.contains(client.getObjectComposition(wallObject.getId()).getName().toLowerCase()))
+            )
+            {
+              scene.removeWallObject(z, x, y);
+            }
           }
-        }
 
-        if (groundObject != null && config.hideAllGroundObjects())
-        {
-          if (config.hideAllGroundObjects() || objectIds.contains(groundObject.getId()) ||
-              (!objectNames.isEmpty() && objectNames.contains(client.getObjectComposition(groundObject.getId()).getName().toLowerCase()))
-          )
+          if (groundObject != null && config.hideAllGroundObjects())
           {
-            scene.removeGroundObject(client.getPlane(), x, y);
+            if (config.hideAllGroundObjects() || objectIds.contains(groundObject.getId()) ||
+                (!objectNames.isEmpty() && objectNames.contains(client.getObjectComposition(groundObject.getId()).getName().toLowerCase()))
+            )
+            {
+              scene.removeGroundObject(z, x, y);
+            }
           }
         }
       }

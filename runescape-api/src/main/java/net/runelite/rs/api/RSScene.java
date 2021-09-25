@@ -63,6 +63,9 @@ public interface RSScene extends Scene {
   @Import("removeGameObject")
   void removeGameObject(GameObject gameObject);
 
+  @Import("removeGameObjects")
+  void removeGameObject(int plane, int x, int y);
+
   @Import("removeBoundaryObject")
   void removeWallObject(int plane, int x, int y);
 
