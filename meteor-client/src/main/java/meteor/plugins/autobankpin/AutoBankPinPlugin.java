@@ -52,10 +52,10 @@ public final class AutoBankPinPlugin extends Plugin {
     @Subscribe
     public final void onGameTick(GameTick event) {
         if (client.getWidget(WidgetID.BANK_PIN_GROUP_ID, BANK_PIN_INSTRUCTION_TEXT.getChildId()) == null
-            || (client.getWidget(BANK_PIN_INSTRUCTION_TEXT).getText() == "First click the FIRST digit."
-                && client.getWidget(BANK_PIN_INSTRUCTION_TEXT).getText() == "Now click the SECOND digit."
-                && client.getWidget(BANK_PIN_INSTRUCTION_TEXT).getText() == "Time for the THIRD digit."
-                && client.getWidget(BANK_PIN_INSTRUCTION_TEXT).getText() == "Finally, the FOURTH digit."))
+            || (client.getWidget(BANK_PIN_INSTRUCTION_TEXT).getText().equals("First click the FIRST digit.")
+                && client.getWidget(BANK_PIN_INSTRUCTION_TEXT).getText().equals("Now click the SECOND digit.")
+                && client.getWidget(BANK_PIN_INSTRUCTION_TEXT).getText().equals("Time for the THIRD digit.")
+                && client.getWidget(BANK_PIN_INSTRUCTION_TEXT).getText().equals("Finally, the FOURTH digit.")))
         {
             return;
         }
