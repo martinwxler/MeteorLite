@@ -33,6 +33,7 @@ import meteor.plugins.ammo.AmmoPlugin;
 import meteor.plugins.animsmoothing.AnimationSmoothingPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.api.example.deathevent.DeathEventPlugin;
+import meteor.plugins.autobankpin.AutoBankPinPlugin;
 import meteor.plugins.hiscore.HiscorePlugin;
 import meteor.plugins.hootoneclick.HootOneClickPlugin;
 import meteor.plugins.autoclicker.AutoClickerPlugin;

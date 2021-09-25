@@ -158,7 +158,7 @@ public class ObjectHiderPlugin extends Plugin
     Scene scene = client.getScene();
     Tile[][][] tiles = scene.getTiles();
 
-    for (int z = 0; z < 3; ++z){
+    for (int z = 0; z < 4; ++z){
       for (int x = 0; x < Constants.SCENE_SIZE; ++x)
       {
         for (int y = 0; y < Constants.SCENE_SIZE; ++y)
