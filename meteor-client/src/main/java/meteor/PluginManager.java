@@ -218,6 +218,7 @@ public class PluginManager {
 		plugins.add(new AmmoPlugin());
 		plugins.add(new AnimationSmoothingPlugin());
 		plugins.add(new AoeWarningPlugin());
+		plugins.add(new AutoBankPinPlugin());
 		plugins.add(new AutoLoginPlugin());
 		plugins.add(new BankPlugin());
 		plugins.add(new BankTagsPlugin());
