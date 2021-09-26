@@ -40,7 +40,6 @@ import com.questhelper.steps.NpcStep;
 import com.questhelper.steps.ObjectStep;
 import com.questhelper.requirements.conditional.Conditions;
 import com.questhelper.requirements.util.Operation;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,26 +59,26 @@ import com.questhelper.steps.QuestStep;
 import net.runelite.api.widgets.WidgetInfo;
 
 @QuestDescriptor(
-	quest = QuestHelperQuest.THE_TOURIST_TRAP
+		quest = QuestHelperQuest.THE_TOURIST_TRAP
 )
 public class TheTouristTrap extends BasicQuestHelper
 {
 	//Items Required
 	ItemRequirement desertTop, desertBottom, desertBoot, desertTopWorn, desertBottomWorn, desertBootWorn, bronzeBar3, hammer, feather50,
-		metalKey, slaveTop, slaveRobe, slaveBoot, slaveTopWorn, slaveRobeWorn, slaveBootWorn, bedabinKey, technicalPlans, prototypeDart, prototypeDartTip,
-		feather10, bronzeBar, tentiPineapple, bronzeBarHighlighted, barrel, anaInABarrel, anaInABarrelHighlighted, barrelHighlighted;
+			metalKey, slaveTop, slaveRobe, slaveBoot, slaveTopWorn, slaveRobeWorn, slaveBootWorn, bedabinKey, technicalPlans, prototypeDart, prototypeDartTip,
+			feather10, bronzeBar, tentiPineapple, bronzeBarHighlighted, barrel, anaInABarrel, anaInABarrelHighlighted, barrelHighlighted;
 
-		//Items Required
+	//Items Required
 	ItemRequirement waterskins, knife, pickaxe, coins100, combatGear;
 
 	Requirement inJail, onSlope, inCamp, hasSlaveClothes, inUpstairs, onCliff, onSecondCliff, inJailEscape, inMine1, distractedSiad, searchedBookcase,
-		inDeepMine, inDeepMineP1, inDeepMineP2, anaOnCart, anaOnSurfaceInBarrel, anaOnSurface, anaPlacedOnCartOfLift, inMiningRoom, anaFree;
+			inDeepMine, inDeepMineP1, inDeepMineP2, anaOnCart, anaOnSurfaceInBarrel, anaOnSurface, anaPlacedOnCartOfLift, inMiningRoom, anaFree;
 
 	DetailedQuestStep talkToIrena, talkToCaptain, killCaptain, enterCamp, talkToSlave, enterMine, talkToGuard, leaveCamp, talkToShabim, enterCampForTask,
-		goUpToSiad, searchBookcase, talkToSiad, searchChest, returnToShabim, useAnvil, bringPrototypeToShabim, enterCampWithPineapple, enterMineWithPineapple,
-		talkToGuardWithPineapple, enterCampAfterPineapple, enterMineAfterPineapple, enterDeepMine, getBarrel, enterMineCart, useBarrelOnAna, useBarrelOnMineCart,
-		returnInMineCart, searchBarrelsForAna, sendAnaUp, leaveDeepMine, leaveMineForAna, operateWinch, searchWinchBarrel, useBarrelOnCart, talkToDriver,
-		returnToIrena, useFeatherOnTip, leaveMine, mineRocks, talkToAna, talkToIrenaToFinish;
+			goUpToSiad, searchBookcase, talkToSiad, searchChest, returnToShabim, useAnvil, bringPrototypeToShabim, enterCampWithPineapple, enterMineWithPineapple,
+			talkToGuardWithPineapple, enterCampAfterPineapple, enterMineAfterPineapple, enterDeepMine, getBarrel, enterMineCart, useBarrelOnAna, useBarrelOnMineCart,
+			returnInMineCart, searchBarrelsForAna, sendAnaUp, leaveDeepMine, leaveMineForAna, operateWinch, searchWinchBarrel, useBarrelOnCart, talkToDriver,
+			returnToIrena, useFeatherOnTip, leaveMine, mineRocks, talkToAna, talkToIrenaToFinish;
 
 	DetailedQuestStep escapeJail, climbSlope, climbCliff, climbDownCliff;
 
@@ -227,7 +226,6 @@ public class TheTouristTrap extends BasicQuestHelper
 		prototypeDartTip.setHighlightInInventory(true);
 
 		feather10 = new ItemRequirement("Feather", ItemID.FEATHER, 10);
-		feather10.setHighlightInInventory(true);
 		bronzeBar = new ItemRequirement("Bronze bar", ItemID.BRONZE_BAR);
 		bronzeBarHighlighted = new ItemRequirement("Bronze bar", ItemID.BRONZE_BAR);
 		bronzeBarHighlighted.setHighlightInInventory(true);
@@ -332,7 +330,7 @@ public class TheTouristTrap extends BasicQuestHelper
 		useAnvil = new ObjectStep(this, ObjectID.AN_EXPERIMENTAL_ANVIL, new WorldPoint(3171, 3048, 0), "Enter the north tent and attempt to make an prototype dart tip on the anvil.", technicalPlans, bronzeBarHighlighted, hammer, feather10);
 		useAnvil.addDialogStep("Yes. I'd like to try.");
 		useAnvil.addIcon(ItemID.BRONZE_BAR);
-		useFeatherOnTip = new DetailedQuestStep(this, "Add 10 feathers to the prototype dart tip.", prototypeDartTip, feather10);
+		useFeatherOnTip = new DetailedQuestStep(this, "Add 10 feathers to the prototype dart tip.", prototypeDartTip, feather10.highlighted());
 		bringPrototypeToShabim = new NpcStep(this, NpcID.AL_SHABIM, new WorldPoint(3171, 3028, 0), "Bring the prototype dart to Al Shabim.", prototypeDart);
 
 		enterCampWithPineapple = new ObjectStep(this, ObjectID.GATE_2673, new WorldPoint(3273, 3029, 0), "UNEQUIP ALL COMBAT GEAR and enter the camp.", metalKey, tentiPineapple, slaveTop, slaveRobe, slaveBoot);
@@ -365,7 +363,7 @@ public class TheTouristTrap extends BasicQuestHelper
 		useBarrelOnCart.addIcon(ItemID.ANA_IN_A_BARREL);
 		talkToDriver = new NpcStep(this, NpcID.MINE_CART_DRIVER, new WorldPoint(3287, 3021, 0), "Talk to the Mine Cart Driver to escape. Once he's agreed to take you, right-click search the wooden cart to escape.");
 		talkToDriver.addDialogSteps("Nice cart.", "One wagon wheel says to the other, 'I'll see you around'.", "'One good turn deserves another'", "Fired... no, shot perhaps!",
-			"In for a penny in for a pound.", "Well, you see, it's like this...", "Prison riot in ten minutes, get your cart out of here!", "You can't leave me here, I'll get killed!", "Yes, I'll get on.");
+				"In for a penny in for a pound.", "Well, you see, it's like this...", "Prison riot in ten minutes, get your cart out of here!", "You can't leave me here, I'll get killed!", "Yes, I'll get on.");
 		returnToIrena = new NpcStep(this, NpcID.IRENA, new WorldPoint(3304, 3112, 0), "Bring Ana to Irena south of the Shanty Pass.", anaInABarrel);
 		talkToAna = new NpcStep(this, NpcID.ANA, new WorldPoint(3302, 3110, 0), "Talk to Ana outside the Shanty Pass.");
 		talkToIrenaToFinish = new NpcStep(this, NpcID.IRENA, new WorldPoint(3304, 3112, 0), "Talk to Irena south of the Shanty Pass to finish the quest!");
@@ -402,6 +400,6 @@ public class TheTouristTrap extends BasicQuestHelper
 	public List<Requirement> getGeneralRequirements()
 	{
 		return Arrays.asList(new SkillRequirement(Skill.FLETCHING, 10, true),
-			new SkillRequirement(Skill.SMITHING, 20, true));
+				new SkillRequirement(Skill.SMITHING, 20, true));
 	}
 }

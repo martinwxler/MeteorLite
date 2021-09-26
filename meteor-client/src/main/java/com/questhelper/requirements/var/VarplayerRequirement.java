@@ -26,13 +26,14 @@
  */
 package com.questhelper.requirements.var;
 
+import com.questhelper.requirements.AbstractRequirement;
 import com.questhelper.requirements.conditional.ConditionForStep;
 import com.questhelper.requirements.util.Operation;
 import java.math.BigInteger;
 import java.util.Locale;
 import net.runelite.api.Client;
 
-public class VarplayerRequirement extends ConditionForStep
+public class VarplayerRequirement extends AbstractRequirement
 {
 
 	private final int varplayerId;
@@ -52,6 +53,7 @@ public class VarplayerRequirement extends ConditionForStep
 
 		this.bitPosition = -1;
 		this.bitIsSet = false;
+		shouldCountForFilter = true;
 	}
 
 	public VarplayerRequirement(int varplayerId, int value, String displayText)
@@ -63,6 +65,7 @@ public class VarplayerRequirement extends ConditionForStep
 
 		this.bitPosition = -1;
 		this.bitIsSet = false;
+		shouldCountForFilter = true;
 	}
 
 	public VarplayerRequirement(int varplayerId, int value, Operation operation)
@@ -74,6 +77,7 @@ public class VarplayerRequirement extends ConditionForStep
 
 		this.bitPosition = -1;
 		this.bitIsSet = false;
+		shouldCountForFilter = true;
 	}
 
 	public VarplayerRequirement(int varplayerId, int value, Operation operation, String displayText)
@@ -85,6 +89,7 @@ public class VarplayerRequirement extends ConditionForStep
 
 		this.bitPosition = -1;
 		this.bitIsSet = false;
+		shouldCountForFilter = true;
 	}
 
 	public VarplayerRequirement(int varplayerId, boolean bitIsSet, int bitPosition)
@@ -96,6 +101,7 @@ public class VarplayerRequirement extends ConditionForStep
 
 		this.bitPosition = bitPosition;
 		this.bitIsSet = bitIsSet;
+		shouldCountForFilter = true;
 	}
 
 	public VarplayerRequirement(int varplayerId, boolean bitIsSet, int bitPosition, String displayText)
@@ -107,6 +113,7 @@ public class VarplayerRequirement extends ConditionForStep
 
 		this.bitPosition = bitPosition;
 		this.bitIsSet = bitIsSet;
+		shouldCountForFilter = true;
 	}
 
 

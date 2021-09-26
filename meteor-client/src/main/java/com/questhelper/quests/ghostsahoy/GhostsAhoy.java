@@ -29,14 +29,18 @@ import com.questhelper.QuestHelperQuest;
 import com.questhelper.QuestVarbits;
 import com.questhelper.Zone;
 import com.questhelper.questhelpers.BasicQuestHelper;
-import com.questhelper.questhelpers.QuestUtil;
-import com.questhelper.requirements.item.ItemRequirements;
 import com.questhelper.requirements.Requirement;
-import com.questhelper.requirements.item.ItemRequirement;
-import com.questhelper.requirements.quest.QuestRequirement;
-import com.questhelper.requirements.player.SkillRequirement;
-import com.questhelper.requirements.var.VarbitRequirement;
 import com.questhelper.requirements.ZoneRequirement;
+import com.questhelper.requirements.conditional.Conditions;
+import com.questhelper.requirements.conditional.NpcCondition;
+import com.questhelper.requirements.item.ItemOnTileRequirement;
+import com.questhelper.requirements.item.ItemRequirement;
+import com.questhelper.requirements.item.ItemRequirements;
+import com.questhelper.requirements.player.SkillRequirement;
+import com.questhelper.requirements.quest.QuestRequirement;
+import com.questhelper.requirements.util.LogicType;
+import com.questhelper.requirements.util.Operation;
+import com.questhelper.requirements.var.VarbitRequirement;
 import com.questhelper.steps.ConditionalStep;
 import com.questhelper.steps.DetailedQuestStep;
 import com.questhelper.steps.DigStep;
@@ -44,11 +48,6 @@ import com.questhelper.steps.ItemStep;
 import com.questhelper.steps.NpcStep;
 import com.questhelper.steps.ObjectStep;
 import com.questhelper.steps.QuestStep;
-import com.questhelper.requirements.conditional.Conditions;
-import com.questhelper.requirements.item.ItemOnTileRequirement;
-import com.questhelper.requirements.util.LogicType;
-import com.questhelper.requirements.conditional.NpcCondition;
-import com.questhelper.requirements.util.Operation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -63,25 +62,25 @@ import net.runelite.api.Skill;
 import net.runelite.api.coords.WorldPoint;
 
 @QuestDescriptor(
-	quest = QuestHelperQuest.GHOSTS_AHOY
+		quest = QuestHelperQuest.GHOSTS_AHOY
 )
 public class GhostsAhoy extends BasicQuestHelper
 {
 	//Required Items
 	ItemRequirement ghostspeak, coins400, milk, silk, dyes, spade, oakLongbow, knife, needle, thread, bucketOfSlime, nettleTea, ectoToken2, ectoToken4, chestKey,
-		nettleTeaHighlighted, milkHighlighted, milkyTea, cup, cupWithMilkyTea, cupWithTea, modelShip, repairedShip, ectoToken12, ectoToken27, charos, map, signedOakBow,
-		ectoToken10, ectoToken25, ectoSheets, bedsheet, petition, boneKey, boneKeyHighlighted, robes, book, manual, mapPiece1, mapPiece2, mapPiece3, silkHighlighted,
-		ectoTokensCharos, ectoTokensNoCharos, ectoSheetsEquipped, enchantedGhostspeakEquipped;
+			nettleTeaHighlighted, milkHighlighted, milkyTea, cup, cupWithMilkyTea, cupWithTea, modelShip, repairedShip, ectoToken12, ectoToken27, charos, map, signedOakBow,
+			ectoToken10, ectoToken25, ectoSheets, bedsheet, petition, boneKey, boneKeyHighlighted, robes, book, manual, mapPiece1, mapPiece2, mapPiece3, silkHighlighted,
+			ectoTokensCharos, ectoTokensNoCharos, ectoSheetsEquipped, enchantedGhostspeakEquipped;
 
 	Requirement inPhas, onDragontooth, hasCupOfMilkyTea, hasCupOfTea, hasModelShip, hasRepairedShip, hasPiece1, hasPiece2, hasPiece3, hasMap, lobsterNearby,
-		hasCup, killedLobster, hadChestKey, onDeck, onTopOfShip, onRocks, unlockedChest2, hasBook, hasSheet, hasEctoSheet, hasMysticalRobes, hasManual, boneKeyNearby,
-		hasBoneKey, talkedToAkHaranu, hasSignedOakBow, hasPetition, hasSignatures, givenPetitionToNecro, inUpstairsEcto, doorUnlocked;
+			hasCup, killedLobster, hadChestKey, onDeck, onTopOfShip, onRocks, unlockedChest2, hasBook, hasSheet, hasEctoSheet, hasMysticalRobes, hasManual, boneKeyNearby,
+			hasBoneKey, talkedToAkHaranu, hasSignedOakBow, hasPetition, hasSignatures, givenPetitionToNecro, inUpstairsEcto, doorUnlocked;
 
 	QuestStep enterPhas, talkToVelorina, talkToNecrovarus, enterPhasAfterNecro, talkToVelorinaAfterNecro, talkToCrone, useTeaOnCup, useMilkOnTea,
-		talkToCroneAgain, repairShip, goUpToDeck, useKeyOnChest, goDownFromMast, searchChestForLobster, killLobster, searchChestAfterLobster, goAcrossPlank,
-		openSecondChest, openThirdChest, useMapsTogether, enterPhasForDigging, takeRowingBoat, digForBook, returnToPhas, talkToAkHaranu, talkToInnkeeper, useSlimeOnSheet,
-		talkToGravingas, talkToVillagers, showPetitionToNecro, talkToNecroForKey, takeKey, goUpFromNecro, useKeyOnDoor, takeRobes, returnToCrone, bringCroneAmulet,
-		talkToNecroAfterCurse, enterPhasFinal, talkToVelorinaFinal, talkToCroneAgainForShip, enterPhasForManual, enterPhasForRobe, talkToRobin, bringBowToAkHaranu;
+			talkToCroneAgain, repairShip, goUpToDeck, useKeyOnChest, goDownFromMast, searchChestForLobster, killLobster, searchChestAfterLobster, goAcrossPlank,
+			openSecondChest, openThirdChest, useMapsTogether, enterPhasForDigging, takeRowingBoat, digForBook, returnToPhas, talkToAkHaranu, talkToInnkeeper, useSlimeOnSheet,
+			talkToGravingas, talkToVillagers, showPetitionToNecro, talkToNecroForKey, takeKey, goUpFromNecro, useKeyOnDoor, takeRobes, returnToCrone, bringCroneAmulet,
+			talkToNecroAfterCurse, enterPhasFinal, talkToVelorinaFinal, talkToCroneAgainForShip, enterPhasForManual, enterPhasForRobe, talkToRobin, bringBowToAkHaranu;
 
 	ConditionalStep getBookSteps, getManualSteps, getRobesSteps;
 
@@ -196,10 +195,10 @@ public class GhostsAhoy extends BasicQuestHelper
 
 		nettleTea = new ItemRequirement("Nettle tea", ItemID.NETTLE_TEA);
 		nettleTea.setTooltip("You can make this by picking nettles whilst wearing gloves (Edgeville yews for example), " +
-			"then using them on a bowl of water. Cook this to have nettle tea");
+				"then using them on a bowl of water. Cook this to have nettle tea");
 		nettleTeaHighlighted = new ItemRequirement("Nettle tea", ItemID.NETTLE_TEA);
 		nettleTeaHighlighted.setTooltip("You can make this by picking nettles whilst wearing gloves (Edgeville yews for example), " +
-			"then using them on a bowl of water. Cook this to have nettle tea");
+				"then using them on a bowl of water. Cook this to have nettle tea");
 		nettleTeaHighlighted.setHighlightInInventory(true);
 
 		milk = new ItemRequirement("Bucket of milk", ItemID.BUCKET_OF_MILK);
@@ -227,7 +226,7 @@ public class GhostsAhoy extends BasicQuestHelper
 		ItemRequirement blueDye = new ItemRequirement("Blue dye", ItemID.BLUE_DYE, 3);
 		ItemRequirement yellowDye = new ItemRequirement("Yellow dye", ItemID.YELLOW_DYE, 3);
 		dyes = new ItemRequirements("3 colours of dyes. Which you'll need is random. To be prepared, bring 3 red/blue/yellow dyes",
-			redDye, blueDye, yellowDye);
+				redDye, blueDye, yellowDye);
 
 		spade = new ItemRequirement("Spade", ItemID.SPADE);
 		oakLongbow = new ItemRequirement("Oak longbow", ItemID.OAK_LONGBOW);
@@ -362,14 +361,14 @@ public class GhostsAhoy extends BasicQuestHelper
 		openThirdChest = new ObjectStep(this, ObjectID.CLOSED_CHEST_16118, new WorldPoint(3606, 3564, 0), "Jump across the rocks to the chest and search it for a map piece.");
 		((ObjectStep) (openThirdChest)).addAlternateObjects(ObjectID.OPEN_CHEST_16119);
 		((ObjectStep) (openThirdChest)).setLinePoints(Arrays.asList(
-			new WorldPoint(3604, 3550, 0),
-			new WorldPoint(3601, 3550, 0),
-			new WorldPoint(3601, 3552, 0),
-			new WorldPoint(3595, 3552, 0),
-			new WorldPoint(3595, 3557, 0),
-			new WorldPoint(3597, 3557, 0),
-			new WorldPoint(3597, 3564, 0),
-			new WorldPoint(3605, 3564, 0)
+				new WorldPoint(3604, 3550, 0),
+				new WorldPoint(3601, 3550, 0),
+				new WorldPoint(3601, 3552, 0),
+				new WorldPoint(3595, 3552, 0),
+				new WorldPoint(3595, 3557, 0),
+				new WorldPoint(3597, 3557, 0),
+				new WorldPoint(3597, 3564, 0),
+				new WorldPoint(3605, 3564, 0)
 		));
 
 		useMapsTogether = new DetailedQuestStep(this, "Use the map pieces together.", mapPiece1, mapPiece2, mapPiece3);
@@ -392,7 +391,7 @@ public class GhostsAhoy extends BasicQuestHelper
 		talkToAkHaranu = new NpcStep(this, NpcID.AKHARANU, new WorldPoint(3689, 3499, 0), "Talk to Ak-Haranu.");
 		talkToAkHaranu.addDialogStep("Okay, wait here - I'll get you your bow.");
 		talkToAkHaranu.addSubSteps(enterPhasForManual);
-		talkToRobin = new NpcStep(this, NpcID.ROBIN, new WorldPoint(3675, 3495, 0), "Talk to Robin the the Port Phasmatys pub. Keep playing runedraw until he agrees to sign your bow.", oakLongbow, coins400);
+		talkToRobin = new NpcStep(this, NpcID.ROBIN, new WorldPoint(3675, 3495, 0), "Talk to Robin in the Port Phasmatys pub. Keep playing runedraw until he agrees to sign your bow.", oakLongbow, coins400);
 		talkToRobin.addDialogStep("Yes, I'll give you a game.");
 		bringBowToAkHaranu = new NpcStep(this, NpcID.AKHARANU, new WorldPoint(3689, 3499, 0), "Bring the signed bow to Ak-Haranu.", signedOakBow);
 

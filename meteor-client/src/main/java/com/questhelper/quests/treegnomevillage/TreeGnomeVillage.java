@@ -45,7 +45,6 @@ import com.questhelper.steps.ItemStep;
 import com.questhelper.steps.NpcStep;
 import com.questhelper.steps.ObjectStep;
 import com.questhelper.steps.QuestStep;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -57,7 +56,7 @@ import net.runelite.api.ObjectID;
 import net.runelite.api.coords.WorldPoint;
 
 @QuestDescriptor(
-	quest = QuestHelperQuest.TREE_GNOME_VILLAGE
+		quest = QuestHelperQuest.TREE_GNOME_VILLAGE
 )
 public class TreeGnomeVillage extends BasicQuestHelper
 {
@@ -65,16 +64,16 @@ public class TreeGnomeVillage extends BasicQuestHelper
 	ItemRequirement logRequirement, orbsOfProtection;
 
 	private QuestStep talkToKingBolren, talkToCommanderMontai, bringWoodToCommanderMontai, talkToCommanderMontaiAgain,
-		firstTracker, secondTracker, thirdTracker, fireBallista, fireBallista1, fireBallista2, fireBallista3, fireBallista4, climbTheLadder,
-		talkToKingBolrenFirstOrb, talkToTheWarlord, fightTheWarlord, returnOrbs, finishQuestDialog;
+			firstTracker, secondTracker, thirdTracker, fireBallista, fireBallista1, fireBallista2, fireBallista3, fireBallista4, climbTheLadder,
+			talkToKingBolrenFirstOrb, talkToTheWarlord, fightTheWarlord, returnOrbs, finishQuestDialog, elkoySkip;
 
 	Requirement completeFirstTracker, completeSecondTracker, completeThirdTracker, handedInOrbs,
-		notCompleteFirstTracker, notCompleteSecondTracker, notCompleteThirdTracker, orbsOfProtectionNearby;
+			notCompleteFirstTracker, notCompleteSecondTracker, notCompleteThirdTracker, orbsOfProtectionNearby;
 
 	private Conditions talkToSecondTracker, talkToThirdTracker, completedTrackers,
-		shouldFireBallista1, shouldFireBallista2, shouldFireBallista3, shouldFireBallista4;
+			shouldFireBallista1, shouldFireBallista2, shouldFireBallista3, shouldFireBallista4;
 
-	private ConditionalStep retrieveOrb, talkToBolrenAtCentreOfMaze, fireBalistaConditional;
+	private ConditionalStep retrieveOrb, talkToBolrenAtCentreOfMaze, fireBalistaConditional, returnFirstOrb;
 
 	//Zones
 	Zone upstairsTower, zoneVillage;
@@ -104,7 +103,7 @@ public class TreeGnomeVillage extends BasicQuestHelper
 		steps.put(3, talkToCommanderMontaiAgain);
 		steps.put(4, talkToTrackersStep());
 		steps.put(5, retrieveOrbStep());
-		steps.put(6, talkToKingBolrenFirstOrb);
+		steps.put(6, returnFirstOrb);
 		steps.put(7, defeatWarlordStep());
 		steps.put(8, returnOrbsStep());
 		return steps;
@@ -142,9 +141,9 @@ public class TreeGnomeVillage extends BasicQuestHelper
 		NpcHintArrowRequirement fightingWarlord = new NpcHintArrowRequirement(NpcID.KHAZARD_WARLORD_7622);
 
 		fightTheWarlord = new NpcStep(this, NpcID.KHAZARD_WARLORD_7622, new WorldPoint(2456, 3301, 0),
-			"Defeat the warlord and retrieve orbs.");
+				"Defeat the warlord and retrieve orbs.");
 		talkToTheWarlord = new NpcStep(this, NpcID.KHAZARD_WARLORD_7621, new WorldPoint(2456, 3301, 0),
-			"Talk to the Warlord south west of West Ardougne, ready to fight him.");
+				"Talk to the Warlord south west of West Ardougne, ready to fight him.");
 
 		ItemRequirement food = new ItemRequirement("Food", ItemCollections.getGoodEatingFood(), -1);
 
@@ -152,8 +151,8 @@ public class TreeGnomeVillage extends BasicQuestHelper
 		combatGear.setDisplayItemId(BankSlotIcons.getMagicCombatGear());
 
 		ConditionalStep defeatTheWarlord = new ConditionalStep(this, talkToTheWarlord,
-			food,
-			combatGear);
+				food,
+				combatGear);
 
 		defeatTheWarlord.addStep(fightingWarlord, fightTheWarlord);
 
@@ -168,7 +167,7 @@ public class TreeGnomeVillage extends BasicQuestHelper
 		orbsOfProtectionNearby = new ItemOnTileRequirement(ItemID.ORBS_OF_PROTECTION);
 
 		ItemStep pickupOrb = new ItemStep(this,
-			"Pick up the nearby Orbs of Protection.", orbsOfProtection);
+				"Pick up the nearby Orbs of Protection.", orbsOfProtection);
 		returnOrbs.addSubSteps(pickupOrb);
 
 		ConditionalStep returnOrbsSteps = new ConditionalStep(this, returnOrbs);
@@ -223,50 +222,50 @@ public class TreeGnomeVillage extends BasicQuestHelper
 
 		DetailedQuestStep goThroughMaze = new DetailedQuestStep(this, new WorldPoint(2541, 3170, 0), "Follow the marked path to walk through the maze.");
 		List<WorldPoint> pathThroughMaze = Arrays.asList(
-			new WorldPoint(2505, 3190, 0),
-			new WorldPoint(2512, 3190, 0),
-			new WorldPoint(2512, 3188, 0),
-			new WorldPoint(2532, 3188, 0),
-			new WorldPoint(2532, 3182, 0),
-			new WorldPoint(2523, 3181, 0),
-			new WorldPoint(2523, 3185, 0),
-			new WorldPoint(2521, 3185, 0),
-			new WorldPoint(2520, 3179, 0),
-			new WorldPoint(2514, 3179, 0),
-			new WorldPoint(2514, 3177, 0),
-			new WorldPoint(2527, 3177, 0),
-			new WorldPoint(2527, 3179, 0),
-			new WorldPoint(2529, 3179, 0),
-			new WorldPoint(2529, 3177, 0),
-			new WorldPoint(2531, 3177, 0),
-			new WorldPoint(2531, 3179, 0),
-			new WorldPoint(2533, 3179, 0),
-			new WorldPoint(2533, 3177, 0),
-			new WorldPoint(2544, 3177, 0),
-			new WorldPoint(2544, 3174, 0),
-			new WorldPoint(2549, 3174, 0),
-			new WorldPoint(2549, 3165, 0),
-			new WorldPoint(2545, 3165, 0),
-			new WorldPoint(2545, 3159, 0),
-			new WorldPoint(2550, 3159, 0),
-			new WorldPoint(2550, 3156, 0),
-			new WorldPoint(2548, 3156, 0),
-			new WorldPoint(2548, 3145, 0),
-			new WorldPoint(2538, 3145, 0),
-			new WorldPoint(2538, 3150, 0),
-			new WorldPoint(2541, 3150, 0),
-			new WorldPoint(2541, 3148, 0),
-			new WorldPoint(2544, 3148, 0),
-			new WorldPoint(2544, 3150, 0),
-			new WorldPoint(2545, 3150, 0),
-			new WorldPoint(2545, 3156, 0),
-			new WorldPoint(2520, 3156, 0),
-			new WorldPoint(2520, 3159, 0),
-			new WorldPoint(2515, 3159, 0));
+				new WorldPoint(2505, 3190, 0),
+				new WorldPoint(2512, 3190, 0),
+				new WorldPoint(2512, 3188, 0),
+				new WorldPoint(2532, 3188, 0),
+				new WorldPoint(2532, 3182, 0),
+				new WorldPoint(2523, 3181, 0),
+				new WorldPoint(2523, 3185, 0),
+				new WorldPoint(2521, 3185, 0),
+				new WorldPoint(2520, 3179, 0),
+				new WorldPoint(2514, 3179, 0),
+				new WorldPoint(2514, 3177, 0),
+				new WorldPoint(2527, 3177, 0),
+				new WorldPoint(2527, 3179, 0),
+				new WorldPoint(2529, 3179, 0),
+				new WorldPoint(2529, 3177, 0),
+				new WorldPoint(2531, 3177, 0),
+				new WorldPoint(2531, 3179, 0),
+				new WorldPoint(2533, 3179, 0),
+				new WorldPoint(2533, 3177, 0),
+				new WorldPoint(2544, 3177, 0),
+				new WorldPoint(2544, 3174, 0),
+				new WorldPoint(2549, 3174, 0),
+				new WorldPoint(2549, 3165, 0),
+				new WorldPoint(2545, 3165, 0),
+				new WorldPoint(2545, 3159, 0),
+				new WorldPoint(2550, 3159, 0),
+				new WorldPoint(2550, 3156, 0),
+				new WorldPoint(2548, 3156, 0),
+				new WorldPoint(2548, 3145, 0),
+				new WorldPoint(2538, 3145, 0),
+				new WorldPoint(2538, 3150, 0),
+				new WorldPoint(2541, 3150, 0),
+				new WorldPoint(2541, 3148, 0),
+				new WorldPoint(2544, 3148, 0),
+				new WorldPoint(2544, 3150, 0),
+				new WorldPoint(2545, 3150, 0),
+				new WorldPoint(2545, 3156, 0),
+				new WorldPoint(2520, 3156, 0),
+				new WorldPoint(2520, 3159, 0),
+				new WorldPoint(2515, 3159, 0));
 		goThroughMaze.setLinePoints(pathThroughMaze);
 
 		talkToBolrenAtCentreOfMaze = new ConditionalStep(this, goThroughMaze,
-			"Speak to King Bolren in the centre of the Tree Gnome Maze.");
+				"Speak to King Bolren in the centre of the Tree Gnome Maze.");
 		talkToBolrenAtCentreOfMaze.addStep(insideGnomeVillage, talkToKingBolren);
 		talkToBolrenAtCentreOfMaze.addSubSteps(talkToKingBolren, goThroughMaze);
 
@@ -297,15 +296,20 @@ public class TreeGnomeVillage extends BasicQuestHelper
 		ItemRequirement firstOrb = new ItemRequirement("Orb of protection", ItemID.ORB_OF_PROTECTION, 1);
 		firstOrb.setTooltip("If you have lost the orb you can get another from the chest");
 		talkToKingBolrenFirstOrb = new NpcStep(this, NpcID.KING_BOLREN, new WorldPoint(2541, 3170, 0),
-			"Speak to King Bolren in the centre of the Tree Gnome Maze. You can talk to Elkoy outside the maze to travel to the centre.",
-			firstOrb);
+				"Speak to King Bolren in the centre of the Tree Gnome Maze.", firstOrb);
 		talkToKingBolrenFirstOrb.addDialogStep("I will find the warlord and bring back the orbs.");
+		elkoySkip = new NpcStep(this, NpcID.ELKOY_4968, new WorldPoint(2505, 3191, 0),
+				"Talk to Elkoy outside the maze to travel to the centre.");
+		returnFirstOrb = new ConditionalStep(this, elkoySkip,
+				"Speak to King Bolren in the centre of the Tree Gnome Maze.");
+		returnFirstOrb.addStep(insideGnomeVillage, talkToKingBolrenFirstOrb);
+		returnFirstOrb.addSubSteps(talkToKingBolrenFirstOrb, elkoySkip);
 
 		returnOrbs = new NpcStep(this, NpcID.KING_BOLREN, new WorldPoint(2541, 3170, 0),
-			"Talk to King Bolren in the centre of the Tree Gnome Maze.", orbsOfProtection);
+				"Talk to King Bolren in the centre of the Tree Gnome Maze.", orbsOfProtection);
 
 		finishQuestDialog = new NpcStep(this, NpcID.KING_BOLREN, new WorldPoint(2541, 3170, 0),
-			"Speak to King Bolren in the centre of the Tree Gnome Maze.");
+				"Speak to King Bolren in the centre of the Tree Gnome Maze.");
 		returnOrbs.addSubSteps(finishQuestDialog);
 	}
 
@@ -320,5 +324,4 @@ public class TreeGnomeVillage extends BasicQuestHelper
 	{
 		return Collections.singletonList("Khazard Warlord (level 112)");
 	}
-
 }
