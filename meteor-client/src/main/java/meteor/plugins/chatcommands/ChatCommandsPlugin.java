@@ -1731,7 +1731,7 @@ public class ChatCommandsPlugin extends Plugin
 		// Public chat on a leagues world is always league hiscores, regardless of icon
 		if (chatMessage.getType() == ChatMessageType.PUBLICCHAT || chatMessage.getType() == ChatMessageType.MODCHAT)
 		{
-			if (client.getWorldType().contains(WorldType.LEAGUE))
+			if (client.getWorldType().contains(WorldType.SEASONAL))
 			{
 				return new HiscoreLookup(player, HiscoreEndpoint.LEAGUE);
 			}
