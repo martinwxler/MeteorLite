@@ -1779,7 +1779,7 @@ public class ChatCommandsPlugin extends Plugin
 	private HiscoreEndpoint getLocalHiscoreEndpointType()
 	{
 		EnumSet<WorldType> worldType = client.getWorldType();
-		if (worldType.contains(WorldType.LEAGUE))
+		if (worldType.contains(WorldType.SEASONAL))
 		{
 			return HiscoreEndpoint.LEAGUE;
 		}
