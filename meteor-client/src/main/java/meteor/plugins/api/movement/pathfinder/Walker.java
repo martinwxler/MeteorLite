@@ -35,21 +35,30 @@ public class Walker {
     private static final int MIN_TILES_LEFT_BEFORE_RECHOOSE = 3;
     private static final int MAX_MIN_ENERGY = 50;
     private static final int MIN_ENERGY = 5;
-    public static final CollisionMap COLLISION_MAP;
+    public static final CollisionMap GLOBAL_COLLISION_MAP;
     public static final LoadingCache<WorldPoint, List<WorldPoint>> PATH_CACHE = CacheBuilder.newBuilder()
             .expireAfterWrite(5, TimeUnit.MINUTES)
             .build(new CacheLoader<>() {
                 @Override
                 public List<WorldPoint> load(@NotNull WorldPoint key) {
                     logger.debug("Loading path to {}", key);
-                    return buildPath(key);
+                    return buildPath(key, false);
+                }
+            });
+    public static final LoadingCache<WorldPoint, List<WorldPoint>> LOCAL_PATH_CACHE = CacheBuilder.newBuilder()
+            .expireAfterWrite(5, TimeUnit.MINUTES)
+            .build(new CacheLoader<>() {
+                @Override
+                public List<WorldPoint> load(@NotNull WorldPoint key) {
+                    logger.debug("Loading local path to {}", key);
+                    return buildPath(key, true);
                 }
             });
 
     static {
         CollisionMap loaded;
         try {
-            loaded = new CollisionMap(
+            loaded = new GlobalCollisionMap(
                     new GZIPInputStream(
                             new ByteArrayInputStream(
                                     Walker.class.getResourceAsStream("/collision-map").readAllBytes()
@@ -61,10 +70,10 @@ public class Walker {
             loaded = null;
         }
 
-        COLLISION_MAP = loaded;
+        GLOBAL_COLLISION_MAP = loaded;
     }
 
-    public static boolean walkTo(WorldPoint destination) {
+    public static boolean walkTo(WorldPoint destination, boolean localRegion) {
         Player local = Players.getLocal();
         if (destination.equals(local.getWorldLocation())) {
             return true;
@@ -74,11 +83,20 @@ public class Walker {
         LinkedHashMap<WorldPoint, Teleport> teleports = buildTeleportLinks(destination);
         List<WorldPoint> path;
 
-        try {
-            path = PATH_CACHE.get(destination);
-        } catch (ExecutionException e) {
-            logger.error("Failed to get cached path", e);
-            return false;
+        if (!localRegion) {
+            try {
+                path = PATH_CACHE.get(destination);
+            } catch (ExecutionException e) {
+                logger.error("Failed to get cached path", e);
+                return false;
+            }
+        } else {
+            try {
+                path = LOCAL_PATH_CACHE.get(destination);
+            } catch (ExecutionException e) {
+                logger.error("Failed to get cached path", e);
+                return false;
+            }
         }
 
         if (path == null) {
@@ -302,15 +320,17 @@ public class Walker {
     public static List<WorldPoint> calculatePath(
             List<WorldPoint> startPoints,
             WorldPoint destination,
-            Map<WorldPoint, List<Transport>> transports
+            Map<WorldPoint, List<Transport>> transports,
+            boolean local
     ) {
-        if (COLLISION_MAP == null) {
+        CollisionMap collisionMap = local ? new LocalCollisionMap() : GLOBAL_COLLISION_MAP;
+        if (collisionMap == null) {
             return Collections.emptyList();
         }
 
         logger.debug("Calculating path towards {}", destination);
 
-        return new Pathfinder(COLLISION_MAP, transports, startPoints,
+        return new Pathfinder(collisionMap, transports, startPoints,
                 destination).find();
     }
 
@@ -323,14 +343,14 @@ public class Walker {
         return out;
     }
 
-    public static List<WorldPoint> buildPath(WorldPoint destination) {
+    public static List<WorldPoint> buildPath(WorldPoint destination, boolean localRegion) {
         Player local = Players.getLocal();
         Map<WorldPoint, List<Transport>> transports = buildTransportLinks();
         LinkedHashMap<WorldPoint, Teleport> teleports = buildTeleportLinks(destination);
         List<WorldPoint> startPoints = new ArrayList<>(teleports.keySet());
         startPoints.add(local.getWorldLocation());
 
-        return calculatePath(startPoints, destination, transports);
+        return calculatePath(startPoints, destination, transports, localRegion);
     }
 
     public static LinkedHashMap<WorldPoint, Teleport> buildTeleportLinks(WorldPoint destination) {

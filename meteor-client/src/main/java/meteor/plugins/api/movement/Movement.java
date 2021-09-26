@@ -78,7 +78,7 @@ public class Movement {
     }
 
     public static boolean walkTo(WorldPoint worldPoint) {
-        return Walker.walkTo(worldPoint);
+        return Walker.walkTo(worldPoint, false);
     }
 
     public static boolean walkTo(Locatable locatable) {
@@ -102,7 +102,11 @@ public class Movement {
     }
 
     public static void drawPath(Graphics2D graphics2D, WorldPoint destination) {
-        Walker.buildPath(destination)
+        drawPath(graphics2D, destination, false);
+    }
+
+    public static void drawPath(Graphics2D graphics2D, WorldPoint destination, boolean localRegion) {
+        Walker.buildPath(destination, localRegion)
                 .forEach(tile -> tile.outline(Game.getClient(), graphics2D, Color.RED, null));
         destination.outline(Game.getClient(), graphics2D, Color.GREEN, "Destination");
     }
@@ -132,7 +136,7 @@ public class Movement {
             graphics2D.drawLine(center.getX(), center.getY(), linkCenter.getX(), linkCenter.getY());
         }
 
-        CollisionMap collisionMap = Walker.COLLISION_MAP;
+        CollisionMap collisionMap = Walker.GLOBAL_COLLISION_MAP;
         if (collisionMap == null) {
             return;
         }
@@ -209,7 +213,11 @@ public class Movement {
     }
 
     public static int calculateDistance(WorldPoint destination) {
-        List<WorldPoint> path = Walker.buildPath(destination);
+        return calculateDistance(destination, false);
+    }
+
+    public static int calculateDistance(WorldPoint destination, boolean localRegion) {
+        List<WorldPoint> path = Walker.buildPath(destination, localRegion);
 
         if (path.size() < 2) {
             return 0;
@@ -232,5 +240,30 @@ public class Movement {
             }
         }
         return distance;
+    }
+
+    /**
+     * Uses the regional collisionmap
+     */
+    public static class Local {
+        public static boolean walkTo(WorldPoint worldPoint) {
+            return Walker.walkTo(worldPoint, true);
+        }
+
+        public static boolean walkTo(Locatable locatable) {
+            return walkTo(locatable.getWorldLocation());
+        }
+
+        public static boolean walkTo(BankLocation bankLocation) {
+            return walkTo(bankLocation.getArea().toWorldPoint());
+        }
+
+        public static boolean walkTo(int x, int y) {
+            return walkTo(x, y, Game.getClient().getPlane());
+        }
+
+        public static boolean walkTo(int x, int y, int plane) {
+            return walkTo(new WorldPoint(x, y, plane));
+        }
     }
 }
