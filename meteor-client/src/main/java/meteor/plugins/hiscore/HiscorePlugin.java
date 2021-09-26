@@ -300,7 +300,7 @@ public class HiscorePlugin extends Plugin
 		{
 			EnumSet<WorldType> wTypes = client.getWorldType();
 
-			if (wTypes.contains(WorldType.DEADMAN_TOURNAMENT))
+			if (wTypes.contains(WorldType.TOURNAMENT_WORLD))
 			{
 				return HiscoreEndpoint.TOURNAMENT;
 			}
@@ -308,7 +308,7 @@ public class HiscorePlugin extends Plugin
 			{
 				return HiscoreEndpoint.DEADMAN;
 			}
-			else if (wTypes.contains(WorldType.LEAGUE))
+			else if (wTypes.contains(WorldType.SEASONAL))
 			{
 				return HiscoreEndpoint.LEAGUE;
 			}
