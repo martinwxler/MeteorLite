@@ -123,6 +123,7 @@ public class Walker {
         if (!local.isAnimating() && !path.contains(local.getWorldLocation())) {
             logger.debug("Direction changed, resetting cached path towards {}", destination);
             PATH_CACHE.refresh(destination);
+            LOCAL_PATH_CACHE.refresh(destination);
             return false;
         }
 
@@ -136,6 +137,7 @@ public class Walker {
         if (!endTile.equals(destination) && endTile.distanceTo(destination) > 5) {
             logger.debug("Destination {} was not in path, recalculating", destination);
             PATH_CACHE.refresh(destination);
+            LOCAL_PATH_CACHE.refresh(destination);
         }
 
         if (local.getWorldLocation().distanceTo(endTile) > 0) {
