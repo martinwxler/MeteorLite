@@ -4,6 +4,7 @@ import com.google.inject.Provides;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.api.items.Inventory;
+import meteor.plugins.api.magic.Regular;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
@@ -69,9 +70,9 @@ public class OneClick3t4g extends Plugin {
             return;
         }
         if(config.humidify()){
-            if(Inventory.getAll(1825,1827,1829,1823).isEmpty()){
+            if(Inventory.getFirst(1825,1827,1829,1823)==null){
                 if(Inventory.getFirst(1831)!=null){
-                    event.setMenuEntry(new MenuEntry("Cast","<col=00ff00>Humidify</col>",1,CC_OP.getId(),-1,14286958,false));
+                    event.setMenuEntry(new MenuEntry("Cast","<col=00ff00>Humidify</col>",1,CC_OP.getId(),-1, client.getWidget(WidgetInfo.SPELL_HUMIDIFY).getId(),false));
                     return;
                 }else{
                     client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "you need to bring waterskins for this disabling plugin", null);
