@@ -120,11 +120,11 @@ public interface World {
   }
 
   default boolean isTournament() {
-    return getTypes().contains(WorldType.TOURNAMENT) || getTypes().contains(WorldType.DEADMAN_TOURNAMENT);
+    return getTypes().contains(WorldType.NOSAVE_MODE) || getTypes().contains(WorldType.TOURNAMENT_WORLD);
   }
 
   default boolean isLeague() {
-    return getTypes().contains(WorldType.LEAGUE);
+    return getTypes().contains(WorldType.SEASONAL);
   }
 
   default boolean isNormal() {
