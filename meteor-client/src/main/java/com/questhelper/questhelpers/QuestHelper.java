@@ -163,7 +163,8 @@ public abstract class QuestHelper implements Module, QuestDebugRenderer
 			return true;
 		}
 
-		return getGeneralRequirements().stream().filter(Objects::nonNull).allMatch(r -> r.check(client));
+		return getGeneralRequirements().stream().filter(Objects::nonNull).allMatch(r ->
+				!r.shouldConsiderForFilter() || r.check(client));
 	}
 
 	@Override
@@ -171,18 +172,18 @@ public abstract class QuestHelper implements Module, QuestDebugRenderer
 	{
 		if (!plugin.isDeveloperMode()) return;
 		panelComponent.getChildren().add(LineComponent.builder()
-			.left("Quest")
-			.leftColor(ColorScheme.CYAN)
-			.right("Var")
-			.rightColor(ColorScheme.CYAN)
-			.build()
+				.left("Quest")
+				.leftColor(ColorScheme.CYAN)
+				.right("Var")
+				.rightColor(ColorScheme.CYAN)
+				.build()
 		);
 		panelComponent.getChildren().add(LineComponent.builder()
-			.left(getQuest().getName())
-			.leftColor(getConfig().debugColor())
-			.right(getVar() + "")
-			.rightColor(getConfig().debugColor())
-			.build()
+				.left(getQuest().getName())
+				.leftColor(getConfig().debugColor())
+				.right(getVar() + "")
+				.rightColor(getConfig().debugColor())
+				.build()
 		);
 	}
 
@@ -222,5 +223,4 @@ public abstract class QuestHelper implements Module, QuestDebugRenderer
 	}
 
 	public List<ExternalQuestResources> getExternalResources(){ return null; }
-
 }

@@ -47,7 +47,7 @@ import net.runelite.api.QuestState;
 import net.runelite.api.coords.WorldPoint;
 
 @QuestDescriptor(
-	quest = QuestHelperQuest.CLIENT_OF_KOUREND
+		quest = QuestHelperQuest.CLIENT_OF_KOUREND
 )
 public class ClientOfKourend extends BasicQuestHelper
 {
@@ -98,6 +98,8 @@ public class ClientOfKourend extends BasicQuestHelper
 	public void setupItemRequirements()
 	{
 		feather = new ItemRequirement("Feather", ItemID.FEATHER);
+		feather.addAlternates(ItemID.BLUE_FEATHER, ItemID.ORANGE_FEATHER, ItemID.RED_FEATHER, ItemID.YELLOW_FEATHER,
+				ItemID.EAGLE_FEATHER, ItemID.STRIPY_FEATHER);
 		feather.setHighlightInInventory(true);
 		enchantedScroll = new ItemRequirement("Enchanted scroll", ItemID.ENCHANTED_SCROLL);
 		enchantedScroll.setHighlightInInventory(true);
@@ -118,7 +120,7 @@ public class ClientOfKourend extends BasicQuestHelper
 
 	public void setupSteps()
 	{
-		talkToVeos = new NpcStep(this, NpcID.VEOS, new WorldPoint(1824, 3690, 0), "Talk to Veos on the Port Piscarilius docks. You can travel to him by talking to Veos in Port Sarim.");
+		talkToVeos = new NpcStep(this, NpcID.VEOS_10727, new WorldPoint(1824, 3690, 0), "Talk to Veos on the Port Piscarilius docks. You can travel to him by talking to Veos in Port Sarim.");
 		talkToVeos.addDialogStep("Sounds interesting! How can I help?");
 		talkToVeos.addDialogStep("Can you take me to Great Kourend?");
 		talkToVeos.addDialogStep("Have you got any quests for me?");
@@ -143,12 +145,12 @@ public class ClientOfKourend extends BasicQuestHelper
 		talkToRegath.addDialogStep("Can I ask you about Arceuus?");
 		talkToRegath.addDialogStep("Why should I gain favour with Arceuus?");
 
-		returnToVeos = new NpcStep(this, NpcID.VEOS, new WorldPoint(1824, 3690, 0), "Return to Veos on Piscarilius docks.");
+		returnToVeos = new NpcStep(this, NpcID.VEOS_10727, new WorldPoint(1824, 3690, 0), "Return to Veos on Piscarilius docks.");
 		returnToVeos.addDialogStep("Let's talk about your client...");
 		returnToVeos.addDialogStep("I've lost something you've given me.");
 		goToAltar = new DetailedQuestStep(this, new WorldPoint(1712, 3883, 0), "Activate the mysterious orb at the Dark Altar. You can either run there through Arceuus, teleport to Wintertodt with the Games Necklace and run south, or teleport straight there on the Arceuus spellbook.", mysteriousOrb);
 
-		finishQuest = new NpcStep(this, NpcID.VEOS, new WorldPoint(1824, 3690, 0), "Return to Veos on Piscarilius docks.");
+		finishQuest = new NpcStep(this, NpcID.VEOS_10727, new WorldPoint(1824, 3690, 0), "Return to Veos on Piscarilius docks.");
 		finishQuest.addDialogStep("Let's talk about your client...");
 	}
 
@@ -159,7 +161,7 @@ public class ClientOfKourend extends BasicQuestHelper
 		reqs.add(feather);
 		return reqs;
 	}
-	
+
 	@Override
 	public List<Requirement> getGeneralRequirements()
 	{

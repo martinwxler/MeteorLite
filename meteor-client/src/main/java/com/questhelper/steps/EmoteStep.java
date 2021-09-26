@@ -49,6 +49,12 @@ public class EmoteStep extends DetailedQuestStep
 		this.emote = emote;
 	}
 
+	public EmoteStep(QuestHelper questHelper, QuestEmote emote, String text, Requirement... requirements)
+	{
+		super(questHelper, text, requirements);
+		this.emote = emote;
+	}
+
 	@Override
 	public void makeWidgetOverlayHint(Graphics2D graphics, QuestHelperPlugin plugin)
 	{
@@ -76,8 +82,8 @@ public class EmoteStep extends DetailedQuestStep
 			{
 				finalEmoteWidget = emoteWidget;
 				graphics.setColor(new Color(questHelper.getConfig().targetOverlayColor().getRed(),
-					questHelper.getConfig().targetOverlayColor().getGreen(),
-					questHelper.getConfig().targetOverlayColor().getBlue(), 65));
+						questHelper.getConfig().targetOverlayColor().getGreen(),
+						questHelper.getConfig().targetOverlayColor().getBlue(), 65));
 				graphics.fill(emoteWidget.getBounds());
 				graphics.setColor(questHelper.getConfig().targetOverlayColor());
 				graphics.draw(emoteWidget.getBounds());
@@ -100,13 +106,13 @@ public class EmoteStep extends DetailedQuestStep
 		}
 
 		final int newScroll = Math.max(0, Math.min(parent.getScrollHeight(),
-			(widget.getRelativeY() + widget.getHeight() / 2) - parent.getHeight() / 2));
+				(widget.getRelativeY() + widget.getHeight() / 2) - parent.getHeight() / 2));
 
 		client.runScript(
-			ScriptID.UPDATE_SCROLLBAR,
-			WidgetInfo.EMOTE_SCROLLBAR.getPackedId(),
-			WidgetInfo.EMOTE_CONTAINER.getPackedId(),
-			newScroll
+				ScriptID.UPDATE_SCROLLBAR,
+				WidgetInfo.EMOTE_SCROLLBAR.getId(),
+				WidgetInfo.EMOTE_CONTAINER.getId(),
+				newScroll
 		);
 	}
 
