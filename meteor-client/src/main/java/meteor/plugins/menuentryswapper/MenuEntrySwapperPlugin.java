@@ -48,7 +48,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -128,7 +127,7 @@ public class MenuEntrySwapperPlugin extends Plugin implements KeyListener {
   private final ArrayList<MenuEntrySwapperPlugin.EntryFromConfig> removeOptions = new ArrayList();
   private final ArrayList<MenuEntrySwapperPlugin.EntryFromConfig> bankCustomSwaps = new ArrayList();
   private final ArrayList<MenuEntrySwapperPlugin.EntryFromConfig> shiftBankCustomSwaps = new ArrayList();
-  private boolean holdingShift = false;
+  private boolean holdingShift;
 
   private MenuEntry[] menuEntries;
   List<String> targetList;
@@ -238,8 +237,7 @@ public class MenuEntrySwapperPlugin extends Plugin implements KeyListener {
 
     setupSwaps();
 
-    if (client.getGameState() != GameState.LOGGED_IN)
-    {
+    if (client.getGameState() != GameState.LOGGED_IN) {
       return;
     }
     setCastOptions(true);
@@ -265,8 +263,7 @@ public class MenuEntrySwapperPlugin extends Plugin implements KeyListener {
 
     swaps.clear();
 
-    if (client.getGameState() == GameState.LOGGED_IN)
-    {
+    if (client.getGameState() == GameState.LOGGED_IN) {
       resetCastOptions();
     }
 
@@ -564,82 +561,49 @@ public class MenuEntrySwapperPlugin extends Plugin implements KeyListener {
         .startsWith(ITEM_KEY_PREFIX)) {
       clientThread.invoke(this::resetItemCompositionCache);
     }
-    if (!"menuentryswapper".equals(event.getGroup()))
-    {
+    if (!"menuentryswapper".equals(event.getGroup())) {
       return;
     }
 
     loadSwaps();
 
-    switch (event.getKey())
-    {
+    switch (event.getKey()) {
       case "hideCastToB":
       case "hideCastIgnoredToB":
         return;
       case "hideCastCoX":
       case "hideCastIgnoredCoX":
-        if (config.hideCastCoX())
-        {
+        if (config.hideCastCoX()) {
           setCastOptions(true);
-        }
-        else
-        {
+        } else {
           resetCastOptions();
         }
     }
-    if (event.getGroup().equals("menuentryswapper")) {
-      String var2 = event.getKey();
-      byte var3 = -1;
-      switch (var2.hashCode()) {
-        case -1885351337:
-          if (var2.equals("removeOptionsStr")) {
-            var3 = 2;
-          }
+    if (event.getGroup().equals(MenuEntrySwapperConfig.GROUP))
+      switch (event.getKey()) {
+        case "customSwapsStr":
+          this.customSwaps.clear();
+          parseConfigToList(this.config.customSwapsString(), this.customSwaps);
           break;
-        case -637339480:
-          if (var2.equals("bankShiftCustomSwapsStr")) {
-            var3 = 4;
-          }
+        case "shiftCustomSwapsStr":
+          this.shiftCustomSwaps.clear();
+          parseConfigToList(this.config.shiftCustomSwapsString(), this.shiftCustomSwaps);
           break;
-        case -179783548:
-          if (var2.equals("shiftCustomSwapsStr")) {
-            var3 = 1;
-          }
+        case "removeOptionsStr":
+          this.removeOptions.clear();
+          parseConfigToList(this.config.removeOptionsString(), this.removeOptions);
           break;
-        case 1157466978:
-          if (var2.equals("customSwapsStr")) {
-            var3 = 0;
-          }
+        case "bankCustomSwapsStr":
+          this.bankCustomSwaps.clear();
+          parseConfigToList(this.config.bankCustomSwapsString(), this.bankCustomSwaps);
           break;
-        case 1423754430:
-          if (var2.equals("bankCustomSwapsStr")) {
-            var3 = 3;
-          }
+        case "bankShiftCustomSwapsStr":
+          this.shiftBankCustomSwaps.clear();
+          parseConfigToList(this.config.bankShiftCustomSwapsString(), this.shiftBankCustomSwaps);
+          break;
       }
-
-      switch (var3) {
-        case 0:
-          customSwaps.clear();
-          parseConfigToList( config.customSwapsString(),  customSwaps);
-          break;
-        case 1:
-          shiftCustomSwaps.clear();
-          parseConfigToList( config.shiftCustomSwapsString(),  shiftCustomSwaps);
-          break;
-        case 2:
-          removeOptions.clear();
-          parseConfigToList( config.removeOptionsString(),  removeOptions);
-          break;
-        case 3:
-          bankCustomSwaps.clear();
-          parseConfigToList( config.bankCustomSwapsString(),  bankCustomSwaps);
-          break;
-        case 4:
-          shiftBankCustomSwaps.clear();
-          parseConfigToList( config.bankShiftCustomSwapsString(), shiftBankCustomSwaps);
-      }
-    }
   }
+
 
   private void resetItemCompositionCache() {
     itemManager.invalidateItemCompositionCache();
@@ -802,18 +766,16 @@ public class MenuEntrySwapperPlugin extends Plugin implements KeyListener {
         MenuEntry entry = menuEntries[i];
         String target = Text.removeTags(entry.getTarget()).toLowerCase();
         String option = Text.removeTags(entry.getOption()).toLowerCase();
-        MenuEntrySwapperPlugin.EntryFromConfig entryFromConfig = new MenuEntrySwapperPlugin.EntryFromConfig(
-            option, target);
-        int index;
+        EntryFromConfig entryFromConfig = new EntryFromConfig(option, target);
         if (holdingShift && config.shiftCustomSwapsToggle()) {
-          index = indexOfEntry(shiftBankCustomSwaps, entryFromConfig, menuEntries);
+          int index = indexOfEntry(shiftBankCustomSwaps, entryFromConfig, menuEntries);
           if (index > priority) {
             entryIndex = i;
             priority = index;
           }
         }
         else if (config.customSwapsToggle()) {
-          index = indexOfEntry(bankCustomSwaps, entryFromConfig, menuEntries);
+          int index = indexOfEntry(bankCustomSwaps, entryFromConfig, menuEntries);
           if (index > priority) {
             entryIndex = i;
             priority = index;
@@ -952,7 +914,7 @@ public class MenuEntrySwapperPlugin extends Plugin implements KeyListener {
   public void onClientTick(ClientTick clientTick) {
     // The menu is not rebuilt when it is open, so don't swap or else it will
     // repeatedly swap entries
-    if (client.getGameState() == GameState.LOGGED_IN && !client.isMenuOpen() && isBankInterfaceClosed()) {
+    if (client.getGameState() == GameState.LOGGED_IN && !client.isMenuOpen() && isBankInterfaceClosed()){
       MenuEntry[] menuEntries = client.getMenuEntries();
       if (config.removeOptionsToggle()) {
         menuEntries = filterEntries(menuEntries);
@@ -967,7 +929,7 @@ public class MenuEntrySwapperPlugin extends Plugin implements KeyListener {
         MenuEntry entry = menuEntries[i];
         String target = Text.standardize(Text.removeTags(entry.getTarget()));
         String option = Text.standardize(Text.removeTags(entry.getOption()));
-        MenuEntrySwapperPlugin.EntryFromConfig entryFromConfig = new MenuEntrySwapperPlugin.EntryFromConfig(
+        EntryFromConfig entryFromConfig = new EntryFromConfig(
             option, target);
         if (holdingShift && config.shiftCustomSwapsToggle()) {
           index = indexOfEntry(shiftCustomSwaps, entryFromConfig, menuEntries);
@@ -989,40 +951,32 @@ public class MenuEntrySwapperPlugin extends Plugin implements KeyListener {
         MenuEntry target = menuEntries[entryIndex];
         int targetId = target.getIdentifier();
         int targetType = target.getType();
-        MenuEntry[] var15 = menuEntries;
-        int var17 = menuEntries.length;
-
-        for (index = 0; index < var17; ++index) {
-          MenuEntry menuEntry = var15[index];
-          if (menuEntry.getType() < target.getType()) {
+        for (MenuEntry menuEntry : menuEntries) {
+          if (menuEntry.getType() < target.getType())
             menuEntry.setType(menuEntry.getType() + 2000);
-          }
         }
-
-        if (targetId >= 6 && targetId <= 9 && targetType == MenuAction.CC_OP_LOW_PRIORITY.getId()) {
+        if (targetId >= 6 && targetId <= 9 && targetType == MenuAction.CC_OP_LOW_PRIORITY.getId())
           target.setType(MenuAction.CC_OP.getId());
-        }
-
         MenuEntry first = menuEntries[menuEntries.length - 1];
         menuEntries[menuEntries.length - 1] = menuEntries[entryIndex];
         menuEntries[entryIndex] = first;
-        client.setMenuEntries(menuEntries);
-      }
+        this.client.setMenuEntries(menuEntries);
+        }
 
-      // Build option map for quick lookup in findIndex
-      int idx = 0;
-      optionIndexes.clear();
-      for (MenuEntry entry : menuEntries) {
-        String option = Text.removeTags(entry.getOption()).toLowerCase();
-        optionIndexes.put(option, idx++);
-      }
+        // Build option map for quick lookup in findIndex
+        int idx = 0;
+        optionIndexes.clear();
+        for (MenuEntry entry : menuEntries) {
+          String option = Text.removeTags(entry.getOption()).toLowerCase();
+          optionIndexes.put(option, idx++);
+        }
 
-      // Perform swaps
-      idx = 0;
-      for (MenuEntry entry : menuEntries) {
-        swapMenuEntry(idx++, entry);
+        // Perform swaps
+        idx = 0;
+        for (MenuEntry entry : menuEntries) {
+          swapMenuEntry(idx++, entry);
+        }
       }
-    }
   }
 
   @Subscribe
@@ -1404,10 +1358,7 @@ public class MenuEntrySwapperPlugin extends Plugin implements KeyListener {
     }
 
     public String toString() {
-      String var10000 = getOption();
-      return "MenuEntrySwapperPlugin.EntryFromConfig(option=" + var10000 + ", target=" + getTarget()
-          + ", topOption=" +  getTopOption() + ", topTarget=" +  getTopTarget()
-          + ")";
+      return "MenuEntrySwapperPlugin.EntryFromConfig(option=" + getOption() + ", target=" + getTarget() + ", topOption=" + getTopOption() + ", topTarget=" + getTopTarget() + ")";
     }
 
     public EntryFromConfig(String option, String target, String topOption, String topTarget) {
@@ -1418,13 +1369,10 @@ public class MenuEntrySwapperPlugin extends Plugin implements KeyListener {
     }
   }
 
-  private void parseConfigToList(String value,
-      List<MenuEntrySwapperPlugin.EntryFromConfig> set) {
+  private void parseConfigToList(String value, List<MenuEntrySwapperPlugin.EntryFromConfig> set) {
     List<String> strList = SPLITTER.splitToList(value);
-    Iterator var4 = strList.iterator();
 
-    while (var4.hasNext()) {
-      String str = (String) var4.next();
+    for (String str : strList) {
       String[] stringList = str.split(",");
       if (stringList.length > 1) {
         String option = stringList[0].toLowerCase().trim();
@@ -1436,7 +1384,7 @@ public class MenuEntrySwapperPlugin extends Plugin implements KeyListener {
           topTarget = stringList[3].toLowerCase().trim();
         }
 
-        MenuEntrySwapperPlugin.EntryFromConfig entryFromConfig = new MenuEntrySwapperPlugin.EntryFromConfig(
+        EntryFromConfig entryFromConfig = new EntryFromConfig(
             option, target, topOption, topTarget);
         set.add(entryFromConfig);
       }
@@ -1462,49 +1410,34 @@ public class MenuEntrySwapperPlugin extends Plugin implements KeyListener {
     String option = Text.removeTags(topEntry.getOption()).toLowerCase();
 
     for (int i = 0; i < configEntries.size(); ++i) {
-      MenuEntrySwapperPlugin.EntryFromConfig _configEntry = configEntries
-          .get(i);
+      EntryFromConfig _configEntry = configEntries.get(i);
       if ((_configEntry.option.equals(entryFromConfig.option) || WildcardMatcher
           .matches(_configEntry.option, entryFromConfig.option)) && (
           _configEntry.target.equals(entryFromConfig.target) || WildcardMatcher
               .matches(_configEntry.target, entryFromConfig.target))) {
         boolean a = _configEntry.topOption == null;
         boolean b = _configEntry.topTarget == null;
-        Supplier<Boolean> c = () -> {
-          return _configEntry.topOption.equals(option) || WildcardMatcher
-              .matches(_configEntry.topOption, option);
-        };
-        Supplier<Boolean> d = () -> {
-          return _configEntry.topTarget.equals(target) || WildcardMatcher
-              .matches(_configEntry.topTarget, target);
-        };
-        if (a || b || c.get() && d.get()) {
+        Supplier<Boolean> c = () -> (_configEntry.topOption.equals(option) || WildcardMatcher.matches(_configEntry.topOption, option));
+        Supplier<Boolean> d = () -> (_configEntry.topTarget.equals(target) || WildcardMatcher.matches(_configEntry.topTarget, target));
+        if (a || b || (c.get() && d.get()))
           return i;
-        }
       }
     }
-
     return -1;
   }
 
   private MenuEntry[] filterEntries(MenuEntry[] menuEntries) {
-    ArrayList<MenuEntry> filtered = new ArrayList();
-    MenuEntry[] var3 = menuEntries;
-    int var4 = menuEntries.length;
-
-    for (int var5 = 0; var5 < var4; ++var5) {
-      MenuEntry entry = var3[var5];
+    ArrayList<MenuEntry> filtered = new ArrayList<>();
+    for (MenuEntry entry : menuEntries) {
       String target = Text.standardize(Text.removeTags(entry.getTarget()));
       String option = Text.standardize(Text.removeTags(entry.getOption()));
-      MenuEntrySwapperPlugin.EntryFromConfig entryFromConfig = new MenuEntrySwapperPlugin.EntryFromConfig(
-          option, target);
-      if (indexOfEntry(removeOptions, entryFromConfig, menuEntries) == -1) {
+     EntryFromConfig entryFromConfig = new EntryFromConfig(option, target);
+      if (indexOfEntry(this.removeOptions, entryFromConfig, menuEntries) == -1)
         filtered.add(entry);
-      }
     }
-
     return filtered.toArray(new MenuEntry[0]);
   }
+
 
   @Subscribe
   public void onFocusChanged(FocusChanged event) {
@@ -1519,8 +1452,8 @@ public class MenuEntrySwapperPlugin extends Plugin implements KeyListener {
     Widget widgetDepositBox = client.getWidget(12582912);
     Widget coxPublicChest = client.getWidget(550, 1);
     Widget coxPrivateChest = client.getWidget(271, 1);
-    return (widgetBankTitleBar == null || widgetBankTitleBar.isHidden()) && (
-        widgetDepositBox == null || widgetDepositBox.isHidden()) && (coxPublicChest == null
+    return (widgetBankTitleBar == null || widgetBankTitleBar.isHidden()) &&
+        (widgetDepositBox == null || widgetDepositBox.isHidden()) && (coxPublicChest == null
         || coxPublicChest.isHidden()) && (coxPrivateChest == null || coxPrivateChest.isHidden());
   }
 
