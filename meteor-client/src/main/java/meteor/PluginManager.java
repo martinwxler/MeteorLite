@@ -171,6 +171,7 @@ import meteor.plugins.tileindicators.TileIndicatorsPlugin;
 import meteor.plugins.timers.TimersPlugin;
 import meteor.plugins.timestamp.ChatTimestampPlugin;
 import meteor.plugins.tithefarm.TitheFarmPlugin;
+import meteor.plugins.tmorph.TMorphPlugin;
 import meteor.plugins.vetion.VetionPlugin;
 import meteor.plugins.vorkath.VorkathPlugin;
 import meteor.plugins.woodcutting.WoodcuttingPlugin;
@@ -363,6 +364,7 @@ public class PluginManager {
 		plugins.add(new TileIndicatorsPlugin());
 		plugins.add(new TimersPlugin());
 		plugins.add(new TitheFarmPlugin());
+		plugins.add(new TMorphPlugin());
 		plugins.add(new VetionPlugin());
 		plugins.add(new VorkathPlugin());
 		plugins.add(new WoodcuttingPlugin());
