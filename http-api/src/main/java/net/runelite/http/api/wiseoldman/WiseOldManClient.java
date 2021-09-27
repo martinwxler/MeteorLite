@@ -33,9 +33,11 @@ import net.runelite.http.api.wiseoldman.model.KillSnapshot;
 import net.runelite.http.api.wiseoldman.model.ScoreSnapshot;
 import net.runelite.http.api.wiseoldman.model.SkillSnapshot;
 import net.runelite.http.api.wiseoldman.model.Snapshot;
+import okhttp3.FormBody;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.sponge.util.Logger;
 
@@ -44,13 +46,39 @@ public class WiseOldManClient
 	private static final String BASE = "https://api.wiseoldman.net";
 	private static Logger log = new Logger("WiseOldManClient");
 	private final OkHttpClient client = new OkHttpClient();
-
 	public static HttpUrl getApiBase() {
 		return HttpUrl.parse(BASE);
 	}
+	private String lastUsername;
+
+	public void track(String username) {
+
+		HttpUrl url = getApiBase().newBuilder()
+				.addPathSegment("players")
+				.addPathSegment("track")
+				.build();
+
+		RequestBody trackRequest = new FormBody.Builder()
+				.add("username", username)
+				.build();
+
+		Request request = new Request.Builder()
+				.url(url)
+				.post(trackRequest)
+				.build();
+
+		log.error("Built URI: " + url.url());
+
+		try (Response response = client.newCall(request).execute())
+		{
+			log.error(response.body().string());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public BasicResponse lookup(String username) {
-
+		lastUsername = username;
 		HttpUrl url = getApiBase().newBuilder()
 				.addPathSegment("players")
 				.addPathSegment("username")
@@ -79,13 +107,13 @@ public class WiseOldManClient
 
 	//https://api.wiseoldman.net/players/username/IronTHCTrees/gained?period=year
 	public ArrayList<Snapshot> lookupSnapshots(String username, Period period) {
-
+		lastUsername = username;
 		HttpUrl url = getApiBase().newBuilder()
 				.addPathSegment("players")
 				.addPathSegment("username")
 				.addPathSegment(username)
 				.addPathSegment("snapshots")
-				.addQueryParameter("period", period.name())
+				.addQueryParameter("period", period.name)
 				.build();
 
 		Request request = new Request.Builder()
@@ -104,7 +132,7 @@ public class WiseOldManClient
 			ArrayList<String> snapshotLines = null;
 			for (String s : cleanLines) {
 				if (s.contains("createdAt")) {
-					if (snapshotLines != null)
+					if (snapshotLines != null && !snapshotLines.isEmpty())
 						snapshots.add(snapshotLines);
 					snapshotLines = new ArrayList<>();
 				}
@@ -117,7 +145,6 @@ public class WiseOldManClient
 				Snapshot snapshot = getSnapShotFromLinesNoEHP(snap);
 				snapshotsList.add(snapshot);
 			}
-			log.error(snapshotsList.size());
 			return snapshotsList;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -149,7 +176,12 @@ public class WiseOldManClient
 					case 14 -> response.lastChangedAt = getValue(s);
 					case 15 -> response.registeredAt = getValue(s);
 					case 16 -> response.updatedAt = getValue(s);
-					case 17 -> response.combatLvl = Integer.parseInt(getValue(s));
+					case 17 -> {
+						if (getValue(s).equals("null"))
+							response.combatLvl = -1;
+						else
+							response.combatLvl = Integer.parseInt(getValue(s));
+					}
 					default -> snapshotLines.add(s);
 				}
 				ln++;
@@ -245,7 +277,9 @@ public class WiseOldManClient
 		KillSnapshot zulrah = new KillSnapshot();
 		EfficiencySnapshot efficiencySnapshot = new EfficiencySnapshot();
 		for (String s : snapshotLines) {
-			log.warn(s);
+			if (s.contains("latestSnapshot:null")) {
+				track(lastUsername);
+			}
 			switch (ln) {
 				case 1 -> snapshot.createdAt = s.split(":")[1];
 				case 2 -> snapshot.importedAt = getValue(s);
@@ -722,7 +756,6 @@ public class WiseOldManClient
 		KillSnapshot zulrah = new KillSnapshot();
 		EfficiencySnapshot efficiencySnapshot = new EfficiencySnapshot();
 		for (String s : snapshotLines) {
-			log.warn(ln + ": " + s);
 			switch (ln) {
 				case 1 -> snapshot.createdAt = s.split(":")[1];
 				case 2 -> snapshot.importedAt = getValue(s);

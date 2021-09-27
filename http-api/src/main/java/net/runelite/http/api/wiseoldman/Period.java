@@ -7,7 +7,7 @@ public enum Period {
   MONTH("month"),
   YEAR("year");
 
-  private final String name;
+  public final String name;
 
   Period(String s) {
     this.name = s;

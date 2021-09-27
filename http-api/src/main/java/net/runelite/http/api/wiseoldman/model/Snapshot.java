@@ -90,16 +90,54 @@ public class Snapshot {
   public EfficiencySnapshot efficiency;
 
   public SkillSnapshot getSnapshotFromSkill(Skill skill) {
-    if (skill == Skill.AGILITY)
-      return agility;
-    else if (skill == Skill.ATTACK)
+    if (skill == Skill.ATTACK)
       return attack;
-    else if (skill == Skill.RUNECRAFT)
-      return runecrafting;
-    else if (skill == Skill.FISHING)
-      return fishing;
+    else if (skill == Skill.DEFENCE)
+      return defence;
+    else if (skill == Skill.STRENGTH)
+      return strength;
+    else if (skill == Skill.HITPOINTS)
+      return hitpoints;
+    else if (skill == Skill.RANGED)
+      return ranged;
+    else if (skill == Skill.PRAYER)
+      return prayer;
+    else if (skill == Skill.MAGIC)
+      return magic;
+    else if (skill == Skill.COOKING)
+      return cooking;
     else if (skill == Skill.WOODCUTTING)
       return woodcutting;
+    else if (skill == Skill.FLETCHING)
+      return fletching;
+    else if (skill == Skill.FISHING)
+      return fishing;
+    else if (skill == Skill.FIREMAKING)
+      return firemaking;
+    else if (skill == Skill.CRAFTING)
+      return crafting;
+    else if (skill == Skill.SMITHING)
+      return smithing;
+    else if (skill == Skill.MINING)
+      return mining;
+    else if (skill == Skill.HERBLORE)
+      return herblore;
+    else if (skill == Skill.AGILITY)
+      return agility;
+    else if (skill == Skill.THIEVING)
+      return thieving;
+    else if (skill == Skill.SLAYER)
+      return slayer;
+    else if (skill == Skill.FARMING)
+      return farming;
+    else if (skill == Skill.RUNECRAFT)
+      return runecrafting;
+    else if (skill == Skill.HUNTER)
+      return hunter;
+    else if (skill == Skill.CONSTRUCTION)
+      return construction;
+    else if (skill == Skill.OVERALL)
+      return overall;
     return null;
   }
 }

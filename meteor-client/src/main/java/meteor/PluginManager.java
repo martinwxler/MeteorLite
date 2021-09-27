@@ -178,6 +178,7 @@ import meteor.plugins.worldmapwalker.WorldMapWalkerPlugin;
 import meteor.plugins.xpdrop.XpDropPlugin;
 import meteor.plugins.xpglobes.XpGlobesPlugin;
 import meteor.plugins.xptracker.XpTrackerPlugin;
+import meteor.plugins.xpupdater.XpUpdaterPlugin;
 import meteor.plugins.zulrah.ZulrahPlugin;
 import meteor.ui.components.Category;
 import meteor.ui.controllers.PluginListUI;
@@ -369,6 +370,7 @@ public class PluginManager {
 		plugins.add(new XpDropPlugin());
 		plugins.add(new XpTrackerPlugin());
 		plugins.add(new XpGlobesPlugin());
+		plugins.add(new XpUpdaterPlugin());
 		plugins.add(new ZulrahPlugin());
   }
 
