@@ -3,6 +3,9 @@ package meteor.ui.controllers;
 import com.google.common.base.Splitter;
 import com.jfoenix.controls.*;
 import com.sun.javafx.collections.ObservableListWrapper;
+import de.jensd.fx.glyphs.GlyphIcons;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -71,6 +74,10 @@ public class PluginConfigUI {
 
 	private PluginToggleButton toggleButton;
 
+	private JFXButton backButton = new JFXButton("Back");
+
+	private Map<String, Boolean> openedCache = new HashMap<>();
+
 	@FXML
 	public void initialize() {
 		MeteorLiteClientLauncher.injector.injectMembers(this);
@@ -81,13 +88,20 @@ public class PluginConfigUI {
 		if (plugin.isToggleable()) {
 			toggleButton = new PluginToggleButton(plugin);
 			toggleButton.setSelected(plugin.enabled);
-			AnchorPane.setTopAnchor(toggleButton, 2.0);
+			AnchorPane.setTopAnchor(toggleButton, 15.0);
 			AnchorPane.setBottomAnchor(toggleButton, 2.0);
 			AnchorPane.setRightAnchor(toggleButton, 8.0);
 			toggleButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> plugin.toggle());
 			titlePanel.getChildren().add(toggleButton);
 		}
-
+		backButton.setStyle("-fx-background-color: #252525; -fx-text-fill: CYAN; -jfx-button-type: RAISED;");
+		FontAwesomeIconView graphic = new FontAwesomeIconView(FontAwesomeIcon.ARROW_LEFT);
+		graphic.setFill(Paint.valueOf("CYAN"));
+		backButton.setGraphic(graphic);
+		backButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> meteorUI.showPlugins());
+		AnchorPane.setLeftAnchor(backButton, 8.0);
+		AnchorPane.setTopAnchor(backButton, 8.0);
+		titlePanel.getChildren().add(backButton);
 		rebuild();
 	}
 
@@ -109,7 +123,13 @@ public class PluginConfigUI {
 			ConfigSection section = csd.getSection();
 			SectionPane sectionBox = createSection(section);
 			configList.getChildren().add(sectionBox.getRootPane());
-			sectionBox.getRootPane().setExpanded(!section.closedByDefault());
+			if (openedCache.get(section.keyName()) != null)
+				sectionBox.getRootPane().setExpanded(openedCache.get(section.keyName()));
+			else
+				sectionBox.getRootPane().setExpanded(!section.closedByDefault());
+			sectionBox.getRootPane().expandedProperty().addListener((obs, wasExpanded, isNowExpanded) -> {
+				openedCache.put(section.keyName(), isNowExpanded);
+			});
 		}
 	}
 
@@ -633,11 +653,6 @@ public class PluginConfigUI {
 		}
 
 		return true;
-	}
-
-	@FXML
-	protected void closeConfig(MouseEvent event) throws IOException {
-		meteorUI.showPlugins();
 	}
 
 	@Subscribe
