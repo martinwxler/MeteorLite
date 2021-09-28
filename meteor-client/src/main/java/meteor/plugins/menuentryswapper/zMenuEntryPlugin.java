@@ -27,6 +27,7 @@ import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.FocusChanged;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -46,6 +47,7 @@ public class zMenuEntryPlugin implements KeyListener {
 
   @Inject
   private KeyManager keyManager;
+  private boolean hasLoaded;
 
   @Inject
   public zMenuEntryPlugin(MenuEntrySwapperConfig config) {
@@ -150,25 +152,33 @@ public class zMenuEntryPlugin implements KeyListener {
     holdingShift = false;
     holdingKeybind = false;
     keyManager.registerKeyListener(this, getClass());
-    customSwaps.clear();
-    parseConfigToList(config.customSwapsString(), customSwaps);
-    shiftCustomSwaps.clear();
-    parseConfigToList(config.shiftCustomSwapsString(), shiftCustomSwaps);
-    removeOptions.clear();
-    parseConfigToList(config.removeOptionsString(), removeOptions);
-    bankCustomSwaps.clear();
-    parseConfigToList(config.bankCustomSwapsString(), bankCustomSwaps);
-    shiftBankCustomSwaps.clear();
-    parseConfigToList(config.bankShiftCustomSwapsString(), shiftBankCustomSwaps);
-    parseConfigToList(config.keyCustomSwapsString(), keyCustomSwaps);
-    removeOptions.clear();
-    parseConfigToList(config.bankKeyCustomSwapsString(), keyBankCustomSwaps);
   }
 
   public void shutdown() {
     holdingShift = false;
     holdingKeybind = false;
     keyManager.unregisterKeyListener(this);
+    hasLoaded = false;
+  }
+
+  @Subscribe
+  public void onGameStateChanged(GameStateChanged event) {
+    if (!hasLoaded){
+      customSwaps.clear();
+      parseConfigToList(config.customSwapsString(), customSwaps);
+      shiftCustomSwaps.clear();
+      parseConfigToList(config.shiftCustomSwapsString(), shiftCustomSwaps);
+      removeOptions.clear();
+      parseConfigToList(config.removeOptionsString(), removeOptions);
+      bankCustomSwaps.clear();
+      parseConfigToList(config.bankCustomSwapsString(), bankCustomSwaps);
+      shiftBankCustomSwaps.clear();
+      parseConfigToList(config.bankShiftCustomSwapsString(), shiftBankCustomSwaps);
+      parseConfigToList(config.keyCustomSwapsString(), keyCustomSwaps);
+      removeOptions.clear();
+      parseConfigToList(config.bankKeyCustomSwapsString(), keyBankCustomSwaps);
+      hasLoaded = true;
+    }
   }
 
   @Subscribe
