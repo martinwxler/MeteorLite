@@ -24,7 +24,8 @@ public class MeteorLiteClientLauncher extends Application implements Module {
   public static final File PROFILES_DIR = new File(METEOR_DIR, "profiles");
   public static final File SCREENSHOT_DIR = new File(METEOR_DIR, "screenshots");
   public static final File VERBOSE_LOG = new File(new File(METEOR_DIR, "logs"), "log.txt");
-  public static final File ERROR_LOG = new File(new File(METEOR_DIR, "logs"), "error.txt");
+  public static final File LOGS_DIR = new File(METEOR_DIR, "logs");
+  public static final File ERROR_LOG = new File(LOGS_DIR, "error.txt");
   public static final File DEFAULT_SESSION_FILE = new File(METEOR_DIR, "session");
   public static final File DEFAULT_CONFIG_FILE = new File(METEOR_DIR, "settings.properties");
   public static PrintStream consoleStream = null;
@@ -39,6 +40,7 @@ public class MeteorLiteClientLauncher extends Application implements Module {
   public void start(Stage primaryStage) throws IOException, InterruptedException, InvocationTargetException {
     try {
       consoleStream = System.out;
+      LOGS_DIR.mkdirs();
       errorFileStream = new LoggerStream(new FileOutputStream(ERROR_LOG));
       verboseFileStream = new LoggerStream(new FileOutputStream(VERBOSE_LOG));
       errorFileStream.error = true;
