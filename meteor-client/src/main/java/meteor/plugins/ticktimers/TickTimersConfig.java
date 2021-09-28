@@ -69,7 +69,7 @@ public interface TickTimersConfig extends Config
 		keyName = "changeTickColor",
 		name = "Change Tick Color",
 		description = "If this is enabled, it will change the tick color to white" +
-			"<br> at 1 tick remaining, signaling you to swap.",
+			"at 1 tick remaining, signaling you to swap.",
 		section = mainConfig
 	)
 	default boolean changeTickColor()

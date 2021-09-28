@@ -792,7 +792,7 @@ public interface TheatreConfig extends Config
 	@ConfigItem(
 			name = "Line of Sight",
 			keyName = "xarpusLineOfSight",
-			description = "Displays Xarpus's Line of Sight on P3<br>Melee Tiles: Displays only the melee tiles that Xarpus can see<br>Square: Displays the whole region that Xarpus can see",
+			description = "Displays Xarpus's Line of Sight on P3" + "Melee Tiles: Displays only the melee tiles that Xarpus can see" + "Square: Displays the whole region that Xarpus can see",
 			position = 5,
 			section = xarpusSection
 	)

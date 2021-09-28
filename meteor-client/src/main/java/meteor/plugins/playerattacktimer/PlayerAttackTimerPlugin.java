@@ -52,7 +52,7 @@ import static meteor.plugins.playerattacktimer.AttackTimerMap.ATTACK_TIMER_MAP;
 @PluginDescriptor(
 	name = "Player Attack Timer",
 	enabledByDefault = false,
-	description = "Display the tick delay for your current weapon.<br>Helps with lazy prayer flicking and flinching.",
+	description = "Display the tick delay for your current weapon." + "Helps with lazy prayer flicking and flinching.",
 	tags = {"player", "attack", "tick", "timer", "delay"}
 )
 public class PlayerAttackTimerPlugin extends Plugin

@@ -194,7 +194,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigItem(
       keyName = "swapBanker",
       name = "Bank",
-      description = "Swap Talk-to with Bank on Bank NPC<br>Example: Banker",
+      description = "Swap Talk-to with Bank on Bank NPC Example: Banker",
       section = npcSection
   )
   default boolean swapBank() {
@@ -314,7 +314,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigItem(
       keyName = "swapExchange",
       name = "Exchange",
-      description = "Swap Talk-to with Exchange on NPC<br>Example: Grand Exchange Clerk, Tool Leprechaun, Void Knight",
+      description = "Swap Talk-to with Exchange on NPC Example: Grand Exchange Clerk, Tool Leprechaun, Void Knight",
       section = npcSection
   )
   default boolean swapExchange() {
@@ -404,7 +404,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigItem(
       keyName = "swapPay",
       name = "Pay",
-      description = "Swap Talk-to with Pay on NPC<br>Example: Elstan, Heskel, Fayeth",
+      description = "Swap Talk-to with Pay on NPC Example: Elstan, Heskel, Fayeth",
       section = npcSection
   )
   default boolean swapPay() {
@@ -474,7 +474,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigItem(
       keyName = "swapTeleportItem",
       name = "Teleport item",
-      description = "Swap Wear, Wield with Rub, Teleport on teleport item<br>Example: Amulet of glory, Explorer's ring, Chronicle",
+      description = "Swap Wear, Wield with Rub, Teleport on teleport item Example: Amulet of glory, Explorer's ring, Chronicle",
       section = itemSection
   )
   default boolean swapTeleportItem() {
@@ -554,7 +554,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigItem(
       keyName = "swapTrade",
       name = "Trade",
-      description = "Swap Talk-to with Trade on NPC<br>Example: Shop keeper, Shop assistant",
+      description = "Swap Talk-to with Trade on NPC Example: Shop keeper, Shop assistant",
       section = npcSection
   )
   default boolean swapTrade() {
@@ -564,7 +564,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigItem(
       keyName = "swapTravel",
       name = "Travel",
-      description = "Swap Talk-to with Travel, Take-boat, Pay-fare, Charter on NPC<br>Example: Squire, Monk of Entrana, Customs officer, Trader Crewmember",
+      description = "Swap Talk-to with Travel, Take-boat, Pay-fare, Charter on NPC Example: Squire, Monk of Entrana, Customs officer, Trader Crewmember",
       section = npcSection
   )
   default boolean swapTravel() {
@@ -815,7 +815,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigItem(
       keyName = "swapPickpocket",
       name = "Pickpocket",
-      description = "Swap Talk-to with Pickpocket on NPC<br>Example: Man, Woman",
+      description = "Swap Talk-to with Pickpocket on NPC Example: Man, Woman",
       position = 2,
       section = skillingSection
   )

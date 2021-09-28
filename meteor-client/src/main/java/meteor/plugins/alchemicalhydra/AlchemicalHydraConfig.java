@@ -89,7 +89,7 @@ public interface AlchemicalHydraConfig extends Config
 		keyName = "hidePrayerOnSpecial",
 		name = "Hide prayer on special attack",
 		description = "Hide prayer overlay during special attacks."
-			+ "<br>This can help indicate when to save prayer points.",
+			+ "This can help indicate when to save prayer points.",
 		position = 2,
 		section = general
 	)

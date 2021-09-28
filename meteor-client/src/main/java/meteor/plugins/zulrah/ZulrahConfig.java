@@ -179,7 +179,7 @@ public interface ZulrahConfig extends Config {
    @ConfigItem(
       name = "Prayer Helper",
       keyName = "prayerHelper",
-      description = "Displays an overlay showing the correct prayer to use for the entirity of the Zulrah fight<br>Changes color dependent on whether or not you're praying correctly or not",
+      description = "Displays an overlay showing the correct prayer to use for the entirity of the Zulrah fight" + "Changes color dependent on whether or not you're praying correctly or not",
       position = 0,
       section = fightHelperSection
    )
@@ -190,7 +190,7 @@ public interface ZulrahConfig extends Config {
    @ConfigItem(
       name = "Prayer Marker",
       keyName = "prayerMarker",
-      description = "Marks the correct prayer to use in the prayer book to use for the entirity of the Zulrah fight<br>Changes color dependent on whether or not you're praying correctly or not",
+      description = "Marks the correct prayer to use in the prayer book to use for the entirity of the Zulrah fight" + "Changes color dependent on whether or not you're praying correctly or not",
       position = 1,
       section = fightHelperSection
    )
@@ -201,7 +201,7 @@ public interface ZulrahConfig extends Config {
    @ConfigItem(
       name = "Prayer Conservation",
       keyName = "prayerConservation",
-      description = "Displays text over your head showing when it's safe to turn off your overheads<br>Overlay gets displayed when Zulrah is not actively targeting you and your overheads are on",
+      description = "Displays text over your head showing when it's safe to turn off your overheads" + "Overlay gets displayed when Zulrah is not actively targeting you and your overheads are on",
       position = 2,
       section = fightHelperSection
    )
@@ -282,7 +282,7 @@ public interface ZulrahConfig extends Config {
    @ConfigItem(
       name = "Display Type",
       keyName = "phaseDisplayType",
-      description = "Overlay: Displays Zulrah's phases details on an overlay<br>Tile: Displays Zulrah's phases details on tiles",
+      description = "Overlay: Displays Zulrah's phases details on an overlay" + "Tile: Displays Zulrah's phases details on tiles",
       position = 0,
       section = phaseHelperSection
    )
@@ -293,7 +293,7 @@ public interface ZulrahConfig extends Config {
    @ConfigItem(
       name = "Display Mode",
       keyName = "phaseDisplayMode",
-      description = "Current: Only displays the current Zulrah phase<br>Next: Only displays the next Zulrah phase<br>",
+      description = "Current: Only displays the current Zulrah phase" + "Next: Only displays the next Zulrah phase",
       position = 1,
       section = phaseHelperSection
    )
@@ -304,7 +304,7 @@ public interface ZulrahConfig extends Config {
    @ConfigItem(
       name = "Rotation Name",
       keyName = "phaseRotationName",
-      description = "Requires: Display Type ('Overlay' or 'Both')<br>Displays text above InfoBox overlay showing the rotation name or unidentified",
+      description = "Requires: Display Type ('Overlay' or 'Both')" + "Displays text above InfoBox overlay showing the rotation name or unidentified",
       position = 2,
       section = phaseHelperSection
    )
@@ -326,7 +326,7 @@ public interface ZulrahConfig extends Config {
    @ConfigItem(
       name = "Tags",
       keyName = "phaseTags",
-      description = "Tags each Zulrah phase on the tile overlay with:<br>[Current] = Current Zulrah phase<br>[Next] = Definite next Zulrah phase<br>[P. Next] = Potentially Zulrah's next phase",
+      description = "Tags each Zulrah phase on the tile overlay with:" + "[Current] = Current Zulrah phase" + "[Next] = Definite next Zulrah phase" + "[P. Next] = Potentially Zulrah's next phase",
       position = 4,
       section = phaseHelperSection
    )
@@ -337,7 +337,7 @@ public interface ZulrahConfig extends Config {
    @ConfigItem(
       name = "Instance Timer",
       keyName = "instanceTimer",
-      description = "Displays an overlay showing how long Zulrah has been alive in minutes:seconds format<br>Timer resets on Zulrah death and/or leaving of the instance of any fashion",
+      description = "Displays an overlay showing how long Zulrah has been alive in minutes:seconds format" + "Timer resets on Zulrah death and/or leaving of the instance of any fashion",
       position = 0,
       section = miscellaneousSection
    )
@@ -348,7 +348,7 @@ public interface ZulrahConfig extends Config {
    @ConfigItem(
       name = "Snakeling",
       keyName = "snakelingSetting",
-      description = "Remove Att. Op.: Removes the 'Attack' option from all the active Snakelings<br>Entity Hider: Hides all the active Snakelings",
+      description = "Remove Att. Op.: Removes the 'Attack' option from all the active Snakelings" + "Entity Hider: Hides all the active Snakelings",
       position = 1,
       section = miscellaneousSection
    )

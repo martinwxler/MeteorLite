@@ -38,7 +38,7 @@ public interface ChatCommandsConfig extends Config
 		position = 0,
 		keyName = "priceEnabled",
 		name = "Price Command",
-		description = "Configures whether the Price command is enabled<br> !price [item]"
+		description = "Configures whether the Price command is enabled !price [item]"
 	)
 	default boolean priceEnabled()
 	{
@@ -49,7 +49,7 @@ public interface ChatCommandsConfig extends Config
 		position = 1,
 		keyName = "lvlEnabled",
 		name = "Level Command",
-		description = "Configures whether the Level command is enabled<br> !lvl [skill]"
+		description = "Configures whether the Level command is enabled !lvl [skill]"
 	)
 	default boolean lvlEnabled()
 	{
@@ -60,7 +60,7 @@ public interface ChatCommandsConfig extends Config
 		position = 2,
 		keyName = "clueEnabled",
 		name = "Clue Command",
-		description = "Configures whether the Clue command is enabled<br> !clues"
+		description = "Configures whether the Clue command is enabled !clues"
 	)
 	default boolean clueEnabled()
 	{
@@ -71,7 +71,7 @@ public interface ChatCommandsConfig extends Config
 		position = 3,
 		keyName = "killcountEnabled",
 		name = "Killcount Command",
-		description = "Configures whether the Killcount command is enabled<br> !kc [boss]"
+		description = "Configures whether the Killcount command is enabled !kc [boss]"
 	)
 	default boolean killcountEnabled()
 	{
@@ -82,7 +82,7 @@ public interface ChatCommandsConfig extends Config
 		position = 4,
 		keyName = "qpEnabled",
 		name = "QP Command",
-		description = "Configures whether the quest point command is enabled<br> !qp"
+		description = "Configures whether the quest point command is enabled !qp"
 	)
 	default boolean qpEnabled()
 	{
@@ -93,7 +93,7 @@ public interface ChatCommandsConfig extends Config
 		position = 5,
 		keyName = "pbEnabled",
 		name = "PB Command",
-		description = "Configures whether the personal best command is enabled<br> !pb"
+		description = "Configures whether the personal best command is enabled !pb"
 	)
 	default boolean pbEnabled()
 	{
@@ -104,7 +104,7 @@ public interface ChatCommandsConfig extends Config
 		position = 6,
 		keyName = "gcEnabled",
 		name = "GC Command",
-		description = "Configures whether the Barbarian Assault High gamble count command is enabled<br> !gc"
+		description = "Configures whether the Barbarian Assault High gamble count command is enabled !gc"
 	)
 	default boolean gcEnabled()
 	{
@@ -115,7 +115,7 @@ public interface ChatCommandsConfig extends Config
 		position = 7,
 		keyName = "duelsEnabled",
 		name = "Duels Command",
-		description = "Configures whether the duel arena command is enabled<br> !duels"
+		description = "Configures whether the duel arena command is enabled !duels"
 	)
 	default boolean duelsEnabled()
 	{
@@ -126,7 +126,7 @@ public interface ChatCommandsConfig extends Config
 		position = 8,
 		keyName = "bhEnabled",
 		name = "BH Command",
-		description = "Configures whether the Bounty Hunter - Hunter command is enabled<br> !bh"
+		description = "Configures whether the Bounty Hunter - Hunter command is enabled !bh"
 	)
 	default boolean bhEnabled()
 	{
@@ -137,7 +137,7 @@ public interface ChatCommandsConfig extends Config
 		position = 9,
 		keyName = "bhRogueEnabled",
 		name = "BH Rogue Command",
-		description = "Configures whether the Bounty Hunter - Rogue command is enabled<br> !bhrogue"
+		description = "Configures whether the Bounty Hunter - Rogue command is enabled !bhrogue"
 	)
 	default boolean bhRogueEnabled()
 	{
@@ -148,7 +148,7 @@ public interface ChatCommandsConfig extends Config
 		position = 10,
 		keyName = "lmsEnabled",
 		name = "LMS Command",
-		description = "Configures whether the Last Man Standing command is enabled<br> !lms"
+		description = "Configures whether the Last Man Standing command is enabled !lms"
 	)
 	default boolean lmsEnabled()
 	{
@@ -159,7 +159,7 @@ public interface ChatCommandsConfig extends Config
 		position = 11,
 		keyName = "lpEnabled",
 		name = "LP Command",
-		description = "Configures whether the League Points command is enabled<br> !lp"
+		description = "Configures whether the League Points command is enabled !lp"
 	)
 	default boolean lpEnabled()
 	{
@@ -170,7 +170,7 @@ public interface ChatCommandsConfig extends Config
 		position = 12,
 		keyName = "swEnabled",
 		name = "SW Command",
-		description = "Configures whether the Soul Wars Zeal command is enabled<br> !sw"
+		description = "Configures whether the Soul Wars Zeal command is enabled !sw"
 	)
 	default boolean swEnabled()
 	{
@@ -181,7 +181,7 @@ public interface ChatCommandsConfig extends Config
 		position = 13,
 		keyName = "petsEnabled",
 		name = "Pets Command",
-		description = "Configures whether the player pet list command is enabled<br> !pets<br>" +
+		description = "Configures whether the player pet list command is enabled !pets" +
 			" Note: Update your pet list by looking at the All Pets tab in the Collection Log"
 	)
 	default boolean petsEnabled()
