@@ -9,12 +9,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
 import meteor.util.LoggerStream;
 import net.runelite.api.Client;
+import sun.misc.Unsafe;
 
 public class MeteorLiteClientLauncher extends Application implements Module {
   public static final File METEOR_DIR
@@ -39,6 +41,7 @@ public class MeteorLiteClientLauncher extends Application implements Module {
   @Override
   public void start(Stage primaryStage) throws IOException, InterruptedException, InvocationTargetException {
     try {
+      disableIllegalReflectiveAccessWarning();
       consoleStream = System.out;
       LOGS_DIR.mkdirs();
       errorFileStream = new LoggerStream(new FileOutputStream(ERROR_LOG));
@@ -58,5 +61,19 @@ public class MeteorLiteClientLauncher extends Application implements Module {
   @Override
   public void configure(Binder binder) {
 
+  }
+
+  public static void disableIllegalReflectiveAccessWarning() {
+    try {
+      Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
+      theUnsafe.setAccessible(true);
+      Unsafe u = (Unsafe) theUnsafe.get(null);
+
+      Class cls = Class.forName("jdk.internal.module.IllegalAccessLogger");
+      Field logger = cls.getDeclaredField("logger");
+      u.putObjectVolatile(cls, u.staticFieldOffset(logger), null);
+    } catch (Exception e) {
+      // ignore
+    }
   }
 }
