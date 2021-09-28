@@ -24,10 +24,12 @@
  */
 package meteor.plugins.menuentryswapper;
 
+import java.awt.event.KeyEvent;
 import meteor.config.Config;
 import meteor.config.ConfigGroup;
 import meteor.config.ConfigItem;
 import meteor.config.ConfigSection;
+import meteor.config.ModifierlessKeybind;
 import meteor.plugins.menuentryswapper.util.BurningAmuletMode;
 import meteor.plugins.menuentryswapper.util.BuyMode;
 import meteor.plugins.menuentryswapper.util.CombatBraceletMode;
@@ -74,9 +76,17 @@ public interface MenuEntrySwapperConfig extends Config {
   String shiftCustomSwapsSection = "[Shift Click] Custom Swaps";
 
   @ConfigSection(
+      name = "Keybind Swaps",
+      description = "Configuration for keybind custom Swaps",
+      position = 2,
+      closedByDefault = true
+  )
+  String keyCustomSwapsSection = "Keybind Swaps";
+
+  @ConfigSection(
       name = "Remove Options",
       description = "Configuration for removing swaps",
-      position = 2,
+      position = 3,
       closedByDefault = true
   )
   String removeSwapsSection = "Remove Options";
@@ -84,7 +94,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigSection(
       name = "Item Swaps",
       description = "All options that swap item menu entries",
-      position = 3,
+      position = 4,
       closedByDefault = true
   )
   String itemSection = "Item Swaps";
@@ -92,7 +102,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigSection(
       name = "NPC Swaps",
       description = "All options that swap NPC menu entries",
-      position = 4,
+      position = 5,
       closedByDefault = true
   )
   String npcSection = "NPC Swaps";
@@ -100,7 +110,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigSection(
       name = "Object Swaps",
       description = "All options that swap object menu entries",
-      position = 5,
+      position = 6,
       closedByDefault = true
   )
   String objectSection = "Object Swaps";
@@ -108,7 +118,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigSection(
       name = "UI Swaps",
       description = "All options that swap entries in the UI (except Items)",
-      position = 6,
+      position = 7,
       closedByDefault = true
   )
   String uiSection = "UI Swaps";
@@ -116,7 +126,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigSection(
       name = "Skilling",
       description = "",
-      position = 7,
+      position = 8,
       keyName = "skillingSection",
       closedByDefault = true
   )
@@ -1214,7 +1224,7 @@ public interface MenuEntrySwapperConfig extends Config {
   }
 
   //------------------------------------------------------------//
-  // Custom Swaps
+  // Custom swaps
   //------------------------------------------------------------//
 
   @ConfigItem(
@@ -1284,6 +1294,51 @@ public interface MenuEntrySwapperConfig extends Config {
   }
 
   @ConfigItem(
+      name = "Keybind - Custom Swaps Toggle",
+      keyName = "keyCustomSwapsToggle",
+      description = "Toggles the use of the Keybind Custom Swaps",
+      section = keyCustomSwapsSection,
+      position = 1
+  )
+  default boolean keyCustomSwapsToggle() {
+    return false;
+  }
+
+  @ConfigItem(
+      keyName = "hotkey",
+      name = "Set Keybind",
+      description = "Binds the key to hold to enable this section",
+      section = keyCustomSwapsSection,
+      position = 2
+  )
+  default ModifierlessKeybind hotkey()
+  {
+    return new ModifierlessKeybind(KeyEvent.VK_UNDEFINED, 0);
+  }
+
+  @ConfigItem(
+      name = "Keybind - Custom Swaps",
+      keyName = "keyCustomSwapsStr",
+      description = "",
+      section = keyCustomSwapsSection,
+      position = 3
+  )
+  default String keyCustomSwapsString() {
+    return "";
+  }
+
+  @ConfigItem(
+      name = "Keybind - Bank Custom Swaps",
+      keyName = "bankKeyCustomSwapsStr",
+      description = "",
+      section = keyCustomSwapsSection,
+      position = 4
+  )
+  default String bankKeyCustomSwapsString() {
+    return "";
+  }
+
+  @ConfigItem(
       name = "Remove Options Toggle",
       keyName = "removeOptionsToggle",
       description = "Toggles the use of the removing options",
@@ -1305,7 +1360,7 @@ public interface MenuEntrySwapperConfig extends Config {
     return "";
   }
 
-  enum ArdougneCloakMode {
+enum ArdougneCloakMode {
     WEAR,
     MONASTERY,
     FARM,
