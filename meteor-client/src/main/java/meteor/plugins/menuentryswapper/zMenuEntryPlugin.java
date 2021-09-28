@@ -163,22 +163,23 @@ public class zMenuEntryPlugin implements KeyListener {
 
   @Subscribe
   public void onGameStateChanged(GameStateChanged event) {
-    if (!hasLoaded){
-      customSwaps.clear();
-      parseConfigToList(config.customSwapsString(), customSwaps);
-      shiftCustomSwaps.clear();
-      parseConfigToList(config.shiftCustomSwapsString(), shiftCustomSwaps);
-      removeOptions.clear();
-      parseConfigToList(config.removeOptionsString(), removeOptions);
-      bankCustomSwaps.clear();
-      parseConfigToList(config.bankCustomSwapsString(), bankCustomSwaps);
-      shiftBankCustomSwaps.clear();
-      parseConfigToList(config.bankShiftCustomSwapsString(), shiftBankCustomSwaps);
-      parseConfigToList(config.keyCustomSwapsString(), keyCustomSwaps);
-      removeOptions.clear();
-      parseConfigToList(config.bankKeyCustomSwapsString(), keyBankCustomSwaps);
-      hasLoaded = true;
-    }
+    if (event.getGameState() == GameState.LOGGED_IN)
+      if (!hasLoaded) {
+        customSwaps.clear();
+        parseConfigToList(config.customSwapsString(), customSwaps);
+        shiftCustomSwaps.clear();
+        parseConfigToList(config.shiftCustomSwapsString(), shiftCustomSwaps);
+        removeOptions.clear();
+        parseConfigToList(config.removeOptionsString(), removeOptions);
+        bankCustomSwaps.clear();
+        parseConfigToList(config.bankCustomSwapsString(), bankCustomSwaps);
+        shiftBankCustomSwaps.clear();
+        parseConfigToList(config.bankShiftCustomSwapsString(), shiftBankCustomSwaps);
+        parseConfigToList(config.keyCustomSwapsString(), keyCustomSwaps);
+        removeOptions.clear();
+        parseConfigToList(config.bankKeyCustomSwapsString(), keyBankCustomSwaps);
+        hasLoaded = true;
+      }
   }
 
   @Subscribe
