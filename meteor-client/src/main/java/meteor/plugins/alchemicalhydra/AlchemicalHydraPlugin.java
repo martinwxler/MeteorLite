@@ -29,7 +29,6 @@ import lombok.Getter;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.*;
-import net.runelite.api.coords.WorldPoint;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
@@ -47,6 +46,8 @@ import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 @Singleton
 @PluginDescriptor(
@@ -95,11 +96,15 @@ public class AlchemicalHydraPlugin extends Plugin
 
 	@Getter
 	int fountainTicks = -1;
+	int lastFountainAnim = -1;
 
 	@Getter
 	private final Map<LocalPoint, Projectile> poisonProjectiles = new HashMap<>();
 
 	private int lastAttackTick = -1;
+
+	@Getter
+	private final Set<GameObject> vents = new HashSet<>();
 
 	@Provides
 	public AlchemicalHydraConfig getConfig(final ConfigManager configManager)
@@ -139,6 +144,8 @@ public class AlchemicalHydraPlugin extends Plugin
 		poisonProjectiles.clear();
 		lastAttackTick = -1;
 		fountainTicks = -1;
+		vents.clear();
+		lastFountainAnim = -1;
 	}
 
 	@Subscribe
@@ -176,6 +183,29 @@ public class AlchemicalHydraPlugin extends Plugin
 	}
 
 	@Subscribe
+	private void onGameObjectSpawned(GameObjectSpawned event)
+	{
+		if (!isInHydraRegion())
+		{
+			return;
+		}
+		GameObject gameobject = event.getGameObject();
+		int id = gameobject.getId();
+		if (id == ObjectID.CHEMICAL_VENT_RED || id == ObjectID.CHEMICAL_VENT_GREEN || id == ObjectID.CHEMICAL_VENT_BLUE)
+		{
+			vents.add(gameobject);
+		}
+	}
+
+	@Subscribe
+	private void onGameObjectDespawned(GameObjectDespawned event)
+	{
+		GameObject gameobject = event.getGameObject();
+		vents.remove(gameobject);
+	}
+
+
+	@Subscribe
 	private void onGameTick(final GameTick event)
 	{
 		attackOverlay.decrementStunTicks();
@@ -192,6 +222,27 @@ public class AlchemicalHydraPlugin extends Plugin
 				fountainTicks = 8;
 			}
 		}
+
+		if (!vents.isEmpty())
+		{
+			for (final GameObject vent : vents)
+			{
+				int animation = getAnimation(vent);
+				if (animation == 8279 && lastFountainAnim == 8280)
+				{
+					fountainTicks = 2;
+				}
+				lastFountainAnim = animation;
+				break; // all vents trigger at same time so dont bother going through them all
+			}
+		}
+
+	}
+
+	int getAnimation(GameObject gameObject)
+	{
+		final DynamicObject dynamicObject = (DynamicObject) gameObject.getRenderable();
+		return dynamicObject.getAnimationID();
 	}
 
 	@Subscribe
@@ -202,6 +253,10 @@ public class AlchemicalHydraPlugin extends Plugin
 		if (npc.getId() == NpcID.ALCHEMICAL_HYDRA)
 		{
 			hydra = new Hydra(npc);
+			if (client.isInInstancedRegion() && fountainTicks == -1) //handles the initial hydra spawn when your in the lobby but havent gone through the main doors
+			{
+				fountainTicks = 11;
+			}
 		}
 	}
 
@@ -210,66 +265,53 @@ public class AlchemicalHydraPlugin extends Plugin
 	{
 		final Actor actor = event.getActor();
 
-		if (hydra == null)
+		if (hydra == null || actor != hydra.getNpc())
 		{
 			return;
 		}
 
-		if (actor == hydra.getNpc())
-		{
-			final HydraPhase phase = hydra.getPhase();
+		final HydraPhase phase = hydra.getPhase();
 
 		final int animationId = actor.getAnimation();
 
-			if ((animationId == phase.getDeathAnimation2() && phase != HydraPhase.FLAME)
-					|| (animationId == phase.getDeathAnimation1() && phase == HydraPhase.FLAME))
+		if ((animationId == phase.getDeathAnimation2() && phase != HydraPhase.FLAME)
+				|| (animationId == phase.getDeathAnimation1() && phase == HydraPhase.FLAME))
+		{
+			switch (phase)
 			{
-				switch (phase)
-				{
-					case POISON:
-						hydra.changePhase(HydraPhase.LIGHTNING);
-						break;
-					case LIGHTNING:
-						hydra.changePhase(HydraPhase.FLAME);
-						break;
-					case FLAME:
-						hydra.changePhase(HydraPhase.ENRAGED);
-						break;
-					case ENRAGED:
-						// NpcDespawned event does not fire for Hydra inbetween kills; must use death animation.
-						hydra = null;
+				case POISON:
+					hydra.changePhase(HydraPhase.LIGHTNING);
+					break;
+				case LIGHTNING:
+					hydra.changePhase(HydraPhase.FLAME);
+					break;
+				case FLAME:
+					hydra.changePhase(HydraPhase.ENRAGED);
+					break;
+				case ENRAGED:
+					// NpcDespawned event does not fire for Hydra inbetween kills; must use death animation.
+					hydra = null;
 
-						if (!poisonProjectiles.isEmpty())
-						{
-							poisonProjectiles.clear();
-						}
-						break;
-				}
-
-				return;
-			}
-			else if (animationId == phase.getSpecialAnimationId() && phase.getSpecialAnimationId() != 0)
-			{
-				hydra.setNextSpecial();
+					if (!poisonProjectiles.isEmpty())
+					{
+						poisonProjectiles.clear();
+					}
+					break;
 			}
 
 			return;
 		}
-		else if (actor == client.getLocalPlayer() && actor.getAnimation() == 839)
+		else if (animationId == phase.getSpecialAnimationId() && phase.getSpecialAnimationId() != 0)
 		{
-			if (client.isInInstancedRegion())
-			{
-				if (WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID() == 5536)
-				{
-					fountainTicks = 10;
-				}
-			}
-			else
-			{
-				fountainTicks = 0;
-			}
+			hydra.setNextSpecial();
+		}
+
+		if (!poisonProjectiles.isEmpty())
+		{
+			poisonProjectiles.values().removeIf(p -> p.getEndCycle() < client.getGameCycle());
 		}
 	}
+
 
 	@Subscribe
 	private void onProjectileMoved(final ProjectileMoved event)
@@ -293,7 +335,7 @@ public class AlchemicalHydraPlugin extends Plugin
 			poisonProjectiles.put(event.getPosition(), projectile);
 		}
 		else if (client.getTickCount() != lastAttackTick
-			&& (projectileId == AttackStyle.MAGIC.getProjectileID() || projectileId == AttackStyle.RANGED.getProjectileID()))
+				&& (projectileId == AttackStyle.MAGIC.getProjectileID() || projectileId == AttackStyle.RANGED.getProjectileID()))
 		{
 			hydra.handleProjectile(projectileId);
 
