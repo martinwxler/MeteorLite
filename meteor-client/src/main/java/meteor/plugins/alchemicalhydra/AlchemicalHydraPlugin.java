@@ -29,6 +29,7 @@ import lombok.Getter;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.*;
+import net.runelite.api.coords.WorldPoint;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
@@ -93,6 +94,9 @@ public class AlchemicalHydraPlugin extends Plugin
 	public static final int HYDRA_4_2 = 8258;
 
 	@Getter
+	int fountainTicks = -1;
+
+	@Getter
 	private final Map<LocalPoint, Projectile> poisonProjectiles = new HashMap<>();
 
 	private int lastAttackTick = -1;
@@ -134,6 +138,7 @@ public class AlchemicalHydraPlugin extends Plugin
 		hydra = null;
 		poisonProjectiles.clear();
 		lastAttackTick = -1;
+		fountainTicks = -1;
 	}
 
 	@Subscribe
@@ -174,6 +179,19 @@ public class AlchemicalHydraPlugin extends Plugin
 	private void onGameTick(final GameTick event)
 	{
 		attackOverlay.decrementStunTicks();
+		updateVentTicks();
+	}
+
+	private void updateVentTicks()
+	{
+		if (fountainTicks > 0)
+		{
+			fountainTicks--;
+			if (fountainTicks == 0)
+			{
+				fountainTicks = 8;
+			}
+		}
 	}
 
 	@Subscribe
@@ -192,50 +210,64 @@ public class AlchemicalHydraPlugin extends Plugin
 	{
 		final Actor actor = event.getActor();
 
-		if (hydra == null || actor != hydra.getNpc())
+		if (hydra == null)
 		{
 			return;
 		}
 
-		final HydraPhase phase = hydra.getPhase();
+		if (actor == hydra.getNpc())
+		{
+			final HydraPhase phase = hydra.getPhase();
 
 		final int animationId = actor.getAnimation();
 
-		if ((animationId == phase.getDeathAnimation2() && phase != HydraPhase.FLAME)
-			|| (animationId == phase.getDeathAnimation1() && phase == HydraPhase.FLAME))
-		{
-			switch (phase)
+			if ((animationId == phase.getDeathAnimation2() && phase != HydraPhase.FLAME)
+					|| (animationId == phase.getDeathAnimation1() && phase == HydraPhase.FLAME))
 			{
-				case POISON:
-					hydra.changePhase(HydraPhase.LIGHTNING);
-					break;
-				case LIGHTNING:
-					hydra.changePhase(HydraPhase.FLAME);
-					break;
-				case FLAME:
-					hydra.changePhase(HydraPhase.ENRAGED);
-					break;
-				case ENRAGED:
-					// NpcDespawned event does not fire for Hydra inbetween kills; must use death animation.
-					hydra = null;
+				switch (phase)
+				{
+					case POISON:
+						hydra.changePhase(HydraPhase.LIGHTNING);
+						break;
+					case LIGHTNING:
+						hydra.changePhase(HydraPhase.FLAME);
+						break;
+					case FLAME:
+						hydra.changePhase(HydraPhase.ENRAGED);
+						break;
+					case ENRAGED:
+						// NpcDespawned event does not fire for Hydra inbetween kills; must use death animation.
+						hydra = null;
 
-					if (!poisonProjectiles.isEmpty())
-					{
-						poisonProjectiles.clear();
-					}
-					break;
+						if (!poisonProjectiles.isEmpty())
+						{
+							poisonProjectiles.clear();
+						}
+						break;
+				}
+
+				return;
+			}
+			else if (animationId == phase.getSpecialAnimationId() && phase.getSpecialAnimationId() != 0)
+			{
+				hydra.setNextSpecial();
 			}
 
 			return;
 		}
-		else if (animationId == phase.getSpecialAnimationId() && phase.getSpecialAnimationId() != 0)
+		else if (actor == client.getLocalPlayer() && actor.getAnimation() == 839)
 		{
-			hydra.setNextSpecial();
-		}
-
-		if (!poisonProjectiles.isEmpty())
-		{
-			poisonProjectiles.values().removeIf(p -> p.getEndCycle() < client.getGameCycle());
+			if (client.isInInstancedRegion())
+			{
+				if (WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID() == 5536)
+				{
+					fountainTicks = 10;
+				}
+			}
+			else
+			{
+				fountainTicks = 0;
+			}
 		}
 	}
 
