@@ -571,7 +571,6 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 			catch (Throwable e)
 			{
 				log.error("Error starting HD plugin", e);
-				stopPlugin();
 			}
 			return true;
 		});
@@ -660,24 +659,6 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 			// force main buffer provider rebuild to turn off alpha channel
 			client.resizeCanvas$api();
 		});
-	}
-
-	private void stopPlugin()
-	{
-		SwingUtilities.invokeLater(() ->
-		{
-			try
-			{
-				pluginManager.setPluginEnabled(this, false);
-				pluginManager.stopPlugin(this);
-			}
-			catch (PluginInstantiationException ex)
-			{
-				log.error("error stopping plugin", ex);
-			}
-		});
-
-		shutDown();
 	}
 
 	@Provides
@@ -842,7 +823,6 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 				catch (ShaderException ex)
 				{
 					log.error("Failed to recompile shader program", ex);
-					stopPlugin();
 				}
 			})
 		);
