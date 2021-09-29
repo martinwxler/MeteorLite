@@ -22,61 +22,45 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.alchemicalhydra.entity;
+package meteor.plugins.alchemicalhydra;
 
+import java.awt.image.BufferedImage;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.runelite.api.ProjectileID;
-import net.runelite.api.SpriteID;
 import net.runelite.api.coords.WorldPoint;
 import meteor.game.SpriteManager;
-import meteor.plugins.alchemicalhydra.overlay.AttackOverlay;
 import meteor.util.ImageUtil;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
-
-import static meteor.plugins.alchemicalhydra.AlchemicalHydraPlugin.*;
-
-@Getter
+@Getter(AccessLevel.PACKAGE)
 @RequiredArgsConstructor
-public enum HydraPhase
+enum HydraPhase
 {
-	POISON(3, HYDRA_1_1, HYDRA_1_2, ProjectileID.HYDRA_POISON, 0,
-		825, SpriteID.BIG_ASS_GUTHIX_SPELL, new WorldPoint(1371, 10263, 0), Color.GREEN, Color.RED),
-	LIGHTNING(3, HYDRA_2_1, HYDRA_2_2, 0, HYDRA_LIGHTNING,
-		550, SpriteID.BIG_SPEC_TRANSFER, new WorldPoint(1371, 10272, 0), Color.CYAN, Color.GREEN),
-	FLAME(3, HYDRA_3_1, HYDRA_3_2, 0, HYDRA_FIRE,
-		275, SpriteID.BIG_SUPERHEAT, new WorldPoint(1362, 10272, 0), Color.RED, Color.CYAN),
-	ENRAGED(1, HYDRA_4_1, HYDRA_4_2, ProjectileID.HYDRA_POISON, 0,
-		0, SpriteID.BIG_ASS_GUTHIX_SPELL, null, null, null);
+	ONE(3, 8237, 8238, 1644, 0, 1774, new WorldPoint(1371, 10263, 0)),
+	TWO(3, 8244, 8245, 0, 8241, 1959, new WorldPoint(1371, 10272, 0)),
+	THREE(3, 8251, 8252, 0, 8248, 1800, new WorldPoint(1362, 10272, 0)),
+	FOUR(1, 8257, 8258, 1644, 0, 1774, null);
 
 	private final int attacksPerSwitch;
-	private final int deathAnimation1;
-	private final int deathAnimation2;
-	private final int specialProjectileId;
-	private final int specialAnimationId;
-	private final int hpThreshold;
+	private final int deathAnim1;
+	private final int deathAnim2;
+	private final int specProjectileId;
+	private final int specAnimationId;
 
 	@Getter(AccessLevel.NONE)
-	private final int spriteId;
+	private final int specImageID;
+	private final WorldPoint fountain;
 
-	private final WorldPoint fountainWorldPoint;
+	private BufferedImage specImage;
 
-	private final Color phaseColor;
-	private final Color fountainColor;
-
-	private BufferedImage specialImage;
-
-	public BufferedImage getSpecialImage(final SpriteManager spriteManager)
+	BufferedImage getSpecImage(SpriteManager spriteManager)
 	{
-		if (specialImage == null)
+		if (specImage == null)
 		{
-			final BufferedImage tmp = spriteManager.getSprite(spriteId, 0);
-			specialImage = tmp == null ? null : ImageUtil.resizeImage(tmp, AttackOverlay.IMAGE_SIZE, AttackOverlay.IMAGE_SIZE);
+			BufferedImage tmp = spriteManager.getSprite(specImageID, 0);
+			specImage = tmp == null ? null : ImageUtil.resizeImage(tmp, HydraOverlay.IMGSIZE, HydraOverlay.IMGSIZE);
 		}
 
-		return specialImage;
+		return specImage;
 	}
 }

@@ -28,7 +28,7 @@ import meteor.plugins.PluginDependency;
 import meteor.plugins.PvPKeys.PvPKeys;
 import meteor.plugins.achievementdiary.DiaryRequirementsPlugin;
 import meteor.plugins.agility.AgilityPlugin;
-import meteor.plugins.alchemicalhydra.AlchemicalHydraPlugin;
+import meteor.plugins.alchemicalhydra.HydraPlugin;
 import meteor.plugins.ammo.AmmoPlugin;
 import meteor.plugins.animsmoothing.AnimationSmoothingPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
@@ -215,7 +215,7 @@ public class PluginManager {
 		// Leave at the top pls, these are not regular plugins
 	  plugins.add(new MeteorLitePlugin());
 		plugins.add(new AgilityPlugin());
-		plugins.add(new AlchemicalHydraPlugin());
+		plugins.add(new HydraPlugin());
 		plugins.add(new AmmoPlugin());
 		plugins.add(new AnimationSmoothingPlugin());
 		plugins.add(new AoeWarningPlugin());
