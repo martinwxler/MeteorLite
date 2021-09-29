@@ -19,8 +19,8 @@ public class InstanceTimerOverlay extends OverlayPanel {
    @Inject
    private InstanceTimerOverlay(ZulrahConfig config) {
       this.config = config;
-      this.setPriority(OverlayPriority.HIGH);
-      this.setPosition(OverlayPosition.ABOVE_CHATBOX_RIGHT);
+      setPriority(OverlayPriority.HIGH);
+      setPosition(OverlayPosition.ABOVE_CHATBOX_RIGHT);
    }
 
    @Override

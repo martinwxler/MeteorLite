@@ -17,7 +17,8 @@ import meteor.ui.overlay.OverlayPosition;
 import meteor.ui.overlay.OverlayPriority;
 import meteor.ui.overlay.components.InfoBoxComponent;
 
-public class PrayerHelperOverlay extends OverlayPanel {
+public class PrayerHelperOverlay extends OverlayPanel
+{
    private final Client client;
    private final ZulrahPlugin plugin;
    private final ZulrahConfig config;
@@ -26,56 +27,61 @@ public class PrayerHelperOverlay extends OverlayPanel {
    private final Color GREEN = new Color(0, 255, 0, 25);
 
    @Inject
-   private PrayerHelperOverlay(Client client, ZulrahPlugin plugin, ZulrahConfig config, SpriteManager spriteManager) {
+   private PrayerHelperOverlay(Client client, ZulrahPlugin plugin, ZulrahConfig config, SpriteManager spriteManager)
+   {
       this.client = client;
       this.plugin = plugin;
       this.config = config;
       this.spriteManager = spriteManager;
-      this.setResizable(false);
-      this.setPriority(OverlayPriority.HIGH);
-      this.setPosition(OverlayPosition.ABOVE_CHATBOX_RIGHT);
+      setResizable(false);
+      setPriority(OverlayPriority.HIGH);
+      setPosition(OverlayPosition.ABOVE_CHATBOX_RIGHT);
    }
 
    @Override
-   public Dimension render(Graphics2D graphics) {
-      if (config.prayerHelper() && plugin.getZulrahNpc() != null && !plugin.getZulrahNpc().isDead()) {
-         Prayer prayer = null;
-         Iterator var3 = plugin.getZulrahData().iterator();
-
-         while(var3.hasNext()) {
-            ZulrahData data = (ZulrahData)var3.next();
-            if (data.getCurrentPhasePrayer().isPresent()) {
-               prayer = (Prayer)data.getCurrentPhasePrayer().get();
-            }
-         }
-
-         if (prayer == null) {
-            return null;
-         } else {
-            InfoBoxComponent prayComponent = new InfoBoxComponent();
-            prayComponent.setImage(spriteManager.getSprite(prayerToSpriteId(prayer), 0));
-            prayComponent.setBackgroundColor(!client.isPrayerActive(prayer) ? RED : GREEN);
-            prayComponent.setPreferredSize(new Dimension(40, 40));
-            panelComponent.getChildren().add(prayComponent);
-            panelComponent.setPreferredSize(new Dimension(40, 0));
-            panelComponent.setBorder(new Rectangle(0, 0, 0, 0));
-            return super.render(graphics);
-         }
-      } else {
+   public Dimension render(Graphics2D graphics)
+   {
+      if (!config.prayerHelper() || plugin.getZulrahNpc() == null || plugin.getZulrahNpc().isDead())
+      {
          return null;
       }
+      Prayer prayer = null;
+      for (ZulrahData data : plugin.getZulrahData())
+      {
+         if (!data.getCurrentPhasePrayer().isPresent()) continue;
+         prayer = data.getCurrentPhasePrayer().get();
+      }
+      if (prayer == null)
+      {
+         return null;
+      }
+      InfoBoxComponent prayComponent = new InfoBoxComponent();
+      prayComponent.setImage(spriteManager.getSprite(prayerToSpriteId(prayer), 0));
+      prayComponent.setBackgroundColor(!client.isPrayerActive(prayer) ? RED : GREEN);
+      prayComponent.setPreferredSize(new Dimension(40, 40));
+      panelComponent.getChildren().add(prayComponent);
+      panelComponent.setPreferredSize(new Dimension(40, 0));
+      panelComponent.setBorder(new Rectangle(0, 0, 0, 0));
+      return super.render(graphics);
    }
 
-   private int prayerToSpriteId(Prayer prayer) {
-      switch(prayer) {
-      case PROTECT_FROM_MELEE:
-         return 129;
-      case PROTECT_FROM_MISSILES:
-         return 128;
-      case PROTECT_FROM_MAGIC:
-         return 127;
-      default:
-         return -1;
+   private int prayerToSpriteId(Prayer prayer)
+   {
+      switch (prayer)
+      {
+         case PROTECT_FROM_MELEE:
+         {
+            return 129;
+         }
+         case PROTECT_FROM_MISSILES:
+         {
+            return 128;
+         }
+         case PROTECT_FROM_MAGIC:
+         {
+            return 127;
+         }
       }
+      return -1;
    }
 }

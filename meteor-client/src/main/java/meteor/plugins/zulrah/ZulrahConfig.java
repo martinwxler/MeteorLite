@@ -184,7 +184,7 @@ public interface ZulrahConfig extends Config {
       section = fightHelperSection
    )
    default boolean prayerHelper() {
-      return false;
+      return true;
    }
 
    @ConfigItem(
@@ -195,7 +195,7 @@ public interface ZulrahConfig extends Config {
       section = fightHelperSection
    )
    default boolean prayerMarker() {
-      return false;
+      return true;
    }
 
    @ConfigItem(
@@ -217,7 +217,7 @@ public interface ZulrahConfig extends Config {
       section = fightHelperSection
    )
    default boolean standLocations() {
-      return false;
+      return true;
    }
 
    @ConfigItem(
@@ -297,7 +297,7 @@ public interface ZulrahConfig extends Config {
       position = 1,
       section = phaseHelperSection
    )
-   default ZulrahConfig.DisplayMode phaseDisplayMode() {
+   default DisplayMode phaseDisplayMode() {
       return DisplayMode.BOTH;
    }
 
@@ -320,7 +320,7 @@ public interface ZulrahConfig extends Config {
       section = phaseHelperSection
    )
    default boolean phaseHats() {
-      return false;
+      return true;
    }
 
    @ConfigItem(
@@ -331,7 +331,7 @@ public interface ZulrahConfig extends Config {
       section = phaseHelperSection
    )
    default boolean phaseTags() {
-      return false;
+      return true;
    }
 
    @ConfigItem(

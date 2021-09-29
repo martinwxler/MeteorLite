@@ -2,7 +2,8 @@ package meteor.plugins.zulrah.constants;
 
 import net.runelite.api.coords.LocalPoint;
 
-public enum ZulrahLocation {
+public enum ZulrahLocation
+{
    NORTH(6720, 7616),
    EAST(8000, 7360),
    SOUTH(6720, 6208),
@@ -11,25 +12,25 @@ public enum ZulrahLocation {
    private final int localX;
    private final int localY;
 
-   public LocalPoint toLocalPoint() {
+   public LocalPoint toLocalPoint()
+   {
       return new LocalPoint(this.localX, this.localY);
    }
 
-   public static ZulrahLocation valueOf(LocalPoint localPoint) {
-      ZulrahLocation[] var1 = values();
-      int var2 = var1.length;
-
-      for(int var3 = 0; var3 < var2; ++var3) {
-         ZulrahLocation loc = var1[var3];
-         if (loc.toLocalPoint().equals(localPoint)) {
+   public static ZulrahLocation valueOf(final LocalPoint localPoint)
+   {
+      for (final ZulrahLocation loc : values())
+      {
+         if (loc.toLocalPoint().equals(localPoint))
+         {
             return loc;
          }
       }
-
       return null;
    }
 
-   ZulrahLocation(int localX, int localY) {
+   private ZulrahLocation(final int localX, final int localY)
+   {
       this.localX = localX;
       this.localY = localY;
    }
