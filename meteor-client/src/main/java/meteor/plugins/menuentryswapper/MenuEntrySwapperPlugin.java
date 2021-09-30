@@ -41,10 +41,14 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 import com.google.inject.Provides;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -63,6 +67,7 @@ import meteor.menus.MenuManager;
 import meteor.menus.WidgetMenuOption;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
+import meteor.plugins.menuentryswapper.util.AbstractComparableEntry;
 import meteor.plugins.menuentryswapper.util.BurningAmuletMode;
 import meteor.plugins.menuentryswapper.util.BuyMode;
 import meteor.plugins.menuentryswapper.util.CombatBraceletMode;
@@ -94,6 +99,7 @@ import net.runelite.api.KeyCode;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.NPC;
+import net.runelite.api.Player;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.GameStateChanged;
@@ -105,6 +111,7 @@ import net.runelite.api.events.WidgetMenuOptionClicked;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 @PluginDescriptor(
     name = "Menu Entry Swapper",
@@ -183,6 +190,8 @@ public class MenuEntrySwapperPlugin extends Plugin {
   private final Multimap<String, Swap> swaps = Multimaps
       .synchronizedSetMultimap(LinkedHashMultimap.create());
   private final ArrayListMultimap<String, Integer> optionIndexes = ArrayListMultimap.create();
+  private final Map<AbstractComparableEntry, Integer> customSwaps = new HashMap<>();
+  private final List<Pair<AbstractComparableEntry, AbstractComparableEntry>> prioSwaps = new ArrayList<>();
   @Inject
   private Client client;
   @Inject
@@ -667,6 +676,16 @@ public class MenuEntrySwapperPlugin extends Plugin {
     resetShiftClickEntry.setParam1(widgetId);
     resetShiftClickEntry.setType(MenuAction.RUNELITE.getId());
     client.setMenuEntries(ArrayUtils.addAll(entries, resetShiftClickEntry));
+
+    Player localPlayer = client.getLocalPlayer();
+
+    if (localPlayer == null)
+    {
+      return;
+    }
+
+    event.setMenuEntries(updateMenuEntries(client.getMenuEntries()));
+    event.setModified();
   }
 
   @Subscribe
@@ -856,6 +875,7 @@ public class MenuEntrySwapperPlugin extends Plugin {
           swapMenuEntry(idx++, entry);
         }
       }
+    client.setMenuEntries(updateMenuEntries(client.getMenuEntries()));
   }
 
   @Subscribe
@@ -1177,5 +1197,38 @@ public class MenuEntrySwapperPlugin extends Plugin {
       client.setHideFriendCastOptions(false);
       client.setHideClanmateCastOptions(false);
     });
+  }
+
+  private MenuEntry[] updateMenuEntries(MenuEntry[] menuEntries)
+  {
+    return Arrays.stream(menuEntries)
+        .filter(filterMenuEntries).sorted((o1, o2) ->
+        {
+          //Priority swaps
+          var prioSwap = prioSwaps
+              .stream()
+              .filter(o -> o.getKey().matches(o1) && o.getValue().matches(o2))
+              .findFirst();
+          if (prioSwap.isPresent())
+            return 1;
+
+          prioSwap = prioSwaps
+              .stream()
+              .filter(o -> o.getKey().matches(o2) && o.getValue().matches(o1))
+              .findFirst();
+          if (prioSwap.isPresent())
+            return -1;
+
+          return 0;
+        })
+        .sorted(
+            //Hotkey swaps
+            Comparator.comparingInt(o -> customSwaps.entrySet()
+                .stream()
+                .filter(x -> x.getKey().matches(o))
+                .map(x -> x.getValue())
+                .sorted(Comparator.reverseOrder())
+                .findFirst().orElse(Integer.MIN_VALUE)))
+        .toArray(MenuEntry[]::new);
   }
 }
