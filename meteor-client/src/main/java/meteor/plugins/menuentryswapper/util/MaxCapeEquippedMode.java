@@ -6,7 +6,11 @@ public enum MaxCapeEquippedMode
 	TELE_TO_POH("Tele to POH"),
 	CRAFTING_GUILD("Crafting Guild"),
 	FISHING_TELEPORTS("Fishing Tele"),
-	WARRIORS_GUILD("Warriors' Guild");
+	WARRIORS_GUILD("Warriors' Guild"),
+	POH_PORTRALS("POH Portals"),
+ 	OTHER_TELEPORTS("Other Teleports"),
+ 	SPELLBOOK("Spellbook"),
+	FEATURES("Features");
 /**
  *  These options exist but don't work as they are considered
  *  "low-priority entries" and will always be pushed down in the menu
