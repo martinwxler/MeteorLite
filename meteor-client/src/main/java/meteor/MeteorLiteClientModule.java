@@ -28,6 +28,8 @@ import meteor.util.NonScheduledExecutorServiceExceptionLogger;
 import net.runelite.api.Client;
 import net.runelite.api.hooks.Callbacks;
 import net.runelite.http.api.chat.ChatClient;
+import net.runelite.http.api.wiseoldman.Period;
+import net.runelite.http.api.wiseoldman.WiseOldManClient;
 import okhttp3.OkHttpClient;
 import org.sponge.util.Logger;
 

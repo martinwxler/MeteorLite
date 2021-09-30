@@ -16,52 +16,36 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-.jfx-text-area {
-  -jfx-focus-color: #4059A9;
-  -jfx-unfocus-color: #4d4d4d;
-  -fx-padding: 0.333333em 0 0 0;
+.chart-title {
+  -fx-text-fill: CYAN;
 }
 
-.jfx-text-area > .input-line {
-  -fx-background-color: -jfx-unfocus-color;
-  -fx-pref-height: 1px;
-  -fx-translate-y: 1px;
+.axis-label {
+  -fx-text-fill: CYAN;
 }
 
-.jfx-text-area > .input-focused-line {
-  -fx-background-color: -jfx-focus-color;
-  -fx-pref-height: 2px;
+.chart-legend-item{
+  -fx-text-fill: CYAN;
 }
 
-.jfx-text-area,
-.jfx-text-area:focused {
-  -fx-prompt-text-fill: #4D4D4D;
+.chart-plot-background {
+  -fx-background-color: #424242;
+}
+.chart-vertical-grid-lines {
+  -fx-stroke: #121212;
+}
+.chart-horizontal-grid-lines {
+  -fx-stroke: #121212;
+}
+.chart-alternative-row-fill {
+  -fx-fill: #005662;
+  -fx-stroke: transparent;
+  -fx-stroke-width: 0;
 }
 
-.jfx-text-area,
-.jfx-text-area .scroll-pane,
-.jfx-text-area:focused,
-.jfx-text-area:focused .scroll-pane {
-  -fx-text-fill: #FFFFFF;
-  -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
-}
+.default-color0.chart-series-line { -fx-stroke: CYAN; }
 
-.jfx-text-area .content,
-.jfx-text-area:focused .content {
-  -fx-background-color: TRANSPARENT, TRANSPARENT, TRANSPARENT, TRANSPARENT;
-  -fx-padding: 0 0 0 0;
-}
-
-.jfx-text-area:error {
-  -jfx-focus-color: #D34336;
-  -jfx-unfocus-color: #D34336;
-}
-
-.jfx-text-area .error-label {
-  -fx-text-fill: #D34336;
-}
-
-.jfx-text-area .error-icon {
-  -fx-fill: #D34336;
+.chart-legend {
+  -fx-background-color:  transparent;
+  -fx-padding: 20px;
 }
