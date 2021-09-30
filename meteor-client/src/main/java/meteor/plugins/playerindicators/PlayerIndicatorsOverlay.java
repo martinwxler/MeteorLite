@@ -25,39 +25,62 @@
  */
 package meteor.plugins.playerindicators;
 
-import meteor.game.ChatIconManager;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.List;
+import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import meteor.ui.overlay.Overlay;
+import meteor.util.ImageUtil;
+import net.runelite.api.Actor;
+import net.runelite.api.Client;
+import net.runelite.api.ItemID;
+import net.runelite.api.Player;
+import net.runelite.api.Point;
+import net.runelite.api.Varbits;
+import net.runelite.api.WorldType;
+import net.runelite.api.kit.KitType;
+import meteor.game.ChatIconManager;
 import meteor.ui.overlay.OverlayPosition;
 import meteor.ui.overlay.OverlayPriority;
 import meteor.ui.overlay.OverlayUtil;
-import meteor.util.Text;
-import net.runelite.api.FriendsChatRank;
-import net.runelite.api.Player;
-import net.runelite.api.Point;
-import net.runelite.api.clan.ClanTitle;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-
-@Singleton
+@Slf4j
 public class PlayerIndicatorsOverlay extends Overlay
 {
 	private static final int ACTOR_OVERHEAD_TEXT_MARGIN = 40;
 	private static final int ACTOR_HORIZONTAL_TEXT_MARGIN = 10;
 
-	private final PlayerIndicatorsService playerIndicatorsService;
+	private final BufferedImage agilityIcon = ImageUtil.getResourceStreamFromClass(
+			PlayerIndicatorsPlugin.class,
+		"agility.png");
+	private final BufferedImage noAgilityIcon = ImageUtil.getResourceStreamFromClass(
+			PlayerIndicatorsPlugin.class,
+		"no-agility.png");
+	private final BufferedImage skullIcon = ImageUtil.getResourceStreamFromClass(
+			PlayerIndicatorsPlugin.class,
+		"skull.png");
+
+	private final PlayerIndicatorsPlugin plugin;
 	private final PlayerIndicatorsConfig config;
-	private final ChatIconManager chatIconManager;
+	private final PlayerIndicatorsService playerIndicatorsExtendedService;
 
 	@Inject
-	private PlayerIndicatorsOverlay(PlayerIndicatorsConfig config, PlayerIndicatorsService playerIndicatorsService,
-		ChatIconManager chatIconManager)
+	private Client client;
+
+	@Inject
+	private ChatIconManager chatIconManager;
+
+	@Inject
+	public PlayerIndicatorsOverlay(
+      PlayerIndicatorsPlugin plugin, PlayerIndicatorsConfig config, PlayerIndicatorsService playerIndicatorsExtendedService)
 	{
+		this.plugin = plugin;
 		this.config = config;
-		this.playerIndicatorsService = playerIndicatorsService;
-		this.chatIconManager = chatIconManager;
+		this.playerIndicatorsExtendedService = playerIndicatorsExtendedService;
 		setPosition(OverlayPosition.DYNAMIC);
 		setPriority(OverlayPriority.MED);
 	}
@@ -65,93 +88,177 @@ public class PlayerIndicatorsOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		playerIndicatorsService.forEachPlayer((player, color) -> renderPlayerOverlay(graphics, player, color));
+		playerIndicatorsExtendedService.forEachPlayer((player, playerRelation) -> drawSceneOverlays(graphics, player, playerRelation));
 		return null;
 	}
 
-	private void renderPlayerOverlay(Graphics2D graphics, Player actor, Color color)
+	private void drawSceneOverlays(Graphics2D graphics, Player actor, PlayerIndicatorsPlugin.PlayerRelation relation)
 	{
-		final PlayerNameLocation drawPlayerNamesConfig = config.playerNamePosition();
-		if (drawPlayerNamesConfig == PlayerNameLocation.DISABLED)
+		if (actor.getName() == null || !plugin.getLocationHashMap().containsKey(relation))
 		{
 			return;
 		}
 
-		final int zOffset;
-		switch (drawPlayerNamesConfig)
+		final List indicationLocations = Arrays.asList(plugin.getLocationHashMap().get(relation));
+		final Color color = plugin.getRelationColorHashMap().get(relation);
+		final boolean skulls = config.playerSkull();
+		final String name = actor.getName();
+		final int zOffset = actor.getLogicalHeight() + ACTOR_OVERHEAD_TEXT_MARGIN;
+		final Point textLocation = actor.getCanvasTextLocation(graphics, name, zOffset);
+
+		if (indicationLocations.contains(
+        PlayerIndicatorsPlugin.PlayerIndicationLocation.ABOVE_HEAD))
 		{
-			case MODEL_CENTER:
-			case MODEL_RIGHT:
-				zOffset = actor.getLogicalHeight() / 2;
-				break;
-			default:
-				zOffset = actor.getLogicalHeight() + ACTOR_OVERHEAD_TEXT_MARGIN;
-		}
+			final StringBuilder nameSb = new StringBuilder(name);
 
-		final String name = Text.sanitize(actor.getName());
-		Point textLocation = actor.getCanvasTextLocation(graphics, name, zOffset);
-
-		if (drawPlayerNamesConfig == PlayerNameLocation.MODEL_RIGHT)
-		{
-			textLocation = actor.getCanvasTextLocation(graphics, "", zOffset);
-
-			if (textLocation == null)
+			if (config.showCombatLevel())
 			{
-				return;
+				nameSb.append(" (");
+				nameSb.append(actor.getCombatLevel());
+				nameSb.append(")");
 			}
 
-			textLocation = new Point(textLocation.getX() + ACTOR_HORIZONTAL_TEXT_MARGIN, textLocation.getY());
-		}
-
-		if (textLocation == null)
-		{
-			return;
-		}
-
-		BufferedImage rankImage = null;
-		if (actor.isFriendsChatMember$api() && config.highlightFriendsChat() && config.showFriendsChatRanks())
-		{
-			final FriendsChatRank rank = playerIndicatorsService.getFriendsChatRank(actor);
-
-			if (rank != FriendsChatRank.UNRANKED)
+			if (config.unchargedGlory() &&
+				actor.getPlayerComposition().getEquipmentId(KitType.AMULET) == ItemID.AMULET_OF_GLORY)
 			{
-				rankImage = chatIconManager.getRankImage(rank);
+				nameSb.append(" (glory)");
 			}
-		}
-		else if (actor.isClanMember$api() && config.highlightClanMembers() && config.showClanChatRanks())
-		{
-			ClanTitle clanTitle = playerIndicatorsService.getClanTitle(actor);
-			if (clanTitle != null)
+
+			final String builtString = nameSb.toString();
+			final int x = graphics.getFontMetrics().stringWidth(builtString);
+			final int y = graphics.getFontMetrics().getHeight();
+
+			if (config.highlightClan() && actor.isFriendsChatMember$api() && config.showFriendsChatRanks() && relation == PlayerIndicatorsPlugin.PlayerRelation.CLAN)
 			{
-				rankImage = chatIconManager.getRankImage(clanTitle);
+				if (plugin.getRank(actor.getName()) != null)
+				{
+					final BufferedImage clanRankImage = chatIconManager.getRankImage(plugin.getRank(actor.getName()));
+					if (clanRankImage != null)
+					{
+						renderActorTextAndImage(graphics, actor, builtString, color,
+							ImageUtil.resizeImage(clanRankImage, y, y), 0, ACTOR_HORIZONTAL_TEXT_MARGIN);
+					}
+				}
 			}
-		}
-
-		if (rankImage != null)
-		{
-			final int imageWidth = rankImage.getWidth();
-			final int imageTextMargin;
-			final int imageNegativeMargin;
-
-			if (drawPlayerNamesConfig == PlayerNameLocation.MODEL_RIGHT)
+			else if (skulls && actor.getSkullIcon() != null && relation.equals(
+          PlayerIndicatorsPlugin.PlayerRelation.TARGET))
 			{
-				imageTextMargin = imageWidth;
-				imageNegativeMargin = 0;
+
+				renderActorTextAndImage(graphics, actor, builtString, color,
+					ImageUtil.resizeImage(skullIcon, y, y), ACTOR_OVERHEAD_TEXT_MARGIN, ACTOR_HORIZONTAL_TEXT_MARGIN);
 			}
 			else
 			{
-				imageTextMargin = imageWidth / 2;
-				imageNegativeMargin = imageWidth / 2;
+				renderActorTextOverlay(graphics, actor, builtString, color);
 			}
-
-			final int textHeight = graphics.getFontMetrics().getHeight() - graphics.getFontMetrics().getMaxDescent();
-			final Point imageLocation = new Point(textLocation.getX() - imageNegativeMargin - 1, textLocation.getY() - textHeight / 2 - rankImage.getHeight() / 2);
-			OverlayUtil.renderImageLocation(graphics, imageLocation, rankImage);
-
-			// move text
-			textLocation = new Point(textLocation.getX() + imageTextMargin, textLocation.getY());
+		}
+		if (actor.getConvexHull() != null && indicationLocations.contains(
+        PlayerIndicatorsPlugin.PlayerIndicationLocation.HULL))
+		{
+			OverlayUtil.renderPolygon(graphics, actor.getConvexHull(), color);
 		}
 
-		OverlayUtil.renderTextLocation(graphics, textLocation, name, color);
+		if (indicationLocations.contains(
+        PlayerIndicatorsPlugin.PlayerIndicationLocation.TILE))
+		{
+			if (actor.getCanvasTilePoly() != null)
+			{
+				OverlayUtil.renderPolygon(graphics, actor.getCanvasTilePoly(), color);
+			}
+		}
+
+		if (relation.equals(PlayerIndicatorsPlugin.PlayerRelation.TARGET))
+		{
+			if (config.showAgilityLevel() && checkWildy() && plugin.getResultCache().containsKey(actor.getName()))
+			{
+				if (textLocation == null)
+				{
+					return;
+				}
+
+				final int level = plugin.getResultCache().get(actor.getName()).getAgility().getLevel();
+
+				if (config.agilityFormat() == PlayerIndicatorsPlugin.AgilityFormats.ICONS)
+				{
+
+					final int width = config.showCombatLevel() ? graphics.getFontMetrics().stringWidth(name)
+						+ ACTOR_HORIZONTAL_TEXT_MARGIN : graphics.getFontMetrics().stringWidth(name);
+
+					final int height = graphics.getFontMetrics().getHeight();
+					if (level >= config.agilityFirstThreshold())
+					{
+						OverlayUtil.renderImageLocation(graphics,
+							new Point(textLocation.getX() + 5 + width,
+								textLocation.getY() - height),
+							ImageUtil.resizeImage(agilityIcon, height, height));
+					}
+					if (level >= config.agilitySecondThreshold())
+					{
+						OverlayUtil.renderImageLocation(graphics,
+							new Point(textLocation.getX() + agilityIcon.getWidth() + width,
+								textLocation.getY() - height),
+							ImageUtil.resizeImage(agilityIcon, height, height));
+					}
+					if (level < config.agilityFirstThreshold())
+					{
+						OverlayUtil.renderImageLocation(graphics,
+							new Point(textLocation.getX() + 5 + width,
+								textLocation.getY() - height),
+							ImageUtil.resizeImage(noAgilityIcon, height, height));
+					}
+				}
+				else
+				{
+					Color agiColor = Color.WHITE;
+
+					if (level >= config.agilityFirstThreshold())
+					{
+						agiColor = Color.CYAN;
+					}
+					else if (level >= config.agilitySecondThreshold())
+					{
+						agiColor = Color.GREEN;
+					}
+					else if (level < config.agilityFirstThreshold())
+					{
+						agiColor = Color.RED;
+					}
+
+					final String n = level + " " + "Agility";
+					renderActorTextOverlay(graphics, actor, n, agiColor, 60);
+				}
+			}
+		}
+	}
+
+	private boolean checkWildy()
+	{
+		return client.getVar(Varbits.IN_WILDERNESS) == 1 || WorldType.isAllPvpWorld(client.getWorldType());
+	}
+
+	public static void renderActorTextAndImage(Graphics2D graphics, Actor actor, String text, Color color, BufferedImage image, int yOffset, int xOffset)
+	{
+		Point textLocation = actor.getCanvasTextLocation(graphics, text, actor.getLogicalHeight() + yOffset);
+
+		if (textLocation != null)
+		{
+			OverlayUtil.renderImageLocation(graphics, textLocation, image);
+			textLocation = new Point(textLocation.getX() + xOffset, textLocation.getY());
+			OverlayUtil.renderTextLocation(graphics, textLocation, text, color);
+		}
+	}
+
+	public static void renderActorTextOverlay(Graphics2D graphics, Actor actor, String text, Color color)
+	{
+		renderActorTextOverlay(graphics, actor, text, color, 40);
+	}
+
+	public static void renderActorTextOverlay(Graphics2D graphics, Actor actor, String text, Color color, int offset)
+	{
+		Point textLocation = actor.getCanvasTextLocation(graphics, text, actor.getLogicalHeight() + offset);
+		if (textLocation != null)
+		{
+			OverlayUtil.renderTextLocation(graphics, textLocation, text, color);
+		}
 	}
 }

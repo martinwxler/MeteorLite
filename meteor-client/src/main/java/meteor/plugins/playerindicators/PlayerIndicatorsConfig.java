@@ -24,36 +24,100 @@
  */
 package meteor.plugins.playerindicators;
 
+import java.awt.Color;
+import java.util.EnumSet;
 import meteor.config.Config;
 import meteor.config.ConfigGroup;
 import meteor.config.ConfigItem;
 import meteor.config.ConfigSection;
+import meteor.config.ConfigTitle;
+import meteor.config.Range;
+import net.runelite.api.FriendsChatRank;
 
-import java.awt.*;
-
-@ConfigGroup("playerindicators")
+@ConfigGroup("playerindicatorsextended")
 public interface PlayerIndicatorsConfig extends Config
 {
-	@ConfigSection(
-		name = "Highlight Options",
-		description = "Toggle highlighted players by type (self, friends, etc.) and choose their highlight colors",
-		position = 99
-	)
-	String highlightSection = "Highlight Options";
+	EnumSet<PlayerIndicatorsPlugin.PlayerIndicationLocation> defaultPlayerIndicatorMode = EnumSet.complementOf(EnumSet.of(
+			PlayerIndicatorsPlugin.PlayerIndicationLocation.HULL));
 
 	@ConfigSection(
-			name = "General",
-			description = "",
-			position = 98
+		name = "Yourself",
+		description = "",
+		position = 0,
+		keyName = "yourselfSection",
+		closedByDefault = true
 	)
-	String general = "General";
+	String yourselfSection = "Yourself";
+
+	@ConfigSection(
+		name = "Friends",
+		description = "",
+		position = 1,
+		keyName = "friendsSection",
+		closedByDefault = true
+	)
+	String friendsSection = "Friends";
+
+	@ConfigSection(
+		name = "Clan",
+		description = "",
+		position = 2,
+		keyName = "friendsChatSection",
+		closedByDefault = true
+	)
+	String friendsChatSection = "Clan";
+
+	@ConfigSection(
+		name = "Team",
+		description = "",
+		position = 3,
+		keyName = "teamSection",
+		closedByDefault = true
+	)
+	String teamSection = "Team";
+
+	@ConfigSection(
+		name = "Target",
+		description = "",
+		position = 4,
+		keyName = "targetSection",
+		closedByDefault = true
+	)
+	String targetSection = "Target";
+
+	@ConfigSection(
+		name = "Other",
+		description = "",
+		position = 5,
+		keyName = "otherSection",
+		closedByDefault = true
+	)
+	String otherSection = "Other";
+
+	@ConfigSection(
+		name = "Callers",
+		description = "",
+		position = 6,
+		keyName = "callersSection",
+		closedByDefault = true
+	)
+	String callersSection = "Callers";
+
+	@ConfigSection(
+		name = "Miscellaneous",
+		description = "",
+		position = 7,
+		keyName = "miscellaneousSection",
+		closedByDefault = true
+	)
+	String miscellaneousSection = "Miscellaneous";
 
 	@ConfigItem(
 		position = 0,
 		keyName = "drawOwnName",
 		name = "Highlight own player",
 		description = "Configures whether or not your own player should be highlighted",
-		section = highlightSection
+		section = yourselfSection
 	)
 	default boolean highlightOwnPlayer()
 	{
@@ -63,9 +127,9 @@ public interface PlayerIndicatorsConfig extends Config
 	@ConfigItem(
 		position = 1,
 		keyName = "ownNameColor",
-		name = "Own player",
+		name = "Own player color",
 		description = "Color of your own player",
-		section = highlightSection
+		section = yourselfSection
 	)
 	default Color getOwnPlayerColor()
 	{
@@ -74,10 +138,23 @@ public interface PlayerIndicatorsConfig extends Config
 
 	@ConfigItem(
 		position = 2,
+		keyName = "selfIndicatorModes",
+		name = "Indicator Mode",
+		description = "Location(s) of the overlay",
+		section = yourselfSection,
+		enumClass = PlayerIndicatorsPlugin.PlayerIndicationLocation.class
+	)
+	default EnumSet<PlayerIndicatorsPlugin.PlayerIndicationLocation> selfIndicatorModes()
+	{
+		return defaultPlayerIndicatorMode;
+	}
+
+	@ConfigItem(
+		position = 0,
 		keyName = "drawFriendNames",
 		name = "Highlight friends",
 		description = "Configures whether or not friends should be highlighted",
-		section = highlightSection
+		section = friendsSection
 	)
 	default boolean highlightFriends()
 	{
@@ -85,11 +162,11 @@ public interface PlayerIndicatorsConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 3,
+		position = 1,
 		keyName = "friendNameColor",
-		name = "Friend",
+		name = "Friend color",
 		description = "Color of friend names",
-		section = highlightSection
+		section = friendsSection
 	)
 	default Color getFriendColor()
 	{
@@ -97,170 +174,438 @@ public interface PlayerIndicatorsConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 4,
-		keyName = "drawClanMemberNames",
-		name = "Highlight friends chat members",
-		description = "Configures if friends chat members should be highlighted",
-		section = highlightSection
+		position = 2,
+		keyName = "friendIndicatorMode",
+		name = "Indicator Mode",
+		description = "Location(s) of the overlay",
+		section = friendsSection,
+		enumClass = PlayerIndicatorsPlugin.PlayerIndicationLocation.class
+
 	)
-	default boolean highlightFriendsChat()
+	default EnumSet<PlayerIndicatorsPlugin.PlayerIndicationLocation> friendIndicatorMode()
+	{
+		return defaultPlayerIndicatorMode;
+	}
+
+	@ConfigItem(
+		position = 0,
+		keyName = "highlightClan",
+		name = "Highlight friends chat members",
+		description = "Configures whether or friends chat members should be highlighted",
+		section = friendsChatSection
+	)
+	default boolean highlightClan()
 	{
 		return true;
 	}
 
 	@ConfigItem(
-		position = 5,
+		position = 1,
 		keyName = "clanMemberColor",
-		name = "Friends chat",
+		name = "Friends chat member color",
 		description = "Color of friends chat members",
-		section = highlightSection
+		section = friendsChatSection
 	)
-	default Color getFriendsChatMemberColor()
+	default Color getFriendsChatColor()
 	{
 		return new Color(170, 0, 255);
 	}
 
 	@ConfigItem(
-		position = 6,
-		keyName = "drawTeamMemberNames",
-		name = "Highlight team members",
-		description = "Configures whether or not team members should be highlighted",
-		section = highlightSection
+		position = 2,
+		keyName = "clanIndicatorModes",
+		name = "Indicator Mode",
+		description = "Location(s) of the overlay",
+		section = friendsChatSection,
+		enumClass = PlayerIndicatorsPlugin.PlayerIndicationLocation.class
+
 	)
-	default boolean highlightTeamMembers()
+	default EnumSet<PlayerIndicatorsPlugin.PlayerIndicationLocation> friendsChatIndicatorModes()
 	{
-		return true;
+		return defaultPlayerIndicatorMode;
 	}
 
 	@ConfigItem(
-		position = 7,
-		keyName = "teamMemberColor",
-		name = "Team member",
-		description = "Color of team members",
-		section = highlightSection
+		position = 3,
+		keyName = "clanMenuIcons",
+		name = "Show friends chat ranks",
+		description = "Add friends chat rank to right click menu and next to player names",
+		section = friendsChatSection
 	)
-	default Color getTeamMemberColor()
+	default boolean showFriendsChatRanks()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		position = 0,
+		keyName = "drawTeamMemberNames",
+		name = "Highlight team members",
+		description = "Configures whether or not team members should be highlighted",
+		section = teamSection
+	)
+	default boolean highlightTeamMembers()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		position = 1,
+		keyName = "teamMemberColor",
+		name = "Team member color",
+		description = "Color of team members",
+		section = teamSection
+	)
+	default Color getTeamcolor()
 	{
 		return new Color(19, 110, 247);
 	}
 
 	@ConfigItem(
-		position = 8,
-		keyName = "drawClanChatMemberNames",
-		name = "Highlight clan members",
-		description = "Configures whether or not clan members should be highlighted",
-		section = highlightSection
+		position = 2,
+		keyName = "teamIndicatorModes",
+		name = "Indicator Mode",
+		description = "Location(s) of the overlay",
+		section = teamSection,
+		enumClass = PlayerIndicatorsPlugin.PlayerIndicationLocation.class
+
 	)
-	default boolean highlightClanMembers()
+	default EnumSet<PlayerIndicatorsPlugin.PlayerIndicationLocation> teamIndicatorModes()
 	{
-		return true;
+		return defaultPlayerIndicatorMode;
 	}
 
 	@ConfigItem(
-		position = 9,
-		keyName = "clanChatMemberColor",
-		name = "Clan member",
-		description = "Color of clan members",
-		section = highlightSection
+		position = 0,
+		keyName = "drawTargetsNames",
+		name = "Highlight attackable targets",
+		description = "Configures whether or not attackable targets should be highlighted",
+		section = targetSection
 	)
-	default Color getClanMemberColor()
-	{
-		return new Color(36, 15, 171);
-	}
-
-	@ConfigItem(
-		position = 10,
-		keyName = "drawNonClanMemberNames",
-		name = "Highlight others",
-		description = "Configures whether or not other players should be highlighted",
-		section = highlightSection
-	)
-	default boolean highlightOthers()
+	default boolean highlightTargets()
 	{
 		return false;
 	}
 
 	@ConfigItem(
-		position = 11,
-		keyName = "nonClanMemberColor",
-		name = "Others",
-		description = "Color of other players names",
-		section = highlightSection
+		position = 1,
+		keyName = "targetColor",
+		name = "Target member color",
+		description = "Color of attackable targets",
+		section = targetSection
 	)
-	default Color getOthersColor()
+	default Color getTargetsColor()
+	{
+		return new Color(19, 110, 247);
+	}
+
+	@ConfigItem(
+		position = 2,
+		keyName = "targetsIndicatorModes",
+		name = "Indicator Mode",
+		description = "Location(s) of the overlay",
+		section = targetSection,
+		enumClass = PlayerIndicatorsPlugin.PlayerIndicationLocation.class
+
+	)
+	default EnumSet<PlayerIndicatorsPlugin.PlayerIndicationLocation> targetsIndicatorModes()
+	{
+		return defaultPlayerIndicatorMode;
+	}
+
+	@ConfigItem(
+		position = 3,
+		keyName = "showAgility",
+		name = "Show Agility Levels",
+		description = "Show the agility level of attackable players next to their name while in the wilderness.",
+		section = targetSection
+	)
+	default boolean showAgilityLevel()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		position = 4,
+		keyName = "agilityFormat",
+		name = "Format",
+		description = "Whether to show the agility level as text, or as icons (1 skull >= 1st threshold, 2 skulls >= 2nd threshold).",
+		section = targetSection
+	)
+	default PlayerIndicatorsPlugin.AgilityFormats agilityFormat()
+	{
+		return PlayerIndicatorsPlugin.AgilityFormats.TEXT;
+	}
+
+	@Range(min = 1, max = 99)
+	@ConfigItem(
+		position = 5,
+		keyName = "agilityFirstThreshold",
+		name = "First Threshold",
+		description = "When showing agility as icons, show one icon for agility >= this level.",
+		section = targetSection
+	)
+	default int agilityFirstThreshold()
+	{
+		return 70;
+	}
+
+	@Range(min = 1, max = 99)
+	@ConfigItem(
+		position = 6,
+		keyName = "agilitySecondThreshold",
+		name = "Second Threshold",
+		description = "When showing agility as icons, show two icons for agility >= this level.",
+		section = targetSection
+	)
+	default int agilitySecondThreshold()
+	{
+		return 84;
+	}
+
+	@ConfigItem(
+		position = 7,
+		keyName = "playerSkull",
+		name = "Show Skull Information",
+		description = "shows",
+		section = targetSection
+	)
+	default boolean playerSkull()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		position = 8,
+		keyName = "minimapSkullLocation",
+		name = "Skull Icon Location",
+		description = "The location of the skull icon for skulled players",
+		section = targetSection
+	)
+	default PlayerIndicatorsPlugin.MinimapSkullLocations skullLocation()
+	{
+		return PlayerIndicatorsPlugin.MinimapSkullLocations.AFTER_NAME;
+	}
+
+	@ConfigItem(
+		position = 9,
+		keyName = "targetRisk",
+		name = "Indicate Target Risk",
+		description = "Indicates the risk (in K GP) of the target",
+		section = targetSection
+	)
+	default boolean targetRisk()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		position = 10,
+		keyName = "showCombat",
+		name = "Show Combat Levels",
+		description = "Show the combat level of attackable players next to their name.",
+		section = targetSection
+	)
+	default boolean showCombatLevel()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		position = 0,
+		keyName = "drawOtherPlayerNames",
+		name = "Highlight other players",
+		description = "Configures whether or not other players should be highlighted",
+		section = otherSection
+	)
+	default boolean highlightOtherPlayers()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		position = 1,
+		keyName = "otherPlayerColor",
+		name = "Other player color",
+		description = "Color of other players' names",
+		section = otherSection
+	)
+	default Color getOtherColor()
 	{
 		return Color.RED;
 	}
 
 	@ConfigItem(
-		position = 10,
-		keyName = "drawPlayerTiles",
-		name = "Draw tiles under players",
-		description = "Configures whether or not tiles under highlighted players should be drawn",
-		section = general
+		position = 2,
+		keyName = "otherIndicatorModes",
+		name = "Indicator Mode",
+		description = "Location(s) of the overlay",
+		section = otherSection,
+		enumClass = PlayerIndicatorsPlugin.PlayerIndicationLocation.class
+
 	)
-	default boolean drawTiles()
+	default EnumSet<PlayerIndicatorsPlugin.PlayerIndicationLocation> otherIndicatorModes()
+	{
+		return defaultPlayerIndicatorMode;
+	}
+
+	@ConfigTitle(
+		keyName = "callerConfiguration",
+		position = 0,
+		name = "Caller Configuration",
+		description = "",
+		section = callersSection
+	)
+	String callerConfiguration = "Caller Configuration";
+
+	@ConfigItem(
+		position = 1,
+		keyName = "highlightCallers",
+		name = "Highlight Callers",
+		description = "Highlights Callers Onscreen",
+		section = callersSection,
+		title = callerConfiguration
+	)
+	default boolean highlightCallers()
 	{
 		return false;
+	}
+
+	@ConfigItem(
+		position = 2,
+		keyName = "useClanchatRanks",
+		name = "Use Ranks as Callers",
+		description = "Uses friends chat ranks as the list of callers",
+		section = callersSection,
+		title = callerConfiguration
+	)
+	default boolean useClanchatRanks()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		position = 3,
+		keyName = "callerRank",
+		name = "Minimum rank for friends chat Caller",
+		description = "Chooses the minimum rank to use as friends chat callers.",
+		section = callersSection,
+		title = callerConfiguration
+	)
+	default FriendsChatRank callerRank()
+	{
+		return FriendsChatRank.CAPTAIN;
+	}
+
+	@ConfigItem(
+		position = 4,
+		keyName = "callers",
+		name = "List of callers to highlight",
+		description = "Highlights callers, only highlights one at a time. Separate each entry with a comma and enter" +
+			" in the order you want them highlighted.",
+		section = callersSection,
+		title = callerConfiguration
+	)
+	default String callers()
+	{
+		return " ";
+	}
+
+	@ConfigTitle(
+		keyName = "callerIndicators",
+		position = 5,
+		name = "Caller Indicators",
+		description = "",
+		section = callersSection
+	)
+	String callerIndicators = "Caller Indicators";
+
+	@ConfigItem(
+		position = 6,
+		keyName = "callerColor",
+		name = "Caller Color",
+		description = "Color of Indicated Callers",
+		section = callersSection,
+		title = callerIndicators
+	)
+	default Color callerColor()
+	{
+		return Color.WHITE;
+	}
+
+	@ConfigItem(
+		position = 7,
+		keyName = "callerHighlightOptions",
+		name = "Caller indication methods",
+		description = "Location(s) of the overlay",
+		section = callersSection,
+		title = callerIndicators,
+		enumClass = PlayerIndicatorsPlugin.PlayerIndicationLocation.class
+	)
+	default EnumSet<PlayerIndicatorsPlugin.PlayerIndicationLocation> callerHighlightOptions()
+	{
+		return defaultPlayerIndicatorMode;
+	}
+
+	@ConfigTitle(
+		keyName = "callerTargetIndicators",
+		position = 8,
+		name = "Caller Target Indicators",
+		description = "",
+		section = callersSection
+	)
+	String callerTargetIndicators = "Caller Target Indicators";
+
+	@ConfigItem(
+		position = 9,
+		keyName = "callersTargets",
+		name = "Calllers' targets",
+		description = "Highlights the targets of callers",
+		section = callersSection,
+		title = callerTargetIndicators
+	)
+	default boolean callersTargets()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		position = 10,
+		keyName = "callerTargetColor",
+		name = "Callers' targets color",
+		description = "Color of the the targets of callers",
+		section = callersSection,
+		title = callerTargetIndicators
+	)
+	default Color callerTargetColor()
+	{
+		return Color.WHITE.darker();
 	}
 
 	@ConfigItem(
 		position = 11,
-		keyName = "playerNamePosition",
-		name = "Name position",
-		description = "Configures the position of drawn player names, or if they should be disabled",
-		section = general
+		keyName = "callerTargetHighlightOptions",
+		name = "Pile indication methods",
+		description = "How to highlight the callers' target",
+		section = callersSection,
+		title = callerTargetIndicators,
+		enumClass = PlayerIndicatorsPlugin.PlayerIndicationLocation.class
 	)
-	default PlayerNameLocation playerNamePosition()
+	default EnumSet<PlayerIndicatorsPlugin.PlayerIndicationLocation> callerTargetHighlightOptions()
 	{
-		return PlayerNameLocation.ABOVE_HEAD;
+		return defaultPlayerIndicatorMode;
 	}
 
 	@ConfigItem(
-		position = 12,
-		keyName = "drawMinimapNames",
-		name = "Draw names on minimap",
-		description = "Configures whether or not minimap names for players with rendered names should be drawn",
-		section = general
+		position = 0,
+		keyName = "unchargedGlory",
+		name = "Uncharged Glory Indication",
+		description = "Indicates if players have an uncharged glory (this only works if the above head indicator is selected)",
+		section = miscellaneousSection
 	)
-	default boolean drawMinimapNames()
+	default boolean unchargedGlory()
 	{
 		return false;
 	}
 
-	@ConfigItem(
-		position = 13,
-		keyName = "colorPlayerMenu",
-		name = "Colorize player menu",
-		description = "Color right click menu for players",
-		section = general
-	)
-	default boolean colorPlayerMenu()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		position = 14,
-		keyName = "clanMenuIcons",
-		name = "Show friends chat ranks",
-		description = "Add friends chat rank to right click menu and next to player names",
-		section = general
-	)
-	default boolean showFriendsChatRanks()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		position = 15,
-		keyName = "clanchatMenuIcons",
-		name = "Show clan chat ranks",
-		description = "Add clan chat rank to right click menu and next to player names",
-		section = general
-	)
-	default boolean showClanChatRanks()
-	{
-		return true;
-	}
 }

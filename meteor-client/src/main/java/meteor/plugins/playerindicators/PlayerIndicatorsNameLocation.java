@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Kamiel <https://github.com/Kamielvf>
+ * Copyright (c) 2019, Jordan Atwood <nightfirecat@protonmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,47 +22,24 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package meteor.plugins.playerindicators;
 
-import meteor.ui.overlay.*;
+import lombok.AllArgsConstructor;
 
-import javax.inject.Inject;
-import java.awt.*;
-
-public class PlayerIndicatorsTileOverlay extends Overlay
+@AllArgsConstructor
+public enum PlayerIndicatorsNameLocation
 {
-	private final PlayerIndicatorsService playerIndicatorsService;
-	private final PlayerIndicatorsConfig config;
 
-	@Inject
-	private PlayerIndicatorsTileOverlay(PlayerIndicatorsConfig config, PlayerIndicatorsService playerIndicatorsService)
-	{
-		this.config = config;
-		this.playerIndicatorsService = playerIndicatorsService;
-		setLayer(OverlayLayer.ABOVE_SCENE);
-		setPosition(OverlayPosition.DYNAMIC);
-		setPriority(OverlayPriority.MED);
-	}
+	DISABLED("Disabled"),
+	ABOVE_HEAD("Above head"),
+	MODEL_CENTER("Center of model"),
+	MODEL_RIGHT("Right of model");
+
+	private final String name;
 
 	@Override
-	public Dimension render(Graphics2D graphics)
+	public String toString()
 	{
-		if (!config.drawTiles())
-		{
-			return null;
-		}
-
-		playerIndicatorsService.forEachPlayer((player, color) ->
-		{
-			final Polygon poly = player.getCanvasTilePoly();
-
-			if (poly != null)
-			{
-				OverlayUtil.renderPolygon(graphics, poly, color);
-			}
-		});
-
-		return null;
+		return name;
 	}
 }

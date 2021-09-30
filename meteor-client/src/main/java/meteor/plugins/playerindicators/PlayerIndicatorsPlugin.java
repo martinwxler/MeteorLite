@@ -24,8 +24,51 @@
  */
 package meteor.plugins.playerindicators;
 
+import static net.runelite.api.FriendsChatRank.UNRANKED;
+import static net.runelite.api.MenuAction.FOLLOW;
+import static net.runelite.api.MenuAction.ITEM_USE_ON_PLAYER;
+import static net.runelite.api.MenuAction.PLAYER_EIGTH_OPTION;
+import static net.runelite.api.MenuAction.PLAYER_FIFTH_OPTION;
+import static net.runelite.api.MenuAction.PLAYER_FIRST_OPTION;
+import static net.runelite.api.MenuAction.PLAYER_FOURTH_OPTION;
+import static net.runelite.api.MenuAction.PLAYER_SECOND_OPTION;
+import static net.runelite.api.MenuAction.PLAYER_SEVENTH_OPTION;
+import static net.runelite.api.MenuAction.PLAYER_SIXTH_OPTION;
+import static net.runelite.api.MenuAction.PLAYER_THIRD_OPTION;
+import static net.runelite.api.MenuAction.RUNELITE;
+import static net.runelite.api.MenuAction.SPELL_CAST_ON_PLAYER;
+import static net.runelite.api.MenuAction.TRADE;
 import com.google.inject.Provides;
-import lombok.Value;
+import java.awt.Color;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import javax.inject.Inject;
+import lombok.AccessLevel;
+import lombok.Getter;
+import meteor.eventbus.events.ConfigChanged;
+import net.runelite.api.Actor;
+import net.runelite.api.Client;
+import net.runelite.api.FriendsChatManager;
+import net.runelite.api.FriendsChatMember;
+import net.runelite.api.FriendsChatRank;
+import net.runelite.api.MenuEntry;
+import net.runelite.api.Player;
+import net.runelite.api.Varbits;
+import net.runelite.api.WorldType;
+import net.runelite.api.events.FriendsChatMemberJoined;
+import net.runelite.api.events.FriendsChatMemberLeft;
+import net.runelite.api.events.InteractingChanged;
+import net.runelite.api.events.MenuEntryAdded;
+import net.runelite.api.events.PlayerSpawned;
+import net.runelite.api.util.Text;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.game.ChatIconManager;
@@ -33,53 +76,54 @@ import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.ui.overlay.OverlayManager;
 import meteor.util.ColorUtil;
-import net.runelite.api.Client;
-import net.runelite.api.FriendsChatRank;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.Player;
-import net.runelite.api.clan.ClanTitle;
-import net.runelite.api.events.ClientTick;
-
-
-import javax.inject.Inject;
-import java.awt.*;
-
-import static net.runelite.api.FriendsChatRank.UNRANKED;
-import static net.runelite.api.MenuAction.*;
+import meteor.util.PvPUtil;
+import net.runelite.http.api.RuneLiteAPI;
+import net.runelite.http.api.hiscore.HiscoreClient;
+import net.runelite.http.api.hiscore.HiscoreResult;
 
 @PluginDescriptor(
 	name = "Player Indicators",
 	description = "Highlight players on-screen and/or on the minimap",
-	tags = {"highlight", "minimap", "overlay", "players"}
+	tags = {"highlight", "minimap", "overlay", "players", "pklite"}
 )
+@Getter(AccessLevel.PACKAGE)
 public class PlayerIndicatorsPlugin extends Plugin
 {
+	private static final HiscoreClient HISCORE_CLIENT = new HiscoreClient(RuneLiteAPI.CLIENT);
+	private final List<String> callers = new ArrayList<>();
+	private final Map<Player, PlayerRelation> colorizedMenus = new ConcurrentHashMap<>();
+	private final Map<PlayerRelation, Color> relationColorHashMap = new ConcurrentHashMap<>();
+	private final Map<PlayerRelation, Object[]> locationHashMap = new ConcurrentHashMap<>();
+	private final Map<String, Actor> callerPiles = new ConcurrentHashMap<>();
+	@Getter(AccessLevel.PACKAGE)
+	private final Map<String, HiscoreResult> resultCache = new HashMap<>();
+	private final ExecutorService executorService = Executors.newFixedThreadPool(100);
+
 	@Inject
+	@Getter(AccessLevel.NONE)
 	private OverlayManager overlayManager;
 
 	@Inject
+	@Getter(AccessLevel.NONE)
 	private PlayerIndicatorsConfig config;
 
 	@Inject
-	private PlayerIndicatorsOverlay playerIndicatorsOverlay;
+	@Getter(AccessLevel.NONE)
+	private PlayerIndicatorsOverlay playerIndicatorsExtendedOverlay;
 
 	@Inject
-	private PlayerIndicatorsTileOverlay playerIndicatorsTileOverlay;
+	@Getter(AccessLevel.NONE)
+	private PlayerIndicatorsMinimapOverlay playerIndicatorsExtendedMinimapOverlay;
 
 	@Inject
-	private PlayerIndicatorsMinimapOverlay playerIndicatorsMinimapOverlay;
-
-	@Inject
-	private PlayerIndicatorsService playerIndicatorsService;
-
-	@Inject
+	@Getter(AccessLevel.NONE)
 	private Client client;
 
 	@Inject
 	private ChatIconManager chatIconManager;
 
 	@Provides
-	public PlayerIndicatorsConfig getConfig(ConfigManager configManager)
+  public PlayerIndicatorsConfig getConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(PlayerIndicatorsConfig.class);
 	}
@@ -87,175 +131,485 @@ public class PlayerIndicatorsPlugin extends Plugin
 	@Override
 	public void startup()
 	{
-		overlayManager.add(playerIndicatorsOverlay);
-		overlayManager.add(playerIndicatorsTileOverlay);
-		overlayManager.add(playerIndicatorsMinimapOverlay);
+		updateConfig();
+		resultCache.clear();
+		overlayManager.add(playerIndicatorsExtendedOverlay);
+		overlayManager.add(playerIndicatorsExtendedMinimapOverlay);
+		getCallerList();
 	}
 
 	@Override
 	public void shutdown()
 	{
-		overlayManager.remove(playerIndicatorsOverlay);
-		overlayManager.remove(playerIndicatorsTileOverlay);
-		overlayManager.remove(playerIndicatorsMinimapOverlay);
+		overlayManager.remove(playerIndicatorsExtendedOverlay);
+		overlayManager.remove(playerIndicatorsExtendedMinimapOverlay);
+		resultCache.clear();
 	}
 
 	@Subscribe
-	public void onClientTick(ClientTick clientTick)
+	private void onInteractingChanged(InteractingChanged event)
 	{
-		if (client.isMenuOpen())
+		if (!config.callersTargets() || event.getSource() == null || callers.isEmpty() || !isCaller(event.getSource()))
 		{
 			return;
 		}
 
-		MenuEntry[] menuEntries = client.getMenuEntries();
-		boolean modified = false;
+		final Actor caller = event.getSource();
 
-		for (MenuEntry entry : menuEntries)
+		if (this.callerPiles.containsKey(caller.getName()))
 		{
-			int type = entry.getType();
-
-			if (type >= MENU_ACTION_DEPRIORITIZE_OFFSET)
+			if (event.getTarget() == null)
 			{
-				type -= MENU_ACTION_DEPRIORITIZE_OFFSET;
+				callerPiles.remove(caller.getName());
+				return;
 			}
 
-			if (type == WALK.getId()
-				|| type == SPELL_CAST_ON_PLAYER.getId()
-				|| type == ITEM_USE_ON_PLAYER.getId()
-				|| type == PLAYER_FIRST_OPTION.getId()
-				|| type == PLAYER_SECOND_OPTION.getId()
-				|| type == PLAYER_THIRD_OPTION.getId()
-				|| type == PLAYER_FOURTH_OPTION.getId()
-				|| type == PLAYER_FIFTH_OPTION.getId()
-				|| type == PLAYER_SIXTH_OPTION.getId()
-				|| type == PLAYER_SEVENTH_OPTION.getId()
-				|| type == PLAYER_EIGTH_OPTION.getId()
-				|| type == RUNELITE_PLAYER.getId())
-			{
-				Player[] players = client.getCachedPlayers();
-				Player player = null;
-
-				int identifier = entry.getIdentifier();
-
-				// 'Walk here' identifiers are offset by 1 because the default
-				// identifier for this option is 0, which is also a player index.
-				if (type == WALK.getId())
-				{
-					identifier--;
-				}
-
-				if (identifier >= 0 && identifier < players.length)
-				{
-					player = players[identifier];
-				}
-
-				if (player == null)
-				{
-					continue;
-				}
-
-				Decorations decorations = getDecorations(player);
-
-				if (decorations == null)
-				{
-					continue;
-				}
-
-				String oldTarget = entry.getTarget();
-				String newTarget = decorateTarget(oldTarget, decorations);
-
-				entry.setTarget(newTarget);
-				modified = true;
-			}
+			callerPiles.replace(caller.getName(), event.getTarget());
+			return;
 		}
 
-		if (modified)
+		if (event.getTarget() == null)
 		{
-			client.setMenuEntries(menuEntries);
+			return;
 		}
+
+		callerPiles.put(caller.getName(), event.getTarget());
 	}
 
-	private Decorations getDecorations(Player player)
+	@Subscribe
+	private void onConfigChanged(ConfigChanged event)
 	{
-		int image = -1;
-		Color color = null;
-
-		if (player.isFriend$api() && config.highlightFriends())
+		if (!event.getGroup().equals("playerindicatorsextended"))
 		{
-			color = config.getFriendColor();
+			return;
 		}
-		else if (player.isFriendsChatMember$api() && config.highlightFriendsChat())
-		{
-			color = config.getFriendsChatMemberColor();
 
-			if (config.showFriendsChatRanks())
+		updateConfig();
+	}
+
+	@Subscribe
+	private void onFriendsChatMemberJoined(FriendsChatMemberJoined event)
+	{
+		getCallerList();
+	}
+
+	@Subscribe
+	private void onFriendsChatMemberLeft(FriendsChatMemberLeft event)
+	{
+		getCallerList();
+	}
+
+	@Subscribe
+	private void onPlayerSpawned(PlayerSpawned event)
+	{
+		final Player player = event.getPlayer();
+
+		if (!config.showAgilityLevel() || resultCache.containsKey(player.getName())
+			|| (client.getVar(Varbits.IN_WILDERNESS) == 0 && !WorldType.isAllPvpWorld(client.getWorldType())))
+		{
+			return;
+		}
+
+		executorService.submit(() ->
+		{
+			int timeout = 0;
+			HiscoreResult result;
+			do
 			{
-				FriendsChatRank rank = playerIndicatorsService.getFriendsChatRank(player);
+				if (timeout >= 10)
+				{
+					return;
+				}
+				try
+				{
+					result = HISCORE_CLIENT.lookup(player.getName());
+				}
+				catch (IOException ex)
+				{
+					timeout++;
+					result = null;
+					try
+					{
+						Thread.sleep(250);
+					}
+					catch (InterruptedException e)
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+			while (result == null);
+
+			resultCache.put(player.getName(), result);
+		});
+	}
+
+	@Subscribe
+	private void onMenuEntryAdded(MenuEntryAdded menuEntryAdded)
+	{
+		int type = menuEntryAdded.getOpcode();
+
+		if (type >= 2000)
+		{
+			type -= 2000;
+		}
+
+		int identifier = menuEntryAdded.getIdentifier();
+		if (type == FOLLOW.getId() || type == TRADE.getId()
+			|| type == SPELL_CAST_ON_PLAYER.getId() || type == ITEM_USE_ON_PLAYER.getId()
+			|| type == PLAYER_FIRST_OPTION.getId()
+			|| type == PLAYER_SECOND_OPTION.getId()
+			|| type == PLAYER_THIRD_OPTION.getId()
+			|| type == PLAYER_FOURTH_OPTION.getId()
+			|| type == PLAYER_FIFTH_OPTION.getId()
+			|| type == PLAYER_SIXTH_OPTION.getId()
+			|| type == PLAYER_SEVENTH_OPTION.getId()
+			|| type == PLAYER_EIGTH_OPTION.getId()
+			|| type == RUNELITE.getId())
+		{
+			final Player localPlayer = client.getLocalPlayer();
+			final Player[] players = client.getCachedPlayers();
+			Player player = null;
+
+			if (identifier >= 0 && identifier < players.length)
+			{
+				player = players[identifier];
+			}
+
+			if (player == null)
+			{
+				return;
+			}
+
+			int image = -1;
+			int image2 = -1;
+			Color color = null;
+
+			if (config.highlightCallers() && isCaller(player))
+			{
+				if (Arrays.asList(this.locationHashMap.get(PlayerRelation.CALLER)).contains(
+            PlayerIndicationLocation.MENU))
+				{
+					color = relationColorHashMap.get(PlayerRelation.CALLER);
+				}
+			}
+			else if (config.callersTargets() && isPile(player))
+			{
+				if (Arrays.asList(this.locationHashMap.get(PlayerRelation.CALLER_TARGET)).contains(
+            PlayerIndicationLocation.MENU))
+				{
+					color = relationColorHashMap.get(PlayerRelation.CALLER_TARGET);
+				}
+			}
+			else if (config.highlightFriends() && client.isFriended(player.getName(), false))
+			{
+				if (Arrays.asList(this.locationHashMap.get(PlayerRelation.FRIEND)).contains(
+            PlayerIndicationLocation.MENU))
+				{
+					color = relationColorHashMap.get(PlayerRelation.FRIEND);
+				}
+			}
+			else if (config.highlightClan() && player.isFriendsChatMember$api())
+			{
+				if (Arrays.asList(this.locationHashMap.get(PlayerRelation.CLAN)).contains(
+            PlayerIndicationLocation.MENU))
+				{
+					color = relationColorHashMap.get(PlayerRelation.CLAN);
+				}
+
+				FriendsChatRank rank = getRank(player.getName());
 				if (rank != UNRANKED)
 				{
 					image = chatIconManager.getIconNumber(rank);
 				}
 			}
-		}
-		else if (player.getTeam() > 0 && client.getLocalPlayer().getTeam() == player.getTeam() && config.highlightTeamMembers())
-		{
-			color = config.getTeamMemberColor();
-		}
-		else if (player.isClanMember$api() && config.highlightClanMembers())
-		{
-			color = config.getClanMemberColor();
-
-			if (config.showClanChatRanks())
+			else if (config.highlightTeamMembers() && player.getTeam() > 0 && (localPlayer != null ? localPlayer.getTeam() : -1) == player.getTeam())
 			{
-				ClanTitle clanTitle = playerIndicatorsService.getClanTitle(player);
-				if (clanTitle != null)
+				if (Arrays.asList(this.locationHashMap.get(PlayerRelation.TEAM)).contains(
+            PlayerIndicationLocation.MENU))
 				{
-					image = chatIconManager.getIconNumber(clanTitle);
+					color = relationColorHashMap.get(PlayerRelation.TEAM);
+				}
+			}
+			else if (config.highlightOtherPlayers() && !player.isFriendsChatMember$api() && !player.isFriend$api() && !PvPUtil.isAttackable(client, player))
+			{
+				if (Arrays.asList(this.locationHashMap.get(PlayerRelation.OTHER)).contains(
+            PlayerIndicationLocation.MENU))
+				{
+					color = relationColorHashMap.get(PlayerRelation.OTHER);
+				}
+			}
+			else if (config.highlightTargets() && !player.isFriendsChatMember$api() && !client.isFriended(player.getName(),
+				false) && PvPUtil.isAttackable(client, player))
+			{
+				if (Arrays.asList(this.locationHashMap.get(PlayerRelation.TARGET)).contains(
+            PlayerIndicationLocation.MENU))
+				{
+					color = relationColorHashMap.get(PlayerRelation.TARGET);
+				}
+			}
+
+
+			if (config.playerSkull() && !player.isFriendsChatMember$api() && player.getSkullIcon() != null)
+			{
+				image2 = 35;
+			}
+
+			if (image != -1 || color != null)
+			{
+				final MenuEntry[] menuEntries = client.getMenuEntries();
+				final MenuEntry lastEntry = menuEntries[menuEntries.length - 1];
+
+
+				if (color != null)
+				{
+					// strip out existing <col...
+					String target = lastEntry.getTarget();
+					final int idx = target.indexOf('>');
+					if (idx != -1)
+					{
+						target = target.substring(idx + 1);
+					}
+
+					lastEntry.setTarget(ColorUtil.prependColorTag(target, color));
+				}
+				if (image != -1)
+				{
+					lastEntry.setTarget("<img=" + image + ">" + lastEntry.getTarget());
+				}
+
+				if (image2 != -1 && config.playerSkull())
+				{
+					lastEntry.setTarget("<img=" + image2 + ">" + lastEntry.getTarget());
+				}
+
+				client.setMenuEntries(menuEntries);
+			}
+		}
+	}
+
+
+	private void getCallerList()
+	{
+		if (!config.highlightCallers())
+		{
+			return;
+		}
+
+		callers.clear();
+
+		final FriendsChatManager clanMemberManager = client.getFriendsChatManager();
+		if (config.useClanchatRanks() && clanMemberManager != null)
+		{
+			for (FriendsChatMember clanMember : clanMemberManager.getMembers())
+			{
+				if (clanMember.getRank().getValue() >= config.callerRank().getValue())
+				{
+					callers.add(Text.standardize(clanMember.getName()));
 				}
 			}
 		}
-		else if (!player.isFriendsChatMember$api() && !player.isClanMember$api() && config.highlightOthers())
+
+		if (config.callers().contains(","))
 		{
-			color = config.getOthersColor();
+			callers.addAll(Arrays.asList(config.callers().split(",")));
+			return;
 		}
 
-		if (image == -1 && color == null)
+		if (!config.callers().equals(""))
 		{
-			return null;
+			callers.add(config.callers());
 		}
-
-		return new Decorations(image, color);
 	}
 
-	private String decorateTarget(String oldTarget, Decorations decorations)
+	/**
+	 * Checks if a player is a caller
+	 *
+	 * @param player The player to check
+	 * @return true if they are, false otherwise
+	 */
+	boolean isCaller(Actor player)
 	{
-		String newTarget = oldTarget;
-
-		if (decorations.getColor() != null && config.colorPlayerMenu())
+		if (player == null || player.getName() == null)
 		{
-			// strip out existing <col...
-			int idx = oldTarget.indexOf('>');
-			if (idx != -1)
+			return false;
+		}
+
+		if (callers.size() > 0)
+		{
+			for (String name : callers)
 			{
-				newTarget = oldTarget.substring(idx + 1);
+				String finalName = Text.standardize(name.trim());
+				if (Text.standardize(player.getName()).equals(finalName))
+				{
+					return true;
+				}
 			}
-
-			newTarget = ColorUtil.prependColorTag(newTarget, decorations.getColor());
 		}
 
-		if (decorations.getImage() != -1)
-		{
-			newTarget = "<img=" + decorations.getImage() + ">" + newTarget;
-		}
-
-		return newTarget;
+		return false;
 	}
 
-	@Value
-	private static class Decorations
+	/**
+	 * Checks if a player is currently a target of any of the current callers
+	 *
+	 * @param actor The player to check
+	 * @return true if they are a target, false otherwise
+	 */
+	public boolean isPile(Actor actor)
 	{
-		private final int image;
-		private final Color color;
+		/**
+		 if (!(actor instanceof Player))
+		 {
+		 return false;
+		 }
+		 **/
+		if (actor == null)
+		{
+			return false;
+		}
+
+		return callerPiles.containsValue(actor);
+	}
+
+
+	public void updateConfig()
+	{
+		locationHashMap.clear();
+		relationColorHashMap.clear();
+
+		if (config.highlightOwnPlayer())
+		{
+			relationColorHashMap.put(PlayerRelation.SELF, config.getOwnPlayerColor());
+			if (config.selfIndicatorModes() != null)
+			{
+				locationHashMap.put(PlayerRelation.SELF, EnumSet.copyOf(config.selfIndicatorModes()).toArray());
+			}
+		}
+
+		if (config.highlightFriends())
+		{
+			relationColorHashMap.put(PlayerRelation.FRIEND, config.getFriendColor());
+			if (config.friendIndicatorMode() != null)
+			{
+				locationHashMap.put(PlayerRelation.FRIEND, config.friendIndicatorMode().toArray());
+			}
+		}
+
+		if (config.highlightClan())
+		{
+			relationColorHashMap.put(PlayerRelation.CLAN, config.getFriendsChatColor());
+			if (config.friendsChatIndicatorModes() != null)
+			{
+				locationHashMap.put(PlayerRelation.CLAN, config.friendsChatIndicatorModes().toArray());
+			}
+		}
+
+		if (config.highlightTeamMembers())
+		{
+			relationColorHashMap.put(PlayerRelation.TEAM, config.getTeamcolor());
+			if (config.teamIndicatorModes() != null)
+			{
+				locationHashMap.put(PlayerRelation.TEAM, config.teamIndicatorModes().toArray());
+			}
+		}
+
+		if (config.highlightOtherPlayers())
+		{
+			relationColorHashMap.put(PlayerRelation.OTHER, config.getOtherColor());
+			if (config.otherIndicatorModes() != null)
+			{
+				locationHashMap.put(PlayerRelation.OTHER, EnumSet.copyOf(config.otherIndicatorModes()).toArray());
+			}
+		}
+
+		if (config.highlightTargets())
+		{
+			relationColorHashMap.put(PlayerRelation.TARGET, config.getTargetsColor());
+			if (config.targetsIndicatorModes() != null)
+			{
+				locationHashMap.put(PlayerRelation.TARGET, config.targetsIndicatorModes().toArray());
+			}
+		}
+
+		if (config.highlightCallers())
+		{
+			relationColorHashMap.put(PlayerRelation.CALLER, config.callerColor());
+			if (config.callerHighlightOptions() != null)
+			{
+				locationHashMap.put(PlayerRelation.CALLER, config.callerHighlightOptions().toArray());
+			}
+			getCallerList();
+		}
+
+		if (config.callersTargets())
+		{
+			relationColorHashMap.put(PlayerRelation.CALLER_TARGET, config.callerTargetColor());
+			if (config.callerTargetHighlightOptions() != null)
+			{
+				locationHashMap.put(PlayerRelation.CALLER_TARGET, config.callerTargetHighlightOptions().toArray());
+			}
+		}
+	}
+
+	public FriendsChatRank getRank(String playerName)
+	{
+		final FriendsChatManager friendsChatManager = client.getFriendsChatManager();
+		if (friendsChatManager == null)
+		{
+			return FriendsChatRank.UNRANKED;
+		}
+
+		FriendsChatMember friendsChatMember = friendsChatManager.findByName(playerName);
+		return friendsChatMember != null ? friendsChatMember.getRank() : FriendsChatRank.UNRANKED;
+	}
+
+	public enum MinimapSkullLocations
+	{
+		BEFORE_NAME,
+		AFTER_NAME
+	}
+
+	public enum AgilityFormats
+	{
+		TEXT,
+		ICONS
+	}
+
+	public enum PlayerIndicationLocation
+	{
+		/**
+		 * Indicates the player by rendering their username above their head
+		 */
+		ABOVE_HEAD,
+		/**
+		 * Indicates the player by outlining the player model's hull.
+		 * NOTE: this may cause FPS lag if enabled for lots of players
+		 */
+		HULL,
+		/**
+		 * Indicates the player by rendering their username on the minimap
+		 */
+		MINIMAP,
+		/**
+		 * Indicates the player by colorizing their right click menu
+		 */
+		MENU,
+		/**
+		 * Indicates the player by rendering a tile marker underneath them
+		 */
+		TILE
+	}
+
+	public enum PlayerRelation
+	{
+		SELF,
+		FRIEND,
+		CLAN,
+		TEAM,
+		TARGET,
+		OTHER,
+		CALLER,
+		CALLER_TARGET
 	}
 }

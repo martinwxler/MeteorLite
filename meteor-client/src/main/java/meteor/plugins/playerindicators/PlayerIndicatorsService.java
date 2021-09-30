@@ -24,107 +24,129 @@
  */
 package meteor.plugins.playerindicators;
 
-import net.runelite.api.*;
-import net.runelite.api.clan.*;
-import meteor.util.Text;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.awt.*;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
+import javax.inject.Inject;
+import net.runelite.api.Client;
+import net.runelite.api.Player;
+import meteor.util.PvPUtil;
 
-@Singleton
 public class PlayerIndicatorsService
 {
 	private final Client client;
 	private final PlayerIndicatorsConfig config;
 
+	private final Predicate<Player> self;
+	private final Predicate<Player> friend;
+	private final Predicate<Player> clan;
+	private final Predicate<Player> team;
+	private final Predicate<Player> target;
+	private final Predicate<Player> other;
+	private final Predicate<Player> caller;
+	private final Predicate<Player> callerTarget;
+
 	@Inject
-	private PlayerIndicatorsService(Client client, PlayerIndicatorsConfig config)
+	private PlayerIndicatorsService(final Client client, final PlayerIndicatorsPlugin plugin, final PlayerIndicatorsConfig config)
 	{
-		this.config = config;
 		this.client = client;
+		this.config = config;
+
+		self = (player) -> (client.getLocalPlayer().equals(player)
+			&& plugin.getLocationHashMap().containsKey(
+        PlayerIndicatorsPlugin.PlayerRelation.SELF));
+
+		friend = (player) -> (!player.equals(client.getLocalPlayer())
+			&& client.isFriended(player.getName(), false)
+			&& plugin.getLocationHashMap().containsKey(
+        PlayerIndicatorsPlugin.PlayerRelation.FRIEND));
+
+		clan = (player) -> (player.isFriendsChatMember$api() && !client.getLocalPlayer().equals(player)
+			&& plugin.getLocationHashMap().containsKey(
+        PlayerIndicatorsPlugin.PlayerRelation.CLAN));
+
+		team = (player) -> (Objects.requireNonNull(client.getLocalPlayer()).getTeam() != 0 && !player.isFriendsChatMember$api()
+			&& !client.isFriended(player.getName(), false)
+			&& client.getLocalPlayer().getTeam() == player.getTeam()
+			&& plugin.getLocationHashMap().containsKey(
+        PlayerIndicatorsPlugin.PlayerRelation.TEAM));
+
+		target = (player) -> (!team.test(player) && !clan.test(player)
+			&& !client.isFriended(player.getName(), false) && PvPUtil.isAttackable(client, player)
+			&& !client.getLocalPlayer().equals(player) && !clan.test(player) && plugin.getLocationHashMap().containsKey(
+				PlayerIndicatorsPlugin.PlayerRelation.TARGET));
+
+		caller = (player) -> (plugin.isCaller(player) && plugin.getLocationHashMap().containsKey(
+				PlayerIndicatorsPlugin.PlayerRelation.CALLER));
+
+		callerTarget = (player) -> (plugin.isPile(player) && plugin.getLocationHashMap().containsKey(
+				PlayerIndicatorsPlugin.PlayerRelation.CALLER_TARGET));
+
+		other = (player) ->
+			(!PvPUtil.isAttackable(client, player) && !client.getLocalPlayer().equals(player)
+				&& !team.test(player) && !clan.test(player) && !client.isFriended(player.getName(), false)
+				&& plugin.getLocationHashMap().containsKey(
+          PlayerIndicatorsPlugin.PlayerRelation.OTHER));
+
 	}
 
-	public void forEachPlayer(final BiConsumer<Player, Color> consumer)
+	public void forEachPlayer(final BiConsumer<Player, PlayerIndicatorsPlugin.PlayerRelation> consumer)
 	{
-		if (!config.highlightOwnPlayer() && !config.highlightFriendsChat()
-			&& !config.highlightFriends() && !config.highlightOthers()
-			&& !config.highlightClanMembers())
+		if (!highlight())
 		{
 			return;
 		}
 
-		final Player localPlayer = client.getLocalPlayer();
-
-		for (Player player : client.getPlayers())
+		final List<Player> players = client.getPlayers();
+		for (Player p : players)
 		{
-			if (player == null || player.getName() == null)
+			if (caller.test(p))
 			{
+				consumer.accept(p, PlayerIndicatorsPlugin.PlayerRelation.CALLER);
 				continue;
 			}
-
-			boolean isFriendsChatMember = player.isFriendsChatMember$api();
-			boolean isClanMember = player.isClanMember$api();
-
-			if (player == localPlayer)
+			if (callerTarget.test(p))
 			{
-				if (config.highlightOwnPlayer())
-				{
-					consumer.accept(player, config.getOwnPlayerColor());
-				}
+				consumer.accept(p, PlayerIndicatorsPlugin.PlayerRelation.CALLER_TARGET);
+				continue;
 			}
-			else if (config.highlightFriends() && player.isFriend$api())
+			if (other.test(p))
 			{
-				consumer.accept(player, config.getFriendColor());
+				consumer.accept(p, PlayerIndicatorsPlugin.PlayerRelation.OTHER);
+				continue;
 			}
-			else if (config.highlightFriendsChat() && isFriendsChatMember)
+			if (self.test(p))
 			{
-				consumer.accept(player, config.getFriendsChatMemberColor());
+				consumer.accept(p, PlayerIndicatorsPlugin.PlayerRelation.SELF);
+				continue;
 			}
-			else if (config.highlightTeamMembers() && localPlayer.getTeam() > 0 && localPlayer.getTeam() == player.getTeam())
+			if (friend.test(p))
 			{
-				consumer.accept(player, config.getTeamMemberColor());
+				consumer.accept(p, PlayerIndicatorsPlugin.PlayerRelation.FRIEND);
+				continue;
 			}
-			else if (config.highlightClanMembers() && isClanMember)
+			if (clan.test(p))
 			{
-				consumer.accept(player, config.getClanMemberColor());
+				consumer.accept(p, PlayerIndicatorsPlugin.PlayerRelation.CLAN);
+				continue;
 			}
-			else if (config.highlightOthers() && !isFriendsChatMember && !isClanMember)
+			if (team.test(p))
 			{
-				consumer.accept(player, config.getOthersColor());
+				consumer.accept(p, PlayerIndicatorsPlugin.PlayerRelation.TEAM);
+				continue;
+			}
+			if (target.test(p))
+			{
+				consumer.accept(p, PlayerIndicatorsPlugin.PlayerRelation.TARGET);
 			}
 		}
 	}
 
-	ClanTitle getClanTitle(Player player)
+	private boolean highlight()
 	{
-		ClanChannel clanChannel = client.getClanChannel();
-		ClanSettings clanSettings = client.getClanSettings();
-		if (clanChannel == null || clanSettings == null)
-		{
-			return null;
-		}
-
-		ClanChannelMember member = clanChannel.findMember(player.getName());
-		if (member == null)
-		{
-			return null;
-		}
-
-		ClanRank rank = member.getRank();
-		return clanSettings.titleForRank(rank);
-	}
-
-	FriendsChatRank getFriendsChatRank(Player player)
-	{
-		final FriendsChatManager friendsChatManager = client.getFriendsChatManager();
-		if (friendsChatManager == null)
-		{
-			return FriendsChatRank.UNRANKED;
-		}
-
-		FriendsChatMember friendsChatMember = friendsChatManager.findByName(Text.removeTags(player.getName()));
-		return friendsChatMember != null ? friendsChatMember.getRank() : FriendsChatRank.UNRANKED;
+		return config.highlightOwnPlayer() || config.highlightClan()
+			|| config.highlightFriends() || config.highlightOtherPlayers() || config.highlightTargets()
+			|| config.highlightCallers() || config.highlightTeamMembers() || config.callersTargets();
 	}
 }
