@@ -33,15 +33,15 @@ import meteor.config.ModifierlessKeybind;
 import meteor.plugins.menuentryswapper.util.BurningAmuletMode;
 import meteor.plugins.menuentryswapper.util.BuyMode;
 import meteor.plugins.menuentryswapper.util.CombatBraceletMode;
+import meteor.plugins.menuentryswapper.util.ConstructionCapeMode;
 import meteor.plugins.menuentryswapper.util.ConstructionMode;
+import meteor.plugins.menuentryswapper.util.CraftingCapeMode;
+import meteor.plugins.menuentryswapper.util.DigsitePendantMode;
 import meteor.plugins.menuentryswapper.util.DuelingRingMode;
 import meteor.plugins.menuentryswapper.util.FairyRingMode;
 import meteor.plugins.menuentryswapper.util.GEItemCollectMode;
 import meteor.plugins.menuentryswapper.util.GamesNecklaceMode;
-import meteor.plugins.menuentryswapper.util.ConstructionCapeMode;
 import meteor.plugins.menuentryswapper.util.GloryMode;
-import meteor.plugins.menuentryswapper.util.CraftingCapeMode;
-import meteor.plugins.menuentryswapper.util.DigsitePendantMode;
 import meteor.plugins.menuentryswapper.util.HouseAdvertisementMode;
 import meteor.plugins.menuentryswapper.util.HouseMode;
 import meteor.plugins.menuentryswapper.util.MagicCapeMode;
@@ -793,8 +793,7 @@ public interface MenuEntrySwapperConfig extends Config {
       position = 0,
       section = skillingSection
   )
-  default boolean getEasyConstruction()
-  {
+  default boolean getEasyConstruction() {
     return true;
   }
 
@@ -807,8 +806,7 @@ public interface MenuEntrySwapperConfig extends Config {
       hidden = true,
       unhide = "getEasyConstruction"
   )
-  default ConstructionMode getConstructionMode()
-  {
+  default ConstructionMode getConstructionMode() {
     return ConstructionMode.LARDER;
   }
 
@@ -819,8 +817,7 @@ public interface MenuEntrySwapperConfig extends Config {
       position = 2,
       section = skillingSection
   )
-  default boolean swapPickpocket()
-  {
+  default boolean swapPickpocket() {
     return false;
   }
 
@@ -835,8 +832,7 @@ public interface MenuEntrySwapperConfig extends Config {
       position = 1,
       section = teleportationSection
   )
-  default boolean getGamesNecklace()
-  {
+  default boolean getGamesNecklace() {
     return false;
   }
 
@@ -849,8 +845,7 @@ public interface MenuEntrySwapperConfig extends Config {
       hidden = true,
       unhide = "swapGamesNecklace"
   )
-  default GamesNecklaceMode getGamesNecklaceMode()
-  {
+  default GamesNecklaceMode getGamesNecklaceMode() {
     return GamesNecklaceMode.OFF;
   }
 
@@ -860,10 +855,9 @@ public interface MenuEntrySwapperConfig extends Config {
       description = "Swap the left click 'remove' option with the desired teleport location on a worn Ring of Dueling.",
       position = 3,
       section = teleportationSection,
-      disabledBy  = "swapDuelRingLavas"
+      disabledBy = "swapDuelRingLavas"
   )
-  default boolean getDuelingRing()
-  {
+  default boolean getDuelingRing() {
     return false;
   }
 
@@ -876,9 +870,8 @@ public interface MenuEntrySwapperConfig extends Config {
       hidden = true,
       unhide = "swapDuelingRing"
   )
-  default DuelingRingMode getDuelingRingMode()
-  {
-    return  DuelingRingMode.OFF;
+  default DuelingRingMode getDuelingRingMode() {
+    return DuelingRingMode.OFF;
   }
 
   @ConfigItem(
@@ -888,8 +881,7 @@ public interface MenuEntrySwapperConfig extends Config {
       position = 5,
       section = teleportationSection
   )
-  default boolean getGlory()
-  {
+  default boolean getGlory() {
     return false;
   }
 
@@ -902,8 +894,7 @@ public interface MenuEntrySwapperConfig extends Config {
       hidden = true,
       unhide = "swapGlory"
   )
-  default GloryMode getGloryMode()
-  {
+  default GloryMode getGloryMode() {
     return GloryMode.OFF;
   }
 
@@ -914,8 +905,7 @@ public interface MenuEntrySwapperConfig extends Config {
       position = 7,
       section = teleportationSection
   )
-  default boolean getSkillsNecklace()
-  {
+  default boolean getSkillsNecklace() {
     return false;
   }
 
@@ -928,8 +918,7 @@ public interface MenuEntrySwapperConfig extends Config {
       hidden = true,
       unhide = "swapSkill"
   )
-  default SkillsNecklaceMode getSkillsNecklaceMode()
-  {
+  default SkillsNecklaceMode getSkillsNecklaceMode() {
     return SkillsNecklaceMode.OFF;
   }
 
@@ -940,8 +929,7 @@ public interface MenuEntrySwapperConfig extends Config {
       position = 9,
       section = teleportationSection
   )
-  default boolean getNecklaceofPassage()
-  {
+  default boolean getNecklaceofPassage() {
     return false;
   }
 
@@ -954,8 +942,7 @@ public interface MenuEntrySwapperConfig extends Config {
       hidden = true,
       unhide = "swapPassage"
   )
-  default NecklaceOfPassageMode getNecklaceofPassageMode()
-  {
+  default NecklaceOfPassageMode getNecklaceofPassageMode() {
     return NecklaceOfPassageMode.OFF;
   }
 
@@ -966,8 +953,7 @@ public interface MenuEntrySwapperConfig extends Config {
       position = 11,
       section = teleportationSection
   )
-  default boolean getDigsitePendant()
-  {
+  default boolean getDigsitePendant() {
     return false;
   }
 
@@ -980,8 +966,7 @@ public interface MenuEntrySwapperConfig extends Config {
       hidden = true,
       unhide = "swapDigsite"
   )
-  default DigsitePendantMode getDigsitePendantMode()
-  {
+  default DigsitePendantMode getDigsitePendantMode() {
     return DigsitePendantMode.OFF;
   }
 
@@ -992,8 +977,7 @@ public interface MenuEntrySwapperConfig extends Config {
       position = 13,
       section = teleportationSection
   )
-  default boolean getCombatBracelet()
-  {
+  default boolean getCombatBracelet() {
     return false;
   }
 
@@ -1006,9 +990,8 @@ public interface MenuEntrySwapperConfig extends Config {
       hidden = true,
       unhide = "swapCombat"
   )
-  default CombatBraceletMode getCombatBraceletMode()
-  {
-    return  CombatBraceletMode.OFF;
+  default CombatBraceletMode getCombatBraceletMode() {
+    return CombatBraceletMode.OFF;
   }
 
   @ConfigItem(
@@ -1018,8 +1001,7 @@ public interface MenuEntrySwapperConfig extends Config {
       position = 15,
       section = teleportationSection
   )
-  default boolean getBurningAmulet()
-  {
+  default boolean getBurningAmulet() {
     return false;
   }
 
@@ -1032,9 +1014,8 @@ public interface MenuEntrySwapperConfig extends Config {
       hidden = true,
       unhide = "swapburning"
   )
-  default BurningAmuletMode getBurningAmuletMode()
-  {
-    return  BurningAmuletMode.OFF;
+  default BurningAmuletMode getBurningAmuletMode() {
+    return BurningAmuletMode.OFF;
   }
 
   @ConfigItem(
@@ -1044,8 +1025,7 @@ public interface MenuEntrySwapperConfig extends Config {
       position = 17,
       section = teleportationSection
   )
-  default boolean getXericsTalisman()
-  {
+  default boolean getXericsTalisman() {
     return false;
   }
 
@@ -1058,8 +1038,7 @@ public interface MenuEntrySwapperConfig extends Config {
       hidden = true,
       unhide = "swapxeric"
   )
-  default XericsTalismanMode getXericsTalismanMode()
-  {
+  default XericsTalismanMode getXericsTalismanMode() {
     return XericsTalismanMode.OFF;
   }
 
@@ -1070,8 +1049,7 @@ public interface MenuEntrySwapperConfig extends Config {
       position = 19,
       section = teleportationSection
   )
-  default boolean getRingofWealth()
-  {
+  default boolean getRingofWealth() {
     return false;
   }
 
@@ -1084,8 +1062,7 @@ public interface MenuEntrySwapperConfig extends Config {
       hidden = true,
       unhide = "swapwealth"
   )
-  default RingOfWealthMode getRingofWealthMode()
-  {
+  default RingOfWealthMode getRingofWealthMode() {
     return RingOfWealthMode.OFF;
   }
 
@@ -1096,8 +1073,7 @@ public interface MenuEntrySwapperConfig extends Config {
       position = 21,
       section = teleportationSection
   )
-  default ConstructionCapeMode getConstructionCapeMode()
-  {
+  default ConstructionCapeMode getConstructionCapeMode() {
     return ConstructionCapeMode.OFF;
   }
 
@@ -1108,8 +1084,7 @@ public interface MenuEntrySwapperConfig extends Config {
       position = 22,
       section = teleportationSection
   )
-  default CraftingCapeMode getCraftingCapeMode()
-  {
+  default CraftingCapeMode getCraftingCapeMode() {
     return CraftingCapeMode.OFF;
   }
 
@@ -1120,8 +1095,7 @@ public interface MenuEntrySwapperConfig extends Config {
       position = 23,
       section = teleportationSection
   )
-  default MagicCapeMode getMagicCapeMode()
-  {
+  default MagicCapeMode getMagicCapeMode() {
     return MagicCapeMode.OFF;
   }
 
@@ -1132,8 +1106,7 @@ public interface MenuEntrySwapperConfig extends Config {
       position = 24,
       section = teleportationSection
   )
-  default MaxCapeEquippedMode getMaxCapeEquippedMode()
-  {
+  default MaxCapeEquippedMode getMaxCapeEquippedMode() {
     return MaxCapeEquippedMode.OFF;
   }
 
@@ -1148,8 +1121,7 @@ public interface MenuEntrySwapperConfig extends Config {
       position = 1,
       section = rightClickOptionsSection
   )
-  default boolean hideTradeWith()
-  {
+  default boolean hideTradeWith() {
     return false;
   }
 
@@ -1160,8 +1132,7 @@ public interface MenuEntrySwapperConfig extends Config {
       position = 2,
       section = rightClickOptionsSection
   )
-  default boolean hideEmpty()
-  {
+  default boolean hideEmpty() {
     return false;
   }
 
@@ -1177,8 +1148,7 @@ public interface MenuEntrySwapperConfig extends Config {
       section = pvmSection
   )
 
-  default boolean hideCastToB()
-  {
+  default boolean hideCastToB() {
     return true;
   }
 
@@ -1191,8 +1161,7 @@ public interface MenuEntrySwapperConfig extends Config {
       hidden = true,
       unhide = "hideCastToB"
   )
-  default String hideCastIgnoredToB()
-  {
+  default String hideCastIgnoredToB() {
     return "cure other, energy transfer, heal other, vengeance other";
   }
 
@@ -1204,8 +1173,7 @@ public interface MenuEntrySwapperConfig extends Config {
       section = pvmSection
   )
 
-  default boolean hideCastCoX()
-  {
+  default boolean hideCastCoX() {
     return true;
   }
 
@@ -1218,8 +1186,7 @@ public interface MenuEntrySwapperConfig extends Config {
       hidden = true,
       unhide = "hideCastCoX"
   )
-  default String hideCastIgnoredCoX()
-  {
+  default String hideCastIgnoredCoX() {
     return "cure other, energy transfer, heal other, vengeance other";
   }
 
@@ -1250,7 +1217,7 @@ public interface MenuEntrySwapperConfig extends Config {
   }
 
   @ConfigItem(
-      name = "Bank Custom Swaps",
+      name = "Bank Swaps",
       keyName = "bankCustomSwapsStr",
       description = "",
       section = customSwapsSection,
@@ -1311,8 +1278,7 @@ public interface MenuEntrySwapperConfig extends Config {
       section = keyCustomSwapsSection,
       position = 2
   )
-  default ModifierlessKeybind hotkey()
-  {
+  default ModifierlessKeybind hotkey() {
     return new ModifierlessKeybind(KeyEvent.VK_UNDEFINED, 0);
   }
 
@@ -1360,7 +1326,7 @@ public interface MenuEntrySwapperConfig extends Config {
     return "";
   }
 
-enum ArdougneCloakMode {
+  enum ArdougneCloakMode {
     WEAR,
     MONASTERY,
     FARM,
