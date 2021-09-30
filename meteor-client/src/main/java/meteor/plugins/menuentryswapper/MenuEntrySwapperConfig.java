@@ -68,20 +68,20 @@ public interface MenuEntrySwapperConfig extends Config {
   String customSwapsSection = "Custom Swaps";
 
   @ConfigSection(
-      name = "[Shift Click] Custom Swaps",
-      description = "Configuration for shift click custom Swaps",
+      name = "Shift Swaps",
+      description = "Configuration for shift custom Swaps",
       position = 1,
       closedByDefault = true
   )
-  String shiftCustomSwapsSection = "[Shift Click] Custom Swaps";
+  String shiftCustomSwapsSection = "Shift Swaps";
 
   @ConfigSection(
-      name = "Keybind Swaps",
-      description = "Configuration for keybind custom Swaps",
+      name = "Hotkey Swaps",
+      description = "Configuration for Hotkey custom Swaps",
       position = 2,
       closedByDefault = true
   )
-  String keyCustomSwapsSection = "Keybind Swaps";
+  String keyCustomSwapsSection = "Hotkey Swaps";
 
   @ConfigSection(
       name = "Remove Options",
@@ -1261,7 +1261,7 @@ public interface MenuEntrySwapperConfig extends Config {
   }
 
   @ConfigItem(
-      name = "Shift - Custom Swaps Toggle",
+      name = "Shift Swaps Toggle",
       keyName = "shiftCustomSwapsToggle",
       description = "Toggles the use of the Shift Custom Swaps",
       section = shiftCustomSwapsSection,
@@ -1272,7 +1272,7 @@ public interface MenuEntrySwapperConfig extends Config {
   }
 
   @ConfigItem(
-      name = "Shift - Custom Swaps",
+      name = "Shift Swaps",
       keyName = "shiftCustomSwapsStr",
       description = "",
       section = shiftCustomSwapsSection,
@@ -1283,7 +1283,7 @@ public interface MenuEntrySwapperConfig extends Config {
   }
 
   @ConfigItem(
-      name = "Shift - Bank Custom Swaps",
+      name = "Shift Bank Swaps",
       keyName = "bankShiftCustomSwapsStr",
       description = "",
       section = shiftCustomSwapsSection,
@@ -1294,9 +1294,9 @@ public interface MenuEntrySwapperConfig extends Config {
   }
 
   @ConfigItem(
-      name = "Keybind - Custom Swaps Toggle",
+      name = "Hotkey Swaps Toggle",
       keyName = "keyCustomSwapsToggle",
-      description = "Toggles the use of the Keybind Custom Swaps",
+      description = "Toggles the use of the Hotkey Custom Swaps",
       section = keyCustomSwapsSection,
       position = 1
   )
@@ -1306,7 +1306,7 @@ public interface MenuEntrySwapperConfig extends Config {
 
   @ConfigItem(
       keyName = "hotkey",
-      name = "Set Keybind",
+      name = "Set Hotkey",
       description = "Binds the key to hold to enable this section",
       section = keyCustomSwapsSection,
       position = 2
@@ -1317,7 +1317,7 @@ public interface MenuEntrySwapperConfig extends Config {
   }
 
   @ConfigItem(
-      name = "Keybind - Custom Swaps",
+      name = "Hotkey Swaps",
       keyName = "keyCustomSwapsStr",
       description = "",
       section = keyCustomSwapsSection,
@@ -1328,7 +1328,7 @@ public interface MenuEntrySwapperConfig extends Config {
   }
 
   @ConfigItem(
-      name = "Keybind - Bank Custom Swaps",
+      name = "Hotkey Bank Swaps",
       keyName = "bankKeyCustomSwapsStr",
       description = "",
       section = keyCustomSwapsSection,
