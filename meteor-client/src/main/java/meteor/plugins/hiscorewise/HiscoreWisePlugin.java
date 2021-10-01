@@ -24,14 +24,15 @@
  */
 package meteor.plugins.hiscorewise;
 
-import static meteor.plugins.hiscore.HiscoreController.INSTANCE;
-import static meteor.plugins.hiscore.HiscoreController.searchBox;
 import static meteor.ui.MeteorUI.lastButtonPressed;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ObjectArrays;
 import com.google.inject.Provides;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -39,6 +40,8 @@ import java.util.regex.Pattern;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -54,21 +57,7 @@ import meteor.plugins.hiscore.HiscoreController;
 import meteor.ui.MeteorUI;
 import meteor.ui.components.ToolbarButton;
 import meteor.ui.controllers.ToolbarController;
-import meteor.util.Text;
-import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
-import net.runelite.api.IconID;
-import net.runelite.api.MenuAction;
-import net.runelite.api.MenuEntry;
-import net.runelite.api.Player;
-import net.runelite.api.WorldType;
-import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.MenuEntryAdded;
-import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.events.VarbitChanged;
-import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.http.api.hiscore.HiscoreEndpoint;
-import org.apache.commons.lang3.ArrayUtils;
 
 @PluginDescriptor(
 	name = "HiScore",
@@ -83,9 +72,15 @@ public class HiscoreWisePlugin extends Plugin
 	private static final ImmutableList<String> AFTER_OPTIONS = ImmutableList.of("Message", "Add ignore", "Remove friend", "Delete", KICK_OPTION);
 	private static final Pattern BOUNTY_PATTERN = Pattern.compile("<col=ff0000>You've been assigned a target: (.*)</col>");
 	private static ToolbarButton navButton;
+	public static HiscoreWisePlugin INSTANCE;
 
 	static {
 		navButton = new ToolbarButton(FontAwesomeIcon.LINE_CHART, "WiseOldMan");
+		InputStream input = ClassLoader.getSystemClassLoader().getResourceAsStream("wom.png");
+		Image image = new Image(input, 20, 20, false, false);
+		ImageView imageView = new ImageView(image);
+		imageView.setPreserveRatio(true);
+		navButton.setGraphic(imageView);
 		ToolbarController.addButton(navButton);
 	}
 
@@ -97,12 +92,13 @@ public class HiscoreWisePlugin extends Plugin
 	private Provider<MenuManager> menuManager;
 
 	@Inject
-	private MeteorUI ui;
+	public MeteorUI ui;
 
-	private Scene wiseOldManPanel;
+	private static Scene wiseOldManPanel;
 	public static Scene skillOverviewPanel;
 	{
 		try {
+			INSTANCE = this;
 			wiseOldManPanel = new Scene(FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader()
 					.getResource("meteor/plugins/hiscorewise/hiscorewise.fxml"))), 350, 800);
 			skillOverviewPanel = new Scene(FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader()
@@ -128,6 +124,10 @@ public class HiscoreWisePlugin extends Plugin
 				lastButtonPressed = event.getName();
 			}
 		}
+	}
+
+	public static void showPanel() {
+		INSTANCE.ui.updateRightPanel(wiseOldManPanel);
 	}
 
 	@Override

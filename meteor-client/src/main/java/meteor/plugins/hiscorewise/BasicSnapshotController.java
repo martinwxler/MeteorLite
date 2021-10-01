@@ -6,6 +6,7 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -17,6 +18,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 import javax.inject.Inject;
 import meteor.MeteorLiteClientLauncher;
+import meteor.config.ConfigManager;
 import meteor.ui.MeteorUI;
 import meteor.ui.components.ToolbarButton;
 import net.runelite.api.Skill;
@@ -32,6 +34,9 @@ public class BasicSnapshotController {
 
   @Inject
   MeteorUI ui;
+
+  @Inject
+  ConfigManager configManager;
 
   private WiseOldManClient wiseOldManClient;
 
@@ -66,12 +71,6 @@ public class BasicSnapshotController {
   private JFXButton woodcuttingButton;
   private JFXButton farmingButton;
   private JFXButton overallButton;
-  private JFXButton normalTableButton;
-  private JFXButton ironmanTableButton;
-  private JFXButton hcTableButton;
-  private JFXButton ultTableButton;
-  private JFXButton deadmanTableButton;
-  private JFXButton leagueTableButton;
   public static Skill lastSkillClicked;
 
   Text displayNameLabel;
@@ -82,6 +81,10 @@ public class BasicSnapshotController {
   Text ehbLabel;
   Text ttmLabel;
   Text tt200mLabel;
+  private String lastLookup = "";
+  private BasicResponse lastResult;
+
+  static DecimalFormat formatter = new DecimalFormat("#,###");
 
   @FXML
   protected void initialize() {
@@ -90,7 +93,7 @@ public class BasicSnapshotController {
     wiseOldManClient = new WiseOldManClient();
     INSTANCE = this;
 
-    Text panelName = new Text("Hiscore Lookup");
+    Text panelName = new Text("WiseOldMan Lookup");
     panelName.setFill(Paint.valueOf("CYAN"));
     AnchorPane.setTopAnchor(panelName, 10.0);
     AnchorPane.setLeftAnchor(panelName, 130.0);
@@ -101,6 +104,10 @@ public class BasicSnapshotController {
     AnchorPane.setTopAnchor(searchBox, 30.0);
     AnchorPane.setLeftAnchor(searchBox, 5.0);
     AnchorPane.setRightAnchor(searchBox, 50.0);
+
+    String lastSearch = configManager.getConfiguration("wiseTracker", "lastSearch");
+    if (lastSearch != null)
+      searchBox.setText(lastSearch);
 
     hiscorePanel.getChildren().add(searchBox);
 
@@ -191,7 +198,7 @@ public class BasicSnapshotController {
     attackButton.setGraphic(view);
     attackButton.setVisible(false);
     attackButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      SkillOverviewController.updateSkill(Skill.ATTACK);
+      SkillOverviewController.updateSkill(lastResult, Skill.ATTACK);
       ui.updateRightPanel(skillOverviewPanel);
     });
     hiscorePanel.getChildren().add(attackButton);
@@ -206,7 +213,7 @@ public class BasicSnapshotController {
     strengthButton.setGraphic(strengthButtonView);
     strengthButton.setVisible(false);
     strengthButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      SkillOverviewController.updateSkill(Skill.STRENGTH);
+      SkillOverviewController.updateSkill(lastResult, Skill.STRENGTH);
       ui.updateRightPanel(skillOverviewPanel);
     });
     hiscorePanel.getChildren().add(strengthButton);
@@ -221,7 +228,7 @@ public class BasicSnapshotController {
     defenceButton.setGraphic(defenceButtonView);
     defenceButton.setVisible(false);
     defenceButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      SkillOverviewController.updateSkill(Skill.DEFENCE);
+      SkillOverviewController.updateSkill(lastResult, Skill.DEFENCE);
       ui.updateRightPanel(skillOverviewPanel);
     });
     hiscorePanel.getChildren().add(defenceButton);
@@ -236,7 +243,7 @@ public class BasicSnapshotController {
     rangedButton.setGraphic(rangedButtonView);
     rangedButton.setVisible(false);
     rangedButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      SkillOverviewController.updateSkill(Skill.RANGED);
+      SkillOverviewController.updateSkill(lastResult, Skill.RANGED);
       ui.updateRightPanel(skillOverviewPanel);
     });
     hiscorePanel.getChildren().add(rangedButton);
@@ -251,7 +258,7 @@ public class BasicSnapshotController {
     prayerButton.setGraphic(prayerButtonView);
     prayerButton.setVisible(false);
     prayerButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      SkillOverviewController.updateSkill(Skill.PRAYER);
+      SkillOverviewController.updateSkill(lastResult, Skill.PRAYER);
       ui.updateRightPanel(skillOverviewPanel);
     });
     hiscorePanel.getChildren().add(prayerButton);
@@ -266,7 +273,7 @@ public class BasicSnapshotController {
     magicButton.setGraphic(magicButtonView);
     magicButton.setVisible(false);
     magicButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      SkillOverviewController.updateSkill(Skill.MAGIC);
+      SkillOverviewController.updateSkill(lastResult, Skill.MAGIC);
       ui.updateRightPanel(skillOverviewPanel);
     });
     hiscorePanel.getChildren().add(magicButton);
@@ -281,7 +288,7 @@ public class BasicSnapshotController {
     runecraftButton.setGraphic(runecraftButtonView);
     runecraftButton.setVisible(false);
     runecraftButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      SkillOverviewController.updateSkill(Skill.RUNECRAFT);
+      SkillOverviewController.updateSkill(lastResult, Skill.RUNECRAFT);
       ui.updateRightPanel(skillOverviewPanel);
     });
     hiscorePanel.getChildren().add(runecraftButton);
@@ -296,7 +303,7 @@ public class BasicSnapshotController {
     constructionButton.setGraphic(constructionButtonView);
     constructionButton.setVisible(false);
     constructionButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      SkillOverviewController.updateSkill(Skill.CONSTRUCTION);
+      SkillOverviewController.updateSkill(lastResult, Skill.CONSTRUCTION);
       ui.updateRightPanel(skillOverviewPanel);
     });
     hiscorePanel.getChildren().add(constructionButton);
@@ -311,7 +318,7 @@ public class BasicSnapshotController {
     hitpointsButton.setGraphic(hitpointsButtonView);
     hitpointsButton.setVisible(false);
     hitpointsButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      SkillOverviewController.updateSkill(Skill.HITPOINTS);
+      SkillOverviewController.updateSkill(lastResult, Skill.HITPOINTS);
       ui.updateRightPanel(skillOverviewPanel);
     });
     hiscorePanel.getChildren().add(hitpointsButton);
@@ -326,7 +333,7 @@ public class BasicSnapshotController {
     agilityButton.setGraphic(agilityButtonView);
     agilityButton.setVisible(false);
     agilityButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      SkillOverviewController.updateSkill(Skill.AGILITY);
+      SkillOverviewController.updateSkill(lastResult, Skill.AGILITY);
       ui.updateRightPanel(skillOverviewPanel);
     });
     hiscorePanel.getChildren().add(agilityButton);
@@ -341,7 +348,7 @@ public class BasicSnapshotController {
     herbloreButton.setGraphic(herbloreButtonView);
     herbloreButton.setVisible(false);
     herbloreButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      SkillOverviewController.updateSkill(Skill.HERBLORE);
+      SkillOverviewController.updateSkill(lastResult, Skill.HERBLORE);
       ui.updateRightPanel(skillOverviewPanel);
     });
     hiscorePanel.getChildren().add(herbloreButton);
@@ -356,7 +363,7 @@ public class BasicSnapshotController {
     thievingButton.setGraphic(thievingButtonView);
     thievingButton.setVisible(false);
     thievingButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      SkillOverviewController.updateSkill(Skill.THIEVING);
+      SkillOverviewController.updateSkill(lastResult, Skill.THIEVING);
       ui.updateRightPanel(skillOverviewPanel);
     });
     hiscorePanel.getChildren().add(thievingButton);
@@ -371,7 +378,7 @@ public class BasicSnapshotController {
     craftingButton.setGraphic(craftingButtonView);
     craftingButton.setVisible(false);
     craftingButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      SkillOverviewController.updateSkill(Skill.CRAFTING);
+      SkillOverviewController.updateSkill(lastResult, Skill.CRAFTING);
       ui.updateRightPanel(skillOverviewPanel);
     });
     hiscorePanel.getChildren().add(craftingButton);
@@ -386,7 +393,7 @@ public class BasicSnapshotController {
     fletchingButton.setGraphic(fletchingButtonView);
     fletchingButton.setVisible(false);
     fletchingButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      SkillOverviewController.updateSkill(Skill.FLETCHING);
+      SkillOverviewController.updateSkill(lastResult, Skill.FLETCHING);
       ui.updateRightPanel(skillOverviewPanel);
     });
     hiscorePanel.getChildren().add(fletchingButton);
@@ -401,7 +408,7 @@ public class BasicSnapshotController {
     slayerButton.setGraphic(slayerButtonView);
     slayerButton.setVisible(false);
     slayerButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      SkillOverviewController.updateSkill(Skill.SLAYER);
+      SkillOverviewController.updateSkill(lastResult, Skill.SLAYER);
       ui.updateRightPanel(skillOverviewPanel);
     });
     hiscorePanel.getChildren().add(slayerButton);
@@ -416,7 +423,7 @@ public class BasicSnapshotController {
     hunterButton.setGraphic(hunterButtonView);
     hunterButton.setVisible(false);
     hunterButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      SkillOverviewController.updateSkill(Skill.HUNTER);
+      SkillOverviewController.updateSkill(lastResult, Skill.HUNTER);
       ui.updateRightPanel(skillOverviewPanel);
     });
     hiscorePanel.getChildren().add(hunterButton);
@@ -431,7 +438,7 @@ public class BasicSnapshotController {
     miningButton.setGraphic(miningButtonView);
     miningButton.setVisible(false);
     miningButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      SkillOverviewController.updateSkill(Skill.MINING);
+      SkillOverviewController.updateSkill(lastResult, Skill.MINING);
       ui.updateRightPanel(skillOverviewPanel);
     });
     hiscorePanel.getChildren().add(miningButton);
@@ -446,7 +453,7 @@ public class BasicSnapshotController {
     smithingButton.setGraphic(smithingButtonView);
     smithingButton.setVisible(false);
     smithingButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      SkillOverviewController.updateSkill(Skill.SMITHING);
+      SkillOverviewController.updateSkill(lastResult, Skill.SMITHING);
       ui.updateRightPanel(skillOverviewPanel);
     });
     hiscorePanel.getChildren().add(smithingButton);
@@ -461,7 +468,7 @@ public class BasicSnapshotController {
     fishingButton.setGraphic(fishingButtonView);
     fishingButton.setVisible(false);
     fishingButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      SkillOverviewController.updateSkill(Skill.FISHING);
+      SkillOverviewController.updateSkill(lastResult, Skill.FISHING);
       ui.updateRightPanel(skillOverviewPanel);
     });
     hiscorePanel.getChildren().add(fishingButton);
@@ -476,7 +483,7 @@ public class BasicSnapshotController {
     cookingButton.setGraphic(cookingButtonView);
     cookingButton.setVisible(false);
     cookingButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      SkillOverviewController.updateSkill(Skill.COOKING);
+      SkillOverviewController.updateSkill(lastResult, Skill.COOKING);
       ui.updateRightPanel(skillOverviewPanel);
     });
     hiscorePanel.getChildren().add(cookingButton);
@@ -491,7 +498,7 @@ public class BasicSnapshotController {
     firemakingButton.setGraphic(firemakingButtonView);
     firemakingButton.setVisible(false);
     firemakingButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      SkillOverviewController.updateSkill(Skill.FIREMAKING);
+      SkillOverviewController.updateSkill(lastResult, Skill.FIREMAKING);
       ui.updateRightPanel(skillOverviewPanel);
     });
     hiscorePanel.getChildren().add(firemakingButton);
@@ -506,7 +513,7 @@ public class BasicSnapshotController {
     woodcuttingButton.setGraphic(woodcuttingButtonView);
     woodcuttingButton.setVisible(false);
     woodcuttingButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      SkillOverviewController.updateSkill(Skill.WOODCUTTING);
+      SkillOverviewController.updateSkill(lastResult, Skill.WOODCUTTING);
       ui.updateRightPanel(skillOverviewPanel);
     });
     hiscorePanel.getChildren().add(woodcuttingButton);
@@ -521,7 +528,7 @@ public class BasicSnapshotController {
     farmingButton.setGraphic(farmingButtonView);
     farmingButton.setVisible(false);
     farmingButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-      SkillOverviewController.updateSkill(Skill.FARMING);
+      SkillOverviewController.updateSkill(lastResult, Skill.FARMING);
       ui.updateRightPanel(skillOverviewPanel);
     });
     hiscorePanel.getChildren().add(farmingButton);
@@ -571,6 +578,13 @@ public class BasicSnapshotController {
     resetButtons();
     final String lookup = sanitize(searchBox.getText());
 
+    if (lastLookup.equals(lookup)) {
+      updateWithResult(lastResult);
+      return;
+    }
+    configManager.setConfiguration("wiseTracker", "lastSearch", lookup);
+    lastLookup = lookup;
+
     if (Strings.isNullOrEmpty(lookup))
     {
       return;
@@ -591,74 +605,79 @@ public class BasicSnapshotController {
       BasicResponse result = wiseOldManClient.lookup(lookup);
       if (result == null)
         return;
+      lastResult = result;
       //successful player search
       searchBox.setEditable(true);
       loading = false;
-      displayNameLabel.setText("Display Name: " + result.displayName);
-      displayNameLabel.setVisible(true);
-      typeLabel.setText("Type: " + result.type);
-      typeLabel.setVisible(true);
-      buildLabel.setText("Build: " + result.build);
-      buildLabel.setVisible(true);
-      combatLvlLabel.setText("Combat LVL: " + result.combatLvl);
-      combatLvlLabel.setVisible(true);
-      ehpLabel.setText("Efficient Hours Played: " + result.ehp);
-      ehpLabel.setVisible(true);
-      ehbLabel.setText("Efficient Hours Bossed: " + result.ehb);
-      ehbLabel.setVisible(true);
-      ttmLabel.setText("Hours To Max: " + result.ttm);
-      ttmLabel.setVisible(true);
-      tt200mLabel.setText("Hours To all 200m: " + result.tt200m);
-      tt200mLabel.setVisible(true);
-      attackButton.setText("  " + result.latestSnapshot.attack.lvl);
-      attackButton.setVisible(true);
-      strengthButton.setText("  " + result.latestSnapshot.strength.lvl);
-      strengthButton.setVisible(true);
-      defenceButton.setText("  " + result.latestSnapshot.defence.lvl);
-      defenceButton.setVisible(true);
-      rangedButton.setText("  " + result.latestSnapshot.ranged.lvl);
-      rangedButton.setVisible(true);
-      prayerButton.setText("  " + result.latestSnapshot.prayer.lvl);
-      prayerButton.setVisible(true);
-      magicButton.setText("  " + result.latestSnapshot.magic.lvl);
-      magicButton.setVisible(true);
-      runecraftButton.setText("  " + result.latestSnapshot.runecrafting.lvl);
-      runecraftButton.setVisible(true);
-      constructionButton.setText("  " + result.latestSnapshot.construction.lvl);
-      constructionButton.setVisible(true);
-      hitpointsButton.setText("  " + result.latestSnapshot.hitpoints.lvl);
-      hitpointsButton.setVisible(true);
-      miningButton.setText("  " + result.latestSnapshot.mining.lvl);
-      miningButton.setVisible(true);
-      agilityButton.setText("  " + result.latestSnapshot.agility.lvl);
-      agilityButton.setVisible(true);
-      herbloreButton.setText("  " + result.latestSnapshot.herblore.lvl);
-      herbloreButton.setVisible(true);
-      thievingButton.setText("  " + result.latestSnapshot.thieving.lvl);
-      thievingButton.setVisible(true);
-      craftingButton.setText("  " + result.latestSnapshot.crafting.lvl);
-      craftingButton.setVisible(true);
-      fletchingButton.setText("  " + result.latestSnapshot.fletching.lvl);
-      fletchingButton.setVisible(true);
-      slayerButton.setText("  " + result.latestSnapshot.slayer.lvl);
-      slayerButton.setVisible(true);
-      hunterButton.setText("  " + result.latestSnapshot.hunter.lvl);
-      hunterButton.setVisible(true);
-      smithingButton.setText("  " + result.latestSnapshot.smithing.lvl);
-      smithingButton.setVisible(true);
-      fishingButton.setText("  " + result.latestSnapshot.fishing.lvl);
-      fishingButton.setVisible(true);
-      cookingButton.setText("  " + result.latestSnapshot.cooking.lvl);
-      cookingButton.setVisible(true);
-      firemakingButton.setText("  " + result.latestSnapshot.firemaking.lvl);
-      firemakingButton.setVisible(true);
-      woodcuttingButton.setText("  " + result.latestSnapshot.woodcutting.lvl);
-      woodcuttingButton.setVisible(true);
-      farmingButton.setText("  " + result.latestSnapshot.farming.lvl);
-      farmingButton.setVisible(true);
-      overallButton.setText("  " + result.latestSnapshot.overall.lvl);
-      overallButton.setVisible(true);
+      updateWithResult(result);
     });
+  }
+
+  public void updateWithResult(BasicResponse result) {
+    displayNameLabel.setText("Display Name: " + result.displayName);
+    displayNameLabel.setVisible(true);
+    typeLabel.setText("Type: " + result.type);
+    typeLabel.setVisible(true);
+    buildLabel.setText("Build: " + result.build);
+    buildLabel.setVisible(true);
+    combatLvlLabel.setText("Combat LVL: " + result.combatLvl);
+    combatLvlLabel.setVisible(true);
+    ehpLabel.setText("Efficient Hours Played: " + formatter.format(result.ehp));
+    ehpLabel.setVisible(true);
+    ehbLabel.setText("Efficient Hours Bossed: " + formatter.format(result.ehb));
+    ehbLabel.setVisible(true);
+    ttmLabel.setText("Hours To Max: " + formatter.format(result.ttm));
+    ttmLabel.setVisible(true);
+    tt200mLabel.setText("Hours To all 200m: " + formatter.format(result.tt200m));
+    tt200mLabel.setVisible(true);
+    attackButton.setText("  " + result.latestSnapshot.attack.lvl);
+    attackButton.setVisible(true);
+    strengthButton.setText("  " + result.latestSnapshot.strength.lvl);
+    strengthButton.setVisible(true);
+    defenceButton.setText("  " + result.latestSnapshot.defence.lvl);
+    defenceButton.setVisible(true);
+    rangedButton.setText("  " + result.latestSnapshot.ranged.lvl);
+    rangedButton.setVisible(true);
+    prayerButton.setText("  " + result.latestSnapshot.prayer.lvl);
+    prayerButton.setVisible(true);
+    magicButton.setText("  " + result.latestSnapshot.magic.lvl);
+    magicButton.setVisible(true);
+    runecraftButton.setText("  " + result.latestSnapshot.runecrafting.lvl);
+    runecraftButton.setVisible(true);
+    constructionButton.setText("  " + result.latestSnapshot.construction.lvl);
+    constructionButton.setVisible(true);
+    hitpointsButton.setText("  " + result.latestSnapshot.hitpoints.lvl);
+    hitpointsButton.setVisible(true);
+    miningButton.setText("  " + result.latestSnapshot.mining.lvl);
+    miningButton.setVisible(true);
+    agilityButton.setText("  " + result.latestSnapshot.agility.lvl);
+    agilityButton.setVisible(true);
+    herbloreButton.setText("  " + result.latestSnapshot.herblore.lvl);
+    herbloreButton.setVisible(true);
+    thievingButton.setText("  " + result.latestSnapshot.thieving.lvl);
+    thievingButton.setVisible(true);
+    craftingButton.setText("  " + result.latestSnapshot.crafting.lvl);
+    craftingButton.setVisible(true);
+    fletchingButton.setText("  " + result.latestSnapshot.fletching.lvl);
+    fletchingButton.setVisible(true);
+    slayerButton.setText("  " + result.latestSnapshot.slayer.lvl);
+    slayerButton.setVisible(true);
+    hunterButton.setText("  " + result.latestSnapshot.hunter.lvl);
+    hunterButton.setVisible(true);
+    smithingButton.setText("  " + result.latestSnapshot.smithing.lvl);
+    smithingButton.setVisible(true);
+    fishingButton.setText("  " + result.latestSnapshot.fishing.lvl);
+    fishingButton.setVisible(true);
+    cookingButton.setText("  " + result.latestSnapshot.cooking.lvl);
+    cookingButton.setVisible(true);
+    firemakingButton.setText("  " + result.latestSnapshot.firemaking.lvl);
+    firemakingButton.setVisible(true);
+    woodcuttingButton.setText("  " + result.latestSnapshot.woodcutting.lvl);
+    woodcuttingButton.setVisible(true);
+    farmingButton.setText("  " + result.latestSnapshot.farming.lvl);
+    farmingButton.setVisible(true);
+    overallButton.setText("  " + result.latestSnapshot.overall.lvl);
+    overallButton.setVisible(true);
   }
 
   private void resetButtons() {

@@ -133,11 +133,7 @@ public class XpUpdaterPlugin extends Plugin
 
 	private void updateCml(String username, EnumSet<WorldType> worldTypes)
 	{
-		if (!worldTypes.contains(WorldType.LEAGUE)
-			&& !worldTypes.contains(WorldType.DEADMAN)
-			&& !worldTypes.contains(WorldType.TOURNAMENT))
-		{
-			HttpUrl url = new HttpUrl.Builder()
+		HttpUrl url = new HttpUrl.Builder()
 				.scheme("https")
 				.host("crystalmathlabs.com")
 				.addPathSegment("tracker")
@@ -146,24 +142,19 @@ public class XpUpdaterPlugin extends Plugin
 				.addQueryParameter("player", username)
 				.build();
 
-			Request request = new Request.Builder()
+		Request request = new Request.Builder()
 				.header("User-Agent", "RuneLite")
 				.url(url)
 				.build();
 
-			log.warn("Built URI: {}", url.url());
+		log.warn("Built URI: {}", url.url());
 
-			sendRequest("CrystalMathLabs", request);
-		}
+		sendRequest("CrystalMathLabs", request);
 	}
 
 	private void updateTempleosrs(String username, EnumSet<WorldType> worldTypes)
 	{
-		if (!worldTypes.contains(WorldType.LEAGUE)
-				&& !worldTypes.contains(WorldType.DEADMAN)
-				&& !worldTypes.contains(WorldType.TOURNAMENT))
-		{
-			HttpUrl url = new HttpUrl.Builder()
+		HttpUrl url = new HttpUrl.Builder()
 				.scheme("https")
 				.host("templeosrs.com")
 				.addPathSegment("php")
@@ -171,24 +162,19 @@ public class XpUpdaterPlugin extends Plugin
 				.addQueryParameter("player", username)
 				.build();
 
-			Request request = new Request.Builder()
+		Request request = new Request.Builder()
 				.header("User-Agent", "RuneLite")
 				.url(url)
 				.build();
 
-			log.warn("Built URI: {}", url.url());
+		log.warn("Built URI: {}", url.url());
 
-			sendRequest("TempleOSRS", request);
-		}
+		sendRequest("TempleOSRS", request);
 	}
 
 	private void updateWom(String username, EnumSet<WorldType> worldTypes)
 	{
-		if (!worldTypes.contains(WorldType.LEAGUE)
-				&& !worldTypes.contains(WorldType.DEADMAN)
-				&& !worldTypes.contains(WorldType.TOURNAMENT))
-		{
-			HttpUrl url = new HttpUrl.Builder()
+		HttpUrl url = new HttpUrl.Builder()
 				.scheme("https")
 				.host("wiseoldman.net")
 				.addPathSegment("api")
@@ -196,20 +182,19 @@ public class XpUpdaterPlugin extends Plugin
 				.addPathSegment("track")
 				.build();
 
-			RequestBody formBody = new FormBody.Builder()
+		RequestBody formBody = new FormBody.Builder()
 				.add("username", username)
 				.build();
 
-			log.warn("Built URI: {}", url.url());
+		log.warn("Built URI: {}", url.url());
 
-			Request request = new Request.Builder()
+		Request request = new Request.Builder()
 				.header("User-Agent", "RuneLite")
 				.url(url)
 				.post(formBody)
 				.build();
 
-			sendRequest("Wise Old Man", request);
-		}
+		sendRequest("Wise Old Man", request);
 	}
 
 	private void sendRequest(String platform, Request request)
