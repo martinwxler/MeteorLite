@@ -25,11 +25,8 @@
 package meteor.plugins.demonicgorilla;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.inject.Provides;
 import lombok.AccessLevel;
 import lombok.Getter;
-import meteor.config.ConfigManager;
-import meteor.plugins.agility.AgilityConfig;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
@@ -74,11 +71,6 @@ public class DemonicGorillaPlugin extends Plugin
 	private List<PendingGorillaAttack> pendingAttacks;
 
 	private Map<Player, MemorizedPlayer> memorizedPlayers;
-
-	@Provides
-	public DemonicGorillaConfig getConfig(ConfigManager configManager) {
-		return configManager.getConfig(DemonicGorillaConfig.class);
-	}
 
 	@Override
 	public void startup()

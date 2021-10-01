@@ -25,17 +25,14 @@
  */
 package meteor.plugins.bosstimer;
 
-import com.google.inject.Provides;
-import meteor.config.ConfigManager;
-import net.runelite.api.NPC;
-import net.runelite.api.events.NpcDespawned;
+import javax.inject.Inject;
 import meteor.eventbus.Subscribe;
 import meteor.game.ItemManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.ui.overlay.infobox.InfoBoxManager;
-
-import javax.inject.Inject;
+import net.runelite.api.NPC;
+import net.runelite.api.events.NpcDespawned;
 
 @PluginDescriptor(
 	name = "Boss Timers",
@@ -50,11 +47,6 @@ public class BossTimersPlugin extends Plugin
 	@Inject
 	private ItemManager itemManager;
 
-	@Provides
-	public BossTimerConfig getConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(BossTimerConfig.class);
-	}
 
 	@Override
 	public void shutdown()

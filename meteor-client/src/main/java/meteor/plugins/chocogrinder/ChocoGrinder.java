@@ -1,27 +1,22 @@
 package meteor.plugins.chocogrinder;
 
-import com.google.inject.Provides;
-import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.plugins.api.entities.NPCs;
-import meteor.plugins.api.entities.TileObjects;
-import meteor.plugins.api.game.Game;
 import meteor.plugins.api.items.Bank;
 import meteor.plugins.api.items.Inventory;
-import meteor.plugins.api.packets.*;
-import net.runelite.api.*;
-import net.runelite.api.events.ChatMessage;
+import meteor.plugins.api.packets.ItemPackets;
+import meteor.plugins.api.packets.MousePackets;
+import meteor.plugins.api.packets.NPCPackets;
+import meteor.plugins.api.packets.WidgetPackets;
+import net.runelite.api.GameState;
+import net.runelite.api.Item;
+import net.runelite.api.NPC;
 import net.runelite.api.events.GameTick;
-import net.runelite.api.widgets.WidgetInfo;
 
 @PluginDescriptor(name = "Chocolate grinder", enabledByDefault = false)
 public class ChocoGrinder extends Plugin {
-    @Provides
-    public ChocoGrinderConfig getConfig(ConfigManager configManager) {
-        return configManager.getConfig(ChocoGrinderConfig.class);
-    }
     int gametick =0;
     Item knife;
     @Override

@@ -1,7 +1,5 @@
 package meteor.plugins.lowcpu;
 
-import com.google.inject.Provides;
-import meteor.config.ConfigManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import net.runelite.api.Client;
@@ -32,10 +30,5 @@ public class LowCpuPlugin extends Plugin {
 		client.setIsHidingEntities(false);
 		client.setLowCpu(false);
 		client.setDrawCallbacks(drawCallbacks);
-	}
-
-	@Provides
-	public LowCpuConfig getConfig(ConfigManager configManager) {
-		return configManager.getConfig(LowCpuConfig.class);
 	}
 }

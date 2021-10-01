@@ -23,7 +23,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.betterantidrag;
+package meteor.plugins.antidrag;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
@@ -46,7 +46,7 @@ import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 
 @PluginDescriptor(
-	name = "Better Anti Drag",
+	name = "Anti Drag",
 	enabledByDefault = false,
 	description = "Prevent dragging an item for a specified delay",
 	tags = {"antidrag", "delay", "inventory", "items"}

@@ -26,8 +26,6 @@
 package meteor.plugins.randomevents;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.inject.Provides;
-import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
@@ -79,11 +77,6 @@ public class RandomEventPlugin extends Plugin
 
 	@Inject
 	private Client client;
-
-	@Provides
-	public RandomEventConfig getConfig(ConfigManager configManager) {
-		return configManager.getConfig(RandomEventConfig.class);
-	}
 
 	@Override
 	public void shutdown()

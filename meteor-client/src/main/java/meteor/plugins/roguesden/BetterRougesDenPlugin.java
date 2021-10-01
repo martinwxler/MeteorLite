@@ -22,15 +22,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.betterroguesden;
+package meteor.plugins.roguesden;
 
 import java.util.HashMap;
 import javax.inject.Inject;
 
-import com.google.inject.Provides;
 import lombok.AccessLevel;
 import lombok.Getter;
-import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
@@ -59,7 +57,7 @@ import net.runelite.api.events.WallObjectDespawned;
 import net.runelite.api.events.WallObjectSpawned;
 
 @PluginDescriptor(
-	name = "Better Rogues' Den",
+	name = "Rogues' Den",
 	description = "Mark tiles and clickboxes to help traverse the maze",
 	tags = {"agility", "maze", "minigame", "overlay", "thieving"},
 	enabledByDefault = false
@@ -86,11 +84,6 @@ public class BetterRougesDenPlugin extends Plugin
 
 	@Inject
 	private RoguesDenMinimapOverlay minimapOverlay;
-
-	@Provides
-	public BetterRoguesDenConfig getConfig(ConfigManager configManager) {
-		return configManager.getConfig(BetterRoguesDenConfig.class);
-	}
 
 	@Override
 	public void startup()

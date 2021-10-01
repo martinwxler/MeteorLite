@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, https://openosrs.com
+ * Copyright (c) 2018, Jordan Atwood <jordan.atwood423@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,50 +22,61 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.betterantidrag;
+package meteor.plugins.roguesden;
 
-import com.google.inject.Inject;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import lombok.AccessLevel;
-import lombok.Setter;
+import javax.inject.Inject;
+
 import meteor.ui.overlay.Overlay;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayPosition;
-import meteor.ui.overlay.OverlayPriority;
+import meteor.ui.overlay.OverlayUtil;
 import net.runelite.api.Client;
+import net.runelite.api.Perspective;
+import net.runelite.api.Point;
+import net.runelite.api.coords.LocalPoint;
 
-public class BetterAntiDragOverlay extends Overlay
+class RoguesDenMinimapOverlay extends Overlay
 {
-	private static final int RADIUS = 20;
-
 	private final Client client;
-
-	@Setter(AccessLevel.PACKAGE)
-	private Color color;
+	private final BetterRougesDenPlugin plugin;
 
 	@Inject
-	private BetterAntiDragOverlay(final Client client)
+	public RoguesDenMinimapOverlay(Client client, BetterRougesDenPlugin plugin)
 	{
+		setPosition(OverlayPosition.DYNAMIC);
+		setLayer(OverlayLayer.ABOVE_WIDGETS);
 		this.client = client;
-		setPosition(OverlayPosition.TOOLTIP);
-		setPriority(OverlayPriority.HIGHEST);
-		setLayer(OverlayLayer.ALWAYS_ON_TOP);
+		this.plugin = plugin;
 	}
 
 	@Override
-	public Dimension render(Graphics2D g)
+	public Dimension render(Graphics2D graphics)
 	{
-		g.setColor(color);
+		if (!plugin.isHasGem())
+		{
+			return null;
+		}
 
-		final net.runelite.api.Point mouseCanvasPosition = client.getMouseCanvasPosition();
-		final Point mousePosition = new Point(mouseCanvasPosition.getX() - RADIUS, mouseCanvasPosition.getY() - RADIUS);
-		final Rectangle bounds = new Rectangle(mousePosition.x, mousePosition.y, 2 * RADIUS, 2 * RADIUS);
-		g.fillOval(bounds.x, bounds.y, bounds.width, bounds.height);
+		for (Obstacles.Obstacle obstacle : Obstacles.OBSTACLES)
+		{
+			final LocalPoint localPoint = LocalPoint.fromWorld(client, obstacle.getTile());
 
-		return bounds.getSize();
+			if (localPoint == null || obstacle.getTile().getPlane() != client.getPlane())
+			{
+				continue;
+			}
+
+			final Point minimapPoint = Perspective.localToMinimap(client, localPoint);
+
+			if (minimapPoint != null)
+			{
+				OverlayUtil.renderMinimapLocation(graphics, minimapPoint, obstacle.getObjectId() == -1 ? Color.GREEN : Color.RED);
+			}
+		}
+
+		return null;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Alex Kolpa <https://github.com/AlexKolpa>
+ * Copyright (c) 2018, https://openosrs.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,18 +22,50 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.agility;
+package meteor.plugins.antidrag;
 
-import java.awt.image.BufferedImage;
-import java.time.temporal.ChronoUnit;
-import meteor.plugins.Plugin;
-import meteor.ui.overlay.infobox.Timer;
+import com.google.inject.Inject;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import lombok.AccessLevel;
+import lombok.Setter;
+import meteor.ui.overlay.Overlay;
+import meteor.ui.overlay.OverlayLayer;
+import meteor.ui.overlay.OverlayPosition;
+import meteor.ui.overlay.OverlayPriority;
+import net.runelite.api.Client;
 
-class AgilityArenaTimer extends Timer
+public class BetterAntiDragOverlay extends Overlay
 {
-	AgilityArenaTimer(Plugin plugin, BufferedImage image)
+	private static final int RADIUS = 20;
+
+	private final Client client;
+
+	@Setter(AccessLevel.PACKAGE)
+	private Color color;
+
+	@Inject
+	private BetterAntiDragOverlay(final Client client)
 	{
-		super(1, ChronoUnit.MINUTES, image, plugin);
-		setTooltip("Time left until location changes");
+		this.client = client;
+		setPosition(OverlayPosition.TOOLTIP);
+		setPriority(OverlayPriority.HIGHEST);
+		setLayer(OverlayLayer.ALWAYS_ON_TOP);
+	}
+
+	@Override
+	public Dimension render(Graphics2D g)
+	{
+		g.setColor(color);
+
+		final net.runelite.api.Point mouseCanvasPosition = client.getMouseCanvasPosition();
+		final Point mousePosition = new Point(mouseCanvasPosition.getX() - RADIUS, mouseCanvasPosition.getY() - RADIUS);
+		final Rectangle bounds = new Rectangle(mousePosition.x, mousePosition.y, 2 * RADIUS, 2 * RADIUS);
+		g.fillOval(bounds.x, bounds.y, bounds.width, bounds.height);
+
+		return bounds.getSize();
 	}
 }
