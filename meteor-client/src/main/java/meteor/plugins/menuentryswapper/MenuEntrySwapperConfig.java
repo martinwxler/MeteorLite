@@ -821,6 +821,17 @@ public interface MenuEntrySwapperConfig extends Config {
     return false;
   }
 
+  @ConfigItem(
+      keyName = "swapImps",
+      name = "Swaps loot and use on imps",
+      description = "based on if u have the type of clue",
+      position = 3,
+      section = skillingSection
+  )
+  default boolean swapImps() {
+    return false;
+  }
+
   //------------------------------------------------------------//
   // Teleportation
   //------------------------------------------------------------//
