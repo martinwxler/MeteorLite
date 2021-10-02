@@ -32,14 +32,17 @@ import meteor.plugins.menuentryswapper.util.BurningAmuletMode;
 import meteor.plugins.menuentryswapper.util.CombatBraceletMode;
 import meteor.plugins.menuentryswapper.util.ConstructionCapeMode;
 import meteor.plugins.menuentryswapper.util.CraftingCapeMode;
+import meteor.plugins.menuentryswapper.util.DiaryCapeMode;
 import meteor.plugins.menuentryswapper.util.DigsitePendantMode;
 import meteor.plugins.menuentryswapper.util.DrakansMedallionMode;
 import meteor.plugins.menuentryswapper.util.DuelingRingMode;
+import meteor.plugins.menuentryswapper.util.FarmCapeMode;
 import meteor.plugins.menuentryswapper.util.GamesNecklaceMode;
 import meteor.plugins.menuentryswapper.util.GloryMode;
 import meteor.plugins.menuentryswapper.util.MagicCapeMode;
 import meteor.plugins.menuentryswapper.util.MaxCapeEquippedMode;
 import meteor.plugins.menuentryswapper.util.NecklaceOfPassageMode;
+import meteor.plugins.menuentryswapper.util.QuestCapeMode;
 import meteor.plugins.menuentryswapper.util.RingOfWealthMode;
 import meteor.plugins.menuentryswapper.util.SkillsNecklaceMode;
 import meteor.plugins.menuentryswapper.util.Swap;
@@ -765,6 +768,22 @@ public class ExtendedSwaps {
         config.getConstructionCapeMode() == ConstructionCapeMode.INVENTORY || config.getConstructionCapeMode() == ConstructionCapeMode.ALWAYS);
     swap("remove", targetSwap("construct."), "tele to poh", () ->
         config.getConstructionCapeMode() == ConstructionCapeMode.EQUIPPED || config.getConstructionCapeMode() == ConstructionCapeMode.ALWAYS);
+
+    swap("wear", targetSwap("quest point cape"), "teleport", () ->
+        config.getQuestCapeMode() == QuestCapeMode.INVENTORY || config.getQuestCapeMode() == QuestCapeMode.ALWAYS);
+    swap("remove", targetSwap("quest point cape"), "teleport", () ->
+        config.getQuestCapeMode() == QuestCapeMode.EQUIPPED || config.getQuestCapeMode() == QuestCapeMode.ALWAYS);
+
+    swap("wear", targetSwap("achievement diary cape"), "teleport", () ->
+        config.getDiaryCapeMode() == DiaryCapeMode.INVENTORY || config.getDiaryCapeMode() == DiaryCapeMode.ALWAYS);
+    swap("remove", targetSwap("achievement diary cape"), "teleport", () ->
+        config.getDiaryCapeMode()== DiaryCapeMode.EQUIPPED || config.getDiaryCapeMode()== DiaryCapeMode.ALWAYS);
+
+    swap("wear", targetSwap("farming cape"), "teleport", () ->
+        config.getFarmingCapeMode() == FarmCapeMode.INVENTORY || config.getFarmingCapeMode() == FarmCapeMode.ALWAYS);
+    swap("remove", targetSwap("farming cape"), "teleport", () ->
+        config.getFarmingCapeMode() == FarmCapeMode.EQUIPPED || config.getFarmingCapeMode() == FarmCapeMode.ALWAYS);
+
 
     swap("wear", targetSwap("magic cape"), "spellbook", () ->
         config.getMagicCapeMode() == MagicCapeMode.INVENTORY || config.getMagicCapeMode() == MagicCapeMode.ALWAYS);
