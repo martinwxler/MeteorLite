@@ -33,6 +33,7 @@ import meteor.plugins.menuentryswapper.util.CombatBraceletMode;
 import meteor.plugins.menuentryswapper.util.ConstructionCapeMode;
 import meteor.plugins.menuentryswapper.util.CraftingCapeMode;
 import meteor.plugins.menuentryswapper.util.DigsitePendantMode;
+import meteor.plugins.menuentryswapper.util.DrakansMedallionMode;
 import meteor.plugins.menuentryswapper.util.DuelingRingMode;
 import meteor.plugins.menuentryswapper.util.GamesNecklaceMode;
 import meteor.plugins.menuentryswapper.util.GloryMode;
@@ -645,102 +646,115 @@ public class ExtendedSwaps {
       swapContains(option, (s) -> true, "pickpocket", config::swapPickpocket);
     }
     swap("remove", targetSwap("burning amulet"), "chaos temple", () ->
-        config.getBurningAmulet() && config.getBurningAmuletMode() == BurningAmuletMode.CHAOS_TEMPLE);
+        config.getBurningAmuletMode() == BurningAmuletMode.CHAOS_TEMPLE);
     swap("remove", targetSwap("burning amulet"), "bandit camp", () ->
-        config.getBurningAmulet() && config.getBurningAmuletMode() == BurningAmuletMode.BANDIT_CAMP);
+        config.getBurningAmuletMode() == BurningAmuletMode.BANDIT_CAMP);
     swap("remove", targetSwap("burning amulet"), "lava maze", () ->
-        config.getBurningAmulet() && config.getBurningAmuletMode() == BurningAmuletMode.LAVA_MAZE);
+        config.getBurningAmuletMode() == BurningAmuletMode.LAVA_MAZE);
+
+    swap("remove", targetSwap("drakan's medallion"), "darkmeyer", () ->
+        config.getDrakansMedallionMode() == DrakansMedallionMode.DARKMEYER_WORN || config.getDrakansMedallionMode() == DrakansMedallionMode.DARKMEYER_ALWAYS);
+    swap("remove", targetSwap("drakan's medallion"), "slepe", () ->
+        config.getDrakansMedallionMode() == DrakansMedallionMode.SLEPE_WORN || config.getDrakansMedallionMode() == DrakansMedallionMode.SLEPE_ALWAYS);
+    swap("remove", targetSwap("drakan's medallion"), "ver sinhaza", () ->
+        config.getDrakansMedallionMode() == DrakansMedallionMode.VER_SINHAZA_WORN || config.getDrakansMedallionMode() == DrakansMedallionMode.VER_SINHAZA_ALWAYS);
+    swap("wear", targetSwap("drakan's medallion"), "darkmeyer", () ->
+        config.getDrakansMedallionMode() == DrakansMedallionMode.DARKMEYER_INV || config.getDrakansMedallionMode() == DrakansMedallionMode.DARKMEYER_ALWAYS);
+    swap("wear", targetSwap("drakan's medallion"), "slepe", () ->
+        config.getDrakansMedallionMode() == DrakansMedallionMode.SLEPE_INV || config.getDrakansMedallionMode() == DrakansMedallionMode.SLEPE_ALWAYS);
+    swap("wear", targetSwap("drakan's medallion"), "ver sinhaza", () ->
+        config.getDrakansMedallionMode() == DrakansMedallionMode.VER_SINHAZA_INV || config.getDrakansMedallionMode() == DrakansMedallionMode.VER_SINHAZA_ALWAYS);
 
     swap("remove", targetSwap("combat bracelet"), "warriors' guild", () ->
-        config.getCombatBracelet() && config.getCombatBraceletMode() == CombatBraceletMode.WARRIORS_GUILD);
+        config.getCombatBraceletMode() == CombatBraceletMode.WARRIORS_GUILD);
     swap("remove", targetSwap("combat bracelet"), "champions' guild", () ->
-        config.getCombatBracelet() && config.getCombatBraceletMode() == CombatBraceletMode.CHAMPIONS_GUILD);
+        config.getCombatBraceletMode() == CombatBraceletMode.CHAMPIONS_GUILD);
     swap("remove", targetSwap("combat bracelet"), "edgeville monastery", () ->
-        config.getCombatBracelet() && config.getCombatBraceletMode() == CombatBraceletMode.EDGEVILLE_MONASTERY);
+        config.getCombatBraceletMode() == CombatBraceletMode.EDGEVILLE_MONASTERY);
     swap("remove", targetSwap("combat bracelet"), "ranging guild", () ->
-        config.getCombatBracelet() && config.getCombatBraceletMode() == CombatBraceletMode.RANGING_GUILD);
+        config.getCombatBraceletMode() == CombatBraceletMode.RANGING_GUILD);
 
     swap("remove", targetSwap("games necklace"), "burthorpe", () ->
-        config.getGamesNecklace() && config.getGamesNecklaceMode() == GamesNecklaceMode.BURTHORPE);
+        config.getGamesNecklaceMode() == GamesNecklaceMode.BURTHORPE);
     swap("remove", targetSwap("games necklace"), "barbarian outpost", () ->
-        config.getGamesNecklace() && config.getGamesNecklaceMode() == GamesNecklaceMode.BARBARIAN_OUTPOST);
+        config.getGamesNecklaceMode() == GamesNecklaceMode.BARBARIAN_OUTPOST);
     swap("remove", targetSwap("games necklace"), "corporeal beast", () ->
-        config.getGamesNecklace() && config.getGamesNecklaceMode() == GamesNecklaceMode.CORPOREAL_BEAST);
+        config.getGamesNecklaceMode() == GamesNecklaceMode.CORPOREAL_BEAST);
     swap("remove", targetSwap("games necklace"), "tears of guthix", () ->
-        config.getGamesNecklace() && config.getGamesNecklaceMode() == GamesNecklaceMode.TEARS_OF_GUTHIX);
+        config.getGamesNecklaceMode() == GamesNecklaceMode.TEARS_OF_GUTHIX);
     swap("remove", targetSwap("games necklace"), "wintertodt camp", () ->
-        config.getGamesNecklace() && config.getGamesNecklaceMode() == GamesNecklaceMode.WINTER);
+        config.getGamesNecklaceMode() == GamesNecklaceMode.WINTER);
 
     swap("remove", targetSwap("ring of dueling"), "duel arena", () ->
-        config.getDuelingRing() && config.getDuelingRingMode() == DuelingRingMode.DUEL_ARENA);
+        config.getDuelingRingMode() == DuelingRingMode.DUEL_ARENA);
     swap("remove", targetSwap("ring of dueling"), "castle wars", () ->
-        config.getDuelingRing() && config.getDuelingRingMode() == DuelingRingMode.CASTLE_WARS);
+        config.getDuelingRingMode() == DuelingRingMode.CASTLE_WARS);
     swap("remove", targetSwap("ring of dueling"), "ferox enclave", () ->
-        config.getDuelingRing() && config.getDuelingRingMode() == DuelingRingMode.FEROX_ENCLAVE);
+        config.getDuelingRingMode() == DuelingRingMode.FEROX_ENCLAVE);
 
     swap("remove", targetSwap("amulet of glory"), "edgeville", () ->
-        config.getGlory() && config.getGloryMode() == GloryMode.EDGEVILLE);
+        config.getGloryMode() == GloryMode.EDGEVILLE);
     swap("remove", targetSwap("amulet of glory"), "karamja", () ->
-        config.getGlory() && config.getGloryMode() == GloryMode.KARAMJA);
+        config.getGloryMode() == GloryMode.KARAMJA);
     swap("remove", targetSwap("amulet of glory"), "al kharid", () ->
-        config.getGlory() && config.getGloryMode() == GloryMode.AL_KHARID);
+        config.getGloryMode() == GloryMode.AL_KHARID);
     swap("remove", targetSwap("amulet of glory"), "draynor village", () ->
-        config.getGlory() && config.getGloryMode() == GloryMode.DRAYNOR_VILLAGE);
+        config.getGloryMode() == GloryMode.DRAYNOR_VILLAGE);
     swap("remove", targetSwap("amulet of eternal glory"), "edgeville", () ->
-        config.getGlory() && config.getGloryMode() == GloryMode.EDGEVILLE);
+        config.getGloryMode() == GloryMode.EDGEVILLE);
     swap("remove", targetSwap("amulet of eternal glory"), "karamja", () ->
-        config.getGlory() && config.getGloryMode() == GloryMode.KARAMJA);
+        config.getGloryMode() == GloryMode.KARAMJA);
     swap("remove", targetSwap("amulet of eternal glory"), "al kharid", () ->
-        config.getGlory() && config.getGloryMode() == GloryMode.AL_KHARID);
+        config.getGloryMode() == GloryMode.AL_KHARID);
     swap("remove", targetSwap("amulet of eternal glory"), "draynor village", () ->
-        config.getGlory() && config.getGloryMode() == GloryMode.DRAYNOR_VILLAGE);
+        config.getGloryMode() == GloryMode.DRAYNOR_VILLAGE);
 
     swap("remove", targetSwap("skills necklace"), "fishing guild", () ->
-        config.getSkillsNecklace() && config.getSkillsNecklaceMode() == SkillsNecklaceMode.FISHING_GUILD);
+        config.getSkillsNecklaceMode() == SkillsNecklaceMode.FISHING_GUILD);
     swap("remove", targetSwap("skills necklace"), "mining guild", () ->
-        config.getSkillsNecklace() && config.getSkillsNecklaceMode() == SkillsNecklaceMode.MINING_GUILD);
+        config.getSkillsNecklaceMode() == SkillsNecklaceMode.MINING_GUILD);
     swap("remove", targetSwap("skills necklace"), "farming guild", () ->
-        config.getSkillsNecklace() && config.getSkillsNecklaceMode() == SkillsNecklaceMode.FARMING_GUILD);
+        config.getSkillsNecklaceMode() == SkillsNecklaceMode.FARMING_GUILD);
     swap("remove", targetSwap("skills necklace"), "cooking guild", () ->
-        config.getSkillsNecklace() && config.getSkillsNecklaceMode() == SkillsNecklaceMode.COOKING_GUILD);
+        config.getSkillsNecklaceMode() == SkillsNecklaceMode.COOKING_GUILD);
     swap("remove", targetSwap("skills necklace"), "woodcutting guild", () ->
-        config.getSkillsNecklace() & config.getSkillsNecklaceMode() == SkillsNecklaceMode.WOODCUTTING_GUILD);
+        config.getSkillsNecklaceMode() == SkillsNecklaceMode.WOODCUTTING_GUILD);
     swap("remove", targetSwap("skills necklace"), "crafting guild", () ->
-        config.getSkillsNecklace() && config.getSkillsNecklaceMode() == SkillsNecklaceMode.CRAFTING_GUILD);
+        config.getSkillsNecklaceMode() == SkillsNecklaceMode.CRAFTING_GUILD);
 
     swap("remove", targetSwap("necklace of passage"), "wizards' tower", () ->
-        config.getNecklaceofPassage() && config.getNecklaceofPassageMode() == NecklaceOfPassageMode.WIZARDS_TOWER);
+        config.getNecklaceofPassageMode() == NecklaceOfPassageMode.WIZARDS_TOWER);
     swap("remove", targetSwap("necklace of passage"), "the outpost", () ->
-        config.getNecklaceofPassage() && config.getNecklaceofPassageMode() == NecklaceOfPassageMode.THE_OUTPOST);
+        config.getNecklaceofPassageMode() == NecklaceOfPassageMode.THE_OUTPOST);
     swap("remove", targetSwap("necklace of passage"), "eagles' eyrie", () ->
-        config.getNecklaceofPassage() && config.getNecklaceofPassageMode() == NecklaceOfPassageMode.EAGLES_EYRIE);
+        config.getNecklaceofPassageMode() == NecklaceOfPassageMode.EAGLES_EYRIE);
 
     swap("remove", targetSwap("digsite pendant"), "digsite", () ->
-        config.getDigsitePendant() && config.getDigsitePendantMode() == DigsitePendantMode.DIGSITE);
+        config.getDigsitePendantMode() == DigsitePendantMode.DIGSITE);
     swap("remove", targetSwap("digsite pendant"), "fossil island", () ->
-        config.getDigsitePendant() && config.getDigsitePendantMode() == DigsitePendantMode.FOSSIL_ISLAND);
+        config.getDigsitePendantMode() == DigsitePendantMode.FOSSIL_ISLAND);
     swap("remove", targetSwap("digsite pendant"), "lithkren dungeon", () ->
-        config.getDigsitePendant() && config.getDigsitePendantMode() == DigsitePendantMode.LITHKREN);
+        config.getDigsitePendantMode() == DigsitePendantMode.LITHKREN);
 
     swap("remove", targetSwap("ring of wealth"), "miscellania", () ->
-        config.getRingofWealth() && config.getRingofWealthMode() == RingOfWealthMode.MISCELLANIA);
+        config.getRingofWealthMode() == RingOfWealthMode.MISCELLANIA);
     swap("remove", targetSwap("ring of wealth"), "grand exchange", () ->
-        config.getRingofWealth() && config.getRingofWealthMode() == RingOfWealthMode.GRAND_EXCHANGE);
+        config.getRingofWealthMode() == RingOfWealthMode.GRAND_EXCHANGE);
     swap("remove", targetSwap("ring of wealth"), "falador", () ->
-        config.getRingofWealth() && config.getRingofWealthMode() == RingOfWealthMode.FALADOR);
+        config.getRingofWealthMode() == RingOfWealthMode.FALADOR);
     swap("remove", targetSwap("ring of wealth"), "dondakan", () ->
-        config.getRingofWealth() && config.getRingofWealthMode() == RingOfWealthMode.DONDAKAN);
+        config.getRingofWealthMode() == RingOfWealthMode.DONDAKAN);
 
     swap("remove", targetSwap("talisman"), "xeric's glade", () ->
-        config.getXericsTalisman() && config.getXericsTalismanMode() == XericsTalismanMode.XERICS_GLADE);
+        config.getXericsTalismanMode() == XericsTalismanMode.XERICS_GLADE);
     swap("remove", targetSwap("talisman"), "xeric's lookout", () ->
-        config.getXericsTalisman() && config.getXericsTalismanMode() == XericsTalismanMode.XERICS_LOOKOUT);
+        config.getXericsTalismanMode() == XericsTalismanMode.XERICS_LOOKOUT);
     swap("remove", targetSwap("talisman"), "xeric's inferno", () ->
-        config.getXericsTalisman() && config.getXericsTalismanMode() == XericsTalismanMode.XERICS_INFERNO);
+        config.getXericsTalismanMode() == XericsTalismanMode.XERICS_INFERNO);
     swap("remove", targetSwap("talisman"), "xeric's heart", () ->
-        config.getXericsTalisman() && config.getXericsTalismanMode() == XericsTalismanMode.XERICS_HEART);
+        config.getXericsTalismanMode() == XericsTalismanMode.XERICS_HEART);
     swap("remove", targetSwap("talisman"), "xeric's honour", () ->
-        config.getXericsTalisman() && config.getXericsTalismanMode() == XericsTalismanMode.XERICS_HONOUR);
+        config.getXericsTalismanMode() == XericsTalismanMode.XERICS_HONOUR);
 
     swap("wear", targetSwap("crafting cape"), "teleport", () ->
         config.getCraftingCapeMode() == CraftingCapeMode.INVENTORY || config.getCraftingCapeMode() == CraftingCapeMode.ALWAYS);

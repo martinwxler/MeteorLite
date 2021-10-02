@@ -37,6 +37,7 @@ import meteor.plugins.menuentryswapper.util.ConstructionCapeMode;
 import meteor.plugins.menuentryswapper.util.ConstructionMode;
 import meteor.plugins.menuentryswapper.util.CraftingCapeMode;
 import meteor.plugins.menuentryswapper.util.DigsitePendantMode;
+import meteor.plugins.menuentryswapper.util.DrakansMedallionMode;
 import meteor.plugins.menuentryswapper.util.DuelingRingMode;
 import meteor.plugins.menuentryswapper.util.FairyRingMode;
 import meteor.plugins.menuentryswapper.util.GEItemCollectMode;
@@ -838,251 +839,132 @@ public interface MenuEntrySwapperConfig extends Config {
   //------------------------------------------------------------//
 
   @ConfigItem(
-      keyName = "swapGamesNecklace",
-      name = "Games Necklace",
-      description = "Swap the left click 'remove' option with the desired teleport location on a worn Games Necklace.",
-      position = 1,
-      section = teleportationSection
-  )
-  default boolean getGamesNecklace() {
-    return false;
-  }
-
-  @ConfigItem(
-      keyName = "gamesNecklaceMode",
-      name = "Mode",
-      description = "",
-      position = 2,
-      section = teleportationSection,
-      hidden = true,
-      unhide = "swapGamesNecklace"
-  )
-  default GamesNecklaceMode getGamesNecklaceMode() {
-    return GamesNecklaceMode.OFF;
-  }
-
-  @ConfigItem(
-      keyName = "swapDuelingRing",
-      name = "Dueling Ring",
-      description = "Swap the left click 'remove' option with the desired teleport location on a worn Ring of Dueling.",
-      position = 3,
-      section = teleportationSection,
-      disabledBy = "swapDuelRingLavas"
-  )
-  default boolean getDuelingRing() {
-    return false;
-  }
-
-  @ConfigItem(
-      keyName = "duelingRingMode",
-      name = "Mode",
-      description = "",
-      position = 4,
-      section = teleportationSection,
-      hidden = true,
-      unhide = "swapDuelingRing"
-  )
-  default DuelingRingMode getDuelingRingMode() {
-    return DuelingRingMode.OFF;
-  }
-
-  @ConfigItem(
-      keyName = "swapGlory",
-      name = "Glory",
-      description = "Swap the left click 'remove' option with the desired teleport location on a worn Amulet of Glory / Amulet of Eternal Glory.",
-      position = 5,
-      section = teleportationSection
-  )
-  default boolean getGlory() {
-    return false;
-  }
-
-  @ConfigItem(
       keyName = "gloryMode",
-      name = "Mode",
+      name = "Amulet of Glory",
       description = "",
-      position = 6,
-      section = teleportationSection,
-      hidden = true,
-      unhide = "swapGlory"
+      position = 0,
+      section = teleportationSection
   )
   default GloryMode getGloryMode() {
     return GloryMode.OFF;
   }
 
   @ConfigItem(
-      keyName = "swapSkill",
-      name = "Skills Necklace",
-      description = "Swap the left click 'remove' option with the desired teleport location on a worn Skills Necklace.",
-      position = 7,
-      section = teleportationSection
-  )
-  default boolean getSkillsNecklace() {
-    return false;
-  }
-
-  @ConfigItem(
-      keyName = "skillsnecklacemode",
-      name = "Mode",
-      description = "",
-      position = 8,
-      section = teleportationSection,
-      hidden = true,
-      unhide = "swapSkill"
-  )
-  default SkillsNecklaceMode getSkillsNecklaceMode() {
-    return SkillsNecklaceMode.OFF;
-  }
-
-  @ConfigItem(
-      keyName = "swapPassage",
-      name = "Passage Necklace",
-      description = "Swap the left click 'remove' option with the desired teleport location on a worn Necklace of Passage.",
-      position = 9,
-      section = teleportationSection
-  )
-  default boolean getNecklaceofPassage() {
-    return false;
-  }
-
-  @ConfigItem(
-      keyName = "necklaceofpassagemode",
-      name = "Mode",
-      description = "",
-      position = 10,
-      section = teleportationSection,
-      hidden = true,
-      unhide = "swapPassage"
-  )
-  default NecklaceOfPassageMode getNecklaceofPassageMode() {
-    return NecklaceOfPassageMode.OFF;
-  }
-
-  @ConfigItem(
-      keyName = "swapDigsite",
-      name = "Digsite Pendant",
-      description = "Swap the left click 'remove' option with the desired teleport location on a worn Digsite Pendant.",
-      position = 11,
-      section = teleportationSection
-  )
-  default boolean getDigsitePendant() {
-    return false;
-  }
-
-  @ConfigItem(
-      keyName = "digsitependantmode",
-      name = "Mode",
-      description = "",
-      position = 12,
-      section = teleportationSection,
-      hidden = true,
-      unhide = "swapDigsite"
-  )
-  default DigsitePendantMode getDigsitePendantMode() {
-    return DigsitePendantMode.OFF;
-  }
-
-  @ConfigItem(
-      keyName = "swapCombat",
-      name = "Combat Bracelet",
-      description = "Swap the left click 'remove' option with the desired teleport location on a worn Combat Bracelet.",
-      position = 13,
-      section = teleportationSection
-  )
-  default boolean getCombatBracelet() {
-    return false;
-  }
-
-  @ConfigItem(
-      keyName = "combatbraceletmode",
-      name = "Mode",
-      description = "",
-      position = 14,
-      section = teleportationSection,
-      hidden = true,
-      unhide = "swapCombat"
-  )
-  default CombatBraceletMode getCombatBraceletMode() {
-    return CombatBraceletMode.OFF;
-  }
-
-  @ConfigItem(
-      keyName = "swapburning",
-      name = "Burning Amulet",
-      description = "Swap the left click 'remove' option with the desired teleport location on a worn Burning Amulet.",
-      position = 15,
-      section = teleportationSection
-  )
-  default boolean getBurningAmulet() {
-    return false;
-  }
-
-  @ConfigItem(
       keyName = "burningamuletmode",
-      name = "Mode",
+      name = "Burning Amulet",
       description = "",
-      position = 16,
-      section = teleportationSection,
-      hidden = true,
-      unhide = "swapburning"
+      position = 1,
+      section = teleportationSection
   )
   default BurningAmuletMode getBurningAmuletMode() {
     return BurningAmuletMode.OFF;
   }
 
   @ConfigItem(
-      keyName = "swapxeric",
-      name = "Xeric's Talisman",
-      description = "Swap the left click 'remove' option with the desired teleport location on a worn Xeric's Talisman.",
-      position = 17,
-      section = teleportationSection
-  )
-  default boolean getXericsTalisman() {
-    return false;
-  }
-
-  @ConfigItem(
-      keyName = "xericstalismanmode",
-      name = "Mode",
+      keyName = "combatbraceletmode",
+      name = "Combat Bracelet",
       description = "",
-      position = 18,
-      section = teleportationSection,
-      hidden = true,
-      unhide = "swapxeric"
+      position = 2,
+      section = teleportationSection
   )
-  default XericsTalismanMode getXericsTalismanMode() {
-    return XericsTalismanMode.OFF;
+  default CombatBraceletMode getCombatBraceletMode() {
+    return CombatBraceletMode.OFF;
   }
 
   @ConfigItem(
-      keyName = "swapwealth",
-      name = "Ring of Wealth",
-      description = "Swap the left click 'remove' option with the desired teleport location on a worn Ring of Wealth.",
-      position = 19,
+      keyName = "digsitependantmode",
+      name = "Digsite Pendant",
+      description = "",
+      position = 3,
       section = teleportationSection
   )
-  default boolean getRingofWealth() {
-    return false;
+  default DigsitePendantMode getDigsitePendantMode() {
+    return DigsitePendantMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "drakansmedallion",
+      name = "Drakans Medallion",
+      description = "",
+      position = 4,
+      section = teleportationSection
+  )
+  default DrakansMedallionMode getDrakansMedallionMode()
+  {
+    return DrakansMedallionMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "gamesNecklaceMode",
+      name = "Games Necklace",
+      description = "",
+      position = 5,
+      section = teleportationSection
+  )
+  default GamesNecklaceMode getGamesNecklaceMode() {
+    return GamesNecklaceMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "necklaceofpassagemode",
+      name = "Necklace of Passage",
+      description = "",
+      position = 6,
+      section = teleportationSection
+  )
+  default NecklaceOfPassageMode getNecklaceofPassageMode() {
+    return NecklaceOfPassageMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "duelingRingMode",
+      name = "Ring of Dueling",
+      description = "",
+      position = 7,
+      section = teleportationSection
+  )
+  default DuelingRingMode getDuelingRingMode() {
+    return DuelingRingMode.OFF;
   }
 
   @ConfigItem(
       keyName = "ringofwealthmode",
-      name = "Mode",
+      name = "Ring of Wealth",
       description = "",
-      position = 20,
-      section = teleportationSection,
-      hidden = true,
-      unhide = "swapwealth"
+      position = 8,
+      section = teleportationSection
   )
   default RingOfWealthMode getRingofWealthMode() {
     return RingOfWealthMode.OFF;
   }
 
   @ConfigItem(
+      keyName = "skillsnecklacemode",
+      name = "Skills Necklace",
+      description = "",
+      position = 9,
+      section = teleportationSection
+  )
+  default SkillsNecklaceMode getSkillsNecklaceMode() {
+    return SkillsNecklaceMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "xericstalismanmode",
+      name = "Xerics Talisman",
+      description = "",
+      position = 10,
+      section = teleportationSection
+  )
+  default XericsTalismanMode getXericsTalismanMode() {
+    return XericsTalismanMode.OFF;
+  }
+
+  @ConfigItem(
       keyName = "swapConstructionCape",
       name = "Construction Cape",
       description = "Swap the left click option with 'Tele to POH' on a Construction Cape.",
-      position = 21,
+      position = 11,
       section = teleportationSection
   )
   default ConstructionCapeMode getConstructionCapeMode() {
@@ -1093,7 +975,7 @@ public interface MenuEntrySwapperConfig extends Config {
       keyName = "swapCraftingCape",
       name = "Crafting Cape",
       description = "Swap the left click option with 'teleport' on a Crafting Cape.",
-      position = 22,
+      position = 12,
       section = teleportationSection
   )
   default CraftingCapeMode getCraftingCapeMode() {
@@ -1104,7 +986,7 @@ public interface MenuEntrySwapperConfig extends Config {
       keyName = "magicCapeMode",
       name = "Magic Cape",
       description = "Swap the left click option with 'spellbook' on a Magic Cape.",
-      position = 23,
+      position = 13,
       section = teleportationSection
   )
   default MagicCapeMode getMagicCapeMode() {
@@ -1115,7 +997,7 @@ public interface MenuEntrySwapperConfig extends Config {
       keyName = "swapMaxCapeEquipped",
       name = "Max Cape",
       description = "Swap the left click 'remove' option with another on a worn Max Cape.",
-      position = 24,
+      position = 14,
       section = teleportationSection
   )
   default MaxCapeEquippedMode getMaxCapeEquippedMode() {
