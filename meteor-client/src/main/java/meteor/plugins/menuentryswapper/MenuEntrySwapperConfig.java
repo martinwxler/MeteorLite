@@ -49,6 +49,8 @@ import meteor.plugins.menuentryswapper.util.HouseAdvertisementMode;
 import meteor.plugins.menuentryswapper.util.HouseMode;
 import meteor.plugins.menuentryswapper.util.MagicCapeMode;
 import meteor.plugins.menuentryswapper.util.MaxCapeEquippedMode;
+import meteor.plugins.menuentryswapper.util.MusicCapeMode;
+import meteor.plugins.menuentryswapper.util.MythCapeMode;
 import meteor.plugins.menuentryswapper.util.NecklaceOfPassageMode;
 import meteor.plugins.menuentryswapper.util.QuestCapeMode;
 import meteor.plugins.menuentryswapper.util.RingOfWealthMode;
@@ -1030,10 +1032,34 @@ public interface MenuEntrySwapperConfig extends Config {
   }
 
   @ConfigItem(
+      keyName = "musicCapeMode",
+      name = "Music Cape",
+      description = "Swap the left click option with 'teleport' on a Music cape Cape.",
+      position = 17,
+      section = teleportationSection
+  )
+  default MusicCapeMode getMusicCapeMode()
+  {
+    return MusicCapeMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "mythCapeMode",
+      name = "Myth Cape",
+      description = "Swap the left click option with 'teleport' on a Myth cape Cape.",
+      position = 18,
+      section = teleportationSection
+  )
+  default MythCapeMode getMythCapeMode()
+  {
+    return MythCapeMode.OFF;
+  }
+
+  @ConfigItem(
       keyName = "swapMaxCapeEquipped",
       name = "Max Cape",
       description = "Swap the left click 'remove' option with another on a worn Max Cape.",
-      position = 17,
+      position = 19,
       section = teleportationSection
   )
   default MaxCapeEquippedMode getMaxCapeEquippedMode() {

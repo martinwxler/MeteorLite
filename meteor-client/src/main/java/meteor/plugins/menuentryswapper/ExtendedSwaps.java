@@ -41,6 +41,8 @@ import meteor.plugins.menuentryswapper.util.GamesNecklaceMode;
 import meteor.plugins.menuentryswapper.util.GloryMode;
 import meteor.plugins.menuentryswapper.util.MagicCapeMode;
 import meteor.plugins.menuentryswapper.util.MaxCapeEquippedMode;
+import meteor.plugins.menuentryswapper.util.MusicCapeMode;
+import meteor.plugins.menuentryswapper.util.MythCapeMode;
 import meteor.plugins.menuentryswapper.util.NecklaceOfPassageMode;
 import meteor.plugins.menuentryswapper.util.QuestCapeMode;
 import meteor.plugins.menuentryswapper.util.RingOfWealthMode;
@@ -777,12 +779,22 @@ public class ExtendedSwaps {
     swap("wear", targetSwap("achievement diary cape"), "teleport", () ->
         config.getDiaryCapeMode() == DiaryCapeMode.INVENTORY || config.getDiaryCapeMode() == DiaryCapeMode.ALWAYS);
     swap("remove", targetSwap("achievement diary cape"), "teleport", () ->
-        config.getDiaryCapeMode()== DiaryCapeMode.EQUIPPED || config.getDiaryCapeMode()== DiaryCapeMode.ALWAYS);
+        config.getDiaryCapeMode() == DiaryCapeMode.EQUIPPED || config.getDiaryCapeMode() == DiaryCapeMode.ALWAYS);
 
     swap("wear", targetSwap("farming cape"), "teleport", () ->
         config.getFarmingCapeMode() == FarmCapeMode.INVENTORY || config.getFarmingCapeMode() == FarmCapeMode.ALWAYS);
     swap("remove", targetSwap("farming cape"), "teleport", () ->
         config.getFarmingCapeMode() == FarmCapeMode.EQUIPPED || config.getFarmingCapeMode() == FarmCapeMode.ALWAYS);
+
+    swap("wear", targetSwap("music cape"), "teleport", () ->
+        config.getMusicCapeMode() == MusicCapeMode.INVENTORY || config.getMusicCapeMode() == MusicCapeMode.ALWAYS);
+    swap("remove", targetSwap("music cape"), "teleport", () ->
+        config.getMusicCapeMode() == MusicCapeMode.EQUIPPED || config.getMusicCapeMode() == MusicCapeMode.ALWAYS);
+
+    swap("wear", targetSwap("mythical cape"), "teleport", () ->
+        config.getMythCapeMode() == MythCapeMode.INVENTORY || config.getMythCapeMode() == MythCapeMode.ALWAYS);
+    swap("remove", targetSwap("mythical cape"), "teleport", () ->
+        config.getMythCapeMode() == MythCapeMode.EQUIPPED || config.getMythCapeMode() == MythCapeMode.ALWAYS);
 
     swap("wear", targetSwap("magic cape"), "spellbook", () ->
         config.getMagicCapeMode() == MagicCapeMode.INVENTORY || config.getMagicCapeMode() == MagicCapeMode.ALWAYS);
