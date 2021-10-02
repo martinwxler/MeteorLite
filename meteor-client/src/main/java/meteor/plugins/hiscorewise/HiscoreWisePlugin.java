@@ -100,9 +100,9 @@ public class HiscoreWisePlugin extends Plugin
 		try {
 			INSTANCE = this;
 			wiseOldManPanel = new Scene(FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader()
-					.getResource("meteor/plugins/hiscorewise/hiscorewise.fxml"))), 350, 800);
+					.getResource("meteor/plugins/hiscorewise/hiscorewise.fxml"))), 360, 800);
 			skillOverviewPanel = new Scene(FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader()
-					.getResource("meteor/plugins/hiscorewise/skilloverview.fxml"))), 350, 800);
+					.getResource("meteor/plugins/hiscorewise/skilloverview.fxml"))), 360, 800);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
