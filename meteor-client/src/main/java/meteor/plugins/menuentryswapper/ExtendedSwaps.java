@@ -784,7 +784,6 @@ public class ExtendedSwaps {
     swap("remove", targetSwap("farming cape"), "teleport", () ->
         config.getFarmingCapeMode() == FarmCapeMode.EQUIPPED || config.getFarmingCapeMode() == FarmCapeMode.ALWAYS);
 
-
     swap("wear", targetSwap("magic cape"), "spellbook", () ->
         config.getMagicCapeMode() == MagicCapeMode.INVENTORY || config.getMagicCapeMode() == MagicCapeMode.ALWAYS);
     swap("remove", targetSwap("magic cape"), "spellbook", () ->
