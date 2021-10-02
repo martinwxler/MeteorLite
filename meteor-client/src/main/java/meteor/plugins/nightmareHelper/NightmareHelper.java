@@ -22,12 +22,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package meteor.plugins.NightmareHelper;
+package meteor.plugins.nightmareHelper;
 
 import javax.inject.Inject;
 
-import com.google.inject.Provides;
-import meteor.config.ConfigManager;
 import meteor.plugins.api.widgets.Prayers;
 import net.runelite.api.*;
 import net.runelite.api.events.*;
@@ -64,11 +62,7 @@ public class NightmareHelper extends Plugin {
         nm = null;
         cursed = false;
     }
-    @Provides
-    public NightmareHelperConfig getConfig(final ConfigManager configManager)
-    {
-        return configManager.getConfig(NightmareHelperConfig.class);
-    }
+
     @Subscribe
     private void onChatMessage(ChatMessage event) {
         if (!inFight || nm == null || event.getType() != ChatMessageType.GAMEMESSAGE) {

@@ -11,15 +11,6 @@ public enum MaxCapeEquippedMode
  	OTHER_TELEPORTS("Other Teleports"),
  	SPELLBOOK("Spellbook"),
 	FEATURES("Features");
-/**
- *  These options exist but don't work as they are considered
- *  "low-priority entries" and will always be pushed down in the menu
- *
- *	POH_PORTRALS("POH Portals"),
- *	OTHER_TELEPORTS("Other Teleports"),
- *	SPELLBOOK("Spellbook"),
- *	FEATURES("Features");
- */
 
 	private final String name;
 

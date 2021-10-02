@@ -10,15 +10,11 @@ import java.util.Set;
 import java.util.function.Supplier;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import meteor.config.Config;
-import meteor.config.ConfigManager;
-import meteor.config.MeteorLiteConfig;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.input.KeyListener;
 import meteor.input.KeyManager;
 import meteor.menus.MenuManager;
-import meteor.plugins.Plugin;
 import meteor.util.Text;
 import meteor.util.WildcardMatcher;
 import net.runelite.api.Client;
@@ -35,8 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class zMenuEntryPlugin implements KeyListener {
-  private static final Logger log = LoggerFactory.getLogger(zMenuEntryPlugin.class);
+public class CustomSwaps implements KeyListener {
+  private static final Logger log = LoggerFactory.getLogger(CustomSwaps.class);
   private final MenuEntrySwapperConfig config;
 
   @Inject
@@ -50,7 +46,7 @@ public class zMenuEntryPlugin implements KeyListener {
   private boolean hasLoaded;
 
   @Inject
-  public zMenuEntryPlugin(MenuEntrySwapperConfig config) {
+  public CustomSwaps(MenuEntrySwapperConfig config) {
     this.config = config;
   }
 

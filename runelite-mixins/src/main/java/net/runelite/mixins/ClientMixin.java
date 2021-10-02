@@ -13,6 +13,7 @@ import static net.runelite.api.Perspective.LOCAL_TILE_SIZE;
 
 import java.math.BigInteger;
 import java.util.*;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.runelite.api.*;
@@ -635,6 +636,14 @@ public abstract class ClientMixin implements RSClient {
     RSItemComposition def = getRSItemDefinition(id);
     itemDefCache.put(id, def);
     return def;
+  }
+
+  @Inject
+  @Override
+  @Nonnull
+  public ItemComposition getItemDefinition(int id)
+  {
+    return getItemComposition(id);
   }
 
   @Inject

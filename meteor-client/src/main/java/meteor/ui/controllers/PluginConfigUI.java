@@ -314,6 +314,7 @@ public class PluginConfigUI {
 
 		AnchorPane.setRightAnchor(comboBox, 8.0);
 		AnchorPane.setTopAnchor(comboBox, 0.0);
+		AnchorPane.setLeftAnchor(comboBox, 150.0);
 
 		comboBox.getStylesheets().add("css/plugins/jfx-combobox.css");
 		comboBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {

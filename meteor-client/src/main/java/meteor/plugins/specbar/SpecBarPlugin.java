@@ -1,6 +1,5 @@
 package meteor.plugins.specbar;
 
-import com.google.inject.Provides;
 import net.runelite.api.*;
 import net.runelite.api.events.ClientTick;
 import net.runelite.api.widgets.Widget;
@@ -23,17 +22,10 @@ public class SpecBarPlugin extends Plugin
     @Inject
     private Client client;
 
-    @Inject
-    private SpecBarConfig config;
 
     @Inject
     private ConfigManager configManager;
 
-    @Provides
-    public SpecBarConfig getConfig(ConfigManager configManager)
-    {
-        return configManager.getConfig(SpecBarConfig.class);
-    }
 
     @Subscribe
     private void onClientTick(ClientTick event)
