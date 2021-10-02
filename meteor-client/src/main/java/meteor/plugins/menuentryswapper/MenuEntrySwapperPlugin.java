@@ -48,6 +48,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -70,7 +71,6 @@ import meteor.plugins.menuentryswapper.util.FairyRingMode;
 import meteor.plugins.menuentryswapper.util.GEItemCollectMode;
 import meteor.plugins.menuentryswapper.util.HouseAdvertisementMode;
 import meteor.plugins.menuentryswapper.util.HouseMode;
-import meteor.plugins.menuentryswapper.util.ImpJar;
 import meteor.plugins.menuentryswapper.util.SellMode;
 import meteor.plugins.menuentryswapper.util.ShiftDepositMode;
 import meteor.plugins.menuentryswapper.util.ShiftWithdrawMode;
@@ -78,12 +78,15 @@ import meteor.plugins.menuentryswapper.util.Swap;
 import meteor.util.Text;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.InventoryID;
+import net.runelite.api.Item;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.KeyCode;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
+import net.runelite.api.Varbits;
 import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.MenuEntryAdded;
@@ -165,6 +168,11 @@ public class MenuEntrySwapperPlugin extends Plugin {
       "first mate deri",
       "first mate peri"
   );
+
+  private List<String> bankItemNames = new ArrayList<>();
+  private List<String> hideAttackIgnoredNPCs = new ArrayList<>();
+  private List<String> hideCastIgnoredSpells = new ArrayList<>();
+
   private final Multimap<String, Swap> swaps = Multimaps
       .synchronizedSetMultimap(LinkedHashMultimap.create());
   private final ArrayListMultimap<String, Integer> optionIndexes = ArrayListMultimap.create();
@@ -187,8 +195,6 @@ public class MenuEntrySwapperPlugin extends Plugin {
   @Inject
   private ExtendedSwaps extendedswaps;
   @Inject
-  private ImpJar impJar;
-  @Inject
   private KeyManager keyManager;
 
   @Getter
@@ -210,12 +216,11 @@ public class MenuEntrySwapperPlugin extends Plugin {
   public void startup() {
     eventBus.register(customswaps);
     eventBus.register(extendedswaps);
-    eventBus.register(impJar);
     keyManager.registerKeyListener(customswaps, this.getClass());
     if (config.shiftClickCustomization()) {
       enableCustomization();
     }
-
+    loadSwaps();
     setupSwaps();
 
     if (client.getGameState() != GameState.LOGGED_IN) {
@@ -235,10 +240,6 @@ public class MenuEntrySwapperPlugin extends Plugin {
     disableCustomization();
 
     swaps.clear();
-
-    if (client.getGameState() == GameState.LOGGED_IN) {
-      resetCastOptions();
-    }
   }
 
   @VisibleForTesting
@@ -695,15 +696,6 @@ public class MenuEntrySwapperPlugin extends Plugin {
       }
       bankModeSwap(actionId, opId);
     }
-
-    if (!config.getEasyConstruction()) {
-      return;
-    }
-
-    if ((client.getVarbitValue(2176) != 1)
-        && menuEntryAdded.getOpcode() != MenuAction.GAME_OBJECT_FIFTH_OPTION.getId()) {
-      return;
-    }
   }
 
   private void bankModeSwap(int entryTypeId, int entryIdentifier) {
@@ -948,15 +940,26 @@ public class MenuEntrySwapperPlugin extends Plugin {
   private boolean shiftModifier() {
     return client.isKeyPressed(KeyCode.KC_SHIFT);
   }
+
+  private void loadSwaps()
+  {
+    hideAttackIgnoredNPCs = net.runelite.api.util.Text.fromCSV(config.hideAttackIgnoredNPCs());
+    hideCastIgnoredSpells = net.runelite.api.util.Text.fromCSV(config.hideCastIgnoredSpells());
+  }
+
+
   private final Predicate<MenuEntry> filterMenuEntries = entry ->
   {
-    String option = Text.removeTags(entry.getOption()).toLowerCase();
+    String option = net.runelite.api.util.Text.removeTags(entry.getOption()).toLowerCase();
+    String target = net.runelite.api.util.Text.removeTags(entry.getTarget()).toLowerCase();
 
-    if (option.contains("trade with") && config.hideTradeWith()) {
+    if (config.hideTradeWith() && option.contains("trade with"))
+    {
       return false;
     }
 
-    if (option.contains("empty") && config.hideEmpty()) {
+    if (config.hideEmpty() && option.contains("empty"))
+    {
       return !entry.getTarget().contains("potion") && !entry.getTarget().contains("Antidote")
           && !entry.getTarget().contains("venom") && !entry.getTarget().contains("antifire")
           && !entry.getTarget().contains("Antipoison") && !entry.getTarget()
@@ -967,17 +970,124 @@ public class MenuEntrySwapperPlugin extends Plugin {
           .contains("Guthix rest");
     }
 
+    if (config.hideDestroy() && option.contains("destroy") && target.contains("rune pouch"))
+    {
+      return false;
+    }
+    if (config.hideExamine() && option.contains("examine"))
+    {
+      return false;
+    }
+
+    if (config.hideLootImpJars() && target.contains("impling") && option.contains("loot"))
+    {
+      if (client.getItemContainer(InventoryID.BANK) != null)
+      {
+        bankItemNames = new ArrayList<>();
+        for (Item i : Objects.requireNonNull(client.getItemContainer(InventoryID.BANK)).getItems())
+        {
+          bankItemNames.add(client.getItemDefinition((i.getId())).getName());
+        }
+      }
+      List<String> invItemNames = new ArrayList<>();
+      switch (target)
+      {
+        case "gourmet impling jar":
+          if (client.getItemContainer(InventoryID.INVENTORY) != null)
+          {
+            for (Item i : Objects.requireNonNull(client.getItemContainer(InventoryID.INVENTORY)).getItems())
+            {
+              invItemNames.add(client.getItemDefinition((i.getId())).getName());
+            }
+            if ((invItemNames.contains("Clue scroll (easy)") || bankItemNames.contains("Clue scroll (easy)")))
+            {
+              return false;
+            }
+          }
+          break;
+        case "young impling jar":
+          if (client.getItemContainer(InventoryID.INVENTORY) != null)
+          {
+            for (Item i : Objects.requireNonNull(client.getItemContainer(InventoryID.INVENTORY)).getItems())
+            {
+              invItemNames.add(client.getItemDefinition((i.getId())).getName());
+            }
+            if (invItemNames.contains("Clue scroll (beginner)") || bankItemNames.contains("Clue scroll (beginner)"))
+            {
+              return false;
+            }
+          }
+          break;
+        case "eclectic impling jar":
+          if (client.getItemContainer(InventoryID.INVENTORY) != null)
+          {
+            for (Item i : Objects.requireNonNull(client.getItemContainer(InventoryID.INVENTORY)).getItems())
+            {
+              invItemNames.add(client.getItemDefinition((i.getId())).getName());
+            }
+            if ((invItemNames.contains("Clue scroll (medium)") || bankItemNames.contains("Clue scroll (medium)")))
+            {
+              return false;
+            }
+          }
+          break;
+        case "magpie impling jar":
+        case "nature impling jar":
+        case "ninja impling jar":
+          if (client.getItemContainer(InventoryID.INVENTORY) != null)
+          {
+            for (Item i : Objects.requireNonNull(client.getItemContainer(InventoryID.INVENTORY)).getItems())
+            {
+              invItemNames.add(client.getItemDefinition((i.getId())).getName());
+            }
+            if ((invItemNames.contains("Clue scroll (hard)") || bankItemNames.contains("Clue scroll (hard)")))
+            {
+              return false;
+            }
+          }
+          break;
+        case "crystal impling jar":
+        case "dragon impling jar":
+          if (client.getItemContainer(InventoryID.INVENTORY) != null)
+          {
+            for (Item i : Objects.requireNonNull(client.getItemContainer(InventoryID.INVENTORY)).getItems())
+            {
+              invItemNames.add(client.getItemDefinition((i.getId())).getName());
+            }
+            if ((invItemNames.contains("Clue scroll (elite)") || bankItemNames.contains("Clue scroll (elite)")))
+            {
+              return false;
+            }
+          }
+          break;
+      }
+    }
+
+    if (config.hideAttack() && entry.getType() == MenuAction.NPC_SECOND_OPTION.getId())
+    {
+      NPC npc = client.getCachedNPCs()[entry.getIdentifier()];
+      if (npc != null && npc.getName() != null && npc.getHealthRatio() == 0 && !hideAttackIgnoredNPCs.contains(
+          net.runelite.api.util.Text.standardize(npc.getName())))
+      {
+        return false;
+      }
+    }
+
+    if (config.hideCastRaids() && (client.getVar(Varbits.IN_RAID) == 1 || client.getVar(Varbits.THEATRE_OF_BLOOD) == 2))
+    {
+      if (client.getSpellSelected() && !hideCastIgnoredSpells.contains(client.getSelectedSpellName()) && entry.getType() == MenuAction.SPELL_CAST_ON_PLAYER.getId())
+      {
+        return false;
+      }
+    }
+
+    if (config.hideCastThralls() && target.contains("thrall") && entry.getType() == MenuAction.SPELL_CAST_ON_NPC.getId())
+    {
+      return false;
+    }
+
     return true;
   };
-
-
-  private void resetCastOptions() {
-    clientThread.invoke(() ->
-    {
-      client.setHideFriendCastOptions(false);
-      client.setHideClanmateCastOptions(false);
-    });
-  }
 
   private MenuEntry[] updateMenuEntries(MenuEntry[] menuEntries) {
     return Arrays.stream(menuEntries)

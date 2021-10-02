@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
-import com.google.common.collect.Sets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -52,7 +51,6 @@ import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
-import net.runelite.api.Varbits;
 import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.MenuEntryAdded;
@@ -66,7 +64,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class ExtendedSwaps {
-  private final MenuEntrySwapperConfig config;
+  private MenuEntrySwapperConfig config;
   @Inject
   private Client client;
 
@@ -163,35 +161,28 @@ public class ExtendedSwaps {
       .synchronizedSetMultimap(LinkedHashMultimap.create());
   private final ArrayListMultimap<String, Integer> optionIndexes = ArrayListMultimap.create();
 
+
+
   public void startUp()
   {
-
     if (client.getGameState() != GameState.LOGGED_IN)
     {
       return;
     }
-    setCastOptions(true);
+    loadSwaps();
   }
 
-
   @Subscribe
-  private void onGameStateChanged(GameStateChanged event)
-  {
-    if (event.getGameState() != GameState.LOGGED_IN)
-    {
+  private void onGameStateChanged(GameStateChanged event) {
+    if (event.getGameState() != GameState.LOGGED_IN) {
       return;
     }
-    setCastOptions(true);
+    loadSwaps();
   }
 
   public void shutDown()
   {
     swaps.clear();
-
-    if (client.getGameState() == GameState.LOGGED_IN)
-    {
-      resetCastOptions();
-    }
   }
 
   public Swap swap(String option, Predicate<String> targetPredicate, String swappedOption,
@@ -210,7 +201,6 @@ public class ExtendedSwaps {
     return swap;
   }
 
-
   @Subscribe
   public void onConfigChanged(ConfigChanged event)
   {
@@ -227,25 +217,7 @@ public class ExtendedSwaps {
         return;
       }
     }
-
     loadSwaps();
-
-    switch (event.getKey())
-    {
-      case "hideCastToB":
-      case "hideCastIgnoredToB":
-        return;
-      case "hideCastCoX":
-      case "hideCastIgnoredCoX":
-        if (config.hideCastCoX())
-        {
-          setCastOptions(true);
-        }
-        else
-        {
-          resetCastOptions();
-        }
-    }
   }
 
 
@@ -820,56 +792,5 @@ public class ExtendedSwaps {
     newEntries[0] = menuEntry;
 
     client.setMenuEntries(newEntries);
-  }
-
-  private void setCastOptions(boolean force)
-  {
-    if (client.getGameState() == GameState.LOGGED_IN)
-    {
-      clientThread.invoke(() ->
-      {
-        boolean tmpInCoxRaid = client.getVar(Varbits.IN_RAID) == 1;
-        if (tmpInCoxRaid != inCoxRaid || force)
-        {
-          if (tmpInCoxRaid && config.hideCastCoX())
-          {
-            client.setHideFriendCastOptions(true);
-            client.setHideClanmateCastOptions(true);
-            client.setUnhiddenCasts(
-                Sets.newHashSet(Text.fromCSV(config.hideCastIgnoredCoX().toLowerCase())));
-          }
-
-          inCoxRaid = tmpInCoxRaid;
-        }
-
-        boolean tmpInTobRaid = client.getVar(Varbits.THEATRE_OF_BLOOD) == 2;
-        if (tmpInTobRaid != inTobRaid || force)
-        {
-          if (tmpInTobRaid && config.hideCastToB())
-          {
-            client.setHideFriendCastOptions(true);
-            client.setHideClanmateCastOptions(true);
-            client.setUnhiddenCasts(
-                Sets.newHashSet(Text.fromCSV(config.hideCastIgnoredToB().toLowerCase())));
-          }
-
-          inTobRaid = tmpInTobRaid;
-        }
-
-        if (!inCoxRaid && !inTobRaid)
-        {
-          resetCastOptions();
-        }
-      });
-    }
-  }
-
-  private void resetCastOptions()
-  {
-    clientThread.invoke(() ->
-    {
-      client.setHideFriendCastOptions(false);
-      client.setHideClanmateCastOptions(false);
-    });
   }
 }
