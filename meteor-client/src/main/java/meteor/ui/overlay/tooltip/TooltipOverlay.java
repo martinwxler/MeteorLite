@@ -32,6 +32,9 @@ import java.awt.Rectangle;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import meteor.config.MeteorLiteConfig;
+import meteor.config.TooltipPositionType;
 import meteor.ui.overlay.Overlay;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayPosition;
@@ -49,11 +52,13 @@ public class TooltipOverlay extends Overlay {
   private static final int PADDING = 2;
   private final TooltipManager tooltipManager;
   private final Client client;
+	private final MeteorLiteConfig meteorLiteConfig;
 
   @Inject
-  private TooltipOverlay(Client client, TooltipManager tooltipManager) {
+  private TooltipOverlay(Client client, TooltipManager tooltipManager, final MeteorLiteConfig meteorLiteConfig) {
     this.client = client;
     this.tooltipManager = tooltipManager;
+		this.meteorLiteConfig = meteorLiteConfig;
     setPosition(OverlayPosition.TOOLTIP);
     setPriority(OverlayPriority.HIGHEST);
     setLayer(OverlayLayer.ABOVE_WIDGETS);
@@ -84,7 +89,9 @@ public class TooltipOverlay extends Overlay {
     final Rectangle prevBounds = getBounds();
 
     final int tooltipX = Math.min(canvasWidth - prevBounds.width, mouseCanvasPosition.getX());
-    final int tooltipY = Math.max(0, mouseCanvasPosition.getY() - prevBounds.height);
+    final int tooltipY = meteorLiteConfig.tooltipPosition() == TooltipPositionType.ABOVE_CURSOR
+      ? Math.max(0, mouseCanvasPosition.getY() - prevBounds.height)
+      : Math.min(canvasHeight - prevBounds.height, mouseCanvasPosition.getY() + UNDER_OFFSET);
     final Rectangle newBounds = new Rectangle(tooltipX, tooltipY, 0, 0);
 
     for (Tooltip tooltip : tooltips) {
@@ -93,13 +100,13 @@ public class TooltipOverlay extends Overlay {
       if (tooltip.getComponent() != null) {
         entity = tooltip.getComponent();
         if (entity instanceof PanelComponent) {
-          ((PanelComponent) entity).setBackgroundColor(Color.darkGray);
+          ((PanelComponent) entity).setBackgroundColor(meteorLiteConfig.overlayBackgroundColor());
         }
       } else {
         final TooltipComponent tooltipComponent = new TooltipComponent();
         tooltipComponent.setModIcons(client.getModIcons());
         tooltipComponent.setText(tooltip.getText());
-        tooltipComponent.setBackgroundColor(Color.darkGray);
+        tooltipComponent.setBackgroundColor(meteorLiteConfig.overlayBackgroundColor());
         entity = tooltipComponent;
       }
 
