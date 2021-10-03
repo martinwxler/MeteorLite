@@ -412,16 +412,19 @@ public class CustomSwaps implements KeyListener {
     }
   }
 
-  private boolean isBankInterfaceClosed() {
+  private boolean isBankInterfaceClosed()
+  {
     Widget widgetBankTitleBar = client.getWidget(WidgetInfo.BANK_TITLE_BAR);
     Widget widgetDepositBox = client.getWidget(12582912);
     Widget coxPublicChest = client.getWidget(550, 1);
     Widget coxPrivateChest = client.getWidget(271, 1);
-    Widget seedVault = client.getWidget(10551336);
-    return ((seedVault == null || seedVault.isHidden()) && (widgetBankTitleBar == null || widgetBankTitleBar.isHidden()) && (widgetDepositBox == null || widgetDepositBox
-            .isHidden()) && (coxPublicChest == null || coxPublicChest
-            .isHidden()) && (coxPrivateChest == null || coxPrivateChest
-            .isHidden()));
+    Widget seedVault = client.getWidget(WidgetInfo.SEED_VAULT_TITLE_CONTAINER);
+    return (
+        (seedVault == null || seedVault.isHidden()) &&
+            (widgetBankTitleBar == null || widgetBankTitleBar.isHidden()) &&
+            (widgetDepositBox == null || widgetDepositBox.isHidden()) &&
+            (coxPublicChest == null || coxPublicChest.isHidden()) &&
+            (coxPrivateChest == null || coxPrivateChest.isHidden())
+    );
   }
-
 }
