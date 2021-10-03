@@ -5,7 +5,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import meteor.callback.ClientThread;
 import meteor.eventbus.events.ConfigChanged;
-import meteor.plugins.api.widgets.Prayers;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
