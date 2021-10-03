@@ -28,12 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import lombok.Getter;
-import net.runelite.api.Client;
-import net.runelite.api.CollisionData;
-import net.runelite.api.CollisionDataFlag;
-import net.runelite.api.Constants;
-import net.runelite.api.Point;
-import net.runelite.api.Tile;
+import net.runelite.api.*;
 
 /**
  * Represents an area on the world.
@@ -612,5 +607,19 @@ public class WorldArea {
     }
 
     return list;
+  }
+
+  public boolean contains(Locatable locatable) {
+    return contains(locatable.getWorldLocation());
+  }
+
+  public boolean contains(WorldPoint worldPoint) {
+    if (plane != worldPoint.getPlane()) {
+      return false;
+    }
+
+    int targetX = worldPoint.getX();
+    int targetY = worldPoint.getY();
+    return targetX >= x && targetY >= y && targetX <= x + width && targetY <= y + height;
   }
 }

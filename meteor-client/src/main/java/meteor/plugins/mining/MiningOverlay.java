@@ -24,18 +24,21 @@
  */
 package meteor.plugins.mining;
 
+import static meteor.ui.overlay.OverlayManager.OPTION_CONFIGURE;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import javax.inject.Inject;
 import net.runelite.api.AnimationID;
 import net.runelite.api.Client;
 import net.runelite.api.MenuAction;
+import net.runelite.api.Skill;
+import meteor.plugins.xptracker.XpTrackerService;
 import meteor.ui.overlay.OverlayMenuEntry;
 import meteor.ui.overlay.OverlayPanel;
 import meteor.ui.overlay.OverlayPosition;
+import meteor.ui.overlay.components.LineComponent;
 import meteor.ui.overlay.components.TitleComponent;
-
-import javax.inject.Inject;
-import java.awt.*;
-
-import static meteor.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 
 class MiningOverlay extends OverlayPanel
 {
@@ -44,17 +47,17 @@ class MiningOverlay extends OverlayPanel
 	private final Client client;
 	private final MiningPlugin plugin;
 	private final MiningConfig config;
-	//private final XpTrackerService xpTrackerService;
+	private final XpTrackerService xpTrackerService;
 
 	@Inject
-	private MiningOverlay(final Client client, final MiningPlugin plugin, final MiningConfig config)//, XpTrackerService xpTrackerService)
+	private MiningOverlay(final Client client, final MiningPlugin plugin, final MiningConfig config, XpTrackerService xpTrackerService)
 	{
 		super(plugin);
 		setPosition(OverlayPosition.TOP_LEFT);
 		this.client = client;
 		this.plugin = plugin;
 		this.config = config;
-		//this.xpTrackerService = xpTrackerService;
+		this.xpTrackerService = xpTrackerService;
 		getMenuEntries().add(new OverlayMenuEntry(MenuAction.RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Mining overlay"));
 		getMenuEntries().add(new OverlayMenuEntry(MenuAction.RUNELITE_OVERLAY, MINING_RESET, "Mining overlay"));
 	}
@@ -82,6 +85,23 @@ class MiningOverlay extends OverlayPanel
 				.text("NOT mining")
 				.color(Color.RED)
 				.build());
+		}
+
+		int actions = xpTrackerService.getActions(Skill.MINING);
+		if (actions > 0)
+		{
+			panelComponent.getChildren().add(LineComponent.builder()
+				.left("Total mined:")
+				.right(Integer.toString(actions))
+				.build());
+
+			if (actions > 2)
+			{
+				panelComponent.getChildren().add(LineComponent.builder()
+					.left("Mined/hr:")
+					.right(Integer.toString(xpTrackerService.getActionsHr(Skill.MINING)))
+					.build());
+			}
 		}
 
 		return super.render(graphics);

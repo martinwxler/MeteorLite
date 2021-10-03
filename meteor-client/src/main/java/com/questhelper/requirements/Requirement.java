@@ -51,6 +51,14 @@ public interface Requirement
 	boolean check(Client client);
 
 	/**
+	 * @return whether the requirement should be considered for filtering in the sidebar
+	 */
+	default boolean shouldConsiderForFilter()
+	{
+		return false;
+	}
+
+	/**
 	 * @return display text to be used for rendering either on overlays or panels. Cannot be null.
 	 */
 	@Nonnull
@@ -96,9 +104,9 @@ public interface Requirement
 		Color color = getColor(client, config);
 
 		lines.add(LineComponent.builder()
-			.left(text)
-			.leftColor(color)
-			.build());
+				.left(text)
+				.leftColor(color)
+				.build());
 
 		return lines;
 	}

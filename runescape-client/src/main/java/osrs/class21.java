@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import net.runelite.mapping.Export;
 import net.runelite.mapping.ObfuscatedGetter;
 import net.runelite.mapping.ObfuscatedName;
 import net.runelite.mapping.ObfuscatedSignature;
@@ -15,7 +16,8 @@ public class class21 {
 	@ObfuscatedSignature(
 		descriptor = "Loi;"
 	)
-	static IndexedSprite field107;
+	@Export("optionSprite")
+	static IndexedSprite optionSprite;
 	@ObfuscatedName("n")
 	@ObfuscatedGetter(
 		intValue = -1947507319

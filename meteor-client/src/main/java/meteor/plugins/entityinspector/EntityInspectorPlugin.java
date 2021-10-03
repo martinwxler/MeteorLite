@@ -10,14 +10,19 @@ import meteor.plugins.entityinspector.varinspector.VarInspector;
 import meteor.plugins.entityinspector.widgetinspector.WidgetInspector;
 import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.events.ConfigButtonClicked;
+import net.runelite.api.events.PacketSent;
 
 import javax.inject.Inject;
 
 @PluginDescriptor(
 				name = "Entity Inspector",
-				description = "Shows entity information"
+				description = "Shows entity information",
+				enabledByDefault = false
 )
 public class EntityInspectorPlugin extends Plugin {
+	@Inject
+	private EntityInspectorConfig config;
+
 	@Inject
 	private EntityInspectorOverlay overlay;
 
@@ -67,5 +72,14 @@ public class EntityInspectorPlugin extends Plugin {
 		if (event.getKey().equals("scriptInspector")) {
 			scriptInspector.open();
 		}
+	}
+
+	@Subscribe
+	public void onPacketSent(PacketSent e) {
+		if (!config.packets()) {
+			return;
+		}
+
+		System.out.println(e.hexDump());
 	}
 }

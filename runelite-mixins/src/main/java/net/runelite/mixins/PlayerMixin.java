@@ -1,19 +1,19 @@
 package net.runelite.mixins;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import net.runelite.api.*;
+import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.OverheadPrayerChanged;
 import net.runelite.api.events.PlayerSkullChanged;
 import net.runelite.api.mixins.*;
+import net.runelite.api.util.Text;
 import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSModel;
 import net.runelite.rs.api.RSPlayer;
 import net.runelite.rs.api.RSUsername;
+
+import java.awt.*;
+import java.util.ArrayList;
 
 import static net.runelite.api.SkullIcon.*;
 
@@ -51,7 +51,7 @@ public abstract class PlayerMixin implements RSPlayer {
       return null;
     }
 
-    return name.replace('\u00A0', ' ');
+    return Text.removeTags(Text.sanitize(name));
   }
 
   @Inject
@@ -63,7 +63,7 @@ public abstract class PlayerMixin implements RSPlayer {
     }
 
     int tileHeight = Perspective
-        .getTileHeight(client, new LocalPoint(getX(), getY()), client.getPlane());
+            .getTileHeight(client, new LocalPoint(getX(), getY()), client.getPlane());
 
     return model.getConvexHull(getX(), getY(), getOrientation(), tileHeight);
   }
@@ -78,7 +78,7 @@ public abstract class PlayerMixin implements RSPlayer {
   @Override
   public boolean isIdle() {
     return (getIdlePoseAnimation() == getPoseAnimation() && getAnimation() == -1)
-        && (getInteracting() == null || getInteracting().isDead());
+            && (getInteracting() == null || getInteracting().isDead());
   }
 
   @Inject
@@ -247,14 +247,8 @@ public abstract class PlayerMixin implements RSPlayer {
 
   @Inject
   @Override
-  public String[] getActions() {
+  public String[] getRawActions() {
     return client.getPlayerOptions();
-  }
-
-  @Inject
-  @Override
-  public List<String> actions() {
-    return Arrays.asList(getActions());
   }
 
   @Override
@@ -266,7 +260,7 @@ public abstract class PlayerMixin implements RSPlayer {
   @Inject
   @Override
   public void interact(String action) {
-    interact(actions().indexOf(action));
+    interact(getActions().indexOf(action));
   }
 
   @Inject
@@ -278,6 +272,15 @@ public abstract class PlayerMixin implements RSPlayer {
   @Inject
   @Override
   public void interact(int identifier, int opcode, int param0, int param1) {
-    client.interact(identifier, opcode, param0, param1);
+    Point screenCoords = getScreenCoords();
+    int x = screenCoords != null ? screenCoords.getX() : -1;
+    int y = screenCoords != null ? screenCoords.getY() : -1;
+
+    client.interact(identifier, opcode, param0, param1, x, y);
+  }
+
+  @Inject
+  private Point getScreenCoords() {
+    return Perspective.localToCanvas(client, getLocalLocation(), client.getPlane());
   }
 }

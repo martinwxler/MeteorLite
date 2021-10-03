@@ -59,7 +59,7 @@ public interface PlayerAttackTimerConfig extends Config
 	@ConfigItem(
 		name = "Debug animation ids",
 		description = "Show your player's current animation ID."
-			+ "<br>Animation IDs can be viewed by wielding a weapon and attacking an NPC.",
+			+ "Animation IDs can be viewed by wielding a weapon and attacking an NPC.",
 		position = 0,
 		keyName = "debugAnimationIds",
 		section = settings,
@@ -73,9 +73,9 @@ public interface PlayerAttackTimerConfig extends Config
 	@ConfigItem(
 		name = "Custom animations (one per line)",
 		description = "Syntax AnimationID:TickDelay"
-			+ "<br>e.g. Abyssal whip would be 1658:4"
-			+ "<br>Animation Ids can be obtained by enabling the above debug setting."
-			+ "<br>Weapon tick delays can be found on the wiki.",
+			+ "e.g. Abyssal whip would be 1658:4"
+			+ "Animation Ids can be obtained by enabling the above debug setting."
+			+ "Weapon tick delays can be found on the wiki.",
 		position = 1,
 		keyName = "customAnimations",
 		section = settings,

@@ -49,11 +49,6 @@ public class AgilityPlugin extends Plugin {
   @Inject
   AgilityOverlay overlay;
 
-  @Provides
-  public AgilityConfig getConfig(ConfigManager configManager) {
-    return configManager.getConfig(AgilityConfig.class);
-  }
-
   @Override
   public void startup() {
     overlay.setLayer(OverlayLayer.ABOVE_SCENE);

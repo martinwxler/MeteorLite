@@ -16,14 +16,15 @@ import net.runelite.api.mixins.Inject;
 import net.runelite.api.mixins.Mixin;
 import net.runelite.api.mixins.Mixins;
 import net.runelite.api.mixins.Shadow;
+import net.runelite.api.util.Text;
 import net.runelite.rs.api.*;
 
 @Mixins({
-    @Mixin(RSWallDecoration.class),
-    @Mixin(RSGameObject.class),
-    @Mixin(RSFloorDecoration.class),
-    @Mixin(RSItemLayer.class),
-    @Mixin(RSBoundaryObject.class)
+        @Mixin(RSWallDecoration.class),
+        @Mixin(RSGameObject.class),
+        @Mixin(RSFloorDecoration.class),
+        @Mixin(RSItemLayer.class),
+        @Mixin(RSBoundaryObject.class)
 })
 public abstract class TileObjectMixin implements TileObject {
 
@@ -88,7 +89,7 @@ public abstract class TileObjectMixin implements TileObject {
     }
 
     return Perspective
-        .getCanvasTileAreaPoly(client, getLocalLocation(), sizeX, sizeY, getPlane(), 0);
+            .getCanvasTileAreaPoly(client, getLocalLocation(), sizeX, sizeY, getPlane(), 0);
   }
 
   @Override
@@ -117,12 +118,12 @@ public abstract class TileObjectMixin implements TileObject {
   @Override
   public String getName() {
     RSObjectComposition def = getCachedDefinition();
-    return def == null ? null : def.getName().replace('\u00A0', ' ');
+    return def == null ? null : Text.removeTags(Text.sanitize(def.getName()));
   }
 
   @Inject
   @Override
-  public String[] getActions() {
+  public String[] getRawActions() {
     RSObjectComposition def = getCachedDefinition();
     return def == null ? null : def.getActions();
   }
@@ -159,7 +160,7 @@ public abstract class TileObjectMixin implements TileObject {
   @Override
   @Inject
   public void interact(String action) {
-    interact(actions().indexOf(action));
+    interact(getActions().indexOf(action));
   }
 
   @Override
@@ -183,14 +184,6 @@ public abstract class TileObjectMixin implements TileObject {
 
   @Override
   @Inject
-  public List<String> actions() {
-    return Arrays.asList(getActions());
-  }
-
-
-
-  @Override
-  @Inject
   public void interact(int action) {
     interact(getId(), getActionId(action));
   }
@@ -198,7 +191,11 @@ public abstract class TileObjectMixin implements TileObject {
   @Inject
   @Override
   public void interact(int identifier, int opcode, int param0, int param1) {
-    client.interact(identifier, opcode, param0, param1);
+    Point screenCoords = getCanvasLocation();
+    int x = screenCoords != null ? screenCoords.getX() : -1;
+    int y = screenCoords != null ? screenCoords.getY() : -1;
+
+    client.interact(identifier, opcode, param0, param1, x, y);
   }
 
   @Inject

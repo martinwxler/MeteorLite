@@ -34,7 +34,6 @@ import lombok.Setter;
 import meteor.callback.ClientThread;
 import meteor.chat.*;
 import meteor.config.ConfigManager;
-import meteor.config.RuneLiteConfig;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ChatInput;
@@ -76,7 +75,8 @@ import static net.runelite.api.SpriteID.TAB_QUESTS_BROWN_RAIDING_PARTY;
 @PluginDescriptor(
 	name = "Chambers Of Xeric",
 	description = "Show helpful information for the Chambers of Xeric raid",
-	tags = {"combat", "raid", "overlay", "pve", "pvm", "bosses", "cox"}
+	tags = {"combat", "raid", "overlay", "pve", "pvm", "bosses", "cox"},
+	enabledByDefault = false
 )
 public class RaidsPlugin extends Plugin
 {
@@ -94,9 +94,6 @@ public class RaidsPlugin extends Plugin
 	// (x=3360, y=5152, plane=2) is the temp location the game puts the player on login into while it decides whether
 	// to put the player into a raid or not.
 	private static final WorldPoint TEMP_LOCATION = new WorldPoint(3360, 5152, 2);
-
-	@Inject
-	private RuneLiteConfig runeLiteConfig;
 
 	@Inject
 	private ChatMessageManager chatMessageManager;

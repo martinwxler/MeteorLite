@@ -25,6 +25,7 @@
 
 package meteor.plugins.cerberus.overlays;
 
+import java.awt.Font;
 import net.runelite.api.Point;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;

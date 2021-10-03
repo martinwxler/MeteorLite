@@ -28,6 +28,7 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -114,7 +115,7 @@ public class HootFighterPlugin extends Plugin {
 
 			Player local = Players.getLocal();
 			List<String> itemsToLoot = List.of(config.loot().split(","));
-			if (!itemsToLoot.isEmpty() && !Inventory.isFull()) {
+			if (!Inventory.isFull()) {
 				TileItem loot = TileItems.getNearest(x ->
 								x.getTile().getWorldLocation().distanceTo(local.getWorldLocation()) < config.attackRange()
 												&& !notOurItems.contains(x)
@@ -149,7 +150,7 @@ public class HootFighterPlugin extends Plugin {
 			}
 
 			NPC mob = Combat.getAttackableNPC(x -> x.getName() != null
-							&& x.getName().equals(config.monster()) && !x.isDead()
+							&& x.getName().toLowerCase().contains(config.monster().toLowerCase()) && !x.isDead()
 							&& x.getWorldLocation().distanceTo(local.getWorldLocation()) < config.attackRange()
 			);
 			if (mob == null) {

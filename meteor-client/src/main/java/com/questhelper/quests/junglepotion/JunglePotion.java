@@ -32,37 +32,39 @@ import com.questhelper.questhelpers.BasicQuestHelper;
 import com.questhelper.requirements.item.ItemRequirement;
 import com.questhelper.requirements.Requirement;
 import com.questhelper.requirements.ZoneRequirement;
+import com.questhelper.requirements.player.SkillRequirement;
+import com.questhelper.requirements.quest.QuestRequirement;
 import com.questhelper.steps.ConditionalStep;
 import com.questhelper.steps.DetailedQuestStep;
 import com.questhelper.steps.NpcStep;
 import com.questhelper.steps.ObjectStep;
 import com.questhelper.steps.QuestStep;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.runelite.api.ItemID;
 import net.runelite.api.NpcID;
 import net.runelite.api.ObjectID;
+import net.runelite.api.QuestState;
+import net.runelite.api.Skill;
 import net.runelite.api.coords.WorldPoint;
 
 @QuestDescriptor(
-	quest = QuestHelperQuest.JUNGLE_POTION
+		quest = QuestHelperQuest.JUNGLE_POTION
 )
 public class JunglePotion extends BasicQuestHelper
 {
 	//Items Required
 	ItemRequirement grimySnakeWeed, snakeWeed, grimyArdrigal, ardrigal, grimySitoFoil, sitoFoil, grimyVolenciaMoss, volenciaMoss,
-		roguesPurse, grimyRoguesPurse;
+			roguesPurse, grimyRoguesPurse;
 
 	QuestStep startQuest, finishQuest;
 
 	ObjectStep getSnakeWeed, getArdrigal, getSitoFoil, getVolenciaMoss, enterCave, getRoguePurseHerb;
 
 	ConditionalStep cleanAndReturnSnakeWeed, cleanAndReturnArdrigal, cleanAndReturnSitoFoil, cleanAndReturnVolenciaMoss,
-		getRoguesPurse, cleanAndReturnRoguesPurse;
+			getRoguesPurse, cleanAndReturnRoguesPurse;
 
 	ZoneRequirement isUnderground;
 
@@ -174,7 +176,7 @@ public class JunglePotion extends BasicQuestHelper
 	private QuestStep getSnakeWeed()
 	{
 		getSnakeWeed = new ObjectStep(this, ObjectID.MARSHY_JUNGLE_VINE, new WorldPoint(2763, 3044, 0),
-			"Search a marshy jungle vine south of Tai Bwo Wannai for some snake weed.");
+				"Search a marshy jungle vine south of Tai Bwo Wannai for some snake weed.");
 		getSnakeWeed.addText("If you want to do Zogre Flesh Eaters or Legends' Quest grab one for each as you will need them later.");
 		return getSnakeWeed;
 	}
@@ -182,7 +184,7 @@ public class JunglePotion extends BasicQuestHelper
 	private QuestStep getArdrigal()
 	{
 		getArdrigal = new ObjectStep(this, ObjectID.PALM_TREE_2577, new WorldPoint(2871, 3116, 0),
-			"Search the palm trees north east of Tai Bwo Wannai for an Ardrigal herb.");
+				"Search the palm trees north east of Tai Bwo Wannai for an Ardrigal herb.");
 		getArdrigal.addText("If you want to do Zogre Flesh Eaters or Legends' Quest grab one for each as you will need them later.");
 		return getArdrigal;
 	}
@@ -190,13 +192,13 @@ public class JunglePotion extends BasicQuestHelper
 	private QuestStep getSitoFoil()
 	{
 		return getSitoFoil = new ObjectStep(this, ObjectID.SCORCHED_EARTH, new WorldPoint(2791, 3047, 0),
-			"Search the scorched earth in the south of Tai Bwo Wannai for a Sito Foil herb.");
+				"Search the scorched earth in the south of Tai Bwo Wannai for a Sito Foil herb.");
 	}
 
 	private QuestStep getVolenciaMoss()
 	{
 		getVolenciaMoss = new ObjectStep(this, ObjectID.ROCK_2581, new WorldPoint(2851, 3036, 0),
-			"Search the rock for a Volencia Moss herb at the mine south east of Tai Bwo Wannai.");
+				"Search the rock for a Volencia Moss herb at the mine south east of Tai Bwo Wannai.");
 		getVolenciaMoss.addText("If you plan on doing Fairy Tale I then take an extra.");
 		return getVolenciaMoss;
 	}
@@ -204,10 +206,10 @@ public class JunglePotion extends BasicQuestHelper
 	private QuestStep getRoguesPurse()
 	{
 		enterCave = new ObjectStep(this, ObjectID.ROCKS_2584, new WorldPoint(2825, 3119, 0),
-			"Enter the cave to the north by clicking on the rocks.");
+				"Enter the cave to the north by clicking on the rocks.");
 		enterCave.addDialogStep("Yes, I'll enter the cave.");
 		getRoguePurseHerb = new ObjectStep(this, ObjectID.FUNGUS_COVERED_CAVERN_WALL, "Get the Rogues Purse from the fungus covered " +
-			"wall in the underground dungeon.");
+				"wall in the underground dungeon.");
 		getRoguePurseHerb.setHideWorldArrow(true);
 		getRoguePurseHerb.addText("If you are planning on doing Zogre Flesh Eaters then take an extra.");
 
@@ -247,9 +249,18 @@ public class JunglePotion extends BasicQuestHelper
 		reqs.add(food);
 		reqs.add(new ItemRequirement("Antipoison", ItemCollections.getAntipoisons()));
 		ItemRequirement karaTele = new ItemRequirement("Teleport to Karamja (Glory/house teleport)",
-			ItemID.BRIMHAVEN_TELEPORT);
+				ItemID.BRIMHAVEN_TELEPORT);
 		karaTele.addAlternates(ItemCollections.getAmuletOfGlories());
 		reqs.add(karaTele);
 		return reqs;
+	}
+
+	@Override
+	public List<Requirement> getGeneralRequirements()
+	{
+		ArrayList<Requirement> req = new ArrayList<>();
+		req.add(new QuestRequirement(QuestHelperQuest.DRUIDIC_RITUAL, QuestState.FINISHED));
+		req.add(new SkillRequirement(Skill.HERBLORE, 3, false));
+		return req;
 	}
 }

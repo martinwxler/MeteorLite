@@ -1,15 +1,23 @@
 package net.runelite.api;
 
-import org.gradle.internal.impldep.org.bouncycastle.util.Arrays;
+import net.runelite.api.util.Text;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public interface Interactable {
-    String[] getActions();
+    String[] getRawActions();
 
     int getActionId(int action);
 
-    List<String> actions();
+    default List<String> getActions() {
+        if (getRawActions() == null) {
+            return null;
+        }
+
+        return Arrays.stream(getRawActions()).map(Text::removeTags).collect(Collectors.toList());
+    }
 
     void interact(String action);
 
@@ -20,16 +28,6 @@ public interface Interactable {
     void interact(int index, int menuAction);
 
     default boolean hasAction(String action) {
-        if (getActions() == null) {
-            return false;
-        }
-
-        for (String a : getActions()) {
-            if (a != null && a.equals(action)) {
-                return true;
-            }
-        }
-
-        return false;
+        return getRawActions() != null && getActions().contains(action);
     }
 }

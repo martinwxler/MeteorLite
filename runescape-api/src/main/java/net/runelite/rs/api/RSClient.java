@@ -27,9 +27,12 @@ package net.runelite.rs.api;
 import java.math.BigInteger;
 import java.util.Map;
 import net.runelite.api.Client;
+import net.runelite.api.IndexedSprite;
 import net.runelite.api.SpritePixels;
 import net.runelite.api.World;
 import net.runelite.api.clan.ClanRank;
+import net.runelite.api.packets.ClientPacket;
+import net.runelite.api.packets.IsaacCipher;
 import net.runelite.api.widgets.Widget;
 import net.runelite.mapping.Construct;
 import net.runelite.mapping.Export;
@@ -299,6 +302,10 @@ public interface RSClient extends RSGameEngine, Client {
   @Override
   int getLoginIndex();
 
+  @Import("loginIndex")
+  @Override
+  void setLoginIndex(int index);
+
   @Import("playerMenuActions")
   @Override
   String[] getPlayerOptions();
@@ -325,7 +332,7 @@ public interface RSClient extends RSGameEngine, Client {
 
   @Import("containsBounds")
   boolean containsBounds(int var0, int var1, int var2, int var3, int var4, int var5, int var6,
-      int var7);
+                         int var7);
 
   @Import("checkClick")
   boolean isCheckClick();
@@ -439,11 +446,11 @@ public interface RSClient extends RSGameEngine, Client {
 
   @Import("getItemSprite")
   RSSpritePixels createRSItemSprite(int itemId, int quantity, int thickness, int borderColor,
-      int stackable, boolean noted);
+                                    int stackable, boolean noted);
 
   @Import("menuAction")
   void sendMenuAction(int n2, int n3, int n4, int n5, String string, String string2, int n6,
-      int n7);
+                      int n7);
 
   @Import("SpriteBuffer_decode")
   void decodeSprite(byte[] data);
@@ -619,6 +626,12 @@ public interface RSClient extends RSGameEngine, Client {
 
   @Import("destinationY")
   int getDestinationY();
+
+  @Import("destinationX")
+  void setDestinationX(int sceneX);
+
+  @Import("destinationY")
+  void setDestinationY(int sceneY);
 
   @Import("soundEffects")
   RSSoundEffect[] getAudioEffects();
@@ -1058,7 +1071,7 @@ public interface RSClient extends RSGameEngine, Client {
 
   @Import("Rasterizer2D_fillRectangleGradientAlpha")
   void rasterizerDrawGradientAlpha(int x, int y, int w, int h, int rgbTop, int rgbBottom,
-      int alphaTop, int alphaBottom);
+                                   int alphaTop, int alphaBottom);
 
   @Import("Rasterizer2D_fillRectangleAlpha")
   void rasterizerFillRectangleAlpha(int x, int y, int w, int h, int rgb, int a);
@@ -1156,7 +1169,7 @@ public interface RSClient extends RSGameEngine, Client {
   @Import("insertMenuItem")
   @Override
   void insertMenuItem(String action, String target, int opcode, int identifier, int argument1,
-      int argument2, boolean forceLeftClick);
+                      int argument2, boolean forceLeftClick);
 
   @Import("selectedItemId")
   @Override
@@ -1197,7 +1210,7 @@ public interface RSClient extends RSGameEngine, Client {
   @Import("Sprite_drawScaled")
   @Override
   void scaleSprite(int[] canvas, int[] pixels, int color, int pixelX, int pixelY, int canvasIdx,
-      int canvasOffset, int newWidth, int newHeight, int pixelWidth, int pixelHeight, int oldWidth);
+                   int canvasOffset, int newWidth, int newHeight, int pixelWidth, int pixelHeight, int oldWidth);
 
   /**
    * This sets the login screen to where it asks for username/pass
@@ -1293,6 +1306,7 @@ public interface RSClient extends RSGameEngine, Client {
   void setStopTimeMs(long time);
 
   @Import("clearLoginScreen")
+  @Override
   void clearLoginScreen(boolean shouldClear);
 
   @Import("leftTitleSprite")
@@ -1435,7 +1449,7 @@ public interface RSClient extends RSGameEngine, Client {
 
   @Construct
   RSSceneTilePaint createSceneTilePaint(int swColor, int seColor, int neColor, int nwColor,
-      int texture, int rgb, boolean isFlat);
+                                        int texture, int rgb, boolean isFlat);
 
   @Import("crossWorldMessageIds")
   long[] getCrossWorldMessageIds();
@@ -1480,11 +1494,32 @@ public interface RSClient extends RSGameEngine, Client {
   RSPacketWriter getPacketWriter();
 
   @Import("getPacketBufferNode")
-  RSPacketBufferNode createPacket(RSClientPacket packet, RSIsaacCipher isaac);
+  @Override
+  RSPacketBufferNode preparePacket(ClientPacket packet, IsaacCipher isaac);
 
   @Import("Packet_nameInput")
   @Override
   RSClientPacket getNameInputPacket();
+
+  @Import("Packet_itemAction")
+  @Override
+  RSClientPacket getItemActionPacket();
+
+  @Import("Packet_NPCAction3Packet")
+  @Override
+  RSClientPacket getNPCAction3Packet();
+
+  @Import("Packet_gameObjectAction2Packet")
+  @Override
+  RSClientPacket getGameObjectAction2Packet();
+
+  @Import("Packet_NPCActionPacket")
+  @Override
+  RSClientPacket getNPCActionPacket();
+
+  @Import("Packet_spellOnItem")
+  @Override
+  RSClientPacket getSpellOnItemPacket();
 
   @Import("Packet_numberInput")
   @Override
@@ -1494,7 +1529,180 @@ public interface RSClient extends RSGameEngine, Client {
   @Override
   RSClientPacket getTextInputPacket();
 
+  @Import("Packet_widgetActionPacket")
+  @Override
+  RSClientPacket getWidgetActionPacket();
+
+  @Import("Packet_widgetAction2Packet")
+  @Override
+  RSClientPacket getWidgetAction2Packet();
+
+  @Import("Packet_clickPacket")
+  @Override
+  RSClientPacket getClickPacket();
+
+  @Import("Packet_itemAction2Packet")
+  @Override
+  RSClientPacket getItemAction2Packet();
+
+  @Import("Packet_itemAction3Packet")
+  @Override
+  RSClientPacket getItemAction3Packet();
+
+  @Import("Packet_itemAction4Packet")
+  @Override
+  RSClientPacket getItemAction4Packet();
+
+  @Import("Packet_itemAction5Packet")
+  @Override
+  RSClientPacket getItemAction5Packet();
+
+  @Import("Packet_itemOnItemPacket")
+  @Override
+  RSClientPacket getItemOnItemPacket();
+
+  @Import("Packet_bankItemActionPacket")
+  @Override
+  RSClientPacket getBankItemActionPacket();
+
+  @Import("Packet_walkPacket")
+  @Override
+  RSClientPacket getWalkPacket();
+
   @Import("loadWorlds")
   @Override
   boolean loadWorlds();
+
+  @Import("logoSprite")
+  @Override
+  void setLogoSprite(IndexedSprite indexedSprite);
+
+  @Import("titleboxSprite")
+  @Override
+  void setLoginBoxSprite (IndexedSprite indexedSprite);
+
+  @Import("titlebuttonSprite")
+  @Override
+  void setLoginButtonSprite (IndexedSprite indexedSprite);
+
+  @Import("loginWorldsButton")
+  @Override
+  void setLoginWorldsButtonSprite (IndexedSprite indexedSprite);
+
+  @Import("title_muteSprite")
+  @Override
+  RSIndexedSprite[] getTitleMuteSprites();
+
+  @Import("optionSprite")
+  @Override
+  void setOptionSprite (IndexedSprite indexedSprite);
+
+  @Import("options_buttons_0Sprite")
+  @Override
+  void setOptionSprite1 (IndexedSprite indexedSprite);
+
+  @Import("options_buttons_2Sprite")
+  @Override
+  void setOptionSprite2 (IndexedSprite indexedSprite);
+
+  @Import("optionEnabledSprite")
+  @Override
+  void setOptionSprite3 (IndexedSprite indexedSprite);
+
+  @Import("logoSprite")
+  @Override
+  RSIndexedSprite getLogoSprite();
+
+  @Import("titleboxSprite")
+  @Override
+  RSIndexedSprite getLoginBoxSprite();
+
+  @Import("titlebuttonSprite")
+  @Override
+  RSIndexedSprite getLoginButtonSprite();
+
+  @Import("loginWorldsButton")
+  @Override
+  RSIndexedSprite getLoginWorldsButtonSprite();
+
+  @Import("optionSprite")
+  @Override
+  RSIndexedSprite getOptionSprite();
+
+  @Import("options_buttons_0Sprite")
+  @Override
+  RSIndexedSprite getOptionSprite1();
+
+  @Import("options_buttons_2Sprite")
+  @Override
+  RSIndexedSprite getOptionSprite2();
+
+  @Import("optionEnabledSprite")
+  @Override
+  RSIndexedSprite getOptionSprite3();
+
+  @Import("resumePauseWidget")
+  @Override
+  void processDialog(int widgetUid, int menuIndex);
+
+  @Import("loginTitleColor")
+  void setLoginTitleColor(int colorHex);
+
+  @Import("loginTitleMessage")
+  void setLoginTitleMessage(String message);
+
+  @Import("rndHue")
+  int getRndHue();
+
+  @Import("Tiles_underlays")
+  byte[][][] getTileUnderlays();
+
+  @Import("Tiles_overlays")
+  byte[][][] getTileOverlays();
+
+  @Import("Tiles_shapes")
+  byte[][][] getTileShapes();
+
+  @Import("Scene_tilesDeque")
+  RSNodeDeque getTilesDeque();
+
+  @Import("worldSelectOpen")
+  @Override
+  boolean isWorldSelectOpen();
+
+  @Import("worldSelectOpen")
+  @Override
+  void setWorldSelectOpen(boolean open);
+
+  @Import("setWindowedMode")
+  @Override
+  void setWindowedMode(int mode);
+
+  @Import("getWindowedMode")
+  @Override
+  int getWindowedMode();
+
+  @Import("MouseHandler_instance")
+  @Override
+  RSMouseHandler getMouseHandler();
+
+  @Import("getServerTime")
+  @Override
+  long getCurrentTime();
+
+  @Import("hasFocus")
+  @Override
+  boolean isFocused();
+
+  @Import("volatileFocus")
+  @Override
+  void setFocused(boolean focused);
+
+  @Import("mouseCrossX")
+  @Override
+  void setClickCrossX(int x);
+
+  @Import("mouseCrossY")
+  @Override
+  void setClickCrossY(int y);
 }

@@ -26,7 +26,6 @@ package net.runelite.asm;
 
 import static net.runelite.deob.DeobAnnotations.getObfuscatedName;
 import static net.runelite.deob.DeobAnnotations.getObfuscatedSignature;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -149,6 +148,13 @@ public class ClassFile implements Annotated, Named {
   }
 
   public void addMethod(Method method) {
+    if (method.getClassFile().isEnum()) {
+      var name = method.getName();
+      if (name.equals("values") || name.equals("valueOf")) {
+          return;
+      }
+    }
+
     methods.add(method);
   }
 

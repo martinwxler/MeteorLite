@@ -32,7 +32,7 @@ public interface FpsConfig extends Config
 	@ConfigItem(
 		keyName = "limitFps",
 		name = "Limit Global FPS",
-		description = "Global FPS limit in effect regardless of<br>" +
+		description = "Global FPS limit in effect regardless of" +
 			"whether window is in focus or not",
 		position = 1
 	)

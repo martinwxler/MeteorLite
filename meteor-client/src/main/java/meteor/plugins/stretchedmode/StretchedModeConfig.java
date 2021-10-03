@@ -51,7 +51,7 @@ public interface StretchedModeConfig extends Config
 	)
 	default boolean increasedPerformance()
 	{
-		return false;
+		return true;
 	}
 
 	@ConfigItem(

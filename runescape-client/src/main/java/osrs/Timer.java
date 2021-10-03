@@ -76,7 +76,7 @@ public class Timer {
 		garbageValue = "1453973445"
 	)
 	public void method5821() {
-		this.field3881 = Occluder.method4335();
+		this.field3881 = Occluder.getServerTime();
 	}
 
 	@ObfuscatedName("c")
@@ -86,7 +86,7 @@ public class Timer {
 	)
 	public void method5822() {
 		if (-1L != this.field3881) {
-			this.field3883 = Occluder.method4335() - this.field3881;
+			this.field3883 = Occluder.getServerTime() - this.field3881;
 			this.field3881 = -1L;
 		}
 
@@ -98,7 +98,7 @@ public class Timer {
 		garbageValue = "-1401008868"
 	)
 	public void method5827(int var1) {
-		this.field3880 = Occluder.method4335();
+		this.field3880 = Occluder.getServerTime();
 		this.field3887 = var1;
 	}
 
@@ -109,7 +109,7 @@ public class Timer {
 	)
 	public void method5824() {
 		if (-1L != this.field3880) {
-			this.field3882 = Occluder.method4335() - this.field3880;
+			this.field3882 = Occluder.getServerTime() - this.field3880;
 			this.field3880 = -1L;
 		}
 

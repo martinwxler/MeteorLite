@@ -101,7 +101,7 @@ public interface OneClickThievingConfig extends Config
             keyName = "enablePray",
             name = "Use Prayer",
             description = "This will use redemption with prayer/restore potions" +
-                    "<br>This is mainly for pickpocketing elves/vyres",
+                    "This is mainly for pickpocketing elves/vyres",
             position = 5
     )
     default boolean enablePray()
@@ -113,7 +113,7 @@ public interface OneClickThievingConfig extends Config
             keyName = "prayMethod",
             name = "Pray Method",
             description = "Lazy reactivates redemption when possible. Active only enables when your hp is low" +
-                    "<br>Active should only be used if your max hp is greater than 60",
+                    "Active should only be used if your max hp is greater than 60",
             position = 6,
             hidden = true,
             unhide = "enablePray"

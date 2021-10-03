@@ -3,6 +3,8 @@ package meteor.plugins.oneclick3t4g;
 import com.google.inject.Provides;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
+import meteor.plugins.api.items.Inventory;
+import meteor.plugins.api.magic.Regular;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
@@ -67,6 +69,18 @@ public class OneClick3t4g extends Plugin {
             inv= client.getItemContainer(InventoryID.INVENTORY);
             return;
         }
+        if(config.humidify()){
+            if(Inventory.getFirst(1825,1827,1829,1823)==null){
+                if(Inventory.getFirst(1831)!=null){
+                    event.setMenuEntry(new MenuEntry("Cast","<col=00ff00>Humidify</col>",1,CC_OP.getId(),-1, client.getWidget(WidgetInfo.SPELL_HUMIDIFY).getId(),false));
+                    return;
+                }else{
+                    client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "you need to bring waterskins for this disabling plugin", null);
+                    this.toggle();
+                    return;
+                }
+            }
+        }
         if(!inv.contains(6333)||!inv.contains(946)){
             client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "you need to bring a teak log and knife. disabling plugin", null);
             this.toggle();
@@ -90,9 +104,10 @@ public class OneClick3t4g extends Plugin {
         }
         if(startingTickCount==-1||(client.getTickCount()-startingTickCount)>2){
             if(config.humidify()){
-                if(!inv.contains(1825)&&!inv.contains(1827)||!inv.contains(1829)||!inv.contains(1823)){
-                    if(inv.contains(1831)){
+                if(Inventory.getAll(1825,1827,1829,1823).isEmpty()){
+                    if(Inventory.getFirst(1831)!=null){
                         event.setMenuEntry(new MenuEntry("Cast","<col=00ff00>Humidify</col>",1,CC_OP.getId(),-1,14286958,false));
+                        return;
                     }else{
                         client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "you need to bring waterskins for this disabling plugin", null);
                         this.toggle();

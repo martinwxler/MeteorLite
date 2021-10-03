@@ -92,4 +92,8 @@ public class Equipment extends Items {
     public static boolean contains(String name) {
         return EQUIPMENT.exists(name);
     }
+
+    public static Item fromSlot(EquipmentInventorySlot slot) {
+        return getFirst(x -> slot.getWidgetInfo().getPackedId() == x.getWidgetId());
+    }
 }

@@ -151,7 +151,7 @@ public interface Client extends GameEngine {
    * @return the message node for the message
    */
   MessageNode addChatMessage(ChatMessageType type, String name, String message, String sender,
-      boolean postEvent);
+                             boolean postEvent);
 
   /**
    * Gets the current game state.
@@ -229,6 +229,8 @@ public interface Client extends GameEngine {
    * @return current login state index
    */
   int getLoginIndex();
+
+  void setLoginIndex(int index);
 
   /**
    * Gets the account type of the logged in player.
@@ -404,6 +406,16 @@ public interface Client extends GameEngine {
   ItemComposition getItemComposition(int id);
 
   /**
+   * Gets the item composition corresponding to an items ID.
+   *
+   * @param id the item ID
+   * @return the corresponding item composition
+   * @see ItemID
+   */
+  @Nonnull
+  ItemComposition getItemDefinition(int id);
+
+  /**
    * Creates an item icon sprite with passed variables.
    *
    * @param itemId      the item ID
@@ -417,7 +429,7 @@ public interface Client extends GameEngine {
    */
   @Nullable
   SpritePixels createItemSprite(int itemId, int quantity, int border, int shadowColor,
-      int stackable, boolean noted, int scale);
+                                int stackable, boolean noted, int scale);
 
   /**
    * Loads and creates the sprite images of the passed archive and file IDs.
@@ -1244,12 +1256,12 @@ public interface Client extends GameEngine {
   /**
    * Retrieve the nameable container containing friends
    */
-  ChatEntityContainer<Friend> getFriendContainer();
+  NameableContainer<Friend> getFriendContainer();
 
   /**
    * Retrieve the nameable container containing ignores
    */
-  ChatEntityContainer<Ignore> getIgnoreContainer();
+  NameableContainer<Ignore> getIgnoreContainer();
 
   /**
    * Gets the clients saved preferences.
@@ -1840,7 +1852,7 @@ public interface Client extends GameEngine {
   int getRasterizer3D_clipMidY2();
 
   void checkClickbox(Model model, int orientation, int pitchSin, int pitchCos, int yawSin,
-      int yawCos, int x, int y, int z, long hash);
+                     int yawCos, int x, int y, int z, long hash);
 
   /**
    * Get the if1 widget whose item is being dragged
@@ -1889,8 +1901,13 @@ public interface Client extends GameEngine {
 
   void setRenderSelf(boolean enabled);
 
-  void invokeMenuAction(String option, String target, int identifier, int opcode, int param0,
-      int param1);
+  default void invokeMenuAction(String option, String target, int identifier, int opcode, int param0,
+                                int param1) {
+    invokeMenuAction(option, target, identifier, opcode, param0, param1, -1, -1);
+  }
+
+  void invokeMenuAction(String option, String target, int identifier, int opcode, int param0, int param1,
+                        int screenX, int screenY);
 
   MouseRecorder getMouseRecorder();
 
@@ -1954,7 +1971,7 @@ public interface Client extends GameEngine {
   int getItemCount();
 
   /**
-   * Makes all widgets behave as if they are {@link WidgetConfig#WIDGET_USE_TARGET}
+   * Makes all widgets behave as if they are
    */
   void setAllWidgetsAreOpTargetable(boolean value);
 
@@ -1962,7 +1979,7 @@ public interface Client extends GameEngine {
    * Adds a MenuEntry to the current menu.
    */
   void insertMenuItem(String action, String target, int opcode, int identifier, int argument1,
-      int argument2, boolean forceLeftClick);
+                      int argument2, boolean forceLeftClick);
 
   void setSelectedItemID(int id);
 
@@ -1997,10 +2014,9 @@ public interface Client extends GameEngine {
    * @param pixelWidth   pretty much horizontal scale
    * @param pixelHeight  pretty much vertical scale
    * @param oldWidth     old width
-   * @see net.runelite.client.util.ImageUtil#resizeSprite(Client, SpritePixels, int, int)
    */
   void scaleSprite(int[] canvas, int[] pixels, int color, int pixelX, int pixelY, int canvasIdx,
-      int canvasOffset, int newWidth, int newHeight, int pixelWidth, int pixelHeight, int oldWidth);
+                   int canvasOffset, int newWidth, int newHeight, int pixelWidth, int pixelHeight, int oldWidth);
 
   /**
    * Get the MenuEntry at client.getMenuOptionCount() - 1
@@ -2085,6 +2101,8 @@ public interface Client extends GameEngine {
    * than half the width of fixed mode, it won't get mirrored to the other side of the screen
    */
   void setLoginScreen(SpritePixels pixels);
+
+  SpritePixels getLoginScreen();
 
   /**
    * Sets whether the flames on the login screen should be rendered
@@ -2202,6 +2220,12 @@ public interface Client extends GameEngine {
   @Nullable
   ClanSettings getGuestClanSettings();
 
+  /**
+   * Hides graphics objects
+   * @param graphicsObject
+   */
+  void setHiddenGraphicsObjects(Set<Integer> graphicsObject);
+
 
   /**
    * Set the target camera yaw
@@ -2209,6 +2233,8 @@ public interface Client extends GameEngine {
    * @param cameraYawTarget
    */
   void setCameraYawTarget(int cameraYawTarget);
+
+  void setCameraPitchTarget(int pitch);
 
   boolean getOccluderEnabled();
 
@@ -2243,7 +2269,11 @@ public interface Client extends GameEngine {
    */
   Sequence loadAnimation(int id);
 
-  void interact(final int identifier, final int opcode, final int param0, final int param1);
+  default void interact(final int identifier, final int opcode, final int param0, final int param1) {
+    interact(identifier, opcode, param0, param1, -1, -1);
+  }
+
+  void interact(final int identifier, final int opcode, final int param0, final int param1, int clickX, int clickY);
 
   int getMouseLastPressedX();
 
@@ -2286,6 +2316,22 @@ public interface Client extends GameEngine {
    */
   ClientPacket getTextInputPacket();
 
+  ClientPacket getClickPacket();
+  ClientPacket getItemOnItemPacket();
+  ClientPacket getSpellOnItemPacket();
+  ClientPacket getItemActionPacket();
+  ClientPacket getNPCAction3Packet();
+  ClientPacket getItemAction2Packet();
+  ClientPacket getItemAction3Packet();
+  ClientPacket getItemAction4Packet();
+  ClientPacket getItemAction5Packet();
+  ClientPacket getBankItemActionPacket();
+  ClientPacket getGameObjectAction2Packet();
+  ClientPacket getNPCActionPacket();
+  ClientPacket getWidgetActionPacket();
+  ClientPacket getWidgetAction2Packet();
+  ClientPacket getWalkPacket();
+
   void setSelectedSceneTileX(int sceneX);
 
   void setSelectedSceneTileY(int sceneY);
@@ -2317,4 +2363,70 @@ public interface Client extends GameEngine {
   void clearItemCache();
 
   void clearObjectCache();
+
+  void setLogoSprite(IndexedSprite indexedSprite);
+
+  void setLoginBoxSprite(IndexedSprite indexedSprite);
+
+  void setLoginButtonSprite(IndexedSprite indexedSprite);
+
+  void setLoginWorldsButtonSprite(IndexedSprite indexedSprite);
+
+  void setOptionSprite(IndexedSprite indexedSprite);
+
+  void setOptionSprite1(IndexedSprite indexedSprite);
+
+  void setOptionSprite2(IndexedSprite indexedSprite);
+
+  void setOptionSprite3(IndexedSprite indexedSprite);
+
+  IndexedSprite[] getTitleMuteSprites();
+
+  IndexedSprite getLogoSprite();
+
+  IndexedSprite getLoginBoxSprite();
+
+  IndexedSprite getLoginButtonSprite();
+
+  IndexedSprite getLoginWorldsButtonSprite();
+
+  IndexedSprite getOptionSprite();
+
+  IndexedSprite getOptionSprite1();
+
+  IndexedSprite getOptionSprite2();
+
+  IndexedSprite getOptionSprite3();
+
+  void processDialog(int widgetUid, int menuIndex);
+
+  void setLoginTitleColor(int colorHex);
+
+  void setLoginTitleMessage(String message);
+
+  void clearLoginScreen(boolean shouldClear);
+
+  void setDestinationX(int sceneX);
+
+  void setDestinationY(int sceneY);
+
+  boolean isWorldSelectOpen();
+
+  void setWorldSelectOpen(boolean open);
+
+  void setWindowedMode(int mode);
+
+  int getWindowedMode();
+
+  MouseHandler getMouseHandler();
+
+  long getCurrentTime();
+
+  boolean isFocused();
+
+  void setFocused(boolean focused);
+
+  void setClickCrossX(int x);
+
+  void setClickCrossY(int y);
 }

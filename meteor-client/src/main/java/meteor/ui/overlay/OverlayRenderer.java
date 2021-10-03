@@ -28,6 +28,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.primitives.Ints;
 import java.awt.Color;
 import java.awt.Composite;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Paint;
@@ -44,14 +45,16 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.swing.SwingUtilities;
-import meteor.config.RuneLiteConfig;
+
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.input.KeyListener;
 import meteor.input.KeyManager;
 import meteor.input.MouseAdapter;
 import meteor.input.MouseManager;
+import meteor.config.MeteorLiteConfig;
 import meteor.ui.JagexColors;
+import meteor.ui.MeteorUI;
 import meteor.util.ColorUtil;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -64,12 +67,13 @@ import net.runelite.api.events.FocusChanged;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
+import org.sponge.util.Logger;
 
 @Singleton
 public class OverlayRenderer extends MouseAdapter implements KeyListener {
 
   private static final int BORDER = 5;
-  private static final int BORDER_TOP = 5;
+  private static final int BORDER_TOP = BORDER + 15;
   private static final int PADDING = 2;
   private static final int OVERLAY_RESIZE_TOLERANCE = 5;
   private static final Dimension SNAP_CORNER_SIZE = new Dimension(80, 80);
@@ -81,7 +85,8 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
   private static final Color MOVING_OVERLAY_RESIZING_COLOR = new Color(255, 0, 255, 200);
   private final Client client;
   private final OverlayManager overlayManager;
-  private final RuneLiteConfig runeLiteConfig;
+  private final MeteorLiteConfig meteorConfig;
+  private final MeteorUI meteorUI;
 
   // Overlay movement variables
   private final Point overlayOffset = new Point();
@@ -105,19 +110,21 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
   // focused overlay
   private Overlay focusedOverlay;
   private Overlay prevFocusedOverlay;
+  private Logger logger = new Logger("OverlayRenderer");
 
   @Inject
   private OverlayRenderer(
-      final Client client,
-      final OverlayManager overlayManager,
-      final RuneLiteConfig runeLiteConfig,
-      final MouseManager mouseManager,
-      final KeyManager keyManager,
-      final EventBus eventBus) {
+          final Client client,
+          final OverlayManager overlayManager,
+          final MeteorLiteConfig meteorConfig,
+          final MouseManager mouseManager,
+          final KeyManager keyManager,
+          final EventBus eventBus, MeteorUI meteorUI) {
     this.client = client;
     this.overlayManager = overlayManager;
-    this.runeLiteConfig = runeLiteConfig;
-    keyManager.registerKeyListener(this, this.getClass());
+    this.meteorConfig = meteorConfig;
+    this.meteorUI = meteorUI;
+    keyManager.registerKeyListener(this, getClass());
     mouseManager.registerMouseListener(this);
     eventBus.register(this);
   }
@@ -141,7 +148,7 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
     }
 
     final boolean shift = client.isKeyPressed(KeyCode.KC_SHIFT);
-    if (!shift && runeLiteConfig.menuEntryShift()) {
+    if (!shift && meteorConfig.menuEntryShift()) {
       return;
     }
 
@@ -267,8 +274,8 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
         if (overlayPosition != OverlayPosition.DETACHED && (preferredLocation == null
             || overlay.getPreferredPosition() != null)) {
           final Rectangle snapCorner = snapCorners.forPosition(overlayPosition);
-          final Point translation = OverlayUtil
-              .transformPosition(overlayPosition, dimension); // offset from corner
+          final Point translation = OverlayUtil.transformPosition(overlayPosition,
+              dimension); // offset from corner
           // Target x/y to draw the overlay
           int destX = (int) snapCorner.getX() + translation.x;
           int destY = (int) snapCorner.getY() + translation.y;
@@ -279,8 +286,8 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
           // addition to its normal dimensions.
           int dX = location.x - destX;
           int dY = location.y - destY;
-          final Point padding = OverlayUtil
-              .padPosition(overlayPosition, dimension, PADDING); // overlay size + fixed padding
+          final Point padding = OverlayUtil.padPosition(overlayPosition, dimension,
+              PADDING); // overlay size + fixed padding
           // translate corner for padding and any difference due to the position clamping
           snapCorner.translate(padding.x + dX, padding.y + dY);
         } else {
@@ -312,8 +319,8 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
               boundsColor = MOVING_OVERLAY_RESIZING_COLOR;
             } else if (inOverlayDraggingMode && currentManagedOverlay == overlay) {
               boundsColor = MOVING_OVERLAY_ACTIVE_COLOR;
-            } else if (inOverlayDraggingMode && overlay.isDragTargetable() && currentManagedOverlay
-                .isDragTargetable()
+            } else if (inOverlayDraggingMode && overlay.isDragTargetable()
+                && currentManagedOverlay.isDragTargetable()
                 && currentManagedOverlay.getBounds().intersects(bounds)) {
               boundsColor = MOVING_OVERLAY_TARGET_COLOR;
               assert currentManagedOverlay != overlay;
@@ -375,7 +382,8 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
       offset.translate(-currentManagedOverlay.getBounds().x, -currentManagedOverlay.getBounds().y);
       overlayOffset.setLocation(offset);
 
-      inOverlayResizingMode = currentManagedOverlay != null && currentManagedOverlay.isResizable();
+      inOverlayResizingMode = currentManagedOverlay != null && currentManagedOverlay.isResizable()
+          && meteorUI.getCurrentCursor() != meteorUI.getDefaultCursor();
       inOverlayDraggingMode = !inOverlayResizingMode;
       startedMovingOverlay = true;
       currentManagedBounds = new Rectangle(currentManagedOverlay.getBounds());
@@ -401,8 +409,42 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
     }
 
     if (currentManagedOverlay == null || !currentManagedOverlay.isResizable()) {
-      //clientUI.setCursor(clientUI.getDefaultCursor());
+      meteorUI.setCursor(meteorUI.getDefaultCursor());
       return mouseEvent;
+    }
+
+    final Rectangle toleranceRect = new Rectangle(currentManagedOverlay.getBounds());
+    toleranceRect.grow(-OVERLAY_RESIZE_TOLERANCE, -OVERLAY_RESIZE_TOLERANCE);
+    final int outcode = toleranceRect.outcode(mouseEvent.getPoint());
+
+    switch (outcode) {
+      case Rectangle.OUT_TOP:
+        meteorUI.setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
+        break;
+      case Rectangle.OUT_TOP | Rectangle.OUT_LEFT:
+        meteorUI.setCursor(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
+        break;
+      case Rectangle.OUT_LEFT:
+        meteorUI.setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
+        break;
+      case Rectangle.OUT_LEFT | Rectangle.OUT_BOTTOM:
+        meteorUI.setCursor(Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR));
+        break;
+      case Rectangle.OUT_BOTTOM:
+        meteorUI.setCursor(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
+        break;
+      case Rectangle.OUT_BOTTOM | Rectangle.OUT_RIGHT:
+        meteorUI.setCursor(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
+        break;
+      case Rectangle.OUT_RIGHT:
+        meteorUI.setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
+        break;
+      case Rectangle.OUT_RIGHT | Rectangle.OUT_TOP:
+        meteorUI.setCursor(Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR));
+        break;
+      default:
+        // center
+        meteorUI.setCursor(meteorUI.getDefaultCursor());
     }
 
     return mouseEvent;
@@ -469,6 +511,45 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
       int width = currentManagedBounds.width;
       int height = currentManagedBounds.height;
 
+      switch (meteorUI.getCurrentCursor().getType()) {
+        case Cursor.N_RESIZE_CURSOR:
+          y += top;
+          height -= top;
+          break;
+        case Cursor.NW_RESIZE_CURSOR:
+          x += left;
+          y += top;
+          width -= left;
+          height -= top;
+          break;
+        case Cursor.W_RESIZE_CURSOR:
+          x += left;
+          width -= left;
+          break;
+        case Cursor.SW_RESIZE_CURSOR:
+          x += left;
+          width -= left;
+          height = top;
+          break;
+        case Cursor.S_RESIZE_CURSOR:
+          height = top;
+          break;
+        case Cursor.SE_RESIZE_CURSOR:
+          width = left;
+          height = top;
+          break;
+        case Cursor.E_RESIZE_CURSOR:
+          width = left;
+          break;
+        case Cursor.NE_RESIZE_CURSOR:
+          y += top;
+          width = left;
+          height -= top;
+          break;
+        default:
+          // center
+      }
+
       final int minOverlaySize = currentManagedOverlay.getMinimumSize();
       final int widthOverflow = Math.max(0, minOverlaySize - width);
       final int heightOverflow = Math.max(0, minOverlaySize - height);
@@ -493,8 +574,8 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
       }
 
       currentManagedBounds.setRect(x, y, width, height);
-      currentManagedOverlay
-          .setPreferredSize(new Dimension(currentManagedBounds.width, currentManagedBounds.height));
+      currentManagedOverlay.setPreferredSize(
+          new Dimension(currentManagedBounds.width, currentManagedBounds.height));
 
       if (currentManagedOverlay.getPreferredLocation() != null) {
         currentManagedOverlay.setPreferredLocation(currentManagedBounds.getLocation());
@@ -543,8 +624,8 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
 
     // Check if the overlay is over a snapcorner and move it if so, unless it is a detached overlay
     if (currentManagedOverlay.getPosition() != OverlayPosition.DETACHED && inOverlayDraggingMode) {
-      final OverlayBounds snapCorners = this.emptySnapCorners
-          .translated(-SNAP_CORNER_SIZE.width, -SNAP_CORNER_SIZE.height);
+      final OverlayBounds snapCorners = this.emptySnapCorners.translated(-SNAP_CORNER_SIZE.width,
+          -SNAP_CORNER_SIZE.height);
 
       for (Rectangle snapCorner : snapCorners.getBounds()) {
         if (snapCorner.contains(mouseEvent.getPoint())) {
@@ -603,11 +684,11 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
 
     // Set font based on configuration
     if (position == OverlayPosition.DYNAMIC || position == OverlayPosition.DETACHED) {
-      graphics.setFont(runeLiteConfig.fontType().getFont());
+      graphics.setFont(meteorConfig.fontType().getFont());
     } else if (position == OverlayPosition.TOOLTIP) {
-      graphics.setFont(runeLiteConfig.tooltipFontType().getFont());
+      graphics.setFont(meteorConfig.tooltipFontType().getFont());
     } else {
-      graphics.setFont(runeLiteConfig.interfaceFontType().getFont());
+      graphics.setFont(meteorConfig.interfaceFontType().getFont());
     }
 
     graphics.translate(point.x, point.y);
@@ -617,7 +698,7 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
     try {
       overlayDimension = overlay.render(graphics);
     } catch (Exception ex) {
-      ex.printStackTrace();
+      logger.warn("Error during overlay rendering", ex);
       return;
     }
 
@@ -656,7 +737,7 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
     currentManagedOverlay = null;
     dragTargetOverlay = null;
     currentManagedBounds = null;
-    //clientUI.setCursor(clientUI.getDefaultCursor());
+    meteorUI.setCursor(meteorUI.getDefaultCursor());
   }
 
   private boolean shouldInvalidateBounds() {
@@ -710,7 +791,7 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
   private OverlayBounds buildSnapCorners() {
     final Point topLeftPoint = new Point(
         viewportBounds.x + BORDER,
-        viewportBounds.y + BORDER_TOP + 20);
+        viewportBounds.y + BORDER_TOP);
 
     final Point topCenterPoint = new Point(
         viewportBounds.x + viewportBounds.width / 2,
@@ -799,9 +880,9 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener {
     // Constrain overlay position to be within the parent bounds
     return new Point(
         Ints.constrainToRange(overlayX, parentBounds.x,
-            Math.max(parentBounds.x, parentBounds.x + parentBounds.width - overlayWidth)),
+            Math.max(parentBounds.x, parentBounds.width - overlayWidth)),
         Ints.constrainToRange(overlayY, parentBounds.y,
-            Math.max(parentBounds.y, parentBounds.y + parentBounds.height - overlayHeight))
+            Math.max(parentBounds.y, parentBounds.height - overlayHeight))
     );
   }
 }

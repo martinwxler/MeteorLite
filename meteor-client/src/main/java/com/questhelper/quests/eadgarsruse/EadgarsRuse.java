@@ -29,23 +29,21 @@ import com.questhelper.QuestDescriptor;
 import com.questhelper.QuestHelperQuest;
 import com.questhelper.Zone;
 import com.questhelper.questhelpers.BasicQuestHelper;
-import com.questhelper.requirements.item.ItemRequirement;
-import com.questhelper.requirements.quest.QuestRequirement;
 import com.questhelper.requirements.Requirement;
-import com.questhelper.requirements.player.SkillRequirement;
-import com.questhelper.requirements.var.VarbitRequirement;
+import com.questhelper.requirements.WidgetTextRequirement;
 import com.questhelper.requirements.ZoneRequirement;
 import com.questhelper.requirements.conditional.Conditions;
 import com.questhelper.requirements.conditional.ObjectCondition;
-import com.questhelper.requirements.WidgetTextRequirement;
+import com.questhelper.requirements.item.ItemRequirement;
+import com.questhelper.requirements.player.SkillRequirement;
+import com.questhelper.requirements.quest.QuestRequirement;
+import com.questhelper.requirements.var.VarbitRequirement;
 import com.questhelper.steps.ConditionalStep;
 import com.questhelper.steps.DetailedQuestStep;
 import com.questhelper.steps.NpcStep;
 import com.questhelper.steps.ObjectStep;
 import com.questhelper.steps.QuestStep;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,35 +56,35 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.WidgetInfo;
 
 @QuestDescriptor(
-	quest = QuestHelperQuest.EADGARS_RUSE
+		quest = QuestHelperQuest.EADGARS_RUSE
 )
 public class EadgarsRuse extends BasicQuestHelper
 {
 	//Items Required
 	ItemRequirement climbingBoots, climbingBootsOr12Coins, vodka, vodkaHighlight, pineappleChunks, pineappleChunksHighlight, logs2, grain10, rawChicken5, tinderbox, pestleAndMortar, ranarrPotionUnf,
-		coins12, cellKey2, alcoChunks, parrot, parrotHighlighted, robe, logs1, thistle, logHighlight, tinderboxHighlight, driedThistle, pestleAndMortarHighlight, groundThistle, ranarrUnfHighlight, trollPotion, trainedParrot,
-		fakeMan, storeroomKey, goutweed, climbingBootsEquipped;
+			coins12, cellKey2, alcoChunks, parrot, parrotHighlighted, robe, logs1, thistle, logHighlight, tinderboxHighlight, driedThistle, pestleAndMortarHighlight, groundThistle, ranarrUnfHighlight, trollPotion, trainedParrot,
+			fakeMan, storeroomKey, goutweed, climbingBootsEquipped;
 
 	//Items Recommended
 	ItemRequirement ardougneTeleport;
 
 	Requirement inSanfewRoom, inTenzingHut, hasClimbingBoots, hasCoins, onMountainPath, inTrollArea1, inPrison, freedEadgar, hasCellKey2, inStrongholdFloor1, inStrongholdFloor2,
-		inEadgarsCave, inTrollheimArea, askedAboutAlcohol, askedAboutPineapple, fireNearby, foundOutAboutKey, inStoreroom;
+			inEadgarsCave, inTrollheimArea, askedAboutAlcohol, askedAboutPineapple, fireNearby, foundOutAboutKey, inStoreroom;
 
 	DetailedQuestStep goUpToSanfew, talkToSanfew, buyClimbingBoots, travelToTenzing, getCoinsOrBoots, climbOverStile, climbOverRocks, enterSecretEntrance, freeEadgar, goUpStairsPrison,
-		getBerryKey, goUpToTopFloorStronghold, exitStronghold, enterEadgarsCave, talkToEadgar, leaveEadgarsCave, enterStronghold, goDownSouthStairs, talkToCook, goUpToTopFloorStrongholdFromCook,
-		exitStrongholdFromCook, enterEadgarsCaveFromCook, talkToEadgarFromCook, talkToPete, talkToPeteAboutAlcohol, talkToPeteAboutPineapple, useVodkaOnChunks, useChunksOnParrot, enterEadgarsCaveWithParrot,
-		talkToEadgarWithParrot, enterPrisonWithParrot, leaveEadgarsCaveWithParrot, enterStrongholdWithParrot, goDownNorthStairsWithParrot, goDownToPrisonWithParrot, parrotOnRack, talkToTegid, enterEadgarsCaveWithItems,
-		talkToEadgarWithItems, leaveEadgarsCaveForThistle, pickThistle, lightFire, useThistleOnFire, useThistleOnTrollFire, grindThistle, useGroundThistleOnRanarr, enterEadgarsCaveWithTrollPotion, giveTrollPotionToEadgar,
-		enterPrisonForParrot, enterStrongholdForParrot, goDownNorthStairsForParrot, goDownToPrisonForParrot, getParrotFromRack, leaveEadgarsCaveForParrot, leavePrisonWithParrot, goUpToTopFloorWithParrot, leaveStrongholdWithParrot,
-		enterEadgarCaveWithTrainedParrot, talkToEadgarWithTrainedParrot, leaveEadgarsCaveWithScarecrow, enterStrongholdWithScarecrow, goDownSouthStairsWithScarecrow, talkToCookWithScarecrow, talkToBurntmeat, goDownToStoreroom,
-		enterStoreroomDoor, getGoutweed, returnUpToSanfew, returnToSanfew;
+			getBerryKey, goUpToTopFloorStronghold, exitStronghold, enterEadgarsCave, talkToEadgar, leaveEadgarsCave, enterStronghold, goDownSouthStairs, talkToCook, goUpToTopFloorStrongholdFromCook,
+			exitStrongholdFromCook, enterEadgarsCaveFromCook, talkToEadgarFromCook, talkToPete, talkToPeteAboutAlcohol, talkToPeteAboutPineapple, useVodkaOnChunks, useChunksOnParrot, enterEadgarsCaveWithParrot,
+			talkToEadgarWithParrot, enterPrisonWithParrot, leaveEadgarsCaveWithParrot, enterStrongholdWithParrot, goDownNorthStairsWithParrot, goDownToPrisonWithParrot, parrotOnRack, talkToTegid, enterEadgarsCaveWithItems,
+			talkToEadgarWithItems, leaveEadgarsCaveForThistle, pickThistle, lightFire, useThistleOnFire, useThistleOnTrollFire, grindThistle, useGroundThistleOnRanarr, enterEadgarsCaveWithTrollPotion, giveTrollPotionToEadgar,
+			enterPrisonForParrot, enterStrongholdForParrot, goDownNorthStairsForParrot, goDownToPrisonForParrot, getParrotFromRack, leaveEadgarsCaveForParrot, leavePrisonWithParrot, goUpToTopFloorWithParrot, leaveStrongholdWithParrot,
+			enterEadgarCaveWithTrainedParrot, talkToEadgarWithTrainedParrot, leaveEadgarsCaveWithScarecrow, enterStrongholdWithScarecrow, goDownSouthStairsWithScarecrow, talkToCookWithScarecrow, talkToBurntmeat, goDownToStoreroom,
+			enterStoreroomDoor, getGoutweed, returnUpToSanfew, returnToSanfew;
 
 	ObjectStep searchDrawers;
 
 	//Zones
 	Zone sanfewRoom, tenzingHut, mountainPath1, mountainPath2, mountainPath3, mountainPath4, mountainPath5, trollArea1, prison, strongholdFloor1, strongholdFloor2, eadgarsCave,
-		trollheimArea, storeroom;
+			trollheimArea, storeroom;
 
 	@Override
 	public Map<Integer, QuestStep> loadSteps()
@@ -524,7 +522,7 @@ public class EadgarsRuse extends BasicQuestHelper
 
 		enterStrongholdWithScarecrow.addSubSteps(leaveEadgarsCaveWithScarecrow, goDownSouthStairsWithScarecrow, talkToCookWithScarecrow, talkToBurntmeat);
 
-		searchDrawers = new ObjectStep(this, ObjectID.KITCHEN_DRAWERS, new WorldPoint(2853, 10050, 1), "Search the kitchen drawers south west of Burntmeat.");
+		searchDrawers = new ObjectStep(this, ObjectID.KITCHEN_DRAWERS, new WorldPoint(2853, 10050, 1), "Search the kitchen drawers south east of Burntmeat.");
 		searchDrawers.addAlternateObjects(ObjectID.KITCHEN_DRAWERS_3817);
 
 		goDownToStoreroom = new ObjectStep(this, ObjectID.STONE_STAIRCASE_3789, new WorldPoint(2853, 10061, 1), "Go down to the storeroom from the Troll Stronghold kitchen.");

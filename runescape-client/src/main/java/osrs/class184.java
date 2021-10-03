@@ -228,9 +228,9 @@ public class class184 implements WorldMapSection {
 			Login.runesSprite = PacketBuffer.method6764(var1, "runes", "");
 			class92.title_muteSprite = PacketBuffer.method6764(var1, "title_mute", "");
 			ModelData0.options_buttons_0Sprite = class196.SpriteBuffer_getIndexedSpriteByName(var1, "options_radio_buttons,0", "");
-			class21.field107 = class196.SpriteBuffer_getIndexedSpriteByName(var1, "options_radio_buttons,4", "");
+			class21.optionSprite = class196.SpriteBuffer_getIndexedSpriteByName(var1, "options_radio_buttons,4", "");
 			Client.options_buttons_2Sprite = class196.SpriteBuffer_getIndexedSpriteByName(var1, "options_radio_buttons,2", "");
-			PlayerComposition.field3019 = class196.SpriteBuffer_getIndexedSpriteByName(var1, "options_radio_buttons,6", "");
+			PlayerComposition.optionEnabledSprite = class196.SpriteBuffer_getIndexedSpriteByName(var1, "options_radio_buttons,6", "");
 			class1.field3 = ModelData0.options_buttons_0Sprite.subWidth;
 			class280.field3323 = ModelData0.options_buttons_0Sprite.subHeight;
 			Login.loginScreenRunesAnimation = new LoginScreenAnimation(Login.runesSprite);

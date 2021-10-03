@@ -67,4 +67,6 @@ public @interface PluginDescriptor {
   boolean loadInSafeMode() default true;
 
   boolean cantDisable() default false;
+
+  boolean disabledOnStartup() default false;
 }

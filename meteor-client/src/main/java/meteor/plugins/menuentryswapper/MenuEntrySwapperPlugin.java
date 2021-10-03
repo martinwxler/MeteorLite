@@ -33,7 +33,6 @@ import static meteor.plugins.menuentryswapper.MenuEntrySwapperConfig.DesertAmule
 import static meteor.plugins.menuentryswapper.MenuEntrySwapperConfig.KaramjaGlovesMode;
 import static meteor.plugins.menuentryswapper.MenuEntrySwapperConfig.MorytaniaLegsMode;
 import static meteor.plugins.menuentryswapper.MenuEntrySwapperConfig.RadasBlessingMode;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableSet;
@@ -41,10 +40,15 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.inject.Provides;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -56,19 +60,35 @@ import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.game.ItemManager;
 import meteor.game.ItemVariationMapping;
+import meteor.input.KeyManager;
 import meteor.menus.MenuManager;
 import meteor.menus.WidgetMenuOption;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
+import meteor.plugins.menuentryswapper.util.AbstractComparableEntry;
+import meteor.plugins.menuentryswapper.util.BuyMode;
+import meteor.plugins.menuentryswapper.util.FairyRingMode;
+import meteor.plugins.menuentryswapper.util.GEItemCollectMode;
+import meteor.plugins.menuentryswapper.util.HouseAdvertisementMode;
+import meteor.plugins.menuentryswapper.util.HouseMode;
+import meteor.plugins.menuentryswapper.util.SellMode;
+import meteor.plugins.menuentryswapper.util.ShiftDepositMode;
+import meteor.plugins.menuentryswapper.util.ShiftWithdrawMode;
+import meteor.plugins.menuentryswapper.util.Swap;
 import meteor.util.Text;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.InventoryID;
+import net.runelite.api.Item;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.KeyCode;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.NPC;
+import net.runelite.api.Player;
+import net.runelite.api.Varbits;
 import net.runelite.api.events.ClientTick;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.MenuOptionClicked;
@@ -77,6 +97,7 @@ import net.runelite.api.events.WidgetMenuOptionClicked;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 @PluginDescriptor(
     name = "Menu Entry Swapper",
@@ -147,9 +168,16 @@ public class MenuEntrySwapperPlugin extends Plugin {
       "first mate deri",
       "first mate peri"
   );
+
+  private List<String> bankItemNames = new ArrayList<>();
+  private List<String> hideAttackIgnoredNPCs = new ArrayList<>();
+  private List<String> hideCastIgnoredSpells = new ArrayList<>();
+
   private final Multimap<String, Swap> swaps = Multimaps
       .synchronizedSetMultimap(LinkedHashMultimap.create());
   private final ArrayListMultimap<String, Integer> optionIndexes = ArrayListMultimap.create();
+  private final Map<AbstractComparableEntry, Integer> customSwaps = new HashMap<>();
+  private final List<Pair<AbstractComparableEntry, AbstractComparableEntry>> prioSwaps = new ArrayList<>();
   @Inject
   private Client client;
   @Inject
@@ -162,6 +190,13 @@ public class MenuEntrySwapperPlugin extends Plugin {
   private MenuManager menuManager;
   @Inject
   private ItemManager itemManager;
+  @Inject
+  private CustomSwaps customswaps;
+  @Inject
+  private ExtendedSwaps extendedswaps;
+  @Inject
+  private KeyManager keyManager;
+
   @Getter
   private boolean configuringShiftClick = false;
 
@@ -179,15 +214,31 @@ public class MenuEntrySwapperPlugin extends Plugin {
 
   @Override
   public void startup() {
+    eventBus.register(customswaps);
+    eventBus.register(extendedswaps);
+    keyManager.registerKeyListener(customswaps, this.getClass());
     if (config.shiftClickCustomization()) {
       enableCustomization();
     }
-
+    loadSwaps();
     setupSwaps();
+
+    if (client.getGameState() != GameState.LOGGED_IN) {
+      return;
+    }
+  }
+
+  @Subscribe
+  private void onGameStateChanged(GameStateChanged event) {
+    if (event.getGameState() != GameState.LOGGED_IN) {
+      return;
+    }
   }
 
   @Override
   public void shutdown() {
+    eventBus.unregister(customswaps);
+    eventBus.unregister(extendedswaps);
     disableCustomization();
 
     swaps.clear();
@@ -483,7 +534,11 @@ public class MenuEntrySwapperPlugin extends Plugin {
         .startsWith(ITEM_KEY_PREFIX)) {
       clientThread.invoke(this::resetItemCompositionCache);
     }
+    if (!"menuentryswapper".equals(event.getGroup())) {
+      return;
+    }
   }
+
 
   private void resetItemCompositionCache() {
     itemManager.invalidateItemCompositionCache();
@@ -587,6 +642,15 @@ public class MenuEntrySwapperPlugin extends Plugin {
     resetShiftClickEntry.setParam1(widgetId);
     resetShiftClickEntry.setType(MenuAction.RUNELITE.getId());
     client.setMenuEntries(ArrayUtils.addAll(entries, resetShiftClickEntry));
+
+    Player localPlayer = client.getLocalPlayer();
+
+    if (localPlayer == null) {
+      return;
+    }
+
+    event.setMenuEntries(updateMenuEntries(client.getMenuEntries()));
+    event.setModified();
   }
 
   @Subscribe
@@ -744,25 +808,24 @@ public class MenuEntrySwapperPlugin extends Plugin {
   public void onClientTick(ClientTick clientTick) {
     // The menu is not rebuilt when it is open, so don't swap or else it will
     // repeatedly swap entries
-    if (client.getGameState() != GameState.LOGGED_IN || client.isMenuOpen()) {
-      return;
-    }
+    if (client.getGameState() == GameState.LOGGED_IN && !client.isMenuOpen()) {
+      MenuEntry[] menuEntries = client.getMenuEntries();
 
-    MenuEntry[] menuEntries = client.getMenuEntries();
+      // Build option map for quick lookup in findIndex
+      int idx = 0;
+      optionIndexes.clear();
+      for (MenuEntry entry : menuEntries) {
+        String option = Text.removeTags(entry.getOption()).toLowerCase();
+        optionIndexes.put(option, idx++);
+      }
 
-    // Build option map for quick lookup in findIndex
-    int idx = 0;
-    optionIndexes.clear();
-    for (MenuEntry entry : menuEntries) {
-      String option = Text.removeTags(entry.getOption()).toLowerCase();
-      optionIndexes.put(option, idx++);
+      // Perform swaps
+      idx = 0;
+      for (MenuEntry entry : menuEntries) {
+        swapMenuEntry(idx++, entry);
+      }
     }
-
-    // Perform swaps
-    idx = 0;
-    for (MenuEntry entry : menuEntries) {
-      swapMenuEntry(idx++, entry);
-    }
+    client.setMenuEntries(updateMenuEntries(client.getMenuEntries()));
   }
 
   @Subscribe
@@ -878,5 +941,187 @@ public class MenuEntrySwapperPlugin extends Plugin {
 
   private boolean shiftModifier() {
     return client.isKeyPressed(KeyCode.KC_SHIFT);
+  }
+
+  private void loadSwaps()
+  {
+    hideAttackIgnoredNPCs = Text.fromCSV(config.hideAttackIgnoredNPCs().toLowerCase().trim());
+    hideCastIgnoredSpells = Text.fromCSV(config.hideCastIgnoredSpells().toLowerCase().trim());
+  }
+
+
+  private final Predicate<MenuEntry> filterMenuEntries = entry ->
+  {
+    String option = net.runelite.api.util.Text.removeTags(entry.getOption()).toLowerCase();
+    String target = net.runelite.api.util.Text.removeTags(entry.getTarget()).toLowerCase();
+
+    if (config.hideTradeWith() && option.contains("trade with"))
+    {
+      return false;
+    }
+
+    if (config.hideEmpty() && option.contains("empty"))
+    {
+      return !entry.getTarget().contains("potion") && !entry.getTarget().contains("Antidote")
+          && !entry.getTarget().contains("venom") && !entry.getTarget().contains("antifire")
+          && !entry.getTarget().contains("Antipoison") && !entry.getTarget()
+          .contains("Superantipoison")
+          && !entry.getTarget().contains("Saradomin brew") && !entry.getTarget()
+          .contains("Super restore")
+          && !entry.getTarget().contains("Zamorak brew") && !entry.getTarget()
+          .contains("Guthix rest");
+    }
+
+    if (config.hideDestroy() && option.contains("destroy") && target.contains("rune pouch"))
+    {
+      return false;
+    }
+    if (config.hideExamine() && option.contains("examine"))
+    {
+      return false;
+    }
+
+    if (config.hideLootImpJars() && target.contains("impling") && option.contains("loot"))
+    {
+      if (client.getItemContainer(InventoryID.BANK) != null)
+      {
+        bankItemNames = new ArrayList<>();
+        for (Item i : Objects.requireNonNull(client.getItemContainer(InventoryID.BANK)).getItems())
+        {
+          bankItemNames.add(client.getItemDefinition((i.getId())).getName());
+        }
+      }
+      List<String> invItemNames = new ArrayList<>();
+      switch (target)
+      {
+        case "gourmet impling jar":
+          if (client.getItemContainer(InventoryID.INVENTORY) != null)
+          {
+            for (Item i : Objects.requireNonNull(client.getItemContainer(InventoryID.INVENTORY)).getItems())
+            {
+              invItemNames.add(client.getItemDefinition((i.getId())).getName());
+            }
+            if ((invItemNames.contains("Clue scroll (easy)") || bankItemNames.contains("Clue scroll (easy)")))
+            {
+              return false;
+            }
+          }
+          break;
+        case "young impling jar":
+          if (client.getItemContainer(InventoryID.INVENTORY) != null)
+          {
+            for (Item i : Objects.requireNonNull(client.getItemContainer(InventoryID.INVENTORY)).getItems())
+            {
+              invItemNames.add(client.getItemDefinition((i.getId())).getName());
+            }
+            if (invItemNames.contains("Clue scroll (beginner)") || bankItemNames.contains("Clue scroll (beginner)"))
+            {
+              return false;
+            }
+          }
+          break;
+        case "eclectic impling jar":
+          if (client.getItemContainer(InventoryID.INVENTORY) != null)
+          {
+            for (Item i : Objects.requireNonNull(client.getItemContainer(InventoryID.INVENTORY)).getItems())
+            {
+              invItemNames.add(client.getItemDefinition((i.getId())).getName());
+            }
+            if ((invItemNames.contains("Clue scroll (medium)") || bankItemNames.contains("Clue scroll (medium)")))
+            {
+              return false;
+            }
+          }
+          break;
+        case "magpie impling jar":
+        case "nature impling jar":
+        case "ninja impling jar":
+          if (client.getItemContainer(InventoryID.INVENTORY) != null)
+          {
+            for (Item i : Objects.requireNonNull(client.getItemContainer(InventoryID.INVENTORY)).getItems())
+            {
+              invItemNames.add(client.getItemDefinition((i.getId())).getName());
+            }
+            if ((invItemNames.contains("Clue scroll (hard)") || bankItemNames.contains("Clue scroll (hard)")))
+            {
+              return false;
+            }
+          }
+          break;
+        case "crystal impling jar":
+        case "dragon impling jar":
+          if (client.getItemContainer(InventoryID.INVENTORY) != null)
+          {
+            for (Item i : Objects.requireNonNull(client.getItemContainer(InventoryID.INVENTORY)).getItems())
+            {
+              invItemNames.add(client.getItemDefinition((i.getId())).getName());
+            }
+            if ((invItemNames.contains("Clue scroll (elite)") || bankItemNames.contains("Clue scroll (elite)")))
+            {
+              return false;
+            }
+          }
+          break;
+      }
+    }
+
+    if (config.hideAttack() && entry.getType() == MenuAction.NPC_SECOND_OPTION.getId())
+    {
+      NPC npc = client.getCachedNPCs()[entry.getIdentifier()];
+      if (npc != null && npc.getName() != null && npc.getHealthRatio() == 0 && !hideAttackIgnoredNPCs.contains(
+          net.runelite.api.util.Text.standardize(npc.getName())))
+      {
+        return false;
+      }
+    }
+
+    if (config.hideCastRaids() && (client.getVar(Varbits.IN_RAID) == 1 || client.getVar(Varbits.THEATRE_OF_BLOOD) == 2))
+    {
+      if (client.getSpellSelected() && !hideCastIgnoredSpells.contains(Text.standardize(client.getSelectedSpellName())) && entry.getType() == MenuAction.SPELL_CAST_ON_PLAYER.getId())
+      {
+        return false;
+      }
+    }
+
+    if (config.hideCastThralls() && target.contains("thrall") && entry.getType() == MenuAction.SPELL_CAST_ON_NPC.getId())
+    {
+      return false;
+    }
+
+    return true;
+  };
+
+  private MenuEntry[] updateMenuEntries(MenuEntry[] menuEntries) {
+    return Arrays.stream(menuEntries)
+        .filter(filterMenuEntries).sorted((o1, o2) ->
+        {
+          //Priority swaps
+          var prioSwap = prioSwaps
+              .stream()
+              .filter(o -> o.getKey().matches(o1) && o.getValue().matches(o2))
+              .findFirst();
+          if (prioSwap.isPresent()) {
+            return 1;
+          }
+
+          prioSwap = prioSwaps
+              .stream()
+              .filter(o -> o.getKey().matches(o2) && o.getValue().matches(o1))
+              .findFirst();
+          if (prioSwap.isPresent()) {
+            return -1;
+          }
+
+          return 0;
+        })
+        .sorted(
+            //Hotkey swaps
+            Comparator.comparingInt(o -> customSwaps.entrySet()
+                .stream()
+                .filter(x -> x.getKey().matches(o))
+                .map(x -> x.getValue())
+                .sorted(Comparator.reverseOrder())
+                .findFirst().orElse(Integer.MIN_VALUE)))
+        .toArray(MenuEntry[]::new);
   }
 }

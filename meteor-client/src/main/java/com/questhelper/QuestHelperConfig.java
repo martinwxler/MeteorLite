@@ -154,8 +154,8 @@ public interface QuestHelperConfig extends Config
 
 	@ConfigItem(
 		keyName = "showSymbolOverlay",
-		name = "Display icons on NPCs and objects",
-		description = "Choose whether NPCs should icons marking them as the current target or not"
+		name = "Display icons",
+		description = "Choose whether NPCs and Objects should show icons marking them as the current target or not"
 	)
 	default boolean showSymbolOverlay()
 	{
@@ -164,8 +164,8 @@ public interface QuestHelperConfig extends Config
 
 	@ConfigItem(
 			keyName = "showMiniMapArrow",
-			name = "Display arrows on the mini-map",
-			description = "Choose whether flashing arrows point to the next objective"
+			name = "Display arrows",
+			description = "Choose whether flashing arrows point to the next objective on the mini-map"
 	)
 	default boolean showMiniMapArrow()
 	{
@@ -213,7 +213,7 @@ public interface QuestHelperConfig extends Config
 
 	@ConfigItem(
 		keyName = "passColour",
-		name = "Colour of passed requirements/checks",
+		name = "Colour of passed checks",
 		description = "Change the colour that will indicate a check has passed",
 		section = colorSection
 	)
@@ -224,7 +224,7 @@ public interface QuestHelperConfig extends Config
 
 	@ConfigItem(
 		keyName = "failColour",
-		name = "Colour of failed requirements/checks",
+		name = "Colour of failed checks",
 		description = "Change the colour that will indicate a check has failed",
 		section = colorSection
 	)

@@ -18,6 +18,8 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class GrandExchange {
+	private static final int F2P_SLOTS = 3;
+	private static final int P2P_SLOTS = 8;
 	private static final int PRICE_VARBIT = 4398;
 	private static final int QUANTITY_VARBIT = 4396;
 	private static final Supplier<Widget> COLLECT_BUTTON = () -> Widgets.get(WidgetID.GRAND_EXCHANGE_GROUP_ID, 6, 0);
@@ -26,7 +28,7 @@ public class GrandExchange {
 	public static View getView() {
 		Widget setupWindow = Widgets.get(WidgetInfo.GRAND_EXCHANGE_OFFER_CONTAINER);
 		if (setupWindow != null && !GameThread.invokeLater(setupWindow::isHidden)) {
-			String text = setupWindow.getChild(10).getText();
+			String text = setupWindow.getChild(18).getText();
 			if (text == null || text.isEmpty()) {
 				return View.UNKNOWN;
 			}
@@ -161,7 +163,7 @@ public class GrandExchange {
 	public static void createBuyOffer() {
 		List<Widget> geRoot = Widgets.get(465);
 
-		if (getEmptySlots() <= 0) {
+		if (isFull()) {
 			return;
 		}
 
@@ -169,7 +171,7 @@ public class GrandExchange {
 			return;
 		}
 
-		for (int i = 7; i < 14; i++) {
+		for (int i = 7; i < 15; i++) {
 			Widget box = geRoot.get(i);
 			if (box == null) {
 				continue;
@@ -187,7 +189,7 @@ public class GrandExchange {
 	public static void abortOffer(int itemId) {
 		List<Widget> geRoot = Widgets.get(465);
 
-		if (getEmptySlots() == 0) {
+		if (isEmpty()) {
 			return;
 		}
 
@@ -195,30 +197,39 @@ public class GrandExchange {
 			return;
 		}
 
-		for (int i = 7; i < 14; i++) {
+		for (int i = 7; i < 15; i++) {
 			Widget box = geRoot.get(i);
 			if (box == null) {
 				continue;
 			}
 
-			if (box.getActions() == null || !box.hasAction("Abort offer")) {
+			Widget abortBox = box.getChild(2);
+			if (abortBox == null || !abortBox.hasAction("Abort offer") || GameThread.invokeLater(abortBox::isHidden)) {
 				continue;
 			}
 
-			Widget itemBox = box.getChild(18);
-			if (itemBox == null || GameThread.invokeLater(itemBox::isHidden)) {
+			Widget itemIdBox = box.getChild(18);
+			if (itemIdBox == null || GameThread.invokeLater(itemIdBox::isHidden)) {
 				continue;
 			}
 
-			if (itemBox.getItemId() == itemId) {
-				itemBox.interact("Abort offer");
+			if (itemIdBox.getItemId() == itemId) {
+				abortBox.interact("Abort offer");
 				return;
 			}
 		}
 	}
 
+	public static boolean isFull() {
+		return getEmptySlots() == 0;
+	}
+
+	public static boolean isEmpty() {
+		return getOffers().size() == 0;
+	}
+
 	public static int getEmptySlots() {
-		return Game.getMembershipDays() <= 0 ? 3 - getOffers().size() : 8 - getOffers().size();
+		return Game.getMembershipDays() <= 0 ? F2P_SLOTS - getOffers().size() : P2P_SLOTS - getOffers().size();
 	}
 
 	public static List<GrandExchangeOffer> getOffers() {

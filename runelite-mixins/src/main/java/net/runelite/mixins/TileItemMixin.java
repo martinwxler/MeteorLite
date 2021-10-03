@@ -1,20 +1,17 @@
 package net.runelite.mixins;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import net.runelite.api.ItemComposition;
-import net.runelite.api.MenuAction;
-import net.runelite.api.Point;
-import net.runelite.api.Tile;
+import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ItemQuantityChanged;
 import net.runelite.api.mixins.FieldHook;
 import net.runelite.api.mixins.Inject;
 import net.runelite.api.mixins.Mixin;
 import net.runelite.api.mixins.Shadow;
+import net.runelite.api.util.Text;
 import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSTileItem;
 
@@ -65,7 +62,7 @@ public abstract class TileItemMixin implements RSTileItem {
   public void quantityChanged(int quantity) {
     if (rl$sceneX != -1) {
       ItemQuantityChanged itemQuantityChanged = new ItemQuantityChanged(this, getTile(),
-          getQuantity(), quantity);
+              getQuantity(), quantity);
       client.getCallbacks().post(itemQuantityChanged);
     }
   }
@@ -144,26 +141,24 @@ public abstract class TileItemMixin implements RSTileItem {
 
   @Override
   @Inject
-  public List<String> actions() {
-    return Arrays.asList(getActions());
-  }
-
-  @Override
-  @Inject
   public void interact(String action) {
-    interact(actions().indexOf(action));
+    interact(getActions().indexOf(action));
   }
 
   @Inject
   @Override
-  public String[] getActions() {
+  public String[] getRawActions() {
     return getComposition().getGroundActions();
   }
 
   @Inject
   @Override
   public void interact(int identifier, int opcode, int param0, int param1) {
-    client.interact(identifier, opcode, param0, param1);
+    Point screenCoords = getScreenCoords();
+    int x = screenCoords != null ? screenCoords.getX() : -1;
+    int y = screenCoords != null ? screenCoords.getY() : -1;
+
+    client.interact(identifier, opcode, param0, param1, x, y);
   }
 
   @Inject
@@ -182,7 +177,7 @@ public abstract class TileItemMixin implements RSTileItem {
   @Inject
   @Override
   public String getName() {
-    return getComposition().getName().replace('\u00A0', ' ');
+    return Text.removeTags(Text.sanitize(getComposition().getName()));
   }
 
   @Inject
@@ -230,5 +225,10 @@ public abstract class TileItemMixin implements RSTileItem {
   @Override
   public String[] getInventoryActions() {
     return getComposition().getInventoryActions();
+  }
+
+  @Inject
+  private Point getScreenCoords() {
+    return Perspective.localToCanvas(client, getLocalLocation(), client.getPlane());
   }
 }

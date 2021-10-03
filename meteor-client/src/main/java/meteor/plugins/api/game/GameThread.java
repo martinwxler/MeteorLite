@@ -9,7 +9,7 @@ import java.util.concurrent.*;
 
 public class GameThread {
     private static final Logger log = new Logger("GameThread");
-    private static final long TIMEOUT = 500;
+    private static final long TIMEOUT = 1000;
     @Inject
     private static ClientThread clientThread;
 

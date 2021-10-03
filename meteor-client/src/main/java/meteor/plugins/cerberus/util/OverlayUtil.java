@@ -1,6 +1,7 @@
 package meteor.plugins.cerberus.util;
 
 import com.google.common.base.Strings;
+import java.awt.Font;
 import net.runelite.api.Point;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;

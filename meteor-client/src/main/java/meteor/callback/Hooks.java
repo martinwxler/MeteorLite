@@ -24,7 +24,6 @@
  */
 package meteor.callback;
 
-import static meteor.MeteorLiteClientModule.mainWindow;
 import static net.runelite.api.widgets.WidgetInfo.WORLD_MAP_VIEW;
 
 import java.awt.Color;
@@ -42,7 +41,6 @@ import java.awt.image.VolatileImage;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import meteor.MeteorLiteClientModule;
 import meteor.chat.ChatMessageManager;
 import meteor.eventbus.DeferredEventBus;
 import meteor.eventbus.EventBus;
@@ -50,9 +48,11 @@ import meteor.eventbus.Subscribe;
 import meteor.input.KeyManager;
 import meteor.input.MouseManager;
 import meteor.task.Scheduler;
+import meteor.ui.MeteorUI;
 import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayRenderer;
 import meteor.ui.overlay.infobox.InfoBoxManager;
+import meteor.util.DrawManager;
 import meteor.util.RSTimeUnit;
 import net.runelite.api.BufferProvider;
 import net.runelite.api.Client;
@@ -98,25 +98,28 @@ public class Hooks implements Callbacks {
   private final InfoBoxManager infoBoxManager;
   private final ChatMessageManager chatMessageManager;
   private final Scheduler scheduler;
+  private final MeteorUI meteorUI;
   private Dimension lastStretchedDimensions;
   private VolatileImage stretchedImage;
   private Graphics2D stretchedGraphics;
+  private final DrawManager drawManager;
   private long lastCheck;
   private boolean ignoreNextNpcUpdate;
   private boolean shouldProcessGameTick;
 
   @Inject
   private Hooks(
-      Client client,
-      OverlayRenderer renderer,
-      ClientThread clientThread,
-      MouseManager mouseManager,
-      EventBus eventBus,
-      DeferredEventBus deferredEventBus,
-      KeyManager keyManager,
-      InfoBoxManager infoBoxManager,
-      ChatMessageManager chatMessageManager,
-      Scheduler scheduler
+          Client client,
+          OverlayRenderer renderer,
+          ClientThread clientThread,
+          MouseManager mouseManager,
+          EventBus eventBus,
+          DeferredEventBus deferredEventBus,
+          KeyManager keyManager,
+          InfoBoxManager infoBoxManager,
+          ChatMessageManager chatMessageManager,
+          Scheduler scheduler,
+          MeteorUI meteorUI, DrawManager drawManager
   ) {
     Hooks.client = client;
     this.clientThread = clientThread;
@@ -127,6 +130,8 @@ public class Hooks implements Callbacks {
     this.keyManager = keyManager;
     this.infoBoxManager = infoBoxManager;
     this.chatMessageManager = chatMessageManager;
+    this.meteorUI = meteorUI;
+    this.drawManager = drawManager;
     this.scheduler = scheduler;
     eventBus.register(this);
   }
@@ -301,7 +306,7 @@ public class Hooks implements Callbacks {
     Image image = mainBufferProvider.getImage();
     final Image finalImage;
     if (client.isStretchedEnabled()) {
-      GraphicsConfiguration gc = mainWindow.getGraphicsConfiguration();
+      GraphicsConfiguration gc = meteorUI.getGraphicsConfiguration();
       Dimension stretchedDimensions = client.getStretchedDimensions();
 
       if (lastStretchedDimensions == null || !lastStretchedDimensions.equals(stretchedDimensions)
@@ -344,7 +349,7 @@ public class Hooks implements Callbacks {
 
     // finalImage is backed by the client buffer which will change soon. make a copy
     // so that callbacks can safely use it later from threads.
-    //drawManager.processDrawComplete(() -> copy(finalImage));
+    drawManager.processDrawComplete(() -> copy(finalImage));
   }
 
   @Override

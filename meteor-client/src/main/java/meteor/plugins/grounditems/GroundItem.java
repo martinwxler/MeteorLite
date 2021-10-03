@@ -33,7 +33,7 @@ import net.runelite.api.coords.WorldPoint;
 
 @Data
 @Builder
-class GroundItem {
+public class GroundItem {
 
   private int id;
   private int itemId;
@@ -51,11 +51,11 @@ class GroundItem {
   private Instant spawnTime;
   private boolean stackable;
 
-  int getHaPrice() {
+  public int getHaPrice() {
     return haPrice * quantity;
   }
 
-  int getGePrice() {
+  public int getGePrice() {
     return gePrice * quantity;
   }
 

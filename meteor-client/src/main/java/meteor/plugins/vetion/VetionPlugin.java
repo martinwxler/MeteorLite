@@ -24,11 +24,8 @@
  */
 package meteor.plugins.vetion;
 
-import com.google.inject.Provides;
 import lombok.AccessLevel;
 import lombok.Getter;
-import meteor.config.ConfigManager;
-import meteor.plugins.agility.AgilityConfig;
 import net.runelite.api.Actor;
 import net.runelite.api.events.AnimationChanged;
 import meteor.eventbus.Subscribe;
@@ -60,11 +57,6 @@ public class VetionPlugin extends Plugin
 	private Map<Actor, Instant> vetions;
 
 	public static final int VETION_EARTHQUAKE = 5507;
-
-	@Provides
-	public VetionConfig getConfig(ConfigManager configManager) {
-		return configManager.getConfig(VetionConfig.class);
-	}
 
 	@Override
 	public void startup()

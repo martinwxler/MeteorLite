@@ -73,9 +73,4 @@ public class DeathEventPlugin extends Plugin {
 			}
 		}
 	}
-
-	@Provides
-	public DeathEventConfig getConfig(ConfigManager configManager) {
-		return configManager.getConfig(DeathEventConfig.class);
-	}
 }

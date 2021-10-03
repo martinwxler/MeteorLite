@@ -3,7 +3,6 @@ package osrs;
 import java.applet.Applet;
 import net.runelite.mapping.ObfuscatedName;
 import net.runelite.mapping.ObfuscatedSignature;
-import netscape.javascript.JSObject;
 
 @ObfuscatedName("ad")
 public class class27 {

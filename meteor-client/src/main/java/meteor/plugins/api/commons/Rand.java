@@ -1,23 +1,18 @@
 package meteor.plugins.api.commons;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Rand {
-    private static final Random random;
-
-    static {
-        random = new Random(System.nanoTime());
-    }
 
     public static synchronized int nextInt(int min, int max) {
-        return min + random.nextInt(max);
+        return ThreadLocalRandom.current().nextInt(min, max);
     }
 
     public static synchronized int nextInt() {
-        return random.nextInt();
+        return ThreadLocalRandom.current().nextInt();
     }
 
     public static synchronized boolean nextBool() {
-        return random.nextBoolean();
+        return ThreadLocalRandom.current().nextBoolean();
     }
 }

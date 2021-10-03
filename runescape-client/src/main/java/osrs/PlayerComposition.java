@@ -22,7 +22,8 @@ public class PlayerComposition {
 	@ObfuscatedSignature(
 		descriptor = "Loi;"
 	)
-	static IndexedSprite field3019;
+	@Export("optionEnabledSprite")
+	static IndexedSprite optionEnabledSprite;
 	@ObfuscatedName("n")
 	@Export("equipment")
 	int[] equipment;

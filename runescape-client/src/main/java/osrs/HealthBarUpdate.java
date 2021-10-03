@@ -176,7 +176,7 @@ public class HealthBarUpdate extends Node {
 					WorldMapSection1.worldSelectFlagSprites = null;
 					World.worldSelectArrows = null;
 					class7.worldSelectStars = null;
-					class275.field3281 = null;
+					class275.loginWorldsButton = null;
 					Login.loginScreenRunesAnimation.method2151();
 					class16.method218(2);
 					if (NetCache.NetCache_socket != null) {

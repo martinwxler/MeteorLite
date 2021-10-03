@@ -53,14 +53,14 @@ public interface TimestampConfig extends Config
 		keyName = "format",
 		name = "Timestamp Format",
 		position = 3,
-		description = "Customize your timestamp format by using the following characters<br>" +
-			"'yyyy' : year<br>" +
-			"'MM' : month<br>" +
-			"'dd' : day<br>" +
-			"'HH' : hour in 24 hour format<br>" +
-			"'hh' : hour in 12 hour format<br>" +
-			"'mm' : minute<br>" +
-			"'ss' : second<br>" +
+		description = "Customize your timestamp format by using the following characters" +
+			"'yyyy' : year" +
+			"'MM' : month" +
+			"'dd' : day" +
+			"'HH' : hour in 24 hour format" +
+			"'hh' : hour in 12 hour format" +
+			"'mm' : minute" +
+			"'ss' : second" +
 			"'a'  : AM/PM"
 	)
 	default String timestampFormat()

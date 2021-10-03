@@ -43,7 +43,7 @@ public interface NpcAggroAreaConfig extends Config
 	@ConfigItem(
 		keyName = "npcUnaggroAlwaysActive",
 		name = "Always active",
-		description = "Always show this plugins overlays<br>Otherwise, they will only be shown when any NPC name matches the list",
+		description = "Always show this plugins overlays"+ "Otherwise, they will only be shown when any NPC name matches the list",
 		position = 1
 	)
 	default boolean alwaysActive()

@@ -21,7 +21,8 @@ public interface TheatreConfig extends Config
 			name = "General",
 			description = "General Configurartion",
 			position = 0,
-			keyName = "generalSection"
+			keyName = "generalSection",
+			closedByDefault = true
 	)
 	String generalSection = "General";
 
@@ -29,7 +30,9 @@ public interface TheatreConfig extends Config
 			name = "Maiden",
 			description = "Maiden's Configuration",
 			position = 1,
-			keyName = "maidenSection"
+			keyName = "maidenSection",
+			closedByDefault = true
+
 	)
 	String maidenSection = "Maiden";
 
@@ -37,7 +40,8 @@ public interface TheatreConfig extends Config
 			name = "Bloat",
 			description = "Bloat's Configuration",
 			position = 2,
-			keyName = "bloatSection"
+			keyName = "bloatSection",
+			closedByDefault = true
 	)
 	String bloatSection = "Bloat";
 
@@ -45,7 +49,8 @@ public interface TheatreConfig extends Config
 			name = "Nylocas",
 			description = "Nylocas' Configuration",
 			position = 3,
-			keyName = "nylocasSection"
+			keyName = "nylocasSection",
+			closedByDefault = true
 	)
 	String nylocasSection = "Nylocas";
 
@@ -53,7 +58,8 @@ public interface TheatreConfig extends Config
 			name = "Sotetseg",
 			description = "Sotetseg's Configuration",
 			position = 4,
-			keyName = "sotetsegSection"
+			keyName = "sotetsegSection",
+			closedByDefault = true
 	)
 	String sotetsegSection = "Sotetseg";
 
@@ -61,7 +67,8 @@ public interface TheatreConfig extends Config
 			name = "Xarpus",
 			description = "Xarpus's Configuration",
 			position = 5,
-			keyName = "xarpusSection"
+			keyName = "xarpusSection",
+			closedByDefault = true
 	)
 	String xarpusSection = "Xarpus";
 
@@ -69,7 +76,8 @@ public interface TheatreConfig extends Config
 			name = "Verzik",
 			description = "Verzik's Configuration",
 			position = 6,
-			keyName = "verzikSection"
+			keyName = "verzikSection",
+			closedByDefault = true
 	)
 	String verzikSection = "Verzik";
 
@@ -242,7 +250,9 @@ public interface TheatreConfig extends Config
 			keyName = "BloatTickCountStyle",
 			name = "Tick Time Style",
 			description = "Count up or Count down options on bloat downed state",
-			section = bloatSection
+			section = bloatSection,
+			hidden = true,
+			unhide = "bloatTickCounter"
 	)
 	default BLOATTIMEDOWN BloatTickCountStyle()
 	{
@@ -267,7 +277,9 @@ public interface TheatreConfig extends Config
 			keyName = "bloatHandsColor",
 			name = "Hands Color",
 			description = "Select a color for the Bloat Hands Overlay to be.",
-			section = bloatSection
+			section = bloatSection,
+			hidden = true,
+			unhide = "bloatHands"
 	)
 	default Color bloatHandsColor()
 	{
@@ -280,7 +292,9 @@ public interface TheatreConfig extends Config
 			keyName = "bloatHandsWidth",
 			name = "Hands Overlay Thickness",
 			description = "Sets the stroke width of the tile overlay where the hands fall. (BIGGER = THICKER).",
-			section = bloatSection
+			section = bloatSection,
+			hidden = true,
+			unhide = "bloatHands"
 	)
 	default int bloatHandsWidth()
 	{
@@ -312,33 +326,9 @@ public interface TheatreConfig extends Config
 	}
 
 	//Nylocas Section
-	@ConfigItem(
-			position = 0,
-			keyName = "nyloPillars",
-			name = "Pillar Health Overlay",
-			description = "Displays the health percentage of the pillars.",
-			section = nylocasSection
-	)
-	default boolean nyloPillars()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-			position = 1,
-			keyName = "nyloExplosions",
-			name = "Explosion Warning",
-			description = "Highlights a Nylocas that is about to explode.",
-			section = nylocasSection
-	)
-	default boolean nyloExplosions()
-	{
-		return true;
-	}
-
 	@Range(max = 52)
 	@ConfigItem(
-			position = 2,
+			position = 0,
 			keyName = "nyloExplosionDisplayTicks",
 			name = "Display Last Ticks",
 			description = "Displays the last 'x' amount of ticks for a Nylocas. (ex: to see the last 10 ticks, you set it to 10).",
@@ -350,11 +340,37 @@ public interface TheatreConfig extends Config
 	}
 
 	@ConfigItem(
+			position = 1,
+			keyName = "nyloPillars",
+			name = "Pillar Health Overlay",
+			description = "Displays the health percentage of the pillars.",
+			section = nylocasSection
+	)
+	default boolean nyloPillars()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+			position = 2,
+			keyName = "nyloExplosions",
+			name = "Explosion Warning",
+			description = "Highlights a Nylocas that is about to explode.",
+			section = nylocasSection
+	)
+	default boolean nyloExplosions()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 			position = 3,
 			keyName = "nyloExplosionDisplayStyle",
 			name = "Display Explosion Style",
 			description = "How to display when a nylocas is about to explode.",
-			section = nylocasSection
+			section = nylocasSection,
+			hidden = true,
+			unhide = "nyloExplosions"
 	)
 	default EXPLOSIVENYLORENDERSTYLE nyloExplosionOverlayStyle()
 	{
@@ -378,7 +394,9 @@ public interface TheatreConfig extends Config
 			keyName = "nyloTimeAliveCountStyle",
 			name = "Tick Time Alive Style",
 			description = "Count up or Count down options on the tick time alive.",
-			section = nylocasSection
+			section = nylocasSection,
+			hidden = true,
+			unhide = "nyloTimeAlive"
 	)
 	default NYLOTIMEALIVE nyloTimeAliveCountStyle()
 	{
@@ -438,7 +456,9 @@ public interface TheatreConfig extends Config
 			keyName = "nyloAggressiveOverlayStyle",
 			name = "Highlight Aggressive",
 			description = "Highlight style for aggressive Nylocas after they spawn.",
-			section = nylocasSection
+			section = nylocasSection,
+			hidden = true,
+			unhide = "nyloAggressiveOverlay"
 	)
 	default AGGRESSIVENYLORENDERSTYLE nyloAggressiveOverlayStyle()
 	{
@@ -684,7 +704,9 @@ public interface TheatreConfig extends Config
 			keyName = "sotetsegBigOrbTickColor",
 			name = "Big Ball Tick Color",
 			description = "Select a color for the Sotetseg Big Ball tick countdown text.",
-			section = sotetsegSection
+			section = sotetsegSection,
+			hidden = true,
+			unhide = "sotetsegBigOrbTicks"
 	)
 	default Color sotetsegBigOrbTickColor()
 	{
@@ -697,7 +719,9 @@ public interface TheatreConfig extends Config
 			keyName = "sotetsegBigOrbTileColor",
 			name = "Big Ball Tile Color",
 			description = "Select a color for the Sotetseg Big Ball tile color.",
-			section = sotetsegSection
+			section = sotetsegSection,
+			hidden = true,
+			unhide = "sotetsegBigOrbTicks"
 	)
 	default Color sotetsegBigOrbTileColor()
 	{
@@ -768,7 +792,7 @@ public interface TheatreConfig extends Config
 	@ConfigItem(
 			name = "Line of Sight",
 			keyName = "xarpusLineOfSight",
-			description = "Displays Xarpus's Line of Sight on P3<br>Melee Tiles: Displays only the melee tiles that Xarpus can see<br>Square: Displays the whole region that Xarpus can see",
+			description = "Displays Xarpus's Line of Sight on P3" + "Melee Tiles: Displays only the melee tiles that Xarpus can see" + "Square: Displays the whole region that Xarpus can see",
 			position = 5,
 			section = xarpusSection
 	)
@@ -821,7 +845,9 @@ public interface TheatreConfig extends Config
 			keyName = "verzikProjectilesColor",
 			name = "Range Tile Markers Color",
 			description = "Select a color for the Verzik's Range Projectile Tile Overlay to be.",
-			section = verzikSection
+			section = verzikSection,
+			hidden = true,
+			unhide = "verzikProjectiles"
 	)
 	default Color verzikProjectilesColor()
 	{

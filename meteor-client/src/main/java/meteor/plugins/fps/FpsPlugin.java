@@ -49,7 +49,6 @@ import net.runelite.api.events.FocusChanged;
 	name = "FPS Control",
 	description = "Show current FPS and/or set an FPS limit",
 	tags = {"frames", "framerate", "limit", "overlay"},
-	enabledByDefault = true,
 	hidden = true
 
 )

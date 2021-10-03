@@ -1,5 +1,6 @@
 package meteor.plugins.entityinspector;
 
+import java.awt.Font;
 import meteor.plugins.api.entities.*;
 import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.movement.Movement;
@@ -420,12 +421,16 @@ public class EntityInspectorOverlay extends Overlay {
 
 	private void appendCommonFields(StringBuilder sb, Interactable interactable) {
 		if (interactable instanceof Actor actor) {
+			if (interactable instanceof NPC && config.ids()) {
+				sb.append("ID: ").append(actor.getId()).append("\n");
+			}
+
 			if (config.names()) {
 				sb.append("Name: ").append(actor.getName()).append("\n");
 			}
 
 			if (config.actions()) {
-				sb.append("Actions: ").append(Arrays.toString(actor.getActions())).append("\n");
+				sb.append("Actions: ").append(Arrays.toString(actor.getRawActions())).append("\n");
 			}
 
 			if (config.worldLocations()) {
@@ -441,7 +446,7 @@ public class EntityInspectorOverlay extends Overlay {
 			}
 
 			if (config.actions()) {
-				sb.append("Actions: ").append(Arrays.toString(obj.getActions())).append("\n");
+				sb.append("Actions: ").append(Arrays.toString(obj.getRawActions())).append("\n");
 			}
 
 			if (config.worldLocations()) {
@@ -457,7 +462,7 @@ public class EntityInspectorOverlay extends Overlay {
 			}
 
 			if (config.actions()) {
-				sb.append("Actions: ").append(Arrays.toString(tileItem.getActions())).append("\n");
+				sb.append("Actions: ").append(Arrays.toString(tileItem.getRawActions())).append("\n");
 			}
 
 			if (config.worldLocations()) {

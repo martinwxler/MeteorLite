@@ -1,6 +1,6 @@
 package net.runelite.mixins;
 
-import net.runelite.api.ChatEntity;
+import net.runelite.api.Nameable;
 import net.runelite.api.mixins.Inject;
 import net.runelite.api.mixins.MethodHook;
 import net.runelite.api.mixins.Mixin;
@@ -57,16 +57,16 @@ public abstract class UserListMixin implements RSUserList
 
 	@Inject
 	@Override
-	public ChatEntity[] getMembers()
+	public Nameable[] getMembers()
 	{
-		ChatEntity[] chatEntities = this.getNameables();
+		Nameable[] chatEntities = this.getNameables();
 		int count = this.getCount();
 		return Arrays.copyOf(chatEntities, count);
 	}
 
 	@Inject
 	@Override
-	public ChatEntity findByName(String name)
+	public Nameable findByName(String name)
 	{
 		return findByName(client.createName(name, client.getLoginType()));
 	}

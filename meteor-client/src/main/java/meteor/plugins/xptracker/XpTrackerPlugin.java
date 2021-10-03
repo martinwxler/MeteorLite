@@ -135,6 +135,12 @@ public class XpTrackerPlugin extends Plugin
 	}
 
 	@Override
+	public void configure(Binder binder)
+	{
+		binder.bind(XpTrackerService.class).to(XpTrackerServiceImpl.class);
+	}
+
+	@Override
 	public void startup()
 	{
 		// Initialize the tracker & last xp if already logged in

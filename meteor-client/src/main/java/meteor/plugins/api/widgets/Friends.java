@@ -17,12 +17,12 @@ public class Friends {
 
 	public static List<Friend> getAll(String... names) {
 		return getAll(x -> {
-			if (x.getName$api() == null) {
+			if (x.getName() == null) {
 				return false;
 			}
 
 			for (String name : names) {
-				if (name.equals(x.getName$api())) {
+				if (name.equals(x.getName())) {
 					return true;
 				}
 			}
@@ -34,7 +34,7 @@ public class Friends {
 	public static List<Friend> getAll(int... worlds) {
 		return getAll(x -> {
 			for (int world : worlds) {
-				if (world == x.getWorld$api()) {
+				if (world == x.getCurrentWorld()) {
 					return true;
 				}
 			}
@@ -51,12 +51,12 @@ public class Friends {
 
 	public static Friend getFirst(String... names) {
 		return getFirst(x -> {
-			if (x.getName$api() == null) {
+			if (x.getName() == null) {
 				return false;
 			}
 
 			for (String name : names) {
-				if (name.equals(x.getName$api())) {
+				if (name.equals(x.getName())) {
 					return true;
 				}
 			}
@@ -68,7 +68,7 @@ public class Friends {
 	public static Friend getFirst(int... worlds) {
 		return getFirst(x -> {
 			for (int world : worlds) {
-				if (world == x.getWorld$api()) {
+				if (world == x.getCurrentWorld()) {
 					return true;
 				}
 			}
@@ -82,7 +82,7 @@ public class Friends {
 	}
 
 	public static boolean isOnline(Friend friend) {
-		return isOnline(friend.getName$api());
+		return isOnline(friend.getName());
 	}
 
 	public static boolean isOnline(String name) {

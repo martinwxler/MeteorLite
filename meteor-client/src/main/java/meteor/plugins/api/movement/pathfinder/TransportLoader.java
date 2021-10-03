@@ -49,7 +49,7 @@ public class TransportLoader {
         }
 
         int gold = Inventory.getFirst(995) != null ? Inventory.getFirst(995).getQuantity() : 0;
-        if (gold > 10) {
+        if (gold >= 10) {
             transports.add(objectTransport(
                     new WorldPoint(3267, 3228, 0),
                     new WorldPoint(3268, 3228, 0),
@@ -108,7 +108,7 @@ public class TransportLoader {
             transports.add(itemUseTransport(new WorldPoint(2512, 3466, 0), new WorldPoint(2511, 3463, 0), 954, 2020));
 
             // Crabclaw island
-            if (gold > 10_000) {
+            if (gold >= 10_000) {
                 transports.add(npcTransport(new WorldPoint(1782, 3458, 0), new WorldPoint(1778, 3417, 0), 7483, "Travel"));
             }
 
@@ -164,8 +164,7 @@ public class TransportLoader {
                 1164,
                 "Well that is a risk I will have to take."));
 
-        LAST_TRANSPORT_LIST = transports;
-        return List.copyOf(LAST_TRANSPORT_LIST);
+        return List.copyOf(LAST_TRANSPORT_LIST = transports);
     }
 
     public static Transport parseTransportLine(String line) {
@@ -192,15 +191,15 @@ public class TransportLoader {
             int openedId
     ) {
         return new Transport(source, destination, Integer.MAX_VALUE, 0, () -> {
-            TileObject openedTrapdoor = TileObjects.getNearest(x -> x.getWorldLocation() == source && x.getId() == openedId);
+            TileObject openedTrapdoor = TileObjects.getFirstSurrounding(source, 5, openedId);
             if (openedTrapdoor != null) {
                 openedTrapdoor.interact(0);
                 return;
             }
 
-            TileObject closedTrapdoor = TileObjects.getNearest(x -> x.getWorldLocation() == source && x.getId() == closedId);
-            if (closedTrapdoor != null) {
-                closedTrapdoor.interact(0);
+            TileObject closedTrapDoor = TileObjects.getFirstSurrounding(source, 5, closedId);
+            if (closedTrapDoor != null) {
+                closedTrapDoor.interact(0);
             }
         });
     }
@@ -216,9 +215,10 @@ public class TransportLoader {
             if (item == null) {
                 return;
             }
-            TileObject obj = TileObjects.getNearest(objId);
-            if (obj != null) {
-                item.useOn(obj);
+
+            TileObject transport = TileObjects.getFirstSurrounding(source, 5, objId);
+            if (transport != null) {
+                item.useOn(transport);
             }
         });
     }
@@ -270,12 +270,10 @@ public class TransportLoader {
             int objId,
             String action
     ) {
-        return new Transport(source, destination, Integer.MAX_VALUE, 0, () -> {
-            TileObject obj = TileObjects.getNearest(objId);
-            if (obj != null) {
-                obj.interact(action);
-            }
-        });
+        return new Transport(source, destination, Integer.MAX_VALUE, 0, () ->
+                TileObjects.getSurrounding(source, 5, x -> x.getId() == objId).stream()
+                        .findFirst()
+                        .ifPresent(obj -> obj.interact(action)));
     }
 
     public static Transport objectDialogTransport(
@@ -299,9 +297,9 @@ public class TransportLoader {
                 return;
             }
 
-            TileObject obj = TileObjects.getNearest(objId);
-            if (obj != null) {
-                obj.interact(action);
+            TileObject transport = TileObjects.getFirstSurrounding(source, 5, objId);
+            if (transport != null) {
+                transport.interact(action);
             }
         });
     }

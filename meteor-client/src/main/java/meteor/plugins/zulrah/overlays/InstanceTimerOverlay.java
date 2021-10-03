@@ -13,33 +13,37 @@ import meteor.ui.overlay.OverlayPriority;
 import meteor.ui.overlay.components.LineComponent;
 
 public class InstanceTimerOverlay extends OverlayPanel {
-   private final ZulrahConfig config;
-   private Instant instanceTimer;
 
-   @Inject
-   private InstanceTimerOverlay(ZulrahConfig config) {
-      this.config = config;
-      this.setPriority(OverlayPriority.HIGH);
-      this.setPosition(OverlayPosition.ABOVE_CHATBOX_RIGHT);
-   }
+  private final ZulrahConfig config;
+  private Instant instanceTimer;
 
-   @Override
-   public Dimension render(Graphics2D graphics) {
-      if (config.instanceTimer() && instanceTimer != null) {
-         Duration elapsed = Duration.between(instanceTimer, Instant.now());
+  @Inject
+  private InstanceTimerOverlay(ZulrahConfig config) {
+    this.config = config;
+    setPriority(OverlayPriority.HIGH);
+    setPosition(OverlayPosition.ABOVE_CHATBOX_RIGHT);
+  }
 
-         panelComponent.getChildren().add(LineComponent.builder().left("Instance Timer:").leftColor(Color.WHITE).right(String.format("%d:%02d", elapsed.getSeconds() / 60, elapsed.getSeconds())).rightColor(Color.GREEN).build());
-         return super.render(graphics);
-      } else {
-         return null;
-      }
-   }
+  @Override
+  public Dimension render(Graphics2D graphics) {
+    if (config.instanceTimer() && instanceTimer != null) {
+      Duration elapsed = Duration.between(instanceTimer, Instant.now());
 
-   public void setTimer() {
-      instanceTimer = Instant.now();
-   }
+      panelComponent.getChildren().add(
+          LineComponent.builder().left("Instance Timer:").leftColor(Color.WHITE)
+              .right(String.format("%d:%02d", elapsed.getSeconds() / 60, elapsed.getSeconds()))
+              .rightColor(Color.GREEN).build());
+      return super.render(graphics);
+    } else {
+      return null;
+    }
+  }
 
-   public void resetTimer() {
-      instanceTimer = null;
-   }
+  public void setTimer() {
+    instanceTimer = Instant.now();
+  }
+
+  public void resetTimer() {
+    instanceTimer = null;
+  }
 }

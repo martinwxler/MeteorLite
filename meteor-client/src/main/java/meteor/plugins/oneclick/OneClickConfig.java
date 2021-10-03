@@ -63,7 +63,7 @@ public interface OneClickConfig extends Config
 		keyName = "swaps",
 		name = "Custom Inventory Swaps",
 		description = "Format is as follows: OneClickThis:WithThis" +
-			"<br>For example, 6032:13421. This will use saltpetre on compost.",
+			"For example, 6032:13421. This will use saltpetre on compost.",
 		position = 5
 	)
 	default String swaps()

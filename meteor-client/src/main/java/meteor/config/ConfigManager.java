@@ -79,6 +79,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import lombok.NonNull;
+import meteor.MeteorLiteClientModule;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ClientShutdown;
@@ -200,8 +201,7 @@ public class ConfigManager {
     if (type == byte[].class) {
       return Base64.getUrlDecoder().decode(str);
     }
-		/*
-				if (type == EnumSet.class)
+		if (type == EnumSet.class)
 		{
 			try
 			{
@@ -213,7 +213,7 @@ public class ConfigManager {
 					return null;
 				}
 
-				enumClass = findEnumClass(str, OPRSExternalPluginManager.pluginClassLoaders);
+				enumClass = findEnumClass(str, MeteorLiteClientModule.class.getClassLoader());
 
 				EnumSet enumSet = EnumSet.noneOf(enumClass);
 				for (String s : splitStr)
@@ -235,7 +235,6 @@ public class ConfigManager {
 				return null;
 			}
 		}
-		 */
 
     return str;
   }
@@ -297,33 +296,31 @@ public class ConfigManager {
   }
 
   public static Class<? extends Enum> findEnumClass(String clasz,
-      ArrayList<ClassLoader> classLoaders) {
+      ClassLoader classLoader) {
     StringBuilder transformedString = new StringBuilder();
-    for (ClassLoader cl : classLoaders) {
-      try {
-        String[] strings = clasz.substring(0, clasz.indexOf("{")).split("\\.");
-        int i = 0;
-        while (i != strings.length) {
-          if (i == 0) {
-            transformedString.append(strings[i]);
-          } else if (i == strings.length - 1) {
-            transformedString.append("$").append(strings[i]);
-          } else {
-            transformedString.append(".").append(strings[i]);
-          }
-          i++;
+    try {
+      String[] strings = clasz.substring(0, clasz.indexOf("{")).split("\\.");
+      int i = 0;
+      while (i != strings.length) {
+        if (i == 0) {
+          transformedString.append(strings[i]);
+        } else if (i == strings.length - 1) {
+          transformedString.append("$").append(strings[i]);
+        } else {
+          transformedString.append(".").append(strings[i]);
         }
-        return (Class<? extends Enum>) cl.loadClass(transformedString.toString());
-      } catch (Exception e2) {
-        // Will likely fail a lot
+        i++;
       }
-      try {
-        return (Class<? extends Enum>) cl.loadClass(clasz.substring(0, clasz.indexOf("{")));
-      } catch (Exception e) {
-        // Will likely fail a lot
-      }
-      transformedString = new StringBuilder();
+      return (Class<? extends Enum>) classLoader.loadClass(transformedString.toString());
+    } catch (Exception e2) {
+      // Will likely fail a lot
     }
+    try {
+      return (Class<? extends Enum>) classLoader.loadClass(clasz.substring(0, clasz.indexOf("{")));
+    } catch (Exception e) {
+      // Will likely fail a lot
+    }
+    transformedString = new StringBuilder();
     throw new RuntimeException("Failed to find Enum for " + clasz.substring(0, clasz.indexOf("{")));
   }
 
@@ -422,7 +419,7 @@ public class ConfigManager {
 
         parent.mkdirs();
 
-        File tempFile = File.createTempFile("runelite", null, parent);
+        File tempFile = File.createTempFile(MeteorLiteConfig.GROUP_NAME, null, parent);
 
         try (FileOutputStream out = new FileOutputStream(tempFile)) {
           out.getChannel().lock();
@@ -514,8 +511,7 @@ public class ConfigManager {
 
     eventBus.post(configChanged);
 
-    if (client.getGameState() == GameState.LOGGED_IN)
-    saveProperties();
+		saveProperties();
   }
 
   public void setConfiguration(String groupName, String profile, String key, Object value) {
@@ -635,16 +631,24 @@ public class ConfigManager {
    */
   public void setDefaultConfiguration(Plugin plugin, Object config, boolean override) {
     Class<?> clazz = config.getClass().getInterfaces()[0];
+
+    String enabledConfig = getConfiguration(plugin.getClass().getSimpleName(), "pluginEnabled");
+    PluginDescriptor descriptor = plugin.getClass().getAnnotation(PluginDescriptor.class);
+    if (enabledConfig == null) {
+      if (descriptor != null) {
+        boolean enabledByDefault = descriptor.enabledByDefault() || descriptor.cantDisable();
+        setConfiguration(plugin.getClass().getSimpleName(), "pluginEnabled", enabledByDefault);
+      }
+    }
+
+    if (enabledConfig != null && descriptor.disabledOnStartup()) {
+      setConfiguration(plugin.getClass().getSimpleName(), "pluginEnabled", false);
+    }
+
     ConfigGroup group = clazz.getAnnotation(ConfigGroup.class);
 
     if (group == null) {
       return;
-    }
-    if (getConfiguration(group.value(), "pluginEnabled") == null) {
-      if (plugin.getClass().getAnnotation(PluginDescriptor.class) != null) {
-        log.debug("should have set default");
-        setConfiguration(group.value(), "pluginEnabled", plugin.getClass().getAnnotation(PluginDescriptor.class).enabledByDefault());
-      }
     }
 
     for (Method method : getAllDeclaredInterfaceMethods(clazz)) {
@@ -753,7 +757,7 @@ public class ConfigManager {
 
   private synchronized void migrateConfig() {
     String migrationKey = "profileMigrationDone";
-    if (getConfiguration("runelite", migrationKey) != null) {
+    if (getConfiguration(MeteorLiteConfig.GROUP_NAME, migrationKey) != null) {
       return;
     }
 
@@ -826,7 +830,7 @@ public class ConfigManager {
     if (changes.get() > 0) {
       //log.info("migrated {} config keys", changes);
     }
-    setConfiguration("runelite", migrationKey, 1);
+    setConfiguration(MeteorLiteConfig.GROUP_NAME, migrationKey, 1);
   }
 
   /**

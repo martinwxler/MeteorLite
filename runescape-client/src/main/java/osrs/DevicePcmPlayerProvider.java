@@ -202,10 +202,10 @@ public class DevicePcmPlayerProvider implements class45 {
 
 			if (Client.gameState != 5) {
 				if (-1L == Login.field902) {
-					Login.field902 = Occluder.method4335() + 1000L;
+					Login.field902 = Occluder.getServerTime() + 1000L;
 				}
 
-				long var31 = Occluder.method4335();
+				long var31 = Occluder.getServerTime();
 				boolean var54;
 				if (Client.archiveLoaders != null && Client.archiveLoadersDone < Client.archiveLoaders.size()) {
 					while (true) {
@@ -1006,7 +1006,7 @@ public class DevicePcmPlayerProvider implements class45 {
 	@Export("resumePauseWidget")
 	static void resumePauseWidget(int var0, int var1) {
 		PacketBufferNode var2 = FriendSystem.getPacketBufferNode(ClientPacket.field2690, Client.packetWriter.isaacCipher);
-		var2.packetBuffer.method6951(var1);
+		var2.packetBuffer.writeShort01(var1);
 		var2.packetBuffer.writeIntME(var0);
 		Client.packetWriter.addNode(var2);
 	}

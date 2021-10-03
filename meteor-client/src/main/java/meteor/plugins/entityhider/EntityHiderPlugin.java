@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2018, Lotto <https://github.com/devLotto>
+ * Copyright (c) 2019, ThatGamerBlue <thatgamerblue@gmail.com>
+ * Copyright (c) 2021, BickusDiggus <https://github.com/BickusDiggus>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,97 +27,260 @@
  */
 package meteor.plugins.entityhider;
 
+import java.util.stream.Collectors;
+import javax.inject.Inject;
 import com.google.inject.Provides;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
+import meteor.util.WildcardMatcher;
 import net.runelite.api.Client;
-
-import javax.inject.Inject;
+import net.runelite.api.GameState;
+import net.runelite.api.NPC;
+import net.runelite.api.events.ClientTick;
+import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.NpcDespawned;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import net.runelite.api.util.Text;
 
 @PluginDescriptor(
-	name = "Entity Hider",
-	description = "Hide players, NPCs, and/or projectiles",
-	tags = {"npcs", "players", "projectiles"},
-	enabledByDefault = false
+    name = "Entity Hider",
+    enabledByDefault = false,
+    description = "Hide dead NPCs animations",
+    tags = {"npcs"}
 )
-public class EntityHiderPlugin extends Plugin
-{
-	@Inject
-	private Client client;
+public class EntityHiderPlugin extends Plugin {
 
-	@Inject
-	private EntityHiderConfig config;
+  @Inject
+  private Client client;
 
-	@Provides
-	public EntityHiderConfig getConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(EntityHiderConfig.class);
-	}
+  @Inject
+  private EntityHiderConfig config;
 
-	@Override
-	public void startUp()
-	{
-		updateConfig();
-	}
+  @Provides
+  public EntityHiderConfig getConfig(ConfigManager configManager) {
+    return configManager.getConfig(EntityHiderConfig.class);
+  }
 
-	@Subscribe
-	public void onConfigChanged(ConfigChanged e)
-	{
-		if (e.getGroup().equals(EntityHiderConfig.GROUP))
-		{
-			updateConfig();
-		}
-	}
+  private ArrayList<Integer> hiddenIndices;
+  private ArrayList<Integer> animationHiddenIndices;
+  private Set<String> hideNPCsOnDeathName;
+  private Set<Integer> hideNPCsOnDeathID;
+  private Set<Integer> hideNPCsOnAnimationID;
+  private Set<String> blacklistName;
+  private Set<Integer> blacklistID;
 
-	public void updateConfig()
-	{
-		client.setIsHidingEntities(true);
+  @Override
+  public void startup() {
+    client.setIsHidingEntities(true);
+    //client.setDeadNPCsHidden(true);
+    hiddenIndices = new ArrayList<>();
+    animationHiddenIndices = new ArrayList<>();
+    updateConfig();
+    meteor.util.Text.fromCSV(config.hideNPCsNames()).forEach(client::addHiddenNpcName);
+  }
 
-		client.setOthersHidden(config.hideOthers());
-		client.setOthersHidden2D(config.hideOthers2D());
+  @Subscribe
+  public void onGameStateChanged(GameStateChanged event) {
+    if (event.getGameState() == GameState.LOGGED_IN) {
+      client.setIsHidingEntities(true);
+      clearHiddenNpcs();
+    }
+  }
 
-		client.setFriendsHidden(config.hideFriends());
-		client.setFriendsChatMembersHidden(config.hideFriendsChatMembers());
-		client.setIgnoresHidden(config.hideIgnores());
+  @Override
+  public void shutdown() {
+    client.setIsHidingEntities(false);
+    //client.setDeadNPCsHidden(false);
+    clearHiddenNpcs();
+    hiddenIndices = null;
+    animationHiddenIndices = null;
+    client.setOthersHidden(false);
+    client.setOthersHidden2D(false);
 
-		client.setLocalPlayerHidden(config.hideLocalPlayer());
-		client.setLocalPlayerHidden2D(config.hideLocalPlayer2D());
+    client.setFriendsHidden(false);
+    client.setFriendsChatMembersHidden(false);
+    client.setIgnoresHidden(false);
 
-		client.setNPCsHidden(config.hideNPCs());
-		client.setNPCsHidden2D(config.hideNPCs2D());
+    client.setLocalPlayerHidden(false);
+    client.setLocalPlayerHidden2D(false);
 
-		client.setPetsHidden(config.hidePets());
+    client.setNPCsHidden(false);
+    client.setNPCsHidden2D(false);
 
-		client.setAttackersHidden(config.hideAttackers());
+    client.setPetsHidden(false);
 
-		client.setProjectilesHidden(config.hideProjectiles());
-	}
+    client.setAttackersHidden(false);
 
-	@Override
-	public void shutDown()
-	{
-		client.setIsHidingEntities(false);
+    client.setProjectilesHidden(false);
+  }
 
-		client.setOthersHidden(false);
-		client.setOthersHidden2D(false);
 
-		client.setFriendsHidden(false);
-		client.setFriendsChatMembersHidden(false);
-		client.setIgnoresHidden(false);
+  @Subscribe
+  public void onClientTick(ClientTick event) {
+    for (NPC npc : client.getNpcs()) {
+      if (npc == null) {
+        continue;
+      }
 
-		client.setLocalPlayerHidden(false);
-		client.setLocalPlayerHidden2D(false);
+      if ((config.hideDeadNPCs() && npc.getHealthRatio() == 0 && npc.getName() != null
+          && !matchWildCards(blacklistName, net.runelite.api.util.Text
+          .standardize(npc.getName())) && !blacklistID.contains(npc.getId()))
+          || (npc.getHealthRatio() == 0 && npc.getName() != null && matchWildCards(
+          hideNPCsOnDeathName, net.runelite.api.util.Text
+              .standardize(npc.getName())))
+          || (npc.getHealthRatio() == 0 && hideNPCsOnDeathID.contains(npc.getId()))
+          || (hideNPCsOnAnimationID.contains(npc.getAnimation()))) {
+        if (!hiddenIndices.contains(npc.getIndex())) {
+          setHiddenNpc(npc, true);
+        }
+      }
 
-		client.setNPCsHidden(false);
-		client.setNPCsHidden2D(false);
+      if (animationHiddenIndices.contains(npc.getIndex()) && !hideNPCsOnAnimationID
+          .contains(npc.getAnimation())) {
+        if (hiddenIndices.contains(npc.getIndex())) {
+          setHiddenNpc(npc, false);
+        }
+      }
+    }
+  }
 
-		client.setPetsHidden(false);
+  @Subscribe
+  public void onNpcDespawned(NpcDespawned event) {
+    if (hiddenIndices.contains(event.getNpc().getIndex())) {
+      setHiddenNpc(event.getNpc(), false);
+    }
+  }
 
-		client.setAttackersHidden(false);
+  @Subscribe
+  public void onConfigChanged(ConfigChanged event) {
+    if (!event.getGroup().equals("entityhiderextended")) {
+      return;
+    }
+    client.setIsHidingEntities(true);
+    updateConfig();
 
-		client.setProjectilesHidden(false);
-	}
+    if (event.getOldValue() == null || event.getNewValue() == null) {
+      return;
+    }
+
+    if (event.getKey().equals("hideNPCsNames")) {
+      List<String> oldList = meteor.util.Text.fromCSV(event.getOldValue());
+      List<String> newList = meteor.util.Text.fromCSV(event.getNewValue());
+
+      List<String> removed = oldList.stream().filter(s -> !newList.contains(s)).collect(
+          Collectors.toCollection(ArrayList::new));
+      List<String> added = newList.stream().filter(s -> !oldList.contains(s)).collect(
+          Collectors.toCollection(ArrayList::new));
+
+      removed.forEach(client::removeHiddenNpcName);
+      added.forEach(client::addHiddenNpcName);
+    }
+  }
+
+  public void updateConfig() {
+    client.setIsHidingEntities(true);
+
+    client.setOthersHidden(config.hideOthers());
+    client.setOthersHidden2D(config.hideOthers2D());
+
+    client.setFriendsHidden(config.hideFriends());
+    client.setFriendsChatMembersHidden(config.hideFriendsChatMembers());
+    client.setIgnoresHidden(config.hideIgnores());
+
+    client.setLocalPlayerHidden(config.hideLocalPlayer());
+    client.setLocalPlayerHidden2D(config.hideLocalPlayer2D());
+
+    client.setNPCsHidden(config.hideNPCs());
+    client.setNPCsHidden2D(config.hideNPCs2D());
+
+    client.setPetsHidden(config.hidePets());
+
+    client.setAttackersHidden(config.hideAttackers());
+
+    client.setProjectilesHidden(config.hideProjectiles());
+
+    hideNPCsOnDeathName = new HashSet<>();
+    hideNPCsOnDeathID = new HashSet<>();
+    hideNPCsOnAnimationID = new HashSet<>();
+    blacklistID = new HashSet<>();
+    blacklistName = new HashSet<>();
+
+    for (String s : net.runelite.api.util.Text.COMMA_SPLITTER
+        .split(config.hideNPCsOnDeathName().toLowerCase())) {
+      hideNPCsOnDeathName.add(s);
+    }
+    for (String s : net.runelite.api.util.Text.COMMA_SPLITTER.split(config.hideNPCsOnDeathID())) {
+      try {
+        hideNPCsOnDeathID.add(Integer.parseInt(s));
+      } catch (NumberFormatException ignored) {
+      }
+
+    }
+    for (String s : net.runelite.api.util.Text.COMMA_SPLITTER
+        .split(config.hideNPCsOnAnimationID())) {
+      try {
+        hideNPCsOnAnimationID.add(Integer.parseInt(s));
+      } catch (NumberFormatException ignored) {
+      }
+
+    }
+    for (String s : net.runelite.api.util.Text.COMMA_SPLITTER
+        .split(config.blacklistDeadNpcsName().toLowerCase())) {
+      blacklistName.add(s);
+    }
+    for (String s : Text.COMMA_SPLITTER.split(config.blacklistDeadNpcsID())) {
+      try {
+        blacklistID.add(Integer.parseInt(s));
+      } catch (NumberFormatException ignored) {
+      }
+
+    }
+  }
+
+  private void setHiddenNpc(NPC npc, boolean hidden) {
+
+    List<Integer> newHiddenNpcIndicesList = client.getHiddenNpcIndices();
+    if (hidden) {
+      newHiddenNpcIndicesList.add(npc.getIndex());
+      hiddenIndices.add(npc.getIndex());
+      if (hideNPCsOnAnimationID.contains(npc.getAnimation())) {
+        animationHiddenIndices.add(npc.getIndex());
+      }
+    } else {
+      if (newHiddenNpcIndicesList.contains(npc.getIndex())) {
+        newHiddenNpcIndicesList.remove((Integer) npc.getIndex());
+        hiddenIndices.remove((Integer) npc.getIndex());
+        animationHiddenIndices.remove((Integer) npc.getIndex());
+      }
+    }
+    client.setHiddenNpcIndices(newHiddenNpcIndicesList);
+
+  }
+
+  private void clearHiddenNpcs() {
+    if (!hiddenIndices.isEmpty()) {
+      List<Integer> newHiddenNpcIndicesList = client.getHiddenNpcIndices();
+      newHiddenNpcIndicesList.removeAll(hiddenIndices);
+      client.setHiddenNpcIndices(newHiddenNpcIndicesList);
+      hiddenIndices.clear();
+      animationHiddenIndices.clear();
+    }
+  }
+
+  private boolean matchWildCards(Set<String> items, String pattern) {
+    boolean matched = false;
+    for (final String item : items) {
+      matched = WildcardMatcher.matches(item, pattern);
+      if (matched) {
+        break;
+      }
+    }
+    return matched;
+  }
 }

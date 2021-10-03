@@ -28,8 +28,6 @@ package meteor.plugins.neverlog;
 import java.util.Random;
 import javax.inject.Inject;
 
-import com.google.inject.Provides;
-import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
@@ -39,7 +37,8 @@ import net.runelite.api.events.GameTick;
 @PluginDescriptor(
     name = "Never Logout",
     description = "Prevents automatic session logout",
-    tags = {"actions", "overlay"}
+    tags = {"actions", "overlay"},
+    enabledByDefault = false
 )
 public class NeverLogoutPlugin extends Plugin {
 
@@ -49,11 +48,6 @@ public class NeverLogoutPlugin extends Plugin {
   private int randomTick;
 
   private final Random random = new Random();
-
-  @Provides
-  public NeverLogoutConfig getConfig(ConfigManager configManager) {
-    return configManager.getConfig(NeverLogoutConfig.class);
-  }
 
   @Subscribe
   private void onGametick(GameTick gameTick) {

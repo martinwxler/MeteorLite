@@ -1,5 +1,8 @@
 package meteor.plugins.api.movement.pathfinder;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import meteor.plugins.api.commons.Rand;
 import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.entities.Players;
@@ -11,29 +14,51 @@ import net.runelite.api.Player;
 import net.runelite.api.Tile;
 import net.runelite.api.WallObject;
 import net.runelite.api.coords.WorldPoint;
+import org.jetbrains.annotations.NotNull;
 import org.sponge.util.Logger;
 
 import javax.inject.Singleton;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 @Singleton
 public class Walker {
     private static final Logger logger = new Logger("Walker");
     private static final int MAX_INTERACT_DISTANCE = 20;
-    private static final int MIN_TILES_WALKED_IN_STEP = 10;
+    private static final int MIN_TILES_WALKED_IN_STEP = 7;
+    private static final int MAX_TILES_WALKED_IN_STEP = 14;
     private static final int MIN_TILES_WALKED_BEFORE_RECHOOSE = 10;
     private static final int MIN_TILES_LEFT_BEFORE_RECHOOSE = 3;
     private static final int MAX_MIN_ENERGY = 50;
     private static final int MIN_ENERGY = 5;
-    public static final CollisionMap collisionMap;
+    public static final CollisionMap GLOBAL_COLLISION_MAP;
+    public static final LoadingCache<WorldPoint, List<WorldPoint>> PATH_CACHE = CacheBuilder.newBuilder()
+            .expireAfterWrite(5, TimeUnit.MINUTES)
+            .build(new CacheLoader<>() {
+                @Override
+                public List<WorldPoint> load(@NotNull WorldPoint key) {
+                    logger.debug("Loading path to {}", key);
+                    return buildPath(key, false);
+                }
+            });
+    public static final LoadingCache<WorldPoint, List<WorldPoint>> LOCAL_PATH_CACHE = CacheBuilder.newBuilder()
+            .expireAfterWrite(5, TimeUnit.MINUTES)
+            .build(new CacheLoader<>() {
+                @Override
+                public List<WorldPoint> load(@NotNull WorldPoint key) {
+                    logger.debug("Loading local path to {}", key);
+                    return buildPath(key, true);
+                }
+            });
 
     static {
         CollisionMap loaded;
         try {
-            loaded = new CollisionMap(
+            loaded = new GlobalCollisionMap(
                     new GZIPInputStream(
                             new ByteArrayInputStream(
                                     Walker.class.getResourceAsStream("/collision-map").readAllBytes()
@@ -45,10 +70,10 @@ public class Walker {
             loaded = null;
         }
 
-        collisionMap = loaded;
+        GLOBAL_COLLISION_MAP = loaded;
     }
 
-    public static boolean walkTo(WorldPoint destination) {
+    public static boolean walkTo(WorldPoint destination, boolean localRegion) {
         Player local = Players.getLocal();
         if (destination.equals(local.getWorldLocation())) {
             return true;
@@ -56,11 +81,31 @@ public class Walker {
 
         Map<WorldPoint, List<Transport>> transports = buildTransportLinks();
         LinkedHashMap<WorldPoint, Teleport> teleports = buildTeleportLinks(destination);
-        List<WorldPoint> startPoints = new ArrayList<>(teleports.keySet());
-        startPoints.add(local.getWorldLocation());
-        List<WorldPoint> path = calculatePath(startPoints, destination, transports);
+        List<WorldPoint> path;
+
+        if (!localRegion) {
+            try {
+                path = PATH_CACHE.get(destination);
+            } catch (ExecutionException e) {
+                logger.error("Failed to get cached path", e);
+                return false;
+            }
+        } else {
+            try {
+                path = LOCAL_PATH_CACHE.get(destination);
+            } catch (ExecutionException e) {
+                logger.error("Failed to get cached path", e);
+                return false;
+            }
+        }
+
+        if (path == null) {
+            logger.error("Path is null");
+            return false;
+        }
 
         if (path.isEmpty()) {
+            logger.error("Path was empty");
             return false;
         }
 
@@ -68,18 +113,34 @@ public class Walker {
         Teleport teleport = teleports.get(startPosition);
 
         if (teleport != null) {
+            logger.debug("Casting teleport {}", teleport);
             teleport.getHandler().run();
             Time.sleep(5000);
             return false;
         }
 
-        return walkAlong(path, transports);
+        // Refresh path if our direction changed
+        if (!local.isAnimating() && !path.contains(local.getWorldLocation())) {
+            logger.debug("Direction changed, resetting cached path towards {}", destination);
+            PATH_CACHE.refresh(destination);
+            LOCAL_PATH_CACHE.refresh(destination);
+            return false;
+        }
+
+        return walkAlong(destination, path, transports);
     }
 
-    public static boolean walkAlong(List<WorldPoint> path, Map<WorldPoint, List<Transport>> transports) {
+    public static boolean walkAlong(WorldPoint destination, List<WorldPoint> path, Map<WorldPoint, List<Transport>> transports) {
         Player local = Players.getLocal();
-        WorldPoint destination = path.get(path.size() - 1);
-        if (local.getWorldLocation().distanceTo(destination) > 0) {
+        WorldPoint endTile = path.get(path.size() - 1);
+
+        if (!endTile.equals(destination) && endTile.distanceTo(destination) > 5) {
+            logger.debug("Destination {} was not in path, recalculating", destination);
+            PATH_CACHE.refresh(destination);
+            LOCAL_PATH_CACHE.refresh(destination);
+        }
+
+        if (local.getWorldLocation().distanceTo(endTile) > 0) {
             List<WorldPoint> remainingPath = remainingPath(path);
 
             if (handleTransports(remainingPath, transports)) {
@@ -97,12 +158,16 @@ public class Walker {
         if (reachablePath.isEmpty()) {
             return false;
         }
-
-        if (reachablePath.size() - 1 <= MIN_TILES_WALKED_IN_STEP) {
-            return step(reachablePath.get(reachablePath.size() - 1));
+        int nextTileIdx = reachablePath.size() - 1;
+        if (nextTileIdx <= MIN_TILES_WALKED_IN_STEP) {
+            return step(reachablePath.get(nextTileIdx));
         }
 
-        int targetDistance = MIN_TILES_WALKED_IN_STEP + Rand.nextInt(0, reachablePath.size() - MIN_TILES_WALKED_IN_STEP);
+        if (nextTileIdx > MAX_TILES_WALKED_IN_STEP) {
+            nextTileIdx = MAX_TILES_WALKED_IN_STEP;
+        }
+
+        int targetDistance = Rand.nextInt(MIN_TILES_WALKED_IN_STEP, nextTileIdx);
         return step(reachablePath.get(targetDistance));
     }
 
@@ -110,7 +175,7 @@ public class Walker {
         Player local = Players.getLocal();
         List<WorldPoint> out = new ArrayList<>();
         for (WorldPoint p : remainingPath) {
-            Tile tile = Tiles.getTiles(x -> x.getWorldLocation().equals(p)).stream().findFirst().orElse(null);
+            Tile tile = Tiles.getAt(p);
             if (tile == null) {
                 break;
             }
@@ -164,7 +229,7 @@ public class Walker {
 
             WorldPoint a = path.get(i);
             WorldPoint b = path.get(i + 1);
-            Tile tileA = Tiles.getTiles(x -> x.getWorldLocation().equals(a)).stream().findFirst().orElse(null);
+            Tile tileA = Tiles.getAt(a);
             if (tileA == null) {
                 return false;
             }
@@ -181,22 +246,26 @@ public class Walker {
                 }
             }
 
-            Tile tileB = Tiles.getTiles(x -> x.getWorldLocation().equals(b)).stream().findFirst().orElse(null);
+            Tile tileB = Tiles.getAt(b);
             if (tileB == null) {
                 return false;
             }
 
             if (isDoored(tileA, tileB)) {
-                tileA.getWallObject().interact("Open");
-                logger.debug("Handling door {}", tileA.getWallObject());
-                Time.sleep(2000);
+                WallObject wall = tileA.getWallObject();
+                wall.interact("Open");
+                logger.debug("Handling door {}", wall.getWorldLocation());
+                Time.sleepUntil(() -> tileA.getWallObject() == null
+                        || !wall.hasAction("Open"), 2000);
                 return true;
             }
 
             if (isDoored(tileB, tileA)) {
-                tileB.getWallObject().interact("Open");
-                logger.debug("Handling door {}", tileB.getWallObject());
-                Time.sleep(2000);
+                WallObject wall = tileB.getWallObject();
+                wall.interact("Open");
+                logger.debug("Handling door {}", wall.getWorldLocation());
+                Time.sleepUntil(() -> tileB.getWallObject() == null
+                        || !wall.hasAction("Open"), 2000);
                 return true;
             }
         }
@@ -253,11 +322,15 @@ public class Walker {
     public static List<WorldPoint> calculatePath(
             List<WorldPoint> startPoints,
             WorldPoint destination,
-            Map<WorldPoint, List<Transport>> transports
+            Map<WorldPoint, List<Transport>> transports,
+            boolean local
     ) {
+        CollisionMap collisionMap = local ? new LocalCollisionMap() : GLOBAL_COLLISION_MAP;
         if (collisionMap == null) {
             return Collections.emptyList();
         }
+
+        logger.debug("Calculating path towards {}", destination);
 
         return new Pathfinder(collisionMap, transports, startPoints,
                 destination).find();
@@ -272,14 +345,14 @@ public class Walker {
         return out;
     }
 
-    public static List<WorldPoint> buildPath(WorldPoint destination) {
+    public static List<WorldPoint> buildPath(WorldPoint destination, boolean localRegion) {
         Player local = Players.getLocal();
         Map<WorldPoint, List<Transport>> transports = buildTransportLinks();
         LinkedHashMap<WorldPoint, Teleport> teleports = buildTeleportLinks(destination);
         List<WorldPoint> startPoints = new ArrayList<>(teleports.keySet());
         startPoints.add(local.getWorldLocation());
 
-        return calculatePath(startPoints, destination, transports);
+        return calculatePath(startPoints, destination, transports, localRegion);
     }
 
     public static LinkedHashMap<WorldPoint, Teleport> buildTeleportLinks(WorldPoint destination) {

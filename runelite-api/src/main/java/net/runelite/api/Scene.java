@@ -72,4 +72,50 @@ public interface Scene {
    * @param gameObject
    */
   void removeGameObject(GameObject gameObject);
+
+  /**
+   * Remove a game object from the scene
+   * @param plane
+   * @param x
+   * @param y
+   */
+  void removeGameObject(int plane, int x, int y);
+
+  /**
+   * Remove a wall object from the scene
+   * @param plane
+   * @param x
+   * @param y
+   */
+  void removeWallObject(int plane, int x, int y);
+
+  /**
+   * Remove a decorative object from the scene
+   * @param plane
+   * @param x
+   * @param y
+   */
+  void removeDecorativeObject(int plane, int x, int y);
+
+  /**
+   * Remove a ground object from the scene
+   * @param plane
+   * @param x
+   * @param y
+   */
+  void removeGroundObject(int plane, int x, int y);
+
+  byte[][][] getUnderlayIds();
+  void setUnderlayIds(byte[][][] underlayIds);
+
+  byte[][][] getOverlayIds();
+  void setOverlayIds(byte[][][] overlayIds);
+
+  byte[][][] getTileShapes();
+  void setTileShapes(byte[][][] tileShapes);
+
+  void generateHouses();
+
+  void setRoofRemovalMode(int flags);
+
 }

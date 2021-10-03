@@ -24,10 +24,41 @@
  */
 package meteor.plugins.menuentryswapper;
 
+import java.awt.event.KeyEvent;
 import meteor.config.Config;
 import meteor.config.ConfigGroup;
 import meteor.config.ConfigItem;
 import meteor.config.ConfigSection;
+import meteor.config.ModifierlessKeybind;
+import meteor.plugins.menuentryswapper.util.BurningAmuletMode;
+import meteor.plugins.menuentryswapper.util.BuyMode;
+import meteor.plugins.menuentryswapper.util.CombatBraceletMode;
+import meteor.plugins.menuentryswapper.util.ConstructionCapeMode;
+import meteor.plugins.menuentryswapper.util.ConstructionMode;
+import meteor.plugins.menuentryswapper.util.CraftingCapeMode;
+import meteor.plugins.menuentryswapper.util.DiaryCapeMode;
+import meteor.plugins.menuentryswapper.util.DigsitePendantMode;
+import meteor.plugins.menuentryswapper.util.DrakansMedallionMode;
+import meteor.plugins.menuentryswapper.util.DuelingRingMode;
+import meteor.plugins.menuentryswapper.util.FairyRingMode;
+import meteor.plugins.menuentryswapper.util.FarmCapeMode;
+import meteor.plugins.menuentryswapper.util.GEItemCollectMode;
+import meteor.plugins.menuentryswapper.util.GamesNecklaceMode;
+import meteor.plugins.menuentryswapper.util.GloryMode;
+import meteor.plugins.menuentryswapper.util.HouseAdvertisementMode;
+import meteor.plugins.menuentryswapper.util.HouseMode;
+import meteor.plugins.menuentryswapper.util.MagicCapeMode;
+import meteor.plugins.menuentryswapper.util.MaxCapeEquippedMode;
+import meteor.plugins.menuentryswapper.util.MusicCapeMode;
+import meteor.plugins.menuentryswapper.util.MythCapeMode;
+import meteor.plugins.menuentryswapper.util.NecklaceOfPassageMode;
+import meteor.plugins.menuentryswapper.util.QuestCapeMode;
+import meteor.plugins.menuentryswapper.util.RingOfWealthMode;
+import meteor.plugins.menuentryswapper.util.SellMode;
+import meteor.plugins.menuentryswapper.util.ShiftDepositMode;
+import meteor.plugins.menuentryswapper.util.ShiftWithdrawMode;
+import meteor.plugins.menuentryswapper.util.SkillsNecklaceMode;
+import meteor.plugins.menuentryswapper.util.XericsTalismanMode;
 
 @ConfigGroup(MenuEntrySwapperConfig.GROUP)
 public interface MenuEntrySwapperConfig extends Config {
@@ -35,9 +66,41 @@ public interface MenuEntrySwapperConfig extends Config {
   String GROUP = "menuentryswapper";
 
   @ConfigSection(
+      name = "Custom Swaps",
+      description = "Configuration for custom Swaps",
+      position = 0,
+      closedByDefault = true
+  )
+  String customSwapsSection = "Custom Swaps";
+
+  @ConfigSection(
+      name = "Shift Swaps",
+      description = "Configuration for shift custom Swaps",
+      position = 1,
+      closedByDefault = true
+  )
+  String shiftCustomSwapsSection = "Shift Swaps";
+
+  @ConfigSection(
+      name = "Hotkey Swaps",
+      description = "Configuration for Hotkey custom Swaps",
+      position = 2,
+      closedByDefault = true
+  )
+  String keyCustomSwapsSection = "Hotkey Swaps";
+
+  @ConfigSection(
+      name = "Remove Options",
+      description = "Configuration for removing swaps",
+      position = 3,
+      closedByDefault = true
+  )
+  String removeSwapsSection = "Remove Options";
+
+  @ConfigSection(
       name = "Item Swaps",
       description = "All options that swap item menu entries",
-      position = 0,
+      position = 4,
       closedByDefault = true
   )
   String itemSection = "Item Swaps";
@@ -45,7 +108,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigSection(
       name = "NPC Swaps",
       description = "All options that swap NPC menu entries",
-      position = 1,
+      position = 5,
       closedByDefault = true
   )
   String npcSection = "NPC Swaps";
@@ -53,7 +116,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigSection(
       name = "Object Swaps",
       description = "All options that swap object menu entries",
-      position = 2,
+      position = 6,
       closedByDefault = true
   )
   String objectSection = "Object Swaps";
@@ -61,10 +124,47 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigSection(
       name = "UI Swaps",
       description = "All options that swap entries in the UI (except Items)",
-      position = 3,
+      position = 7,
       closedByDefault = true
   )
   String uiSection = "UI Swaps";
+
+  @ConfigSection(
+      name = "Skilling",
+      description = "",
+      position = 8,
+      keyName = "skillingSection",
+      closedByDefault = true
+  )
+  String skillingSection = "Skilling";
+
+  @ConfigSection(
+      name = "Teleportation",
+      description = "",
+      position = 8,
+      keyName = "teleportationSection",
+      closedByDefault = true
+  )
+  String teleportationSection = "Teleportation";
+
+  @ConfigSection(
+      name = "Right Click Options",
+      description = "",
+      position = 9,
+      keyName = "rightClickOptionsSection",
+      closedByDefault = true
+  )
+  String rightClickOptionsSection = "Right Click Options";
+
+
+  @ConfigSection(
+      name = "PvM",
+      description = "",
+      position = 10,
+      keyName = "pvmSection",
+      closedByDefault = true
+  )
+  String pvmSection = "PvM";
 
   @ConfigItem(
       position = -2,
@@ -100,7 +200,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigItem(
       keyName = "swapBanker",
       name = "Bank",
-      description = "Swap Talk-to with Bank on Bank NPC<br>Example: Banker",
+      description = "Swap Talk-to with Bank on Bank NPC Example: Banker",
       section = npcSection
   )
   default boolean swapBank() {
@@ -220,7 +320,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigItem(
       keyName = "swapExchange",
       name = "Exchange",
-      description = "Swap Talk-to with Exchange on NPC<br>Example: Grand Exchange Clerk, Tool Leprechaun, Void Knight",
+      description = "Swap Talk-to with Exchange on NPC Example: Grand Exchange Clerk, Tool Leprechaun, Void Knight",
       section = npcSection
   )
   default boolean swapExchange() {
@@ -310,7 +410,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigItem(
       keyName = "swapPay",
       name = "Pay",
-      description = "Swap Talk-to with Pay on NPC<br>Example: Elstan, Heskel, Fayeth",
+      description = "Swap Talk-to with Pay on NPC Example: Elstan, Heskel, Fayeth",
       section = npcSection
   )
   default boolean swapPay() {
@@ -380,7 +480,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigItem(
       keyName = "swapTeleportItem",
       name = "Teleport item",
-      description = "Swap Wear, Wield with Rub, Teleport on teleport item<br>Example: Amulet of glory, Explorer's ring, Chronicle",
+      description = "Swap Wear, Wield with Rub, Teleport on teleport item Example: Amulet of glory, Explorer's ring, Chronicle",
       section = itemSection
   )
   default boolean swapTeleportItem() {
@@ -460,7 +560,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigItem(
       keyName = "swapTrade",
       name = "Trade",
-      description = "Swap Talk-to with Trade on NPC<br>Example: Shop keeper, Shop assistant",
+      description = "Swap Talk-to with Trade on NPC Example: Shop keeper, Shop assistant",
       section = npcSection
   )
   default boolean swapTrade() {
@@ -470,7 +570,7 @@ public interface MenuEntrySwapperConfig extends Config {
   @ConfigItem(
       keyName = "swapTravel",
       name = "Travel",
-      description = "Swap Talk-to with Travel, Take-boat, Pay-fare, Charter on NPC<br>Example: Squire, Monk of Entrana, Customs officer, Trader Crewmember",
+      description = "Swap Talk-to with Travel, Take-boat, Pay-fare, Charter on NPC Example: Squire, Monk of Entrana, Customs officer, Trader Crewmember",
       section = npcSection
   )
   default boolean swapTravel() {
@@ -686,6 +786,537 @@ public interface MenuEntrySwapperConfig extends Config {
   )
   default boolean swapLizardRelease() {
     return true;
+  }
+
+  //------------------------------------------------------------//
+  // Skilling
+  //------------------------------------------------------------//
+
+  @ConfigItem(
+      keyName = "getEasyConstruction",
+      name = "Easy Construction",
+      description = "Makes 'Remove'/'Build' the default option for listed items.",
+      position = 0,
+      section = skillingSection
+  )
+  default boolean getEasyConstruction() {
+    return true;
+  }
+
+  @ConfigItem(
+      keyName = "getConstructionMode",
+      name = "EZ Construction Type",
+      description = "",
+      position = 1,
+      section = skillingSection,
+      hidden = true,
+      unhide = "getEasyConstruction"
+  )
+  default ConstructionMode getConstructionMode() {
+    return ConstructionMode.LARDER;
+  }
+
+  @ConfigItem(
+      keyName = "swapPickpocket",
+      name = "Pickpocket",
+      description = "Swap Talk-to with Pickpocket on NPC Example: Man, Woman",
+      position = 2,
+      section = skillingSection
+  )
+  default boolean swapPickpocket() {
+    return false;
+  }
+
+  @ConfigItem(
+      keyName = "hideLootImpJars",
+      name = "Hide 'Loot' Impling Jars",
+      description = "Hides the 'Loot' option from impling jars if you have the type of clue.",
+      position = 3,
+      section = skillingSection
+  )
+  default boolean hideLootImpJars()
+  {
+    return false;
+  }
+
+  //------------------------------------------------------------//
+  // Teleportation
+  //------------------------------------------------------------//
+
+  @ConfigItem(
+      keyName = "gloryMode",
+      name = "Amulet of Glory",
+      description = "",
+      position = 0,
+      section = teleportationSection
+  )
+  default GloryMode getGloryMode() {
+    return GloryMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "burningamuletmode",
+      name = "Burning Amulet",
+      description = "",
+      position = 1,
+      section = teleportationSection
+  )
+  default BurningAmuletMode getBurningAmuletMode() {
+    return BurningAmuletMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "combatbraceletmode",
+      name = "Combat Bracelet",
+      description = "",
+      position = 2,
+      section = teleportationSection
+  )
+  default CombatBraceletMode getCombatBraceletMode() {
+    return CombatBraceletMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "digsitependantmode",
+      name = "Digsite Pendant",
+      description = "",
+      position = 3,
+      section = teleportationSection
+  )
+  default DigsitePendantMode getDigsitePendantMode() {
+    return DigsitePendantMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "drakansmedallion",
+      name = "Drakans Medallion",
+      description = "",
+      position = 4,
+      section = teleportationSection
+  )
+  default DrakansMedallionMode getDrakansMedallionMode()
+  {
+    return DrakansMedallionMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "gamesNecklaceMode",
+      name = "Games Necklace",
+      description = "",
+      position = 5,
+      section = teleportationSection
+  )
+  default GamesNecklaceMode getGamesNecklaceMode() {
+    return GamesNecklaceMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "necklaceofpassagemode",
+      name = "Necklace of Passage",
+      description = "",
+      position = 6,
+      section = teleportationSection
+  )
+  default NecklaceOfPassageMode getNecklaceofPassageMode() {
+    return NecklaceOfPassageMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "duelingRingMode",
+      name = "Ring of Dueling",
+      description = "",
+      position = 7,
+      section = teleportationSection
+  )
+  default DuelingRingMode getDuelingRingMode() {
+    return DuelingRingMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "ringofwealthmode",
+      name = "Ring of Wealth",
+      description = "",
+      position = 8,
+      section = teleportationSection
+  )
+  default RingOfWealthMode getRingofWealthMode() {
+    return RingOfWealthMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "skillsnecklacemode",
+      name = "Skills Necklace",
+      description = "",
+      position = 9,
+      section = teleportationSection
+  )
+  default SkillsNecklaceMode getSkillsNecklaceMode() {
+    return SkillsNecklaceMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "xericstalismanmode",
+      name = "Xerics Talisman",
+      description = "",
+      position = 10,
+      section = teleportationSection
+  )
+  default XericsTalismanMode getXericsTalismanMode() {
+    return XericsTalismanMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "swapConstructionCape",
+      name = "Construction Cape",
+      description = "Swap the left click option with 'Tele to POH' on a Construction Cape.",
+      position = 11,
+      section = teleportationSection
+  )
+  default ConstructionCapeMode getConstructionCapeMode() {
+    return ConstructionCapeMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "swapCraftingCape",
+      name = "Crafting Cape",
+      description = "Swap the left click option with 'teleport' on a Crafting Cape.",
+      position = 12,
+      section = teleportationSection
+  )
+  default CraftingCapeMode getCraftingCapeMode() {
+    return CraftingCapeMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "swapDiaryCape",
+      name = "Diary Cape",
+      description = "Swap the left click option with 'teleport' on a Diary Cape.",
+      position = 13,
+      section = teleportationSection
+  )
+  default DiaryCapeMode getDiaryCapeMode() {
+    return DiaryCapeMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "swapFarmingCape",
+      name = "Farming Cape",
+      description = "Swap the left click option with 'teleport' on a Farming Cape.",
+      position = 14,
+      section = teleportationSection
+  )
+  default FarmCapeMode getFarmingCapeMode() {
+    return FarmCapeMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "swapQuestCape",
+      name = "Quest Cape",
+      description = "Swap the left click option with 'teleport' on a Quest Cape.",
+      position = 15,
+      section = teleportationSection
+  )
+  default QuestCapeMode getQuestCapeMode() {
+    return QuestCapeMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "magicCapeMode",
+      name = "Magic Cape",
+      description = "Swap the left click option with 'spellbook' on a Magic Cape.",
+      position = 16,
+      section = teleportationSection
+  )
+  default MagicCapeMode getMagicCapeMode() {
+    return MagicCapeMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "musicCapeMode",
+      name = "Music Cape",
+      description = "Swap the left click option with 'teleport' on a Music cape Cape.",
+      position = 17,
+      section = teleportationSection
+  )
+  default MusicCapeMode getMusicCapeMode()
+  {
+    return MusicCapeMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "mythCapeMode",
+      name = "Myth Cape",
+      description = "Swap the left click option with 'teleport' on a Myth cape Cape.",
+      position = 18,
+      section = teleportationSection
+  )
+  default MythCapeMode getMythCapeMode()
+  {
+    return MythCapeMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "swapMaxCapeEquipped",
+      name = "Max Cape",
+      description = "Swap the left click 'remove' option with another on a worn Max Cape.",
+      position = 19,
+      section = teleportationSection
+  )
+  default MaxCapeEquippedMode getMaxCapeEquippedMode() {
+    return MaxCapeEquippedMode.OFF;
+  }
+
+  //------------------------------------------------------------//
+  // Right Click Options
+  //------------------------------------------------------------//
+
+  @ConfigItem(
+      keyName = "hideTradeWith",
+      name = "Hide 'Trade With'",
+      description = "Hides the 'Trade with' option from the right click menu.",
+      position = 0,
+      section = rightClickOptionsSection
+  )
+  default boolean hideTradeWith() {
+    return false;
+  }
+
+  @ConfigItem(
+      keyName = "hideEmpty",
+      name = "Hide 'Empty'",
+      description = "Hides the 'Empty' option from the right click menu for potions.",
+      position = 1,
+      section = rightClickOptionsSection
+  )
+  default boolean hideEmpty() {
+    return false;
+  }
+
+  @ConfigItem(
+      keyName = "hideExamine",
+      name = "Hide 'Examine'",
+      description = "Hides the 'Examine' option from the right click menu.",
+      position = 2,
+      section = rightClickOptionsSection
+  )
+  default boolean hideExamine()
+  {
+    return false;
+  }
+
+  @ConfigItem(
+      keyName = "hideDestroy",
+      name = "Hide 'Destroy' Rune Pouch",
+      description = "Hides the 'Destroy' option from rune pouch.",
+      position = 3,
+      section = rightClickOptionsSection
+  )
+  default boolean hideDestroy()
+  {
+    return false;
+  }
+
+  //------------------------------------------------------------//
+  // PVM
+  //------------------------------------------------------------//
+
+  @ConfigItem(
+      keyName = "hideAttack",
+      name = "Hide Attack On Dead NPCs",
+      description = "Hides the 'Attack' option on dead npcs.",
+      position = 0,
+      section = pvmSection
+  )
+
+  default boolean hideAttack() {
+    return false;
+  }
+
+  @ConfigItem(
+      keyName = "hideAttackIgnoredNPCs",
+      name = "Ignored NPCs",
+      description = "NPCs that should not be hidden from being attacked, separated by a comma",
+      position = 1,
+      section = pvmSection,
+      hidden = true,
+      unhide = "hideAttack"
+  )
+  default String hideAttackIgnoredNPCs() {
+    return "";
+  }
+
+  @ConfigItem(
+      keyName = "hideCastRaids",
+      name = "Hide Cast On Players In Raids",
+      description = "Hides the cast option for players while in raids.",
+      position = 2,
+      section = pvmSection
+  )
+
+  default boolean hideCastRaids() {
+    return true;
+  }
+
+  @ConfigItem(
+      keyName = "hideCastIgnoredSpells",
+      name = "Ignored Spells",
+      description = "Spells that should not be hidden from being cast, separated by a comma",
+      position = 3,
+      section = pvmSection,
+      hidden = true,
+      unhide = "hideCastRaids"
+  )
+  default String hideCastIgnoredSpells() {
+    return "cure other, energy transfer, heal other, vengeance other";
+  }
+
+  @ConfigItem(
+      keyName = "hideCastThralls",
+      name = "Hide Cast On Thralls",
+      description = "Hides the cast option on thralls.",
+      position = 4,
+      section = pvmSection
+  )
+  default boolean hideCastThralls()
+  {
+    return true;
+  }
+
+
+  //------------------------------------------------------------//
+  // Custom swaps
+  //------------------------------------------------------------//
+
+  @ConfigItem(
+      name = "Custom Swaps Toggle",
+      keyName = "customSwapsToggle",
+      description = "Toggles the use of the Custom Swaps",
+      section = customSwapsSection,
+      position = 3
+  )
+  default boolean customSwapsToggle() {
+    return false;
+  }
+
+  @ConfigItem(
+      name = "Custom Swaps",
+      keyName = "customSwapsStr",
+      description = "",
+      section = customSwapsSection,
+      position = 4
+  )
+  default String customSwapsString() {
+    return "";
+  }
+
+  @ConfigItem(
+      name = "Bank Swaps",
+      keyName = "bankCustomSwapsStr",
+      description = "",
+      section = customSwapsSection,
+      position = 5
+  )
+  default String bankCustomSwapsString() {
+    return "";
+  }
+
+  @ConfigItem(
+      name = "Shift Swaps Toggle",
+      keyName = "shiftCustomSwapsToggle",
+      description = "Toggles the use of the Shift Custom Swaps",
+      section = shiftCustomSwapsSection,
+      position = 6
+  )
+  default boolean shiftCustomSwapsToggle() {
+    return false;
+  }
+
+  @ConfigItem(
+      name = "Shift Swaps",
+      keyName = "shiftCustomSwapsStr",
+      description = "",
+      section = shiftCustomSwapsSection,
+      position = 7
+  )
+  default String shiftCustomSwapsString() {
+    return "";
+  }
+
+  @ConfigItem(
+      name = "Shift Bank Swaps",
+      keyName = "bankShiftCustomSwapsStr",
+      description = "",
+      section = shiftCustomSwapsSection,
+      position = 8
+  )
+  default String bankShiftCustomSwapsString() {
+    return "";
+  }
+
+  @ConfigItem(
+      name = "Hotkey Swaps Toggle",
+      keyName = "keyCustomSwapsToggle",
+      description = "Toggles the use of the Hotkey Custom Swaps",
+      section = keyCustomSwapsSection,
+      position = 1
+  )
+  default boolean keyCustomSwapsToggle() {
+    return false;
+  }
+
+  @ConfigItem(
+      keyName = "hotkey",
+      name = "Set Hotkey",
+      description = "Binds the key to hold to enable this section",
+      section = keyCustomSwapsSection,
+      position = 2
+  )
+  default ModifierlessKeybind hotkey() {
+    return new ModifierlessKeybind(KeyEvent.VK_UNDEFINED, 0);
+  }
+
+  @ConfigItem(
+      name = "Hotkey Swaps",
+      keyName = "keyCustomSwapsStr",
+      description = "",
+      section = keyCustomSwapsSection,
+      position = 3
+  )
+  default String keyCustomSwapsString() {
+    return "";
+  }
+
+  @ConfigItem(
+      name = "Hotkey Bank Swaps",
+      keyName = "bankKeyCustomSwapsStr",
+      description = "",
+      section = keyCustomSwapsSection,
+      position = 4
+  )
+  default String bankKeyCustomSwapsString() {
+    return "";
+  }
+
+  @ConfigItem(
+      name = "Remove Options Toggle",
+      keyName = "removeOptionsToggle",
+      description = "Toggles the use of the removing options",
+      section = removeSwapsSection,
+      position = 9
+  )
+  default boolean removeOptionsToggle() {
+    return false;
+  }
+
+  @ConfigItem(
+      name = "Remove Options",
+      keyName = "removeOptionsStr",
+      description = "",
+      section = removeSwapsSection,
+      position = 10
+  )
+  default String removeOptionsString() {
+    return "";
   }
 
   enum ArdougneCloakMode {

@@ -48,6 +48,7 @@ public interface HootFighterConfig extends Config {
 					keyName = "monster",
 					name = "Monster",
 					description = "Monster to kill",
+					textField = true,
 					position = 0,
 					section = general
 	)

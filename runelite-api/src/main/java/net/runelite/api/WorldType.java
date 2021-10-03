@@ -58,11 +58,11 @@ public enum WorldType {
   /**
    * Tournament world type.
    */
-  TOURNAMENT(1 << 25),
+  NOSAVE_MODE(1 << 25),
   /**
    * Deadman Tournament world type.
    */
-  DEADMAN_TOURNAMENT(1 << 26),
+  TOURNAMENT_WORLD(1 << 26),
   /**
    * Deadman world type.
    */
@@ -70,7 +70,7 @@ public enum WorldType {
   /**
    * League world type
    */
-  LEAGUE(1 << 30);
+  SEASONAL(1 << 30);
 
   private static final EnumSet<WorldType> PVP_WORLD_TYPES = EnumSet.of(
       DEADMAN, // dmmt worlds are also flaged as DEADMAN

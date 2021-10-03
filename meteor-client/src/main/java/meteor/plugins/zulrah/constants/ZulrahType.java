@@ -4,69 +4,80 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import net.runelite.api.Skill;
 import meteor.plugins.zulrah.ZulrahPlugin;
-import org.sponge.util.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public enum ZulrahType {
-   RANGE("Range", 2042, Skill.RANGED, Color.YELLOW),
-   MELEE("Melee", 2043, Skill.ATTACK, Color.RED),
-   MAGIC("Magic", 2044, Skill.MAGIC, Color.CYAN);
+  RANGE("Range", 2042, Skill.RANGED, Color.YELLOW),
+  MELEE("Melee", 2043, Skill.ATTACK, Color.RED),
+  MAGIC("Magic", 2044, Skill.MAGIC, Color.CYAN);
 
-   private static final Logger log = Logger.getLogger(ZulrahType.class);
-   private final String name;
-   private final int npcId;
-   private final Skill skill;
-   private final Color color;
+  private static final Logger log;
+  private final String name;
+  private final int npcId;
+  private final Skill skill;
+  private final Color color;
 
-   public static ZulrahType valueOf(int npcId) {
-      switch(npcId) {
-      case 2042:
-         return RANGE;
-      case 2043:
-         return MELEE;
-      case 2044:
-         return MAGIC;
-      default:
-         return null;
+  public static ZulrahType valueOf(final int npcId) {
+    switch (npcId) {
+      case 2042: {
+        return ZulrahType.RANGE;
       }
-   }
-
-   public BufferedImage getImage() {
-      try {
-         return ZulrahPlugin.ZULRAH_IMAGES[this.ordinal()];
-      } catch (ArrayIndexOutOfBoundsException var2) {
-         log.debug("Attempted to get Zulrah Image but was out of bounds... Cause -> {}", var2.getMessage());
-         return null;
+      case 2043: {
+        return ZulrahType.MELEE;
       }
-   }
+      case 2044: {
+        return ZulrahType.MAGIC;
+      }
+      default: {
+        return null;
+      }
+    }
+  }
 
-   public Color getColorWithAlpha(int alpha) {
-      return new Color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), alpha);
-   }
+  public BufferedImage getImage() {
+    try {
+      return ZulrahPlugin.ZULRAH_IMAGES[this.ordinal()];
+    } catch (ArrayIndexOutOfBoundsException ex) {
+      ZulrahType.log.debug("Attempted to get Zulrah Image but was out of bounds... Cause -> {}",
+          ex.getMessage());
+      return null;
+    }
+  }
 
-   public String toString() {
-      return this.name;
-   }
+  public Color getColorWithAlpha(final int alpha) {
+    return new Color(this.color.getRed(), this.color.getGreen(), this.color.getBlue(), alpha);
+  }
 
-   ZulrahType(String name, int npcId, Skill skill, Color color) {
-      this.name = name;
-      this.npcId = npcId;
-      this.skill = skill;
-      this.color = color;
-   }
+  @Override
+  public String toString() {
+    return this.name;
+  }
 
-   public String getName() {
-      return this.name;
-   }
+  ZulrahType(final String name, final int npcId, final Skill skill, final Color color) {
+    this.name = name;
+    this.npcId = npcId;
+    this.skill = skill;
+    this.color = color;
+  }
 
-   public int getNpcId() {
-      return this.npcId;
-   }
+  public String getName() {
+    return this.name;
+  }
 
-   public Skill getSkill() {
-      return this.skill;
-   }
+  public int getNpcId() {
+    return this.npcId;
+  }
 
-   public Color getColor() {
-      return this.color;
-   }
+  public Skill getSkill() {
+    return this.skill;
+  }
+
+  public Color getColor() {
+    return this.color;
+  }
+
+  static {
+    log = LoggerFactory.getLogger(ZulrahType.class);
+  }
 }

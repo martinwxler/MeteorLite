@@ -54,7 +54,8 @@ import java.util.concurrent.ScheduledExecutorService;
 @PluginDescriptor(
 	name = "Player-owned House",
 	description = "Show minimap icons and mark unlit/lit burners",
-	tags = {"construction", "poh", "minimap", "overlay"}
+	tags = {"construction", "poh", "minimap", "overlay"},
+	enabledByDefault = false
 )
 public class PohPlugin extends Plugin
 {

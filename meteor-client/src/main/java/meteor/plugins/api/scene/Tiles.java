@@ -4,8 +4,9 @@ import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.game.Game;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldPoint;
+import org.sponge.util.Logger;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.*;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.function.Predicate;
 
 @Singleton
 public class Tiles {
+    private static final Logger log = new Logger("Tiles");
     private static final int MAX_RANGE = 50;
     public static List<Tile> getTiles(Predicate<Tile> filter) {
         List<Tile> out = new ArrayList<>();
@@ -37,58 +39,27 @@ public class Tiles {
         return getTiles(x -> true);
     }
 
-    public static Tile getHoveredTile() {
-        return getTiles(x -> {
-            LocalPoint localPoint = LocalPoint.fromWorld(Game.getClient(), x.getWorldLocation());
-            if (localPoint == null) {
-                return false;
-            }
-
-            Polygon poly = Perspective.getCanvasTilePoly(Game.getClient(), localPoint);
-            if (poly == null) {
-                return false;
-            }
-
-            return poly.contains(Game.getClient().getMouseCanvasPosition().getX(), Game.getClient().getMouseCanvasPosition().getY());
-        }).stream().findFirst().orElse(null);
+    public static Tile getAt(WorldPoint worldPoint) {
+        return getAt(worldPoint.getX(), worldPoint.getY(), worldPoint.getPlane());
     }
 
-    public static Locatable getHoveredObject() {
-        MenuEntry[] menuEntries = Game.getClient().getMenuEntries();
-        if (menuEntries.length == 0) {
+    public static Tile getAt(LocalPoint localPoint) {
+        return Game.getClient().getScene().getTiles()[Game.getClient().getPlane()][localPoint.getSceneX()][localPoint.getSceneY()];
+    }
+
+    public static Tile getAt(int worldX, int worldY, int plane) {
+        if (!WorldPoint.isInScene(Game.getClient(), worldX, worldY)) {
             return null;
         }
 
-        MenuEntry top = menuEntries[menuEntries.length - 1];
-        MenuAction menuAction = MenuAction.of(top.getType());
+        int x = worldX - Game.getClient().getBaseX();
+        int y = worldY - Game.getClient().getBaseY();
 
-        switch (menuAction) {
-            case ITEM_USE_ON_GAME_OBJECT:
-            case SPELL_CAST_ON_GAME_OBJECT:
-            case GAME_OBJECT_FIRST_OPTION:
-            case GAME_OBJECT_SECOND_OPTION:
-            case GAME_OBJECT_THIRD_OPTION:
-            case GAME_OBJECT_FOURTH_OPTION:
-            case GAME_OBJECT_FIFTH_OPTION: {
-                int x = top.getParam0();
-                int y = top.getParam1();
-                int id = top.getIdentifier();
-                return findTileObject(x, y, id);
-            }
-            case ITEM_USE_ON_NPC:
-            case SPELL_CAST_ON_NPC:
-            case NPC_FIRST_OPTION:
-            case NPC_SECOND_OPTION:
-            case NPC_THIRD_OPTION:
-            case NPC_FOURTH_OPTION:
-            case NPC_FIFTH_OPTION: {
-                int id = top.getIdentifier();
-                return findNpc(id);
-            }
+        return Game.getClient().getScene().getTiles()[plane][x][y];
+    }
 
-            default:
-                return null;
-        }
+    public static Tile getHoveredTile() {
+        return Game.getClient().getSelectedSceneTile();
     }
 
     private static TileObject findTileObject(int x, int y, int id) {

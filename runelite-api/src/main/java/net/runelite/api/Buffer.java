@@ -38,13 +38,27 @@ public interface Buffer extends Node {
    */
   void writeByte$api(int var1);
 
+  void writeByte01$api(int var1);
+
   void writeShort$api(int var1);
 
   void writeMedium$api(int var1);
 
+  void writeIntME$api(int var1);
+
+  void writeInt2$api(int var1);
+
   void writeInt$api(int var1);
 
   void writeLong$api(long var1);
+
+  void writeShort01$api(int var1);
+
+  void writeInt0123$api(int var1);
+
+  void writeShortA$api(int var1);
+
+  void writeShort01A$api(int var1);
 
   void writeStringCp1252NullTerminated$api(String string);
 }

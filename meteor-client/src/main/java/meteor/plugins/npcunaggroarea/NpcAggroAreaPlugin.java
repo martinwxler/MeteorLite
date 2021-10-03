@@ -59,8 +59,7 @@ import java.util.List;
 @PluginDescriptor(
 	name = "NPC Aggression Timer",
 	description = "Highlights the unaggressive area of NPCs nearby and timer until it becomes active",
-	tags = {"highlight", "lines", "unaggro", "aggro", "aggressive", "npcs", "area", "slayer"},
-	enabledByDefault = false
+	tags = {"highlight", "lines", "unaggro", "aggro", "aggressive", "npcs", "area", "slayer"}
 )
 public class NpcAggroAreaPlugin extends Plugin
 {

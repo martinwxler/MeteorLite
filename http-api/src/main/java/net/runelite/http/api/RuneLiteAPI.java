@@ -27,16 +27,28 @@ package net.runelite.http.api;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.awt.Color;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import net.runelite.http.api.gson.ColorTypeAdapter;
 import net.runelite.http.api.gson.IllegalReflectionExclusion;
 import net.runelite.http.api.gson.InstantTypeAdapter;
 import okhttp3.*;
 import org.sponge.util.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class RuneLiteAPI {
 
@@ -51,8 +63,12 @@ public class RuneLiteAPI {
   public static String userAgent;
   private static String version;
 
+  private static final String MAVEN_METADATA = "https://repo.runelite.net/net/runelite/runelite-parent/maven-metadata.xml";
+  private static String upstreamVersion;
+
   static {
-    version = "1.7.21";
+    parseMavenVersion();
+    version = upstreamVersion;
     userAgent = "RuneLite/" + version + "-";
       OkHttpClient.Builder builder = new OkHttpClient.Builder();
       List<ConnectionSpec> specs = new ArrayList<>();
@@ -133,4 +149,55 @@ public class RuneLiteAPI {
     RuneLiteAPI.version = version;
   }
 
+  private static void parseMavenVersion()
+  {
+    try (ByteArrayInputStream fis = new ByteArrayInputStream(downloadUrl(new URL(MAVEN_METADATA))))
+    {
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      factory.setValidating(false);
+      factory.setIgnoringElementContentWhitespace(true);
+      DocumentBuilder builder = factory.newDocumentBuilder();
+      Document doc = builder.parse(fis);
+      NodeList versionList = doc.getElementsByTagName("version");
+      for (int i = 0; i != versionList.getLength(); i++)
+      {
+        Node node = versionList.item(i);
+        if (node.getTextContent() != null)
+        {
+          upstreamVersion = node.getTextContent();
+        }
+      }
+    }
+    catch (ParserConfigurationException | IOException | SAXException ex)
+    {
+      logger.error(null, ex);
+    }
+  }
+
+  private static byte[] downloadUrl(URL toDownload)
+  {
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    InputStream stream;
+    try
+    {
+      byte[] chunk = new byte[4096];
+      int bytesRead;
+      URLConnection conn = toDownload.openConnection();
+      conn.setRequestProperty("User-Agent", userAgent);
+      stream = conn.getInputStream();
+
+      while ((bytesRead = stream.read(chunk)) > 0)
+      {
+        outputStream.write(chunk, 0, bytesRead);
+      }
+      stream.close();
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+      return null;
+    }
+
+    return outputStream.toByteArray();
+  }
 }

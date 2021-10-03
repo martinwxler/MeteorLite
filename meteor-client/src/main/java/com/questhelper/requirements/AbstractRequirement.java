@@ -35,7 +35,15 @@ public abstract class AbstractRequirement implements Requirement
 	private String tooltip;
 	private Requirement panelReplacement = null;
 
+	protected boolean shouldCountForFilter = false;
+
 	abstract public boolean check(Client client);
+
+	@Override
+	public boolean shouldConsiderForFilter()
+	{
+		return shouldCountForFilter;
+	}
 
 	abstract public String getDisplayText();
 

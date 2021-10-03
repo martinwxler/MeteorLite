@@ -38,7 +38,7 @@ public class TeleportLoader {
 
     public static List<Teleport> buildTeleports() {
         if (lastBuild.plusSeconds(BUILD_DELAY_SECONDS).isAfter(Instant.now())) {
-            return List.copyOf(LAST_TELEPORT_LIST);
+            return LAST_TELEPORT_LIST;
         }
 
         lastBuild = Instant.now();
@@ -80,12 +80,12 @@ public class TeleportLoader {
                 for (TeleportTab tab : TeleportTab.values()){
                     if (tab.canUse() && tab.getPoint().distanceTo(Players.getLocal().getWorldLocation()) > 20) {
                         teleports.add(new Teleport(tab.getPoint(), 5,
-                        () -> {
-                            Item teleTab = Inventory.getFirst(tab.getItemId());
-                            if (teleTab != null) {
-                                teleTab.interact("Break");
-                            }
-                        }));
+                                () -> {
+                                    Item teleTab = Inventory.getFirst(tab.getItemId());
+                                    if (teleTab != null) {
+                                        teleTab.interact("Break");
+                                    }
+                                }));
                     }
                 }
             }
@@ -138,7 +138,7 @@ public class TeleportLoader {
         }
 
         if (Game.getWildyLevel() <= 20) {
-            for (TeleportSpell teleportSpell : TeleportSpell.values()){
+            for (TeleportSpell teleportSpell : TeleportSpell.values()) {
                 if (!teleportSpell.canCast()) {
                     continue;
                 }
@@ -149,8 +149,8 @@ public class TeleportLoader {
                 }
             }
         }
-        LAST_TELEPORT_LIST = teleports;
-        return List.copyOf(LAST_TELEPORT_LIST);
+
+        return List.copyOf(LAST_TELEPORT_LIST = teleports);
     }
 
     public static void jewelryTeleport(String target, int... ids) {

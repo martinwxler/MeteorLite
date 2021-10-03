@@ -24,6 +24,11 @@
   -fx-padding: 0.333333em 0 0.333333em 0;
 }
 
+.jfx-password-field {
+  -fx-text-fill: CYAN;
+  -jfx-focus-color: CYAN;
+}
+
 .jfx-text-field > .input-line {
   -fx-background-color: #121212;
   -fx-pref-height: 1px;

@@ -24,7 +24,7 @@
  */
 package net.runelite.api;
 
-public interface ChatEntityContainer<T extends ChatEntity> {
+public interface ChatEntityContainer<T extends Nameable> {
 
   /**
    * Get the number of members in this container

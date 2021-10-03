@@ -25,15 +25,18 @@
 package net.runelite.api;
 
 import lombok.Data;
+import net.runelite.api.util.Text;
 import net.runelite.api.widgets.*;
 
+import java.awt.*;
 import java.util.Arrays;
-import java.util.List;
-
-import net.runelite.api.widgets.WidgetItem;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Data
-public class Item implements Interactable, Identifiable, Nameable {
+public class Item implements Interactable, Identifiable, EntityNameable {
+	private static final ThreadLocalRandom random = ThreadLocalRandom.current();
+
 	private final int id;
 	private final int quantity;
 
@@ -46,18 +49,27 @@ public class Item implements Interactable, Identifiable, Nameable {
 
 	@Override
 	public String getName() {
-		return client.getItemComposition(getId()).getName().replace('\u00A0', ' ');
+		return Text.removeTags(Text.sanitize(getComposition().getName()));
 	}
 
 	@Override
-	public String[] getActions() {
-		if (WidgetInfo.TO_GROUP(widgetId) == WidgetID.INVENTORY_GROUP_ID) {
+	public String[] getRawActions() {
+		if (getType() == Type.INVENTORY) {
 			return client.getItemComposition(getId()).getInventoryActions();
 		}
 
 		Widget widget = client.getWidget(widgetId);
 		if (widget != null) {
-			return widget.getActions();
+			if (getType() == Type.EQUIPMENT) {
+				return widget.getRawActions();
+			}
+
+			Widget itemChild = widget.getChild(slot);
+			if (itemChild != null) {
+				return itemChild.getRawActions();
+			}
+
+			return widget.getRawActions();
 		}
 
 		return null;
@@ -67,7 +79,7 @@ public class Item implements Interactable, Identifiable, Nameable {
 	public int getActionId(int action) {
 		switch (action) {
 			case 0:
-				if (getActions()[0] == null) {
+				if (getRawActions()[0] == null) {
 					return MenuAction.ITEM_USE.getId();
 				}
 
@@ -86,30 +98,27 @@ public class Item implements Interactable, Identifiable, Nameable {
 	}
 
 	@Override
-	public List<String> actions() {
-		return Arrays.asList(getActions());
-	}
-
-	@Override
 	public void interact(String action) {
-		interact(actions().indexOf(action));
+		interact(getActions().indexOf(action));
 	}
 
 	@Override
 	public void interact(int index) {
 		switch (getType()) {
 			case TRADE, TRADE_INVENTORY -> {
-				Widget itemWidget = client.getWidget(widgetId);
-				if (itemWidget == null) {
-					return;
+				Widget widget = client.getWidget(widgetId);
+				if (widget != null) {
+					Widget itemChild = widget.getChild(slot);
+					if (itemChild != null) {
+						itemChild.interact(index);
+					}
 				}
-				itemWidget.interact(index);
 			}
 			case EQUIPMENT -> interact(index, index > 4 ? MenuAction.CC_OP_LOW_PRIORITY.getId()
 							: MenuAction.CC_OP.getId());
 			case BANK, BANK_INVENTORY -> interact(index, MenuAction.CC_OP.getId());
 			case INVENTORY -> interact(getId(), getActionId(index));
-			case UNKNOWN -> throw new IllegalStateException("Couldn't detect Item type for itemId: " + getId());
+			case UNKNOWN -> client.getLogger().error("Couldn't determine item type for: {}, widgetid: {}", id, widgetId);
 		}
 	}
 
@@ -131,13 +140,47 @@ public class Item implements Interactable, Identifiable, Nameable {
 			case BANK -> interact(index, menuAction, getSlot(), WidgetInfo.BANK_ITEM_CONTAINER.getPackedId());
 			case BANK_INVENTORY -> interact(index, menuAction, getSlot(), WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER.getPackedId());
 			case INVENTORY -> interact(getId(), menuAction, actionParam, widgetId);
-			case UNKNOWN -> throw new IllegalStateException("Couldn't detect Item type for itemId: " + getId());
+			case UNKNOWN -> client.getLogger().error("Couldn't determine item type for: {}, widgetid: {}", id, widgetId);
 		}
 	}
 
 	@Override
 	public void interact(int identifier, int opcode, int param0, int param1) {
-		client.interact(identifier, opcode, param0, param1);
+		Point screenLoc = getScreenCoords();
+		client.interact(identifier, opcode, param0, param1, screenLoc.getX(), screenLoc.getY());
+	}
+
+	public void useOn(Interactable entity) {
+		if (entity instanceof TileItem tileItem) {
+			useOn(tileItem);
+			return;
+		}
+
+		if (entity instanceof TileObject tileObject) {
+			useOn(tileObject);
+			return;
+		}
+
+		if (entity instanceof Item item) {
+			useOn(item);
+			return;
+		}
+
+		if (entity instanceof Actor actor) {
+			useOn(actor);
+			return;
+		}
+
+		if (entity instanceof Widget widget) {
+			useOn(widget);
+		}
+	}
+
+	public void useOn(TileItem object) {
+		client.setSelectedItemWidget(widgetId);
+		client.setSelectedItemSlot(getSlot());
+		client.setSelectedItemID(getId());
+		object.interact(0, MenuAction.ITEM_USE_ON_GROUND_ITEM.getId());
 	}
 
 	public void useOn(TileObject object) {
@@ -194,7 +237,23 @@ public class Item implements Interactable, Identifiable, Nameable {
 	}
 
 	public enum Type {
-		INVENTORY, EQUIPMENT, BANK, BANK_INVENTORY, TRADE, TRADE_INVENTORY, UNKNOWN;
+		INVENTORY(InventoryID.INVENTORY),
+		EQUIPMENT(InventoryID.EQUIPMENT),
+		BANK(InventoryID.BANK),
+		BANK_INVENTORY(InventoryID.INVENTORY),
+		TRADE(InventoryID.TRADE),
+		TRADE_INVENTORY(InventoryID.INVENTORY),
+		UNKNOWN(null);
+
+		private final InventoryID inventoryID;
+
+		Type(InventoryID inventoryID) {
+			this.inventoryID = inventoryID;
+		}
+
+		public InventoryID getInventoryID() {
+			return inventoryID;
+		}
 
 		private static Type get(int widgetId) {
 			return switch (WidgetInfo.TO_GROUP(widgetId)) {
@@ -239,5 +298,37 @@ public class Item implements Interactable, Identifiable, Nameable {
 
 	public int getStorePrice() {
 		return getComposition().getPrice();
+	}
+
+	private Point getScreenCoords() {
+		Widget widget = client.getWidget(widgetId);
+		if (widget == null) {
+			return new Point(-1, -1);
+		}
+
+		if (getType() != Type.EQUIPMENT) {
+			Widget slot = widget.getChild(getSlot());
+			if (slot != null) {
+				Rectangle bounds = slot.getBounds();
+				if (bounds != null) {
+					try {
+						return new Point(random.nextInt(bounds.x, bounds.x + bounds.width), random.nextInt(bounds.y, bounds.y + bounds.height));
+					} catch (IllegalArgumentException e) {
+						return new Point(-1, -1);
+					}
+				}
+			}
+		}
+
+		Rectangle bounds = widget.getBounds();
+		if (bounds != null) {
+			try {
+				return new Point(random.nextInt(bounds.x, bounds.x + bounds.width), random.nextInt(bounds.y, bounds.y + bounds.height));
+			} catch (IllegalArgumentException e) {
+				return new Point(-1, -1);
+			}
+		}
+
+		return widget.getCanvasLocation();
 	}
 }

@@ -88,7 +88,7 @@ public interface CerberusConfig extends Config
 		keyName = "calculateAutoAttackPrayer",
 		name = "Calculate auto attack prayer",
 		description = "Calculate prayer for auto attacks based on your equipment defensive bonuses."
-			+ "<br>Default is Protect from Magic.",
+			+ "Default is Protect from Magic.",
 		position = 2,
 		section = generalSection
 	)
@@ -174,8 +174,7 @@ public interface CerberusConfig extends Config
 	@ConfigItem(
 		keyName = "showUpcomingAttackNumber",
 		name = "Show attack number",
-		description = "Display the attack pattern number on each upcoming attack." +
-			"<br>See http://pastebin.com/hWCvantS",
+		description = "Display the attack pattern number on each upcoming attack.",
 		position = 3,
 		section = upcomingAttacksSection,
 		hidden = true,

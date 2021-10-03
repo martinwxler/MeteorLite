@@ -1,14 +1,16 @@
 package meteor.ui.controllers;
 
+import com.google.common.base.Splitter;
 import com.jfoenix.controls.*;
 import com.sun.javafx.collections.ObservableListWrapper;
+import de.jensd.fx.glyphs.GlyphIcons;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.Scene;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -17,16 +19,16 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import meteor.MeteorLiteClientLauncher;
 import meteor.MeteorLiteClientModule;
 import meteor.config.Button;
 import meteor.config.*;
+import meteor.eventbus.EventBus;
+import meteor.eventbus.Subscribe;
+import meteor.eventbus.events.PluginChanged;
 import meteor.plugins.Plugin;
-import meteor.ui.components.Category;
-import meteor.ui.components.ConfigButton;
-import meteor.ui.components.ConfigSectionPane;
-import meteor.ui.components.PluginToggleButton;
+import meteor.ui.MeteorUI;
+import meteor.ui.components.*;
 import net.runelite.api.Client;
 import net.runelite.api.events.ConfigButtonClicked;
 import org.sponge.util.Logger;
@@ -36,19 +38,14 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static java.awt.event.KeyEvent.getExtendedKeyCodeForChar;
 import static meteor.ui.controllers.PluginListUI.lastPluginInteracted;
-import static meteor.ui.controllers.PluginListUI.pluginPanels;
 
 public class PluginConfigUI {
 
 	private static final Logger logger = new Logger("PluginConfigController");
-
-	@FXML
-	private AnchorPane rootPanel;
 
 	@FXML
 	private AnchorPane titlePanel;
@@ -59,7 +56,7 @@ public class PluginConfigUI {
 	@FXML
 	private Text pluginTitle;
 
-	private final Map<String, ConfigSectionPane> sections = new HashMap<>();
+	private final Map<String, SectionPane> sections = new HashMap<>();
 
 	private Plugin plugin;
 
@@ -69,20 +66,48 @@ public class PluginConfigUI {
 	@Inject
 	private ConfigManager configManager;
 
+	@Inject
+	private EventBus eventBus;
+
+	@Inject
+	private MeteorUI meteorUI;
+
 	private PluginToggleButton toggleButton;
+
+	private JFXButton backButton = new JFXButton("Back");
+
+	private Map<String, Boolean> openedCache = new HashMap<>();
 
 	@FXML
 	public void initialize() {
-		MeteorLiteClientModule.instanceInjectorStatic.injectMembers(this);
+		MeteorLiteClientLauncher.injector.injectMembers(this);
 		plugin = lastPluginInteracted;
+		eventBus.register(this);
 		pluginTitle.setText(plugin.getName());
-		configManager = MeteorLiteClientLauncher.mainClientInstance.instanceInjector.getInstance(ConfigManager.class);
 
-		toggleButton = PluginListUI.configGroupPluginMap
-						.get(plugin.getConfig(configManager).getClass().getInterfaces()[0].getAnnotation(ConfigGroup.class).value());
-		if (toggleButton != null) {
+		if (plugin.isToggleable()) {
+			toggleButton = new PluginToggleButton(plugin);
+			toggleButton.setSelected(plugin.enabled);
+			AnchorPane.setTopAnchor(toggleButton, 15.0);
+			AnchorPane.setBottomAnchor(toggleButton, 2.0);
+			AnchorPane.setRightAnchor(toggleButton, 8.0);
+			toggleButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> plugin.toggle());
 			titlePanel.getChildren().add(toggleButton);
 		}
+		backButton.setStyle("-fx-background-color: #252525; -fx-text-fill: CYAN; -jfx-button-type: RAISED;");
+		FontAwesomeIconView graphic = new FontAwesomeIconView(FontAwesomeIcon.ARROW_LEFT);
+		graphic.setFill(Paint.valueOf("CYAN"));
+		backButton.setGraphic(graphic);
+		backButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> meteorUI.showPlugins());
+		AnchorPane.setLeftAnchor(backButton, 8.0);
+		AnchorPane.setTopAnchor(backButton, 8.0);
+		titlePanel.getChildren().add(backButton);
+		rebuild();
+	}
+
+	private void rebuild() {
+		sections.clear();
+		configList.getChildren().clear();
 
 		initSections();
 		initConfigs();
@@ -96,9 +121,15 @@ public class PluginConfigUI {
 						.sorted(Comparator.comparingInt(ConfigSectionDescriptor::position))
 						.collect(Collectors.toList())) {
 			ConfigSection section = csd.getSection();
-			ConfigSectionPane sectionBox = createSection(section);
-			configList.getChildren().add(sectionBox.getTitledPane());
-			sectionBox.getTitledPane().setExpanded(!section.closedByDefault());
+			SectionPane sectionBox = createSection(section);
+			configList.getChildren().add(sectionBox.getRootPane());
+			if (openedCache.get(section.keyName()) != null)
+				sectionBox.getRootPane().setExpanded(openedCache.get(section.keyName()));
+			else
+				sectionBox.getRootPane().setExpanded(!section.closedByDefault());
+			sectionBox.getRootPane().expandedProperty().addListener((obs, wasExpanded, isNowExpanded) -> {
+				openedCache.put(section.keyName(), isNowExpanded);
+			});
 		}
 	}
 
@@ -110,8 +141,8 @@ public class PluginConfigUI {
 			for (ConfigItemDescriptor configItemDescriptor : descriptor.getItems().stream()
 							.sorted(Comparator.comparingInt(ConfigItemDescriptor::position))
 							.collect(Collectors.toList())) {
-				ConfigSectionPane sectionBox = sections.get(configItemDescriptor.getItem().section());
-				Pane configContainer = sectionBox != null ? sectionBox.getContainer() : createNode();
+				SectionPane sectionBox = sections.get(configItemDescriptor.getItem().section());
+				Pane configContainer = sectionBox != null ? sectionBox.getContainer() : new PanelItem();
 
 				if (configItemDescriptor.getType() == int.class) {
 					if (configItemDescriptor.getRange() != null) {
@@ -124,27 +155,43 @@ public class PluginConfigUI {
 						createIntegerSliderNode(descriptor, configContainer, configItemDescriptor);
 					}
 				}
+
 				if (configItemDescriptor.getType() == boolean.class) {
 					createBooleanNode(descriptor, configContainer, configItemDescriptor);
 				}
+
 				if (configItemDescriptor.getType() == String.class) {
-					createStringNode(descriptor, configContainer, configItemDescriptor);
+					if (configItemDescriptor.getItem().textField()) {
+						createStringNode(descriptor, configContainer, configItemDescriptor);
+					} else {
+						createStringAreaNode(descriptor, configContainer, configItemDescriptor);
+					}
 				}
+
 				if (configItemDescriptor.getType() == Color.class) {
 					createColorPickerNode(descriptor, configContainer, configItemDescriptor);
 				}
+
 				if (configItemDescriptor.getType() == double.class) {
 					createdDoubleTextNode(descriptor, configContainer, configItemDescriptor);
 				}
+
 				if (configItemDescriptor.getType() == Button.class) {
 					createButtonNode(descriptor, configContainer, configItemDescriptor);
 				}
+
 				if (configItemDescriptor.getType() == ModifierlessKeybind.class) {
 					createHotKeyNode(descriptor, configContainer, configItemDescriptor);
 				}
+
+				if (configItemDescriptor.getType() == Keybind.class) {
+					createDefaultKeyBindNode(descriptor, configContainer, configItemDescriptor);
+				}
+
 				if (configItemDescriptor.getType().isEnum()) {
 					createEnumNode(descriptor, configContainer, configItemDescriptor);
 				}
+
 				if (!configContainer.getChildren().isEmpty() && !configList.getChildren().contains(configContainer)) {
 					configList.getChildren().add(configContainer);
 				}
@@ -153,31 +200,18 @@ public class PluginConfigUI {
 	}
 
 	private void createButtonNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
-		ConfigButton button = new ConfigButton(configItem.getIcon().canToggle());
+		JFXButton button;
+		if (configItem.getIcon().canToggle()) {
+			button = new ConfigToggleButton();
+		} else {
+			button = new ConfigButton(configItem.name(), configItem.getIcon().value());
+		}
 
 		AnchorPane.setTopAnchor(button, 4.0);
 		AnchorPane.setBottomAnchor(button, 4.0);
 		AnchorPane.setRightAnchor(button, 40.0);
 		AnchorPane.setLeftAnchor(button, 40.0);
-		AtomicReference<FontAwesomeIcon> icon = new AtomicReference<>();
 
-		if (button.isToggleable()) {
-			if (button.isToggled()) {
-				icon.set(configItem.getIcon().stop());
-				button.setText("Stop");
-			} else {
-				icon.set(configItem.getIcon().start());
-				button.setText("Start");
-			}
-		} else {
-			icon.set(configItem.getIcon().value());
-			button.setText(configItem.name());
-		}
-
-		FontAwesomeIconView buttonIcon = new FontAwesomeIconView(icon.get());
-		buttonIcon.setSize("16");
-		buttonIcon.setFill(javafx.scene.paint.Color.valueOf("CYAN"));
-		button.setGraphic(buttonIcon);
 		button.autosize();
 		button.setStyle("-fx-background-color: #252525; -fx-text-fill: CYAN; -jfx-button-type: RAISED;");
 
@@ -186,42 +220,25 @@ public class PluginConfigUI {
 				return;
 			}
 
-			button.toggle();
-
-			if (button.isToggleable()) {
-				if (button.isToggled()) {
-					icon.set(configItem.getIcon().start());
-					button.setText("Start");
-					client.getCallbacks().post(new ConfigButtonClicked(config.getGroup().value(), configItem.key()));
-					return;
-				}
-
-				icon.set(configItem.getIcon().stop());
-				button.setText("Stop");
-				client.getCallbacks().post(new ConfigButtonClicked(config.getGroup().value(), configItem.key()));
-				return;
+			if (button instanceof ConfigToggleButton cfg) {
+				cfg.toggle();
 			}
 
 			client.getCallbacks().post(new ConfigButtonClicked(config.getGroup().value(), configItem.key()));
-			icon.set(configItem.getIcon().value());
 		});
 
-		addConfigItemComponents(root, button);
+		addConfigItemComponents(config, configItem, root, button);
 	}
 
 	private void createHotKeyNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
 		Text name = createText(configItem.name(), Paint.valueOf("WHITE"), configItem.getItem().description());
-		AnchorPane.setTopAnchor(name, 8.0);
-		AnchorPane.setLeftAnchor(name, 8.0);
 
-		ConfigButton button = new ConfigButton(false);;
+		ConfigButton button = new ConfigButton(configManager.getConfiguration(config.getGroup().value(), configItem.key(), ModifierlessKeybind.class).toString());
 		AnchorPane.setTopAnchor(button, 4.0);
 		AnchorPane.setBottomAnchor(button, 4.0);
 		AnchorPane.setRightAnchor(button, 0.0);
 		AnchorPane.setLeftAnchor(button, 190.0);
-		AtomicReference<FontAwesomeIcon> icon = new AtomicReference<>();
 
-		button.setText(configManager.getConfiguration(config.getGroup().value(), configItem.key(), ModifierlessKeybind.class).toString());
 		button.autosize();
 		button.setStyle("-fx-background-color: #252525; -fx-text-fill: CYAN; -jfx-button-type: RAISED;");
 
@@ -233,7 +250,7 @@ public class PluginConfigUI {
 			button.setText("Press any key...");
 			EventHandler<KeyEvent> keyListener = (e) -> {
 				configManager.setConfiguration(config.getGroup().value(), configItem.key(), new ModifierlessKeybind(getExtendedKeyCodeForChar(e.getCharacter().charAt(0)),
-						0));
+								0));
 				button.setText(e.getCharacter().toUpperCase());
 			};
 			EventHandler<KeyEvent> unregisterListener = (e) -> {
@@ -242,13 +259,45 @@ public class PluginConfigUI {
 			button.addEventHandler(KeyEvent.KEY_TYPED, keyListener);
 			button.addEventHandler(KeyEvent.KEY_TYPED, unregisterListener);
 		});
-		addConfigItemComponents(root, name, button);
+
+		addConfigItemComponents(config, configItem, root, name, button);
+	}
+
+	private void createDefaultKeyBindNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
+		Text name = createText(configItem.name(), Paint.valueOf("WHITE"), configItem.getItem().description());
+
+		ConfigButton button = new ConfigButton(configManager.getConfiguration(config.getGroup().value(), configItem.key(), Keybind.class).toString());
+		AnchorPane.setTopAnchor(button, 4.0);
+		AnchorPane.setBottomAnchor(button, 4.0);
+		AnchorPane.setRightAnchor(button, 0.0);
+		AnchorPane.setLeftAnchor(button, 190.0);
+
+		button.autosize();
+		button.setStyle("-fx-background-color: #252525; -fx-text-fill: CYAN; -jfx-button-type: RAISED;");
+
+		button.pressedProperty().addListener((options, oldValue, pressed) -> {
+			if (!pressed) {
+				return;
+			}
+
+			button.setText("Press any key...");
+			EventHandler<KeyEvent> keyListener = (e) -> {
+				configManager.setConfiguration(config.getGroup().value(), configItem.key(), new ModifierlessKeybind(getExtendedKeyCodeForChar(e.getCharacter().charAt(0)),
+								0));
+				button.setText(e.getCharacter().toUpperCase());
+			};
+			EventHandler<KeyEvent> unregisterListener = (e) -> {
+				button.removeEventHandler(KeyEvent.KEY_TYPED, keyListener);
+			};
+			button.addEventHandler(KeyEvent.KEY_TYPED, keyListener);
+			button.addEventHandler(KeyEvent.KEY_TYPED, unregisterListener);
+		});
+
+		addConfigItemComponents(config, configItem, root, name, button);
 	}
 
 	private void createEnumNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
 		Text name = createText(configItem.name(), Paint.valueOf("WHITE"), configItem.getItem().description());
-		AnchorPane.setTopAnchor(name, 8.0);
-		AnchorPane.setLeftAnchor(name, 8.0);
 
 		Class<? extends Enum> type = (Class<? extends Enum>) configItem.getType();
 		Enum<?> currentConfigEnum = Enum.valueOf(type, configManager.getConfiguration(config.getGroup().value(), configItem.key()));
@@ -263,57 +312,48 @@ public class PluginConfigUI {
 		JFXComboBox<Enum<?>> comboBox = new JFXComboBox<>(observableList);
 		comboBox.setValue(currentToSet);
 
-		AnchorPane.setLeftAnchor(comboBox, 200.0);
 		AnchorPane.setRightAnchor(comboBox, 8.0);
-		AnchorPane.setTopAnchor(comboBox, 8.0);
-		AnchorPane.setBottomAnchor(comboBox, 8.0);
+		AnchorPane.setTopAnchor(comboBox, 0.0);
+		AnchorPane.setLeftAnchor(comboBox, 150.0);
 
 		comboBox.getStylesheets().add("css/plugins/jfx-combobox.css");
 		comboBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
 			updateConfigItemValue(config, configItem, newValue.name());
 		});
 
-		addConfigItemComponents(root, name, comboBox);
+		addConfigItemComponents(config, configItem, root, name, comboBox);
 	}
 
 	private void createdDoubleTextNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
 		Text name = createText(configItem.name(), Paint.valueOf("WHITE"), configItem.getItem().description());
-		AnchorPane.setTopAnchor(name, 8.0);
-		AnchorPane.setLeftAnchor(name, 8.0);
 
 		JFXTextField textField = new JFXTextField();
-
 		AnchorPane.setLeftAnchor(textField, 200.0);
 		AnchorPane.setRightAnchor(textField, 8.0);
 
-		textField.setFont(Font.font(18));
+		textField.setFont(Font.font(MeteorLiteClientModule.METEOR_FONT_SIZE));
 		textField.setText(configManager.getConfiguration(config.getGroup().value(), configItem.key(), String.class));
-		textField.addEventHandler(KeyEvent.KEY_TYPED, (e) ->
-		{
-			if (isInputValidDouble(configItem, textField.getText()))
-				updateConfigItemValue(config, configItem, Double.parseDouble(textField.getText()));
-			else {
-				textField.clear();
-				textField.setText("0.0");
-				updateConfigItemValue(config, configItem, 0.0);
+		textField.textProperty().addListener((obs, oldValue, newValue) -> {
+			double inputValue = checkDoubleInput(configItem, newValue);
+			if (inputValue != Double.MIN_VALUE) {
+				updateConfigItemValue(config, configItem, inputValue);
 			}
 		});
+
 		textField.getStylesheets().add("css/plugins/jfx-textfield.css");
 
-		addConfigItemComponents(root, name, textField);
+		addConfigItemComponents(config, configItem, root, name, textField);
 	}
 
-	private void createStringNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor descriptor) {
+	private void createStringAreaNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor descriptor) {
 		Text name = createText(descriptor.name(), Paint.valueOf("WHITE"), descriptor.getItem().description());
-		AnchorPane.setLeftAnchor(name, 8.0);
-		AnchorPane.setTopAnchor(name, 8.0);
 
 		JFXTextArea textArea = new JFXTextArea();
-		AnchorPane.setLeftAnchor(textArea, 8.0);
-		AnchorPane.setRightAnchor(textArea, 8.0);
-		AnchorPane.setTopAnchor(textArea, 34.0);
+		AnchorPane.setLeftAnchor(textArea, 0.0);
+		AnchorPane.setRightAnchor(textArea, 0.0);
+		AnchorPane.setTopAnchor(textArea, 24.0);
 		AnchorPane.setBottomAnchor(textArea, 8.0);
-		textArea.setFont(Font.font(18));
+		textArea.setFont(Font.font(MeteorLiteClientModule.METEOR_FONT_SIZE));
 
 		textArea.setWrapText(true);
 		textArea.setText(configManager.getConfiguration(config.getGroup().value(), descriptor.key(), String.class));
@@ -321,20 +361,34 @@ public class PluginConfigUI {
 		textArea.setStyle("-jfx-focus-color: CYAN;");
 		textArea.textProperty().addListener((observable, oldValue, newValue) -> updateConfigItemValue(config, descriptor, newValue));
 
-		addConfigItemComponents(root, name, textArea);
+		addConfigItemComponents(config, descriptor, root, name, textArea);
 	}
 
+	private void createStringNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor descriptor) {
+		Text name = createText(descriptor.name(), Paint.valueOf("WHITE"), descriptor.getItem().description());
+
+		TextField textfield = descriptor.getItem().secret() ? new JFXPasswordField() : new JFXTextField();
+		AnchorPane.setLeftAnchor(textfield, 0.0);
+		AnchorPane.setRightAnchor(textfield, 0.0);
+		AnchorPane.setTopAnchor(textfield, 34.0);
+		AnchorPane.setBottomAnchor(textfield, 8.0);
+		textfield.setFont(Font.font(MeteorLiteClientModule.METEOR_FONT_SIZE));
+
+		textfield.setText(configManager.getConfiguration(config.getGroup().value(), descriptor.key(), String.class));
+		textfield.getStylesheets().add("css/plugins/jfx-textfield.css");
+		textfield.setStyle("-jfx-focus-color: CYAN;");
+		textfield.textProperty().addListener((observable, oldValue, newValue) -> updateConfigItemValue(config, descriptor, newValue));
+
+		addConfigItemComponents(config, descriptor, root, name, textfield);
+	}
 
 	private void createBooleanNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor descriptor) {
 		Text name = createText(descriptor.name(), Paint.valueOf("WHITE"), descriptor.getItem().description());
-		AnchorPane.setLeftAnchor(name, 8.0);
-		AnchorPane.setTopAnchor(name, 8.0);
 
 		PluginToggleButton toggleButton = new PluginToggleButton(plugin);
 		AnchorPane.setTopAnchor(toggleButton, 2.0);
 		AnchorPane.setBottomAnchor(toggleButton, 2.0);
 		AnchorPane.setRightAnchor(toggleButton, 8.0);
-		toggleButton.setSize(6);
 
 		Object o = configManager.getConfiguration(config.getGroup().value(), descriptor.key(), descriptor.getType());
 		boolean enabled = false;
@@ -343,18 +397,21 @@ public class PluginConfigUI {
 		}
 		toggleButton.setSelected(enabled);
 		toggleButton.setStyle("-fx-text-fill: CYAN;");
-		toggleButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> updateConfigItemValue(config, descriptor, toggleButton.isSelected()));
+		toggleButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
+			updateConfigItemValue(config, descriptor, toggleButton.isSelected());
+			if (hidesOtherConfigs(descriptor)) {
+				rebuild();
+			}
+		});
 
-		addConfigItemComponents(root, name, toggleButton);
+		addConfigItemComponents(config, descriptor, root, name, toggleButton);
 	}
 
 	private void createIntegerSliderNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor descriptor) {
 		Text name = createText(descriptor.name(), Paint.valueOf("WHITE"), descriptor.getItem().description());
-		AnchorPane.setTopAnchor(name, 8.0);
-		AnchorPane.setLeftAnchor(name, 8.0);
 
 		JFXSlider slider = new JFXSlider();
-		AnchorPane.setLeftAnchor(slider, 8.0);
+		AnchorPane.setLeftAnchor(slider, 0.0);
 		AnchorPane.setTopAnchor(slider, 34.0);
 		AnchorPane.setRightAnchor(slider, 8.0);
 
@@ -364,6 +421,7 @@ public class PluginConfigUI {
 			min = descriptor.getRange().min();
 			max = descriptor.getRange().max();
 		}
+
 		slider.setValue(configManager.getConfiguration(config.getGroup().value(), descriptor.key(), Double.class));
 		slider.setMax(max);
 		slider.setMin(min);
@@ -374,50 +432,39 @@ public class PluginConfigUI {
 		slider.setShowTickLabels(true);
 		slider.addEventHandler(MouseEvent.MOUSE_DRAGGED, (e) -> updateConfigItemValue(config, descriptor, (int) slider.getValue()));
 
-		addConfigItemComponents(root, name, slider);
+		addConfigItemComponents(config, descriptor, root, name, slider);
 	}
 
 	private void createIntegerTextNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor descriptor) {
 		Text name = createText(descriptor.name(), Paint.valueOf("WHITE"), descriptor.getItem().description());
-		AnchorPane.setTopAnchor(name, 8.0);
-		AnchorPane.setLeftAnchor(name, 8.0);
 
 		JFXTextField textField = new JFXTextField();
-		AnchorPane.setTopAnchor(textField, 8.0);
-		AnchorPane.setBottomAnchor(textField, 8.0);
+		AnchorPane.setTopAnchor(textField, 1.0);
+//		AnchorPane.setBottomAnchor(textField, 1.0);
 		AnchorPane.setLeftAnchor(textField, 200.0);
 		AnchorPane.setRightAnchor(textField, 8.0);
 
-		textField.setFont(Font.font(18));
+		textField.setFont(Font.font(MeteorLiteClientModule.METEOR_FONT_SIZE));
 		textField.setText(configManager.getConfiguration(config.getGroup().value(), descriptor.key(), String.class));
-		textField.addEventHandler(KeyEvent.KEY_TYPED, (e) ->
-		{
-			int min = 0;
-			if (descriptor.getRange() != null) {
-				min = descriptor.getRange().min();
-			}
-
-			if (isInputValidInteger(descriptor, textField.getText())) {
-				updateConfigItemValue(config, descriptor, Integer.parseInt(textField.getText()));
-			} else {
-				textField.setText("" + min);
-				updateConfigItemValue(config, descriptor, min);
+		textField.textProperty().addListener((obs, oldValue, newValue) -> {
+			int inputValue = checkIntInput(descriptor, newValue);
+			if (inputValue != Integer.MIN_VALUE) {
+				updateConfigItemValue(config, descriptor, inputValue);
 			}
 		});
+
 		textField.setStyle("-jfx-focus-color: CYAN;");
 		textField.getStylesheets().add("css/plugins/jfx-textfield.css");
 
-		addConfigItemComponents(root, name, textField);
+		addConfigItemComponents(config, descriptor, root, name, textField);
 	}
 
 	private void createColorPickerNode(ConfigDescriptor config, Pane root, ConfigItemDescriptor configItem) {
 		Text name = createText(configItem.name(), Paint.valueOf("WHITE"), configItem.getItem().description());
-		AnchorPane.setTopAnchor(name, 8.0);
-		AnchorPane.setLeftAnchor(name, 8.0);
 
 		JFXColorPicker colorPicker = new JFXColorPicker();
-		AnchorPane.setTopAnchor(colorPicker, 8.0);
-		AnchorPane.setBottomAnchor(colorPicker, 8.0);
+		AnchorPane.setTopAnchor(colorPicker, 1.0);
+		AnchorPane.setBottomAnchor(colorPicker, 1.0);
 		AnchorPane.setLeftAnchor(colorPicker, 200.0);
 		AnchorPane.setRightAnchor(colorPicker, 8.0);
 
@@ -440,49 +487,54 @@ public class PluginConfigUI {
 			updateConfigItemValue(config, configItem, colorToSet);
 		});
 
-		addConfigItemComponents(root, name, colorPicker);
+		addConfigItemComponents(config, configItem, root, name, colorPicker);
 	}
 
-	private boolean isInputValidInteger(ConfigItemDescriptor descriptor, String input) {
+	private int checkIntInput(ConfigItemDescriptor descriptor, String input) {
+		if (input == null || input.isBlank()) {
+			return Integer.MIN_VALUE;
+		}
+
 		int i;
 		try {
 			i = Integer.parseInt(input);
 		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
+			return Integer.MIN_VALUE;
 		}
 
-		if (descriptor.getRange() == null)
-			return true;
+		Range range = descriptor.getRange();
+		if (range == null) {
+			return i;
+		}
 
-		if (descriptor.getRange().max() < i)
-			return false;
+		if (i >= range.min() && i <= range.max()) {
+			return i;
+		}
 
-		if (descriptor.getRange().min() > i)
-			return false;
-
-		return true;
+		return Integer.MIN_VALUE;
 	}
 
-	private boolean isInputValidDouble(ConfigItemDescriptor descriptor, String input) {
-		double d;
-		try {
-			d = Double.parseDouble(input);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
+	private double checkDoubleInput(ConfigItemDescriptor descriptor, String input) {
+		if (input == null || input.isBlank()) {
+			return Double.MIN_VALUE;
 		}
 
-		if (descriptor.getRange() == null)
-			return true;
+		double i;
+		try {
+			i = Double.parseDouble(input);
+		} catch (Exception e) {
+			return Double.MIN_VALUE;
+		}
 
-		if (descriptor.getRange().max() < Double.MIN_VALUE)
-			return false;
+		Range range = descriptor.getRange();
+		if (range == null) {
+			return i;
+		}
+		if (i >= range.min() && i <= range.max()) {
+			return i;
+		}
 
-		if (descriptor.getRange().min() > Double.MAX_VALUE)
-			return false;
-
-		return true;
+		return Double.MIN_VALUE;
 	}
 
 	private void updateConfigItemValue(ConfigDescriptor config, ConfigItemDescriptor configItem, Object value) {
@@ -490,33 +542,36 @@ public class PluginConfigUI {
 		lastPluginInteracted.updateConfig();
 	}
 
-	private AnchorPane createNode() {
-		AnchorPane node = new AnchorPane();
-		node.setStyle("-fx-background-color: #212121; -fx-border-style: solid;  -fx-border-color: #121212; -fx-border-width: 1;");
-		return node;
-	}
-
-	public ConfigSectionPane createSection(ConfigSection configSection) {
-		ConfigSectionPane section = new ConfigSectionPane(configSection.name());
+	public SectionPane createSection(ConfigSection configSection) {
+		SectionPane section = new SectionPane(configSection.name());
 		sections.put(section.getName(), section);
 		return section;
 	}
 
-	private void addConfigItemComponents(Pane root, Node... nodes) {
+	private void addConfigItemComponents(ConfigDescriptor cd, ConfigItemDescriptor cid, Pane root, Node... nodes) {
 		if (root instanceof VBox) {
-			Pane pane = createNode();
+			Pane pane = new PanelItem();
 			pane.getChildren().addAll(nodes);
+			if (!hideUnhide(cd, cid)) {
+				return;
+			}
+
 			root.getChildren().add(pane);
 		} else {
+			if (!hideUnhide(cd, cid)) {
+				return;
+			}
+
 			root.getChildren().addAll(nodes);
 		}
 	}
 
-	private Text createText(String text, Paint color, String tooltipText) {
-		Text label = new Text();
-		label.setText(text);
+	private MeteorText createText(String text, Paint color, String tooltipText) {
+		MeteorText label = new MeteorText(text);
+		AnchorPane.setTopAnchor(label, 3.0);
+		AnchorPane.setBottomAnchor(label, 3.0);
+		AnchorPane.setLeftAnchor(label, 4.0);
 		label.setFill(color);
-		label.setFont(Font.font(18));
 
 		if (tooltipText != null) {
 			JFXTooltip tooltip = new JFXTooltip();
@@ -538,9 +593,73 @@ public class PluginConfigUI {
 		return label;
 	}
 
-	@FXML
-	protected void closeConfig(MouseEvent event) throws IOException {
-		PluginListUI.INSTANCE.refreshPlugins();
-		MeteorLiteClientModule.showPlugins();
+	private boolean hidesOtherConfigs(ConfigItemDescriptor cid) {
+		Config config = plugin.getConfig(configManager);
+		ConfigDescriptor descriptor = configManager.getConfigDescriptor(config);
+		for (ConfigItemDescriptor item : descriptor.getItems()) {
+				if (item.getItem().hide().contains(cid.key()) || item.getItem().unhide().contains(cid.key())) {
+					return true;
+				}
+		}
+
+		return false;
+	}
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	private boolean hideUnhide(ConfigDescriptor cd, ConfigItemDescriptor cid) {
+		boolean unhide = cid.getItem().hidden();
+		boolean hide = !cid.getItem().hide().isEmpty();
+
+		if (unhide || hide) {
+			boolean show = false;
+
+			List<String> itemHide = Splitter
+							.onPattern("\\|\\|")
+							.trimResults()
+							.omitEmptyStrings()
+							.splitToList(String.format("%s || %s", cid.getItem().unhide(), cid.getItem().hide()));
+
+			for (ConfigItemDescriptor cid2 : cd.getItems()) {
+				if (itemHide.contains(cid2.getItem().keyName())) {
+					if (cid2.getType() == boolean.class) {
+						show = Boolean.parseBoolean(configManager.getConfiguration(cd.getGroup().value(), cid2.getItem().keyName()));
+					} else if (cid2.getType().isEnum()) {
+						Class<? extends Enum> type = (Class<? extends Enum>) cid2.getType();
+						try {
+							Enum selectedItem = Enum.valueOf(type, configManager.getConfiguration(cd.getGroup().value(), cid2.getItem().keyName()));
+							if (!cid.getItem().unhideValue().equals("")) {
+								List<String> unhideValue = Splitter
+												.onPattern("\\|\\|")
+												.trimResults()
+												.omitEmptyStrings()
+												.splitToList(cid.getItem().unhideValue());
+
+								show = unhideValue.contains(selectedItem.toString());
+							} else if (!cid.getItem().hideValue().equals("")) {
+								List<String> hideValue = Splitter
+												.onPattern("\\|\\|")
+												.trimResults()
+												.omitEmptyStrings()
+												.splitToList(cid.getItem().hideValue());
+
+								show = !hideValue.contains(selectedItem.toString());
+							}
+						} catch (IllegalArgumentException ignored) {
+						}
+					}
+				}
+			}
+
+			return (!unhide || show) && (!hide || !show);
+		}
+
+		return true;
+	}
+
+	@Subscribe
+	public void onPluginChanged(PluginChanged e) {
+		if (toggleButton != null && e.getPlugin().equals(plugin)) {
+			toggleButton.setSelected(e.isLoaded());
+		}
 	}
 }

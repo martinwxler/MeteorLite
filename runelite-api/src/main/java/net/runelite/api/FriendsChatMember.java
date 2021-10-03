@@ -27,7 +27,7 @@ package net.runelite.api;
 /**
  * Represents a friends chat member.
  */
-public interface FriendsChatMember extends ChatPlayer {
+public interface FriendsChatMember extends Nameable {
 
   /**
    * Gets the world the member is in.

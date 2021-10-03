@@ -7,18 +7,19 @@ import java.io.IOException;
 import java.util.Objects;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javax.inject.Inject;
+
 import lombok.Getter;
 import lombok.Setter;
 import meteor.MeteorLiteClientModule;
+import meteor.PluginManager;
 import meteor.config.Config;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
-import meteor.plugins.voidutils.OSRSUtils;
-import meteor.plugins.voidutils.tasks.PriorityTask;
-import meteor.plugins.voidutils.tasks.Task;
-import meteor.plugins.voidutils.tasks.TaskSet;
+import meteor.eventbus.events.PluginChanged;
 import meteor.task.Scheduler;
+import meteor.ui.MeteorUI;
 import meteor.ui.components.PluginToggleButton;
 import meteor.ui.controllers.PluginListUI;
 import meteor.ui.overlay.OverlayManager;
@@ -31,9 +32,6 @@ public class Plugin implements Module {
 
   @Inject
   public Client client;
-
-  @Inject
-  public OSRSUtils osrs;
 
   @Inject
   public EventBus eventBus;
@@ -56,23 +54,30 @@ public class Plugin implements Module {
   @Inject
   public OverlayManager overlayManager;
 
-  public TaskSet tasks = new TaskSet(this);
+  @Inject
+  private MeteorUI meteorUI;
+
+  private Scene configScene;
 
   public Plugin() {
-    logger.name = this.getClass().getAnnotation(PluginDescriptor.class).name();
+    logger.name = getDescriptor().name();
   }
 
   public void startup() { }
   public void shutdown() { }
   
   public void updateConfig() { }
-  public void resetConfiguration(){ }
+  public void resetConfiguration() { }
 
   @Override
   public void configure(Binder binder) { }
 
+  public PluginDescriptor getDescriptor() {
+    return getClass().getAnnotation(PluginDescriptor.class);
+  }
+
   public String getName() {
-    return getClass().getAnnotation(PluginDescriptor.class).name();
+    return getDescriptor().name();
   }
 
   public Config getConfig(ConfigManager configManager)
@@ -80,16 +85,20 @@ public class Plugin implements Module {
     return config;
   }
 
-  public void showConfig() {
-    Parent configRoot = null;
-    try {
-      configRoot = FXMLLoader.load(Objects.requireNonNull(ClassLoader.getSystemClassLoader()
-              .getResource("plugin-config.fxml")));
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+  private Parent configRoot = null;
 
-    MeteorLiteClientModule.updateRightPanel(configRoot, 370);
+  public void showConfig() {
+    if (configRoot == null) {
+      try {
+        configRoot = FXMLLoader.load(Objects.requireNonNull(ClassLoader.getSystemClassLoader()
+                .getResource("plugin-config.fxml")));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+    if (configScene == null)
+      configScene = new Scene(configRoot, 350, 800);
+    meteorUI.updateRightPanel(configScene);
   }
 
   public void unload() {
@@ -114,16 +123,52 @@ public class Plugin implements Module {
     updateConfig();
 
     PluginListUI.overrideToggleListener = true;
-    for (PluginToggleButton ptb : PluginListUI.configGroupPluginMap.values()) {
+    for (PluginToggleButton ptb : PluginListUI.toggleButtons.values()) {
       if (ptb.plugin == this) {
         ptb.setSelected(enabled);
       }
     }
 
     PluginListUI.overrideToggleListener = false;
+    eventBus.post(new PluginChanged(this, enabled));
   }
 
   public void toggle() {
+    boolean conflict = false;
+    for (Class<?> p : PluginManager.conflicts.keySet())
+      if (p == getClass()) {
+        conflict = true;
+        break;
+      }
+    for (Class<?> p : PluginManager.conflicts.values())
+      if (p == getClass()) {
+        conflict = true;
+        break;
+      }
+
+      if (conflict) {
+        Class<? extends Plugin> conflictingClass = null;
+        for (Class<? extends Plugin> p : PluginManager.conflicts.keySet()) {
+          if (p == this.getClass()) {
+            conflictingClass = PluginManager.conflicts.get(p);
+            break;
+          }
+        }
+        if (conflictingClass == null) {
+          for (Class<? extends Plugin> p : PluginManager.conflicts.keySet()) {
+            if (PluginManager.conflicts.get(p) == this.getClass()) {
+              conflictingClass = p;
+              break;
+            }
+          }
+        }
+        if (conflictingClass != null) {
+          Plugin instance = PluginManager.getInstance(conflictingClass);
+          if (instance.isEnabled())
+            instance.toggle();
+        }
+      }
+
     toggle(!enabled);
   }
 
@@ -138,24 +183,7 @@ public class Plugin implements Module {
 
   }
 
-  public <T extends Task> T getTask(Class<? extends Task> type) {
-    for (Task t : tasks.tasks) {
-      if (type.isInstance(t))
-      {
-        return (T) t;
-      }
-    }
-    return null;
+  public boolean isToggleable() {
+    return !getDescriptor().cantDisable();
   }
-
-  public <T extends PriorityTask> T getPriorityTask(Class<? extends Task> type) {
-    for (Task t : tasks.tasks) {
-      if (type.isInstance(t))
-      {
-        return (T) t;
-      }
-    }
-    return null;
-  }
-
 }
