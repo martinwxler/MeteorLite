@@ -76,7 +76,7 @@ public class HydraExtraOverlay extends Overlay {
             }
         }
 
-        if(config.ventTicks() && plugin.ventTicks > 0 && plugin.hydra.getNpc() != null && this.client.isInInstancedRegion()){
+        if(config.ventTicks() && plugin.ventTicks > 0 && plugin.hydra != null && plugin.hydra.getNpc() != null && this.client.isInInstancedRegion()){
             String text = String.valueOf(plugin.ventTicks);
             Font oldFont = graphics.getFont();
             graphics.setFont(FontManager.getRunescapeBoldFont());
@@ -153,7 +153,6 @@ public class HydraExtraOverlay extends Overlay {
                     Point pointShadow = new Point(textLoc.getX() + 1, textLoc.getY() + 1);
                     OverlayUtil.renderTextLocation(graphics, pointShadow, text, Color.BLACK);
                     OverlayUtil.renderTextLocation(graphics, textLoc, text, textColor);
-                    System.out.println("text done");
                     graphics.setFont(oldFont);
                 }
             }

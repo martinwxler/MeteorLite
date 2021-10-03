@@ -3,7 +3,9 @@ package meteor.plugins.alchemicalhydra;
 import com.google.inject.Provides;
 import lombok.AccessLevel;
 import lombok.Getter;
+import meteor.callback.ClientThread;
 import meteor.eventbus.events.ConfigChanged;
+import meteor.plugins.api.widgets.Prayers;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
@@ -13,13 +15,14 @@ import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.plugins.alchemicalhydra.Hydra.AttackStyle;
-import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayManager;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
 import java.util.Map.Entry;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 
 @PluginDescriptor(
 	name = "Alchemical Hydra",
@@ -50,6 +53,7 @@ public class HydraPlugin extends Plugin {
 	public GameObject redVent = null;
 	public GameObject greenVent = null;
 	public GameObject blueVent = null;
+	private boolean inFight = false;
 	public int ventTicks = 0;
 
 	@Inject
@@ -70,6 +74,8 @@ public class HydraPlugin extends Plugin {
 	@Inject
 	private OverlayManager overlayManager;
 
+	@Inject
+	private ClientThread clientThread;
 
 	@Provides
     public HydraConfig getConfig(ConfigManager configManager) {
@@ -166,6 +172,9 @@ public class HydraPlugin extends Plugin {
 				addOverlays();
 			}
 		}
+		if (state.getGameState() == GameState.LOADING){
+			inFight = false;
+		}
 	}
 
 	@Subscribe
@@ -188,6 +197,7 @@ public class HydraPlugin extends Plugin {
 				event.getNpc().getId() == 8618 || event.getNpc().getId() == 8619 || event.getNpc().getId() == 8620 ||
 				event.getNpc().getId() == 8621 || event.getNpc().getId() == 8622) {
 			immuneActive = true;
+
 		}
 	}
 
@@ -202,17 +212,25 @@ public class HydraPlugin extends Plugin {
 	private void onAnimationChanged(AnimationChanged animationChanged) {
 		Actor actor = animationChanged.getActor();
 
-		if(this.client.getLocalPlayer() != null) {
-			if (animationChanged.getActor().getName() != null && animationChanged.getActor() instanceof NPC) {
+		if(this.client.getLocalPlayer() != null)
+		{
+			if (animationChanged.getActor().getName() != null && animationChanged.getActor() instanceof NPC)
+			{
 				if (animationChanged.getActor().getName().toLowerCase().contains("alchemical hydra")
-						&& (animationChanged.getActor().getAnimation() == 9111 || animationChanged.getActor().getAnimation() == 9112 || animationChanged.getActor().getAnimation() == 9113)) {
-					if (config.attackChange()) {
+						&& (animationChanged.getActor().getAnimation() == 9111 || animationChanged.getActor().getAnimation() == 9112 || animationChanged.getActor().getAnimation() == 9113))
+				{
+					if (config.attackChange())
+					{
 						client.playSoundEffect(3924, this.config.attackChangeVolume());
 					}
 				}
-			} else if (animationChanged.getActor() instanceof Player && animationChanged.getActor().getAnimation() == 839) {
+			}
+
+			else if (animationChanged.getActor() instanceof Player && animationChanged.getActor().getAnimation() == 839)
+			{
 				if(this.client.isInInstancedRegion()) {
-					if (WorldPoint.fromLocalInstance(client, this.client.getLocalPlayer().getLocalLocation()).getRegionID() == 5536) {
+					if (WorldPoint.fromLocalInstance(client, this.client.getLocalPlayer().getLocalLocation()).getRegionID() == 5536)
+					{
 						ventTicks = 10;
 					}
 				}else{
@@ -300,7 +318,13 @@ public class HydraPlugin extends Plugin {
 		if (overlay.getStunTicks() > 0) {
 			overlay.setStunTicks(overlay.getStunTicks() - 1);
 		}
-
+		if (config.autoPray() && hydra != null && inFight && !client.isPrayerActive(hydra.getNextAttack().getPrayer()))
+		{
+			activatePrayer(hydra.getNextAttack().getPrayer());
+			if (config.offensivePrayerToggle()){
+				activatePrayer(config.offensivePrayer().getPrayer());
+			}
+		}
 		if(ventTicks > 0){
 			ventTicks--;
 			if(ventTicks == 0){
@@ -317,6 +341,13 @@ public class HydraPlugin extends Plugin {
 			greenVent = event.getGameObject();
 		}else if (event.getGameObject().getId() == 34570) {
 			blueVent = event.getGameObject();
+		}
+	}
+
+	@Subscribe
+	private void onWallObjestSpawned(WallObjectSpawned event){
+		if (event.getWallObject().getId() == 34556){
+			inFight = true;
 		}
 	}
 
@@ -350,4 +381,40 @@ public class HydraPlugin extends Plugin {
 		overlayManager.remove(sceneOverlay);
 	}
 
+	public void activatePrayer(Prayer prayer) {
+		if (prayer == null) {
+			return;
+		}
+
+		//check if prayer is already active this tick
+		if (client.isPrayerActive(prayer)) {
+			return;
+		}
+
+		WidgetInfo widgetInfo = prayer.getWidgetInfo();
+
+		if (widgetInfo == null) {
+			return;
+		}
+		Widget prayer_widget = client.getWidget(widgetInfo);
+
+		if (prayer_widget == null) {
+			return;
+		}
+
+		if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0) {
+			return;
+		}
+
+		clientThread.invoke(() ->
+				client.invokeMenuAction(
+						"Activate",
+						prayer_widget.getName(),
+						1,
+						MenuAction.CC_OP.getId(),
+						prayer_widget.getItemId(),
+						prayer_widget.getId()
+				)
+		);
+	}
 }
