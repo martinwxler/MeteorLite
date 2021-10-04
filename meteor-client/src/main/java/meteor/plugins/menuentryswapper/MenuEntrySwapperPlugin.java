@@ -988,7 +988,7 @@ public class MenuEntrySwapperPlugin extends Plugin {
         bankItemNames = new ArrayList<>();
         for (Item i : Objects.requireNonNull(client.getItemContainer(InventoryID.BANK)).getItems())
         {
-          bankItemNames.add(client.getItemDefinition((i.getId())).getName());
+          bankItemNames.add(client.getItemComposition((i.getId())).getName());
         }
       }
       List<String> invItemNames = new ArrayList<>();
@@ -999,7 +999,7 @@ public class MenuEntrySwapperPlugin extends Plugin {
           {
             for (Item i : Objects.requireNonNull(client.getItemContainer(InventoryID.INVENTORY)).getItems())
             {
-              invItemNames.add(client.getItemDefinition((i.getId())).getName());
+              invItemNames.add(client.getItemComposition((i.getId())).getName());
             }
             if ((invItemNames.contains("Clue scroll (easy)") || bankItemNames.contains("Clue scroll (easy)")))
             {
@@ -1012,7 +1012,7 @@ public class MenuEntrySwapperPlugin extends Plugin {
           {
             for (Item i : Objects.requireNonNull(client.getItemContainer(InventoryID.INVENTORY)).getItems())
             {
-              invItemNames.add(client.getItemDefinition((i.getId())).getName());
+              invItemNames.add(client.getItemComposition((i.getId())).getName());
             }
             if (invItemNames.contains("Clue scroll (beginner)") || bankItemNames.contains("Clue scroll (beginner)"))
             {
@@ -1025,7 +1025,7 @@ public class MenuEntrySwapperPlugin extends Plugin {
           {
             for (Item i : Objects.requireNonNull(client.getItemContainer(InventoryID.INVENTORY)).getItems())
             {
-              invItemNames.add(client.getItemDefinition((i.getId())).getName());
+              invItemNames.add(client.getItemComposition((i.getId())).getName());
             }
             if ((invItemNames.contains("Clue scroll (medium)") || bankItemNames.contains("Clue scroll (medium)")))
             {
@@ -1040,7 +1040,7 @@ public class MenuEntrySwapperPlugin extends Plugin {
           {
             for (Item i : Objects.requireNonNull(client.getItemContainer(InventoryID.INVENTORY)).getItems())
             {
-              invItemNames.add(client.getItemDefinition((i.getId())).getName());
+              invItemNames.add(client.getItemComposition((i.getId())).getName());
             }
             if ((invItemNames.contains("Clue scroll (hard)") || bankItemNames.contains("Clue scroll (hard)")))
             {
@@ -1054,7 +1054,7 @@ public class MenuEntrySwapperPlugin extends Plugin {
           {
             for (Item i : Objects.requireNonNull(client.getItemContainer(InventoryID.INVENTORY)).getItems())
             {
-              invItemNames.add(client.getItemDefinition((i.getId())).getName());
+              invItemNames.add(client.getItemComposition((i.getId())).getName());
             }
             if ((invItemNames.contains("Clue scroll (elite)") || bankItemNames.contains("Clue scroll (elite)")))
             {
