@@ -36,10 +36,12 @@ import meteor.plugins.menuentryswapper.util.CombatBraceletMode;
 import meteor.plugins.menuentryswapper.util.ConstructionCapeMode;
 import meteor.plugins.menuentryswapper.util.ConstructionMode;
 import meteor.plugins.menuentryswapper.util.CraftingCapeMode;
+import meteor.plugins.menuentryswapper.util.DiaryCapeMode;
 import meteor.plugins.menuentryswapper.util.DigsitePendantMode;
 import meteor.plugins.menuentryswapper.util.DrakansMedallionMode;
 import meteor.plugins.menuentryswapper.util.DuelingRingMode;
 import meteor.plugins.menuentryswapper.util.FairyRingMode;
+import meteor.plugins.menuentryswapper.util.FarmCapeMode;
 import meteor.plugins.menuentryswapper.util.GEItemCollectMode;
 import meteor.plugins.menuentryswapper.util.GamesNecklaceMode;
 import meteor.plugins.menuentryswapper.util.GloryMode;
@@ -47,7 +49,10 @@ import meteor.plugins.menuentryswapper.util.HouseAdvertisementMode;
 import meteor.plugins.menuentryswapper.util.HouseMode;
 import meteor.plugins.menuentryswapper.util.MagicCapeMode;
 import meteor.plugins.menuentryswapper.util.MaxCapeEquippedMode;
+import meteor.plugins.menuentryswapper.util.MusicCapeMode;
+import meteor.plugins.menuentryswapper.util.MythCapeMode;
 import meteor.plugins.menuentryswapper.util.NecklaceOfPassageMode;
+import meteor.plugins.menuentryswapper.util.QuestCapeMode;
 import meteor.plugins.menuentryswapper.util.RingOfWealthMode;
 import meteor.plugins.menuentryswapper.util.SellMode;
 import meteor.plugins.menuentryswapper.util.ShiftDepositMode;
@@ -983,10 +988,43 @@ public interface MenuEntrySwapperConfig extends Config {
   }
 
   @ConfigItem(
+      keyName = "swapDiaryCape",
+      name = "Diary Cape",
+      description = "Swap the left click option with 'teleport' on a Diary Cape.",
+      position = 13,
+      section = teleportationSection
+  )
+  default DiaryCapeMode getDiaryCapeMode() {
+    return DiaryCapeMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "swapFarmingCape",
+      name = "Farming Cape",
+      description = "Swap the left click option with 'teleport' on a Farming Cape.",
+      position = 14,
+      section = teleportationSection
+  )
+  default FarmCapeMode getFarmingCapeMode() {
+    return FarmCapeMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "swapQuestCape",
+      name = "Quest Cape",
+      description = "Swap the left click option with 'teleport' on a Quest Cape.",
+      position = 15,
+      section = teleportationSection
+  )
+  default QuestCapeMode getQuestCapeMode() {
+    return QuestCapeMode.OFF;
+  }
+
+  @ConfigItem(
       keyName = "magicCapeMode",
       name = "Magic Cape",
       description = "Swap the left click option with 'spellbook' on a Magic Cape.",
-      position = 13,
+      position = 16,
       section = teleportationSection
   )
   default MagicCapeMode getMagicCapeMode() {
@@ -994,10 +1032,34 @@ public interface MenuEntrySwapperConfig extends Config {
   }
 
   @ConfigItem(
+      keyName = "musicCapeMode",
+      name = "Music Cape",
+      description = "Swap the left click option with 'teleport' on a Music cape Cape.",
+      position = 17,
+      section = teleportationSection
+  )
+  default MusicCapeMode getMusicCapeMode()
+  {
+    return MusicCapeMode.OFF;
+  }
+
+  @ConfigItem(
+      keyName = "mythCapeMode",
+      name = "Myth Cape",
+      description = "Swap the left click option with 'teleport' on a Myth cape Cape.",
+      position = 18,
+      section = teleportationSection
+  )
+  default MythCapeMode getMythCapeMode()
+  {
+    return MythCapeMode.OFF;
+  }
+
+  @ConfigItem(
       keyName = "swapMaxCapeEquipped",
       name = "Max Cape",
       description = "Swap the left click 'remove' option with another on a worn Max Cape.",
-      position = 14,
+      position = 19,
       section = teleportationSection
   )
   default MaxCapeEquippedMode getMaxCapeEquippedMode() {

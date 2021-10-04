@@ -27,6 +27,7 @@ package meteor.plugins.alchemicalhydra;
 import meteor.config.*;
 
 import java.awt.*;
+import net.runelite.api.Prayer;
 
 @ConfigGroup("betterHydra")
 public interface HydraConfig extends Config
@@ -56,10 +57,44 @@ public interface HydraConfig extends Config
 	String lightningSection = "Lightning";
 
 	@ConfigItem(
+			keyName = "autoPrayer",
+			name = "Auto Prayer",
+			description = "Automatically switches your prayers because why not",
+			position = 0,
+			section = hydraSection
+	)
+	default boolean autoPray()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "offensivePrayerToggle",
+			name = "Offensive Prayer Toggle",
+			description = "Toggles the option to use offensive prayers with Auto Prayer",
+			position = 1,
+			section = hydraSection
+	)
+	default boolean offensivePrayerToggle()
+	{
+		return false;
+	}
+	@ConfigItem(
+			keyName = "offensivePrayer",
+			name = "Offensive Prayer",
+			description = "Choose which offensive prayer to use with Auto Prayer",
+			position = 2,
+			section = hydraSection
+	)
+	default OffensivePrayers offensivePrayer() {
+		return OffensivePrayers.RIGOUR;
+	}
+
+	@ConfigItem(
 		keyName = "counting",
 		name = "Prayer helper",
 		description = "Basically everything this plugin is known for. Also has attacks between specs and poison overlay. Shouldn't NOT use this tbh",
-		position = 1,
+		position = 3,
 		section = hydraSection
 	)
 	default boolean counting()
@@ -83,7 +118,7 @@ public interface HydraConfig extends Config
 		keyName = "stun",
 		name = "Stun timer",
 		description = "Shows when you can walk in fire phase",
-		position = 3,
+		position = 4,
 		section = hydraSection
 	)
 	default boolean stun()
@@ -96,7 +131,7 @@ public interface HydraConfig extends Config
 		keyName = "safeCol",
 		name = "Safe colour",
 		description = "Colour overlay will be when there's >2 attacks left",
-		position = 4,
+		position = 5,
 		section = hydraSection
 	)
 	default Color safeCol()
@@ -109,7 +144,7 @@ public interface HydraConfig extends Config
 		keyName = "medCol",
 		name = "Medium colour",
 		description = "Colour overlay will be when a input is coming up",
-		position = 5,
+		position = 6,
 		section = hydraSection
 	)
 	default Color medCol()
@@ -122,7 +157,7 @@ public interface HydraConfig extends Config
 		keyName = "badCol",
 		name = "Bad colour",
 		description = "Colour overlay will be when you have to do something NOW",
-		position = 6,
+		position = 7,
 		section = hydraSection
 	)
 	default Color badCol()
@@ -135,7 +170,7 @@ public interface HydraConfig extends Config
 		keyName = "poisonBorderCol",
 		name = "Poison border colour",
 		description = "Colour the edges of the area highlighted by poison special will be",
-		position = 7,
+		position = 8,
 		section = hydraSection
 	)
 	default Color poisonBorderCol()
@@ -148,7 +183,7 @@ public interface HydraConfig extends Config
 		keyName = "poisonCol",
 		name = "Poison colour",
 		description = "Colour the fill of the area highlighted by poison special will be",
-		position = 8,
+		position = 9,
 		section = hydraSection
 	)
 	default Color poisonCol()
@@ -187,7 +222,7 @@ public interface HydraConfig extends Config
 			keyName = "hydraImmunityOutline",
 			name = "Hydra immunity outline",
 			description = "Highlights hydra when it is not weakened",
-			position = 11,
+			position = 10,
 			section = hydraSection
 	)
 	default ImmunityMode hydraImmunityOutline()
@@ -200,7 +235,7 @@ public interface HydraConfig extends Config
 			keyName = "hydraImmunityColor",
 			name = "Hydra immunity color",
 			description = "Adjusts the color of the hydra outline when its immune",
-			position = 12,
+			position = 11,
 			section = hydraSection
 	)
 	default Color hydraImmunityColor() { return Color.WHITE; }
@@ -210,7 +245,7 @@ public interface HydraConfig extends Config
 			keyName = "hydraImmunityWidth",
 			name = "Hydra immunity width",
 			description = "Adjust the width of the hydra outline when its immune",
-			position = 13,
+			position = 12,
 			section = hydraSection
 	)
 	default int hydraImmunityWidth()
@@ -223,7 +258,7 @@ public interface HydraConfig extends Config
 			keyName = "hydraImmunityGlow",
 			name = "Hydra immunity glow",
 			description = "Specify between 0-4 how much of the model outline should be faded",
-			position = 14,
+			position = 13,
 			section = hydraSection
 	)
 	default int hydraImmunityGlow()
@@ -283,7 +318,7 @@ public interface HydraConfig extends Config
 			keyName = "showHpUntilPhaseChange",
 			name = "Show HP until phase change",
 			description = "Overlay hydra with hp remaining until next phase change.",
-			position = 19,
+			position = 14,
 			section = hydraSection
 	)
 	default boolean showHpUntilPhaseChange()
@@ -295,7 +330,7 @@ public interface HydraConfig extends Config
 			keyName = "attackChange",
 			name = "Attack change sound notification",
 			description = "Plays a sound when hydra switches its attack style.",
-			position = 20,
+			position = 15,
 			section = hydraSection
 	)
 	default boolean attackChange()
@@ -308,7 +343,7 @@ public interface HydraConfig extends Config
 			keyName = "attackChangeVolume",
 			name = "Attack change sound volume",
 			description = "Ding ding",
-			position = 21,
+			position = 16,
 			section = hydraSection
 	)
 	default int attackChangeVolume()
@@ -338,5 +373,23 @@ public interface HydraConfig extends Config
 		OFF,
 		OUTLINE,
 		TRUE_LOCATION
+	}
+
+	public enum OffensivePrayers{
+		EAGLE_EYE(Prayer.EAGLE_EYE),
+		RIGOUR(Prayer.RIGOUR),
+		PIETY(Prayer.PIETY);
+
+		private final Prayer prayer;
+
+		OffensivePrayers (Prayer prayer)
+		{
+			this.prayer = prayer;
+		}
+
+		public Prayer getPrayer()
+		{
+			return prayer;
+		}
 	}
 }

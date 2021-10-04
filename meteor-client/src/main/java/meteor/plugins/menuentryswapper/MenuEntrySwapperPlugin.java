@@ -945,8 +945,8 @@ public class MenuEntrySwapperPlugin extends Plugin {
 
   private void loadSwaps()
   {
-    hideAttackIgnoredNPCs = net.runelite.api.util.Text.fromCSV(config.hideAttackIgnoredNPCs());
-    hideCastIgnoredSpells = net.runelite.api.util.Text.fromCSV(config.hideCastIgnoredSpells());
+    hideAttackIgnoredNPCs = Text.fromCSV(config.hideAttackIgnoredNPCs().toLowerCase().trim());
+    hideCastIgnoredSpells = Text.fromCSV(config.hideCastIgnoredSpells().toLowerCase().trim());
   }
 
 
@@ -1077,7 +1077,7 @@ public class MenuEntrySwapperPlugin extends Plugin {
 
     if (config.hideCastRaids() && (client.getVar(Varbits.IN_RAID) == 1 || client.getVar(Varbits.THEATRE_OF_BLOOD) == 2))
     {
-      if (client.getSpellSelected() && !hideCastIgnoredSpells.contains(client.getSelectedSpellName()) && entry.getType() == MenuAction.SPELL_CAST_ON_PLAYER.getId())
+      if (client.getSpellSelected() && !hideCastIgnoredSpells.contains(Text.standardize(client.getSelectedSpellName())) && entry.getType() == MenuAction.SPELL_CAST_ON_PLAYER.getId())
       {
         return false;
       }
