@@ -26,18 +26,11 @@ package meteor.plugins.hiscorewise;
 
 import static meteor.ui.MeteorUI.lastButtonPressed;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ObjectArrays;
-import com.google.inject.Provides;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.EnumSet;
 import java.util.Objects;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -45,23 +38,19 @@ import javafx.scene.image.ImageView;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Provider;
-import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
-import meteor.eventbus.events.ConfigChanged;
 import meteor.eventbus.events.ToolbarButtonClicked;
 import meteor.menus.MenuManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
-import meteor.plugins.hiscore.HiscoreConfig;
-import meteor.plugins.hiscore.HiscoreController;
 import meteor.ui.MeteorUI;
 import meteor.ui.components.ToolbarButton;
 import meteor.ui.controllers.ToolbarController;
 import net.runelite.api.Client;
 
 @PluginDescriptor(
-	name = "HiScore",
-	description = "Enable the HiScore panel and an optional Lookup option on players",
+	name = "WiseOldMan Tracker",
+	description = "Enable the WiseOldMan tracker panel",
 	tags = {"panel", "players"},
 	loadWhenOutdated = true
 )
@@ -107,12 +96,6 @@ public class HiscoreWisePlugin extends Plugin
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	@Provides
-	public HiscoreConfig getConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(HiscoreConfig.class);
 	}
 
 	@Subscribe
