@@ -81,6 +81,7 @@ public class HiscoreWisePlugin extends Plugin
 		ImageView imageView = new ImageView(image);
 		imageView.setPreserveRatio(true);
 		navButton.setGraphic(imageView);
+		navButton.width = 150;
 		ToolbarController.addButton(navButton);
 	}
 
