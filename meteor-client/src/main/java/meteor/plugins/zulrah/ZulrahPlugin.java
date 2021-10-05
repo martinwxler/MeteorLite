@@ -19,14 +19,17 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import meteor.plugins.api.game.Combat;
+import meteor.callback.ClientThread;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
-import net.runelite.api.MenuEntry;
+import net.runelite.api.MenuAction;
 import net.runelite.api.NPC;
+import net.runelite.api.NpcID;
+import net.runelite.api.Prayer;
 import net.runelite.api.Projectile;
 import net.runelite.api.Renderable;
+import net.runelite.api.Skill;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ClientTick;
@@ -35,6 +38,8 @@ import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuEntryAdded;
+import net.runelite.api.events.NpcChanged;
+import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.ProjectileMoved;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
@@ -55,6 +60,7 @@ import meteor.ui.overlay.OverlayManager;
 import meteor.ui.overlay.infobox.Counter;
 import meteor.ui.overlay.infobox.InfoBoxManager;
 import meteor.util.ImageUtil;
+import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import org.sponge.util.Logger;
 
@@ -87,8 +93,10 @@ public class ZulrahPlugin extends Plugin implements KeyListener {
   private SceneOverlay sceneOverlay;
   @Inject
   private ZulrahConfig config;
-
+  @Inject
+  private ClientThread clientThread;
   private NPC zulrahNpc = null;
+  private NpcID npcID;
   private int stage = 0;
   private int phaseTicks = -1;
   private int attackTicks = -1;
@@ -110,8 +118,8 @@ public class ZulrahPlugin extends Plugin implements KeyListener {
     if (zulrahReset) {
       phaseTicks = 38;
     } else {
-      ZulrahPhase p = current != null ? getCurrentPhase((RotationType) current)
-          : getCurrentPhase((RotationType) potential);
+      ZulrahPhase p = current != null ? getCurrentPhase(current)
+          : getCurrentPhase(potential);
       Preconditions.checkNotNull(p,
           "Attempted to set phase ticks but current Zulrah phase was somehow null. Stage: "
               + stage);
@@ -160,6 +168,7 @@ public class ZulrahPlugin extends Plugin implements KeyListener {
     clearSnakelingCollection();
     holdingSnakelingHotkey = false;
     handleTotalTicksInfoBox(true);
+    firstJadAttack = false;
     log.debug("Zulrah Reset!");
   }
 
@@ -222,6 +231,8 @@ public class ZulrahPlugin extends Plugin implements KeyListener {
     }
   }
 
+  private boolean firstJadAttack = false;
+
   @Subscribe
   private void onGameTick(GameTick event) {
     if (client.getGameState() != GameState.LOGGED_IN || zulrahNpc == null) {
@@ -243,6 +254,56 @@ public class ZulrahPlugin extends Plugin implements KeyListener {
       toxicCloudsMap.replaceAll((k, v) -> v - 1);
     }
     handleTotalTicksInfoBox(false);
+    if (zulrahNpc != null && config.autoPray())
+    {
+      boolean jad = false;
+      Prayer prayer = null;
+      for (ZulrahData data : this.getZulrahData()) {
+        if (!data.getCurrentPhasePrayer().isPresent()) {
+          continue;
+        }
+        prayer = data.getCurrentPhasePrayer().get();
+        jad = data.isJad();
+      }
+      if (prayer != null && !jad) {
+        activatePrayer(prayer);
+      }
+      if (jad && !firstJadAttack)
+      {
+        firstJadAttack = true;
+        activatePrayer(prayer);
+      }
+    }
+  }
+
+  @Subscribe
+  public void onNpcChanged(NpcChanged npcCompositionChanged)
+  {
+    NPC npc = npcCompositionChanged.getNpc();
+    if (config.offensivePrayerToggle())
+    {
+      switch (npc.getId())
+      {
+        case NpcID.ZULRAH, NpcID.ZULRAH_2043 -> activatePrayer(
+            config.offensiveMagePrayer().getPrayer());
+        case NpcID.ZULRAH_2044 -> activatePrayer(config.offensiveRangePrayer().getPrayer());
+      }
+    }
+  }
+
+  @Subscribe
+  public void onNpcSpawned(NpcSpawned npcSpawned)
+  {
+    NPC npc = npcSpawned.getNpc();
+    if (config.offensivePrayerToggle())
+    {
+      switch (npc.getId())
+      {
+        case NpcID.ZULRAH, NpcID.ZULRAH_2043 -> activatePrayer(
+            config.offensiveMagePrayer().getPrayer());
+        case NpcID.ZULRAH_2044 -> activatePrayer(config.offensiveRangePrayer().getPrayer());
+      }
+    }
   }
 
   @Subscribe
@@ -286,6 +347,7 @@ public class ZulrahPlugin extends Plugin implements KeyListener {
         flipStandLocation = false;
         flipPhasePrayer = false;
         zulrahReset = true;
+        firstJadAttack = false;
         log.debug("Resetting Zulrah");
         break;
       }
@@ -341,10 +403,16 @@ public class ZulrahPlugin extends Plugin implements KeyListener {
     }
     Projectile p = event.getProjectile();
     switch (p.getId()) {
-      case 1045:
-      case 1047: {
+      case 1045, 1047 -> {
         projectilesMap.put(event.getPosition(), p.getRemainingCycles() / 30);
       }
+    }
+    if (event.getProjectile().getId() == 1046 && this.currentRotation != null && this.getCurrentPhase(this.currentRotation).getZulrahNpc().isJad()) { //Mage attack and Jad
+      activatePrayer(Prayer.PROTECT_FROM_MISSILES);
+    }
+
+    if (event.getProjectile().getId() == 1044 && this.currentRotation != null && this.getCurrentPhase(this.currentRotation).getZulrahNpc().isJad()) { //Range attack and Jad
+      activatePrayer(Prayer.PROTECT_FROM_MAGIC);
     }
   }
 
@@ -375,7 +443,9 @@ public class ZulrahPlugin extends Plugin implements KeyListener {
 
   @Nullable
   private ZulrahPhase getCurrentPhase(RotationType type) {
-    return stage >= type.getZulrahPhases().size() ? null : type.getZulrahPhases().get(stage);
+    if (type != null)
+      return stage >= type.getZulrahPhases().size() ? null : type.getZulrahPhases().get(stage);
+    return null;
   }
 
   @Nullable
@@ -473,5 +543,43 @@ public class ZulrahPlugin extends Plugin implements KeyListener {
         .getResourceStreamFromClass(ZulrahPlugin.class, "zulrah_melee.png");
     ZulrahPlugin.ZULRAH_IMAGES[2] = ImageUtil
         .getResourceStreamFromClass(ZulrahPlugin.class, "zulrah_magic.png");
+  }
+  public void activatePrayer(Prayer prayer) {
+    logger.debug("working");
+    logger.debug("praying: " + prayer);
+    if (prayer == null) {
+      return;
+    }
+
+    //check if prayer is already active this tick
+    if (client.isPrayerActive(prayer)) {
+      return;
+    }
+
+    WidgetInfo widgetInfo = prayer.getWidgetInfo();
+
+    if (widgetInfo == null) {
+      return;
+    }
+    Widget prayer_widget = client.getWidget(widgetInfo);
+
+    if (prayer_widget == null) {
+      return;
+    }
+
+    if (client.getBoostedSkillLevel(Skill.PRAYER) <= 0) {
+      return;
+    }
+
+    clientThread.invoke(() ->
+        client.invokeMenuAction(
+            "Activate",
+            prayer_widget.getName(),
+            1,
+            MenuAction.CC_OP.getId(),
+            prayer_widget.getItemId(),
+            prayer_widget.getId()
+        )
+    );
   }
 }

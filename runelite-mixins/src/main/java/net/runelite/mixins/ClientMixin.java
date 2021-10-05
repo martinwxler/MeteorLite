@@ -640,14 +640,6 @@ public abstract class ClientMixin implements RSClient {
 
   @Inject
   @Override
-  @Nonnull
-  public ItemComposition getItemDefinition(int id)
-  {
-    return getItemComposition(id);
-  }
-
-  @Inject
-  @Override
   public NPCComposition getNpcComposition(int id) {
     assert this.isClientThread() : "getNpcDefinition must be called on client thread";
     return getRSNpcComposition(id);
