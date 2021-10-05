@@ -33,6 +33,7 @@ import meteor.plugins.aoewarnings.AoeWarningPlugin;
 import meteor.plugins.api.example.deathevent.DeathEventPlugin;
 import meteor.plugins.autobankpin.AutoBankPinPlugin;
 import meteor.plugins.hiscore.HiscorePlugin;
+import meteor.plugins.hiscorewise.HiscoreWisePlugin;
 import meteor.plugins.hootoneclick.HootOneClickPlugin;
 import meteor.plugins.autoclicker.AutoClickerPlugin;
 import meteor.plugins.autologhop.AutoLogHop;
@@ -177,6 +178,7 @@ import meteor.plugins.worldmapwalker.WorldMapWalkerPlugin;
 import meteor.plugins.xpdrop.XpDropPlugin;
 import meteor.plugins.xpglobes.XpGlobesPlugin;
 import meteor.plugins.xptracker.XpTrackerPlugin;
+import meteor.plugins.xpupdater.XpUpdaterPlugin;
 import meteor.plugins.zulrah.ZulrahPlugin;
 import meteor.ui.components.Category;
 import meteor.ui.controllers.PluginListUI;
@@ -272,6 +274,7 @@ public class PluginManager {
 		plugins.add(new sGroundMarkerPlugin());
 		plugins.add(new HerbiboarPlugin());
 		plugins.add(new HiscorePlugin());
+		plugins.add(new HiscoreWisePlugin());
 		plugins.add(new HootAgilityPlugin());
 		plugins.add(new HootFighterPlugin());
 		plugins.add(new HootHerblorePlugin());
@@ -369,6 +372,7 @@ public class PluginManager {
 		plugins.add(new XpDropPlugin());
 		plugins.add(new XpTrackerPlugin());
 		plugins.add(new XpGlobesPlugin());
+		plugins.add(new XpUpdaterPlugin());
 		plugins.add(new ZulrahPlugin());
   }
 
