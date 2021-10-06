@@ -38,6 +38,8 @@ import javafx.scene.image.ImageView;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Provider;
+import meteor.MeteorLiteClientLauncher;
+import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ToolbarButtonClicked;
 import meteor.menus.MenuManager;
@@ -52,7 +54,7 @@ import net.runelite.api.Client;
 	name = "WiseOldMan Tracker",
 	description = "Enable the WiseOldMan tracker panel",
 	tags = {"panel", "players"},
-	loadWhenOutdated = true
+	cantDisable = true
 )
 public class HiscoreWisePlugin extends Plugin
 {
@@ -84,6 +86,9 @@ public class HiscoreWisePlugin extends Plugin
 	@Inject
 	public MeteorUI ui;
 
+	@Inject
+	private EventBus eventBus;
+
 	private static Scene wiseOldManPanel;
 	public static Scene skillOverviewPanel;
 	{
@@ -96,6 +101,8 @@ public class HiscoreWisePlugin extends Plugin
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		MeteorLiteClientLauncher.injector.injectMembers(this);
+		eventBus.register(this);
 	}
 
 	@Subscribe
