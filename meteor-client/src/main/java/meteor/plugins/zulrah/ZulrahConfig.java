@@ -10,6 +10,9 @@ import meteor.config.FontType;
 import meteor.config.Keybind;
 import meteor.config.Range;
 import meteor.config.Units;
+import meteor.plugins.alchemicalhydra.HydraConfig;
+import meteor.plugins.alchemicalhydra.HydraConfig.OffensivePrayers;
+import net.runelite.api.Prayer;
 
 @ConfigGroup("znzulrah")
 public interface ZulrahConfig extends Config {
@@ -174,6 +177,52 @@ public interface ZulrahConfig extends Config {
   @Alpha
   default Color zulrahTileColor() {
     return Color.LIGHT_GRAY;
+  }
+
+  @ConfigItem(
+      keyName = "autoPrayer",
+      name = "Auto Prayer",
+      description = "Automatically switches your prayers because why not",
+      position = 0,
+      section = fightHelperSection
+  )
+  default boolean autoPray()
+  {
+    return false;
+  }
+
+  @ConfigItem(
+      keyName = "offensivePrayerToggle",
+      name = "Offensive Prayer Toggle",
+      description = "Toggles the option to use offensive prayers with Auto Prayer",
+      position = 1,
+      section = fightHelperSection
+  )
+  default boolean offensivePrayerToggle()
+  {
+    return false;
+  }
+
+  @ConfigItem(
+      keyName = "offensiveRangePrayer",
+      name = "Offensive Range Prayer",
+      description = "Choose which offensive prayer to use with Auto Prayer",
+      position = 2,
+      section = fightHelperSection
+  )
+  default ZulrahConfig.OffensiveRangePrayers offensiveRangePrayer() {
+    return ZulrahConfig.OffensiveRangePrayers.RIGOUR;
+  }
+
+  @ConfigItem(
+      keyName = "offensiveMagePrayer",
+      name = "Offensive Mage Prayer",
+      description = "Choose which offensive prayer to use with Auto Prayer",
+      position = 2,
+      section = fightHelperSection
+  )
+  default ZulrahConfig.OffensiveMagePrayers offensiveMagePrayer() {
+    return ZulrahConfig.OffensiveMagePrayers.AUGURY;
   }
 
   @ConfigItem(
@@ -484,6 +533,43 @@ public interface ZulrahConfig extends Config {
 
     public String getName() {
       return this.name;
+    }
+  }
+  public enum OffensiveRangePrayers{
+    EAGLE_EYE(Prayer.EAGLE_EYE),
+    RIGOUR(Prayer.RIGOUR),
+    MYSTIC_MIGHT(Prayer.MYSTIC_MIGHT),
+    AUGURY(Prayer.AUGURY);
+
+    private final Prayer prayer;
+
+    OffensiveRangePrayers (Prayer prayer)
+    {
+      this.prayer = prayer;
+    }
+
+    public Prayer getPrayer()
+    {
+      return prayer;
+    }
+  }
+
+  public enum OffensiveMagePrayers{
+    EAGLE_EYE(Prayer.EAGLE_EYE),
+    RIGOUR(Prayer.RIGOUR),
+    MYSTIC_MIGHT(Prayer.MYSTIC_MIGHT),
+    AUGURY(Prayer.AUGURY);
+
+    private final Prayer prayer;
+
+    OffensiveMagePrayers (Prayer prayer)
+    {
+      this.prayer = prayer;
+    }
+
+    public Prayer getPrayer()
+    {
+      return prayer;
     }
   }
 }

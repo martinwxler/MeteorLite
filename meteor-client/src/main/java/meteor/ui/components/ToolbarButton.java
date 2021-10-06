@@ -13,10 +13,11 @@ import net.runelite.api.events.ConfigButtonClicked;
 
 public class ToolbarButton extends JFXButton {
 
+  public double width;
   /*
-  This must be manually defined because the size of a node cannot be determined before it is added
-  to a screen.
-   */
+    This must be manually defined because the size of a node cannot be determined before it is added
+    to a screen.
+     */
   @Getter
   @Setter
   int realWidth;

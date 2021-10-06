@@ -30,12 +30,16 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import meteor.config.MeteorLiteConfig;
 
 @Singleton
 public class MouseManager {
 
   // Button numbers greater than BUTTON3 have no constant identifier
   private static final int MOUSE_BUTTON_4 = 4;
+
+  @Inject
+  MeteorLiteConfig meteorLiteConfig;
 
   private final List<MouseListener> mouseListeners = new CopyOnWriteArrayList<>();
   private final List<MouseWheelListener> mouseWheelListeners = new CopyOnWriteArrayList<>();
@@ -72,11 +76,22 @@ public class MouseManager {
     mouseWheelListeners.remove(mouseWheelListener);
   }
 
+  private void checkExtraMouseButtons(MouseEvent mouseEvent)
+  {
+    // Prevent extra mouse buttons from being passed into the client,
+    // as it treats them all as left click
+    int button = mouseEvent.getButton();
+    if (button >= MOUSE_BUTTON_4 && meteorLiteConfig.blockExtraMouseButtons())
+    {
+      mouseEvent.consume();
+    }
+  }
+
   public MouseEvent processMousePressed(MouseEvent mouseEvent) {
     if (mouseEvent.isConsumed()) {
       return mouseEvent;
     }
-
+    checkExtraMouseButtons(mouseEvent);
     for (MouseListener mouseListener : mouseListeners) {
       mouseEvent = mouseListener.mousePressed(mouseEvent);
       if (mouseEvent.isConsumed()) {
@@ -90,7 +105,7 @@ public class MouseManager {
     if (mouseEvent.isConsumed()) {
       return mouseEvent;
     }
-
+    checkExtraMouseButtons(mouseEvent);
     for (MouseListener mouseListener : mouseListeners) {
       mouseEvent = mouseListener.mouseReleased(mouseEvent);
       if (mouseEvent.isConsumed()) {
@@ -104,7 +119,7 @@ public class MouseManager {
     if (mouseEvent.isConsumed()) {
       return mouseEvent;
     }
-
+    checkExtraMouseButtons(mouseEvent);
     for (MouseListener mouseListener : mouseListeners) {
       mouseEvent = mouseListener.mouseClicked(mouseEvent);
       if (mouseEvent.isConsumed()) {

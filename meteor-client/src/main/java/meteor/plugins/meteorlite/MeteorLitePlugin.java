@@ -74,7 +74,6 @@ public class MeteorLitePlugin extends Plugin {
         overlayManager.remove(interactionOverlay);
         mouseManager.unregisterMouseListener(interactionOverlay);
         eventBus.unregister(interactionManager);
-        eventBus.unregister(meteorLiteLoginScreen);
     }
 
     @Subscribe

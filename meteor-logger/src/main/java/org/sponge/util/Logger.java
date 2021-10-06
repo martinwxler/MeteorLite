@@ -18,7 +18,7 @@ public class Logger {
   public String name;
   public String plugin;
   String format = "%-35s%s%n";
-  private static boolean debugOutput = false;
+  private static boolean debugOutput = true;
 
   public Logger(String name) {
     this.name = name;

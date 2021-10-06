@@ -34,7 +34,8 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public enum ChatMessageType {
+public enum ChatMessageType
+{
   /**
    * A normal game message.
    */
@@ -175,28 +176,35 @@ public enum ChatMessageType {
    * Clan wars challenge for clans rather than FCs
    */
   CLAN_CLAN_WARS_CHALLENGE(110),
+
+  CLAN_GIM_FORM_GROUP(111),
+  CLAN_GIM_GROUP_WITH(112),
   /**
    * An unknown message type.
    */
   UNKNOWN(-1);
 
+  private final int type;
+
   private static final Map<Integer, ChatMessageType> CHAT_MESSAGE_TYPES = new HashMap<>();
 
-  static {
-    for (ChatMessageType chatMessageType : values()) {
+  static
+  {
+    for (ChatMessageType chatMessageType : values())
+    {
       CHAT_MESSAGE_TYPES.put(chatMessageType.type, chatMessageType);
     }
   }
 
-  private final int type;
-
   /**
-   * Utility method that maps the type value to its respective {@link ChatMessageType} value.
+   * Utility method that maps the type value to its respective
+   * {@link ChatMessageType} value.
    *
    * @param type the raw type
    * @return appropriate message type, or {@link #UNKNOWN}
    */
-  public static ChatMessageType of(int type) {
+  public static ChatMessageType of(int type)
+  {
     return CHAT_MESSAGE_TYPES.getOrDefault(type, UNKNOWN);
   }
 }

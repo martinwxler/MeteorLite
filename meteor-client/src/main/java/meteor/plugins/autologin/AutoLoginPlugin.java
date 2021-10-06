@@ -1,22 +1,18 @@
 package meteor.plugins.autologin;
 
 import com.google.inject.Provides;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.plugins.api.game.Game;
-import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.input.Keyboard;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.LoginStateChanged;
-import osrs.Login;
-
-import javax.inject.Inject;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 @PluginDescriptor(
 				name = "Auto Login",

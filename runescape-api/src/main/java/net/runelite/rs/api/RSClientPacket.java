@@ -3,7 +3,7 @@ package net.runelite.rs.api;
 import net.runelite.api.packets.ClientPacket;
 import net.runelite.mapping.Import;
 
-public interface RSClientPacket extends RSPacket, ClientPacket {
+public interface RSClientPacket extends ClientPacket {
     @Import("id")
     @Override
     int getId();

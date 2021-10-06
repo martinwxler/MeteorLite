@@ -47,7 +47,7 @@ public class ToolbarController {
 
   public static void addButton(ToolbarButton button) {
     buttons.add(button);
-    AnchorPane.setRightAnchor(button, getNextButtonPos());
+    AnchorPane.setRightAnchor(button, getNextButtonPos(button));
     staticAP.getChildren().add(button);
   }
 
@@ -55,16 +55,21 @@ public class ToolbarController {
     staticAP.getChildren().remove(button);
   }
 
-  public static double getNextButtonPos() {
+  public static double getNextButtonPos(ToolbarButton b) {
     double newButtonLayoutX = AnchorPane.getRightAnchor(staticPB) + PLUGINS_BUTTON_WIDTH + DEFAULT_SPACING;
     JFXButton lastButton = staticPB;
+    int layoutX = (int) newButtonLayoutX;
+    for (ToolbarButton button : buttons) {
+      if (button != b)
+      layoutX += button.width + 5;
+    }
     for (ToolbarButton button : buttons) {
       if (lastButton != staticPB) {
-        newButtonLayoutX = newButtonLayoutX + ((ToolbarButton)lastButton).getRealWidth() + DEFAULT_SPACING;
+        newButtonLayoutX = newButtonLayoutX + ((ToolbarButton)lastButton).width + DEFAULT_SPACING;
       }
       lastButton = button;
     }
-    return newButtonLayoutX;
+    return layoutX;
   }
 
   @FXML

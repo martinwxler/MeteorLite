@@ -90,6 +90,7 @@ public class HiscorePlugin extends Plugin
 
 	static {
 		navButton = new ToolbarButton(FontAwesomeIcon.LINE_CHART, "Hiscores");
+		navButton.width = 80;
 		ToolbarController.addButton(navButton);
 	}
 
