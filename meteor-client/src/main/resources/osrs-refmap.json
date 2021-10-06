@@ -256,7 +256,7 @@
   "iu": "osrs.class244",
   "iv": "osrs.Varps",
   "iw": "osrs.SpriteMask",
-  "iy": "osrs.class238",
+  "iy": "osrs.Packet",
   "iz": "osrs.ClientPacket",
   "ja": "osrs.class268",
   "jb": "osrs.Skills",

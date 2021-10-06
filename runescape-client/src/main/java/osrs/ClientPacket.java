@@ -8,7 +8,7 @@ import net.runelite.mapping.ObfuscatedSignature;
 
 @ObfuscatedName("iz")
 @Implements("ClientPacket")
-public class ClientPacket implements class238 {
+public class ClientPacket implements Packet {
 	@ObfuscatedName("l")
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
