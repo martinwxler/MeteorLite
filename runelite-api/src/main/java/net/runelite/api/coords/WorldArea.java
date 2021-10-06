@@ -613,13 +613,23 @@ public class WorldArea {
     return contains(locatable.getWorldLocation());
   }
 
-  public boolean contains(WorldPoint worldPoint) {
-    if (plane != worldPoint.getPlane()) {
-      return false;
-    }
+  /**
+   * Checks whether a tile is contained within the area and in the same plane.
+   *
+   * @return {@code true} if the tile is contained within the bounds of this area, {@code false} otherwise.
+   */
+  public boolean contains(WorldPoint worldPoint)
+  {
+    return distanceTo(worldPoint) == 0;
+  }
 
-    int targetX = worldPoint.getX();
-    int targetY = worldPoint.getY();
-    return targetX >= x && targetY >= y && targetX <= x + width && targetY <= y + height;
+  /**
+   * Checks whether a tile is contained within the area while ignoring the plane.
+   *
+   * @return {@code true} if the tile is contained within the bounds of this area regardless of plane, {@code false} otherwise.
+   */
+  public boolean contains2D(WorldPoint worldPoint)
+  {
+    return distanceTo2D(worldPoint) == 0;
   }
 }

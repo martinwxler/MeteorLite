@@ -2211,6 +2211,24 @@ public interface Client extends GameEngine {
   ClanSettings getGuestClanSettings();
 
   /**
+   * Get clan channel by id.
+   * @param clanId the clan id
+   * @return
+   * @see net.runelite.api.clan.ClanID
+   */
+  @Nullable
+  ClanChannel getClanChannel(int clanId);
+
+  /**
+   * Get clan settings by id
+   * @param clanId the clan id
+   * @return
+   * @see net.runelite.api.clan.ClanID
+   */
+  @Nullable
+  ClanSettings getClanSettings(int clanId);
+
+  /**
    * Hides graphics objects
    * @param graphicsObject
    */
