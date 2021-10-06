@@ -3,9 +3,9 @@ package osrs;
 import net.runelite.mapping.Export;
 import net.runelite.mapping.ObfuscatedName;
 
-@ObfuscatedName("lj")
+@ObfuscatedName("ly")
 public class class316 {
-	@ObfuscatedName("n")
+	@ObfuscatedName("l")
 	@Export("cp1252AsciiExtension")
 	public static final char[] cp1252AsciiExtension;
 

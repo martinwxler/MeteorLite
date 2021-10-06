@@ -6,27 +6,27 @@ import net.runelite.mapping.Implements;
 import net.runelite.mapping.ObfuscatedName;
 import net.runelite.mapping.ObfuscatedSignature;
 
-@ObfuscatedName("np")
+@ObfuscatedName("nf")
 @Implements("IterableNodeHashTableIterator")
 public class IterableNodeHashTableIterator implements Iterator {
-	@ObfuscatedName("n")
+	@ObfuscatedName("l")
 	@ObfuscatedSignature(
 		descriptor = "Lnz;"
 	)
 	@Export("hashTable")
 	IterableNodeHashTable hashTable;
-	@ObfuscatedName("c")
+	@ObfuscatedName("q")
 	@ObfuscatedSignature(
-		descriptor = "Lnr;"
+		descriptor = "Lnv;"
 	)
 	@Export("head")
 	Node head;
-	@ObfuscatedName("m")
+	@ObfuscatedName("f")
 	@Export("index")
 	int index;
-	@ObfuscatedName("k")
+	@ObfuscatedName("j")
 	@ObfuscatedSignature(
-		descriptor = "Lnr;"
+		descriptor = "Lnv;"
 	)
 	@Export("last")
 	Node last;
@@ -40,38 +40,12 @@ public class IterableNodeHashTableIterator implements Iterator {
 		this.start();
 	}
 
-	@ObfuscatedName("n")
+	@ObfuscatedName("l")
 	@Export("start")
 	void start() {
 		this.head = this.hashTable.buckets[0].previous;
 		this.index = 1;
 		this.last = null;
-	}
-
-	public boolean hasNext() {
-		if (this.hashTable.buckets[this.index - 1] != this.head) {
-			return true;
-		} else {
-			while (this.index < this.hashTable.size) {
-				if (this.hashTable.buckets[this.index++].previous != this.hashTable.buckets[this.index - 1]) {
-					this.head = this.hashTable.buckets[this.index - 1].previous;
-					return true;
-				}
-
-				this.head = this.hashTable.buckets[this.index - 1];
-			}
-
-			return false;
-		}
-	}
-
-	public void remove() {
-		if (this.last == null) {
-			throw new IllegalStateException();
-		} else {
-			this.last.remove();
-			this.last = null;
-		}
 	}
 
 	public Object next() {
@@ -94,5 +68,27 @@ public class IterableNodeHashTableIterator implements Iterator {
 			this.last = var1;
 			return var1;
 		}
+	}
+
+	public boolean hasNext() {
+		if (this.hashTable.buckets[this.index - 1] != this.head) {
+			return true;
+		} else {
+			while (this.index < this.hashTable.size) {
+				if (this.hashTable.buckets[this.index++].previous != this.hashTable.buckets[this.index - 1]) {
+					this.head = this.hashTable.buckets[this.index - 1].previous;
+					return true;
+				}
+
+				this.head = this.hashTable.buckets[this.index - 1];
+			}
+
+			return false;
+		}
+	}
+
+	public void remove() {
+		this.last.remove();
+		this.last = null;
 	}
 }

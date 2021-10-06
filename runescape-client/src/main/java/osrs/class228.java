@@ -2,6 +2,6 @@ package osrs;
 
 import net.runelite.mapping.ObfuscatedName;
 
-@ObfuscatedName("hf")
+@ObfuscatedName("hc")
 public interface class228 extends class230 {
 }

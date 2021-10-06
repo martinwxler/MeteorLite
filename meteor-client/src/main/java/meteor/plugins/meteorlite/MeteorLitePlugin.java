@@ -34,7 +34,6 @@ public class MeteorLitePlugin extends Plugin {
     @Inject
     private InteractionOverlay interactionOverlay;
 
-    @Inject
     private MeteorLiteLoginScreen meteorLiteLoginScreen;
 
     @Inject
@@ -56,16 +55,9 @@ public class MeteorLitePlugin extends Plugin {
         overlayManager.add(interactionOverlay);
         mouseManager.registerMouseListener(interactionOverlay);
         eventBus.register(interactionManager);
-        eventBus.register(meteorLiteLoginScreen);
 
         if (config.externalsLoadOnStartup()) {
             Game.getClient().getCallbacks().post(new ExternalsReloaded());
-        }
-
-        if (config.meteorLoginScreen()) {
-            meteorLiteLoginScreen.setCustom();
-        } else {
-            meteorLiteLoginScreen.setDefault();
         }
     }
 
@@ -74,7 +66,6 @@ public class MeteorLitePlugin extends Plugin {
         overlayManager.remove(interactionOverlay);
         mouseManager.unregisterMouseListener(interactionOverlay);
         eventBus.unregister(interactionManager);
-        eventBus.unregister(meteorLiteLoginScreen);
     }
 
     @Subscribe
@@ -92,14 +83,6 @@ public class MeteorLitePlugin extends Plugin {
     public void onConfigChanged(ConfigChanged event) {
         if (!event.getGroup().equals(MeteorLiteConfig.GROUP_NAME)) {
             return;
-        }
-
-        if (event.getKey().equals("meteorLoginScreen")) {
-            if (config.meteorLoginScreen()) {
-                meteorLiteLoginScreen.setCustom();
-            } else {
-                meteorLiteLoginScreen.setDefault();
-            }
         }
     }
 

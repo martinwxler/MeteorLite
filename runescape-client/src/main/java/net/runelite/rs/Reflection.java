@@ -110,7 +110,7 @@ public class Reflection {
     return Class.forName(name);
   }
 
-  public static Field findField(Class<?> clazz, String name) throws NoSuchFieldException {
+  public static Field findField(Class<?> clazz, String name) {
     try {
       for (Field f : clazz.getDeclaredFields()) {
         ObfuscatedName annotation = f.getAnnotation(ObfuscatedName.class);
@@ -124,8 +124,13 @@ public class Reflection {
 
       return clazz.getDeclaredField(name);
     } catch (NoSuchFieldException e) {
-      throw e;
+      try {
+        throw e;
+      } catch (NoSuchFieldException ex) {
+        ex.printStackTrace();
+      }
     }
+    return null;
   }
 
   public static String getMethodName(Method method) {

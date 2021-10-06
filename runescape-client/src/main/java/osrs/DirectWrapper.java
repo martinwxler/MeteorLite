@@ -4,10 +4,10 @@ import net.runelite.mapping.Export;
 import net.runelite.mapping.Implements;
 import net.runelite.mapping.ObfuscatedName;
 
-@ObfuscatedName("ir")
+@ObfuscatedName("it")
 @Implements("DirectWrapper")
 public class DirectWrapper extends Wrapper {
-	@ObfuscatedName("n")
+	@ObfuscatedName("l")
 	@Export("obj")
 	Object obj;
 
@@ -16,13 +16,13 @@ public class DirectWrapper extends Wrapper {
 		this.obj = var1;
 	}
 
-	@ObfuscatedName("n")
+	@ObfuscatedName("l")
 	@Export("get")
 	Object get() {
 		return this.obj;
 	}
 
-	@ObfuscatedName("c")
+	@ObfuscatedName("q")
 	@Export("isSoft")
 	boolean isSoft() {
 		return false;

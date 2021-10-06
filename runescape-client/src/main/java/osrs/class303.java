@@ -3,7 +3,7 @@ package osrs;
 import java.util.HashMap;
 import net.runelite.mapping.ObfuscatedName;
 
-@ObfuscatedName("kt")
+@ObfuscatedName("kv")
 public class class303 {
 	static {
 		new HashMap();
