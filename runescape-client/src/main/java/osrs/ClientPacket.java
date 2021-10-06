@@ -58,7 +58,7 @@ public class ClientPacket implements class238 {
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
 	)
-	public static final ClientPacket field2668;
+	public static final ClientPacket Packet_itemAction;
 	@ObfuscatedName("y")
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
@@ -73,7 +73,7 @@ public class ClientPacket implements class238 {
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
 	)
-	public static final ClientPacket field2711;
+	public static final ClientPacket Packet_NPCAction3Packet;
 	@ObfuscatedName("v")
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
@@ -133,7 +133,7 @@ public class ClientPacket implements class238 {
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
 	)
-	public static final ClientPacket field2688;
+	public static final ClientPacket Packet_widgetActionPacket;
 	@ObfuscatedName("d")
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
@@ -173,7 +173,7 @@ public class ClientPacket implements class238 {
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
 	)
-	public static final ClientPacket field2685;
+	public static final ClientPacket Packet_itemAction4Packet;
 	@ObfuscatedName("ao")
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
@@ -253,12 +253,12 @@ public class ClientPacket implements class238 {
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
 	)
-	public static final ClientPacket field2742;
+	public static final ClientPacket Packet_numberInput;
 	@ObfuscatedName("ae")
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
 	)
-	public static final ClientPacket field2708;
+	public static final ClientPacket Packet_gameObjectAction2Packet;
 	@ObfuscatedName("ai")
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
@@ -268,7 +268,7 @@ public class ClientPacket implements class238 {
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
 	)
-	public static final ClientPacket field2710;
+	public static final ClientPacket Packet_clickPacket;
 	@ObfuscatedName("bz")
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
@@ -283,22 +283,22 @@ public class ClientPacket implements class238 {
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
 	)
-	public static final ClientPacket field2719;
+	public static final ClientPacket Packet_spellOnItem;
 	@ObfuscatedName("bf")
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
 	)
-	public static final ClientPacket field2714;
+	public static final ClientPacket Packet_itemAction3Packet;
 	@ObfuscatedName("bj")
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
 	)
-	public static final ClientPacket field2705;
+	public static final ClientPacket Packet_bankItemActionPacket;
 	@ObfuscatedName("bo")
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
 	)
-	public static final ClientPacket field2716;
+	public static final ClientPacket Packet_itemOnItemPacket;
 	@ObfuscatedName("bx")
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
@@ -313,7 +313,7 @@ public class ClientPacket implements class238 {
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
 	)
-	public static final ClientPacket field2666;
+	public static final ClientPacket Packet_nameInput;
 	@ObfuscatedName("ba")
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
@@ -363,7 +363,7 @@ public class ClientPacket implements class238 {
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
 	)
-	public static final ClientPacket field2729;
+	public static final ClientPacket Packet_NPCActionPacket;
 	@ObfuscatedName("be")
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
@@ -373,7 +373,7 @@ public class ClientPacket implements class238 {
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
 	)
-	public static final ClientPacket field2731;
+	public static final ClientPacket Packet_itemAction2Packet;
 	@ObfuscatedName("bn")
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
@@ -423,7 +423,7 @@ public class ClientPacket implements class238 {
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
 	)
-	public static final ClientPacket field2741;
+	public static final ClientPacket Packet_textInput;
 	@ObfuscatedName("cx")
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
@@ -508,7 +508,7 @@ public class ClientPacket implements class238 {
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
 	)
-	public static final ClientPacket field2659;
+	public static final ClientPacket Packet_itemAction5Packet;
 	@ObfuscatedName("co")
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
@@ -518,7 +518,7 @@ public class ClientPacket implements class238 {
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
 	)
-	public static final ClientPacket field2760;
+	public static final ClientPacket Packet_widgetAction2Packet;
 	@ObfuscatedName("cb")
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
@@ -562,10 +562,10 @@ public class ClientPacket implements class238 {
 		field2665 = new ClientPacket(6, -1);
 		field2689 = new ClientPacket(7, 8);
 		field2667 = new ClientPacket(8, -2);
-		field2668 = new ClientPacket(9, 8);
+		Packet_itemAction = new ClientPacket(9, 8);
 		field2690 = new ClientPacket(10, 1);
 		field2672 = new ClientPacket(11, 15);
-		field2711 = new ClientPacket(12, 3);
+		Packet_NPCAction3Packet = new ClientPacket(12, 3);
 		field2699 = new ClientPacket(13, 8);
 		field2673 = new ClientPacket(14, 2);
 		field2670 = new ClientPacket(15, 8);
@@ -577,7 +577,7 @@ public class ClientPacket implements class238 {
 		field2680 = new ClientPacket(21, 0);
 		field2681 = new ClientPacket(22, 15);
 		field2682 = new ClientPacket(23, 3);
-		field2688 = new ClientPacket(24, 8);
+		Packet_widgetActionPacket = new ClientPacket(24, 8);
 		field2684 = new ClientPacket(25, 16);
 		field2758 = new ClientPacket(26, -1);
 		field2686 = new ClientPacket(27, -1);
@@ -585,7 +585,7 @@ public class ClientPacket implements class238 {
 		field2692 = new ClientPacket(29, 7);
 		field2675 = new ClientPacket(30, 13);
 		field2696 = new ClientPacket(31, -1);
-		field2685 = new ClientPacket(32, 8);
+		Packet_itemAction4Packet = new ClientPacket(32, 8);
 		field2707 = new ClientPacket(33, 7);
 		field2748 = new ClientPacket(34, -1);
 		field2691 = new ClientPacket(35, 3);
@@ -601,19 +601,19 @@ public class ClientPacket implements class238 {
 		field2704 = new ClientPacket(45, -1);
 		field2671 = new ClientPacket(46, 16);
 		field2750 = new ClientPacket(47, 9);
-		field2742 = new ClientPacket(48, 4);
-		field2708 = new ClientPacket(49, 7);
+		Packet_numberInput = new ClientPacket(48, 4);
+		Packet_gameObjectAction2Packet = new ClientPacket(49, 7);
 		field2709 = new ClientPacket(50, 3);
-		field2710 = new ClientPacket(51, 6);
+		Packet_clickPacket = new ClientPacket(51, 6);
 		field2683 = new ClientPacket(52, 7);
 		field2712 = new ClientPacket(53, 7);
-		field2719 = new ClientPacket(54, 14);
-		field2714 = new ClientPacket(55, 8);
-		field2705 = new ClientPacket(56, 8);
-		field2716 = new ClientPacket(57, 16);
+		Packet_spellOnItem = new ClientPacket(54, 14);
+		Packet_itemAction3Packet = new ClientPacket(55, 8);
+		Packet_bankItemActionPacket = new ClientPacket(56, 8);
+		Packet_itemOnItemPacket = new ClientPacket(57, 16);
 		field2717 = new ClientPacket(58, 11);
 		field2718 = new ClientPacket(59, 5);
-		field2666 = new ClientPacket(60, -1);
+		Packet_nameInput = new ClientPacket(60, -1);
 		field2720 = new ClientPacket(61, 4);
 		field2695 = new ClientPacket(62, 3);
 		field2722 = new ClientPacket(63, 8);
@@ -623,9 +623,9 @@ public class ClientPacket implements class238 {
 		field2669 = new ClientPacket(67, 0);
 		field2721 = new ClientPacket(68, 3);
 		field2728 = new ClientPacket(69, 15);
-		field2729 = new ClientPacket(70, 3);
+		Packet_NPCActionPacket = new ClientPacket(70, 3);
 		field2730 = new ClientPacket(71, 8);
-		field2731 = new ClientPacket(72, 8);
+		Packet_itemAction2Packet = new ClientPacket(72, 8);
 		field2732 = new ClientPacket(73, 10);
 		field2733 = new ClientPacket(74, 3);
 		field2734 = new ClientPacket(75, 6);
@@ -635,7 +635,7 @@ public class ClientPacket implements class238 {
 		field2661 = new ClientPacket(79, -1);
 		field2739 = new ClientPacket(80, 4);
 		field2740 = new ClientPacket(81, 3);
-		field2741 = new ClientPacket(82, -1);
+		Packet_textInput = new ClientPacket(82, -1);
 		field2698 = new ClientPacket(83, 8);
 		field2743 = new ClientPacket(84, 8);
 		field2674 = new ClientPacket(85, -1);
@@ -652,9 +652,9 @@ public class ClientPacket implements class238 {
 		field2738 = new ClientPacket(96, 8);
 		field2756 = new ClientPacket(97, -1);
 		field2757 = new ClientPacket(98, 2);
-		field2659 = new ClientPacket(99, 8);
+		Packet_itemAction5Packet = new ClientPacket(99, 8);
 		field2715 = new ClientPacket(100, -1);
-		field2760 = new ClientPacket(101, 8);
+		Packet_widgetAction2Packet = new ClientPacket(101, 8);
 		field2761 = new ClientPacket(102, 3);
 		field2762 = new ClientPacket(103, 7);
 		field2763 = new ClientPacket(104, 15);

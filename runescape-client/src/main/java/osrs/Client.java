@@ -3259,7 +3259,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 							}
 
 							var5 = (int)var17;
-							var19 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2710, packetWriter.isaacCipher);
+							var19 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.Packet_clickPacket, packetWriter.isaacCipher);
 							var19.packetBuffer.writeShort((MouseHandler.MouseHandler_lastButton == 2 ? 1 : 0) + (var5 << 1));
 							var19.packetBuffer.writeShort(var4);
 							var19.packetBuffer.writeShort(var3);
