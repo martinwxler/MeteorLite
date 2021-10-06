@@ -1,6 +1,6 @@
 package net.runelite.api.packets;
 
-public interface ClientPacket extends Packet {
+public interface ClientPacket {
     int getId();
     int getLength();
 }

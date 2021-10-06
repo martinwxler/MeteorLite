@@ -9,7 +9,7 @@ import net.runelite.rs.ScriptOpcodes;
 
 @ObfuscatedName("ip")
 @Implements("LoginPacket")
-public class LoginPacket implements Packet {
+public class LoginPacket implements class238 {
 	@ObfuscatedName("l")
 	@ObfuscatedSignature(
 		descriptor = "Lip;"
