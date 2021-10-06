@@ -25,22 +25,7 @@
  */
 package meteor.plugins.agility;
 
-import static net.runelite.api.NullObjectID.NULL_25337;
-import static net.runelite.api.NullObjectID.NULL_26371;
-import static net.runelite.api.NullObjectID.NULL_26375;
-import static net.runelite.api.NullObjectID.NULL_26561;
-import static net.runelite.api.NullObjectID.NULL_26562;
-import static net.runelite.api.NullObjectID.NULL_26884;
-import static net.runelite.api.NullObjectID.NULL_26886;
-import static net.runelite.api.NullObjectID.NULL_29868;
-import static net.runelite.api.NullObjectID.NULL_29869;
-import static net.runelite.api.NullObjectID.NULL_29870;
-import static net.runelite.api.NullObjectID.NULL_31823;
-import static net.runelite.api.NullObjectID.NULL_31849;
-import static net.runelite.api.NullObjectID.NULL_33327;
-import static net.runelite.api.NullObjectID.NULL_33328;
-import static net.runelite.api.NullObjectID.NULL_39541;
-import static net.runelite.api.NullObjectID.NULL_39542;
+import static net.runelite.api.NullObjectID.*;
 import static net.runelite.api.ObjectID.A_WOODEN_LOG;
 import static net.runelite.api.ObjectID.BALANCING_LEDGE_23548;
 import static net.runelite.api.ObjectID.BIG_WINDOW;
@@ -335,7 +320,7 @@ public enum AgilityShortcut {
   GRAND_EXCHANGE_UNDERWALL_TUNNEL(21, "Underwall Tunnel", new WorldPoint(3139, 3515, 0),
       UNDERWALL_TUNNEL_16529, UNDERWALL_TUNNEL_16530),
   BRIMHAVEN_DUNGEON_PIPE(22, "Pipe Squeeze", new WorldPoint(2654, 9569, 0), PIPE_21728),
-  OBSERVATORY_SCALE_CLIFF(23, "Grapple Rocks", new WorldPoint(2447, 3155, 0), NULL_31849),
+  OBSERVATORY_SCALE_CLIFF(23, "Grapple Rocks", new WorldPoint(2447, 3155, 0), NULL_31849, NULL_31852),
   EAGLES_PEAK_ROCK_CLIMB(25, "Rock Climb", new WorldPoint(2320, 3499, 0), ROCKS_19849),
   FALADOR_UNDERWALL_TUNNEL(26, "Underwall Tunnel", new WorldPoint(2947, 3313, 0), UNDERWALL_TUNNEL,
       UNDERWALL_TUNNEL_16528),
