@@ -277,9 +277,9 @@ public class TextureProvider implements TextureLoader {
 			IndexedSprite[] var11 = KitDefinition.method2934(var1, var8, var9);
 			class16.title_muteSprite = var11;
 			class397.options_buttons_0Sprite = class131.SpriteBuffer_getIndexedSpriteByName(var1, "options_radio_buttons,0", "");
-			Login.field876 = class131.SpriteBuffer_getIndexedSpriteByName(var1, "options_radio_buttons,4", "");
+			Login.optionSprite = class131.SpriteBuffer_getIndexedSpriteByName(var1, "options_radio_buttons,4", "");
 			FileSystem.options_buttons_2Sprite = class131.SpriteBuffer_getIndexedSpriteByName(var1, "options_radio_buttons,2", "");
-			Login.field877 = class131.SpriteBuffer_getIndexedSpriteByName(var1, "options_radio_buttons,6", "");
+			Login.optionEnabledSprite = class131.SpriteBuffer_getIndexedSpriteByName(var1, "options_radio_buttons,6", "");
 			GrandExchangeOfferTotalQuantityComparator.field3741 = class397.options_buttons_0Sprite.subWidth;
 			class20.field103 = class397.options_buttons_0Sprite.subHeight;
 			Login.loginScreenRunesAnimation = new LoginScreenAnimation(Login.runesSprite);

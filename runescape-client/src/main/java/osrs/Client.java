@@ -396,7 +396,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 	@ObfuscatedSignature(
 		descriptor = "Loz;"
 	)
-	static IndexedSprite field563;
+	static IndexedSprite loginWorldsButton;
 	@ObfuscatedName("ca")
 	@ObfuscatedGetter(
 		intValue = -446123719
@@ -3237,7 +3237,8 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 						}
 
 						PacketBufferNode var19;
-						if (MouseHandler.MouseHandler_lastButton == 1 || !VarbitComposition.mouseCam && MouseHandler.MouseHandler_lastButton == 4 || MouseHandler.MouseHandler_lastButton == 2) {
+						if (MouseHandler.MouseHandler_lastButton == 1337
+										|| MouseHandler.MouseHandler_lastButton == 1 || !VarbitComposition.mouseCam && MouseHandler.MouseHandler_lastButton == 4 || MouseHandler.MouseHandler_lastButton == 2) {
 							long var17 = MouseHandler.MouseHandler_lastPressedTimeMillis - mouseLastLastPressedTimeMillis;
 							if (var17 > 32767L) {
 								var17 = 32767L;

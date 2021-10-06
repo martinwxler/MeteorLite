@@ -1579,15 +1579,15 @@ public interface RSClient extends RSGameEngine, Client {
 
   @Import("titleboxSprite")
   @Override
-  void setLoginBoxSprite (IndexedSprite indexedSprite);
+  void setLoginBoxSprite(IndexedSprite indexedSprite);
 
   @Import("titlebuttonSprite")
   @Override
-  void setLoginButtonSprite (IndexedSprite indexedSprite);
+  void setLoginButtonSprite(IndexedSprite indexedSprite);
 
   @Import("loginWorldsButton")
   @Override
-  void setLoginWorldsButtonSprite (IndexedSprite indexedSprite);
+  void setLoginWorldsButtonSprite(IndexedSprite indexedSprite);
 
   @Import("title_muteSprite")
   @Override
@@ -1595,19 +1595,19 @@ public interface RSClient extends RSGameEngine, Client {
 
   @Import("optionSprite")
   @Override
-  void setOptionSprite (IndexedSprite indexedSprite);
+  void setOptionSprite(IndexedSprite indexedSprite);
 
   @Import("options_buttons_0Sprite")
   @Override
-  void setOptionSprite1 (IndexedSprite indexedSprite);
+  void setOptionSprite1(IndexedSprite indexedSprite);
 
   @Import("options_buttons_2Sprite")
   @Override
-  void setOptionSprite2 (IndexedSprite indexedSprite);
+  void setOptionSprite2(IndexedSprite indexedSprite);
 
   @Import("optionEnabledSprite")
   @Override
-  void setOptionSprite3 (IndexedSprite indexedSprite);
+  void setOptionSprite3(IndexedSprite indexedSprite);
 
   @Import("logoSprite")
   @Override

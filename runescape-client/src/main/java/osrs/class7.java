@@ -105,7 +105,7 @@ public class class7 {
 			NetFileRequest.worldSelectFlagSprites = null;
 			EnumComposition.worldSelectArrows = null;
 			class320.worldSelectStars = null;
-			Client.field563 = null;
+			Client.loginWorldsButton = null;
 			Login.loginScreenRunesAnimation.method2164();
 			CollisionMap.method3417(2);
 			if (NetCache.NetCache_socket != null) {

@@ -51,12 +51,12 @@ public class Login {
 	@ObfuscatedSignature(
 		descriptor = "Loz;"
 	)
-	static IndexedSprite field876;
+	static IndexedSprite optionSprite;
 	@ObfuscatedName("c")
 	@ObfuscatedSignature(
 		descriptor = "Loz;"
 	)
-	static IndexedSprite field877;
+	static IndexedSprite optionEnabledSprite;
 	@ObfuscatedName("b")
 	@ObfuscatedSignature(
 		descriptor = "Lcl;"

@@ -85,7 +85,7 @@ public class Script extends DualNode {
 		garbageValue = "-1258113861"
 	)
 	static IndexedSprite method1955(boolean var0, boolean var1) {
-		return var0 ? (var1 ? Login.field877 : FileSystem.options_buttons_2Sprite) : (var1 ? Login.field876 : class397.options_buttons_0Sprite);
+		return var0 ? (var1 ? Login.optionEnabledSprite : FileSystem.options_buttons_2Sprite) : (var1 ? Login.optionSprite : class397.options_buttons_0Sprite);
 	}
 
 	@ObfuscatedName("m")

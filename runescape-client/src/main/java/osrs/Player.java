@@ -169,6 +169,9 @@ public final class Player extends Actor {
 	@Export("tileY")
 	int tileY;
 
+	static int loginTitleColor = 16776960;
+	static String loginTitleMessage = "Welcome to RuneScape";
+
 	Player() {
 		this.headIconPk = -1;
 		this.headIconPrayer = -1;
@@ -1391,11 +1394,11 @@ public final class Player extends Actor {
 			if (Client.gameState == 20) {
 				SoundCache.titleboxSprite.drawAt(Login.loginBoxX + 180 - SoundCache.titleboxSprite.subWidth / 2, 271 - SoundCache.titleboxSprite.subHeight / 2);
 				var33 = 201;
-				var0.drawCentered(Login.Login_response1, Login.loginBoxX + 180, var33, 16776960, 0);
+				var0.drawCentered(Login.Login_response1, Login.loginBoxX + 180, var33, loginTitleColor, 0);
 				var34 = var33 + 15;
-				var0.drawCentered(Login.Login_response2, Login.loginBoxX + 180, var34, 16776960, 0);
+				var0.drawCentered(Login.Login_response2, Login.loginBoxX + 180, var34, loginTitleColor, 0);
 				var34 += 15;
-				var0.drawCentered(Login.Login_response3, Login.loginBoxX + 180, var34, 16776960, 0);
+				var0.drawCentered(Login.Login_response3, Login.loginBoxX + 180, var34, loginTitleColor, 0);
 				var34 += 15;
 				var34 += 7;
 				if (Login.loginIndex != 4 && Login.loginIndex != 10) {
@@ -1428,7 +1431,7 @@ public final class Player extends Actor {
 				short var23;
 				if (Login.loginIndex == 0) {
 					var33 = 251;
-					var0.drawCentered("Welcome to RuneScape", Login.loginBoxX + 180, var33, 16776960, 0);
+					var0.drawCentered(loginTitleMessage, Login.loginBoxX + 180, var33, loginTitleColor, 0);
 					var34 = var33 + 30;
 					var4 = Login.loginBoxX + 180 - 80;
 					var23 = 291;
@@ -1438,7 +1441,7 @@ public final class Player extends Actor {
 					class132.titlebuttonSprite.drawAt(var4 - 73, var23 - 20);
 					var0.drawLines("Existing User", var4 - 73, var23 - 20, 144, 40, 16777215, 0, 1, 1, 0);
 				} else if (Login.loginIndex == 1) {
-					var0.drawCentered(Login.Login_response0, Login.loginBoxX + 180, 201, 16776960, 0);
+					var0.drawCentered(Login.Login_response0, Login.loginBoxX + 180, 201, loginTitleColor, 0);
 					var33 = 236;
 					var0.drawCentered(Login.Login_response1, Login.loginBoxX + 180, var33, 16777215, 0);
 					var34 = var33 + 15;
@@ -1455,11 +1458,11 @@ public final class Player extends Actor {
 					var0.drawCentered("Cancel", var4, var23 + 5, 16777215, 0);
 				} else if (Login.loginIndex == 2) {
 					var33 = 201;
-					var0.drawCentered(Login.Login_response1, class78.loginBoxCenter, var33, 16776960, 0);
+					var0.drawCentered(Login.Login_response1, class78.loginBoxCenter, var33, loginTitleColor, 0);
 					var34 = var33 + 15;
-					var0.drawCentered(Login.Login_response2, class78.loginBoxCenter, var34, 16776960, 0);
+					var0.drawCentered(Login.Login_response2, class78.loginBoxCenter, var34, loginTitleColor, 0);
 					var34 += 15;
-					var0.drawCentered(Login.Login_response3, class78.loginBoxCenter, var34, 16776960, 0);
+					var0.drawCentered(Login.Login_response3, class78.loginBoxCenter, var34, loginTitleColor, 0);
 					var34 += 15;
 					var34 += 7;
 					var0.draw("Login: ", class78.loginBoxCenter - 110, var34, 16777215, 0);
@@ -1475,7 +1478,7 @@ public final class Player extends Actor {
 					for (var6 = var6; var0.stringWidth(var6) > var35; var6 = var6.substring(1)) {
 					}
 
-					var0.draw(AbstractFont.escapeBrackets(var6) + (Login.currentLoginField == 0 & Client.cycle % 40 < 20 ? FloorUnderlayDefinition.colorStartTag(16776960) + "|" : ""), class78.loginBoxCenter - 70, var34, 16777215, 0);
+					var0.draw(AbstractFont.escapeBrackets(var6) + (Login.currentLoginField == 0 & Client.cycle % 40 < 20 ? FloorUnderlayDefinition.colorStartTag(loginTitleColor) + "|" : ""), class78.loginBoxCenter - 70, var34, 16777215, 0);
 					var34 += 15;
 					var8 = Login.Login_password;
 					var7 = StructComposition.method3152('*', var8.length());
@@ -1484,19 +1487,19 @@ public final class Player extends Actor {
 					for (var27 = var7; var0.stringWidth(var27) > var35; var27 = var27.substring(1)) {
 					}
 
-					var0.draw("Password: " + var27 + (Login.currentLoginField == 1 & Client.cycle % 40 < 20 ? FloorUnderlayDefinition.colorStartTag(16776960) + "|" : ""), class78.loginBoxCenter - 108, var34, 16777215, 0);
+					var0.draw("Password: " + var27 + (Login.currentLoginField == 1 & Client.cycle % 40 < 20 ? FloorUnderlayDefinition.colorStartTag(loginTitleColor) + "|" : ""), class78.loginBoxCenter - 108, var34, 16777215, 0);
 					var34 += 15;
 					var33 = 277;
 					var28 = class78.loginBoxCenter + -117;
 					IndexedSprite var29 = Script.method1955(Client.Login_isUsernameRemembered, Login.field904);
 					var29.drawAt(var28, var33);
 					var28 = var28 + var29.subWidth + 5;
-					var1.draw("Remember username", var28, var33 + 13, 16776960, 0);
+					var1.draw("Remember username", var28, var33 + 13, loginTitleColor, 0);
 					var28 = class78.loginBoxCenter + 24;
 					var29 = Script.method1955(WorldMapDecorationType.clientPreferences.hideUsername, Login.field895);
 					var29.drawAt(var28, var33);
 					var28 = var28 + var29.subWidth + 5;
-					var1.draw("Hide username", var28, var33 + 13, 16776960, 0);
+					var1.draw("Hide username", var28, var33 + 13, loginTitleColor, 0);
 					var34 = var33 + 15;
 					var12 = class78.loginBoxCenter - 80;
 					short var13 = 321;
@@ -1519,11 +1522,11 @@ public final class Player extends Actor {
 					var1.drawCentered(Login.field894, class78.loginBoxCenter, var33, 16777215, 0);
 				} else if (Login.loginIndex == 3) {
 					var33 = 201;
-					var0.drawCentered("Invalid credentials.", Login.loginBoxX + 180, var33, 16776960, 0);
+					var0.drawCentered("Invalid credentials.", Login.loginBoxX + 180, var33, loginTitleColor, 0);
 					var34 = var33 + 20;
-					var1.drawCentered("For accounts created after 24th November 2010, please use your", Login.loginBoxX + 180, var34, 16776960, 0);
+					var1.drawCentered("For accounts created after 24th November 2010, please use your", Login.loginBoxX + 180, var34, loginTitleColor, 0);
 					var34 += 15;
-					var1.drawCentered("email address to login. Otherwise please login with your username.", Login.loginBoxX + 180, var34, 16776960, 0);
+					var1.drawCentered("email address to login. Otherwise please login with your username.", Login.loginBoxX + 180, var34, loginTitleColor, 0);
 					var34 += 15;
 					var4 = Login.loginBoxX + 180;
 					var23 = 276;
@@ -1536,7 +1539,7 @@ public final class Player extends Actor {
 				} else {
 					String var5;
 					if (Login.loginIndex == 4) {
-						var0.drawCentered("Authenticator", Login.loginBoxX + 180, 201, 16776960, 0);
+						var0.drawCentered("Authenticator", Login.loginBoxX + 180, 201, loginTitleColor, 0);
 						var33 = 236;
 						var0.drawCentered(Login.Login_response1, Login.loginBoxX + 180, var33, 16777215, 0);
 						var34 = var33 + 15;
@@ -1547,11 +1550,11 @@ public final class Player extends Actor {
 						var5 = "PIN: ";
 						var7 = Ignored.otp;
 						var6 = StructComposition.method3152('*', var7.length());
-						var0.draw(var5 + var6 + (Client.cycle % 40 < 20 ? FloorUnderlayDefinition.colorStartTag(16776960) + "|" : ""), Login.loginBoxX + 180 - 108, var34, 16777215, 0);
+						var0.draw(var5 + var6 + (Client.cycle % 40 < 20 ? FloorUnderlayDefinition.colorStartTag(loginTitleColor) + "|" : ""), Login.loginBoxX + 180 - 108, var34, 16777215, 0);
 						var34 -= 8;
-						var0.draw("Trust this computer", Login.loginBoxX + 180 - 9, var34, 16776960, 0);
+						var0.draw("Trust this computer", Login.loginBoxX + 180 - 9, var34, loginTitleColor, 0);
 						var34 += 15;
-						var0.draw("for 30 days: ", Login.loginBoxX + 180 - 9, var34, 16776960, 0);
+						var0.draw("for 30 days: ", Login.loginBoxX + 180 - 9, var34, loginTitleColor, 0);
 						var26 = 180 + Login.loginBoxX - 9 + var0.stringWidth("for 30 days: ") + 15;
 						var9 = var34 - var0.ascent;
 						IndexedSprite var10;
@@ -1574,13 +1577,13 @@ public final class Player extends Actor {
 					} else {
 						short var43;
 						if (Login.loginIndex == 5) {
-							var0.drawCentered("Forgotten your password?", Login.loginBoxX + 180, 201, 16776960, 0);
+							var0.drawCentered("Forgotten your password?", Login.loginBoxX + 180, 201, loginTitleColor, 0);
 							var33 = 221;
-							var2.drawCentered(Login.Login_response1, Login.loginBoxX + 180, var33, 16776960, 0);
+							var2.drawCentered(Login.Login_response1, Login.loginBoxX + 180, var33, loginTitleColor, 0);
 							var34 = var33 + 15;
-							var2.drawCentered(Login.Login_response2, Login.loginBoxX + 180, var34, 16776960, 0);
+							var2.drawCentered(Login.Login_response2, Login.loginBoxX + 180, var34, loginTitleColor, 0);
 							var34 += 15;
-							var2.drawCentered(Login.Login_response3, Login.loginBoxX + 180, var34, 16776960, 0);
+							var2.drawCentered(Login.Login_response3, Login.loginBoxX + 180, var34, loginTitleColor, 0);
 							var34 += 15;
 							var34 += 14;
 							var0.draw("Username/email: ", Login.loginBoxX + 180 - 145, var34, 16777215, 0);
@@ -1596,7 +1599,7 @@ public final class Player extends Actor {
 							for (var6 = var6; var0.stringWidth(var6) > var35; var6 = var6.substring(1)) {
 							}
 
-							var0.draw(AbstractFont.escapeBrackets(var6) + (Client.cycle % 40 < 20 ? FloorUnderlayDefinition.colorStartTag(16776960) + "|" : ""), Login.loginBoxX + 180 - 34, var34, 16777215, 0);
+							var0.draw(AbstractFont.escapeBrackets(var6) + (Client.cycle % 40 < 20 ? FloorUnderlayDefinition.colorStartTag(loginTitleColor) + "|" : ""), Login.loginBoxX + 180 - 34, var34, 16777215, 0);
 							var34 += 15;
 							var25 = Login.loginBoxX + 180 - 80;
 							var43 = 321;
@@ -1609,11 +1612,11 @@ public final class Player extends Actor {
 							var1.drawCentered("Still having trouble logging in?", class78.loginBoxCenter, var43, 268435455, 0);
 						} else if (Login.loginIndex == 6) {
 							var33 = 201;
-							var0.drawCentered(Login.Login_response1, Login.loginBoxX + 180, var33, 16776960, 0);
+							var0.drawCentered(Login.Login_response1, Login.loginBoxX + 180, var33, loginTitleColor, 0);
 							var34 = var33 + 15;
-							var0.drawCentered(Login.Login_response2, Login.loginBoxX + 180, var34, 16776960, 0);
+							var0.drawCentered(Login.Login_response2, Login.loginBoxX + 180, var34, loginTitleColor, 0);
 							var34 += 15;
-							var0.drawCentered(Login.Login_response3, Login.loginBoxX + 180, var34, 16776960, 0);
+							var0.drawCentered(Login.Login_response3, Login.loginBoxX + 180, var34, loginTitleColor, 0);
 							var34 += 15;
 							var4 = Login.loginBoxX + 180;
 							var23 = 321;
@@ -1621,11 +1624,11 @@ public final class Player extends Actor {
 							var0.drawCentered("Back", var4, var23 + 5, 16777215, 0);
 						} else if (Login.loginIndex == 7) {
 							var33 = 216;
-							var0.drawCentered("Your date of birth isn't set.", Login.loginBoxX + 180, var33, 16776960, 0);
+							var0.drawCentered("Your date of birth isn't set.", Login.loginBoxX + 180, var33, loginTitleColor, 0);
 							var34 = var33 + 15;
-							var2.drawCentered("Please verify your account status by", Login.loginBoxX + 180, var34, 16776960, 0);
+							var2.drawCentered("Please verify your account status by", Login.loginBoxX + 180, var34, loginTitleColor, 0);
 							var34 += 15;
-							var2.drawCentered("setting your date of birth.", Login.loginBoxX + 180, var34, 16776960, 0);
+							var2.drawCentered("setting your date of birth.", Login.loginBoxX + 180, var34, loginTitleColor, 0);
 							var34 += 15;
 							var4 = Login.loginBoxX + 180 - 80;
 							var23 = 321;
@@ -1636,11 +1639,11 @@ public final class Player extends Actor {
 							var0.drawCentered("Back", var4, var23 + 5, 16777215, 0);
 						} else if (Login.loginIndex == 8) {
 							var33 = 216;
-							var0.drawCentered("Sorry, but your account is not eligible to play.", Login.loginBoxX + 180, var33, 16776960, 0);
+							var0.drawCentered("Sorry, but your account is not eligible to play.", Login.loginBoxX + 180, var33, loginTitleColor, 0);
 							var34 = var33 + 15;
-							var2.drawCentered("For more information, please take a look at", Login.loginBoxX + 180, var34, 16776960, 0);
+							var2.drawCentered("For more information, please take a look at", Login.loginBoxX + 180, var34, loginTitleColor, 0);
 							var34 += 15;
-							var2.drawCentered("our privacy policy.", Login.loginBoxX + 180, var34, 16776960, 0);
+							var2.drawCentered("our privacy policy.", Login.loginBoxX + 180, var34, loginTitleColor, 0);
 							var34 += 15;
 							var4 = Login.loginBoxX + 180 - 80;
 							var23 = 321;
@@ -1651,11 +1654,11 @@ public final class Player extends Actor {
 							var0.drawCentered("Back", var4, var23 + 5, 16777215, 0);
 						} else if (Login.loginIndex == 9) {
 							var33 = 221;
-							var0.drawCentered(Login.Login_response1, Login.loginBoxX + 180, var33, 16776960, 0);
+							var0.drawCentered(Login.Login_response1, Login.loginBoxX + 180, var33, loginTitleColor, 0);
 							var34 = var33 + 25;
-							var0.drawCentered(Login.Login_response2, Login.loginBoxX + 180, var34, 16776960, 0);
+							var0.drawCentered(Login.Login_response2, Login.loginBoxX + 180, var34, loginTitleColor, 0);
 							var34 += 25;
-							var0.drawCentered(Login.Login_response3, Login.loginBoxX + 180, var34, 16776960, 0);
+							var0.drawCentered(Login.Login_response3, Login.loginBoxX + 180, var34, loginTitleColor, 0);
 							var4 = Login.loginBoxX + 180;
 							var23 = 311;
 							class132.titlebuttonSprite.drawAt(var4 - 73, var23 - 20);
@@ -1663,7 +1666,7 @@ public final class Player extends Actor {
 						} else if (Login.loginIndex == 10) {
 							var34 = Login.loginBoxX + 180;
 							var35 = 209;
-							var0.drawCentered("Welcome to RuneScape", Login.loginBoxX + 180, var35, 16776960, 0);
+							var0.drawCentered(loginTitleMessage, Login.loginBoxX + 180, var35, loginTitleColor, 0);
 							var4 = var35 + 20;
 							Login.field873.drawAt(var34 - 109, var4);
 							class4.field8.drawAt(var34 - 48, var4 + 18);
@@ -1713,11 +1716,11 @@ public final class Player extends Actor {
 								class20.Login_promptCredentials(false);
 							}
 
-							var0.drawCentered(var24, Login.loginBoxX + 180, var33, 16776960, 0);
+							var0.drawCentered(var24, Login.loginBoxX + 180, var33, loginTitleColor, 0);
 							var34 = var33 + 15;
-							var2.drawCentered(var5, Login.loginBoxX + 180, var34, 16776960, 0);
+							var2.drawCentered(var5, Login.loginBoxX + 180, var34, loginTitleColor, 0);
 							var34 += 15;
-							var2.drawCentered(var6, Login.loginBoxX + 180, var34, 16776960, 0);
+							var2.drawCentered(var6, Login.loginBoxX + 180, var34, loginTitleColor, 0);
 							var34 += 15;
 							var25 = Login.loginBoxX + 180;
 							var43 = 276;
@@ -1755,12 +1758,12 @@ public final class Player extends Actor {
 
 			class16.title_muteSprite[WorldMapDecorationType.clientPreferences.titleMusicDisabled ? 1 : 0].drawAt(Login.xPadding + 765 - 40, 463);
 			if (Client.gameState > 5 && Language.Language_EN == ReflectionCheck.clientLanguage) {
-				if (Client.field563 != null) {
+				if (Client.loginWorldsButton != null) {
 					var34 = Login.xPadding + 5;
 					var35 = 463;
 					byte var41 = 100;
 					byte var31 = 35;
-					Client.field563.drawAt(var34, var35);
+					Client.loginWorldsButton.drawAt(var34, var35);
 					var0.drawCentered("World" + " " + Client.worldId, var41 / 2 + var34, var31 / 2 + var35 - 2, 16777215, 0);
 					if (class4.World_request != null) {
 						var1.drawCentered("Loading...", var41 / 2 + var34, var31 / 2 + var35 + 12, 16777215, 0);
@@ -1768,7 +1771,7 @@ public final class Player extends Actor {
 						var1.drawCentered("Click to switch", var41 / 2 + var34, var31 / 2 + var35 + 12, 16777215, 0);
 					}
 				} else {
-					Client.field563 = class131.SpriteBuffer_getIndexedSpriteByName(class176.archive8, "sl_button", "");
+					Client.loginWorldsButton = class131.SpriteBuffer_getIndexedSpriteByName(class176.archive8, "sl_button", "");
 				}
 			}
 
