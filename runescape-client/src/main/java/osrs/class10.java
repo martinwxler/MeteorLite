@@ -210,22 +210,22 @@ public class class10 {
 				if (var0 == 1) {
 					var8 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2740, Client.packetWriter.isaacCipher);
 					var8.packetBuffer.writeByte(0);
-					var8.packetBuffer.method6930(var3[var6]);
+					var8.packetBuffer.writeShort01(var3[var6]);
 					Client.packetWriter.addNode(var8);
 				} else if (var0 == 4) {
 					var8 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2682, Client.packetWriter.isaacCipher);
-					var8.packetBuffer.method6931(var3[var6]);
-					var8.packetBuffer.method7066(0);
+					var8.packetBuffer.writeShortA(var3[var6]);
+					var8.packetBuffer.writeByte01(0);
 					Client.packetWriter.addNode(var8);
 				} else if (var0 == 6) {
 					var8 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2695, Client.packetWriter.isaacCipher);
-					var8.packetBuffer.method7066(0);
-					var8.packetBuffer.method6930(var3[var6]);
+					var8.packetBuffer.writeByte01(0);
+					var8.packetBuffer.writeShort01(var3[var6]);
 					Client.packetWriter.addNode(var8);
 				} else if (var0 == 7) {
 					var8 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2709, Client.packetWriter.isaacCipher);
-					var8.packetBuffer.method7117(0);
-					var8.packetBuffer.method7029(var3[var6]);
+					var8.packetBuffer.writeByteA(0);
+					var8.packetBuffer.writeShort01A(var3[var6]);
 					Client.packetWriter.addNode(var8);
 				}
 

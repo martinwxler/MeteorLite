@@ -143,7 +143,7 @@ public class class16 implements ThreadFactory {
 		PacketBufferNode var2 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2665, Client.packetWriter.isaacCipher);
 		var2.packetBuffer.writeByte(class113.stringCp1252NullTerminatedByteSize(var0) + 1);
 		var2.packetBuffer.writeStringCp1252NullTerminated(var0);
-		var2.packetBuffer.method7066(var1);
+		var2.packetBuffer.writeByte01(var1);
 		Client.packetWriter.addNode(var2);
 	}
 

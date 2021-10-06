@@ -3,7 +3,6 @@ package meteor.plugins.api.packets;
 import meteor.plugins.api.game.Game;
 import net.runelite.api.packets.PacketBufferNode;
 import net.runelite.api.packets.PacketWriter;
-import osrs.KeyHandler;
 
 public class NPCPackets {
     public static void queueNPCAction3Packet(int NPCIndex, int ctrlDown){

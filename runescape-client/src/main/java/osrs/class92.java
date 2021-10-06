@@ -311,9 +311,9 @@ public class class92 {
 					int var12 = class67.localPlayer.y - var10 >> 7;
 					PacketBufferNode var13 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2745, Client.packetWriter.isaacCipher);
 					var13.packetBuffer.writeByte(18);
-					var13.packetBuffer.method7029(var11 + WorldMapSectionType.baseX);
-					var13.packetBuffer.method6931(var12 + PlayerComposition.baseY);
-					var13.packetBuffer.method7117(KeyHandler.KeyHandler_pressedKeys[82] ? (KeyHandler.KeyHandler_pressedKeys[81] ? 2 : 1) : 0);
+					var13.packetBuffer.writeShort01A(var11 + WorldMapSectionType.baseX);
+					var13.packetBuffer.writeShortA(var12 + PlayerComposition.baseY);
+					var13.packetBuffer.writeByteA(KeyHandler.KeyHandler_pressedKeys[82] ? (KeyHandler.KeyHandler_pressedKeys[81] ? 2 : 1) : 0);
 					var13.packetBuffer.writeByte(var4);
 					var13.packetBuffer.writeByte(var5);
 					var13.packetBuffer.writeShort(Client.camAngleY);

@@ -764,7 +764,7 @@ public class Buffer extends Node {
 		descriptor = "(IB)V",
 		garbageValue = "55"
 	)
-	public void method7066(int var1) {
+	public void writeByte01(int var1) {
 		this.array[++this.offset - 1] = (byte)(var1 + 128);
 	}
 
@@ -773,7 +773,7 @@ public class Buffer extends Node {
 		descriptor = "(IB)V",
 		garbageValue = "-32"
 	)
-	public void method7117(int var1) {
+	public void writeByteA(int var1) {
 		this.array[++this.offset - 1] = (byte)(0 - var1);
 	}
 
@@ -845,7 +845,7 @@ public class Buffer extends Node {
 		descriptor = "(IB)V",
 		garbageValue = "127"
 	)
-	public void method6930(int var1) {
+	public void writeShort01(int var1) {
 		this.array[++this.offset - 1] = (byte)var1;
 		this.array[++this.offset - 1] = (byte)(var1 >> 8);
 	}
@@ -855,7 +855,7 @@ public class Buffer extends Node {
 		descriptor = "(II)V",
 		garbageValue = "466660080"
 	)
-	public void method6931(int var1) {
+	public void writeShortA(int var1) {
 		this.array[++this.offset - 1] = (byte)(var1 >> 8);
 		this.array[++this.offset - 1] = (byte)(var1 + 128);
 	}
@@ -865,7 +865,7 @@ public class Buffer extends Node {
 		descriptor = "(II)V",
 		garbageValue = "2130162206"
 	)
-	public void method7029(int var1) {
+	public void writeShort01A(int var1) {
 		this.array[++this.offset - 1] = (byte)(var1 + 128);
 		this.array[++this.offset - 1] = (byte)(var1 >> 8);
 	}
@@ -956,7 +956,7 @@ public class Buffer extends Node {
 		descriptor = "(II)V",
 		garbageValue = "-82136411"
 	)
-	public void method6940(int var1) {
+	public void writeInt0123(int var1) {
 		this.array[++this.offset - 1] = (byte)var1;
 		this.array[++this.offset - 1] = (byte)(var1 >> 8);
 		this.array[++this.offset - 1] = (byte)(var1 >> 16);
@@ -981,7 +981,7 @@ public class Buffer extends Node {
 		descriptor = "(IB)V",
 		garbageValue = "-95"
 	)
-	public void method6942(int var1) {
+	public void writeInt2(int var1) {
 		this.array[++this.offset - 1] = (byte)(var1 >> 16);
 		this.array[++this.offset - 1] = (byte)(var1 >> 24);
 		this.array[++this.offset - 1] = (byte)var1;

@@ -233,7 +233,7 @@ public class ClientPacket implements Packet {
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
 	)
-	public static final ClientPacket field2703;
+	public static final ClientPacket Packet_walkPacket;
 	@ObfuscatedName("aj")
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
@@ -597,7 +597,7 @@ public class ClientPacket implements Packet {
 		field2700 = new ClientPacket(41, 7);
 		field2701 = new ClientPacket(42, 7);
 		field2702 = new ClientPacket(43, 7);
-		field2703 = new ClientPacket(44, -1);
+		Packet_walkPacket = new ClientPacket(44, -1);
 		field2704 = new ClientPacket(45, -1);
 		field2671 = new ClientPacket(46, 16);
 		field2750 = new ClientPacket(47, 9);

@@ -3,9 +3,6 @@ package meteor.plugins.api.packets;
 import meteor.plugins.api.game.Game;
 import net.runelite.api.packets.PacketBufferNode;
 import net.runelite.api.packets.PacketWriter;
-import osrs.FloorOverlayDefinition;
-import osrs.KeyHandler;
-import osrs.class320;
 
 public class GameObjectPackets {
     public static void queueGameObjectAction2Packet(int objectID, int worldPointX, int worldPointY, int ctrlDown){

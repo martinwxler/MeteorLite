@@ -58,8 +58,8 @@ public class UrlRequest {
 		PacketBufferNode var4 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2750, Client.packetWriter.isaacCipher);
 		var4.packetBuffer.method7026(var2);
 		var4.packetBuffer.writeInt(var3 ? Client.field572 * -1959883561 * -20896025 : 0);
-		var4.packetBuffer.method6931(var1);
-		var4.packetBuffer.method6931(var0);
+		var4.packetBuffer.writeShortA(var1);
+		var4.packetBuffer.writeShortA(var0);
 		Client.packetWriter.addNode(var4);
 	}
 }

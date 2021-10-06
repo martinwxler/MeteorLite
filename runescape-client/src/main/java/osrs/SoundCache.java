@@ -318,7 +318,7 @@ public class SoundCache {
 							var6.packetBuffer.writeShort(1 + class113.stringCp1252NullTerminatedByteSize(var4) + class113.stringCp1252NullTerminatedByteSize(var5));
 							var6.packetBuffer.writeStringCp1252NullTerminated(var5);
 							var6.packetBuffer.writeStringCp1252NullTerminated(var4);
-							var6.packetBuffer.method7066(var10);
+							var6.packetBuffer.writeByte01(var10);
 							Client.packetWriter.addNode(var6);
 							return 1;
 						}

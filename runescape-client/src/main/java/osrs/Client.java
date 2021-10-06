@@ -2657,23 +2657,23 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 				var6.packetBuffer.writeInt(Tiles.archive6.hash);
 				var6.packetBuffer.writeInt(0);
 				var6.packetBuffer.writeIntME(class54.archive20.hash);
-				var6.packetBuffer.method6940(RouteStrategy.archive2.hash);
-				var6.packetBuffer.method6942(ClanChannel.archive0.hash);
-				var6.packetBuffer.method6942(class150.archive3.hash);
+				var6.packetBuffer.writeInt0123(RouteStrategy.archive2.hash);
+				var6.packetBuffer.writeInt2(ClanChannel.archive0.hash);
+				var6.packetBuffer.writeInt2(class150.archive3.hash);
 				var6.packetBuffer.writeIntME(class12.archive15.hash);
 				var6.packetBuffer.writeIntME(ItemContainer.archive17.hash);
 				var6.packetBuffer.writeIntME(Interpreter.archive9.hash);
 				var6.packetBuffer.writeInt(Skeleton.archive7.hash);
-				var6.packetBuffer.method6940(class260.archive4.hash);
+				var6.packetBuffer.writeInt0123(class260.archive4.hash);
 				var6.packetBuffer.writeIntME(ApproximateRouteStrategy.archive5.hash);
-				var6.packetBuffer.method6942(class176.archive8.hash);
-				var6.packetBuffer.method6940(UserComparator6.archive12.hash);
-				var6.packetBuffer.method6940(TextureProvider.archive18.hash);
-				var6.packetBuffer.method6940(class54.archive13.hash);
+				var6.packetBuffer.writeInt2(class176.archive8.hash);
+				var6.packetBuffer.writeInt0123(UserComparator6.archive12.hash);
+				var6.packetBuffer.writeInt0123(TextureProvider.archive18.hash);
+				var6.packetBuffer.writeInt0123(class54.archive13.hash);
 				var6.packetBuffer.writeInt(MouseRecorder.archive1.hash);
 				var6.packetBuffer.writeIntME(ViewportMouse.archive19.hash);
 				var6.packetBuffer.writeIntME(class4.archive11.hash);
-				var6.packetBuffer.method6940(class28.archive14.hash);
+				var6.packetBuffer.writeInt0123(class28.archive14.hash);
 				var6.packetBuffer.xteaEncrypt(var30, var8, var6.packetBuffer.offset);
 				var6.packetBuffer.writeLengthShort(var6.packetBuffer.offset - var7);
 				packetWriter.addNode(var6);
@@ -3279,7 +3279,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 								}
 
 								field719 = var20;
-								var15.packetBuffer.method7117(KeyHandler.field135[var5]);
+								var15.packetBuffer.writeByteA(KeyHandler.field135[var5]);
 								var15.packetBuffer.method6938((int)var22);
 							}
 
@@ -3299,7 +3299,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 							field574 = 20;
 							field575 = false;
 							var15 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2720, packetWriter.isaacCipher);
-							var15.packetBuffer.method6931(camAngleY);
+							var15.packetBuffer.writeShortA(camAngleY);
 							var15.packetBuffer.writeShort(camAngleX);
 							packetWriter.addNode(var15);
 						}
@@ -3482,9 +3482,9 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 																			}
 
 																			var19 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2755, packetWriter.isaacCipher);
-																			var19.packetBuffer.method7117(var35);
-																			var19.packetBuffer.method7029(dragItemSlotSource);
-																			var19.packetBuffer.method7029(dragItemSlotDestination);
+																			var19.packetBuffer.writeByteA(var35);
+																			var19.packetBuffer.writeShort01A(dragItemSlotSource);
+																			var19.packetBuffer.writeShort01A(dragItemSlotDestination);
 																			var19.packetBuffer.writeInt(GameEngine.dragInventoryWidget.id);
 																			packetWriter.addNode(var19);
 																		}
@@ -3505,11 +3505,11 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 															if (Scene.shouldSendWalk()) {
 																var4 = Scene.Scene_selectedX;
 																var5 = Scene.Scene_selectedY;
-																var19 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2703, packetWriter.isaacCipher);
+																var19 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.Packet_walkPacket, packetWriter.isaacCipher);
 																var19.packetBuffer.writeByte(5);
-																var19.packetBuffer.method7029(var4 + WorldMapSectionType.baseX);
-																var19.packetBuffer.method6931(var5 + PlayerComposition.baseY);
-																var19.packetBuffer.method7117(KeyHandler.KeyHandler_pressedKeys[82] ? (KeyHandler.KeyHandler_pressedKeys[81] ? 2 : 1) : 0);
+																var19.packetBuffer.writeShort01A(var4 + WorldMapSectionType.baseX);
+																var19.packetBuffer.writeShortA(var5 + PlayerComposition.baseY);
+																var19.packetBuffer.writeByteA(KeyHandler.KeyHandler_pressedKeys[82] ? (KeyHandler.KeyHandler_pressedKeys[81] ? 2 : 1) : 0);
 																packetWriter.addNode(var19);
 																Scene.method4243();
 																mouseCrossX = MouseHandler.MouseHandler_lastPressedX;
@@ -4853,10 +4853,10 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 					var5 = var3.readInt();
 					var6 = Frames.getGcDuration();
 					PacketBufferNode var72 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2732, packetWriter.isaacCipher);
-					var72.packetBuffer.method7117(var6);
-					var72.packetBuffer.method7066(GameEngine.fps);
+					var72.packetBuffer.writeByteA(var6);
+					var72.packetBuffer.writeByte01(GameEngine.fps);
 					var72.packetBuffer.writeIntME(var17);
-					var72.packetBuffer.method6940(var5);
+					var72.packetBuffer.writeInt0123(var5);
 					packetWriter.addNode(var72);
 					var1.serverPacket = null;
 					return true;
@@ -5925,12 +5925,12 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 
 						if (var13 != null) {
 							PacketBufferNode var12 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2684, packetWriter.isaacCipher);
-							var12.packetBuffer.method6942(clickedWidget.id);
-							var12.packetBuffer.method7029(clickedWidget.childIndex);
-							var12.packetBuffer.method6930(draggedOnWidget.childIndex);
+							var12.packetBuffer.writeInt2(clickedWidget.id);
+							var12.packetBuffer.writeShort01A(clickedWidget.childIndex);
+							var12.packetBuffer.writeShort01(draggedOnWidget.childIndex);
 							var12.packetBuffer.writeShort(draggedOnWidget.itemId);
-							var12.packetBuffer.method6931(clickedWidget.itemId);
-							var12.packetBuffer.method6940(draggedOnWidget.id);
+							var12.packetBuffer.writeShortA(clickedWidget.itemId);
+							var12.packetBuffer.writeInt0123(draggedOnWidget.id);
 							packetWriter.addNode(var12);
 						}
 					}
