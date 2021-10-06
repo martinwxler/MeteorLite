@@ -74,6 +74,7 @@ public class ClientPacket implements Packet {
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
 	)
+	@Export("Packet_itemOnItemPacket")
 	public static final ClientPacket Packet_itemOnItemPacket;
 	@ObfuscatedName("f")
 	@ObfuscatedSignature(
@@ -99,6 +100,7 @@ public class ClientPacket implements Packet {
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
 	)
+	@Export("Packet_clickPacket")
 	public static final ClientPacket Packet_clickPacket;
 	@ObfuscatedName("j")
 	@ObfuscatedSignature(
@@ -211,6 +213,7 @@ public class ClientPacket implements Packet {
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
 	)
+	@Export("Packet_widgetActionPacket")
 	public static final ClientPacket Packet_widgetActionPacket;
 	@ObfuscatedName("ao")
 	@ObfuscatedSignature(
@@ -287,6 +290,7 @@ public class ClientPacket implements Packet {
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
 	)
+	@Export("Packet_itemAction2Packet")
 	public static final ClientPacket Packet_itemAction2Packet;
 	@ObfuscatedName("bp")
 	@ObfuscatedSignature(
@@ -297,11 +301,13 @@ public class ClientPacket implements Packet {
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
 	)
+	@Export("Packet_itemAction4Packet")
 	public static final ClientPacket Packet_itemAction4Packet;
 	@ObfuscatedName("bc")
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
 	)
+	@Export("Packet_walkPacket")
 	public static final ClientPacket Packet_walkPacket;
 	@ObfuscatedName("br")
 	@ObfuscatedSignature(
@@ -368,6 +374,7 @@ public class ClientPacket implements Packet {
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
 	)
+	@Export("Packet_NPCActionPacket")
 	public static final ClientPacket Packet_NPCActionPacket;
 	@ObfuscatedName("bg")
 	@ObfuscatedSignature(
@@ -378,6 +385,7 @@ public class ClientPacket implements Packet {
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
 	)
+	@Export("Packet_gameObjectAction2Packet")
 	public static final ClientPacket Packet_gameObjectAction2Packet;
 	@ObfuscatedName("bv")
 	@ObfuscatedSignature(
@@ -409,6 +417,7 @@ public class ClientPacket implements Packet {
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
 	)
+	@Export("Packet_itemAction3Packet")
 	public static final ClientPacket Packet_itemAction3Packet;
 	@ObfuscatedName("ci")
 	@ObfuscatedSignature(
@@ -479,6 +488,7 @@ public class ClientPacket implements Packet {
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
 	)
+	@Export("Packet_bankItemActionPacket")
 	public static final ClientPacket Packet_bankItemActionPacket;
 	@ObfuscatedName("cm")
 	@ObfuscatedSignature(
@@ -494,6 +504,7 @@ public class ClientPacket implements Packet {
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
 	)
+	@Export("Packet_NPCAction3Packet")
 	public static final ClientPacket Packet_NPCAction3Packet;
 	@ObfuscatedName("cg")
 	@ObfuscatedSignature(
@@ -539,6 +550,7 @@ public class ClientPacket implements Packet {
 	@ObfuscatedSignature(
 		descriptor = "Lix;"
 	)
+	@Export("Packet_widgetAction2Packet")
 	public static final ClientPacket Packet_widgetAction2Packet;
 	@ObfuscatedName("dk")
 	@ObfuscatedSignature(
