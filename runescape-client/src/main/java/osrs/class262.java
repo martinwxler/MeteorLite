@@ -130,7 +130,7 @@ public class class262 {
 					} else if (var0 == ScriptOpcodes.TRADINGPOST_GETOFFERAGE) {
 						var3 = Interpreter.Interpreter_intStack[--AbstractByteArrayCopier.Interpreter_intStackSize];
 						var4 = (GrandExchangeEvent)class6.grandExchangeEvents.events.get(var3);
-						long var5 = UserComparator4.method2406() - class119.field1395 - var4.age;
+						long var5 = UserComparator4.getServerTime() - class119.field1395 - var4.age;
 						int var7 = (int)(var5 / 3600000L);
 						int var8 = (int)((var5 - (long)(var7 * 3600000)) / 60000L);
 						int var9 = (int)((var5 - (long)(var7 * 3600000) - (long)(var8 * 60000)) / 1000L);

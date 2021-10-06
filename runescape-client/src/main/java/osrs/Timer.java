@@ -78,7 +78,7 @@ public class Timer {
 		garbageValue = "114"
 	)
 	public void method5903() {
-		this.field3911 = UserComparator4.method2406();
+		this.field3911 = UserComparator4.getServerTime();
 	}
 
 	@ObfuscatedName("q")
@@ -88,7 +88,7 @@ public class Timer {
 	)
 	public void method5904() {
 		if (-1L != this.field3911) {
-			this.field3907 = UserComparator4.method2406() - this.field3911;
+			this.field3907 = UserComparator4.getServerTime() - this.field3911;
 			this.field3911 = -1L;
 		}
 
@@ -100,7 +100,7 @@ public class Timer {
 		garbageValue = "18294445"
 	)
 	public void method5905(int var1) {
-		this.field3904 = UserComparator4.method2406();
+		this.field3904 = UserComparator4.getServerTime();
 		this.field3908 = var1;
 	}
 
@@ -111,7 +111,7 @@ public class Timer {
 	)
 	public void method5906() {
 		if (this.field3904 != -1L) {
-			this.field3909 = UserComparator4.method2406() - this.field3904;
+			this.field3909 = UserComparator4.getServerTime() - this.field3904;
 			this.field3904 = -1L;
 		}
 

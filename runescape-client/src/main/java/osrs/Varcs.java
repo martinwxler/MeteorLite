@@ -241,7 +241,7 @@ public class Varcs {
 		}
 
 		this.unwrittenChanges = false;
-		this.field1268 = UserComparator4.method2406();
+		this.field1268 = UserComparator4.getServerTime();
 	}
 
 	@ObfuscatedName("i")
@@ -328,7 +328,7 @@ public class Varcs {
 	)
 	@Export("tryWrite")
 	void tryWrite() {
-		if (this.unwrittenChanges && this.field1268 < UserComparator4.method2406() - 60000L) {
+		if (this.unwrittenChanges && this.field1268 < UserComparator4.getServerTime() - 60000L) {
 			this.write();
 		}
 

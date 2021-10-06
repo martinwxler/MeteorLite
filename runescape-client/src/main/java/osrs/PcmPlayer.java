@@ -113,7 +113,7 @@ public class PcmPlayer {
 
 	protected PcmPlayer() {
 		this.field269 = 32;
-		this.timeMs = UserComparator4.method2406();
+		this.timeMs = UserComparator4.getServerTime();
 		this.field274 = 0L;
 		this.field275 = 0;
 		this.field262 = 0;
@@ -194,7 +194,7 @@ public class PcmPlayer {
 	@Export("run")
 	public final synchronized void run() {
 		if (this.samples != null) {
-			long var1 = UserComparator4.method2406();
+			long var1 = UserComparator4.getServerTime();
 
 			try {
 				if (0L != this.field274) {
@@ -301,7 +301,7 @@ public class PcmPlayer {
 			this.discard();
 		} catch (Exception var2) {
 			this.close();
-			this.field274 = UserComparator4.method2406() + 2000L;
+			this.field274 = UserComparator4.getServerTime() + 2000L;
 		}
 
 	}
@@ -466,7 +466,7 @@ public class PcmPlayer {
 			this.stream.fill(var1, 0, var2);
 		}
 
-		this.timeMs = UserComparator4.method2406();
+		this.timeMs = UserComparator4.getServerTime();
 	}
 
 	@ObfuscatedName("ak")

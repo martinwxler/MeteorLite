@@ -243,7 +243,7 @@ public class World {
 			Login.field869 = 1;
 		} else if (var0 == 4) {
 			class112.method2474(14);
-			Login.field884 = 0;
+			Login.Login_banType = 0;
 		} else if (var0 == 5) {
 			Login.field869 = 2;
 			class17.setLoginResponseString("Your account has not logged out from its last", "session or the server is too busy right now.", "Please try again in a few minutes.");
@@ -270,7 +270,7 @@ public class World {
 				class17.setLoginResponseString("You are standing in a members-only area.", "To play on this world move to a free area first", "");
 			} else if (var0 == 18) {
 				class112.method2474(14);
-				Login.field884 = 1;
+				Login.Login_banType = 1;
 			} else if (var0 == 19) {
 				class17.setLoginResponseString("This world is running a closed Beta.", "Sorry invited players only.", "Please use a different world.");
 			} else if (var0 == 20) {

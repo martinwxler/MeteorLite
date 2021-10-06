@@ -91,7 +91,7 @@ public class Frames extends DualNode {
 		}
 
 		if (AccessFile.garbageCollector != null) {
-			long var9 = UserComparator4.method2406();
+			long var9 = UserComparator4.getServerTime();
 			long var3 = AccessFile.garbageCollector.getCollectionTime();
 			if (GameEngine.garbageCollectorLastCollectionTime != -1L) {
 				long var5 = var3 - GameEngine.garbageCollectorLastCollectionTime;

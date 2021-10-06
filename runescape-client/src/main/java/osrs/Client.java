@@ -1631,7 +1631,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 	)
 	@Export("resizeGame")
 	protected final void resizeGame() {
-		field708 = UserComparator4.method2406() + 500L;
+		field708 = UserComparator4.getServerTime() + 500L;
 		this.resizeJS();
 		if (rootInterface != -1) {
 			this.resizeRoot(true);
@@ -1883,7 +1883,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 			class126.pcmPlayer0.tryDiscard();
 		}
 
-		if ((gameState == 10 || gameState == 20 || gameState == 30) && 0L != field708 && UserComparator4.method2406() > field708) {
+		if ((gameState == 10 || gameState == 20 || gameState == 30) && 0L != field708 && UserComparator4.getServerTime() > field708) {
 			class392.setWindowedMode(class12.getWindowedMode());
 		}
 
@@ -2046,7 +2046,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 	@Export("doCycleJs5")
 	void doCycleJs5() {
 		if (gameState != 1000) {
-			long var2 = UserComparator4.method2406();
+			long var2 = UserComparator4.getServerTime();
 			int var4 = (int)(var2 - NetCache.field3715);
 			NetCache.field3715 = var2;
 			if (var4 > 200) {
@@ -2323,7 +2323,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 						var5.writeInt(200);
 						class78.js5Socket.write(var5.array, 0, 5);
 						++js5ConnectState;
-						class229.field2643 = UserComparator4.method2406();
+						class229.field2643 = UserComparator4.getServerTime();
 					}
 
 					if (js5ConnectState == 3) {
@@ -2335,7 +2335,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 							}
 
 							++js5ConnectState;
-						} else if (UserComparator4.method2406() - class229.field2643 > 30000L) {
+						} else if (UserComparator4.getServerTime() - class229.field2643 > 30000L) {
 							this.js5Error(-2);
 							return;
 						}
@@ -3270,7 +3270,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 							var15 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2667, packetWriter.isaacCipher);
 							var15.packetBuffer.writeShort(0);
 							var16 = var15.packetBuffer.offset;
-							long var20 = UserComparator4.method2406();
+							long var20 = UserComparator4.getServerTime();
 
 							for (var5 = 0; var5 < KeyHandler.field136; ++var5) {
 								long var22 = var20 - field719;
@@ -4164,7 +4164,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 				if (ServerPacket.field2847 == var1.serverPacket) {
 					var64 = var3.readUnsignedByte() == 1;
 					if (var64) {
-						class119.field1395 = UserComparator4.method2406() - var3.readLong();
+						class119.field1395 = UserComparator4.getServerTime() - var3.readLong();
 						class6.grandExchangeEvents = new GrandExchangeEvents(var3, true);
 					} else {
 						class6.grandExchangeEvents = null;

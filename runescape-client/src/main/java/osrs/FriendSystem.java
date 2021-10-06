@@ -81,7 +81,7 @@ public class FriendSystem {
 	@Export("processFriendUpdates")
 	final void processFriendUpdates() {
 		for (FriendLoginUpdate var1 = (FriendLoginUpdate)this.friendsList.friendLoginUpdates.last(); var1 != null; var1 = (FriendLoginUpdate)this.friendsList.friendLoginUpdates.previous()) {
-			if ((long)var1.field3952 < UserComparator4.method2406() / 1000L - 5L) {
+			if ((long)var1.field3952 < UserComparator4.getServerTime() / 1000L - 5L) {
 				if (var1.world > 0) {
 					GraphicsDefaults.addGameMessage(5, "", var1.username + " has logged in.");
 				}

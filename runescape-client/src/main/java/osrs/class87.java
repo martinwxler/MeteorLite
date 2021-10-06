@@ -109,10 +109,10 @@ public class class87 {
 
 			if (Client.gameState != 5) {
 				if (Login.field885 == -1L) {
-					Login.field885 = UserComparator4.method2406() + 1000L;
+					Login.field885 = UserComparator4.getServerTime() + 1000L;
 				}
 
-				long var22 = UserComparator4.method2406();
+				long var22 = UserComparator4.getServerTime();
 				boolean var32;
 				if (Client.archiveLoaders != null && Client.archiveLoadersDone < Client.archiveLoaders.size()) {
 					while (true) {
@@ -693,7 +693,7 @@ public class class87 {
 											}
 										} else if (Login.loginIndex == 14) {
 											String var29 = "";
-											switch(Login.field884) {
+											switch(Login.Login_banType) {
 											case 0:
 												var29 = "https://support.runescape.com/hc/en-gb/articles/115002238729-Account-Bans";
 												break;

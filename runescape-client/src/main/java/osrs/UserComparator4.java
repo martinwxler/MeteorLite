@@ -53,7 +53,7 @@ public class UserComparator4 implements Comparator {
 		descriptor = "(I)J",
 		garbageValue = "754804678"
 	)
-	public static final synchronized long method2406() {
+	public static final synchronized long getServerTime() {
 		long var0 = System.currentTimeMillis();
 		if (var0 < class397.field4283) {
 			class247.field2919 += class397.field4283 - var0;

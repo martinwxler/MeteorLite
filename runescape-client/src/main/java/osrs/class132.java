@@ -102,7 +102,7 @@ public abstract class class132 extends Node {
 						}
 
 						NetCache.NetCache_loadTime = 0;
-						NetCache.field3715 = UserComparator4.method2406();
+						NetCache.field3715 = UserComparator4.getServerTime();
 						return;
 					}
 
