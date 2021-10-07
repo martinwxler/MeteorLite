@@ -11,6 +11,18 @@ public interface RSBuffer extends Buffer, RSNode {
   @Import("offset")
   int getOffset();
 
+  @Import("writeByte0A1")
+  @Override
+  void writeByte0A1$api(int var1);
+
+  @Import("writeByte2")
+  @Override
+  void writeByte2$api(int var1);
+
+  @Import("writeByte01A")
+  @Override
+  void writeByte01A$api(int var1);
+
   @Import("writeByte")
   @Override
   void writeByte$api(int var1);

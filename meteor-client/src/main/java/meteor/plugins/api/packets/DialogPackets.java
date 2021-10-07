@@ -18,4 +18,7 @@ public class DialogPackets {
 		Packets.queuePacket(Game.getClient().getNameInputPacket(), name);
 		GameThread.invoke(() -> Game.getClient().runScript(138));
 	}
+	public static void closeInterface(){
+		Packets.queuePacket(Game.getClient().getInterfaceClosePacket());
+	}
 }

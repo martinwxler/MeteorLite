@@ -782,7 +782,7 @@ public class Buffer extends Node {
 		descriptor = "(IS)V",
 		garbageValue = "255"
 	)
-	public void method7026(int var1) {
+	public void writeByte01A(int var1) {
 		this.array[++this.offset - 1] = (byte)(128 - var1);
 	}
 

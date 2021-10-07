@@ -22,11 +22,11 @@ public class SpellPackets {
 	public static void queueSpellOnItemPacket(int spellWidgetID, int spellWidgetIndex, int inventoryID, int itemID, int itemIndex) {
 		PacketWriter writer = Game.getClient().getPacketWriter();
 		PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getSpellOnItemPacket(), writer.getIsaacCipher());
-		packet.getPacketBuffer().writeIntME$api(spellWidgetID);
 		packet.getPacketBuffer().writeShort$api(spellWidgetIndex);
-		packet.getPacketBuffer().writeInt$api(inventoryID);
+		packet.getPacketBuffer().writeShort01A$api(itemIndex);
 		packet.getPacketBuffer().writeShort01A$api(itemID);
-		packet.getPacketBuffer().writeShort01$api(itemIndex);
+		packet.getPacketBuffer().writeInt$api(inventoryID);
+		packet.getPacketBuffer().writeIntME$api(spellWidgetID);
 		writer.queuePacket(packet);
 	}
 }

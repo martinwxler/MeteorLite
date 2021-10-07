@@ -85,7 +85,6 @@ public class EEelFisherPlugin extends Plugin {
             return;
         }
         executor.submit(() -> {
-            Time.sleep(millisecondDelay());
             if (Inventory.getFreeSlots() != 0 && !crushing) {
                 NPC fishingSpot = NPCs.getNearest(x -> x.getName() != null && x.getName().contains("Fishing spot"));
                 if (fishingSpot != null&&fishingSpot.distanceTo(Players.getLocal().getWorldLocation())<20) {
@@ -129,13 +128,4 @@ public class EEelFisherPlugin extends Plugin {
     public void onMenuOptionClicked(MenuOptionClicked event){
         crushing=false;
     }
-    public int millisecondDelay() {
-        int delay;
-        do {
-            double val = rand.nextGaussian() * config.millisecondDelayDeviation() + config.milisecondDelayAVG();
-            delay = (int) Math.round(val);
-        } while (delay <= config.millisecondDelayMin() || delay >= config.millisecondDelayMax());
-        return delay;
-    }
-
 }
