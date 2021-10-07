@@ -26,7 +26,7 @@ import javax.inject.Inject;
 import java.util.Random;
 
 @PluginDescriptor(
-        name = "Auto High Alchemy",
+        name = "High Alchemy",
         description = "Cast High Alchemy for you",
         tags = {},
         enabledByDefault = false,
@@ -73,7 +73,6 @@ public class HighAlchPlugin extends Plugin {
             double val = rand.nextGaussian() * 1 + 3;
             delay = (int) Math.round(val);
         } while (delay <= 1 || delay >= 9);
-        logger.debug(delay);
         return delay;
     }
     @Subscribe
