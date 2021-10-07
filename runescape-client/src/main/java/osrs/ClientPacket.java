@@ -348,7 +348,7 @@ public class ClientPacket implements class238 {
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
 	)
-	public static final ClientPacket field2669;
+	public static final ClientPacket Packet_interfaceClosePacket;
 	@ObfuscatedName("bi")
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
@@ -528,12 +528,12 @@ public class ClientPacket implements class238 {
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
 	)
-	public static final ClientPacket field2762;
+	public static final ClientPacket Packet_gameObjectActionPacket;
 	@ObfuscatedName("db")
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
 	)
-	public static final ClientPacket field2763;
+	public static final ClientPacket Packet_itemUseOnGameObjectPacket;
 	@ObfuscatedName("dx")
 	@ObfuscatedSignature(
 		descriptor = "Liz;"
@@ -620,7 +620,7 @@ public class ClientPacket implements class238 {
 		field2723 = new ClientPacket(64, 4);
 		field2724 = new ClientPacket(65, -1);
 		field2725 = new ClientPacket(66, -1);
-		field2669 = new ClientPacket(67, 0);
+		Packet_interfaceClosePacket = new ClientPacket(67, 0);
 		field2721 = new ClientPacket(68, 3);
 		field2728 = new ClientPacket(69, 15);
 		Packet_NPCActionPacket = new ClientPacket(70, 3);
@@ -656,8 +656,8 @@ public class ClientPacket implements class238 {
 		field2715 = new ClientPacket(100, -1);
 		Packet_widgetAction2Packet = new ClientPacket(101, 8);
 		field2761 = new ClientPacket(102, 3);
-		field2762 = new ClientPacket(103, 7);
-		field2763 = new ClientPacket(104, 15);
+		Packet_gameObjectActionPacket = new ClientPacket(103, 7);
+		Packet_itemUseOnGameObjectPacket = new ClientPacket(104, 15);
 		field2764 = new ClientPacket(105, 11);
 	}
 

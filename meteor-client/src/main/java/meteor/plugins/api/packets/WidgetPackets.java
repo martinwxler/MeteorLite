@@ -22,4 +22,12 @@ public class WidgetPackets {
         packet.getPacketBuffer().writeShort$api(itemID);
         writer.queuePacket(packet);
     }
+    public static void queueWidgetAction3Packet(int widgetID, int itemID, int itemSlot){
+        PacketWriter writer = Game.getClient().getPacketWriter();
+        PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getWidgetAction3Packet(), writer.getIsaacCipher());
+        packet.getPacketBuffer().writeInt$api(widgetID);
+        packet.getPacketBuffer().writeShort$api(itemSlot);
+        packet.getPacketBuffer().writeShort$api(itemID);
+        writer.queuePacket(packet);
+    }
 }

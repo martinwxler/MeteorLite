@@ -56,44 +56,4 @@ public interface EEelFisherConfig extends Config {
     default int tickDelayMin() {
         return 3;
     }
-    @Range(textInput = true)
-    @ConfigItem(
-            keyName = "millisecondDelayAVG",
-            name = "Millisecond delay average",
-            description = " This delay decides how long to wait to make an action once a choice has been made",
-            position = 4
-    )
-    default int milisecondDelayAVG() {
-        return 200;
-    }
-    @Range(textInput = true)
-    @ConfigItem(
-            keyName = "millisecondDelayDeviation",
-            name = "Millisecond delay deviation",
-            description = "Average millisecond deviation",
-            position = 5
-    )
-    default int millisecondDelayDeviation() {
-        return 150;
-    }
-    @Range(textInput = true)
-    @ConfigItem(
-            keyName = "millisecondDelayMax",
-            name = "Millisecond delay max",
-            description = "The maximum millisecond delay",
-            position = 6
-    )
-    default int millisecondDelayMax() {
-        return 400;
-    }
-    @Range(textInput = true)
-    @ConfigItem(
-            keyName = "millisecondDelayMin",
-            name = "Millisecond delay minimum",
-            description = "The minimum millisecond delay",
-            position = 7
-    )
-    default int millisecondDelayMin() {
-        return 100;
-    }
 }
