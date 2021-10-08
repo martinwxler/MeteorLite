@@ -210,7 +210,7 @@ public class PlatformInfo extends Node {
 			Client.mouseCrossState = 0;
 			Client.destinationX = var0;
 			Client.destinationY = var1;
-			var8 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2763, Client.packetWriter.isaacCipher);
+			var8 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.Packet_itemUseOnGameObjectPacket, Client.packetWriter.isaacCipher);
 			var8.packetBuffer.writeShort01A(var3);
 			var8.packetBuffer.writeShort01A(PacketBufferNode.selectedItemId);
 			var8.packetBuffer.writeByte01(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
@@ -242,9 +242,9 @@ public class PlatformInfo extends Node {
 			Client.mouseCrossState = 0;
 			Client.destinationX = var0;
 			Client.destinationY = var1;
-			var8 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2762, Client.packetWriter.isaacCipher);
+			var8 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.Packet_gameObjectActionPacket, Client.packetWriter.isaacCipher);
 			var8.packetBuffer.writeShort01A(var3);
-			var8.packetBuffer.method7026(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
+			var8.packetBuffer.writeByte01A(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
 			var8.packetBuffer.writeShort01A(PlayerComposition.baseY + var1);
 			var8.packetBuffer.writeShort01A(var0 + WorldMapSectionType.baseX);
 			Client.packetWriter.addNode(var8);
@@ -284,7 +284,7 @@ public class PlatformInfo extends Node {
 			var8 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2700, Client.packetWriter.isaacCipher);
 			var8.packetBuffer.writeShortA(PlayerComposition.baseY + var1);
 			var8.packetBuffer.writeShortA(var0 + WorldMapSectionType.baseX);
-			var8.packetBuffer.method7026(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
+			var8.packetBuffer.writeByte01A(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
 			var8.packetBuffer.writeShort01A(var3);
 			Client.packetWriter.addNode(var8);
 		} else {
@@ -391,7 +391,7 @@ public class PlatformInfo extends Node {
 					Client.destinationY = var1;
 					var9 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2733, Client.packetWriter.isaacCipher);
 					var9.packetBuffer.writeShortA(var3);
-					var9.packetBuffer.method7026(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
+					var9.packetBuffer.writeByte01A(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
 					Client.packetWriter.addNode(var9);
 				}
 			} else {
@@ -510,7 +510,7 @@ public class PlatformInfo extends Node {
 					Client.destinationY = var1;
 					var8 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2663, Client.packetWriter.isaacCipher);
 					var8.packetBuffer.writeShort01A(var3);
-					var8.packetBuffer.method7026(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
+					var8.packetBuffer.writeByte01A(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
 					var8.packetBuffer.writeShortA(var0 + WorldMapSectionType.baseX);
 					var8.packetBuffer.writeShort01A(PlayerComposition.baseY + var1);
 					Client.packetWriter.addNode(var8);
@@ -522,7 +522,7 @@ public class PlatformInfo extends Node {
 					Client.destinationX = var0;
 					Client.destinationY = var1;
 					var8 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2736, Client.packetWriter.isaacCipher);
-					var8.packetBuffer.method7026(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
+					var8.packetBuffer.writeByte01A(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
 					var8.packetBuffer.writeShort(var0 + WorldMapSectionType.baseX);
 					var8.packetBuffer.writeShort(var3);
 					var8.packetBuffer.writeShort01A(PlayerComposition.baseY + var1);
@@ -617,6 +617,9 @@ public class PlatformInfo extends Node {
 								Client.field597 = var0;
 							} else if (var2 == 32) {
 								var8 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.Packet_spellOnItem, Client.packetWriter.isaacCipher);
+								//item slot var 0
+								//Inventory id var1
+								//item id var 3
 								var8.packetBuffer.writeShort(Client.selectedSpellChildIndex);
 								var8.packetBuffer.writeShort01A(var0);
 								var8.packetBuffer.writeShort01A(var3);

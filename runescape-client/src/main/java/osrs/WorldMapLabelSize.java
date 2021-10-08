@@ -1097,7 +1097,7 @@ public class WorldMapLabelSize {
 		garbageValue = "-220787387"
 	)
 	static final void method3445() {
-		PacketBufferNode var0 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2669, Client.packetWriter.isaacCipher);
+		PacketBufferNode var0 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.Packet_interfaceClosePacket, Client.packetWriter.isaacCipher);
 		Client.packetWriter.addNode(var0);
 
 		for (InterfaceParent var1 = (InterfaceParent)Client.interfaceParents.first(); var1 != null; var1 = (InterfaceParent)Client.interfaceParents.next()) {
