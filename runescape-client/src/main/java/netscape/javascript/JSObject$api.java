@@ -52,12 +52,12 @@ import java.util.ServiceLoader;
  *
  */
 @SuppressWarnings("deprecation")
-public abstract class JSObject {
+public abstract class JSObject$api {
 	/**
 	 * Constructs a new JSObject. Users should neither call this method nor
 	 * subclass JSObject.
 	 */
-	protected JSObject()  {
+	protected JSObject$api()  {
 	}
 
 	/**
@@ -156,7 +156,7 @@ public abstract class JSObject {
 
 	@Deprecated(since = "9")
 	@SuppressWarnings("exports")
-	public static JSObject getWindow(Applet applet) throws JSException {
+	public static JSObject$api getWindow(Applet applet) throws JSException {
 		return ProviderLoader.callGetWindow(applet);
 	}
 
@@ -179,7 +179,7 @@ public abstract class JSObject {
 			);
 		}
 
-		private static JSObject callGetWindow(Applet applet) {
+		private static JSObject$api callGetWindow(Applet applet) {
 			if (provider != null) {
 				return provider.getWindow(applet);
 			}
