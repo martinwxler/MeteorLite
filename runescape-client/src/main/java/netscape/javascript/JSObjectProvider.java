@@ -1,8 +1,6 @@
 package netscape.javascript;
 
 import java.applet.Applet;
-import netscape.javascript.JSException;
-import netscape.javascript.JSObject;
 
 @SuppressWarnings("deprecation")
 public interface JSObjectProvider {
@@ -16,5 +14,5 @@ public interface JSObjectProvider {
 	 * are not connected to a browser.
 	 * @throws JSException when an error is encountered.
 	 */
-	public JSObject getWindow(Applet applet) throws JSException;
+	public JSObject$api getWindow(Applet applet) throws JSException;
 }

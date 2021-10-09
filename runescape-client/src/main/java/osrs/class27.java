@@ -3,7 +3,7 @@ package osrs;
 import java.applet.Applet;
 import net.runelite.mapping.ObfuscatedName;
 import net.runelite.mapping.ObfuscatedSignature;
-import netscape.javascript.JSObject;
+import netscape.javascript.JSObject$api;
 
 @ObfuscatedName("ad")
 public class class27 {
@@ -13,7 +13,7 @@ public class class27 {
 		garbageValue = "1346370498"
 	)
 	public static void method405(Applet var0, String var1) throws Throwable {
-		JSObject.getWindow(var0).eval(var1);
+		JSObject$api.getWindow(var0).eval(var1);
 	}
 
 	@ObfuscatedName("q")
@@ -22,6 +22,6 @@ public class class27 {
 		garbageValue = "2078687871"
 	)
 	public static Object method406(Applet var0, String var1, Object[] var2) throws Throwable {
-		return JSObject.getWindow(var0).call(var1, var2);
+		return JSObject$api.getWindow(var0).call(var1, var2);
 	}
 }

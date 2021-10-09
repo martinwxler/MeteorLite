@@ -5,7 +5,7 @@ import java.net.URL;
 import net.runelite.mapping.ObfuscatedGetter;
 import net.runelite.mapping.ObfuscatedName;
 import net.runelite.mapping.ObfuscatedSignature;
-import netscape.javascript.JSObject;
+import netscape.javascript.JSObject$api;
 
 @ObfuscatedName("ea")
 public class class139 extends class132 {
@@ -106,7 +106,7 @@ public class class139 extends class132 {
 		} else if (var1 == 3) {
 			try {
 				Applet var3 = class29.field168;
-				JSObject.getWindow(var3).call("loggedout", (Object[])null);
+				JSObject$api.getWindow(var3).call("loggedout", (Object[])null);
 			} catch (Throwable var9) {
 			}
 

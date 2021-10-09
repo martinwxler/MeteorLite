@@ -15,7 +15,7 @@ import net.runelite.mapping.Implements;
 import net.runelite.mapping.ObfuscatedGetter;
 import net.runelite.mapping.ObfuscatedName;
 import net.runelite.mapping.ObfuscatedSignature;
-import netscape.javascript.JSObject;
+import netscape.javascript.JSObject$api;
 
 @Implements("Client")
 @ObfuscatedName("client")
@@ -2841,7 +2841,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
 
 					try {
 						Client var19 = class21.client;
-						JSObject.getWindow(var19).call("zap", (Object[])null);
+						JSObject$api.getWindow(var19).call("zap", (Object[])null);
 					} catch (Throwable var20) {
 					}
 
