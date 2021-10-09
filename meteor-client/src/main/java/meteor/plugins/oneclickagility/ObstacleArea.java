@@ -2,6 +2,7 @@ package meteor.plugins.oneclickagility;
 
 import lombok.Getter;
 import lombok.Setter;
+import meteor.plugins.api.game.Game;
 import net.runelite.api.GameObject;
 import net.runelite.api.Locatable;
 import net.runelite.api.MenuAction;
@@ -50,6 +51,8 @@ public class ObstacleArea
     {
         if (nextObstacle != null)
         {
+            if (nextObstacle.distanceTo(Game.getClient().getLocalPlayer().getWorldLocation()) < 1)
+                return null;
             return new MenuEntry(nextObstacle.getRawActions()[0], nextObstacle.getName(),nextObstacle.getId(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), getObjectParam(nextObstacle),getObjectParam1(nextObstacle),true);
         }
         return null;
