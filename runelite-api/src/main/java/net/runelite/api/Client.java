@@ -2324,25 +2324,58 @@ public interface Client extends GameEngine {
    */
   ClientPacket getTextInputPacket();
 
-  ClientPacket getClickPacket();
-  ClientPacket getItemOnItemPacket();
-  ClientPacket getSpellOnItemPacket();
+
+  /*
+  The Item packets
+   */
   ClientPacket getItemActionPacket();
-  ClientPacket getNPCAction3Packet();
   ClientPacket getItemAction2Packet();
   ClientPacket getItemAction3Packet();
   ClientPacket getItemAction4Packet();
   ClientPacket getItemAction5Packet();
+  ClientPacket getItemOnItemPacket();
   ClientPacket getBankItemActionPacket();
+  /*
+  The NPC packets
+   */
+  ClientPacket getNPCActionPacket();
+  ClientPacket getNPCAction2Packet();
+  ClientPacket getNPCAction3Packet();
+  ClientPacket getNPCAction4Packet();
+  ClientPacket getNPCAction5Packet();
+
+  /*
+  GameObject packets
+   */
   ClientPacket getGameObjectActionPacket();
   ClientPacket getGameObjectAction2Packet();
-  ClientPacket getNPCActionPacket();
-  ClientPacket getInterfaceClosePacket();
+  ClientPacket getGameObjectAction3Packet();
+  ClientPacket getGameObjectAction4Packet();
+  ClientPacket getGameObjectAction5Packet();
+  ClientPacket getItemUseOnGameObjectPacket();
+  /*
+  Widget packets
+   */
   ClientPacket getWidgetActionPacket();
   ClientPacket getWidgetAction2Packet();
   ClientPacket getWidgetAction3Packet();
+  ClientPacket getWidgetAction4Packet();
+  ClientPacket getWidgetAction5Packet();
+  ClientPacket getWidgetAction6Packet();
+  ClientPacket getWidgetAction7Packet();
+  ClientPacket getWidgetAction8Packet();
+  ClientPacket getWidgetAction10Packet();
+
+  /*
+  Spell packets
+   */
+  ClientPacket getSpellOnItemPacket();
+  /*
+  Misc
+   */
+  ClientPacket getClickPacket();
+  ClientPacket getInterfaceClosePacket();
   ClientPacket getWalkPacket();
-  ClientPacket getItemUseOnGameObjectPacket();
 
   void setSelectedSceneTileX(int sceneX);
 
