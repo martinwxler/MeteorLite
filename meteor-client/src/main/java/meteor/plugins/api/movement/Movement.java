@@ -1,5 +1,6 @@
 package meteor.plugins.api.movement;
 
+import meteor.plugins.api.commons.Rand;
 import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.Vars;
@@ -11,6 +12,7 @@ import meteor.ui.overlay.OverlayUtil;
 import net.runelite.api.Point;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -75,6 +77,20 @@ public class Movement {
 
     public static void walk(Locatable locatable) {
         walk(locatable.getWorldLocation());
+    }
+
+    public static boolean walkTo(WorldPoint worldPoint, int radius) {
+        WorldPoint wp = new WorldPoint(
+                worldPoint.getX() + Rand.nextInt(-radius, radius),
+                worldPoint.getY() + Rand.nextInt(-radius, radius),
+                worldPoint.getPlane());
+        return Walker.walkTo(wp, false);
+    }
+
+    public static boolean walkTo(WorldArea worldArea) {
+        List<WorldPoint> wpList = worldArea.toWorldPointList();
+        WorldPoint wp = wpList.get(Rand.nextInt(0, wpList.size()));
+        return Walker.walkTo(wp, false);
     }
 
     public static boolean walkTo(WorldPoint worldPoint) {
