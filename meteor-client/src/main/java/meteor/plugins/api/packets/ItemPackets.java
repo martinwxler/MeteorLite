@@ -1,5 +1,6 @@
 package meteor.plugins.api.packets;
 
+import com.questhelper.steps.WidgetDetails;
 import meteor.plugins.api.game.Game;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
@@ -20,6 +21,9 @@ public class ItemPackets {
 			case 2 -> itemThirdOption(item);
 			case 3 -> itemFourthOption(item);
 			case 4 -> itemFifthOption(item);
+			default ->{
+				WidgetPackets.widgetAction(Game.getClient().getWidget(item.getWidgetId()),action);
+			}
 		}
 	}
 

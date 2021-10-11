@@ -10,20 +10,27 @@ import meteor.plugins.api.packets.ItemPackets;
 import meteor.plugins.api.packets.MousePackets;
 import meteor.plugins.api.packets.NPCPackets;
 import meteor.plugins.api.packets.WidgetPackets;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.GameState;
 import net.runelite.api.Item;
 import net.runelite.api.NPC;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.widgets.WidgetInfo;
 
 @PluginDescriptor(name = "Chocolate grinder", enabledByDefault = false)
 public class ChocoGrinder extends Plugin {
     int gametick =0;
     Item knife;
+    int failed =0;
+    int chocoSlot =-1;
     @Override
     public void startup(){
         if(client.getGameState()== GameState.LOGGED_IN){
             knife = Inventory.getFirst(	946);
         }
+        chocoSlot =-1;
+        failed =0;
+        gametick =0;
     }
     public void clickPacket(){
         client.setMouseLastPressedMillis(System.currentTimeMillis());
@@ -46,6 +53,14 @@ public class ChocoGrinder extends Plugin {
         if(client.getGameState()!= GameState.LOGGED_IN){
             return;
         }
+        if(chocoSlot==-1){
+            Item bars=Bank.getFirst("Chocolate bar");
+            if(bars==null){
+                this.toggle();
+                client.addChatMessage(ChatMessageType.GAMEMESSAGE, "ChocoGrinder", "Either bank was not open or you did not having chocolate bars in bank", null);
+                return;
+            }
+        }
         if(knife==null){
             knife = Inventory.getFirst(	946);
             return;
@@ -53,13 +68,10 @@ public class ChocoGrinder extends Plugin {
         if(gametick==0){
             if(!Inventory.getAll(1975).isEmpty()) {
                 clickPacket();
-                WidgetPackets.queueWidgetAction2Packet(983043,1975,0);
-            }
-            if(Bank.getFirst(1973).getQuantity()<27){
-                this.toggle();
+                WidgetPackets.queueWidgetAction2Packet(WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER.getPackedId(),1975,0);
             }
             clickPacket();
-            WidgetPackets.queueWidgetActionPacket(786444,1973,0);
+            WidgetPackets.queueWidgetActionPacket(WidgetInfo.BANK_ITEM_CONTAINER.getPackedId(),1973,chocoSlot);
             for (int i = 0; i < 8; i++) {
                 clickPacket();
                 itemOnItemPacket(1973,26,946,27);
@@ -78,6 +90,18 @@ public class ChocoGrinder extends Plugin {
             }
             NPC bank = NPCs.getNearest("Banker");
             if (bank != null) {
+                if(Inventory.getFreeSlots()>0){
+                    failed++;
+                    if(failed>2){
+                        this.toggle();
+                        client.addChatMessage(ChatMessageType.GAMEMESSAGE, "ChocoGrinder", "Out of chocolate", null);
+                        return;
+                    }
+                    clickPacket();
+                    NPCPackets.queueNPCAction3Packet(bank.getIndex(),0);
+                    return;
+                }
+                failed=0;
                 clickPacket();
                 NPCPackets.queueNPCAction3Packet(bank.getIndex(),0);
             }
