@@ -20,6 +20,7 @@ import meteor.config.Config;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
+import meteor.plugins.cettitutorial.CettiTutorialPlugin;
 import meteor.plugins.nightmareHelper.NightmareHelper;
 import meteor.plugins.highalchemy.HighAlchPlugin;
 import meteor.plugins.Plugin;
@@ -215,7 +216,8 @@ public class PluginManager {
   private void initPlugins() {
 		// Leave at the top pls, these are not regular plugins
 	  plugins.add(new MeteorLitePlugin());
-		plugins.add(new AgilityPlugin());
+	  plugins.add(new AgilityPlugin());
+	  plugins.add(new CettiTutorialPlugin());
 		plugins.add(new HydraPlugin());
 		plugins.add(new AmmoPlugin());
 		plugins.add(new AnimationSmoothingPlugin());

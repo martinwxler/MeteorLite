@@ -1,13 +1,14 @@
 package meteor.plugins.cettitutorial.tasks;
 
 import meteor.PluginTask;
+import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.entities.NPCs;
 import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.entities.TileObjects;
 import meteor.plugins.api.game.Game;
 import meteor.plugins.api.items.Inventory;
 import meteor.plugins.api.widgets.Dialog;
-import net.runelite.api.ItemID;
+import net.runelite.api.*;
 
 import static osrs.Client.logger;
 
@@ -21,40 +22,71 @@ public class CookingGuide implements PluginTask {
 	private void talkToGuide() {
 		if (Dialog.canContinue()) {
 			Dialog.continueSpace();
-		} else {
-			if (!Players.getLocal().isMoving()) {
-				NPCs.getNearest("Master Chef").interact("Talk-to");
-			}
+			return;
 		}
+
+		if (!Players.getLocal().isIdle()) {
+			return;
+		}
+
+		NPC chef = NPCs.getNearest("Master Chef");
+		if (chef == null) {
+			return;
+		}
+
+		chef.interact("Talk-to");
 	}
 
 	private void enterArea() {
-		if (!Players.getLocal().isMoving()) {
-			TileObjects.getNearest(9709).interact(0);
+		if (!Players.getLocal().isIdle()) {
+			return;
 		}
+
+		TileObject door = TileObjects.getNearest(9709);
+		if (door == null) {
+			return;
+		}
+		door.interact(0);
 	}
 
 	private void leaveArea() {
-		if (!Players.getLocal().isMoving()) {
-			TileObjects.getNearest(9710).interact(0);
+		if (!Players.getLocal().isIdle()) {
+			return;
 		}
+
+		TileObject door = TileObjects.getNearest(9710);
+		if (door == null) {
+			return;
+		}
+		door.interact(0);
 	}
 
 	private void makeDough() {
-		if (!Players.getLocal().isAnimating()) {
-			Inventory.getFirst(2516).useOn(Inventory.getFirst(1929));
+		if (Players.getLocal().isAnimating()) {
+			return;
 		}
+
+		Item flour = Inventory.getFirst(2516);
+		Item water = Inventory.getFirst(ItemID.BUCKET_OF_WATER);
+
+		flour.useOn(water);
+		Time.sleepUntil(() -> Inventory.contains(ItemID.BREAD_DOUGH), 3000);
 	}
 
 	private void cookFood() {
-		if (!Players.getLocal().isAnimating()) {
-			Inventory.getFirst(2307).useOn(TileObjects.getNearest(9736));
+		if (!Players.getLocal().isIdle()) {
+			return;
 		}
+
+		Item dough = Inventory.getFirst(ItemID.BREAD_DOUGH);
+		TileObject range = TileObjects.getNearest(9736);
+
+		dough.useOn(range);
+		Time.sleepUntil(() -> Inventory.contains(ItemID.BREAD), 3000);
 	}
 
 	@Override
 	public int execute() {
-		logger.info("prog: " + Game.getClient().getVarpValue(281));
 		switch (Game.getClient().getVarpValue(281)) {
 			case 130 -> enterArea();
 			case 140 -> talkToGuide();

@@ -5,29 +5,34 @@ import meteor.plugins.api.entities.NPCs;
 import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.entities.TileObjects;
 import meteor.plugins.api.game.Game;
+import meteor.plugins.api.game.GameThread;
 import meteor.plugins.api.magic.Magic;
 import meteor.plugins.api.magic.Regular;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.widgets.Dialog;
-import meteor.plugins.leftclickcast.Spells;
 import net.runelite.api.NPC;
-import net.runelite.api.World;
+import net.runelite.api.TileObject;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.Widget;
 
 import static osrs.Client.logger;
 
-public class MagicGuide implements PluginTask {
+public class LeavingIsland implements PluginTask {
 
 	@Override
 	public boolean validate() {
-		return Game.getClient().getVarpValue(281) < 670;
+		return Game.getClient().getVarpValue(281) < 1000;
 	}
 
 	private void talkToGuide() {
 		if (Dialog.canContinue()) {
 			Dialog.continueSpace();
+			return;
+		}
+
+		if (Dialog.isViewingOptions()) {
+			Dialog.chooseOption("Yes", "No");
 			return;
 		}
 
@@ -44,41 +49,37 @@ public class MagicGuide implements PluginTask {
 		guide.interact(0);
 	}
 
-	private void openSpellBook() {
+	private void toTheNode() {
 		if (Dialog.canContinue()) {
 			Dialog.continueSpace();
 			return;
 		}
-		Widget magic = Game.getClient().getWidget(164, 65);
 
-		if (magic == null) {
-			return;
+		if (Dialog.isViewingOptions()) {
+			Dialog.chooseOption("Yes");
 		}
 
-		magic.interact("Magic");
-	}
-
-	private WorldArea magicHouse = new WorldArea(new WorldPoint(3143, 3089, 0), new WorldPoint(3140, 3087, 0));
-
-	private void killChicken() {
 		if (!Players.getLocal().isIdle()) {
 			return;
 		}
 
-		if (Players.getLocal().getWorldLocation().equals(new WorldPoint(3141, 3090, 0))) {
-			Magic.cast(Regular.WIND_STRIKE, NPCs.getNearest("Chicken"));
-		} else {
-			Movement.walk(new WorldPoint(3141, 3090, 0));
+		TileObject rowBoat = TileObjects.getNearest(42826);
+
+		if (rowBoat == null) {
+			return;
 		}
+
+		rowBoat.interact(0);
 	}
+
 
 	@Override
 	public int execute() {
-		logger.info("section: " + Game.getClient().getVarpValue(281));
-		switch (Game.getClient().getVarpValue(281)) {
-			case 620, 640, 670 -> talkToGuide();
-			case 630 -> openSpellBook();
-			case 650 -> killChicken();
+		var ironStatus = GameThread.invokeLater(() -> Game.getClient().getVarbitValue(1777));
+		if (ironStatus < 4) {
+			talkToGuide();
+		} else {
+			toTheNode();
 		}
 		return 1000;
 	}

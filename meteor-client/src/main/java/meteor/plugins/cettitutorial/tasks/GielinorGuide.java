@@ -7,6 +7,11 @@ import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.entities.TileObjects;
 import meteor.plugins.api.game.Game;
 import meteor.plugins.api.widgets.Dialog;
+import meteor.plugins.api.widgets.Tab;
+import meteor.plugins.api.widgets.Tabs;
+import net.runelite.api.NPC;
+import net.runelite.api.TileObject;
+import net.runelite.api.widgets.Widget;
 
 import static osrs.Client.logger;
 
@@ -19,44 +24,54 @@ public class GielinorGuide implements PluginTask {
 
 	private void talkToGuide() {
 		if (Dialog.canContinue()) {
-			logger.info("Can continue!");
 			Dialog.continueSpace();
-		} else if (Dialog.isViewingOptions()) {
-			Dialog.chooseOption("I am an experienced player.");
-		} else if (!Dialog.isViewingOptions()
-						|| !Dialog.canContinue()
-						|| !Dialog.canContinueTutIsland()
-						|| !Dialog.canContinueTutIsland2()
-						|| !Dialog.canContinueTutIsland3()) {
-			logger.info("Not talking with NPC!");
-			if (!Players.getLocal().isMoving()) {
-				logger.info("Interacting with NPC");
-				NPCs.getNearest("Gielinor Guide").interact("Talk-to");
-
-			}
+			return;
 		}
+
+		if (Dialog.isViewingOptions()) {
+			Dialog.chooseOption("I am an experienced player.");
+			return;
+		}
+
+		if (Players.getLocal().isMoving()) {
+			return;
+		}
+
+		NPC guide = NPCs.getNearest("Gielinor Guide");
+		guide.interact("Talk-to");
 	}
 
 	private void openSettings() {
 		if (Dialog.canContinue()) {
 			Dialog.continueSpace();
 		}
-		Game.getClient().getWidget(164, 47).interact("Settings");
+
+		Widget settings = Game.getClient().getWidget(164, 47);
+
+		if (settings == null) {
+			return;
+		}
+
+		settings.interact("Settings");
 	}
 
 	private void leaveArea() {
-		if (!Players.getLocal().isMoving()) {
-			TileObjects.getNearest(9398).interact(0);
-			Time.sleep(600);
+		if (Players.getLocal().isMoving()) {
+			return;
 		}
+
+		TileObject door = TileObjects.getNearest(9398);
+		if (door == null) {
+			return;
+		}
+
+		door.interact(0);
 	}
 
 	@Override
 	public int execute() {
-		logger.info("Get through house: prog: " + Game.getClient().getVarpValue(281));
 		switch (Game.getClient().getVarpValue(281)) {
 			case 2, 7 -> {
-				logger.info("Talk to guide");
 				talkToGuide();
 			}
 			case 3 -> openSettings();

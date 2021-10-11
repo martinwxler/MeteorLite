@@ -36,6 +36,7 @@ public class CreateCharacter implements PluginTask {
 	}
 
 	private void enterUsername() {
+
 		if (Game.getClient().getWidget(558, 7) != null) {
 			if (Game.getClient().getWidget(558, 12).getText().contains("*")) {
 				if (Game.getClient().getWidget(558, 12).getText().equals("*")) {
@@ -67,12 +68,14 @@ public class CreateCharacter implements PluginTask {
 			if (Game.getClient().getWidget(679, 66).getActions().contains("Female")) {
 				logger.info("Selecting Female");
 				Game.getClient().getWidget(679, 66).interact("Female");
-				Time.sleep(600, 800);
 			}
 		}
 	}
 
 	private void setRandomAppearance() {
+
+
+		// TODO: Remove beard (17) from appearance list if female
 		if (config.randomAppearance()) {
 			List<Integer> appearanceOptions = Arrays.asList(13, 17, 21, 25, 29, 33, 37, 44, 48, 52, 56, 60);
 			for (int option : appearanceOptions) {
