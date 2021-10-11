@@ -80,7 +80,12 @@ public class SurvivalGuide implements PluginTask {
 			return;
 		}
 
-		NPCs.getNearest(3317).interact("Net");
+		NPC pond = NPCs.getNearest(3317);
+		if (pond == null) {
+			return;
+		}
+
+		pond.interact("Net");
 	}
 
 	private void chopTree() {
@@ -105,7 +110,13 @@ public class SurvivalGuide implements PluginTask {
 			return;
 		}
 
-		Inventory.getFirst(ItemID.TINDERBOX).useOn(Inventory.getFirst(2511));
+		Item tinderbox = Inventory.getFirst(ItemID.TINDERBOX);
+		Item logs = Inventory.getFirst(2511);
+		if (tinderbox == null || logs == null) {
+			return;
+		}
+
+		tinderbox.useOn(logs);
 	}
 
 	private void cookFood() {
