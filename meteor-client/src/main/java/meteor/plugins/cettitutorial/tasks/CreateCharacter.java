@@ -1,25 +1,15 @@
 package meteor.plugins.cettitutorial.tasks;
 
-import com.questhelper.quests.mourningsendparti.MourningsEndPartI;
-import lombok.extern.java.Log;
 import meteor.PluginTask;
-import meteor.eventbus.Subscribe;
-import meteor.plugins.api.commons.Rand;
 import meteor.plugins.api.commons.Time;
-import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.game.Game;
 import meteor.plugins.api.input.Keyboard;
-import meteor.plugins.api.movement.Movement;
 import meteor.plugins.cettitutorial.CettiTutorialConfig;
-import meteor.plugins.cettitutorial.CettiTutorialPlugin;
-import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.ChatMessage;
+import net.runelite.api.widgets.Widget;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-
-import static osrs.Client.logger;
 
 public class CreateCharacter implements PluginTask {
 
@@ -37,69 +27,129 @@ public class CreateCharacter implements PluginTask {
 
 	private void enterUsername() {
 
-		if (Game.getClient().getWidget(558, 7) != null) {
-			if (Game.getClient().getWidget(558, 12).getText().contains("*")) {
-				if (Game.getClient().getWidget(558, 12).getText().equals("*")) {
-					Keyboard.type(config.userName()); // CHANGE TO CONFIG
+		Widget setDisplayName = Game.getClient().getWidget(558, 2);
+		Widget displayNameField = Game.getClient().getWidget(558, 7);
+		Widget displayNameFieldText = Game.getClient().getWidget(558, 12);
+		Widget displayNameAvailable = Game.getClient().getWidget(558,13);
 
-				} else if (Game.getClient().getWidget(558, 13).getText().toLowerCase().contains("try clicking one of our suggestions")) {
-					int selectName = new Random().nextInt((17 - 15) + 1) + 15;
-					logger.info("Setting name to " + selectName);
-					Game.getClient().getWidget(558, selectName).interact("Set name"); // not working for some reason
-					Time.sleep(1000, 2000);
+		if (setDisplayName == null) {
+			return;
+		}
 
-				} else if (Game.getClient().getWidget(558, 13).getText().toLowerCase().contains("you may set this name now")) {
-					Game.getClient().getWidget(558, 19).interact("Set name");
-					Time.sleep(1000, 2000);
+		if (displayNameField == null) {
+			return;
+		}
 
-				} else {
-					Game.getClient().getWidget(558, 18).interact("Look up name");
-					Time.sleep(1000, 2000);
+		if (displayNameFieldText == null) {
+			return;
+		}
+
+		if (displayNameAvailable == null) {
+			return;
+		}
+
+		String displayNameText = displayNameFieldText.getText();
+
+		// initial name look up
+		if (displayNameAvailable.getText().equals("Please look up a name to see whether it is available.")) {
+			if (displayNameText.equals("*")) {
+				displayNameField.interact(0);
+				Keyboard.type(config.userName());
+
+				Widget lookUpNameButton = Game.getClient().getWidget(558,18);
+
+				if (lookUpNameButton == null) {
+					return;
 				}
-			} else {
-				Game.getClient().getWidget(558, 7).interact("Enter name");
-				Time.sleep(400, 600);
+
+				lookUpNameButton.interact(0);
+				return;
 			}
+		}
+
+		// name not available, select suggestion
+		if (displayNameAvailable.getText().contains("Try clicking one of our suggestions, instead")) {
+			int selectName = new Random().nextInt((17 - 15) + 1) + 15;
+
+			//TODO: This widget doesn't interact properly and leaves the chosen name saying "Please wait..."
+			Widget nameSuggestion = Game.getClient().getWidget(558, selectName);
+
+			if (nameSuggestion == null) {
+				return;
+			}
+
+			nameSuggestion.interact("Set name");
+			return;
+		}
+
+		// name is available, set name
+		if (displayNameAvailable.getText().contains("Great! The display name")) {
+
+			Widget setNameButton = Game.getClient().getWidget(558, 19);
+			if (setNameButton == null) {
+				return;
+			}
+
+			setNameButton.interact(0);
 		}
 	}
 
 	private void setFemale() {
+
+		Widget femaleButton = Game.getClient().getWidget(679, 66);
+
+		if (femaleButton == null) {
+			return;
+		}
+
 		if (config.setFemale()) {
-			if (Game.getClient().getWidget(679, 66).getActions().contains("Female")) {
-				logger.info("Selecting Female");
-				Game.getClient().getWidget(679, 66).interact("Female");
+			if (femaleButton.getActions().contains("Female")) {
+				femaleButton.interact("Female");
 			}
 		}
 	}
 
 	private void setRandomAppearance() {
 
-
-		// TODO: Remove beard (17) from appearance list if female
 		if (config.randomAppearance()) {
 			List<Integer> appearanceOptions = Arrays.asList(13, 17, 21, 25, 29, 33, 37, 44, 48, 52, 56, 60);
+
 			for (int option : appearanceOptions) {
-				int random = new Random().nextInt((30 - 1) + 1) + 1;
+				int random = new Random().nextInt((10 - 1) + 1) + 1;
+				Widget arrowSelect = Game.getClient().getWidget(679, option);
+
+				if (arrowSelect == null) {
+					return;
+				}
+
+				if (config.setFemale()) {
+					if (option == 17) {
+						return;
+					}
+				}
+
 				for (int i = 0; i < random; ++i) {
-					Game.getClient().getWidget(679, option).interact("Select");
-					Time.sleep(150, 300);
+					arrowSelect.interact("Select");
 				}
 			}
 		}
 	}
 
 	private void confirmAppearance() {
-		if (Game.getClient().getWidget(679, 2) != null) {
-			setFemale();
-			setRandomAppearance();
-			Game.getClient().getWidget(679, 68).interact("Confirm");
-			Time.sleep(600, 800);
+		Widget confirmAppearance = Game.getClient().getWidget(679, 68);
+
+		if (confirmAppearance == null) {
+			return;
 		}
+
+		setFemale();
+		setRandomAppearance();
+		confirmAppearance.interact("Confirm");
+		Time.sleep(600);
 	}
 
 	@Override
 	public int execute() {
-		logger.info("Creating Character");
 		enterUsername();
 		confirmAppearance();
 		return 1000;

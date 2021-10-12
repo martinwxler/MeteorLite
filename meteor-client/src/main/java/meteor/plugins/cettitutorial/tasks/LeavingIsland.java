@@ -6,17 +6,11 @@ import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.entities.TileObjects;
 import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.GameThread;
-import meteor.plugins.api.magic.Magic;
-import meteor.plugins.api.magic.Regular;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.widgets.Dialog;
 import net.runelite.api.NPC;
 import net.runelite.api.TileObject;
-import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.widgets.Widget;
-
-import static osrs.Client.logger;
 
 public class LeavingIsland implements PluginTask {
 
@@ -32,7 +26,7 @@ public class LeavingIsland implements PluginTask {
 		}
 
 		if (Dialog.isViewingOptions()) {
-			Dialog.chooseOption("Yes", "No");
+			Dialog.chooseOption("Yes.", "No,");
 			return;
 		}
 
