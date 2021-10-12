@@ -19,7 +19,6 @@ import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
 
 import static net.runelite.api.widgets.WidgetInfo.MINIMAP_WORLDMAP_OPTIONS;
 
@@ -32,21 +31,16 @@ import static net.runelite.api.widgets.WidgetInfo.MINIMAP_WORLDMAP_OPTIONS;
 public class WorldMapWalkerPlugin extends Plugin {
 
     @Inject
-    private ScheduledExecutorService executorService;
-
-    @Inject
     private WorldMapOverlay worldMapOverlay;
 
     private Point lastMenuOpenedPoint;
     private WorldPoint mapPoint;
 
-    private static final WidgetMenuOption CLEAR_MARKERS_OPTION = new WidgetMenuOption("Clear destination", "WorldMapWalker", MINIMAP_WORLDMAP_OPTIONS);
 
     private static final String DESTINATION_MENU_TARGET = "<col=00ff00>Destination";
 
     @Override
     public void startup() {
-        //menuManager.addManagedCustomMenu(CLEAR_MARKERS_OPTION);
     }
 
     @Override
@@ -73,6 +67,7 @@ public class WorldMapWalkerPlugin extends Plugin {
         lastMenuOpenedPoint = client.getMouseCanvasPosition();
     }
 
+    //Check if menu options have already been added
     private boolean menuContainsEntries(){
         MenuEntry[] entries = client.getMenuEntries();
         if(entries != null){
@@ -93,7 +88,6 @@ public class WorldMapWalkerPlugin extends Plugin {
 
         final Widget map = client.getWidget(WidgetInfo.WORLD_MAP_VIEW);
 
-        //Menu entries already added
         // If user clicks on map
         if (map != null && map.getBounds().contains(client.getMouseCanvasPosition().getX(), client.getMouseCanvasPosition().getY())) {
             if (!menuContainsEntries()) {
@@ -103,12 +97,14 @@ public class WorldMapWalkerPlugin extends Plugin {
             }
             return;
         }
+        // If user clicks on globe icon on minimap
         if (event.getActionParam1() == MINIMAP_WORLDMAP_OPTIONS.getId()) {
             if (!menuContainsEntries()) {
                 addMenuEntry(event, "Clear",1);
             }
             return;
         }
+        // If user right clicks on ground
         if (mapPoint != null && event.getOption().equals("Walk here")) {
             if (!menuContainsEntries()) {
                 addMenuEntry(event, "Clear",1);
