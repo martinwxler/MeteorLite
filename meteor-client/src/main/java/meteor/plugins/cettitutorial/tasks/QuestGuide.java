@@ -7,6 +7,11 @@ import meteor.plugins.api.entities.TileObjects;
 import meteor.plugins.api.game.Game;
 import meteor.plugins.api.items.Inventory;
 import meteor.plugins.api.widgets.Dialog;
+import meteor.plugins.api.widgets.Tab;
+import meteor.plugins.api.widgets.Tabs;
+import net.runelite.api.NPC;
+import net.runelite.api.TileObject;
+import net.runelite.api.widgets.Widget;
 
 import static osrs.Client.logger;
 
@@ -20,35 +25,63 @@ public class QuestGuide implements PluginTask {
 	private void talkToGuide() {
 		if (Dialog.canContinue()) {
 			Dialog.continueSpace();
-		} else {
-			if (!Players.getLocal().isMoving()) {
-				NPCs.getNearest("Quest Guide").interact("Talk-to");
-			}
+			return;
 		}
+
+		if (!Players.getLocal().isIdle()) {
+			return;
+		}
+
+		NPC guide = NPCs.getNearest("Quest Guide");
+		if (guide == null) {
+			return;
+		}
+
+		guide.interact("Talk-to");
 	}
 
 	private void enterArea() {
-		if (!Players.getLocal().isMoving()) {
-			TileObjects.getNearest(9716).interact(0);
+		if (Players.getLocal().isMoving()) {
+			return;
 		}
+
+		TileObject door = TileObjects.getNearest(9716);
+		if (door == null) {
+			return;
+		}
+
+		door.interact(0);
 	}
 
 	private void leaveArea() {
-		if (!Players.getLocal().isMoving()) {
-			TileObjects.getNearest(9726).interact(0);
+		if (!Players.getLocal().isIdle()) {
+			return;
 		}
+
+		TileObject ladder = TileObjects.getNearest(9726);
+		if (ladder == null) {
+			return;
+		}
+
+		ladder.interact(0);
 	}
 
 	private void openQuests() {
 		if (Dialog.canContinue()) {
 			Dialog.continueSpace();
 		}
-		Game.getClient().getWidget(164, 61).interact("Quest List");
+
+		Widget quest = Game.getClient().getWidget(164, 61);
+
+		if (quest == null) {
+			return;
+		}
+
+		quest.interact("Quest List");
 	}
 
 	@Override
 	public int execute() {
-		logger.info("prog: " + Game.getClient().getVarpValue(281));
 		switch (Game.getClient().getVarpValue(281)) {
 			case 200 -> enterArea();
 			case 220, 240 -> talkToGuide();

@@ -38,7 +38,8 @@ public class CettiTutorialPlugin extends TaskPlugin {
 						new BankAndAccountGuide(),
 						new PrayerGuide(),
 						new IronmanGuide(config, this),
-						new MagicGuide()
+						new MagicGuide(),
+						new LeavingIsland()
 		);
 	}
 

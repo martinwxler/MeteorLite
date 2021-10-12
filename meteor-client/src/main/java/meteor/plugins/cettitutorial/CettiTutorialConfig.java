@@ -29,7 +29,10 @@ public interface CettiTutorialConfig extends Config {
 					position = 25,
 					name = "Group Iron",
 					keyName = "groupIron",
-					description = "Choose to be Group Ironman"
+					description = "Choose to be Group Ironman",
+					hidden = true,
+					unhide = "gameMode",
+					unhideValue = "Ironman || Hardcore Ironman"
 	)
 	default boolean groupIron() {
 		return false;
@@ -86,15 +89,15 @@ public interface CettiTutorialConfig extends Config {
 	}
 
 
-	@ConfigItem(
-					position = 70,
-					name = "Run to GE",
-					keyName = "runToGE",
-					description = "Runs to GE on completion."
-	)
-	default boolean runToGE() {
-		return false;
-	}
+//	@ConfigItem(
+//					position = 70,
+//					name = "Run to GE",
+//					keyName = "runToGE",
+//					description = "Runs to GE on completion."
+//	)
+//	default boolean runToGE() {
+//		return false;
+//	}
 
 //    @Icon
 //    @ConfigItem(

@@ -16,6 +16,7 @@ import net.runelite.api.Item;
 import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
 import net.runelite.api.TileObject;
+import net.runelite.api.widgets.Widget;
 import osrs.GameObject;
 
 import static osrs.Client.logger;
@@ -50,7 +51,13 @@ public class SurvivalGuide implements PluginTask {
 			Dialog.continueSpace();
 		}
 
-		Tabs.open(Tab.INVENTORY);
+		Widget inventory = Game.getClient().getWidget(164, 62);
+
+		if (inventory == null) {
+			return;
+		}
+
+		inventory.interact("Inventory");
 	}
 
 	private void openSkills() {
@@ -58,7 +65,13 @@ public class SurvivalGuide implements PluginTask {
 			Dialog.continueSpace();
 		}
 
-		Tabs.open(Tab.SKILLS);
+		Widget skills = Game.getClient().getWidget(164, 60);
+
+		if (skills == null) {
+			return;
+		}
+
+		skills.interact("Skills");
 	}
 
 	private void leaveArea() {
@@ -66,13 +79,12 @@ public class SurvivalGuide implements PluginTask {
 			return;
 		}
 
-		TileObject obj = TileObjects.getNearest(9708);
-		if (obj == null) {
+		TileObject gate = TileObjects.getNearest(9708);
+		if (gate == null) {
 			return;
 		}
 
-		obj.interact(0);
-//            Time.sleep(600);
+		gate.interact(0);
 	}
 
 	private void fishPond() {
@@ -112,6 +124,7 @@ public class SurvivalGuide implements PluginTask {
 
 		Item tinderbox = Inventory.getFirst(ItemID.TINDERBOX);
 		Item logs = Inventory.getFirst(2511);
+
 		if (tinderbox == null || logs == null) {
 			return;
 		}
@@ -135,12 +148,8 @@ public class SurvivalGuide implements PluginTask {
 
 	@Override
 	public int execute() {
-		logger.info("prog: " + Game.getClient().getVarpValue(281));
 		switch (Game.getClient().getVarpValue(281)) {
-			case 20, 60 -> {
-				logger.info("Talk to guide");
-				talkToGuide();
-			}
+			case 20, 60 -> talkToGuide();
 			case 30 -> openInventory();
 			case 40 -> fishPond();
 			case 50 -> openSkills();

@@ -8,8 +8,12 @@ import meteor.plugins.api.game.Game;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.movement.Reachable;
 import meteor.plugins.api.widgets.Dialog;
+import meteor.plugins.api.widgets.Tab;
+import meteor.plugins.api.widgets.Tabs;
 import net.runelite.api.NPC;
+import net.runelite.api.TileObject;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.widgets.Widget;
 
 import static osrs.Client.logger;
 
@@ -21,43 +25,68 @@ public class PrayerGuide implements PluginTask {
 	}
 
 	private void talkToGuide() {
-		NPC guide = NPCs.getNearest("Brother Brace");
 		if (Dialog.canContinue()) {
 			Dialog.continueSpace();
-		} else {
-			if (guide == null) {
-				Movement.walk(new WorldPoint(3125, 3107, 0));
-			} else {
-				if (!Players.getLocal().isMoving()) {
-					guide.interact(0);
-				}
-			}
+			return;
 		}
+
+		NPC guide = NPCs.getNearest("Brother Brace");
+
+		if (guide == null) {
+			if (!Players.getLocal().isMoving()) {
+				// TODO: randomize point, or walk into "Area"
+				Movement.walk(new WorldPoint(3125, 3107, 0));
+			}
+			return;
+		}
+
+		guide.interact(0);
 	}
 
 	private void leaveArea() {
-		if (!Players.getLocal().isMoving()) {
-			TileObjects.getNearest(9723).interact(0);
+		if (!Players.getLocal().isIdle()) {
+			return;
 		}
+
+		TileObject door = TileObjects.getNearest(9723);
+
+		if (door == null) {
+			return;
+		}
+
+		door.interact(0);
 	}
 
 	private void openPrayer() {
 		if (Dialog.canContinue()) {
 			Dialog.continueSpace();
+			return;
 		}
-		Game.getClient().getWidget(164, 64).interact("Prayer");
+		Widget prayer = Game.getClient().getWidget(164, 64);
+
+		if (prayer == null) {
+			return;
+		}
+
+		prayer.interact("Prayer");
 	}
 
 	private void openFriendsList() {
 		if (Dialog.canContinue()) {
 			Dialog.continueSpace();
+			return;
 		}
-		Game.getClient().getWidget(164, 46).interact("Friends List");
+		Widget friends = Game.getClient().getWidget(164, 46);
+
+		if (friends == null) {
+			return;
+		}
+
+		friends.interact("Friends List");
 	}
 
 	@Override
 	public int execute() {
-		logger.info("prog: " + Game.getClient().getVarpValue(281));
 		switch (Game.getClient().getVarpValue(281)) {
 			case 550, 570, 600 -> talkToGuide();
 			case 560 -> openPrayer();

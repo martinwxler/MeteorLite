@@ -12,6 +12,8 @@ import meteor.plugins.api.items.Inventory;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.movement.Reachable;
 import meteor.plugins.api.widgets.Dialog;
+import meteor.plugins.api.widgets.Tab;
+import meteor.plugins.api.widgets.Tabs;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.InteractingChanged;
@@ -30,56 +32,111 @@ public class CombatGuide implements PluginTask {
 	private void talkToGuide() {
 		if (Dialog.canContinue()) {
 			Dialog.continueSpace();
-		} else {
-			if (!Players.getLocal().isMoving()) {
-				NPCs.getNearest("Combat Instructor").interact("Talk-to");
-			}
+			return;
 		}
+
+		if (Players.getLocal().isMoving()) {
+			return;
+		}
+
+		NPC instructor = NPCs.getNearest("Combat Instructor");
+
+		if (instructor == null) {
+			return;
+		}
+
+		instructor.interact("Talk-to");
+
 	}
 
 	private void enterArea() {
-		if (!Players.getLocal().isMoving()) {
-			TileObjects.getNearest(9719).interact(0);
+		if (!Players.getLocal().isIdle()) {
+			return;
 		}
+
+		TileObject gate = TileObjects.getNearest(9719);
+
+		if (gate == null) {
+			return;
+		}
+
+		gate.interact(0);
 	}
 
 	private void leaveArea() {
-		if (!Players.getLocal().isMoving()) {
-			TileObjects.getNearest(9727).interact(0);
+		if (!Players.getLocal().isIdle()) {
+			return;
 		}
+
+		TileObject ladder = TileObjects.getNearest(9727);
+
+		if (ladder == null) {
+			return;
+		}
+
+		ladder.interact(0);
 	}
 
 	private void openEquipment() {
 		if (Dialog.canContinue()) {
 			Dialog.continueSpace();
+			return;
 		}
-		Game.getClient().getWidget(164, 63).interact("Worn Equipment");
+
+		Widget equipment = Game.getClient().getWidget(164, 63);
+
+		if (equipment == null) {
+			return;
+		}
+
+		equipment.interact("Worn Equipment");
 	}
 
 	private void viewEquipment() {
 		if (Dialog.canContinue()) {
 			Dialog.continueSpace();
+			return;
 		}
-		Game.getClient().getWidget(387, 1).interact("View equipment stats");
+
+		Widget viewEquipment = Game.getClient().getWidget(387, 1);
+
+		if (viewEquipment == null) {
+			return;
+		}
+
+		viewEquipment.interact("View equipment stats");
 	}
 
 	private void openCombat() {
 		if (Dialog.canContinue()) {
 			Dialog.continueSpace();
+			return;
 		}
-		Game.getClient().getWidget(164, 59).interact("Combat Options");
+		Widget combat = Game.getClient().getWidget(164, 59);
+
+		if (combat == null) {
+			return;
+		}
+
+		combat.interact("Combat Options");
 	}
 
 	private void equipEquipItems(int... items) {
-		Widget[] eq_items = Game.getClient().getWidget(85, 0).getChildren();
+		// When inside equipment stats interface
+		Widget eq_items = Game.getClient().getWidget(85, 0);
 
-		// ADD TO API FOR EQUIPING MUTLIPLE ITEMS
-		if (eq_items != null) {
-			for (Widget eq_item : eq_items) {
-				for (int item : items) {
-					if (eq_item.getItemId() == item) {
-						eq_item.interact("Equip");
-					}
+		if (eq_items == null) {
+			return;
+		}
+
+		if (eq_items.getChildren() == null) {
+			return;
+		}
+
+		for (Widget eq_item : eq_items.getChildren()) {
+			for (int item : items) {
+				if (eq_item.getItemId() == item) {
+					eq_item.interact("Equip");
 				}
 			}
 		}
@@ -95,25 +152,28 @@ public class CombatGuide implements PluginTask {
 	}
 
 	private void killRat(boolean ranged) {
+		//TODO: check if we are in combat already!
+		if (!Players.getLocal().isIdle()) {
+			return;
+		}
+
 		if (ranged) {
 			WorldPoint rangedSpot = new WorldPoint(3111, 9518, 0);
-			if (Players.getLocal().isIdle() && !Players.getLocal().getWorldLocation().equals(rangedSpot)) {
+
+			if (!Players.getLocal().getWorldLocation().equals(rangedSpot)) {
 				Movement.walk(rangedSpot);
 				Time.sleepUntil(() -> Players.getLocal().getWorldLocation().equals(rangedSpot), 2000);
+				return;
 			}
 		}
+
 		NPC rat = NPCs.getNearest("Giant rat");
-		if (Players.getLocal().isIdle()) {
-			logger.info("Attacking rat");
-			rat.interact("Attack");
-		} else {
-			logger.info("We are interacting with " + Players.getLocal().getInteracting());
-		}
+
+		rat.interact("Attack");
 	}
 
 	@Override
 	public int execute() {
-		logger.info("prog: " + Game.getClient().getVarpValue(281));
 		switch (Game.getClient().getVarpValue(281)) {
 			case 370, 410 -> talkToGuide();
 			case 390 -> openEquipment();
