@@ -1,6 +1,8 @@
 package meteor.plugins.worldmapwalker;
 
 import meteor.eventbus.Subscribe;
+import meteor.menus.MenuManager;
+import meteor.menus.WidgetMenuOption;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.plugins.api.entities.Players;
@@ -20,6 +22,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
+import static net.runelite.api.widgets.WidgetInfo.MINIMAP_WORLDMAP_OPTIONS;
+
 @PluginDescriptor(
         name = "World Map Walker",
         description = "Right click anywhere within the World Map to walk there",
@@ -34,11 +38,19 @@ public class WorldMapWalkerPlugin extends Plugin {
     @Inject
     private WorldMapOverlay worldMapOverlay;
 
+    @Inject
+    private MenuManager menuManager;
+
     private Point lastMenuOpenedPoint;
     private WorldPoint mapPoint;
 
+    private static final WidgetMenuOption CLEAR_MARKERS_OPTION = new WidgetMenuOption("Clear destination", "WorldMapWalker", MINIMAP_WORLDMAP_OPTIONS);
+
+    private static final String DESTINATION_MENU_TARGET = "<col=00ff00>Destination";
+
     @Override
     public void startup() {
+        //menuManager.addManagedCustomMenu(CLEAR_MARKERS_OPTION);
     }
 
     @Override
@@ -65,35 +77,66 @@ public class WorldMapWalkerPlugin extends Plugin {
         lastMenuOpenedPoint = client.getMouseCanvasPosition();
     }
 
+    private boolean menuContainsEntries(){
+        MenuEntry[] entries = client.getMenuEntries();
+        if(entries != null){
+            for (MenuEntry entry : entries) {
+                if(entry == null){
+                    continue;
+                }
+                if(entry.getTarget().equals(DESTINATION_MENU_TARGET)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     @Subscribe
     public void onMenuEntryAdded(MenuEntryAdded event) {
+
         final Widget map = client.getWidget(WidgetInfo.WORLD_MAP_VIEW);
 
-        if (map == null) {
+        //Menu entries already added
+        // If user clicks on map
+        if (map != null && map.getBounds().contains(client.getMouseCanvasPosition().getX(), client.getMouseCanvasPosition().getY())) {
+            if (!menuContainsEntries()) {
+                addMenuEntry(event, "Walk to", DESTINATION_MENU_TARGET);
+                addMenuEntry(event, "Clear", DESTINATION_MENU_TARGET);
+                logger.info("World map param1: " + event.getActionParam1());
+            }
             return;
         }
-
-        if (map.getBounds().contains(client.getMouseCanvasPosition().getX(), client.getMouseCanvasPosition().getY())) {
-            addMenuEntry(event, "Map walk here");
-            addMenuEntry(event, "Clear destination");
+        if (event.getActionParam1() == MINIMAP_WORLDMAP_OPTIONS.getId()) {
+            if (!menuContainsEntries()) {
+                addMenuEntry(event, "Clear", DESTINATION_MENU_TARGET);
+            }
+            return;
+        }
+        if (mapPoint != null && event.getOption().equals("Walk here")) {
+            if (!menuContainsEntries()) {
+                addMenuEntry(event, "Clear", DESTINATION_MENU_TARGET);
+            }
         }
     }
 
     @Subscribe
     public void onMenuOptionClicked(MenuOptionClicked e) {
-        if (e.getMenuOption().equals("Map walk here")) {
-            mapPoint = calculateMapPoint(client.isMenuOpen() ? lastMenuOpenedPoint : client.getMouseCanvasPosition());
-            logger.debug("Walking to: {}", mapPoint.toString());
-            var mapWidget = Widgets.get(595, 38);
+        if(e.getMenuTarget().equals(DESTINATION_MENU_TARGET)) {
+            if (e.getMenuOption().equals("Walk to")) {
+                mapPoint = calculateMapPoint(client.isMenuOpen() ? lastMenuOpenedPoint : client.getMouseCanvasPosition());
+                logger.debug("Walking to: {}", mapPoint.toString());
+                var mapWidget = Widgets.get(595, 38);
 
-            if (mapWidget != null) {
-                Widgets.get(595, 38).interact("Close");
+                if (mapWidget != null) {
+                    Widgets.get(595, 38).interact("Close");
+                }
             }
-        }
 
-        if (e.getMenuOption().equals("Clear destination")) {
-            logger.info("Stopping walking");
-            mapPoint = null;
+            if (e.getMenuOption().equals("Clear")) {
+                logger.info("Stopping walking");
+                mapPoint = null;
+            }
         }
     }
 
@@ -117,14 +160,14 @@ public class WorldMapWalkerPlugin extends Plugin {
         return mapPoint.dx(dx).dy(dy);
     }
 
-    private void addMenuEntry(MenuEntryAdded event, String option) {
+    private void addMenuEntry(MenuEntryAdded event, String option, String target) {
         List<MenuEntry> entries = new LinkedList<>(Arrays.asList(client.getMenuEntries()));
 
         MenuEntry entry = new MenuEntry();
         entry.setOption(option);
-        entry.setTarget(event.getTarget());
+        entry.setTarget(target);
         entry.setOpcode(MenuAction.RUNELITE.getId());
-        entries.add(0, entry);
+        entries.add(0,entry);
 
         client.setMenuEntries(entries.toArray(new MenuEntry[0]));
     }
