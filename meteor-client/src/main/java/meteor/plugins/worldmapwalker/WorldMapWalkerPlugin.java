@@ -101,21 +101,21 @@ public class WorldMapWalkerPlugin extends Plugin {
         // If user clicks on map
         if (map != null && map.getBounds().contains(client.getMouseCanvasPosition().getX(), client.getMouseCanvasPosition().getY())) {
             if (!menuContainsEntries()) {
-                addMenuEntry(event, "Walk to", DESTINATION_MENU_TARGET);
-                addMenuEntry(event, "Clear", DESTINATION_MENU_TARGET);
+                addMenuEntry(event, "Walk to",0);
+                addMenuEntry(event, "Clear",0);
                 logger.info("World map param1: " + event.getActionParam1());
             }
             return;
         }
         if (event.getActionParam1() == MINIMAP_WORLDMAP_OPTIONS.getId()) {
             if (!menuContainsEntries()) {
-                addMenuEntry(event, "Clear", DESTINATION_MENU_TARGET);
+                addMenuEntry(event, "Clear",1);
             }
             return;
         }
         if (mapPoint != null && event.getOption().equals("Walk here")) {
             if (!menuContainsEntries()) {
-                addMenuEntry(event, "Clear", DESTINATION_MENU_TARGET);
+                addMenuEntry(event, "Clear",1);
             }
         }
     }
@@ -160,14 +160,14 @@ public class WorldMapWalkerPlugin extends Plugin {
         return mapPoint.dx(dx).dy(dy);
     }
 
-    private void addMenuEntry(MenuEntryAdded event, String option, String target) {
+    private void addMenuEntry(MenuEntryAdded event, String option, int index) {
         List<MenuEntry> entries = new LinkedList<>(Arrays.asList(client.getMenuEntries()));
 
         MenuEntry entry = new MenuEntry();
         entry.setOption(option);
-        entry.setTarget(target);
+        entry.setTarget(DESTINATION_MENU_TARGET);
         entry.setOpcode(MenuAction.RUNELITE.getId());
-        entries.add(0,entry);
+        entries.add(index,entry);
 
         client.setMenuEntries(entries.toArray(new MenuEntry[0]));
     }
