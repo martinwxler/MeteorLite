@@ -1,7 +1,6 @@
 package meteor.plugins.worldmapwalker;
 
 import meteor.eventbus.Subscribe;
-import meteor.menus.MenuManager;
 import meteor.menus.WidgetMenuOption;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
@@ -37,9 +36,6 @@ public class WorldMapWalkerPlugin extends Plugin {
 
     @Inject
     private WorldMapOverlay worldMapOverlay;
-
-    @Inject
-    private MenuManager menuManager;
 
     private Point lastMenuOpenedPoint;
     private WorldPoint mapPoint;
