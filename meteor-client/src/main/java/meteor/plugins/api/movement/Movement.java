@@ -1,5 +1,6 @@
 package meteor.plugins.api.movement;
 
+import meteor.plugins.api.commons.Rand;
 import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.Vars;
@@ -11,6 +12,7 @@ import meteor.ui.overlay.OverlayUtil;
 import net.runelite.api.Point;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -20,6 +22,7 @@ import java.awt.*;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 public class Movement {
     private static final Logger logger = new Logger("Movement");
@@ -71,6 +74,19 @@ public class Movement {
         }
 
         Game.getClient().interact(0, MenuAction.WALK.getId(), walkPoint.getX(), walkPoint.getY());
+    }
+
+    public static void walk(WorldArea worldArea) {
+        Player local = Players.getLocal();
+
+        if (worldArea.contains(local.getWorldLocation())) {
+            return;
+        }
+
+        List<WorldPoint> walkPointList = worldArea.toWorldPointList();
+        WorldPoint walkPoint = walkPointList.get(Rand.nextInt(0, walkPointList.size()));
+
+        Movement.walk(walkPoint);
     }
 
     public static void walk(Locatable locatable) {
