@@ -106,8 +106,15 @@ public class Movement {
         }
 
         List<WorldPoint> walkPointList = worldArea.toWorldPointList();
-        WorldPoint walkPoint = walkPointList.get(Rand.nextInt(0, walkPointList.size()));
+        List<WorldPoint> losPoints = new ArrayList<>();
 
+        for (WorldPoint point : walkPointList) {
+            if (!Reachable.isWalkable(point)) {
+                continue;
+            }
+            losPoints.add(point);
+        }
+        WorldPoint walkPoint = losPoints.get(Rand.nextInt(0, walkPointList.size()));
         Movement.walk(walkPoint);
     }
 
