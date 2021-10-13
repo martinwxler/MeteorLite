@@ -5,19 +5,24 @@ import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.game.Game;
 import meteor.plugins.api.input.Keyboard;
 import meteor.plugins.cettitutorial.CettiTutorialConfig;
+import meteor.plugins.cettitutorial.CettiTutorialPlugin;
 import net.runelite.api.widgets.Widget;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import static osrs.Client.logger;
+
 public class CreateCharacter implements PluginTask {
 
 	CettiTutorialConfig config;
+	CettiTutorialPlugin plugin;
 
-	public CreateCharacter(CettiTutorialConfig config) {
+	public CreateCharacter(CettiTutorialConfig config, CettiTutorialPlugin plugin) {
 		super();
 		this.config = config;
+		this.plugin = plugin;
 	}
 
 	@Override
@@ -65,6 +70,8 @@ public class CreateCharacter implements PluginTask {
 				lookUpNameButton.interact(0);
 				return;
 			}
+
+			displayNameField.interact(0);
 		}
 
 		// name not available, select suggestion
@@ -115,21 +122,25 @@ public class CreateCharacter implements PluginTask {
 			List<Integer> appearanceOptions = Arrays.asList(13, 17, 21, 25, 29, 33, 37, 44, 48, 52, 56, 60);
 
 			for (int option : appearanceOptions) {
-				int random = new Random().nextInt((10 - 1) + 1) + 1;
+				int random = new Random().nextInt((20 - 1) + 1) + 1;
 				Widget arrowSelect = Game.getClient().getWidget(679, option);
 
 				if (arrowSelect == null) {
-					return;
+					break;
 				}
 
 				if (config.setFemale()) {
 					if (option == 17) {
-						return;
+						continue;
 					}
 				}
 
 				for (int i = 0; i < random; ++i) {
+					if (!plugin.enabled) {
+						return;
+					}
 					arrowSelect.interact("Select");
+					Time.sleep(50,100);
 				}
 			}
 		}
@@ -145,13 +156,13 @@ public class CreateCharacter implements PluginTask {
 		setFemale();
 		setRandomAppearance();
 		confirmAppearance.interact("Confirm");
-		Time.sleep(600);
+		Time.sleep(1000);
 	}
 
 	@Override
 	public int execute() {
 		enterUsername();
 		confirmAppearance();
-		return 1000;
+		return 700;
 	}
 }

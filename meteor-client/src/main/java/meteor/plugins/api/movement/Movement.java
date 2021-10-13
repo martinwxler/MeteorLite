@@ -2,6 +2,7 @@ package meteor.plugins.api.movement;
 
 import meteor.plugins.api.commons.Rand;
 import meteor.plugins.api.entities.Players;
+import meteor.plugins.api.entities.TileObjects;
 import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.Vars;
 import meteor.plugins.api.movement.pathfinder.*;
@@ -19,10 +20,8 @@ import net.runelite.api.widgets.WidgetInfo;
 import org.sponge.util.Logger;
 
 import java.awt.*;
-import java.util.Comparator;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
 
 public class Movement {
     private static final Logger logger = new Logger("Movement");
@@ -84,8 +83,15 @@ public class Movement {
         }
 
         List<WorldPoint> walkPointList = worldArea.toWorldPointList();
-        WorldPoint walkPoint = walkPointList.get(Rand.nextInt(0, walkPointList.size()));
+        List<WorldPoint> losPoints = new ArrayList<>();
 
+        for (WorldPoint point : walkPointList) {
+            if (!Reachable.isWalkable(point)) {
+                continue;
+            }
+            losPoints.add(point);
+        }
+        WorldPoint walkPoint = losPoints.get(Rand.nextInt(0, walkPointList.size()));
         Movement.walk(walkPoint);
     }
 

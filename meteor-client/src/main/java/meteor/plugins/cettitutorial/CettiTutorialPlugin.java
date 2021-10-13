@@ -28,7 +28,7 @@ public class CettiTutorialPlugin extends TaskPlugin {
 	public void startup() {
 		ironTypeSet = false;
 		submit(
-						new CreateCharacter(config),
+						new CreateCharacter(config, this),
 						new GielinorGuide(),
 						new SurvivalGuide(),
 						new CookingGuide(),

@@ -12,6 +12,7 @@ import meteor.plugins.api.movement.pathfinder.Walker;
 import meteor.plugins.api.widgets.Dialog;
 import meteor.plugins.api.widgets.Widgets;
 import net.runelite.api.*;
+import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
@@ -32,13 +33,15 @@ public class MiningGuide implements PluginTask {
 			return;
 		}
 
+		if (!Players.getLocal().isIdle()) {
+			return;
+		}
+
 		NPC guide = NPCs.getNearest("Mining Instructor");
+		WorldArea miningArea = new WorldArea(new WorldPoint(3083, 9520, 0), new WorldPoint(3077, 9500, 0));
 
 		if (guide == null) {
-			if (!Players.getLocal().isMoving()) {
-				// TODO: randomize point, or walk into "Area"
-				Movement.walk(new WorldPoint(3080, 9500, 0));
-			}
+			Movement.walk(miningArea);
 			return;
 		}
 
@@ -122,6 +125,6 @@ public class MiningGuide implements PluginTask {
 			case 340, 350 -> useAnvil();
 			case 360 -> leaveArea();
 		}
-		return 1000;
+		return 700;
 	}
 }

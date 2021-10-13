@@ -88,6 +88,6 @@ public class QuestGuide implements PluginTask {
 			case 230 -> openQuests();
 			case 250 -> leaveArea();
 		}
-		return 1000;
+		return 700;
 	}
 }
