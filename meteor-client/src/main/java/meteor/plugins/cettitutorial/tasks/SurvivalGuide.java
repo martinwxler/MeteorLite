@@ -13,6 +13,7 @@ import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.widgets.Dialog;
 import meteor.plugins.api.widgets.Tab;
 import meteor.plugins.api.widgets.Tabs;
+import meteor.plugins.cettitutorial.Methods;
 import net.runelite.api.Item;
 import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
@@ -133,7 +134,7 @@ public class SurvivalGuide implements PluginTask {
 		}
 
 		if (Players.getLocal().getWorldLocation().equals(nearestObject.getWorldLocation())) {
-			WorldPoint newWalkPoint = Movement.getRandomPoint(Players.getLocal().getWorldLocation(), 3, true);
+			WorldPoint newWalkPoint = Methods.getRandomPoint(Players.getLocal().getWorldLocation(), 3, true);
 			Movement.walk(newWalkPoint);
 			return;
 		}

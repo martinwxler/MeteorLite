@@ -45,29 +45,6 @@ public class Movement {
                 && destination.distanceTo(local.getLocalLocation()) > 4;
     }
 
-    public static WorldPoint getRandomPoint(WorldPoint sourcePoint, int radius, boolean avoidObjects) {
-        TileObject nearestObject = TileObjects.getNearest(x -> x.getName() != null && !x.getName().equals("null"));
-        WorldArea sourceArea = new WorldArea(sourcePoint, 1, 1);
-        WorldArea possibleArea = new WorldArea(
-                new WorldPoint(sourcePoint.getX() - radius, sourcePoint.getY() - radius, sourcePoint.getPlane()),
-                new WorldPoint(sourcePoint.getX() + radius, sourcePoint.getY() + radius, sourcePoint.getPlane())
-        );
-
-        List<WorldPoint> possiblePoints = possibleArea.toWorldPointList();
-        List<WorldPoint> losPoints = new ArrayList<>();
-        losPoints.add(sourcePoint);
-
-        for (WorldPoint point : possiblePoints) {
-            if (sourceArea.hasLineOfSightTo(Game.getClient(), point)) {
-                if (point.equals(nearestObject.getWorldLocation()) && avoidObjects) {
-                    continue;
-                }
-                losPoints.add(point);
-            }
-        }
-        return losPoints.get(Rand.nextInt(0, losPoints.size() - 1));
-    }
-
     public static void walk(Point point) {
         Game.getClient().interact(0, MenuAction.WALK.getId(), point.getX(), point.getY());
     }
