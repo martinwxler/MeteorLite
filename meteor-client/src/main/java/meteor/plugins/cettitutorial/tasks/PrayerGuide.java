@@ -12,6 +12,8 @@ import meteor.plugins.api.widgets.Tab;
 import meteor.plugins.api.widgets.Tabs;
 import net.runelite.api.NPC;
 import net.runelite.api.TileObject;
+import net.runelite.api.World;
+import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.Widget;
 
@@ -29,14 +31,15 @@ public class PrayerGuide implements PluginTask {
 			Dialog.continueSpace();
 			return;
 		}
+		if (!Players.getLocal().isIdle()) {
+			return;
+		}
 
 		NPC guide = NPCs.getNearest("Brother Brace");
+		WorldArea church = new WorldArea(new WorldPoint(3122,3105,0), new WorldPoint(3128,3107,0));
 
 		if (guide == null) {
-			if (!Players.getLocal().isMoving()) {
-				// TODO: randomize point, or walk into "Area"
-				Movement.walk(new WorldPoint(3125, 3107, 0));
-			}
+			Movement.walk(church);
 			return;
 		}
 
@@ -93,6 +96,6 @@ public class PrayerGuide implements PluginTask {
 			case 580 -> openFriendsList();
 			case 610 -> leaveArea();
 		}
-		return 1000;
+		return 700;
 	}
 }

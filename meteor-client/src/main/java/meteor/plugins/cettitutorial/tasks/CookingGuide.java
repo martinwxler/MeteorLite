@@ -9,6 +9,7 @@ import meteor.plugins.api.game.Game;
 import meteor.plugins.api.items.Inventory;
 import meteor.plugins.api.widgets.Dialog;
 import net.runelite.api.*;
+import rs117.hd.materials.Overlay;
 
 import static osrs.Client.logger;
 
@@ -94,6 +95,6 @@ public class CookingGuide implements PluginTask {
 			case 160 -> cookFood();
 			case 170 -> leaveArea();
 		}
-		return 1000;
+		return 700;
 	}
 }

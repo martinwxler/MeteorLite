@@ -45,7 +45,7 @@ public class Movement {
                 && destination.distanceTo(local.getLocalLocation()) > 4;
     }
 
-    public WorldPoint getRandomPoint(WorldPoint sourcePoint, int radius, boolean avoidObjects) {
+    public static WorldPoint getRandomPoint(WorldPoint sourcePoint, int radius, boolean avoidObjects) {
         TileObject nearestObject = TileObjects.getNearest(x -> x.getName() != null && !x.getName().equals("null"));
         WorldArea sourceArea = new WorldArea(sourcePoint, 1, 1);
         WorldArea possibleArea = new WorldArea(

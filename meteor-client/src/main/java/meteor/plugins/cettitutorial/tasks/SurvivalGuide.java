@@ -9,6 +9,7 @@ import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.Vars;
 import meteor.plugins.api.items.Inventory;
 import meteor.plugins.api.items.Items;
+import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.widgets.Dialog;
 import meteor.plugins.api.widgets.Tab;
 import meteor.plugins.api.widgets.Tabs;
@@ -16,6 +17,7 @@ import net.runelite.api.Item;
 import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
 import net.runelite.api.TileObject;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.Widget;
 import osrs.GameObject;
 
@@ -118,14 +120,21 @@ public class SurvivalGuide implements PluginTask {
 	}
 
 	private void lightFire() {
-		if (Players.getLocal().isAnimating()) {
+		if (!Players.getLocal().isIdle()) {
 			return;
 		}
 
 		Item tinderbox = Inventory.getFirst(ItemID.TINDERBOX);
 		Item logs = Inventory.getFirst(2511);
+		TileObject nearestObject = TileObjects.getNearest(x -> x.getName() != null && !x.getName().equals("null"));
 
 		if (tinderbox == null || logs == null) {
+			return;
+		}
+
+		if (Players.getLocal().getWorldLocation().equals(nearestObject.getWorldLocation())) {
+			WorldPoint newWalkPoint = Movement.getRandomPoint(Players.getLocal().getWorldLocation(), 3, true);
+			Movement.walk(newWalkPoint);
 			return;
 		}
 

@@ -15,6 +15,7 @@ import meteor.plugins.api.widgets.Dialog;
 import meteor.plugins.api.widgets.Tab;
 import meteor.plugins.api.widgets.Tabs;
 import net.runelite.api.*;
+import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.widgets.Widget;
@@ -152,24 +153,21 @@ public class CombatGuide implements PluginTask {
 	}
 
 	private void killRat(boolean ranged) {
-		//TODO: check if we are in combat already!
 		if (!Players.getLocal().isIdle()) {
 			return;
 		}
 
 		if (ranged) {
-			WorldPoint rangedSpot = new WorldPoint(3111, 9518, 0);
-
-			if (!Players.getLocal().getWorldLocation().equals(rangedSpot)) {
+			WorldArea rangedSpot = new WorldArea(new WorldPoint(3106,9519, 0), new WorldPoint(3112,9525, 0));
+			if (!rangedSpot.contains(Players.getLocal().getWorldLocation())) {
 				Movement.walk(rangedSpot);
-				Time.sleepUntil(() -> Players.getLocal().getWorldLocation().equals(rangedSpot), 2000);
 				return;
 			}
 		}
 
 		NPC rat = NPCs.getNearest("Giant rat");
-
 		rat.interact("Attack");
+		Time.sleepUntil(rat::isDead, 5000);
 	}
 
 	@Override
@@ -190,7 +188,7 @@ public class CombatGuide implements PluginTask {
 					enterArea();
 				}
 			}
-			case 480 -> {
+			case 480, 490 -> {
 				if (!Equipment.contains(ItemID.SHORTBOW) || !Equipment.contains(ItemID.BRONZE_ARROW)) {
 					equipItems(ItemID.SHORTBOW, ItemID.BRONZE_ARROW);
 				} else {
@@ -199,6 +197,6 @@ public class CombatGuide implements PluginTask {
 			}
 			case 500 -> leaveArea();
 		}
-		return 1000;
+		return 700;
 	}
 }

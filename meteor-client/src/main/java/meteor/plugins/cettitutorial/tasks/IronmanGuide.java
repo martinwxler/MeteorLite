@@ -14,6 +14,7 @@ import meteor.plugins.cettitutorial.CettiTutorialConfig;
 import meteor.plugins.cettitutorial.CettiTutorialPlugin;
 import meteor.plugins.cettitutorial.Methods;
 import net.runelite.api.NPC;
+import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -65,13 +66,15 @@ public class IronmanGuide implements PluginTask {
 			return;
 		}
 
+		if (!Players.getLocal().isIdle()) {
+			return;
+		}
+
 		NPC guide = NPCs.getNearest("Iron Man tutor");
+		WorldArea ironManTutorLocation = new WorldArea(new WorldPoint(3125, 3075, 0), new WorldPoint(3135, 3095, 0));
 
 		if (guide == null) {
-			if (!Players.getLocal().isMoving()) {
-				// TODO: randomize point, or walk into "Area"
-				Movement.walk(new WorldPoint(3130, 3086, 0));
-			}
+			Movement.walk(ironManTutorLocation);
 			return;
 		}
 
@@ -190,12 +193,12 @@ public class IronmanGuide implements PluginTask {
 
 		if (pinSection.getText().equals("Set new PIN")) {
 			Keyboard.type(config.bankPin());
+			Time.sleepUntil(() -> pinSection.getText().equals("Confirm new PIN"), 5000);
 			return;
 		}
 
 		if (pinSection.getText().equals("Confirm new PIN")) {
 			Keyboard.type(config.bankPin());
-			CettiTutorialPlugin.ironTypeSet = true;
 			Time.sleep(1000);
 		}
 
@@ -215,6 +218,6 @@ public class IronmanGuide implements PluginTask {
 		setBankPin();
 		setIronmanType();
 		talkToGuide();
-		return 1000;
+		return 700;
 	}
 }

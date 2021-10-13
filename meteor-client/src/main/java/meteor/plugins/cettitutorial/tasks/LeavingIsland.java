@@ -1,6 +1,7 @@
 package meteor.plugins.cettitutorial.tasks;
 
 import meteor.PluginTask;
+import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.entities.NPCs;
 import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.entities.TileObjects;
@@ -64,6 +65,7 @@ public class LeavingIsland implements PluginTask {
 		}
 
 		rowBoat.interact(0);
+		Time.sleepUntil(() -> Game.getClient().getVarpValue(281) == 1000, 10000);
 	}
 
 
@@ -75,6 +77,6 @@ public class LeavingIsland implements PluginTask {
 		} else {
 			toTheNode();
 		}
-		return 1000;
+		return 700;
 	}
 }

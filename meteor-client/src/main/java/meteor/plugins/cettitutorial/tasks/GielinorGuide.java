@@ -77,6 +77,6 @@ public class GielinorGuide implements PluginTask {
 			case 3 -> openSettings();
 			case 10 -> leaveArea();
 		}
-		return 1000;
+		return 700;
 	}
 }
