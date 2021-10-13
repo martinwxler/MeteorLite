@@ -71,7 +71,6 @@ import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.GroundObject;
 import net.runelite.api.Model;
-import net.runelite.api.NodeCache;
 import net.runelite.api.Perspective;
 import net.runelite.api.Renderable;
 import net.runelite.api.Scene;
@@ -552,12 +551,6 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 				textureArrayId = -1;
 				textureHDArrayId = -1;
 
-				// increase size of model cache for dynamic objects since we are extending scene size
-				NodeCache cachedModels2 = client.getCachedModels2();
-				cachedModels2.setCapacity(256);
-				cachedModels2.setRemainingCapacity(256);
-				cachedModels2.reset();
-
 				// load all dynamic scene lights from text file
 				lightManager.loadLightsFromFile();
 
@@ -571,6 +564,7 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 			catch (Throwable e)
 			{
 				log.error("Error starting HD plugin", e);
+				shutdown();
 			}
 			return true;
 		});
@@ -823,6 +817,7 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 				catch (ShaderException ex)
 				{
 					log.error("Failed to recompile shader program", ex);
+					shutdown();
 				}
 			})
 		);
@@ -986,10 +981,10 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 			materialUniformBuf.putFloat(material.getEmissiveStrength());
 			materialUniformBuf.putInt(material.getDisplacementMapId());
 			materialUniformBuf.putFloat(material.getDisplacementStrength());
-			materialUniformBuf.putInt(material.getDisplacementDurationX());
-			materialUniformBuf.putInt(material.getDisplacementDurationY());
-			materialUniformBuf.putInt(material.getScrollDurationX());
-			materialUniformBuf.putInt(material.getScrollDurationY());
+			materialUniformBuf.putFloat(material.getDisplacementDurationX());
+			materialUniformBuf.putFloat(material.getDisplacementDurationY());
+			materialUniformBuf.putFloat(material.getScrollDurationX());
+			materialUniformBuf.putFloat(material.getScrollDurationY());
 			materialUniformBuf.putFloat(material.getTextureScaleX());
 			materialUniformBuf.putFloat(material.getTextureScaleY());
 
@@ -1150,9 +1145,9 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 					lightsUniformBuf.putInt(light.y);
 					lightsUniformBuf.putInt(light.z);
 					lightsUniformBuf.putFloat(light.currentSize);
-					lightsUniformBuf.putInt(light.currentColor[0]);
-					lightsUniformBuf.putInt(light.currentColor[1]);
-					lightsUniformBuf.putInt(light.currentColor[2]);
+					lightsUniformBuf.putFloat(light.currentColor[0]);
+					lightsUniformBuf.putFloat(light.currentColor[1]);
+					lightsUniformBuf.putFloat(light.currentColor[2]);
 					lightsUniformBuf.putFloat(light.currentStrength);
 
 					// UBO elements must be divisible by groups of 4 scalars. Pad any remaining space
@@ -1724,6 +1719,10 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 			// Clear scene
 			int sky = environmentManager.getFogColor();
 			float[] fogColor = new float[]{(sky >> 16 & 0xFF) / 255f, (sky >> 8 & 0xFF) / 255f, (sky & 0xFF) / 255f};
+			for (int i = 0; i < fogColor.length; i++)
+			{
+				fogColor[i] = HDUtils.linearToGamma(fogColor[i]);
+			}
 			gl.glClearColor(fogColor[0], fogColor[1], fogColor[2], 1f);
 			gl.glClear(gl.GL_COLOR_BUFFER_BIT);
 
@@ -1755,6 +1754,18 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 			float[] waterColorLight = new Color(Color.HSBtoRGB(waterColorHSB[0], waterColorHSB[1], waterColorHSB[2] * lightBrightnessMultiplier)).getRGBColorComponents(null);
 			float[] waterColorMid = new Color(Color.HSBtoRGB(waterColorHSB[0], waterColorHSB[1], waterColorHSB[2] * midBrightnessMultiplier)).getRGBColorComponents(null);
 			float[] waterColorDark = new Color(Color.HSBtoRGB(waterColorHSB[0], waterColorHSB[1], waterColorHSB[2] * darkBrightnessMultiplier)).getRGBColorComponents(null);
+			for (int i = 0; i < waterColorLight.length; i++)
+			{
+				waterColorLight[i] = HDUtils.linearToGamma(waterColorLight[i]);
+			}
+			for (int i = 0; i < waterColorMid.length; i++)
+			{
+				waterColorMid[i] = HDUtils.linearToGamma(waterColorMid[i]);
+			}
+			for (int i = 0; i < waterColorDark.length; i++)
+			{
+				waterColorDark[i] = HDUtils.linearToGamma(waterColorDark[i]);
+			}
 			gl.glUniform3f(uniWaterColorLight, waterColorLight[0], waterColorLight[1], waterColorLight[2]);
 			gl.glUniform3f(uniWaterColorMid, waterColorMid[0], waterColorMid[1], waterColorMid[2]);
 			gl.glUniform3f(uniWaterColorDark, waterColorDark[0], waterColorDark[1], waterColorDark[2]);
@@ -2283,7 +2294,7 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 				return;
 			}
 
-			if ((model.getBufferOffset() & 0b1) == 0b1 && distance > drawObjectCutoff)
+			if (((model.getBufferOffset() & 0b11) == 0b01 && distance > drawObjectCutoff) || (model.getBufferOffset() & 0b11) == 0b11)
 			{
 				return;
 			}
@@ -2299,7 +2310,7 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 			b.ensureCapacity(8);
 			IntBuffer buffer = b.getBuffer();
 			// shift the bufferoffset as the last bit is used for the level of detail setting
-			buffer.put(model.getBufferOffset() >> 1);
+			buffer.put(model.getBufferOffset() >> 2);
 			buffer.put(uvOffset);
 			buffer.put(tc);
 			buffer.put(targetBufferOffset);
@@ -2327,7 +2338,7 @@ public class GpuHDPlugin extends Plugin implements DrawCallbacks
 					return;
 				}
 
-				if ((model.getBufferOffset() & 0b1) == 0b1 && distance > drawObjectCutoff)
+				if (((model.getBufferOffset() & 0b11) == 0b01 && distance > drawObjectCutoff) || (model.getBufferOffset() & 0b11) == 0b11)
 				{
 					return;
 				}
