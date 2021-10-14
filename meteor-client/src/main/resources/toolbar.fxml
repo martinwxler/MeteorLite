@@ -27,12 +27,12 @@
       <Font name="Candara" size="24.0" />
     </font>
   </JFXTextArea>-->
-  <JFXButton fx:id="idleButton" layoutX="223.0" layoutY="1.0" prefHeight="43.0" prefWidth="65.0" style="-fx-background-color: #FFFF00;" text="Idle" textOverrun="CLIP" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="155.0" AnchorPane.topAnchor="-5.0">
-     <graphic>
-       <FontAwesomeIconView fill="BLACK" glyphName="WARNING" size="16" translateX="-5.0" wrappingWidth="11.523646354675293" />
-     </graphic>
-     <font>
-         <Font name="Verdana" size="15.0" />
-      </font>
-   </JFXButton>
+    <JFXButton fx:id="idleButton" layoutX="223.0" layoutY="1.0" prefHeight="43.0" prefWidth="65.0" style="-fx-background-color: #FFFF00;" text="Idle" textOverrun="CLIP" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="155.0" AnchorPane.topAnchor="-5.0">
+        <graphic>
+            <FontAwesomeIconView fill="BLACK" glyphName="WARNING" size="10" translateX="-5.0" wrappingWidth="11.523646354675293" />
+        </graphic>
+        <font>
+            <Font name="Verdana" size="10.0" />
+        </font>
+    </JFXButton>
 </AnchorPane>
