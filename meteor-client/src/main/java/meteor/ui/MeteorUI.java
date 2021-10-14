@@ -15,6 +15,7 @@ import meteor.eventbus.events.ConfigChanged;
 import meteor.events.ExternalsReloaded;
 import meteor.config.MeteorLiteConfig;
 import meteor.ui.controllers.ToolbarController;
+import meteor.util.ImageUtil;
 import net.runelite.api.Client;
 import net.runelite.api.Constants;
 import net.runelite.api.events.GameTick;
@@ -89,6 +90,8 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 	public Scene pluginsRootScene;
 	public static boolean rightPanelVisible = false;
 	public static String lastButtonPressed = "";
+	public static String Meteor = "MeteorLite";
+	public static final BufferedImage ICON = ImageUtil.loadImageResource(MeteorUI.class, "/MeteorLite_icon2.png");
 
 	public void init() throws IOException, InterruptedException, InvocationTargetException {
 		applet.setMinimumSize(Constants.GAME_FIXED_SIZE);
@@ -123,6 +126,11 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 		rightPanel.setScene(pluginsRootScene);
 
 		setupJavaFXComponents(applet);
+
+
+
+		this.setTitle("MeteorLite");
+		this.setIconImage(ICON);
 
 		updateFrameConfig(true);
 		setWindowBounds();
@@ -351,10 +359,10 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 	public void setupJavaFXComponents(Applet applet) {
 		setMinimumFrameSize();
 		JFXPanel toolbarPanel = new JFXPanel();
-		toolbarPanel.setSize(1280, 100);
+		toolbarPanel.setSize(1280, 210);
 		rightPanel.setSize(550, 800);
 
-		toolbarPanel.setScene(new Scene(toolbarRoot, 300, 33));
+		toolbarPanel.setScene(new Scene(toolbarRoot, 300, 16));
 		toolbarPanel.setVisible(true);
 		rightPanel.setVisible(false);
 

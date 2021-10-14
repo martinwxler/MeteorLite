@@ -14,6 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import meteor.themes.MeteorliteTheme;
 import meteor.util.LoggerStream;
 import net.runelite.api.Client;
 import sun.misc.Unsafe;
@@ -52,7 +53,7 @@ public class MeteorLiteClientLauncher extends Application implements Module {
     } catch (FileNotFoundException ex) {
       ex.printStackTrace();
     }
-
+    MeteorliteTheme.install();
     MeteorLiteClientModule module = new MeteorLiteClientModule();
     injector = Guice.createInjector(module);
     module.start();
