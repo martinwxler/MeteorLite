@@ -74,13 +74,6 @@ public class ToolbarController {
 
   @FXML
   protected void handlePluginsPressed(ActionEvent event) {
-    if (lastButtonPressed.equals("Plugins"))
-      meteorUI.toggleRightPanel();
-    else {
-      meteorUI.rightPanel.setScene(meteorUI.pluginsRootScene);
-      meteorUI.showRightPanel();
-    }
-
-    lastButtonPressed = "Plugins";
+      meteorUI.showPlugins();
   }
 }

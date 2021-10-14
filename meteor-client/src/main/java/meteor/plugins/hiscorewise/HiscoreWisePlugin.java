@@ -32,12 +32,16 @@ import java.io.InputStream;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Provider;
+
+import javafx.scene.layout.Pane;
 import meteor.MeteorLiteClientLauncher;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
@@ -89,15 +93,15 @@ public class HiscoreWisePlugin extends Plugin
 	@Inject
 	private EventBus eventBus;
 
-	private static Scene wiseOldManPanel;
-	public static Scene skillOverviewPanel;
+	private static Parent wiseOldManPanel;
+	public static Parent skillOverviewPanel;
 	{
 		try {
 			INSTANCE = this;
-			wiseOldManPanel = new Scene(FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader()
-					.getResource("meteor/plugins/hiscorewise/hiscorewise.fxml"))), 360, 800);
-			skillOverviewPanel = new Scene(FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader()
-					.getResource("meteor/plugins/hiscorewise/skilloverview.fxml"))), 360, 800);
+			wiseOldManPanel = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader()
+					.getResource("meteor/plugins/hiscorewise/hiscorewise.fxml")));
+			skillOverviewPanel =FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader()
+					.getResource("meteor/plugins/hiscorewise/skilloverview.fxml")));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -108,12 +112,7 @@ public class HiscoreWisePlugin extends Plugin
 	@Subscribe
 	public void onToolbarButtonClicked(ToolbarButtonClicked event) {
 		if (event.getName().equals("WiseOldMan")) {
-			if (lastButtonPressed.equals(event.getName()))
-				ui.toggleRightPanel();
-			else {
 				ui.updateRightPanel(wiseOldManPanel);
-				lastButtonPressed = event.getName();
-			}
 		}
 	}
 
