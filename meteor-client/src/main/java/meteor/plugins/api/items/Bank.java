@@ -21,7 +21,14 @@ import java.util.function.Supplier;
 
 public class Bank extends Items {
 	private static final Bank BANK = new Bank();
-	private static final Supplier<Widget> MAIN_TAB = () -> Widgets.get(12, 10, 10);
+	private static final int WITHDRAW_MODE_VARBIT = 3958;
+	private static final int QUANTITY_MODE_VARP = 6590;
+	private static final Supplier<Widget> MAIN_TAB = () -> Widgets.get(12, 11, 0);
+	private static final Supplier<Widget> BANK_CAPACITY = () -> Widgets.get(12, 9);
+	private static final Supplier<Widget> RELEASE_PLACEHOLDERS = () -> Widgets.get(12, 56);
+	private static final Supplier<Widget> SETTINGS_CONTAINER = () -> Widgets.get(12, 48);
+	private static final Supplier<Widget> WITHDRAW_ITEM = () -> Widgets.get(12, Component.BANK_WITHDRAW_ITEM.childId);
+	private static final Supplier<Widget> WITHDRAW_NOTE = () -> Widgets.get(12, Component.BANK_WITHDRAW_NOTE.childId);
 
 	@Override
 	protected List<Item> all(Predicate<Item> filter) {
@@ -49,11 +56,7 @@ public class Bank extends Items {
 		return items;
 	}
 
-	private static final int WITHDRAW_MODE_VARBIT = 3958;
-	private static final int QUANTITY_MODE_VARP = 6590;
-	private static final Supplier<Widget> BANK_CAPACITY = () -> Widgets.get(12, 8);
-	private static final Supplier<Widget> RELEASE_PLACEHOLDERS = () -> Widgets.get(12, 55);
-	private static final Supplier<Widget> SETTINGS_CONTAINER = () -> Widgets.get(12, 48);
+
 
 	public static void setQuantityMode(QuantityMode quantityMode) {
 		if (getQuantityMode() != quantityMode) {
@@ -222,10 +225,7 @@ public class Bank extends Items {
 	}
 
 	public static void setWithdrawMode(boolean noted) {
-		Widget widget = noted ?
-						Widgets.get(Component.BANK_WITHDRAW_NOTE.groupId, Component.BANK_WITHDRAW_NOTE.childId) :
-						Widgets.get(Component.BANK_WITHDRAW_ITEM.groupId, Component.BANK_WITHDRAW_ITEM.childId);
-
+		Widget widget = noted ? WITHDRAW_NOTE.get() : WITHDRAW_ITEM.get();
 		if (widget != null) {
 			widget.interact(0);
 		}
@@ -321,17 +321,17 @@ public class Bank extends Items {
 	}
 
 	public enum Component {
-		BANK_REARRANGE_SWAP(WidgetID.BANK_GROUP_ID, 16),
-		BANK_REARRANGE_INSERT(WidgetID.BANK_GROUP_ID, 18),
-		BANK_WITHDRAW_ITEM(WidgetID.BANK_GROUP_ID, 21),
-		BANK_WITHDRAW_NOTE(WidgetID.BANK_GROUP_ID, 23),
-		BANK_QUANTITY_BUTTONS_CONTAINER(WidgetID.BANK_GROUP_ID, 25),
-		BANK_QUANTITY_ONE(WidgetID.BANK_GROUP_ID, 27),
-		BANK_QUANTITY_FIVE(WidgetID.BANK_GROUP_ID, 29),
-		BANK_QUANTITY_TEN(WidgetID.BANK_GROUP_ID, 31),
-		BANK_QUANTITY_X(WidgetID.BANK_GROUP_ID, 33),
-		BANK_QUANTITY_ALL(WidgetID.BANK_GROUP_ID, 35),
-		BANK_PLACEHOLDERS_BUTTON(WidgetID.BANK_GROUP_ID, 37),
+		BANK_REARRANGE_SWAP(WidgetID.BANK_GROUP_ID, 17),
+		BANK_REARRANGE_INSERT(WidgetID.BANK_GROUP_ID, 19),
+		BANK_WITHDRAW_ITEM(WidgetID.BANK_GROUP_ID, 22),
+		BANK_WITHDRAW_NOTE(WidgetID.BANK_GROUP_ID, 24),
+		BANK_QUANTITY_BUTTONS_CONTAINER(WidgetID.BANK_GROUP_ID, 26),
+		BANK_QUANTITY_ONE(WidgetID.BANK_GROUP_ID, 28),
+		BANK_QUANTITY_FIVE(WidgetID.BANK_GROUP_ID, 30),
+		BANK_QUANTITY_TEN(WidgetID.BANK_GROUP_ID, 32),
+		BANK_QUANTITY_X(WidgetID.BANK_GROUP_ID, 34),
+		BANK_QUANTITY_ALL(WidgetID.BANK_GROUP_ID, 36),
+		BANK_PLACEHOLDERS_BUTTON(WidgetID.BANK_GROUP_ID, 38),
 		EMPTY(-1, -1);
 
 		private final int groupId;

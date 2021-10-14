@@ -140,7 +140,7 @@ public class ReflectionCheck extends Node {
 					}
 
 					if (var0 == 3) {
-						var7 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2752, Client.packetWriter.isaacCipher);
+						var7 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.Packet_widgetAction3Packet, Client.packetWriter.isaacCipher);
 						var7.packetBuffer.writeInt(var1);
 						var7.packetBuffer.writeShort(var2);
 						var7.packetBuffer.writeShort(var3);
@@ -148,7 +148,7 @@ public class ReflectionCheck extends Node {
 					}
 
 					if (var0 == 4) {
-						var7 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2698, Client.packetWriter.isaacCipher);
+						var7 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.Packet_widgetAction4Packet, Client.packetWriter.isaacCipher);
 						var7.packetBuffer.writeInt(var1);
 						var7.packetBuffer.writeShort(var2);
 						var7.packetBuffer.writeShort(var3);
@@ -156,7 +156,7 @@ public class ReflectionCheck extends Node {
 					}
 
 					if (var0 == 5) {
-						var7 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2743, Client.packetWriter.isaacCipher);
+						var7 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.Packet_widgetAction5Packet, Client.packetWriter.isaacCipher);
 						var7.packetBuffer.writeInt(var1);
 						var7.packetBuffer.writeShort(var2);
 						var7.packetBuffer.writeShort(var3);
@@ -164,7 +164,7 @@ public class ReflectionCheck extends Node {
 					}
 
 					if (var0 == 6) {
-						var7 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2766, Client.packetWriter.isaacCipher);
+						var7 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.Packet_widgetAction6Packet, Client.packetWriter.isaacCipher);
 						var7.packetBuffer.writeInt(var1);
 						var7.packetBuffer.writeShort(var2);
 						var7.packetBuffer.writeShort(var3);
@@ -172,7 +172,7 @@ public class ReflectionCheck extends Node {
 					}
 
 					if (var0 == 7) {
-						var7 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2730, Client.packetWriter.isaacCipher);
+						var7 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.Packet_widgetAction7Packet, Client.packetWriter.isaacCipher);
 						var7.packetBuffer.writeInt(var1);
 						var7.packetBuffer.writeShort(var2);
 						var7.packetBuffer.writeShort(var3);
@@ -180,7 +180,7 @@ public class ReflectionCheck extends Node {
 					}
 
 					if (var0 == 8) {
-						var7 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2670, Client.packetWriter.isaacCipher);
+						var7 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.Packet_widgetAction8Packet, Client.packetWriter.isaacCipher);
 						var7.packetBuffer.writeInt(var1);
 						var7.packetBuffer.writeShort(var2);
 						var7.packetBuffer.writeShort(var3);
@@ -196,7 +196,7 @@ public class ReflectionCheck extends Node {
 					}
 
 					if (var0 == 10) {
-						var7 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.field2738, Client.packetWriter.isaacCipher);
+						var7 = LoginScreenAnimation.getPacketBufferNode(ClientPacket.Packet_widgetAction10Packet, Client.packetWriter.isaacCipher);
 						var7.packetBuffer.writeInt(var1);
 						var7.packetBuffer.writeShort(var2);
 						var7.packetBuffer.writeShort(var3);

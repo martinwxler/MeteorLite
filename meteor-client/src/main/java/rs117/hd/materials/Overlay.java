@@ -84,7 +84,7 @@ public enum Overlay
 	AL_KHARID_FLOOR_MARBLE_2(4, Area.AL_KHARID_BUILDINGS, GroundMaterial.MARBLE_1_SEMIGLOSS, new Properties().setBlended(false)),
 	KHARID_PATHS_1(26, Area.KHARID_DESERT_REGION, GroundMaterial.DIRT, new Properties().setSaturation(2).setHue(6).setShiftLightness(5)),
 	KHARID_PATHS_2(76, Area.KHARID_DESERT_REGION, GroundMaterial.DIRT, new Properties().setSaturation(3).setHue(6).setShiftLightness(-10)),
-	KHARID_PATHS_3(25, Area.KHARID_DESERT_REGION, GroundMaterial.DIRT),
+	KHARID_PATHS_3(25, Area.KHARID_DESERT_REGION, GroundMaterial.DIRT, new Properties().setSaturation(3).setHue(6)),
 
 	// Falador
 	FALADOR_PATHS(-119, Area.FALADOR, GroundMaterial.FALADOR_PATHS, new Properties().setHue(7).setSaturation(1).setShiftLightness(7)),
@@ -199,6 +199,7 @@ public enum Overlay
 	CRANDOR_GROUND_1(11, Area.CRANDOR, GroundMaterial.GRAVEL),
 
 	FISHING_TRAWLER_BOAT_PORT_KHAZARD_FIX(42, Area.FISHING_TRAWLER_BOAT_PORT_KHAZARD, WaterType.WATER),
+	FISHING_TRAWLER_BOAT_FLOODED(6, Area.FISHING_TRAWLER_BOAT_FLOODED, WaterType.WATER_FLAT),
 
 	// Mind Altar
 	MIND_ALTAR_TILE_1(3, Area.MIND_ALTAR, GroundMaterial.MARBLE_1_SEMIGLOSS, new Properties().setBlended(false)),
@@ -217,11 +218,15 @@ public enum Overlay
 	PEST_CONTROL_LANDER_WATER_FIX_2(42, Area.PEST_CONTROL_LANDER_WATER_FIX, WaterType.WATER),
 
 	// Barbarian Assault
-	BA_WAITING_ROOM_NUMBERS(89, GroundMaterial.DIRT, new Properties().setBlended(false)),
+	BA_WAITING_ROOM_NUMBERS(89, Area.BARBARIAN_ASSAULT_WAITING_ROOMS, GroundMaterial.DIRT, new Properties().setBlended(false)),
 
 	// POHs
 	POH_DESERT_INDOORS(26, Area.PLAYER_OWNED_HOUSE, GroundMaterial.TILES_2x2_2, new Properties().setBlended(false)),
 	POH_TWISTED_INDOORS(99, Area.PLAYER_OWNED_HOUSE, GroundMaterial.TILES_2x2_2, new Properties().setBlended(false)),
+
+	// Random events
+	PRISON_PETE_TILE_1(2, Area.RANDOM_EVENT_PRISON_PETE, GroundMaterial.MARBLE_1, new Properties().setBlended(false)),
+	PRISON_PETE_TILE_2(-125, Area.RANDOM_EVENT_PRISON_PETE, GroundMaterial.MARBLE_2, new Properties().setBlended(false)),
 
 
 

@@ -5,12 +5,14 @@ import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
+import meteor.plugins.api.items.Bank;
 import meteor.plugins.api.items.Inventory;
 import meteor.plugins.api.magic.Regular;
 import meteor.plugins.api.magic.Rune;
 import meteor.plugins.api.packets.ItemPackets;
 import meteor.plugins.api.packets.MousePackets;
 import meteor.plugins.api.packets.SpellPackets;
+import meteor.plugins.api.widgets.Dialog;
 import meteor.plugins.prayerFlicker.PrayerFlickerConfig;
 import meteor.plugins.runepouch.Runes;
 import net.runelite.api.ChatMessageType;
@@ -53,6 +55,9 @@ public class HighAlchPlugin extends Plugin {
     @Subscribe
     public void onGameTick(GameTick e){
         if(client.getGameState()!= GameState.LOGGED_IN){
+            return;
+        }
+        if(Dialog.isOpen()|| Bank.isOpen()){
             return;
         }
         if(timeout<=-20){
