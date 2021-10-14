@@ -45,6 +45,8 @@ public class ToolbarController {
     idleButton.setVisible(false);
     AnchorPane.setTopAnchor(staticPB, 2.0);
     AnchorPane.setBottomAnchor(staticPB, 2.0);
+    AnchorPane.setTopAnchor(idleButton, 2.0);
+    AnchorPane.setBottomAnchor(idleButton, 2.0);
   }
 
   public static void addButton(ToolbarButton button) {
