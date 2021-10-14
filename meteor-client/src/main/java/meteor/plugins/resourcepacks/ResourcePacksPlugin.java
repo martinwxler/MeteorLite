@@ -1,9 +1,20 @@
 package meteor.plugins.resourcepacks;
 
 import com.google.inject.Provides;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Enumeration;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import javax.inject.Inject;
 import lombok.Setter;
 import meteor.MeteorLiteClientLauncher;
@@ -19,11 +30,12 @@ import net.runelite.api.events.BeforeRender;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.ScriptPostFired;
 import okhttp3.HttpUrl;
+import org.apache.commons.io.FileUtils;
+import org.sponge.util.Logger;
 
 @PluginDescriptor(
 		name = "Resource Packs",
-		description = "Change the look of the client",
-		enabledByDefault = false
+		description = "Change the look of the client"
 )
 public class ResourcePacksPlugin extends Plugin
 {
@@ -67,6 +79,7 @@ public class ResourcePacksPlugin extends Plugin
 		if (!RESOURCEPACKS_DIR.exists())
 		{
 			RESOURCEPACKS_DIR.mkdirs();
+			unpackMeteorLiteTheme();
 		}
 
 		if (!NOTICE_FILE.exists())
@@ -189,5 +202,51 @@ public class ResourcePacksPlugin extends Plugin
 				resourcePacksManager.addPropertyToWidget(widgetOverride);
 			}
 		}
+	}
+
+	private void unpackMeteorLiteTheme() {
+		Logger log = Logger.getLogger(getClass());
+		log.info("Unpacking theme");
+		File themeZip = new File(MeteorLiteClientLauncher.METEOR_DIR, "theme.zip");
+		File themeDir = new File(RESOURCEPACKS_DIR, "MeteorLite");
+		try {
+			FileUtils.copyInputStreamToFile(ClassLoader.getSystemClassLoader().getResourceAsStream("MeteorLite-Theme.zip"), themeZip);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		try(ZipFile file = new ZipFile(themeZip))
+		{
+			FileSystem fileSystem = FileSystems.getDefault();
+			Enumeration<? extends ZipEntry> entries = file.entries();
+			Files.createDirectory(themeDir.toPath());
+			while (entries.hasMoreElements())
+			{
+				ZipEntry entry = entries.nextElement();
+				if (entry.isDirectory())
+				{
+					Files.createDirectories(fileSystem.getPath(RESOURCEPACKS_DIR + "/" + entry.getName()));
+				}
+				else
+				{
+					InputStream is = file.getInputStream(entry);
+					BufferedInputStream bis = new BufferedInputStream(is);
+					String uncompressedFileName = RESOURCEPACKS_DIR + "/" + entry.getName();
+					Path uncompressedFilePath = fileSystem.getPath(uncompressedFileName);
+					Files.createFile(uncompressedFilePath);
+					FileOutputStream fileOutput = new FileOutputStream(uncompressedFileName);
+					while (bis.available() > 0)
+					{
+						fileOutput.write(bis.read());
+					}
+					fileOutput.close();
+				}
+			}
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+		log.info("Theme unpacked successfully");
 	}
 }

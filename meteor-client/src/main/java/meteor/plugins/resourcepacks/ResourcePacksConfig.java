@@ -1,6 +1,8 @@
 package meteor.plugins.resourcepacks;
 
+import static meteor.plugins.resourcepacks.ResourcePacksPlugin.RESOURCEPACKS_DIR;
 import java.awt.Color;
+import java.io.File;
 import meteor.config.Alpha;
 import meteor.config.Config;
 import meteor.config.ConfigGroup;
@@ -55,7 +57,7 @@ public interface ResourcePacksConfig extends Config
 	)
 	default String resourcePackPath()
 	{
-		return "";
+		return new File(RESOURCEPACKS_DIR.getPath() + "/MeteorLite/").getAbsolutePath();
 	}
 
 	@ConfigItem(
