@@ -362,7 +362,7 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 		toolbarPanel.setSize(1280, 210);
 		rightPanel.setSize(550, 800);
 
-		toolbarPanel.setScene(new Scene(toolbarRoot, 300, 16));
+		toolbarPanel.setScene(new Scene(toolbarRoot, 300, 30));
 		toolbarPanel.setVisible(true);
 		rightPanel.setVisible(false);
 
