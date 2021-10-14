@@ -29,6 +29,7 @@ import meteor.config.Config;
 import meteor.config.ConfigGroup;
 import meteor.config.ConfigItem;
 import meteor.config.ConfigSection;
+import meteor.config.Range;
 import meteor.config.Units;
 
 @ConfigGroup("xpTracker")
@@ -210,5 +211,31 @@ public interface XpTrackerConfig extends Config
 	default boolean prioritizeRecentXpSkills()
 	{
 		return false;
+	}
+
+	@ConfigItem(
+			position = 15,
+			keyName = "addToCanvasOnUpdate",
+			name = "Add to canvas on skill update",
+			description = "Automatically adds skill info box to canvas when a skill changes"
+	)
+	default boolean addToCanvasOnUpdate()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+			position = 15,
+			keyName = "infoboxCooldown",
+			name = "Infobox cooldown",
+			description = "Time until an infobox is automatically cleared from the canvas in minutes"
+	)
+	@Range(
+			max = 15,
+			min = 1
+	)
+	default int infoboxCooldown()
+	{
+		return 3;
 	}
 }
