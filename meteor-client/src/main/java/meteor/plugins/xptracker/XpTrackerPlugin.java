@@ -131,7 +131,9 @@ public class XpTrackerPlugin extends Plugin
 	private final XpPauseState xpPauseState = new XpPauseState();
 
 	private boolean startedCooldowns;
+	private boolean ignoredfirstHPUpdate;
 	private HashMap<Skill, Long> skillUpdates = new HashMap<>();
+	private HashMap<Skill, Integer> lastSkillXPs = new HashMap<>();
 
 	@Provides
 	public XpTrackerConfig getConfig(ConfigManager configManager)
@@ -403,10 +405,20 @@ public class XpTrackerPlugin extends Plugin
 		// Also update the total experience
 		xpState.updateSkill(Skill.OVERALL, client.getOverallExperience(), -1, -1);
 
+		if (statChanged.getSkill() == Skill.HITPOINTS)
+			if (!ignoredfirstHPUpdate) {
+				ignoredfirstHPUpdate = true;
+				return;
+			}
+
 		if (getConfig(configManager).addToCanvasOnUpdate()) {
 			skillUpdates.put(skill, System.currentTimeMillis());
-			if (!hasOverlay(skill))
-				addOverlay(skill);
+			if (!hasOverlay(skill)) {
+					if (lastSkillXPs.getOrDefault(skill, client.getSkillExperience(skill)) != client.getSkillExperience(skill))
+						addOverlay(skill);
+			}
+
+			lastSkillXPs.put(skill, client.getSkillExperience(skill));
 		}
 	}
 
