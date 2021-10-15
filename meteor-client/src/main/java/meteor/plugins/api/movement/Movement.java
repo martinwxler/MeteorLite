@@ -99,6 +99,20 @@ public class Movement {
         walk(locatable.getWorldLocation());
     }
 
+    public static boolean walkTo(WorldPoint worldPoint, int radius) {
+        WorldPoint wp = new WorldPoint(
+                worldPoint.getX() + Rand.nextInt(-radius, radius),
+                worldPoint.getY() + Rand.nextInt(-radius, radius),
+                worldPoint.getPlane());
+        return Walker.walkTo(wp, false);
+    }
+
+    public static boolean walkTo(WorldArea worldArea) {
+        List<WorldPoint> wpList = worldArea.toWorldPointList();
+        WorldPoint wp = wpList.get(Rand.nextInt(0, wpList.size()));
+        return Walker.walkTo(wp, false);
+    }
+
     public static boolean walkTo(WorldPoint worldPoint) {
         return Walker.walkTo(worldPoint, false);
     }

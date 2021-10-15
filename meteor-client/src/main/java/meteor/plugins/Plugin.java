@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javax.inject.Inject;
 
+import javafx.scene.layout.Pane;
 import lombok.Getter;
 import lombok.Setter;
 import meteor.MeteorLiteClientModule;
@@ -57,8 +58,6 @@ public class Plugin implements Module {
   @Inject
   private MeteorUI meteorUI;
 
-  private Scene configScene;
-
   public Plugin() {
     logger.name = getDescriptor().name();
   }
@@ -96,9 +95,7 @@ public class Plugin implements Module {
         e.printStackTrace();
       }
     }
-    if (configScene == null)
-      configScene = new Scene(configRoot, 350, 800);
-    meteorUI.updateRightPanel(configScene);
+    meteorUI.updateRightPanel(configRoot);
   }
 
   public void unload() {
