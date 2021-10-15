@@ -99,14 +99,53 @@ public abstract class ClientMixin implements RSClient {
   private static boolean lowCpu;
   @Inject
   private static boolean allWidgetsAreOpTargetable = false;
-
+  
   @Inject
   @FieldHook("gameState")
-  public static void onGameStateChanged(int idx) {
+  public static void gameStateChanged(int idx)
+  {
     clientInstance = client;
-    GameStateChanged gameStateChanged = new GameStateChanged();
-    gameStateChanged.setGameState(GameState.of(client.getRSGameState$api()));
-    client.getCallbacks().post(gameStateChanged);
+    GameState gameState = client.getGameState();
+    client.getLogger().debug("Game state changed: {}", gameState);
+    GameStateChanged gameStateChange = new GameStateChanged();
+    gameStateChange.setGameState(gameState);
+    client.getCallbacks().post(gameStateChange);
+
+    if (gameState == GameState.LOGGED_IN)
+    {
+      if (client.getLocalPlayer() == null)
+      {
+        return;
+      }
+
+      int plane = client.getPlane();
+      RSScene scene = client.getScene();
+      RSTile[][][] tiles = scene.getTiles();
+      RSNodeDeque[][][] allItemDeque = client.getGroundItemDeque();
+      RSNodeDeque[][] planeItems = allItemDeque[plane];
+
+      for (int x = 0; x < 104; x++)
+      {
+        for (int y = 0; y < 104; y++)
+        {
+          RSNodeDeque itemDeque = planeItems[x][y];
+          if (itemDeque != null)
+          {
+            RSTile tile = tiles[plane][x][y];
+            RSNode head = itemDeque.getSentinel();
+
+            for (RSNode current = head.getNext(); current != head; current = current.getNext())
+            {
+              RSTileItem item = (RSTileItem) current;
+              item.setX(x);
+              item.setY(y);
+              ItemSpawned event = new ItemSpawned(tile, item);
+              client.getCallbacks().post(event);
+            }
+          }
+        }
+      }
+    }
   }
 
   @Inject
