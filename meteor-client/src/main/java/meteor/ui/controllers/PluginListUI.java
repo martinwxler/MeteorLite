@@ -6,13 +6,23 @@ import com.jfoenix.controls.JFXTooltip;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -28,26 +38,23 @@ import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.ui.MeteorUI;
 import meteor.ui.components.*;
+import meteor.util.MeteorConstants;
 import org.sponge.util.Logger;
 
 import javax.inject.Inject;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class PluginListUI {
+public class PluginListUI extends AnchorPane {
 	private static final Logger log = new Logger("PluginListUI");
 	private static final String MAIN_CATEGORY_NAME = "Plugins";
 	public static final String EXTERNAL_CATEGORY_NAME = "Externals";
 
-	@FXML
 	private FontAwesomeIconView addCategory;
-
-	@FXML
 	private VBox pluginList;
-
-	@FXML
 	public ScrollPane scrollPane;
 
 	public static Plugin lastPluginInteracted;
@@ -68,12 +75,63 @@ public class PluginListUI {
 
 	public static ArrayList<Category> categories = new ArrayList<>();
 
-	@FXML
-	public void initialize() {
+
+//	<AnchorPane fx:id="rootPanel" style="-fx-background-color: #212121; -fx-border-color: #121212; -fx-border-width: 3;" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="meteor.ui.controllers.PluginListUI">
+//
+//<Text fill="WHITE" text="Plugins" AnchorPane.leftAnchor="150.0" AnchorPane.topAnchor="8.0">
+//<font>
+//<Font size="18.0" />
+//</font>
+//</Text>
+//<FontAwesomeIconView fill="AQUA" glyphName="PLUG" size="18" AnchorPane.leftAnchor="125.0" AnchorPane.rightAnchor="125.0" AnchorPane.topAnchor="12.0">
+//<font>
+//<Font name="FontAwesome" size="14.0" />
+//</font>
+//</FontAwesomeIconView>
+//<FontAwesomeIconView fx:id="addCategory" fill="AQUA" glyphName="PLUS_SQUARE" size="28" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="8.0">
+//<font>
+//<Font name="FontAwesome" size="18.0" />
+//</font>
+//</FontAwesomeIconView>
+//<ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="40.0">
+//<stylesheets>
+//<URL value="@css/plugins/jfx-scrollpane.css" />
+//<URL value="@css/plugins/jfx-scrollbar.css" />
+//</stylesheets>
+//<content>
+//<VBox fx:id="pluginList" />
+//</content>
+//</ScrollPane>
+
+
+	public PluginListUI() {
 		MeteorLiteClientLauncher.injector.injectMembers(this);
 		eventBus.register(this);
 		INSTANCE = this;
 		categories.clear();
+
+		setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
+
+		setMinWidth(MeteorConstants.PANEL_WIDTH);
+		setMaxWidth(MeteorConstants.PANEL_WIDTH);
+
+		addCategory = new FontAwesomeIconView();
+		addCategory.setFill(Color.AQUA);
+		addCategory.setGlyphName("PLUS_SQUARE");
+		addCategory.setSize("28");
+
+		pluginList = new VBox();
+		pluginList.setMinWidth(MeteorConstants.PANEL_WIDTH);
+		pluginList.setMaxWidth(MeteorConstants.PANEL_WIDTH);
+
+		scrollPane = new ScrollPane();
+		scrollPane.getStylesheets().add("css/plugins/jfx-scrollpane.css");
+		scrollPane.getStylesheets().add("css/plugins/jfx-scrollbar.css");
+		scrollPane.setMinWidth(MeteorConstants.PANEL_WIDTH);
+		scrollPane.setMaxWidth(MeteorConstants.PANEL_WIDTH);
+
+		scrollPane.setContent(pluginList);
+		getChildren().addAll(addCategory, scrollPane);
 
 		addCategory.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
 			createCategory();
