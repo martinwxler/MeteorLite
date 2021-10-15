@@ -2,11 +2,8 @@ package meteor.ui;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
-import lombok.Getter;
 import meteor.PluginManager;
 import meteor.config.ConfigManager;
 import meteor.config.MeteorLiteConfig;
@@ -15,7 +12,8 @@ import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ClientShutdown;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.events.ExternalsReloaded;
-import meteor.ui.controllers.ToolbarController;
+import meteor.util.ImageUtil;
+import meteor.util.MeteorConstants;
 import net.runelite.api.Client;
 import net.runelite.api.Constants;
 import net.runelite.api.events.GameTick;
@@ -46,6 +44,7 @@ import static meteor.MeteorLiteClientModule.properties;
 
 @Singleton
 public class MeteorUI extends ContainableFrame implements AppletStub, AppletContext {
+	public static final BufferedImage ICON = ImageUtil.loadImageResource(MeteorUI.class, "/MeteorLite_icon2.png");
 	private static final Logger log = new Logger("MeteorUI");
 	private static final String CONFIG_CLIENT_BOUNDS = "clientBounds";
 	private static final String CONFIG_CLIENT_MAXIMIZED = "clientMaximized";
@@ -53,42 +52,27 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 	private static final String CONFIG_OPACITY_AMOUNT = "opacityPercentage";
 	private static final int CLIENT_WELL_HIDDEN_MARGIN = 160;
 	private static final int CLIENT_WELL_HIDDEN_MARGIN_TOP = 10;
-	public static final int TOOLBAR_HEIGHT = 33;
-	public static final int RIGHT_PANEL_WIDTH = 374;
-
-	public static final int CLIENT_WIDTH = Constants.GAME_FIXED_WIDTH + (Constants.GAME_FIXED_WIDTH - 749);
-	public static final int CLIENT_HEIGHT = Constants.GAME_FIXED_HEIGHT + (Constants.GAME_FIXED_HEIGHT - 464) + TOOLBAR_HEIGHT;
-	public static final Dimension CLIENT_SIZE = new Dimension(CLIENT_WIDTH + 24, CLIENT_HEIGHT);
 
 	private final JPanel rootPanel = new JPanel();
-
 	private Parent pluginsRoot;
-	private Parent toolbarRoot;
 	private Cursor defaultCursor;
 
 	@Inject
 	private Applet applet;
-
 	@Inject
 	private EventBus eventBus;
-
 	@Inject
 	private PluginManager pluginManager;
-
 	@Inject
 	private ConfigManager configManager;
-
 	@Inject
 	private MeteorLiteConfig config;
-
 	@Inject
 	private Client client;
-
 	@Inject
 	private RightPanel rightPanel;
 
 	private Dimension lastClientSize;
-	public static String lastButtonPressed = "";
 
 	public void init() throws IOException, InterruptedException, InvocationTargetException {
 		applet.setMinimumSize(Constants.GAME_FIXED_SIZE);
@@ -98,12 +82,6 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 		JPanel gamePanel = new JPanel();
 		rootPanel.setLayout(new BorderLayout());
 		gamePanel.setMinimumSize(Constants.GAME_FIXED_SIZE);
-		try {
-			toolbarRoot = FXMLLoader.load(
-					Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("toolbar.fxml")));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
 		gamePanel.setLayout(new BorderLayout());
 		gamePanel.add(applet, BorderLayout.CENTER);
@@ -122,6 +100,9 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 		}
 
 		setupJavaFXComponents(applet);
+
+		this.setTitle("MeteorLite");
+		this.setIconImage(ICON);
 
 		updateFrameConfig(true);
 		setWindowBounds();
@@ -262,13 +243,13 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 				// if panel would extend past screen, dont resize
 				Dimension currentSize = getSize();
 				Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-				if (currentSize.getWidth() + RIGHT_PANEL_WIDTH > screenSize.getWidth()) {
+				if (currentSize.getWidth() + MeteorConstants.RIGHT_PANEL_WIDTH > screenSize.getWidth()) {
 					return;
 				}
 
 				// If resizing the game would go below the minimum size, always extend panel.
-				if (getWidth() < CLIENT_WIDTH + RIGHT_PANEL_WIDTH) {
-					setSize(new Dimension(CLIENT_WIDTH + RIGHT_PANEL_WIDTH - 24, getHeight()));
+				if (getWidth() < MeteorConstants.CLIENT_WIDTH + MeteorConstants.RIGHT_PANEL_WIDTH) {
+					setSize(new Dimension(MeteorConstants.CLIENT_WIDTH + MeteorConstants.RIGHT_PANEL_WIDTH, getHeight()));
 					return;
 				}
 
@@ -277,14 +258,14 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 				}
 
 				// if current client size is less than window size, but showing the panel would go past the screen, set size equal to screen size.
-				Dimension newClientSize = new Dimension(CLIENT_WIDTH + RIGHT_PANEL_WIDTH, getHeight());
+				Dimension newClientSize = new Dimension(MeteorConstants.CLIENT_WIDTH + MeteorConstants.RIGHT_PANEL_WIDTH, getHeight());
 				if (newClientSize.getWidth() > screenSize.getWidth()) {
 					newClientSize = screenSize;
 					setExtendedState(JFrame.MAXIMIZED_BOTH);
 				}
 				setSize(newClientSize);
 			} finally {
-				setMinimumSize(new Dimension(CLIENT_WIDTH + RIGHT_PANEL_WIDTH, CLIENT_HEIGHT));
+				setMinimumSize(new Dimension(MeteorConstants.CLIENT_WIDTH + MeteorConstants.RIGHT_PANEL_WIDTH, MeteorConstants.CLIENT_HEIGHT));
 				validate();
 			}
 		} else {
@@ -295,7 +276,7 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 	private void setMinimumFrameSize() {
 		// if resize game is checked, and we are at the minimum size, still resize.
 		boolean resize = getMinimumSize().equals(getSize());
-		setMinimumSize(CLIENT_SIZE);
+		setMinimumSize(MeteorConstants.CLIENT_SIZE);
 
 		// if maximized, dont resize
 		if (getExtendedState() == JFrame.MAXIMIZED_BOTH) {
@@ -309,10 +290,10 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 		}
 
 		if (!config.resizeGame()) {
-			setSize(new Dimension(CLIENT_WIDTH + 24, getHeight()));
+			setSize(new Dimension(MeteorConstants.CLIENT_WIDTH + MeteorConstants.SIDEBAR_WIDTH, getHeight()));
 		}
 		if (resize) {
-			setSize(new Dimension(CLIENT_WIDTH + 24, getHeight()));
+			setSize(new Dimension(MeteorConstants.CLIENT_WIDTH + MeteorConstants.SIDEBAR_WIDTH, getHeight()));
 		}
 		validate();
 	}
@@ -329,13 +310,7 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 
 	public void setupJavaFXComponents(Applet applet) {
 		setMinimumFrameSize();
-		JFXPanel toolbarPanel = new JFXPanel();
-		toolbarPanel.setSize(1280, 100);
 
-		toolbarPanel.setScene(new Scene(toolbarRoot, 300, 33));
-		toolbarPanel.setVisible(true);
-
-		rootPanel.add(toolbarPanel, BorderLayout.NORTH);
 		rootPanel.add(rightPanel, BorderLayout.EAST);
 		add(rootPanel);
 		rootPanel.setVisible(true);
@@ -421,12 +396,6 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 		//This fixes bad drawing
 		if (client.getGameDrawingMode() != 2) {
 			client.setGameDrawingMode(2);
-		}
-
-		if (client.getLocalPlayer().isIdle()) {
-			ToolbarController.idleButtonInstance.setVisible(true);
-		} else {
-			ToolbarController.idleButtonInstance.setVisible(false);
 		}
 	}
 

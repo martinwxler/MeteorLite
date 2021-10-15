@@ -78,4 +78,25 @@ public interface RSBuffer extends Buffer, RSNode {
   @Import("writeStringCp1252NullTerminated")
   @Override
   void writeStringCp1252NullTerminated$api(String string);
+
+  @Import("offset")
+  void setOffset(int offset);
+
+  @Import("readUnsignedByte")
+  int readUnsignedByte$api();
+
+  @Import("readByte")
+  byte readByte$api();
+
+  @Import("readUnsignedShort")
+  int readUnsignedShort$api();
+
+  @Import("readShort")
+  int readShort$api();
+
+  @Import("readInt")
+  int readInt$api();
+
+  @Import("readStringCp1252NullTerminated")
+  String readStringCp1252NullTerminated$api();
 }

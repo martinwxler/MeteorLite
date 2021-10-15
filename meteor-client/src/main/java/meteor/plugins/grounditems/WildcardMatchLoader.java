@@ -32,32 +32,37 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import meteor.util.WildcardMatcher;
 
-class WildcardMatchLoader extends CacheLoader<NamedQuantity, Boolean> {
+class WildcardMatchLoader extends CacheLoader<NamedQuantity, Boolean>
+{
+	private final List<ItemThreshold> itemThresholds;
 
-  private final List<ItemThreshold> itemThresholds;
+	WildcardMatchLoader(List<String> configEntries)
+	{
+		this.itemThresholds = configEntries.stream()
+			.map(ItemThreshold::fromConfigEntry)
+			.filter(Objects::nonNull)
+			.collect(Collectors.toList());
+	}
 
-  WildcardMatchLoader(List<String> configEntries) {
-    this.itemThresholds = configEntries.stream()
-        .map(ItemThreshold::fromConfigEntry)
-        .filter(Objects::nonNull)
-        .collect(Collectors.toList());
-  }
+	@Override
+	public Boolean load(@Nonnull final NamedQuantity key)
+	{
+		if (Strings.isNullOrEmpty(key.getName()))
+		{
+			return false;
+		}
 
-  @Override
-  public Boolean load(@Nonnull final NamedQuantity key) {
-    if (Strings.isNullOrEmpty(key.getName())) {
-      return false;
-    }
+		final String filteredName = key.getName().trim();
 
-    final String filteredName = key.getName().trim();
+		for (final ItemThreshold entry : itemThresholds)
+		{
+			if (WildcardMatcher.matches(entry.getItemName(), filteredName)
+				&& entry.quantityHolds(key.getQuantity()))
+			{
+				return true;
+			}
+		}
 
-    for (final ItemThreshold entry : itemThresholds) {
-      if (WildcardMatcher.matches(entry.getItemName(), filteredName)
-          && entry.quantityHolds(key.getQuantity())) {
-        return true;
-      }
-    }
-
-    return false;
-  }
+		return false;
+	}
 }

@@ -31,10 +31,14 @@ import com.google.inject.Provides;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import meteor.MeteorLiteClientModule;
+import meteor.plugins.api.game.Game;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.Experience;
@@ -111,6 +115,12 @@ public class XpTrackerPlugin extends Plugin
 	@Inject
 	private XpState xpState;
 
+	@Inject
+	private ConfigManager configManager;
+
+	@Inject
+	private ScheduledExecutorService executorService;
+
 	private XpWorldType lastWorldType;
 	private String lastUsername;
 	private long lastTickMillis = 0;
@@ -120,12 +130,15 @@ public class XpTrackerPlugin extends Plugin
 
 	private final XpPauseState xpPauseState = new XpPauseState();
 
+	private boolean startedCooldowns;
+	private boolean ignoredfirstHPUpdate;
+	private HashMap<Skill, Long> skillUpdates = new HashMap<>();
+	private HashMap<Skill, Integer> lastSkillXPs = new HashMap<>();
+
 	@Provides
 	public XpTrackerConfig getConfig(ConfigManager configManager)
 	{
-		configManager.setDefaultConfiguration(this, XpTrackerConfig.class, false);
-		return new XpTrackerConfig() {
-		};
+		return configManager.getConfig(XpTrackerConfig.class);
 	}
 
 	@Provides
@@ -146,6 +159,21 @@ public class XpTrackerPlugin extends Plugin
 		// Initialize the tracker & last xp if already logged in
 		fetchXp = true;
 		initializeTracker = true;
+		if (!startedCooldowns)
+			executorService.scheduleAtFixedRate(() -> {
+				if (Game.getClient().getLocalPlayer() != null) {
+					if (skillUpdates.size() > 0) {
+						for (Skill s : skillUpdates.keySet()) {
+							long elapsedMilli = (System.currentTimeMillis() - skillUpdates.get(s));
+							if ((elapsedMilli / 1000 / 60) > xpTrackerConfig.infoboxCooldown())
+								if (hasOverlay(s))
+									removeOverlay(s);
+						}
+					}
+				}
+			}, 0, xpTrackerConfig.infoboxCooldown(), TimeUnit.MINUTES);
+
+		startedCooldowns = true;
 	}
 
 	@Override
@@ -376,6 +404,22 @@ public class XpTrackerPlugin extends Plugin
 		xpState.updateSkill(skill, currentXp, startGoalXp, endGoalXp);
 		// Also update the total experience
 		xpState.updateSkill(Skill.OVERALL, client.getOverallExperience(), -1, -1);
+
+		if (statChanged.getSkill() == Skill.HITPOINTS)
+			if (!ignoredfirstHPUpdate) {
+				ignoredfirstHPUpdate = true;
+				return;
+			}
+
+		if (getConfig(configManager).addToCanvasOnUpdate()) {
+			skillUpdates.put(skill, System.currentTimeMillis());
+			if (!hasOverlay(skill)) {
+					if (lastSkillXPs.getOrDefault(skill, client.getSkillExperience(skill)) != client.getSkillExperience(skill))
+						addOverlay(skill);
+			}
+
+			lastSkillXPs.put(skill, client.getSkillExperience(skill));
+		}
 	}
 
 	@Subscribe

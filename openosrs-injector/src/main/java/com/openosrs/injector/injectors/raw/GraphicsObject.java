@@ -27,15 +27,9 @@ public class GraphicsObject extends AbstractInjector
 
 	public void inject()
 	{
-		final ClassFile graphicsObjectVanilla = inject.toVanilla(
-						inject.getDeobfuscated()
-										.findClass("GraphicsObject")
-		);
+		final ClassFile graphicsObjectVanilla = inject.vanilla.findClass("osrs/GraphicsObject");
 
-		final ClassFile renderableVanilla = inject.toVanilla(
-						inject.getDeobfuscated()
-										.findClass("Renderable")
-		);
+		final ClassFile renderableVanilla = inject.vanilla.findClass("osrs/Renderable");
 
 		graphicsObjectVanilla.clearFinal();
 

@@ -1769,4 +1769,13 @@ public interface RSClient extends RSGameEngine, Client {
   @Import("mouseCrossY")
   @Override
   void setClickCrossY(int y);
+
+  @Import("SpotAnimationDefinition_get")
+  RSSpotAnimationDefinition getSpotAnimationDefinition(int id);
+
+  @Import("ModelData_get")
+  RSModelData getModelData(RSAbstractArchive var0, int var1, int var2);
+
+  @Import("readStringIntParameters")
+  RSIterableNodeHashTable readStringIntParameters(RSBuffer buffer, RSIterableNodeHashTable table);
 }

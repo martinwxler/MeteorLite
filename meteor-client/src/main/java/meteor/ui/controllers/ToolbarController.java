@@ -1,14 +1,10 @@
 package meteor.ui.controllers;
 
-import static meteor.ui.MeteorUI.lastButtonPressed;
 import com.jfoenix.controls.JFXButton;
-import java.io.IOException;
 import java.util.ArrayList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Paint;
 import meteor.MeteorLiteClientLauncher;
 import meteor.ui.MeteorUI;
 
@@ -43,11 +39,17 @@ public class ToolbarController {
     staticPB = pluginsButton;
     staticAP = toolbar;
     idleButton.setVisible(false);
+    AnchorPane.setTopAnchor(staticPB, 2.0);
+    AnchorPane.setBottomAnchor(staticPB, 2.0);
+    AnchorPane.setTopAnchor(idleButton, 2.0);
+    AnchorPane.setBottomAnchor(idleButton, 2.0);
   }
 
   public static void addButton(ToolbarButton button) {
     buttons.add(button);
     AnchorPane.setRightAnchor(button, getNextButtonPos(button));
+    AnchorPane.setTopAnchor(button, 2.0);
+    AnchorPane.setBottomAnchor(button, 2.0);
     staticAP.getChildren().add(button);
   }
 

@@ -57,7 +57,6 @@ import okhttp3.Response;
 	tags = {"cml", "crystalmathlabs", "templeosrs", "temple", "wom", "wiseoldman", "wise old man", "external", "integration"},
 	cantDisable = true
 )
-@Slf4j
 public class XpUpdaterPlugin extends Plugin
 {
 	/**
@@ -105,7 +104,6 @@ public class XpUpdaterPlugin extends Plugin
 			// Don't submit update unless xp threshold is reached
 			if (Math.abs(totalXp - lastXp) > XP_THRESHOLD)
 			{
-				log.debug("Submitting update for {}", local.getName());
 				update(local.getName());
 				lastXp = totalXp;
 			}
@@ -147,7 +145,7 @@ public class XpUpdaterPlugin extends Plugin
 				.url(url)
 				.build();
 
-		log.warn("Built URI: {}", url.url());
+		logger.warn("Built URI: {}", url.url());
 
 		sendRequest("CrystalMathLabs", request);
 	}
@@ -167,7 +165,7 @@ public class XpUpdaterPlugin extends Plugin
 				.url(url)
 				.build();
 
-		log.warn("Built URI: {}", url.url());
+		logger.warn("Built URI: {}", url.url());
 
 		sendRequest("TempleOSRS", request);
 	}
@@ -186,7 +184,7 @@ public class XpUpdaterPlugin extends Plugin
 				.add("username", username)
 				.build();
 
-		log.warn("Built URI: {}", url.url());
+		logger.warn("Built URI: {}", url.url());
 
 		Request request = new Request.Builder()
 				.header("User-Agent", "RuneLite")
@@ -204,7 +202,7 @@ public class XpUpdaterPlugin extends Plugin
 			@Override
 			public void onFailure(Call call, IOException e)
 			{
-				log.warn("Error submitting {} update, caused by {}.", platform, e.getMessage());
+				logger.warn("Error submitting {} update, caused by {}.", platform, e.getMessage());
 			}
 
 			@Override

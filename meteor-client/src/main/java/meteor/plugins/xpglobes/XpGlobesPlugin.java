@@ -51,7 +51,8 @@ import meteor.ui.overlay.OverlayManager;
 @PluginDescriptor(
 	name = "XP Globes",
 	description = "Show XP globes for the respective skill when gaining XP",
-	tags = {"experience", "levels", "overlay"}
+	tags = {"experience", "levels", "overlay"},
+	enabledByDefault = false
 )
 @PluginDependency(XpTrackerPlugin.class)
 public class XpGlobesPlugin extends Plugin

@@ -34,6 +34,7 @@ import meteor.config.ConfigSection;
 import meteor.config.Range;
 import meteor.config.Units;
 import meteor.plugins.grounditems.config.DespawnTimerMode;
+import meteor.plugins.grounditems.config.HighlightTier;
 import meteor.plugins.grounditems.config.ItemHighlightMode;
 import meteor.plugins.grounditems.config.MenuHighlightMode;
 import meteor.plugins.grounditems.config.PriceDisplayMode;
@@ -373,4 +374,25 @@ public interface GroundItemsConfig extends Config {
     return true;
   }
 
+  @ConfigItem(
+      keyName = "showLootbeamForHighlighted",
+      name = "Highlighted item lootbeams",
+      description = "Configures lootbeams to show for all highlighted items.",
+      position = 30
+  )
+  default boolean showLootbeamForHighlighted()
+  {
+    return true;
+  }
+
+  @ConfigItem(
+      keyName = "showLootbeamTier",
+      name = "Lootbeam tier",
+      description = "Configures which price tiers will trigger a lootbeam",
+      position = 31
+  )
+  default HighlightTier showLootbeamTier()
+  {
+    return HighlightTier.HIGH;
+  }
 }

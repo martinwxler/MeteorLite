@@ -26,12 +26,10 @@ package meteor.plugins.hiscore;
 
 import static meteor.plugins.hiscore.HiscoreController.INSTANCE;
 import static meteor.plugins.hiscore.HiscoreController.searchBox;
-import static meteor.ui.MeteorUI.lastButtonPressed;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ObjectArrays;
 import com.google.inject.Provides;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.Objects;
@@ -46,11 +44,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import lombok.Getter;
-import meteor.eventbus.events.ToolbarButtonClicked;
-import meteor.ui.MeteorUI;
 import meteor.ui.Sidebar;
-import meteor.ui.components.ToolbarButton;
-import meteor.ui.controllers.ToolbarController;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -71,7 +65,6 @@ import meteor.eventbus.events.ConfigChanged;
 import meteor.menus.MenuManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
-import meteor.util.ImageUtil;
 import meteor.util.Text;
 import net.runelite.http.api.hiscore.HiscoreEndpoint;
 import org.apache.commons.lang3.ArrayUtils;
@@ -269,7 +262,6 @@ public class HiscorePlugin extends Plugin
 	{
 		Platform.runLater(() ->
 		{
-			lastButtonPressed = "Hiscores";
 			searchBox.setText(playerName);
 			HiscoreController.endpoint = endpoint;
 			INSTANCE.lookup();

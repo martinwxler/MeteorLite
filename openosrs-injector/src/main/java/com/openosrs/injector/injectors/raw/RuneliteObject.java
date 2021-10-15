@@ -27,7 +27,7 @@ import org.objectweb.asm.Opcodes;
 
 public class RuneliteObject extends AbstractInjector
 {
-	private static final String RUNELITE_OBJECT = "RuneLiteObject";
+	private static final String RUNELITE_OBJECT = "osrs/RuneLiteObject";
 
 	public RuneliteObject(InjectData inject)
 	{
@@ -38,17 +38,11 @@ public class RuneliteObject extends AbstractInjector
 	{
 		ClassFile runeliteObjectVanilla = inject.vanilla.findClass(RUNELITE_OBJECT);
 
-		final ClassFile graphicsObjectVanilla = inject.toVanilla(
-						inject.getDeobfuscated()
-										.findClass("GraphicsObject")
-		);
+		final ClassFile graphicsObjectVanilla = inject.vanilla.findClass("osrs/GraphicsObject");
 
 		graphicsObjectVanilla.clearFinal();
 
-		final ClassFile clientVanilla = inject.toVanilla(
-						inject.getDeobfuscated()
-										.findClass("Client")
-		);
+		final ClassFile clientVanilla = inject.vanilla.findClass("osrs/Client");
 
 		final ClassFile runeLiteObjectDeob = inject.getDeobfuscated()
 						.findClass(RUNELITE_OBJECT);

@@ -26,8 +26,8 @@ public class ToolbarButton extends JFXButton {
     super(text);
     setTextFill(Paint.valueOf("CYAN"));
     setStyle("-fx-background-color: #252525; -fx-text-fill: CYAN; -jfx-button-type: RAISED;");
-    AnchorPane.setTopAnchor(this, 2.0);
-    AnchorPane.setBottomAnchor(this, 2.0);
+    AnchorPane.setTopAnchor(this, -5.0);
+    AnchorPane.setBottomAnchor(this, 0.5);
 
     if (icon != null) {
       setGraphic(icon);

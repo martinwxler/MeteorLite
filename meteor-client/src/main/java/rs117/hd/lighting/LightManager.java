@@ -982,8 +982,7 @@ public class LightManager
 		int highValuePrice = configManager.getConfiguration("grounditems", "highValuePrice", Integer.class);
 		int insaneValuePrice = configManager.getConfiguration("grounditems", "insaneValuePrice", Integer.class);
 
-		GroundItemsPlugin groundItemsPlugin = PluginManager.getInstance(GroundItemsPlugin.class);
-		for (GroundItem groundItem : groundItemsPlugin.collectedGroundItems.values()) {
+		for (GroundItem groundItem : GroundItemsPlugin.collectedGroundItems.values()) {
 			if (itemSpawned.getItem().getId() == groundItem.getItemId())
 				if (groundItem.getLocation().distanceTo(itemSpawned.getTile().getWorldLocation()) == 0) {
 
@@ -1019,7 +1018,7 @@ public class LightManager
 					int b = rgb & 0xff;
 					LocalPoint localPoint = LocalPoint.fromWorld(client, groundItem.getLocation());
 					Light light = new Light(localPoint.getX(), localPoint.getY(), groundItem.getLocation().getPlane(),
-							25, Alignment.CENTER, 320, 14f, new float[]{r, g, b}, LightType.FLICKER, 0, 0, 0);
+							25, Alignment.CENTER, 120, 7f, new float[]{r, g, b}, LightType.FLICKER, 0, 0, 0);
 					light.tileItem = itemSpawned.getItem();
 					light.visible = false;
 
