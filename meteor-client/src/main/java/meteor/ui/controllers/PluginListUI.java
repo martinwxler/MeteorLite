@@ -125,10 +125,10 @@ public class PluginListUI extends AnchorPane {
 		pluginList.setMaxWidth(MeteorConstants.PANEL_WIDTH);
 
 		scrollPane = new ScrollPane();
-		scrollPane.getStylesheets().add("css/plugins/jfx-scrollpane.css");
-		scrollPane.getStylesheets().add("css/plugins/jfx-scrollbar.css");
-		scrollPane.setMinWidth(MeteorConstants.PANEL_WIDTH);
-		scrollPane.setMaxWidth(MeteorConstants.PANEL_WIDTH);
+//		scrollPane.getStylesheets().add("css/plugins/jfx-scrollpane.css");
+//		scrollPane.getStylesheets().add("css/plugins/jfx-scrollbar.css");
+		scrollPane.setFitToWidth(true);
+		scrollPane.setFitToHeight(true);
 
 		scrollPane.setContent(pluginList);
 		getChildren().addAll(addCategory, scrollPane);
