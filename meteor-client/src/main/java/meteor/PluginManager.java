@@ -424,17 +424,29 @@ public class PluginManager {
 		Injector pluginInjector = parent.createChildInjector(pluginModule);
 		pluginInjector.injectMembers(plugin);
 		plugin.setInjector(pluginInjector);
-		Config config = plugin.getConfig(configManager);
-		if (config != null) {
-			configManager.setDefaultConfiguration(plugin, config, false);
+		String enabledConfig = configManager.getConfiguration(plugin.getClass().getSimpleName(), "pluginEnabled");
+		PluginDescriptor descriptor = plugin.getClass().getAnnotation(PluginDescriptor.class);
+		if (enabledConfig == null) {
+			if (descriptor != null) {
+				boolean enabledByDefault = descriptor.enabledByDefault() || descriptor.cantDisable();
+				configManager.setConfiguration(plugin.getClass().getSimpleName(), "pluginEnabled", enabledByDefault);
+			}
 		}
 
-		boolean shouldEnable = plugin.getClass().getAnnotation(PluginDescriptor.class)
-				.enabledByDefault();
+		if (enabledConfig != null && descriptor.disabledOnStartup()) {
+			configManager.setConfiguration(plugin.getClass().getSimpleName(), "pluginEnabled", false);
+		}
 
-		if (!Boolean.parseBoolean(configManager.getConfiguration(plugin.getClass().getSimpleName(), "pluginEnabled")))
-			shouldEnable = false;
-		if (plugin.getClass().getAnnotation(PluginDescriptor.class).cantDisable())
+		Config config = plugin.getConfig(configManager);
+		if (config != null) {
+			configManager.setDefaultConfiguration(config, false);
+		}
+
+		boolean shouldEnable = false;
+
+		if (Boolean.parseBoolean(configManager.getConfiguration(plugin.getClass().getSimpleName(), "pluginEnabled")))
+			shouldEnable = true;
+		else if (plugin.getClass().getAnnotation(PluginDescriptor.class).cantDisable())
 			shouldEnable = true;
 
 		if (shouldEnable)
