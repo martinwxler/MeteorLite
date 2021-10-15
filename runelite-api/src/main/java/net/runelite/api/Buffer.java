@@ -69,4 +69,15 @@ public interface Buffer extends Node {
   void writeShort01A$api(int var1);
 
   void writeStringCp1252NullTerminated$api(String string);
+
+  /**
+   * Use this api to write to byte buffers
+   */
+  void writeByte(int var1);
+
+  void writeShort(int var1);
+
+  void writeInt(int var1);
+
+  void writeLong(long var1);
 }

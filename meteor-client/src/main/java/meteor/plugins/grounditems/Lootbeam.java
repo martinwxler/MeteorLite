@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, dekvall <https://github.com/dekvall>
+ * Copyright (c) 2021, Trevor <https://github.com/Trevor159>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,18 +24,56 @@
  */
 package meteor.plugins.grounditems;
 
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
+import java.awt.Color;
+import net.runelite.api.AnimationID;
+import net.runelite.api.Client;
+import net.runelite.api.JagexColor;
+import net.runelite.api.RuneLiteObject;
+import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldPoint;
 
-@Value
-@RequiredArgsConstructor
-class NamedQuantity
+class Lootbeam
 {
-	private final String name;
-	private final int quantity;
+	private static final int RAID_LIGHT_MODEL = 5809;
+	private static final short RAID_LIGHT_FIND_COLOR = 6371;
 
-	NamedQuantity(GroundItem groundItem)
+	private final RuneLiteObject runeLiteObject;
+	private final Client client;
+	private Color color;
+
+	public Lootbeam(Client client, WorldPoint worldPoint, Color color)
 	{
-		this(groundItem.getName(), groundItem.getQuantity());
+		this.client = client;
+		runeLiteObject = client.createRuneLiteObject();
+
+		setColor(color);
+		runeLiteObject.setAnimation(client.loadAnimation(AnimationID.RAID_LIGHT_ANIMATION));
+		runeLiteObject.setShouldLoop(true);
+
+		LocalPoint lp = LocalPoint.fromWorld(client, worldPoint);
+		runeLiteObject.setLocation(lp, client.getPlane());
+
+		runeLiteObject.setActive(true);
 	}
+
+	public void setColor(Color color)
+	{
+		if (this.color != null && this.color.equals(color))
+		{
+			return;
+		}
+
+		this.color = color;
+		runeLiteObject.setModel(client.loadModel(
+			RAID_LIGHT_MODEL,
+			new short[]{RAID_LIGHT_FIND_COLOR},
+			new short[]{JagexColor.rgbToHSL(color.getRGB(), 1.0d)}
+		));
+	}
+
+	public void remove()
+	{
+		runeLiteObject.setActive(false);
+	}
+
 }

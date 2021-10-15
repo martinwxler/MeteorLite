@@ -13,7 +13,6 @@ import static net.runelite.api.Perspective.LOCAL_TILE_SIZE;
 
 import java.math.BigInteger;
 import java.util.*;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.runelite.api.*;
@@ -1836,5 +1835,33 @@ public abstract class ClientMixin implements RSClient {
     PlayerMenuOptionsChanged optionsChanged = new PlayerMenuOptionsChanged();
     optionsChanged.setIndex(idx);
     client.getCallbacks().post(optionsChanged);
+  }
+
+  @Inject
+  public Model loadModel(int id)
+  {
+    return loadModel(id, null, null);
+  }
+
+  @Inject
+  public Model loadModel(int id, short[] colorToFind, short[] colorToReplace)
+  {
+    RSModelData modeldata = client.getModelData(client.getObjectDefinition_modelsArchive(), id, 0);
+
+    if (colorToFind != null)
+    {
+      for (int i = 0; i < colorToFind.length; ++i)
+      {
+        modeldata.recolor$api(colorToFind[i], colorToReplace[i]);
+      }
+    }
+
+    return modeldata.toModel(modeldata.getAmbient() + 64, modeldata.getContrast() + 850, -30, -50, -30);
+  }
+
+  @Inject
+  public Sequence loadAnimation(int id)
+  {
+    return client.getSequenceDefinition(id);
   }
 }

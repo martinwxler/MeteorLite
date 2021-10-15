@@ -29,16 +29,18 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum ItemHighlightMode {
-  NONE("None"),
-  OVERLAY("Overlay"),
-  MENU("Right-click menu"),
-  BOTH("Both");
+public enum ItemHighlightMode
+{
+	NONE("None"),
+	OVERLAY("Overlay"),
+	MENU("Right-click menu"),
+	BOTH("Both");
 
-  private final String name;
+	private final String name;
 
-  @Override
-  public String toString() {
-    return name;
-  }
+	@Override
+	public String toString()
+	{
+		return name;
+	}
 }

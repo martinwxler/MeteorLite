@@ -33,95 +33,105 @@ import javax.inject.Inject;
 import javax.swing.SwingUtilities;
 import meteor.input.KeyListener;
 import meteor.input.MouseAdapter;
-import org.sponge.util.Logger;
 
-public class GroundItemInputListener extends MouseAdapter implements KeyListener {
+public class GroundItemInputListener extends MouseAdapter implements KeyListener
+{
+	private static final int HOTKEY = KeyEvent.VK_ALT;
 
-  private static final int HOTKEY = KeyEvent.VK_ALT;
+	private Instant lastPress;
 
-  private Instant lastPress;
+	@Inject
+	private GroundItemsPlugin plugin;
 
-  @Inject
-  private GroundItemsPlugin plugin;
+	@Inject
+	private GroundItemsConfig config;
 
-  @Inject
-  private GroundItemsConfig config;
+	@Override
+	public void keyTyped(KeyEvent e)
+	{
 
-  @Override
-  public void keyTyped(KeyEvent e) {
+	}
 
-  }
+	@Override
+	public void keyPressed(KeyEvent e)
+	{
+		if (e.getKeyCode() == HOTKEY)
+		{
+			if (plugin.isHideAll())
+			{
+				plugin.setHideAll(false);
+				plugin.setHotKeyPressed(true);
+				lastPress = null;
+			}
+			else if (lastPress != null && !plugin.isHotKeyPressed() && config.doubleTapDelay() > 0 && Duration.between(lastPress, Instant.now()).compareTo(Duration.ofMillis(config.doubleTapDelay())) < 0)
+			{
+				plugin.setHideAll(true);
+				lastPress = null;
+			}
+			else
+			{
+				plugin.setHotKeyPressed(true);
+				lastPress = Instant.now();
+			}
+		}
+	}
 
-  @Override
-  public void keyPressed(KeyEvent e) {
-    if (e.getKeyCode() == HOTKEY) {
-      if (plugin.isHideAll()) {
-        plugin.setHideAll(false);
-        plugin.setHotKeyPressed(true);
-        lastPress = null;
-      } else if (lastPress != null && !plugin.isHotKeyPressed() && config.doubleTapDelay() > 0 &&
-          Duration.between(lastPress, Instant.now())
-              .compareTo(Duration.ofMillis(config.doubleTapDelay())) < 0) {
-        plugin.setHideAll(true);
-        lastPress = null;
-      } else {
-        plugin.setHotKeyPressed(true);
-        lastPress = Instant.now();
-      }
-    }
-  }
+	@Override
+	public void keyReleased(KeyEvent e)
+	{
+		if (e.getKeyCode() == HOTKEY)
+		{
+			plugin.setHotKeyPressed(false);
+			plugin.setTextBoxBounds(null);
+			plugin.setHiddenBoxBounds(null);
+			plugin.setHighlightBoxBounds(null);
+		}
+	}
 
-  @Override
-  public void keyReleased(KeyEvent e) {
-    if (e.getKeyCode() == HOTKEY) {
-      plugin.setHotKeyPressed(false);
-      plugin.setTextBoxBounds(null);
-      plugin.setHiddenBoxBounds(null);
-      plugin.setHighlightBoxBounds(null);
-    }
-  }
+	@Override
+	public MouseEvent mousePressed(MouseEvent e)
+	{
+		final Point mousePos = e.getPoint();
 
-  @Override
-  public MouseEvent mousePressed(MouseEvent e) {
-    final Point mousePos = e.getPoint();
+		if (plugin.isHotKeyPressed())
+		{
+			if (SwingUtilities.isLeftMouseButton(e))
+			{
+				// Process both click boxes for hidden and highlighted items
+				if (plugin.getHiddenBoxBounds() != null && plugin.getHiddenBoxBounds().getKey().contains(mousePos))
+				{
+					plugin.updateList(plugin.getHiddenBoxBounds().getValue().getName(), true);
+					e.consume();
+					return e;
+				}
 
-    if (plugin.isHotKeyPressed()) {
-      if (SwingUtilities.isLeftMouseButton(e)) {
-        if (plugin.getHiddenBoxBounds() != null)
-        // Process both click boxes for hidden and highlighted items
-        if (plugin.getHiddenBoxBounds() != null && plugin.getHiddenBoxBounds().getKey()
-            .contains(mousePos)) {
-          new Logger("gitems").warn("set hidden");
-          plugin.updateList(plugin.getHiddenBoxBounds().getValue().getName(), true);
-          e.consume();
-          return e;
-        }
+				if (plugin.getHighlightBoxBounds() != null && plugin.getHighlightBoxBounds().getKey().contains(mousePos))
+				{
+					plugin.updateList(plugin.getHighlightBoxBounds().getValue().getName(), false);
+					e.consume();
+					return e;
+				}
 
-        if (plugin.getHighlightBoxBounds() != null && plugin.getHighlightBoxBounds().getKey()
-            .contains(mousePos)) {
-          plugin.updateList(plugin.getHighlightBoxBounds().getValue().getName(), false);
-          e.consume();
-          return e;
-        }
+				// There is one name click box for left click and one for right click
+				if (plugin.getTextBoxBounds() != null && plugin.getTextBoxBounds().getKey().contains(mousePos))
+				{
+					plugin.updateList(plugin.getTextBoxBounds().getValue().getName(), false);
+					e.consume();
+					return e;
+				}
+			}
+			else if (SwingUtilities.isRightMouseButton(e))
+			{
+				if (plugin.getTextBoxBounds() != null && plugin.getTextBoxBounds().getKey().contains(mousePos))
+				{
+					plugin.updateList(plugin.getTextBoxBounds().getValue().getName(), true);
+					e.consume();
+					return e;
+				}
+			}
+		}
 
-        // There is one name click box for left click and one for right click
-        if (plugin.getTextBoxBounds() != null && plugin.getTextBoxBounds().getKey()
-            .contains(mousePos)) {
-          plugin.updateList(plugin.getTextBoxBounds().getValue().getName(), false);
-          e.consume();
-          return e;
-        }
-      } else if (SwingUtilities.isRightMouseButton(e)) {
-        if (plugin.getTextBoxBounds() != null && plugin.getTextBoxBounds().getKey()
-            .contains(mousePos)) {
-          plugin.updateList(plugin.getTextBoxBounds().getValue().getName(), true);
-          e.consume();
-          return e;
-        }
-      }
-    }
-
-    return e;
-  }
+		return e;
+	}
 }
 
