@@ -20,6 +20,7 @@ import meteor.config.Config;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
+import meteor.plugins.PluginDescriptor;
 import meteor.plugins.cettitutorial.CettiTutorialPlugin;
 import meteor.plugins.nightmareHelper.NightmareHelper;
 import meteor.plugins.highalchemy.HighAlchPlugin;
@@ -431,6 +432,10 @@ public class PluginManager {
 		if (Boolean.parseBoolean(configManager.getConfiguration(plugin.getClass().getSimpleName(), "pluginEnabled"))) {
 			plugin.toggle();
 		}
+		else if (plugin.getClass().getAnnotation(PluginDescriptor.class).cantDisable())
+			plugin.toggle();
+		else if (plugin.getClass().getAnnotation(PluginDescriptor.class).enabledByDefault())
+			plugin.toggle();
 	}
 
 	public void startExternals() {
