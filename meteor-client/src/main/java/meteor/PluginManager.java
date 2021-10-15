@@ -429,12 +429,15 @@ public class PluginManager {
 			configManager.setDefaultConfiguration(plugin, config, false);
 		}
 
-		if (Boolean.parseBoolean(configManager.getConfiguration(plugin.getClass().getSimpleName(), "pluginEnabled"))) {
-			plugin.toggle();
-		}
-		else if (plugin.getClass().getAnnotation(PluginDescriptor.class).cantDisable())
-			plugin.toggle();
-		else if (plugin.getClass().getAnnotation(PluginDescriptor.class).enabledByDefault())
+		boolean shouldEnable = plugin.getClass().getAnnotation(PluginDescriptor.class)
+				.enabledByDefault();
+
+		if (!Boolean.parseBoolean(configManager.getConfiguration(plugin.getClass().getSimpleName(), "pluginEnabled")))
+			shouldEnable = false;
+		if (plugin.getClass().getAnnotation(PluginDescriptor.class).cantDisable())
+			shouldEnable = true;
+
+		if (shouldEnable)
 			plugin.toggle();
 	}
 
