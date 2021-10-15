@@ -101,8 +101,6 @@ public class HiscoreWisePlugin extends Plugin
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		MeteorLiteClientLauncher.injector.injectMembers(this);
-		eventBus.register(this);
 	}
 
 	@Subscribe
