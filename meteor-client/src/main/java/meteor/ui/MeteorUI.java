@@ -118,7 +118,7 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 				if (clientBounds != null) {
 					revalidateMinimumSize();
 					setLocation(clientBounds.getLocation());
-					setSize(clientBounds.getSize());
+					setSize((int)clientBounds.getWidth() + 85, (int)clientBounds.getHeight());
 				} else {
 					setLocationRelativeTo(getOwner());
 				}
@@ -249,7 +249,7 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 
 				// If resizing the game would go below the minimum size, always extend panel.
 				if (getWidth() < MeteorConstants.CLIENT_WIDTH + MeteorConstants.RIGHT_PANEL_WIDTH) {
-					setSize(new Dimension(MeteorConstants.CLIENT_WIDTH + MeteorConstants.RIGHT_PANEL_WIDTH, getHeight()));
+					setSize(new Dimension(MeteorConstants.CLIENT_WIDTH + MeteorConstants.RIGHT_PANEL_WIDTH + 85, getHeight()));
 					return;
 				}
 
@@ -265,7 +265,7 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 				}
 				setSize(newClientSize);
 			} finally {
-				setMinimumSize(new Dimension(MeteorConstants.CLIENT_WIDTH + MeteorConstants.RIGHT_PANEL_WIDTH, MeteorConstants.CLIENT_HEIGHT));
+				setMinimumSize(new Dimension(MeteorConstants.CLIENT_WIDTH + 85 + MeteorConstants.RIGHT_PANEL_WIDTH, MeteorConstants.CLIENT_HEIGHT));
 				validate();
 			}
 		} else {
@@ -290,10 +290,10 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 		}
 
 		if (!config.resizeGame()) {
-			setSize(new Dimension(MeteorConstants.CLIENT_WIDTH + MeteorConstants.SIDEBAR_WIDTH, getHeight()));
+			setSize(new Dimension(MeteorConstants.CLIENT_WIDTH + 85 + MeteorConstants.SIDEBAR_WIDTH, getHeight()));
 		}
 		if (resize) {
-			setSize(new Dimension(MeteorConstants.CLIENT_WIDTH + MeteorConstants.SIDEBAR_WIDTH, getHeight()));
+			setSize(new Dimension(MeteorConstants.CLIENT_WIDTH + 85 + MeteorConstants.SIDEBAR_WIDTH, getHeight()));
 		}
 		validate();
 	}
