@@ -185,7 +185,7 @@ import meteor.plugins.xptracker.XpTrackerPlugin;
 import meteor.plugins.xpupdater.XpUpdaterPlugin;
 import meteor.plugins.zulrah.ZulrahPlugin;
 import meteor.ui.components.Category;
-import meteor.ui.controllers.PluginListUI;
+import meteor.ui.PluginListPanel;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
 import org.sponge.util.Logger;
@@ -457,7 +457,7 @@ public class PluginManager {
 		List<Plugin> externals = loadPluginsFromDir(EXTERNALS_DIR);
 		plugins.stream().filter(Plugin::isExternal).forEach(Plugin::unload);
 		plugins.removeIf(Plugin::isExternal);
-		Category category = PluginListUI.INSTANCE.findOrCreateCategory(PluginListUI.EXTERNAL_CATEGORY_NAME);
+		Category category = PluginListPanel.INSTANCE.findOrCreateCategory(PluginListPanel.EXTERNAL_CATEGORY_NAME);
 
 		for (Plugin external : externals) {
 			if (!category.plugins.contains(external.getName())) {

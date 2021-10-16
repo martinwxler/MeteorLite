@@ -85,12 +85,6 @@ public class RightPanel extends JFXPanel {
 		Platform.runLater(() -> createScene(getWidth()));
 	}
 
-	public void preloadPanel(Parent parent) {
-		Platform.runLater(() -> update(parent));
-		Platform.runLater(this::close);
-		Platform.runLater(() ->meteorUI.updateClientSize());
-	}
-
 	public void update(Parent parent) {
 		if (isOpen()) {
 			if (lastPanel != null && parent.idProperty().equals(lastPanel.idProperty())) {

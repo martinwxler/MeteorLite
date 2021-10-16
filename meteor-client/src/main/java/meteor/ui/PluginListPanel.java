@@ -1,10 +1,9 @@
-package meteor.ui.controllers;
+package meteor.ui;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import impl.org.controlsfx.skin.CustomTextFieldSkin;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -14,7 +13,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
-import javafx.scene.control.skin.TextFieldSkin;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
@@ -46,8 +44,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class PluginListUI extends BorderPane {
-	private static final Logger log = new Logger("PluginListUI");
+public class PluginListPanel extends BorderPane {
+	private static final Logger log = new Logger("PluginListPanel");
 	private static final String MAIN_CATEGORY_NAME = "Plugins";
 	public static final String EXTERNAL_CATEGORY_NAME = "Externals";
 
@@ -65,14 +63,14 @@ public class PluginListUI extends BorderPane {
 	@Inject
 	private ConfigManager configManager;
 
-	public static PluginListUI INSTANCE;
+	public static PluginListPanel INSTANCE;
 
 	@Inject
 	private EventBus eventBus;
 
 	public static ArrayList<Category> categories = new ArrayList<>();
 
-	public PluginListUI() {
+	public PluginListPanel() {
 		MeteorLiteClientLauncher.injector.injectMembers(this);
 		eventBus.register(this);
 		INSTANCE = this;

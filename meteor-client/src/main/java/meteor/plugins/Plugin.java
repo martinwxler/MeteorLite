@@ -7,13 +7,11 @@ import java.io.IOException;
 import java.util.Objects;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
+
 import javax.inject.Inject;
 
-import javafx.scene.layout.Pane;
 import lombok.Getter;
 import lombok.Setter;
-import meteor.MeteorLiteClientModule;
 import meteor.PluginManager;
 import meteor.config.Config;
 import meteor.config.ConfigManager;
@@ -22,7 +20,7 @@ import meteor.eventbus.events.PluginChanged;
 import meteor.task.Scheduler;
 import meteor.ui.MeteorUI;
 import meteor.ui.components.PluginToggleButton;
-import meteor.ui.controllers.PluginListUI;
+import meteor.ui.PluginListPanel;
 import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.Client;
 import org.sponge.util.Logger;
@@ -119,14 +117,14 @@ public class Plugin implements Module {
 
     updateConfig();
 
-    PluginListUI.overrideToggleListener = true;
-    for (PluginToggleButton ptb : PluginListUI.toggleButtons.values()) {
+    PluginListPanel.overrideToggleListener = true;
+    for (PluginToggleButton ptb : PluginListPanel.toggleButtons.values()) {
       if (ptb.plugin == this) {
         ptb.setSelected(enabled);
       }
     }
 
-    PluginListUI.overrideToggleListener = false;
+    PluginListPanel.overrideToggleListener = false;
     eventBus.post(new PluginChanged(this, enabled));
   }
 

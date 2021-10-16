@@ -8,8 +8,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.paint.Paint;
 import lombok.Getter;
 import meteor.MeteorLiteClientModule;
@@ -17,10 +15,9 @@ import meteor.config.Config;
 import meteor.config.ConfigManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
-import meteor.ui.controllers.PluginListUI;
-import net.runelite.api.mixins.Inject;
+import meteor.ui.PluginListPanel;
 
-import static meteor.ui.controllers.PluginListUI.overrideToggleListener;
+import static meteor.ui.PluginListPanel.overrideToggleListener;
 
 public class PluginListCell extends AnchorPane {
 
@@ -71,7 +68,7 @@ public class PluginListCell extends AnchorPane {
 			cog.setSize(String.valueOf(MeteorLiteClientModule.METEOR_FONT_SIZE));
 			configButton.setGraphic(cog);
 			configButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-				PluginListUI.lastPluginInteracted = plugin;
+				PluginListPanel.lastPluginInteracted = plugin;
 				plugin.showConfig();
 			});
 		}

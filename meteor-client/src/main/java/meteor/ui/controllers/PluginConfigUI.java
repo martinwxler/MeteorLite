@@ -3,7 +3,6 @@ package meteor.ui.controllers;
 import com.google.common.base.Splitter;
 import com.jfoenix.controls.*;
 import com.sun.javafx.collections.ObservableListWrapper;
-import de.jensd.fx.glyphs.GlyphIcons;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.collections.ObservableList;
@@ -37,13 +36,12 @@ import org.sponge.util.Logger;
 
 import javax.inject.Inject;
 import java.awt.*;
-import java.io.IOException;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.awt.event.KeyEvent.getExtendedKeyCodeForChar;
-import static meteor.ui.controllers.PluginListUI.lastPluginInteracted;
+import static meteor.ui.PluginListPanel.lastPluginInteracted;
 
 public class PluginConfigUI {
 
