@@ -1,31 +1,49 @@
 package meteor.ui.controllers;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXListCell;
+import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextField;
 import com.jfoenix.controls.JFXTooltip;
+import com.jfoenix.validation.RequiredFieldValidator;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import javafx.application.Preloader;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import meteor.MeteorLiteClientLauncher;
 import meteor.MeteorLiteClientModule;
 import meteor.PluginManager;
@@ -39,6 +57,8 @@ import meteor.plugins.PluginDescriptor;
 import meteor.ui.MeteorUI;
 import meteor.ui.components.*;
 import meteor.util.MeteorConstants;
+import net.runelite.api.Constants;
+import org.controlsfx.control.textfield.CustomTextField;
 import org.sponge.util.Logger;
 
 import javax.inject.Inject;
@@ -48,20 +68,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class PluginListUI extends AnchorPane {
+public class PluginListUI extends BorderPane {
 	private static final Logger log = new Logger("PluginListUI");
 	private static final String MAIN_CATEGORY_NAME = "Plugins";
 	public static final String EXTERNAL_CATEGORY_NAME = "Externals";
 
 	private FontAwesomeIconView addCategory;
-	private VBox pluginList;
+//	private VBox pluginList;
 	public ScrollPane scrollPane;
 
 	public static Plugin lastPluginInteracted;
 
 	public static Map<String, PluginToggleButton> toggleButtons = new HashMap<>();
 
-	public static Map<Plugin, AnchorPane> pluginPanels = new HashMap<>();
+	ObservableList<PluginListPanel> plugins = FXCollections.observableArrayList();
 
 	public static boolean overrideToggleListener = false;
 
@@ -74,35 +94,6 @@ public class PluginListUI extends AnchorPane {
 	private EventBus eventBus;
 
 	public static ArrayList<Category> categories = new ArrayList<>();
-
-
-//	<AnchorPane fx:id="rootPanel" style="-fx-background-color: #212121; -fx-border-color: #121212; -fx-border-width: 3;" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="meteor.ui.controllers.PluginListUI">
-//
-//<Text fill="WHITE" text="Plugins" AnchorPane.leftAnchor="150.0" AnchorPane.topAnchor="8.0">
-//<font>
-//<Font size="18.0" />
-//</font>
-//</Text>
-//<FontAwesomeIconView fill="AQUA" glyphName="PLUG" size="18" AnchorPane.leftAnchor="125.0" AnchorPane.rightAnchor="125.0" AnchorPane.topAnchor="12.0">
-//<font>
-//<Font name="FontAwesome" size="14.0" />
-//</font>
-//</FontAwesomeIconView>
-//<FontAwesomeIconView fx:id="addCategory" fill="AQUA" glyphName="PLUS_SQUARE" size="28" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="8.0">
-//<font>
-//<Font name="FontAwesome" size="18.0" />
-//</font>
-//</FontAwesomeIconView>
-//<ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="40.0">
-//<stylesheets>
-//<URL value="@css/plugins/jfx-scrollpane.css" />
-//<URL value="@css/plugins/jfx-scrollbar.css" />
-//</stylesheets>
-//<content>
-//<VBox fx:id="pluginList" />
-//</content>
-//</ScrollPane>
-
 
 	public PluginListUI() {
 		MeteorLiteClientLauncher.injector.injectMembers(this);
@@ -120,18 +111,46 @@ public class PluginListUI extends AnchorPane {
 		addCategory.setGlyphName("PLUS_SQUARE");
 		addCategory.setSize("28");
 
-		pluginList = new VBox();
-		pluginList.setMinWidth(MeteorConstants.PANEL_WIDTH);
-		pluginList.setMaxWidth(MeteorConstants.PANEL_WIDTH);
+		FilteredList<PluginListPanel> filteredData = new FilteredList<>(plugins, s -> true);
+
+		CustomTextField searchBar = new CustomTextField();
+		searchBar.setLeft(new FontAwesomeIconView(FontAwesomeIcon.SEARCH));
+
+		searchBar.textProperty().addListener(obs->{
+			String filter = searchBar.getText().toLowerCase();
+			if(filter.length() == 0) {
+				filteredData.setPredicate(s -> true);
+			}
+			else {
+				filteredData.setPredicate(s -> s.getPluginName().toLowerCase().contains(filter));
+			}
+		});
+
+		HBox.setHgrow(searchBar, Priority.ALWAYS);
+		HBox.setMargin(searchBar, new Insets(4,4,4,8));
+		HBox.setMargin(addCategory, new Insets(4,8,4,4));
+		setTop(new HBox(searchBar, addCategory));
+
+//		pluginList = new VBox();
+//		pluginList.setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
 
 		scrollPane = new ScrollPane();
-//		scrollPane.getStylesheets().add("css/plugins/jfx-scrollpane.css");
-//		scrollPane.getStylesheets().add("css/plugins/jfx-scrollbar.css");
+		scrollPane.getStylesheets().add("css/plugins/jfx-scrollbar.css");
 		scrollPane.setFitToWidth(true);
 		scrollPane.setFitToHeight(true);
+		scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+		scrollPane.setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
 
-		scrollPane.setContent(pluginList);
-		getChildren().addAll(addCategory, scrollPane);
+		VBox pluginListView = new VBox();
+		pluginListView.setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
+
+		filteredData.addListener((ListChangeListener.Change<? extends PluginListPanel> c) -> {
+			pluginListView.getChildren().clear();
+			pluginListView.getChildren().addAll(filteredData);
+		});
+
+		scrollPane.setContent(pluginListView);
+		setCenter(scrollPane);
 
 		addCategory.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
 			createCategory();
@@ -212,8 +231,7 @@ public class PluginListUI extends AnchorPane {
 
 	public void refreshPlugins() {
 		categories.forEach(Category::clear);
-		pluginList.getChildren().clear();
-		pluginPanels.clear();
+//		pluginList.getChildren().clear();
 		toggleButtons.clear();
 
 		for (Category c : categories) {
@@ -260,7 +278,7 @@ public class PluginListUI extends AnchorPane {
 			Text title = c.getSectionPane().getTitle();
 			title.setOnContextMenuRequested(e -> contextMenu.show(titlePane, e.getScreenX(), e.getScreenY()));
 
-			pluginList.getChildren().add(titlePane);
+//			pluginList.getChildren().add(titlePane);
 
 			for (String s : c.plugins) {
 				Plugin p = PluginManager.getInstance(s);
@@ -450,77 +468,14 @@ public class PluginListUI extends AnchorPane {
 	}
 
 	private void addPlugin(Plugin p, Category category) {
-		PanelItem pluginPanel = new PanelItem();
-		pluginPanels.put(p, pluginPanel);
-
-		PluginToggleButton toggleButton = null;
-		if (!p.getClass().getAnnotation(PluginDescriptor.class).cantDisable()) {
-			toggleButton = new PluginToggleButton(p);
-			AnchorPane.setTopAnchor(toggleButton, 6.0);
-			AnchorPane.setRightAnchor(toggleButton, 8.0);
-
-			PluginToggleButton finalToggleButton = toggleButton;
-			toggleButton.selectedProperty().addListener((options, oldValue, newValue) -> {
-				if (newValue == finalToggleButton.plugin.isEnabled()) {
-					return;
-				}
-				if (!overrideToggleListener) {
-					p.toggle();
-				}
-			});
-
-			toggleButtons.put(p.getClass().getSimpleName(), toggleButton);
-			toggleButton.setSelected(Boolean.parseBoolean(configManager.getConfiguration(p.getClass().getSimpleName(), "pluginEnabled")));
-		}
-
-		if (toggleButton != null) {
-			toggleButton.selectedProperty().addListener((options, oldValue, newValue) -> {
-				configManager.setConfiguration(p.getClass().getSimpleName(), "pluginEnabled", newValue);
-			});
-		}
-
-		PluginConfigButton configButton = new PluginConfigButton(p);
-		Config pluginConfig = p.getConfig(configManager);
-		if (pluginConfig != null && pluginConfig.getClass().getDeclaredMethods().length > 4) {
-			AnchorPane.setRightAnchor(configButton, 48.0);
-			AnchorPane.setTopAnchor(configButton, 0.0);
-
-			FontAwesomeIconView cog = new FontAwesomeIconView(FontAwesomeIcon.COG);
-			cog.setFill(MeteorLiteClientModule.METEOR_FONT_COLOR);
-			cog.setSize(String.valueOf(MeteorLiteClientModule.METEOR_FONT_SIZE));
-			configButton.setGraphic(cog);
-			configButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-				lastPluginInteracted = p;
-				p.showConfig();
-			});
-		}
-
-		MeteorText pluginName = new MeteorText(p);
-		pluginName.setFill(Paint.valueOf("WHITE"));
-
-		AnchorPane.setLeftAnchor(pluginName, 2.0);
-		AnchorPane.setTopAnchor(pluginName, 0.0);
-
-		if (p.getClass().getAnnotation(PluginDescriptor.class).description().length() > 0) {
-			JFXTooltip tooltip = new JFXTooltip();
-			tooltip.setText(p.getClass().getAnnotation(PluginDescriptor.class).description());
-
-			pluginName.addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
-				tooltip.showOnAnchors(pluginName, 0, -50);
-			});
-
-			pluginName.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
-				tooltip.hide();
-			});
-		}
-
-		pluginPanel.getChildren().add(pluginName);
-		pluginPanel.getChildren().add(configButton); //Order matters here! Very Important! uwu
-		if (toggleButton != null) {
-			pluginPanel.getChildren().add(toggleButton);
-		}
-
 		ContextMenu contextMenu = new ContextMenu();
+
+		PluginListPanel panel = new PluginListPanel(p, contextMenu, configManager);
+
+		plugins.add(panel);
+
+		toggleButtons.put(p.getClass().getSimpleName(), panel.getToggleButton());
+
 		contextMenu.setStyle("-fx-background-color: #121212;");
 		for (Category c : categories) {
 			if (c.name.equals(MAIN_CATEGORY_NAME)) {
@@ -577,12 +532,7 @@ public class PluginListUI extends AnchorPane {
 				contextMenu.getItems().add(moveDownMenuItem);
 			}
 		}
-
-		pluginName.setOnContextMenuRequested(e -> {
-			contextMenu.show(pluginName, e.getScreenX(), e.getScreenY());
-		});
-
-		category.addNode(pluginPanel);
+		category.addNode(panel);
 	}
 
 	@Subscribe

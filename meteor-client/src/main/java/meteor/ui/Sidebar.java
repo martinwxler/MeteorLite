@@ -39,7 +39,7 @@ public class Sidebar extends VBox {
 	public Sidebar() {
 		setMinWidth(32);
 		setMaxWidth(32);
-		setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
+		setBackground(new Background(new BackgroundFill(Paint.valueOf("212121"), null, null)));
 
 		// Plugins button
 		FontAwesomeIconView plugIcon = new FontAwesomeIconView();

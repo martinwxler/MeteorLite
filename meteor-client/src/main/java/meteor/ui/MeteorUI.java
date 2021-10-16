@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import lombok.Getter;
 import meteor.PluginManager;
 import meteor.config.ConfigManager;
 import meteor.config.MeteorLiteConfig;
@@ -55,7 +56,6 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 	private static final int CLIENT_WELL_HIDDEN_MARGIN_TOP = 10;
 
 	private final JPanel rootPanel = new JPanel();
-	private Parent pluginsRoot;
 	private Cursor defaultCursor;
 
 	@Inject
@@ -72,6 +72,9 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 	private Client client;
 	@Inject
 	private RightPanel rightPanel;
+
+	@Getter
+	private PluginListUI pluginListUI;
 
 	private Dimension lastClientSize;
 
@@ -94,7 +97,7 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 
 		setupJavaFXComponents(applet);
 
-		pluginsRoot = new PluginListUI();
+		pluginListUI = new PluginListUI();
 
 		this.setTitle("MeteorLite");
 		this.setIconImage(ICON);
@@ -295,7 +298,7 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 
 
 	public void showPlugins() {
-		updateRightPanel(pluginsRoot);
+		updateRightPanel(pluginListUI);
 	}
 
 	public void updateRightPanel(Parent root) {

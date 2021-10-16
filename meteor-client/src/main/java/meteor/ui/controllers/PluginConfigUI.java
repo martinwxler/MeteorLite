@@ -14,6 +14,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
@@ -84,6 +86,8 @@ public class PluginConfigUI {
 		plugin = lastPluginInteracted;
 		eventBus.register(this);
 		pluginTitle.setText(plugin.getName());
+
+		configList.setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
 
 		if (plugin.isToggleable()) {
 			toggleButton = new PluginToggleButton(plugin);

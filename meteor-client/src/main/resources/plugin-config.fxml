@@ -27,6 +27,5 @@
       </content>
       <stylesheets>
          <URL value="@css/plugins/jfx-scrollbar.css" />
-         <URL value="@css/plugins/jfx-scrollpane.css" />
       </stylesheets></ScrollPane>
 </AnchorPane>
