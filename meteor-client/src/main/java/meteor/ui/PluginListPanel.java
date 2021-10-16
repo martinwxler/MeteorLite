@@ -41,6 +41,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -95,6 +96,7 @@ public class PluginListPanel extends BorderPane {
 
 		FontAwesomeIconView searchIcon = new FontAwesomeIconView(FontAwesomeIcon.SEARCH);
 		searchIcon.setFill(Color.CYAN);
+		searchIcon.setTranslateX(2);
 		searchBar.setLeft(searchIcon);
 
 		searchBar.textProperty().addListener(obs->{
@@ -265,7 +267,7 @@ public class PluginListPanel extends BorderPane {
 					addPlugin(p, c);
 				}
 			}
-			plugins.sort(Comparator.comparing(PluginListCell::getPluginName));
+			plugins.sort(Comparator.comparing(plugin -> plugin.getPluginName().toLowerCase()));
 		}
 	}
 
