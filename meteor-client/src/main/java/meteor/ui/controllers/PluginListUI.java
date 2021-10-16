@@ -1,69 +1,47 @@
 package meteor.ui.controllers;
 
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXListCell;
-import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextField;
-import com.jfoenix.controls.JFXTooltip;
-import com.jfoenix.validation.RequiredFieldValidator;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import javafx.application.Preloader;
+import impl.org.controlsfx.skin.CustomTextFieldSkin;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
-import javafx.event.EventHandler;
-import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.skin.TextFieldSkin;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.BorderStroke;
-import javafx.scene.layout.BorderStrokeStyle;
-import javafx.scene.layout.BorderWidths;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import meteor.MeteorLiteClientLauncher;
-import meteor.MeteorLiteClientModule;
 import meteor.PluginManager;
-import meteor.config.Config;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.events.ExternalsReloaded;
 import meteor.plugins.Plugin;
-import meteor.plugins.PluginDescriptor;
-import meteor.ui.MeteorUI;
 import meteor.ui.components.*;
 import meteor.util.MeteorConstants;
-import net.runelite.api.Constants;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.sponge.util.Logger;
 
 import javax.inject.Inject;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -74,14 +52,13 @@ public class PluginListUI extends BorderPane {
 	public static final String EXTERNAL_CATEGORY_NAME = "Externals";
 
 	private FontAwesomeIconView addCategory;
-//	private VBox pluginList;
 	public ScrollPane scrollPane;
 
 	public static Plugin lastPluginInteracted;
 
 	public static Map<String, PluginToggleButton> toggleButtons = new HashMap<>();
 
-	ObservableList<PluginListPanel> plugins = FXCollections.observableArrayList();
+	ObservableList<PluginListCell> plugins = FXCollections.observableArrayList();
 
 	public static boolean overrideToggleListener = false;
 
@@ -111,10 +88,16 @@ public class PluginListUI extends BorderPane {
 		addCategory.setGlyphName("PLUS_SQUARE");
 		addCategory.setSize("28");
 
-		FilteredList<PluginListPanel> filteredData = new FilteredList<>(plugins, s -> true);
+		FilteredList<PluginListCell> filteredData = new FilteredList<>(plugins, s -> true);
 
 		CustomTextField searchBar = new CustomTextField();
-		searchBar.setLeft(new FontAwesomeIconView(FontAwesomeIcon.SEARCH));
+		searchBar.setStyle("-fx-text-inner-color: white;");
+		searchBar.setBackground(new Background(new BackgroundFill(Paint.valueOf("121212"), null, null)));
+//		searchBar.setBorder(new Border(new BorderStroke(Paint.valueOf("121212"), BorderStrokeStyle.SOLID, new CornerRadii(2), new BorderWidths(2))));
+
+		FontAwesomeIconView searchIcon = new FontAwesomeIconView(FontAwesomeIcon.SEARCH);
+		searchIcon.setFill(Color.CYAN);
+		searchBar.setLeft(searchIcon);
 
 		searchBar.textProperty().addListener(obs->{
 			String filter = searchBar.getText().toLowerCase();
@@ -131,9 +114,6 @@ public class PluginListUI extends BorderPane {
 		HBox.setMargin(addCategory, new Insets(4,8,4,4));
 		setTop(new HBox(searchBar, addCategory));
 
-//		pluginList = new VBox();
-//		pluginList.setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
-
 		scrollPane = new ScrollPane();
 		scrollPane.getStylesheets().add("css/plugins/jfx-scrollbar.css");
 		scrollPane.setFitToWidth(true);
@@ -142,9 +122,10 @@ public class PluginListUI extends BorderPane {
 		scrollPane.setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
 
 		VBox pluginListView = new VBox();
+		pluginListView.setPadding(new Insets(4));
 		pluginListView.setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
 
-		filteredData.addListener((ListChangeListener.Change<? extends PluginListPanel> c) -> {
+		filteredData.addListener((ListChangeListener.Change<? extends PluginListCell> c) -> {
 			pluginListView.getChildren().clear();
 			pluginListView.getChildren().addAll(filteredData);
 		});
@@ -231,7 +212,6 @@ public class PluginListUI extends BorderPane {
 
 	public void refreshPlugins() {
 		categories.forEach(Category::clear);
-//		pluginList.getChildren().clear();
 		toggleButtons.clear();
 
 		for (Category c : categories) {
@@ -287,6 +267,7 @@ public class PluginListUI extends BorderPane {
 					addPlugin(p, c);
 				}
 			}
+			plugins.sort(Comparator.comparing(PluginListCell::getPluginName));
 		}
 	}
 
@@ -470,7 +451,7 @@ public class PluginListUI extends BorderPane {
 	private void addPlugin(Plugin p, Category category) {
 		ContextMenu contextMenu = new ContextMenu();
 
-		PluginListPanel panel = new PluginListPanel(p, contextMenu, configManager);
+		PluginListCell panel = new PluginListCell(p, contextMenu, configManager);
 
 		plugins.add(panel);
 
