@@ -1,7 +1,6 @@
 plugins {
     id 'java'
     id 'application'
-    id 'com.github.johnrengelman.shadow'
     id 'org.beryx.runtime'
     id 'org.openjfx.javafxplugin' version '0.0.10'
 }
@@ -121,17 +120,33 @@ task copyRunBat (type: Copy) {
     include "run.bat"
 }
 
-shadowJar {
-    finalizedBy(copyRunBat)
-    configurations = [project.configurations.runtimeClasspath]
-    minimize {
-        it.exclude(it.dependency {'net.runelite.jogl:.*:.*'} as Spec<? super ResolvedDependency>)
-        it.exclude(it.dependency {'xerces:xercesImpl:.*:.*'} as Spec<? super ResolvedDependency>)
-        it.exclude(it.project(":runelite-api") as Spec<? super ResolvedDependency>)
-        it.exclude(it.project(":runescape-api") as Spec<? super ResolvedDependency>)
+tasks {
+    compileJava.dependsOn project(":fernflower").tasks.getByName("decompileInjected")
+    compileJava.dependsOn(":runelite-mixins:compileJava")
+}
+
+processResources {
+    dependsOn(":runelite-script-assembler:assembleScripts")
+    from("${buildDir}/scripts")
+}
+
+task bootstrap(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = "meteor.util.bootstrap.Bootstrapper"
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'meteor.MeteorLiteClientLauncher'
+        )
     }
-    minimize()
-    applicationDefaultJvmArgs = [
+}
+
+sourceCompatibility = 17
+targetCompatibility = 17
+
+applicationDefaultJvmArgs = [
             "-noverify",
             "-Xmx512m",
             "-Dprism.allowhidpi=false",
@@ -162,32 +177,6 @@ shadowJar {
             "-Dsun.java2d.uiScale=1.0",
             "--illegal-access=permit",
             "-ea"]
-}
-tasks {
-    compileJava.dependsOn project(":fernflower").tasks.getByName("decompileInjected")
-    compileJava.dependsOn(":runelite-mixins:compileJava")
-}
-
-processResources {
-    dependsOn(":runelite-script-assembler:assembleScripts")
-    from("${buildDir}/scripts")
-}
-
-task bootstrap(type: JavaExec) {
-    classpath = sourceSets.main.runtimeClasspath
-    main = "meteor.util.bootstrap.Bootstrapper"
-}
-
-jar {
-    manifest {
-        attributes(
-                'Main-Class': 'meteor.MeteorLiteClientLauncher'
-        )
-    }
-}
-
-sourceCompatibility = 17
-targetCompatibility = 17
 
 
 
