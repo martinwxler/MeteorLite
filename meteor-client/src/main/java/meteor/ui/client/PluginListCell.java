@@ -26,10 +26,11 @@ public class PluginListCell extends AnchorPane {
 	@Getter
 	private String pluginName;
 
-	public PluginListCell(Plugin plugin, ContextMenu contextMenu, ConfigManager configManager) {
+	public PluginListCell(Plugin plugin, ConfigManager configManager) {
 		setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
 		pluginName = plugin.getName();
-
+		ContextMenu contextMenu = new ContextMenu();
+		contextMenu.setStyle("-fx-background-color: #121212;");
 		if (!plugin.getClass().getAnnotation(PluginDescriptor.class).cantDisable()) {
 			toggleButton = new PluginToggleButton(plugin);
 			AnchorPane.setTopAnchor(toggleButton, 6.0);

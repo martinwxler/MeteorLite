@@ -112,41 +112,6 @@ public class Plugin implements Module {
   }
 
   public void toggle() {
-    boolean conflict = false;
-    for (Class<?> p : PluginManager.conflicts.keySet())
-      if (p == getClass()) {
-        conflict = true;
-        break;
-      }
-    for (Class<?> p : PluginManager.conflicts.values())
-      if (p == getClass()) {
-        conflict = true;
-        break;
-      }
-
-      if (conflict) {
-        Class<? extends Plugin> conflictingClass = null;
-        for (Class<? extends Plugin> p : PluginManager.conflicts.keySet()) {
-          if (p == this.getClass()) {
-            conflictingClass = PluginManager.conflicts.get(p);
-            break;
-          }
-        }
-        if (conflictingClass == null) {
-          for (Class<? extends Plugin> p : PluginManager.conflicts.keySet()) {
-            if (PluginManager.conflicts.get(p) == this.getClass()) {
-              conflictingClass = p;
-              break;
-            }
-          }
-        }
-        if (conflictingClass != null) {
-          Plugin instance = PluginManager.getInstance(conflictingClass);
-          if (instance.isEnabled())
-            instance.toggle();
-        }
-      }
-
     toggle(!enabled);
   }
 
