@@ -10,7 +10,6 @@ import com.questhelper.QuestHelperPlugin;
 import java.io.File;
 import java.lang.reflect.Modifier;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +19,7 @@ import meteor.config.Config;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
+import meteor.plugins.ExternalPluginClassLoader;
 import meteor.plugins.PluginDescriptor;
 import meteor.plugins.cettitutorial.CettiTutorialPlugin;
 import meteor.plugins.nightmareHelper.NightmareHelper;
@@ -482,7 +482,7 @@ public class PluginManager {
 				}
 
 				JarFile jar = new JarFile(file);
-				try (URLClassLoader ucl = new URLClassLoader(new URL[]{file.toURI().toURL()})) {
+				try (ExternalPluginClassLoader ucl = new ExternalPluginClassLoader(new URL[]{file.toURI().toURL()})) {
 					var elems = jar.entries();
 
 					while (elems.hasMoreElements()) {
