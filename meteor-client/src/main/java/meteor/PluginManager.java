@@ -185,7 +185,7 @@ import meteor.plugins.xptracker.XpTrackerPlugin;
 import meteor.plugins.xpupdater.XpUpdaterPlugin;
 import meteor.plugins.zulrah.ZulrahPlugin;
 import meteor.ui.components.Category;
-import meteor.ui.PluginListPanel;
+import meteor.ui.client.PluginListPanel;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
 import org.sponge.util.Logger;

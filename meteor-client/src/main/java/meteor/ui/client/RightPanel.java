@@ -1,4 +1,4 @@
-package meteor.ui;
+package meteor.ui.client;
 
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import meteor.ui.MeteorUI;
 import meteor.util.MeteorConstants;
 
 import javax.inject.Inject;

@@ -1,4 +1,4 @@
-package meteor.ui;
+package meteor.ui.client;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
@@ -42,7 +42,6 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -54,9 +53,7 @@ public class PluginListPanel extends BorderPane {
 	private FontAwesomeIconView addCategory;
 	public ScrollPane scrollPane;
 
-	public static Plugin lastPluginInteracted;
-
-	public static Map<String, PluginToggleButton> toggleButtons = new HashMap<>();
+	public Map<String, PluginToggleButton> toggleButtons = new HashMap<>();
 
 	ObservableList<PluginListCell> plugins = FXCollections.observableArrayList();
 

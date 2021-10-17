@@ -1,4 +1,4 @@
-package meteor.ui;
+package meteor.ui.client;
 
 import com.jfoenix.controls.JFXButton;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -15,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.TextAlignment;
 import lombok.extern.slf4j.Slf4j;
+import meteor.ui.MeteorUI;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

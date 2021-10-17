@@ -12,6 +12,8 @@ import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ClientShutdown;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.events.ExternalsReloaded;
+import meteor.ui.client.PluginListPanel;
+import meteor.ui.client.RightPanel;
 import meteor.util.ImageUtil;
 import meteor.util.MeteorConstants;
 import net.runelite.api.Client;

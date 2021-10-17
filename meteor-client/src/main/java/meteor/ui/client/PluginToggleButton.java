@@ -1,4 +1,4 @@
-package meteor.ui.components;
+package meteor.ui.client;
 
 import com.jfoenix.controls.JFXToggleButton;
 import javafx.scene.control.ContentDisplay;

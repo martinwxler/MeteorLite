@@ -3,9 +3,6 @@ package meteor.plugins;
 import com.google.inject.Binder;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import java.io.IOException;
-import java.util.Objects;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 
 import javax.inject.Inject;
@@ -19,8 +16,7 @@ import meteor.eventbus.EventBus;
 import meteor.eventbus.events.PluginChanged;
 import meteor.task.Scheduler;
 import meteor.ui.MeteorUI;
-import meteor.ui.components.PluginToggleButton;
-import meteor.ui.PluginListPanel;
+import meteor.ui.client.PluginConfigPanel;
 import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.Client;
 import org.sponge.util.Logger;
@@ -86,12 +82,7 @@ public class Plugin implements Module {
 
   public void showConfig() {
     if (configRoot == null) {
-      try {
-        configRoot = FXMLLoader.load(Objects.requireNonNull(ClassLoader.getSystemClassLoader()
-                .getResource("plugin-config.fxml")));
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      configRoot = new PluginConfigPanel(this);
     }
     meteorUI.updateRightPanel(configRoot);
   }
@@ -158,7 +149,6 @@ public class Plugin implements Module {
 
     toggle(!enabled);
   }
-
 
   // These should NOT be used as they are not called
   // This will create errors in plugins that try to use the protected variant

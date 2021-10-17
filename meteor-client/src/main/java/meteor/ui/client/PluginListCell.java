@@ -1,4 +1,4 @@
-package meteor.ui.components;
+package meteor.ui.client;
 
 import com.jfoenix.controls.JFXTooltip;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -15,7 +15,7 @@ import meteor.config.Config;
 import meteor.config.ConfigManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
-import meteor.ui.PluginListPanel;
+import meteor.ui.components.MeteorText;
 
 public class PluginListCell extends AnchorPane {
 
@@ -62,7 +62,6 @@ public class PluginListCell extends AnchorPane {
 			cog.setSize(String.valueOf(MeteorLiteClientModule.METEOR_FONT_SIZE));
 			configButton.setGraphic(cog);
 			configButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
-				PluginListPanel.lastPluginInteracted = plugin;
 				plugin.showConfig();
 			});
 		}

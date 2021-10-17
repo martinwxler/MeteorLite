@@ -1,4 +1,4 @@
-package meteor.ui.components;
+package meteor.ui.client;
 
 import javafx.scene.layout.AnchorPane;
 

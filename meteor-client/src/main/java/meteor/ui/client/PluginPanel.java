@@ -1,4 +1,4 @@
-package meteor.ui;
+package meteor.ui.client;
 
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Border;

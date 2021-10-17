@@ -1,14 +1,21 @@
-package meteor.ui.controllers;
+package meteor.ui.client;
 
 import com.google.common.base.Splitter;
-import com.jfoenix.controls.*;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXColorPicker;
+import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXPasswordField;
+import com.jfoenix.controls.JFXSlider;
+import com.jfoenix.controls.JFXTextArea;
+import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.JFXTooltip;
 import com.sun.javafx.collections.ObservableListWrapper;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -23,67 +30,110 @@ import javafx.scene.text.Text;
 import meteor.MeteorLiteClientLauncher;
 import meteor.MeteorLiteClientModule;
 import meteor.config.Button;
-import meteor.config.*;
+import meteor.config.Config;
+import meteor.config.ConfigDescriptor;
+import meteor.config.ConfigItemDescriptor;
+import meteor.config.ConfigManager;
+import meteor.config.ConfigSection;
+import meteor.config.ConfigSectionDescriptor;
+import meteor.config.Keybind;
+import meteor.config.ModifierlessKeybind;
+import meteor.config.Range;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.PluginChanged;
 import meteor.plugins.Plugin;
 import meteor.ui.MeteorUI;
-import meteor.ui.components.*;
+import meteor.ui.components.ConfigButton;
+import meteor.ui.components.ConfigToggleButton;
+import meteor.ui.components.MeteorText;
+import meteor.ui.components.SectionPane;
+import meteor.util.MeteorConstants;
 import net.runelite.api.Client;
 import net.runelite.api.events.ConfigButtonClicked;
 import org.sponge.util.Logger;
 
 import javax.inject.Inject;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.awt.event.KeyEvent.getExtendedKeyCodeForChar;
-import static meteor.ui.PluginListPanel.lastPluginInteracted;
 
-public class PluginConfigUI {
+public class PluginConfigPanel extends AnchorPane {
 
 	private static final Logger logger = new Logger("PluginConfigController");
-
-	@FXML
-	private AnchorPane titlePanel;
-
-	@FXML
-	private VBox configList;
-
-	@FXML
-	private Text pluginTitle;
-
 	private final Map<String, SectionPane> sections = new HashMap<>();
-
-	private Plugin plugin;
+	private final Plugin plugin;
+	private final AnchorPane titlePanel;
+	private final VBox configList;
+	private final Text pluginTitle;
 
 	@Inject
 	private Client client;
-
 	@Inject
 	private ConfigManager configManager;
-
 	@Inject
 	private EventBus eventBus;
-
 	@Inject
 	private MeteorUI meteorUI;
 
 	private PluginToggleButton toggleButton;
 
-	private JFXButton backButton = new JFXButton("Back");
+	private final JFXButton backButton = new JFXButton("Back");
 
-	private Map<String, Boolean> openedCache = new HashMap<>();
+	private final Map<String, Boolean> openedCache = new HashMap<>();
 
-	@FXML
-	public void initialize() {
+	public PluginConfigPanel(Plugin plugin) {
 		MeteorLiteClientLauncher.injector.injectMembers(this);
-		plugin = lastPluginInteracted;
 		eventBus.register(this);
+
+		this.plugin = plugin;
+		titlePanel = new AnchorPane();
+		AnchorPane.setTopAnchor(titlePanel, 0.0);
+		AnchorPane.setLeftAnchor(titlePanel, 0.0);
+		AnchorPane.setRightAnchor(titlePanel, 0.0);
+		setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
+
+		setMinWidth(MeteorConstants.PANEL_WIDTH);
+		setMaxWidth(MeteorConstants.PANEL_WIDTH);
+
+		FontAwesomeIconView panelButtonIcon = new FontAwesomeIconView(FontAwesomeIcon.PLUG);
+		AnchorPane.setTopAnchor(panelButtonIcon, 12.0);
+		AnchorPane.setLeftAnchor(panelButtonIcon, 80.0);
+		panelButtonIcon.setFill(javafx.scene.paint.Color.AQUA);
+		panelButtonIcon.setSize("18");
+
+		pluginTitle = new Text();
+		AnchorPane.setTopAnchor(pluginTitle, 8.0);
+		AnchorPane.setLeftAnchor(pluginTitle, 104.0);
+		pluginTitle.setFont(new Font(18));
+		pluginTitle.setFill(javafx.scene.paint.Color.WHITE);
 		pluginTitle.setText(plugin.getName());
+
+		titlePanel.getChildren().addAll(panelButtonIcon, pluginTitle);
+
+		configList = new VBox();
+
+
+		ScrollPane scrollPane = new ScrollPane();
+		AnchorPane.setLeftAnchor(scrollPane, 8.0);
+		AnchorPane.setRightAnchor(scrollPane, 8.0);
+		AnchorPane.setBottomAnchor(scrollPane, 8.0);
+		AnchorPane.setTopAnchor(scrollPane, 40.0);
+		scrollPane.getStylesheets().add("css/plugins/jfx-scrollbar.css");
+		scrollPane.setFitToWidth(true);
+		scrollPane.setFitToHeight(true);
+		scrollPane.setHbarPolicy(javafx.scene.control.ScrollPane.ScrollBarPolicy.NEVER);
+		scrollPane.setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
+		scrollPane.setContent(configList);
+
+		getChildren().addAll(titlePanel, scrollPane);
+
 
 		configList.setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
 
@@ -120,15 +170,16 @@ public class PluginConfigUI {
 		ConfigDescriptor descriptor = configManager.getConfigDescriptor(config);
 
 		for (ConfigSectionDescriptor csd : descriptor.getSections().stream()
-						.sorted(Comparator.comparingInt(ConfigSectionDescriptor::position))
-						.collect(Collectors.toList())) {
+				.sorted(Comparator.comparingInt(ConfigSectionDescriptor::position))
+				.collect(Collectors.toList())) {
 			ConfigSection section = csd.getSection();
 			SectionPane sectionBox = createSection(section);
 			configList.getChildren().add(sectionBox.getRootPane());
-			if (openedCache.get(section.keyName()) != null)
+			if (openedCache.get(section.keyName()) != null) {
 				sectionBox.getRootPane().setExpanded(openedCache.get(section.keyName()));
-			else
+			} else {
 				sectionBox.getRootPane().setExpanded(!section.closedByDefault());
+			}
 			sectionBox.getRootPane().expandedProperty().addListener((obs, wasExpanded, isNowExpanded) -> {
 				openedCache.put(section.keyName(), isNowExpanded);
 			});
@@ -141,8 +192,8 @@ public class PluginConfigUI {
 
 		if (descriptor != null) {
 			for (ConfigItemDescriptor configItemDescriptor : descriptor.getItems().stream()
-							.sorted(Comparator.comparingInt(ConfigItemDescriptor::position))
-							.collect(Collectors.toList())) {
+					.sorted(Comparator.comparingInt(ConfigItemDescriptor::position))
+					.collect(Collectors.toList())) {
 				SectionPane sectionBox = sections.get(configItemDescriptor.getItem().section());
 				Pane configContainer = sectionBox != null ? sectionBox.getContainer() : new PanelItem();
 
@@ -252,7 +303,7 @@ public class PluginConfigUI {
 			button.setText("Press any key...");
 			EventHandler<KeyEvent> keyListener = (e) -> {
 				configManager.setConfiguration(config.getGroup().value(), configItem.key(), new ModifierlessKeybind(getExtendedKeyCodeForChar(e.getCharacter().charAt(0)),
-								0));
+						0));
 				button.setText(e.getCharacter().toUpperCase());
 			};
 			EventHandler<KeyEvent> unregisterListener = (e) -> {
@@ -285,7 +336,7 @@ public class PluginConfigUI {
 			button.setText("Press any key...");
 			EventHandler<KeyEvent> keyListener = (e) -> {
 				configManager.setConfiguration(config.getGroup().value(), configItem.key(), new ModifierlessKeybind(getExtendedKeyCodeForChar(e.getCharacter().charAt(0)),
-								0));
+						0));
 				button.setText(e.getCharacter().toUpperCase());
 			};
 			EventHandler<KeyEvent> unregisterListener = (e) -> {
@@ -306,8 +357,9 @@ public class PluginConfigUI {
 		List<Enum<?>> list = new ArrayList<>();
 		Enum<?> currentToSet = null;
 		for (Enum<?> o : type.getEnumConstants()) {
-			if (o.equals(currentConfigEnum))
+			if (o.equals(currentConfigEnum)) {
 				currentToSet = o;
+			}
 			list.add(o);
 		}
 		ObservableList<Enum<?>> observableList = new ObservableListWrapper<>(list);
@@ -442,7 +494,7 @@ public class PluginConfigUI {
 
 		JFXTextField textField = new JFXTextField();
 		AnchorPane.setTopAnchor(textField, 1.0);
-//		AnchorPane.setBottomAnchor(textField, 1.0);
+		//		AnchorPane.setBottomAnchor(textField, 1.0);
 		AnchorPane.setLeftAnchor(textField, 200.0);
 		AnchorPane.setRightAnchor(textField, 8.0);
 
@@ -541,7 +593,7 @@ public class PluginConfigUI {
 
 	private void updateConfigItemValue(ConfigDescriptor config, ConfigItemDescriptor configItem, Object value) {
 		configManager.setConfiguration(config.getGroup().value(), configItem.key(), value);
-		lastPluginInteracted.updateConfig();
+		plugin.updateConfig();
 	}
 
 	public SectionPane createSection(ConfigSection configSection) {
@@ -599,9 +651,9 @@ public class PluginConfigUI {
 		Config config = plugin.getConfig(configManager);
 		ConfigDescriptor descriptor = configManager.getConfigDescriptor(config);
 		for (ConfigItemDescriptor item : descriptor.getItems()) {
-				if (item.getItem().hide().contains(cid.key()) || item.getItem().unhide().contains(cid.key())) {
-					return true;
-				}
+			if (item.getItem().hide().contains(cid.key()) || item.getItem().unhide().contains(cid.key())) {
+				return true;
+			}
 		}
 
 		return false;
@@ -616,10 +668,10 @@ public class PluginConfigUI {
 			boolean show = false;
 
 			List<String> itemHide = Splitter
-							.onPattern("\\|\\|")
-							.trimResults()
-							.omitEmptyStrings()
-							.splitToList(String.format("%s || %s", cid.getItem().unhide(), cid.getItem().hide()));
+					.onPattern("\\|\\|")
+					.trimResults()
+					.omitEmptyStrings()
+					.splitToList(String.format("%s || %s", cid.getItem().unhide(), cid.getItem().hide()));
 
 			for (ConfigItemDescriptor cid2 : cd.getItems()) {
 				if (itemHide.contains(cid2.getItem().keyName())) {
@@ -631,18 +683,18 @@ public class PluginConfigUI {
 							Enum selectedItem = Enum.valueOf(type, configManager.getConfiguration(cd.getGroup().value(), cid2.getItem().keyName()));
 							if (!cid.getItem().unhideValue().equals("")) {
 								List<String> unhideValue = Splitter
-												.onPattern("\\|\\|")
-												.trimResults()
-												.omitEmptyStrings()
-												.splitToList(cid.getItem().unhideValue());
+										.onPattern("\\|\\|")
+										.trimResults()
+										.omitEmptyStrings()
+										.splitToList(cid.getItem().unhideValue());
 
 								show = unhideValue.contains(selectedItem.toString());
 							} else if (!cid.getItem().hideValue().equals("")) {
 								List<String> hideValue = Splitter
-												.onPattern("\\|\\|")
-												.trimResults()
-												.omitEmptyStrings()
-												.splitToList(cid.getItem().hideValue());
+										.onPattern("\\|\\|")
+										.trimResults()
+										.omitEmptyStrings()
+										.splitToList(cid.getItem().hideValue());
 
 								show = !hideValue.contains(selectedItem.toString());
 							}
