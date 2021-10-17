@@ -518,7 +518,11 @@ public class PluginListPanel extends BorderPane {
 
 	@Subscribe
 	public void onPluginChanged(PluginChanged e) {
-		toggleButtons.get(e.getPlugin().getClass().getSimpleName()).setSelected(e.getPlugin().isEnabled());
+		PluginToggleButton t = toggleButtons.get(e.getPlugin().getClass().getSimpleName());
+		if (t != null) {
+			t.setSelected(e.getPlugin().isEnabled());
+		}
+
 	}
 
 	@Subscribe
