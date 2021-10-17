@@ -17,8 +17,6 @@ import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.ui.PluginListPanel;
 
-import static meteor.ui.PluginListPanel.overrideToggleListener;
-
 public class PluginListCell extends AnchorPane {
 
 
@@ -32,20 +30,16 @@ public class PluginListCell extends AnchorPane {
 		setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
 		pluginName = plugin.getName();
 
-		PluginToggleButton toggleButton = null;
 		if (!plugin.getClass().getAnnotation(PluginDescriptor.class).cantDisable()) {
 			toggleButton = new PluginToggleButton(plugin);
 			AnchorPane.setTopAnchor(toggleButton, 6.0);
 			AnchorPane.setRightAnchor(toggleButton, 8.0);
 
-			PluginToggleButton finalToggleButton = toggleButton;
 			toggleButton.selectedProperty().addListener((options, oldValue, newValue) -> {
-				if (newValue == finalToggleButton.plugin.isEnabled()) {
+				if (newValue == plugin.isEnabled()) {
 					return;
 				}
-				if (!overrideToggleListener) {
-					plugin.toggle();
-				}
+				plugin.toggle();
 			});
 
 			toggleButton.setSelected(Boolean.parseBoolean(configManager.getConfiguration(plugin.getClass().getSimpleName(), "pluginEnabled")));

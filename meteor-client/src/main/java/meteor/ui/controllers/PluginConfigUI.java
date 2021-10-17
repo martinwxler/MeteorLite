@@ -661,7 +661,7 @@ public class PluginConfigUI {
 	@Subscribe
 	public void onPluginChanged(PluginChanged e) {
 		if (toggleButton != null && e.getPlugin().equals(plugin)) {
-			toggleButton.setSelected(e.isLoaded());
+			toggleButton.setSelected(e.getPlugin().isEnabled());
 		}
 	}
 }

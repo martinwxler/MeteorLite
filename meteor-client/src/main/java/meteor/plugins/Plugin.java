@@ -117,14 +117,6 @@ public class Plugin implements Module {
 
     updateConfig();
 
-    PluginListPanel.overrideToggleListener = true;
-    for (PluginToggleButton ptb : PluginListPanel.toggleButtons.values()) {
-      if (ptb.plugin == this) {
-        ptb.setSelected(enabled);
-      }
-    }
-
-    PluginListPanel.overrideToggleListener = false;
     eventBus.post(new PluginChanged(this, enabled));
   }
 

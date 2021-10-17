@@ -30,6 +30,7 @@ import meteor.PluginManager;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
+import meteor.eventbus.events.PluginChanged;
 import meteor.events.ExternalsReloaded;
 import meteor.plugins.Plugin;
 import meteor.ui.components.*;
@@ -58,8 +59,6 @@ public class PluginListPanel extends BorderPane {
 	public static Map<String, PluginToggleButton> toggleButtons = new HashMap<>();
 
 	ObservableList<PluginListCell> plugins = FXCollections.observableArrayList();
-
-	public static boolean overrideToggleListener = false;
 
 	@Inject
 	private ConfigManager configManager;
@@ -514,6 +513,11 @@ public class PluginListPanel extends BorderPane {
 			}
 		}
 		category.addNode(panel);
+	}
+
+	@Subscribe
+	public void onPluginChanged(PluginChanged e) {
+		toggleButtons.get(e.getPlugin().getClass().getSimpleName()).setSelected(e.getPlugin().isEnabled());
 	}
 
 	@Subscribe
