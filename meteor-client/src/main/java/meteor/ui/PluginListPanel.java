@@ -211,6 +211,7 @@ public class PluginListPanel extends BorderPane {
 
 	public void refreshPlugins() {
 		categories.forEach(Category::clear);
+		plugins.clear();
 		toggleButtons.clear();
 
 		for (Category c : categories) {
