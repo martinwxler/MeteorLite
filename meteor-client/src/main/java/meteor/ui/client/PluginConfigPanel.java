@@ -39,9 +39,6 @@ import meteor.config.ConfigSectionDescriptor;
 import meteor.config.Keybind;
 import meteor.config.ModifierlessKeybind;
 import meteor.config.Range;
-import meteor.eventbus.EventBus;
-import meteor.eventbus.Subscribe;
-import meteor.eventbus.events.PluginChanged;
 import meteor.plugins.Plugin;
 import meteor.ui.MeteorUI;
 import meteor.ui.components.ConfigButton;
@@ -72,19 +69,15 @@ public class PluginConfigPanel extends AnchorPane {
 	private final AnchorPane titlePanel;
 	private final VBox configList;
 	private final Text pluginTitle;
-
+	private final JFXButton backButton = new JFXButton("Back");
+	private final Map<String, Boolean> openedCache = new HashMap<>();
 	@Inject
 	private Client client;
 	@Inject
 	private ConfigManager configManager;
 	@Inject
 	private MeteorUI meteorUI;
-
 	private PluginToggleButton toggleButton;
-
-	private final JFXButton backButton = new JFXButton("Back");
-
-	private final Map<String, Boolean> openedCache = new HashMap<>();
 
 	public PluginConfigPanel(Plugin plugin) {
 		MeteorLiteClientLauncher.injector.injectMembers(this);
@@ -94,7 +87,7 @@ public class PluginConfigPanel extends AnchorPane {
 		AnchorPane.setTopAnchor(titlePanel, 0.0);
 		AnchorPane.setLeftAnchor(titlePanel, 0.0);
 		AnchorPane.setRightAnchor(titlePanel, 0.0);
-		setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
+		setBackground(new Background(new BackgroundFill(MeteorConstants.LIGHT_GRAY, null, null)));
 
 		setMinWidth(MeteorConstants.PANEL_WIDTH);
 		setMaxWidth(MeteorConstants.PANEL_WIDTH);
@@ -115,7 +108,7 @@ public class PluginConfigPanel extends AnchorPane {
 		titlePanel.getChildren().addAll(panelButtonIcon, pluginTitle);
 
 		configList = new VBox();
-
+		configList.setBackground(new Background(new BackgroundFill(MeteorConstants.LIGHT_GRAY, null, null)));
 
 		ScrollPane scrollPane = new ScrollPane();
 		AnchorPane.setLeftAnchor(scrollPane, 8.0);
@@ -126,13 +119,10 @@ public class PluginConfigPanel extends AnchorPane {
 		scrollPane.setFitToWidth(true);
 		scrollPane.setFitToHeight(true);
 		scrollPane.setHbarPolicy(javafx.scene.control.ScrollPane.ScrollBarPolicy.NEVER);
-		scrollPane.setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
+		scrollPane.setBackground(new Background(new BackgroundFill(MeteorConstants.LIGHT_GRAY, null, null)));
 		scrollPane.setContent(configList);
 
 		getChildren().addAll(titlePanel, scrollPane);
-
-
-		configList.setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
 
 		if (plugin.isToggleable()) {
 			toggleButton = new PluginToggleButton(plugin);
@@ -143,7 +133,11 @@ public class PluginConfigPanel extends AnchorPane {
 			toggleButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> plugin.toggle());
 			titlePanel.getChildren().add(toggleButton);
 		}
-		backButton.setStyle("-fx-background-color: #252525; -fx-text-fill: CYAN; -jfx-button-type: RAISED;");
+
+		backButton.setTextFill(MeteorConstants.CYAN_PAINT);
+		backButton.setButtonType(JFXButton.ButtonType.RAISED);
+		backButton.setBackground(new Background(new BackgroundFill(MeteorConstants.GRAY, null, null)));
+
 		FontAwesomeIconView graphic = new FontAwesomeIconView(FontAwesomeIcon.ARROW_LEFT);
 		graphic.setFill(Paint.valueOf("CYAN"));
 		backButton.setGraphic(graphic);
@@ -192,7 +186,7 @@ public class PluginConfigPanel extends AnchorPane {
 					.sorted(Comparator.comparingInt(ConfigItemDescriptor::position))
 					.collect(Collectors.toList())) {
 				SectionPane sectionBox = sections.get(configItemDescriptor.getItem().section());
-				Pane configContainer = sectionBox != null ? sectionBox.getContainer() : new PanelItem();
+				Pane configContainer = sectionBox != null ? sectionBox.getContainer() : new AnchorPane();
 
 				if (configItemDescriptor.getType() == int.class) {
 					if (configItemDescriptor.getRange() != null) {
@@ -263,7 +257,10 @@ public class PluginConfigPanel extends AnchorPane {
 		AnchorPane.setLeftAnchor(button, 40.0);
 
 		button.autosize();
-		button.setStyle("-fx-background-color: #252525; -fx-text-fill: CYAN; -jfx-button-type: RAISED;");
+		button.setTextFill(MeteorConstants.CYAN_PAINT);
+		button.setButtonType(JFXButton.ButtonType.RAISED);
+		button.setBackground(new Background(new BackgroundFill(MeteorConstants.LIGHT_GRAY, null, null)));
+
 
 		button.pressedProperty().addListener((options, oldValue, pressed) -> {
 			if (!pressed) {
@@ -290,7 +287,9 @@ public class PluginConfigPanel extends AnchorPane {
 		AnchorPane.setLeftAnchor(button, 190.0);
 
 		button.autosize();
-		button.setStyle("-fx-background-color: #252525; -fx-text-fill: CYAN; -jfx-button-type: RAISED;");
+		button.setTextFill(MeteorConstants.CYAN_PAINT);
+		button.setButtonType(JFXButton.ButtonType.RAISED);
+		button.setBackground(new Background(new BackgroundFill(MeteorConstants.LIGHT_GRAY, null, null)));
 
 		button.pressedProperty().addListener((options, oldValue, pressed) -> {
 			if (!pressed) {
@@ -323,7 +322,9 @@ public class PluginConfigPanel extends AnchorPane {
 		AnchorPane.setLeftAnchor(button, 190.0);
 
 		button.autosize();
-		button.setStyle("-fx-background-color: #252525; -fx-text-fill: CYAN; -jfx-button-type: RAISED;");
+		button.setTextFill(MeteorConstants.CYAN_PAINT);
+		button.setButtonType(JFXButton.ButtonType.RAISED);
+		button.setBackground(new Background(new BackgroundFill(MeteorConstants.LIGHT_GRAY, null, null)));
 
 		button.pressedProperty().addListener((options, oldValue, pressed) -> {
 			if (!pressed) {
@@ -601,7 +602,7 @@ public class PluginConfigPanel extends AnchorPane {
 
 	private void addConfigItemComponents(ConfigDescriptor cd, ConfigItemDescriptor cid, Pane root, Node... nodes) {
 		if (root instanceof VBox) {
-			Pane pane = new PanelItem();
+			Pane pane = new AnchorPane();
 			pane.getChildren().addAll(nodes);
 			if (!hideUnhide(cd, cid)) {
 				return;

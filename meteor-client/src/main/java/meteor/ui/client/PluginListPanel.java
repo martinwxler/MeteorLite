@@ -7,7 +7,6 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
@@ -17,13 +16,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import meteor.MeteorLiteClientLauncher;
 import meteor.PluginManager;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
-import meteor.eventbus.events.PluginChanged;
 import meteor.events.ExternalsReloaded;
 import meteor.plugins.Plugin;
 import meteor.util.MeteorConstants;
@@ -31,8 +28,6 @@ import org.controlsfx.control.textfield.CustomTextField;
 
 import javax.inject.Inject;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
 
 public class PluginListPanel extends BorderPane {
 
@@ -53,7 +48,7 @@ public class PluginListPanel extends BorderPane {
 
 		plugins = FXCollections.observableArrayList();
 
-		setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
+		setBackground(new Background(new BackgroundFill(MeteorConstants.LIGHT_GRAY, null, null)));
 
 		setMinWidth(MeteorConstants.PANEL_WIDTH);
 		setMaxWidth(MeteorConstants.PANEL_WIDTH);
@@ -67,7 +62,7 @@ public class PluginListPanel extends BorderPane {
 
 		CustomTextField searchBar = new CustomTextField();
 		searchBar.setStyle("-fx-text-inner-color: white;");
-		searchBar.setBackground(new Background(new BackgroundFill(Paint.valueOf("121212"), null, null)));
+		searchBar.setBackground(new Background(new BackgroundFill(MeteorConstants.DARK_GRAY, null, null)));
 
 		FontAwesomeIconView searchIcon = new FontAwesomeIconView(FontAwesomeIcon.SEARCH);
 		searchIcon.setFill(Color.CYAN);
@@ -93,11 +88,11 @@ public class PluginListPanel extends BorderPane {
 		scrollPane.setFitToWidth(true);
 		scrollPane.setFitToHeight(true);
 		scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-		scrollPane.setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
+		scrollPane.setBackground(new Background(new BackgroundFill(MeteorConstants.LIGHT_GRAY, null, null)));
 
 		VBox pluginListView = new VBox();
 		pluginListView.setPadding(new Insets(4));
-		pluginListView.setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
+		pluginListView.setBackground(new Background(new BackgroundFill(MeteorConstants.LIGHT_GRAY, null, null)));
 
 		filteredData.addListener((ListChangeListener.Change<? extends PluginListCell> c) -> {
 			pluginListView.getChildren().clear();

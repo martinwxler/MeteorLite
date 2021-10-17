@@ -9,13 +9,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.TextAlignment;
 import lombok.extern.slf4j.Slf4j;
 import meteor.ui.MeteorUI;
+import meteor.util.MeteorConstants;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -40,7 +39,7 @@ public class Sidebar extends VBox {
 	public Sidebar() {
 		setMinWidth(32);
 		setMaxWidth(32);
-		setBackground(new Background(new BackgroundFill(Paint.valueOf("212121"), null, null)));
+		setBackground(new Background(new BackgroundFill(MeteorConstants.GRAY, null, null)));
 
 		// Plugins button
 		FontAwesomeIconView plugIcon = new FontAwesomeIconView();
@@ -49,15 +48,8 @@ public class Sidebar extends VBox {
 		plugIcon.setSize("12");
 		plugIcon.setWrappingWidth(WRAPPING_WIDTH);
 
-		JFXButton pluginsButton = new JFXButton();
-		pluginsButton.setMaxSize(32, 32);
-		pluginsButton.setMinSize(32, 32);
+		JFXButton pluginsButton = createButton();
 		pluginsButton.setGraphic(plugIcon);
-		pluginsButton.setAlignment(Pos.CENTER);
-		pluginsButton.setTextAlignment(TextAlignment.CENTER);
-		pluginsButton.setTextFill(Color.CYAN);
-		pluginsButton.setButtonType(JFXButton.ButtonType.RAISED);
-		pluginsButton.setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), new CornerRadii(3), null)));
 
 		pluginsButton.setOnMouseClicked(event -> {
 			meteorUI.showPlugins();
@@ -72,15 +64,8 @@ public class Sidebar extends VBox {
 		panelButtonIcon.setSize("10");
 		panelButtonIcon.setWrappingWidth(WRAPPING_WIDTH);
 
-		JFXButton panelButton = new JFXButton();
-		panelButton.setMaxSize(32, 32);
-		panelButton.setMinSize(32, 32);
+		JFXButton panelButton = createButton();
 		panelButton.setGraphic(panelButtonIcon);
-		panelButton.setAlignment(Pos.CENTER);
-		panelButton.setTextAlignment(TextAlignment.CENTER);
-		panelButton.setTextFill(Color.CYAN);
-		panelButton.setButtonType(JFXButton.ButtonType.RAISED);
-		panelButton.setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), new CornerRadii(3), null)));
 
 		panelButton.setOnMouseClicked(event -> {
 			meteorUI.updateRightPanel(parent);
@@ -95,15 +80,8 @@ public class Sidebar extends VBox {
 		imageView.resize(24, 24);
 		imageView.setPreserveRatio(true);
 
-		JFXButton panelButton = new JFXButton();
-		panelButton.setMaxSize(32, 32);
-		panelButton.setMinSize(32, 32);
+		JFXButton panelButton = createButton();
 		panelButton.setGraphic(imageView);
-		panelButton.setAlignment(Pos.CENTER);
-		panelButton.setTextAlignment(TextAlignment.CENTER);
-		panelButton.setTextFill(Color.CYAN);
-		panelButton.setButtonType(JFXButton.ButtonType.RAISED);
-		panelButton.setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), new CornerRadii(3), null)));
 
 		panelButton.setOnMouseClicked(event -> {
 			meteorUI.updateRightPanel(parent);
@@ -111,6 +89,18 @@ public class Sidebar extends VBox {
 
 		getChildren().add(panelButton);
 		buttons.put(parent, panelButton);
+	}
+
+	private JFXButton createButton() {
+		JFXButton button = new JFXButton();
+		button.setMaxSize(32, 32);
+		button.setMinSize(32, 32);
+		button.setAlignment(Pos.CENTER);
+		button.setTextAlignment(TextAlignment.CENTER);
+		button.setTextFill(Color.CYAN);
+		button.setButtonType(JFXButton.ButtonType.RAISED);
+		button.setBackground(new Background(new BackgroundFill(MeteorConstants.GRAY, null, null)));
+		return button;
 	}
 
 	public void removeNavigationButton(Parent parent) {

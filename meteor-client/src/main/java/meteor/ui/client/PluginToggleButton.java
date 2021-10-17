@@ -5,6 +5,7 @@ import javafx.scene.control.ContentDisplay;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.PluginChanged;
 import meteor.plugins.Plugin;
+import meteor.util.MeteorConstants;
 
 public class PluginToggleButton extends JFXToggleButton {
 
@@ -12,7 +13,7 @@ public class PluginToggleButton extends JFXToggleButton {
 
 	public PluginToggleButton(Plugin plugin) {
 		this.plugin = plugin;
-		setStyle("-fx-text-fill: CYAN;");
+		setToggleColor(MeteorConstants.CYAN_PAINT);
 		setSize(5);
 		setMinHeight(0);
 		setPrefHeight(12);

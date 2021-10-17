@@ -19,6 +19,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import meteor.MeteorLiteClientLauncher;
+import meteor.util.MeteorConstants;
 import net.runelite.api.Skill;
 import net.runelite.http.api.wiseoldman.Period;
 import net.runelite.http.api.wiseoldman.WiseOldManClient;
@@ -68,7 +69,7 @@ public class SkillOverviewController {
     wiseOldManClient = new WiseOldManClient();
     INSTANCE = this;
     hiscorePanel.getStylesheets().add("css/plugins/jfx-scrollbar.css");
-    scrollPanel.setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
+    scrollPanel.setBackground(new Background(new BackgroundFill(MeteorConstants.LIGHT_GRAY, null, null)));
 
     backButton.setStyle("-fx-background-color: #252525; -fx-text-fill: CYAN; -jfx-button-type: RAISED;");
     FontAwesomeIconView graphic = new FontAwesomeIconView(FontAwesomeIcon.ARROW_LEFT);

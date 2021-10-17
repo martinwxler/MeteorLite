@@ -13,41 +13,41 @@ import lombok.Getter;
 
 
 public class PluginPanel extends GridPane {
-    public static final int PANEL_WIDTH = 350;
-    public static final int SCROLLBAR_WIDTH = 17;
-    public static final int BORDER_OFFSET = 6;
+	public static final int PANEL_WIDTH = 350;
+	public static final int SCROLLBAR_WIDTH = 17;
+	public static final int BORDER_OFFSET = 6;
 
-    private final ScrollPane scrollPane;
-    @Getter
-    private final BorderPane wrappedPane;
+	private final ScrollPane scrollPane;
+	@Getter
+	private final BorderPane wrappedPane;
 
-    public PluginPanel() {
-        super();
+	public PluginPanel() {
+		super();
 
-        setBorder(new Border(new BorderStroke(Paint.valueOf("009688"), BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(2))));
-        //        setBackground(Paint.valueOf(ColorScheme.DARK_GRAY_COLOR.toString()));
+		setBorder(new Border(new BorderStroke(Paint.valueOf("009688"), BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(2))));
+		//        setBackground(Paint.valueOf(ColorScheme.DARK_GRAY_COLOR.toString()));
 
-        final BorderPane northPanel = new BorderPane();
-        northPanel.setTop(this);
-        //        northPanel.setBackground(Paint.valueOf(ColorScheme.DARK_GRAY_COLOR.toString()));
+		final BorderPane northPanel = new BorderPane();
+		northPanel.setTop(this);
+		//        northPanel.setBackground(Paint.valueOf(ColorScheme.DARK_GRAY_COLOR.toString()));
 
-        scrollPane = new ScrollPane(northPanel);
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+		scrollPane = new ScrollPane(northPanel);
+		scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
-        wrappedPane = new BorderPane();
+		wrappedPane = new BorderPane();
 
-        // Adjust the preferred size to expand to width of scrollbar to
-        // to preven scrollbar overlapping over contents
-        wrappedPane.setMinWidth(PANEL_WIDTH);
-        wrappedPane.setCenter(scrollPane);
+		// Adjust the preferred size to expand to width of scrollbar to
+		// to preven scrollbar overlapping over contents
+		wrappedPane.setMinWidth(PANEL_WIDTH);
+		wrappedPane.setCenter(scrollPane);
 
-        setMinWidth(PANEL_WIDTH);
-        setMinHeight(800);
-    }
+		setMinWidth(PANEL_WIDTH);
+		setMinHeight(800);
+	}
 
-    public void onActivate() {
-    }
+	public void onActivate() {
+	}
 
-    public void onDeactivate() {
-    }
+	public void onDeactivate() {
+	}
 }

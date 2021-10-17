@@ -27,6 +27,7 @@ import meteor.MeteorLiteClientLauncher;
 import meteor.config.ConfigManager;
 import meteor.ui.MeteorUI;
 import meteor.ui.components.ToolbarButton;
+import meteor.util.MeteorConstants;
 import net.runelite.api.Skill;
 import net.runelite.http.api.hiscore.HiscoreEndpoint;
 import net.runelite.http.api.wiseoldman.WiseOldManClient;
@@ -158,7 +159,7 @@ public class BasicSnapshotController {
     INSTANCE = this;
     hiscorePanel.getStylesheets().add("css/plugins/jfx-scrollbar.css");
     skillPanel.setStyle("-fx-background-color: #252525;");
-    scrollPanel.setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
+    scrollPanel.setBackground(new Background(new BackgroundFill(MeteorConstants.LIGHT_GRAY, null, null)));
     scrollPanel.setFillWidth(true);
     scrollPanel.getChildren().clear();
     scrollPanel.getChildren().add(skillPanel);
