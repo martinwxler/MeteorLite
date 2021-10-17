@@ -19,7 +19,6 @@ import meteor.ui.components.MeteorText;
 
 public class PluginListCell extends AnchorPane {
 
-
 	@Getter
 	private PluginToggleButton toggleButton;
 

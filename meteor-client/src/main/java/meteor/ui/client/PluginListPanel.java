@@ -30,14 +30,12 @@ import meteor.util.MeteorConstants;
 import org.controlsfx.control.textfield.CustomTextField;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
 public class PluginListPanel extends BorderPane {
 
-	private final Map<String, PluginToggleButton> toggleButtons;
 	private final ObservableList<PluginListCell> plugins;
 
 	@Inject
@@ -53,7 +51,6 @@ public class PluginListPanel extends BorderPane {
 		MeteorLiteClientLauncher.injector.injectMembers(this);
 		eventBus.register(this);
 
-		toggleButtons = new HashMap<>();
 		plugins = FXCollections.observableArrayList();
 
 		setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
@@ -119,7 +116,6 @@ public class PluginListPanel extends BorderPane {
 
 	public void refreshPlugins() {
 		plugins.clear();
-		toggleButtons.clear();
 
 		for (Plugin p : pluginManager.getPlugins()) {
 			if (p != null) {
@@ -131,16 +127,11 @@ public class PluginListPanel extends BorderPane {
 
 	private void addPlugin(Plugin p) {
 		PluginListCell panel = new PluginListCell(p, configManager);
-		plugins.add(panel);
-		toggleButtons.put(p.getClass().getSimpleName(), panel.getToggleButton());
-	}
-
-	@Subscribe
-	public void onPluginChanged(PluginChanged e) {
-		PluginToggleButton t = toggleButtons.get(e.getPlugin().getClass().getSimpleName());
-		if (t != null) {
-			t.setSelected(e.getPlugin().isEnabled());
+		PluginToggleButton tb = panel.getToggleButton();
+		if (tb != null) {
+			eventBus.register(panel.getToggleButton());
 		}
+		plugins.add(panel);
 	}
 
 	@Subscribe

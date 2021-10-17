@@ -78,8 +78,6 @@ public class PluginConfigPanel extends AnchorPane {
 	@Inject
 	private ConfigManager configManager;
 	@Inject
-	private EventBus eventBus;
-	@Inject
 	private MeteorUI meteorUI;
 
 	private PluginToggleButton toggleButton;
@@ -90,7 +88,6 @@ public class PluginConfigPanel extends AnchorPane {
 
 	public PluginConfigPanel(Plugin plugin) {
 		MeteorLiteClientLauncher.injector.injectMembers(this);
-		eventBus.register(this);
 
 		this.plugin = plugin;
 		titlePanel = new AnchorPane();
@@ -708,12 +705,5 @@ public class PluginConfigPanel extends AnchorPane {
 		}
 
 		return true;
-	}
-
-	@Subscribe
-	public void onPluginChanged(PluginChanged e) {
-		if (toggleButton != null && e.getPlugin().equals(plugin)) {
-			toggleButton.setSelected(e.getPlugin().isEnabled());
-		}
 	}
 }
