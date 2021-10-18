@@ -45,6 +45,7 @@ import javax.inject.Provider;
 
 import lombok.Getter;
 import meteor.ui.client.Sidebar;
+import meteor.ui.client.Toolbar;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -96,6 +97,9 @@ public class HiscorePlugin extends Plugin
 	private HiscoreEndpoint localHiscoreEndpoint;
 
 	@Inject
+	private Toolbar toolbar;
+
+	@Inject
 	private Sidebar sidebar;
 
 	private Parent hiscorePanel;
@@ -129,6 +133,7 @@ public class HiscorePlugin extends Plugin
 	public void startup()
 	{
 		sidebar.addNavigationButton(FontAwesomeIcon.LINE_CHART, hiscorePanel);
+		toolbar.addNavigationButton(FontAwesomeIcon.LINE_CHART, hiscorePanel, this);
 
 		if (config.playerOption() && client != null)
 		{
