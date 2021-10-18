@@ -19,7 +19,7 @@ import meteor.util.LoggerStream;
 import net.runelite.api.Client;
 import sun.misc.Unsafe;
 
-public class MeteorLiteClientLauncher extends Application implements Module {
+public class MeteorLiteClientLauncher extends Application {
   public static final File METEOR_DIR
       = new File(System.getProperty("user.home"), ".meteorlite");
   public static final File CACHE_DIR = new File(METEOR_DIR, "cache");
@@ -57,11 +57,6 @@ public class MeteorLiteClientLauncher extends Application implements Module {
     MeteorLiteClientModule module = new MeteorLiteClientModule();
     injector = Guice.createInjector(module);
     module.start();
-  }
-
-  @Override
-  public void configure(Binder binder) {
-
   }
 
   public static void disableIllegalReflectiveAccessWarning() {

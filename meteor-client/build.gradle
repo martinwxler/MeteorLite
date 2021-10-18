@@ -45,6 +45,8 @@ dependencies {
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '_'
     implementation(group: "com.squareup.okhttp3", name: "okhttp", version: "_")
 
+    implementation 'org.controlsfx:controlsfx:11.1.0'
+
     implementation(group: "net.runelite.gluegen", name: "gluegen-rt", version: "2.4.0-rc-20200429")
     implementation(group: "net.runelite.jogl", name: "jogl-all", version: "2.4.0-rc-20200429")
 

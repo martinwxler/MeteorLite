@@ -3,17 +3,12 @@ package meteor.plugins;
 import com.google.inject.Binder;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import java.io.IOException;
-import java.util.Objects;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
+
 import javax.inject.Inject;
 
-import javafx.scene.layout.Pane;
 import lombok.Getter;
 import lombok.Setter;
-import meteor.MeteorLiteClientModule;
 import meteor.PluginManager;
 import meteor.config.Config;
 import meteor.config.ConfigManager;
@@ -21,8 +16,7 @@ import meteor.eventbus.EventBus;
 import meteor.eventbus.events.PluginChanged;
 import meteor.task.Scheduler;
 import meteor.ui.MeteorUI;
-import meteor.ui.components.PluginToggleButton;
-import meteor.ui.controllers.PluginListUI;
+import meteor.ui.client.PluginConfigPanel;
 import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.Client;
 import org.sponge.util.Logger;
@@ -88,12 +82,7 @@ public class Plugin implements Module {
 
   public void showConfig() {
     if (configRoot == null) {
-      try {
-        configRoot = FXMLLoader.load(Objects.requireNonNull(ClassLoader.getSystemClassLoader()
-                .getResource("plugin-config.fxml")));
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      configRoot = new PluginConfigPanel(this);
     }
     meteorUI.updateRightPanel(configRoot);
   }
@@ -119,56 +108,12 @@ public class Plugin implements Module {
 
     updateConfig();
 
-    PluginListUI.overrideToggleListener = true;
-    for (PluginToggleButton ptb : PluginListUI.toggleButtons.values()) {
-      if (ptb.plugin == this) {
-        ptb.setSelected(enabled);
-      }
-    }
-
-    PluginListUI.overrideToggleListener = false;
     eventBus.post(new PluginChanged(this, enabled));
   }
 
   public void toggle() {
-    boolean conflict = false;
-    for (Class<?> p : PluginManager.conflicts.keySet())
-      if (p == getClass()) {
-        conflict = true;
-        break;
-      }
-    for (Class<?> p : PluginManager.conflicts.values())
-      if (p == getClass()) {
-        conflict = true;
-        break;
-      }
-
-      if (conflict) {
-        Class<? extends Plugin> conflictingClass = null;
-        for (Class<? extends Plugin> p : PluginManager.conflicts.keySet()) {
-          if (p == this.getClass()) {
-            conflictingClass = PluginManager.conflicts.get(p);
-            break;
-          }
-        }
-        if (conflictingClass == null) {
-          for (Class<? extends Plugin> p : PluginManager.conflicts.keySet()) {
-            if (PluginManager.conflicts.get(p) == this.getClass()) {
-              conflictingClass = p;
-              break;
-            }
-          }
-        }
-        if (conflictingClass != null) {
-          Plugin instance = PluginManager.getInstance(conflictingClass);
-          if (instance.isEnabled())
-            instance.toggle();
-        }
-      }
-
     toggle(!enabled);
   }
-
 
   // These should NOT be used as they are not called
   // This will create errors in plugins that try to use the protected variant

@@ -44,7 +44,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import lombok.Getter;
-import meteor.ui.Sidebar;
+import meteor.ui.client.Sidebar;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;

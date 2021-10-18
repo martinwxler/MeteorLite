@@ -2,8 +2,8 @@ package meteor.ui;
 
 import com.google.inject.Inject;
 import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import lombok.Getter;
 import meteor.PluginManager;
 import meteor.config.ConfigManager;
 import meteor.config.MeteorLiteConfig;
@@ -12,6 +12,8 @@ import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ClientShutdown;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.events.ExternalsReloaded;
+import meteor.ui.client.PluginListPanel;
+import meteor.ui.client.RightPanel;
 import meteor.util.ImageUtil;
 import meteor.util.MeteorConstants;
 import net.runelite.api.Client;
@@ -37,7 +39,6 @@ import java.net.URL;
 import java.security.InvalidParameterException;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.Objects;
 
 import static meteor.MeteorLiteClientModule.parameters;
 import static meteor.MeteorLiteClientModule.properties;
@@ -54,7 +55,6 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 	private static final int CLIENT_WELL_HIDDEN_MARGIN_TOP = 10;
 
 	private final JPanel rootPanel = new JPanel();
-	private Parent pluginsRoot;
 	private Cursor defaultCursor;
 
 	@Inject
@@ -71,6 +71,9 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 	private Client client;
 	@Inject
 	private RightPanel rightPanel;
+
+	@Getter
+	private PluginListPanel pluginListPanel;
 
 	private Dimension lastClientSize;
 
@@ -91,15 +94,9 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 		configManager.load();
 		pluginManager.startInternalPlugins();
 
-		// preload plugins scene, needs to be after pluginManager.startInternalPlugins() is called.
-		try {
-			pluginsRoot = FXMLLoader.load(
-					Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource("plugins.fxml")));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 		setupJavaFXComponents(applet);
+
+		pluginListPanel = new PluginListPanel();
 
 		this.setTitle("MeteorLite");
 		this.setIconImage(ICON);
@@ -118,7 +115,7 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 				if (clientBounds != null) {
 					revalidateMinimumSize();
 					setLocation(clientBounds.getLocation());
-					setSize((int)clientBounds.getWidth() + 85, (int)clientBounds.getHeight());
+					setSize(clientBounds.getSize());
 				} else {
 					setLocationRelativeTo(getOwner());
 				}
@@ -249,7 +246,7 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 
 				// If resizing the game would go below the minimum size, always extend panel.
 				if (getWidth() < MeteorConstants.CLIENT_WIDTH + MeteorConstants.RIGHT_PANEL_WIDTH) {
-					setSize(new Dimension(MeteorConstants.CLIENT_WIDTH + MeteorConstants.RIGHT_PANEL_WIDTH + 85, getHeight()));
+					setSize(new Dimension(MeteorConstants.CLIENT_WIDTH + MeteorConstants.RIGHT_PANEL_WIDTH, getHeight()));
 					return;
 				}
 
@@ -265,7 +262,7 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 				}
 				setSize(newClientSize);
 			} finally {
-				setMinimumSize(new Dimension(MeteorConstants.CLIENT_WIDTH + 85 + MeteorConstants.RIGHT_PANEL_WIDTH, MeteorConstants.CLIENT_HEIGHT));
+				setMinimumSize(new Dimension(MeteorConstants.CLIENT_WIDTH + MeteorConstants.RIGHT_PANEL_WIDTH, MeteorConstants.CLIENT_HEIGHT));
 				validate();
 			}
 		} else {
@@ -290,17 +287,17 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 		}
 
 		if (!config.resizeGame()) {
-			setSize(new Dimension(MeteorConstants.CLIENT_WIDTH + 85 + MeteorConstants.SIDEBAR_WIDTH, getHeight()));
+			setSize(new Dimension(MeteorConstants.CLIENT_WIDTH + MeteorConstants.SIDEBAR_WIDTH, getHeight()));
 		}
 		if (resize) {
-			setSize(new Dimension(MeteorConstants.CLIENT_WIDTH + 85 + MeteorConstants.SIDEBAR_WIDTH, getHeight()));
+			setSize(new Dimension(MeteorConstants.CLIENT_WIDTH + MeteorConstants.SIDEBAR_WIDTH, getHeight()));
 		}
 		validate();
 	}
 
 
 	public void showPlugins() {
-		updateRightPanel(pluginsRoot);
+		updateRightPanel(pluginListPanel);
 	}
 
 	public void updateRightPanel(Parent root) {
@@ -309,7 +306,7 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 	}
 
 	public void setupJavaFXComponents(Applet applet) {
-		setMinimumFrameSize();
+		setMinimumSize(MeteorConstants.CLIENT_SIZE);
 
 		rootPanel.add(rightPanel, BorderLayout.EAST);
 		add(rootPanel);

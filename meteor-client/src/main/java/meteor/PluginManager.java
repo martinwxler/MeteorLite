@@ -4,6 +4,7 @@ import com.google.inject.Binder;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.google.inject.Singleton;
 import com.owain.chinLogin.ChinLoginPlugin;
 import com.owain.chinmanager.ChinManagerPlugin;
 import com.questhelper.QuestHelperPlugin;
@@ -15,10 +16,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.jar.JarFile;
 
+import lombok.Getter;
 import meteor.config.Config;
 import meteor.config.ConfigManager;
 import meteor.eventbus.EventBus;
 import meteor.eventbus.Subscribe;
+import meteor.eventbus.events.PluginChanged;
 import meteor.plugins.ExternalPluginClassLoader;
 import meteor.plugins.PluginDescriptor;
 import meteor.plugins.cettitutorial.CettiTutorialPlugin;
@@ -185,16 +188,17 @@ import meteor.plugins.xptracker.XpTrackerPlugin;
 import meteor.plugins.xpupdater.XpUpdaterPlugin;
 import meteor.plugins.zulrah.ZulrahPlugin;
 import meteor.ui.components.Category;
-import meteor.ui.controllers.PluginListUI;
+import meteor.ui.client.PluginListPanel;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
 import org.sponge.util.Logger;
 import rs117.hd.GpuHDPlugin;
 
+@Singleton
 public class PluginManager {
-	private static final Logger logger = new Logger("PluginManager");
-	public static final File EXTERNALS_DIR = new File(MeteorLiteClientLauncher.METEOR_DIR, "externals");
-	public static HashMap<Class<? extends Plugin>, Class<? extends Plugin>> conflicts = new HashMap<>();
+	private final Logger logger = new Logger("PluginManager");
+	private final File EXTERNALS_DIR = new File(MeteorLiteClientLauncher.METEOR_DIR, "externals");
+	private HashMap<Class<? extends Plugin>, Class<? extends Plugin>> conflicts = new HashMap<>();
 
 	@Inject
 	private EventBus eventBus;
@@ -206,13 +210,16 @@ public class PluginManager {
 	private MeteorLiteClientModule meteorLiteClientModule;
 	public boolean startedPlugins;
 
+	@Getter
+	private List<Plugin> plugins;
+
 	PluginManager() {
+		plugins = new ArrayList<>();
 		if (!EXTERNALS_DIR.exists()) {
 			EXTERNALS_DIR.mkdirs();
 		}
 	}
 
-	public static List<Plugin> plugins = new ArrayList<>();
 
   private void initPlugins() {
 		// Leave at the top pls, these are not regular plugins
@@ -457,19 +464,19 @@ public class PluginManager {
 		List<Plugin> externals = loadPluginsFromDir(EXTERNALS_DIR);
 		plugins.stream().filter(Plugin::isExternal).forEach(Plugin::unload);
 		plugins.removeIf(Plugin::isExternal);
-		Category category = PluginListUI.INSTANCE.findOrCreateCategory(PluginListUI.EXTERNAL_CATEGORY_NAME);
+//		Category category = PluginListPanel.INSTANCE.findOrCreateCategory(PluginListPanel.EXTERNAL_CATEGORY_NAME);
 
 		for (Plugin external : externals) {
-			if (!category.plugins.contains(external.getName())) {
-				category.plugins.add(0, external.getName());
-			}
+//			if (!category.plugins.contains(external.getName())) {
+//				category.plugins.add(0, external.getName());
+//			}
 
 			plugins.add(external);
 			startPlugin(external);
 		}
 	}
 
-	public static List<Plugin> loadPluginsFromDir(File dir) {
+	private List<Plugin> loadPluginsFromDir(File dir) {
 		List<Plugin> plugins = new ArrayList<>();
 		try {
 			File[] files = dir.listFiles();
@@ -519,8 +526,8 @@ public class PluginManager {
 		return plugins;
 	}
 
-	public static <T extends Plugin> T getInstance(Class<? extends Plugin> type) {
-		for (Plugin p : PluginManager.plugins) {
+	public <T extends Plugin> T getInstance(Class<? extends Plugin> type) {
+		for (Plugin p : plugins) {
 			if (type.isInstance(p)) {
 				return (T) p;
 			}
@@ -528,11 +535,50 @@ public class PluginManager {
 		return null;
 	}
 
-	public static Plugin getInstance(String name) {
-		for (Plugin p : PluginManager.plugins)
+	public Plugin getInstance(String name) {
+		for (Plugin p : plugins)
 			if (p.getName().equals(name))
 				return p;
 		return null;
+	}
+
+	@Subscribe
+	public void onPluginChanged(PluginChanged e) {
+		Plugin plugin = e.getPlugin();
+		boolean conflict = false;
+		for (Class<?> p : conflicts.keySet())
+			if (p == getClass()) {
+				conflict = true;
+				break;
+			}
+		for (Class<?> p : conflicts.values())
+			if (p == getClass()) {
+				conflict = true;
+				break;
+			}
+
+		if (conflict) {
+			Class<? extends Plugin> conflictingClass = null;
+			for (Class<? extends Plugin> p : conflicts.keySet()) {
+				if (p == plugin.getClass()) {
+					conflictingClass = conflicts.get(p);
+					break;
+				}
+			}
+			if (conflictingClass == null) {
+				for (Class<? extends Plugin> p : conflicts.keySet()) {
+					if (conflicts.get(p) == plugin.getClass()) {
+						conflictingClass = p;
+						break;
+					}
+				}
+			}
+			if (conflictingClass != null) {
+				Plugin instance = getInstance(conflictingClass);
+				if (instance.isEnabled())
+					instance.toggle();
+			}
+		}
 	}
 
 	@Subscribe

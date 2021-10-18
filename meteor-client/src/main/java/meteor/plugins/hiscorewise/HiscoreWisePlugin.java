@@ -42,7 +42,7 @@ import meteor.menus.MenuManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.ui.MeteorUI;
-import meteor.ui.Sidebar;
+import meteor.ui.client.Sidebar;
 import net.runelite.api.Client;
 
 @PluginDescriptor(
