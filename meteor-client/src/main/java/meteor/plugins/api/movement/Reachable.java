@@ -79,8 +79,14 @@ public class Reachable {
                 continue;
             }
 
+            boolean containsPoint = false;
+
+            if (targetObject instanceof GameObject go) {
+                containsPoint = go.getWorldArea().contains(neighbour);
+            }
+
             if (targetObject != null
-                    && targetObject.getWorldLocation().equals(neighbour)
+                    && (targetObject.getWorldLocation().equals(neighbour) || containsPoint)
                     && (!isWalled(dir, getCollisionFlag(current)) || targetObject instanceof WallObject)) {
                 out.add(neighbour);
                 continue;
