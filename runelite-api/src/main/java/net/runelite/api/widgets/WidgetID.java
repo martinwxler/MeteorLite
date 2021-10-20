@@ -184,6 +184,7 @@ public final class WidgetID
 	public static final int CLAN_GUEST_GROUP_ID = 702;
 	public static final int GRAVESTONE_GROUP_ID = 672;
 	public static final int POH_TREASURE_CHEST_INVENTORY_GROUP_ID = 674;
+	public static final int GROUP_IRON_GROUP_ID = 726;
 
 	static class WorldMap
 	{
@@ -535,6 +536,7 @@ public final class WidgetID
 		static final int MUSIC_ICON = 48;
 		static final int INVENTORY_TAB = 54;
 		static final int PRAYER_TAB = 56;
+		static final int MAGIC_TAB = 57;
 		static final int CMB_ICON = 58;
 		static final int SKILLS_ICON = 59;
 		static final int QUESTS_ICON = 60;
