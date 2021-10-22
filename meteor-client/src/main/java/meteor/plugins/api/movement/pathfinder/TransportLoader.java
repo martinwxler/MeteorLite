@@ -1,11 +1,15 @@
 package meteor.plugins.api.movement.pathfinder;
 
+import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.entities.NPCs;
+import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.entities.TileObjects;
+import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.Skills;
 import meteor.plugins.api.game.Vars;
 import meteor.plugins.api.game.Worlds;
 import meteor.plugins.api.items.Inventory;
+import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.widgets.Dialog;
 import net.runelite.api.Item;
 import net.runelite.api.NPC;
@@ -164,6 +168,16 @@ public class TransportLoader {
                 1164,
                 "Well that is a risk I will have to take."));
 
+        // Motherload Mine
+        transports.addAll(motherloadMineTransport(new WorldPoint(3765, 5687, 0), new WorldPoint(3765, 5689, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3761, 5687, 0), new WorldPoint(3763, 5687, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3745, 5688, 0), new WorldPoint(3745, 5690, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3731, 5682, 0), new WorldPoint(3731, 5684, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3733, 5679, 0), new WorldPoint(3733, 5681, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3727, 5682, 0), new WorldPoint(3727, 5684, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3726, 5653, 0), new WorldPoint(3726, 5655, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3726, 5652, 0), new WorldPoint(3728, 5652, 0)));
+
         return List.copyOf(LAST_TRANSPORT_LIST = transports);
     }
 
@@ -262,6 +276,24 @@ public class TransportLoader {
                 npc.interact(0);
             }
         });
+    }
+
+    public static List<Transport> motherloadMineTransport(
+            WorldPoint source,
+            WorldPoint destination
+    ) {
+        return List.of(
+            new Transport(source, destination, Integer.MAX_VALUE, 0, () -> {
+                TileObjects.getSurrounding(source, 1, x -> x.getName().equalsIgnoreCase("Rockfall")).stream()
+                        .findFirst()
+                        .ifPresentOrElse(obj -> obj.interact("Mine"), () -> Movement.walk(destination));
+            }),
+            new Transport(destination, source, Integer.MAX_VALUE, 0, () -> {
+                TileObjects.getSurrounding(destination, 1, x -> x.getName().equalsIgnoreCase("Rockfall")).stream()
+                        .findFirst()
+                        .ifPresentOrElse(obj -> obj.interact("Mine"), () -> Movement.walk(source));
+             })
+        );
     }
 
     public static Transport objectTransport(
