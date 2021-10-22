@@ -1,10 +1,7 @@
 package meteor.plugins.api.movement.pathfinder;
 
-import meteor.plugins.api.commons.Time;
 import meteor.plugins.api.entities.NPCs;
-import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.entities.TileObjects;
-import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.Skills;
 import meteor.plugins.api.game.Vars;
 import meteor.plugins.api.game.Worlds;
