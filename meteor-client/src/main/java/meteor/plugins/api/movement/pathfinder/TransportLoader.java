@@ -7,19 +7,24 @@ import meteor.plugins.api.game.Vars;
 import meteor.plugins.api.game.Worlds;
 import meteor.plugins.api.items.Inventory;
 import meteor.plugins.api.movement.Movement;
+import meteor.plugins.api.movement.Reachable;
 import meteor.plugins.api.widgets.Dialog;
 import net.runelite.api.Item;
 import net.runelite.api.NPC;
 import net.runelite.api.Skill;
 import net.runelite.api.TileObject;
+import net.runelite.api.coords.Direction;
 import net.runelite.api.coords.WorldPoint;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class TransportLoader {
     private static final int BUILD_DELAY_SECONDS = 5;
@@ -166,14 +171,37 @@ public class TransportLoader {
                 "Well that is a risk I will have to take."));
 
         // Motherload Mine
-        transports.addAll(motherloadMineTransport(new WorldPoint(3765, 5687, 0), new WorldPoint(3765, 5689, 0)));
-        transports.addAll(motherloadMineTransport(new WorldPoint(3761, 5687, 0), new WorldPoint(3763, 5687, 0)));
-        transports.addAll(motherloadMineTransport(new WorldPoint(3745, 5688, 0), new WorldPoint(3745, 5690, 0)));
-        transports.addAll(motherloadMineTransport(new WorldPoint(3731, 5682, 0), new WorldPoint(3731, 5684, 0)));
-        transports.addAll(motherloadMineTransport(new WorldPoint(3733, 5679, 0), new WorldPoint(3733, 5681, 0)));
-        transports.addAll(motherloadMineTransport(new WorldPoint(3727, 5682, 0), new WorldPoint(3727, 5684, 0)));
-        transports.addAll(motherloadMineTransport(new WorldPoint(3726, 5653, 0), new WorldPoint(3726, 5655, 0)));
-        transports.addAll(motherloadMineTransport(new WorldPoint(3726, 5652, 0), new WorldPoint(3728, 5652, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3726, 5643, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3726, 5654, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3727, 5652, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3727, 5683, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3728, 5651, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3728, 5688, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3731, 5683, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3733, 5680, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3745, 5689, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3748, 5684, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3748, 5689, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3755, 5640, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3756, 5639, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3757, 5677, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3759, 5690, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3762, 5652, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3762, 5668, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3765, 5688, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3766, 5639, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3766, 5647, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3768, 5674, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3768, 5679, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3769, 5642, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3769, 5658, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3769, 5680, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3770, 5659, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3771, 5638, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3762, 5687, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3766, 5670, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3719, 5664, 0)));
+        transports.addAll(motherloadMineTransport(new WorldPoint(3720, 5665, 0)));
 
         return List.copyOf(LAST_TRANSPORT_LIST = transports);
     }
@@ -276,21 +304,29 @@ public class TransportLoader {
     }
 
     public static List<Transport> motherloadMineTransport(
-            WorldPoint source,
-            WorldPoint destination
+            WorldPoint rockfall
     ) {
-        return List.of(
-            new Transport(source, destination, Integer.MAX_VALUE, 0, () -> {
-                TileObjects.getSurrounding(source, 1, x -> x.getName().equalsIgnoreCase("Rockfall")).stream()
-                        .findFirst()
-                        .ifPresentOrElse(obj -> obj.interact("Mine"), () -> Movement.walk(destination));
-            }),
-            new Transport(destination, source, Integer.MAX_VALUE, 0, () -> {
-                TileObjects.getSurrounding(destination, 1, x -> x.getName().equalsIgnoreCase("Rockfall")).stream()
-                        .findFirst()
-                        .ifPresentOrElse(obj -> obj.interact("Mine"), () -> Movement.walk(source));
-             })
-        );
+        return Arrays.stream(Direction.values()).map(dir -> {
+            WorldPoint neighbor = Reachable.getNeighbour(dir, rockfall);
+            if (Reachable.isWalkable(neighbor)) {
+                WorldPoint dest = null;
+                switch (dir) {
+                    case NORTH -> dest = rockfall.dy(-1);
+                    case SOUTH -> dest = rockfall.dy(1);
+                    case WEST -> dest = rockfall.dx(1);
+                    case EAST -> dest = rockfall.dx(-1);
+                }
+                if (dest != null) {
+                    WorldPoint finalDest = dest;
+                    return new Transport(neighbor, finalDest, Integer.MAX_VALUE, 0, () -> {
+                        TileObjects.getAt(rockfall, x -> x.getName().equalsIgnoreCase("Rockfall")).stream()
+                                .findFirst()
+                                .ifPresentOrElse(obj -> obj.interact("Mine"), () -> Movement.walk(finalDest));
+                    });
+                }
+            }
+            return null;
+        }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     public static Transport objectTransport(
