@@ -89,7 +89,7 @@ public class TransportLoader {
         }
 
         // Lumbridge castle dining room, ignore if RFD is in progress.
-        if (Game.getClient().getVarbitValue(QuestVarbits.QUEST_RECIPE_FOR_DISASTER.getId()) == -1) {
+        if (Vars.getBit(QuestVarbits.QUEST_RECIPE_FOR_DISASTER.getId()) == -1) {
             transports.add(objectTransport(new WorldPoint(3213, 3221, 0), new WorldPoint(3212, 3221, 0), 12349, "Open"));
             transports.add(objectTransport(new WorldPoint(3212, 3221, 0), new WorldPoint(3213, 3221, 0), 12349, "Open"));
             transports.add(objectTransport(new WorldPoint(3213, 3222, 0), new WorldPoint(3212, 3222, 0), 12350, "Open"));
