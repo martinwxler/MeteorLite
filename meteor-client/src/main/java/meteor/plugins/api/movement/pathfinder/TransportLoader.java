@@ -1,8 +1,10 @@
 package meteor.plugins.api.movement.pathfinder;
 
+import com.questhelper.QuestVarbits;
 import meteor.plugins.api.entities.NPCs;
 import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.entities.TileObjects;
+import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.Skills;
 import meteor.plugins.api.game.Vars;
 import meteor.plugins.api.game.Worlds;
@@ -84,6 +86,16 @@ public class TransportLoader {
                     2882,
                     "Pay-toll(10gp)")
             );
+        }
+
+        // Lumbridge castle dining room, ignore if RFD is in progress.
+        if (Game.getClient().getVarbitValue(QuestVarbits.QUEST_RECIPE_FOR_DISASTER.getId()) == -1) {
+            transports.add(objectTransport(new WorldPoint(3213, 3221, 0), new WorldPoint(3212, 3221, 0), 12349, "Open"));
+            transports.add(objectTransport(new WorldPoint(3212, 3221, 0), new WorldPoint(3213, 3221, 0), 12349, "Open"));
+            transports.add(objectTransport(new WorldPoint(3213, 3222, 0), new WorldPoint(3212, 3222, 0), 12350, "Open"));
+            transports.add(objectTransport(new WorldPoint(3212, 3222, 0), new WorldPoint(3213, 3222, 0), 12350, "Open"));
+            transports.add(objectTransport(new WorldPoint(3207, 3218, 0), new WorldPoint(3207, 3217, 0), 12348, "Open"));
+            transports.add(objectTransport(new WorldPoint(3207, 3217, 0), new WorldPoint(3207, 3218, 0), 12348, "Open"));
         }
 
         if (Worlds.inMembersWorld()) {
