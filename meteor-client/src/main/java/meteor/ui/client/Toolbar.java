@@ -60,6 +60,9 @@ public class Toolbar extends JFXPanel {
 	@Getter
 	private Parent currentRoot;
 
+	@Getter
+	private Map<String, Parent> roots;
+
 	public Toolbar() {
 		buttons = new HashMap<>();
 

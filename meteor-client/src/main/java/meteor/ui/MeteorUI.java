@@ -332,8 +332,6 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 	}
 
 	public void setupJavaFXComponents(Applet applet) {
-
-
 		toolbar.setPosition(config.toolbarPosition().getPosition());
 
 		if (!toolbar.getPosition().equals(BorderLayout.EAST)) {
