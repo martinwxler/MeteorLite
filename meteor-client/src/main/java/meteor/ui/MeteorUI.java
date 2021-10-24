@@ -323,9 +323,16 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 		Platform.runLater(() -> rightPanel.update(root));
 	}
 
+	public void hideRightPanel() {
+		SwingUtilities.invokeLater(() -> rootPanel.remove(rightPanel));
+	}
+
+	public void showRightPanel() {
+		SwingUtilities.invokeLater(() -> rootPanel.add(rightPanel, BorderLayout.EAST));
+	}
+
 	public void setupJavaFXComponents(Applet applet) {
 
-		rootPanel.add(rightPanel, BorderLayout.EAST);
 
 		toolbar.setPosition(config.toolbarPosition().getPosition());
 
@@ -333,6 +340,7 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 			rootPanel.add(toolbar, toolbar.getPosition());
 		} else {
 			rightPanel.addToolbar();
+			rootPanel.add(rightPanel, BorderLayout.EAST);
 		}
 
 		setMinimumFrameSize();
@@ -406,13 +414,13 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 		if (event.getKey().equals("toolbarPosition")) {
 			toolbar.setPosition(config.toolbarPosition().getPosition());
 			rootPanel.remove(toolbar);
+			setMinimumFrameSize();
 			if (!toolbar.getPosition().equals(BorderLayout.EAST)) {
 				rootPanel.add(toolbar, toolbar.getPosition());
 				rightPanel.removeToolbar();
 			} else {
 				rightPanel.addToolbar();
 			}
-			setMinimumFrameSize();
 		}
 
 		if (!(event.getKey().equals(CONFIG_OPACITY) ||

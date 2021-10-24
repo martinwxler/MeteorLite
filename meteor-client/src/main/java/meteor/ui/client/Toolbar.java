@@ -103,7 +103,7 @@ public class Toolbar extends JFXPanel {
 	private HBox initHorizontalToolbar() {
 		HBox horizontalToolbar = new HBox();
 		horizontalToolbar.setMinHeight(32);
-		horizontalToolbar.setMinHeight(32);
+		horizontalToolbar.setMaxHeight(32);
 		horizontalToolbar.setMinWidth(MeteorConstants.CLIENT_WIDTH);
 		horizontalToolbar.setPrefWidth(MeteorConstants.CLIENT_WIDTH);
 		horizontalToolbar.setAlignment(Pos.CENTER_RIGHT);
@@ -117,7 +117,7 @@ public class Toolbar extends JFXPanel {
 		return horizontalToolbar;
 	}
 
-	private VBox initVerticalToolbar() {
+	public VBox initVerticalToolbar() {
 		VBox verticalToolbar = new VBox();
 		verticalToolbar.setMinWidth(32);
 		verticalToolbar.setMaxWidth(32);
@@ -136,7 +136,6 @@ public class Toolbar extends JFXPanel {
 			meteorUI.updateRightPanel(parent);
 		});
 		buttons.put(plugin.getClass().getSimpleName(), toolbarButton);
-		refresh();
 	}
 
 	public void addNavigationButton(Image image, Parent parent, Plugin plugin) {
@@ -145,12 +144,10 @@ public class Toolbar extends JFXPanel {
 			meteorUI.updateRightPanel(parent);
 		});
 		buttons.put(plugin.getClass().getSimpleName(), toolbarButton);
-		refresh();
 	}
 
 	public void removeNavigationButton(Plugin plugin) {
 		buttons.remove(plugin.getClass().getSimpleName());
-		refresh();
 	}
 
 }

@@ -3,6 +3,7 @@ package meteor.ui.client;
 import com.jfoenix.controls.JFXButton;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.image.Image;
@@ -41,7 +42,7 @@ public class ToolbarButton extends JFXButton {
 		setTextAlignment(TextAlignment.CENTER);
 		setTextFill(Color.CYAN);
 		setButtonType(JFXButton.ButtonType.RAISED);
-		setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), new CornerRadii(3), null)));
+		setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
 	}
 
 	private void addIcon(Image image) {
