@@ -10,6 +10,7 @@ import meteor.plugins.api.items.Inventory;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.movement.Reachable;
 import meteor.plugins.api.widgets.Dialog;
+import meteor.plugins.api.widgets.Widgets;
 import net.runelite.api.Item;
 import net.runelite.api.NPC;
 import net.runelite.api.Skill;
@@ -17,12 +18,19 @@ import net.runelite.api.TileObject;
 import net.runelite.api.coords.Direction;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.widgets.Widget;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static net.runelite.api.MenuAction.WIDGET_TYPE_6;
 
 public class TransportLoader {
     private static final int RFD_VARBIT = 1850;
@@ -31,6 +39,14 @@ public class TransportLoader {
     private static List<Transport> LAST_TRANSPORT_LIST = Collections.emptyList();
 
     private static final WorldArea MLM = new WorldArea(3714, 5633, 60, 62, 0);
+
+    public static final List<SpiritTree> SPIRIT_TREES = List.of(
+            new SpiritTree(new WorldPoint(2542, 3170, 0), "Tree gnome Village"),
+            new SpiritTree(new WorldPoint(2461, 3444, 0), "Gnome Stronghold"),
+            new SpiritTree(new WorldPoint(2555, 3259, 0), "Battlefield of Khazard"),
+            new SpiritTree(new WorldPoint(3185, 3508, 0), "Grand Exchange"),
+            new SpiritTree(new WorldPoint(2488, 2850, 0), "Feldip Hills")
+    );
 
     public static List<Transport> buildTransports() {
         if (lastBuild.plusSeconds(BUILD_DELAY_SECONDS).isAfter(Instant.now())) {
@@ -158,6 +174,17 @@ public class TransportLoader {
 
             // Port Piscarilius
             transports.add(npcTransport(new WorldPoint(1824, 3691, 0), new WorldPoint(3055, 3242, 1), 10727, "Port Sarim"));
+
+            if (Vars.getVarp(111) == 9) {
+                for (var source : SPIRIT_TREES) {
+                    if (source.location.equals("Gnome Stronghold") && Vars.getVarp(150) < 160) {
+                        continue;
+                    }
+                    for (var target : SPIRIT_TREES) {
+                        transports.add(spritTreeTransport(source.position, target.position, target.location));
+                    }
+                }
+            }
 
             // Gnome stronghold
             transports.add(objectDialogTransport(new WorldPoint(2461, 3382, 0),
@@ -380,5 +407,38 @@ public class TransportLoader {
                 transport.interact(action);
             }
         });
+    }
+
+    private static Transport spritTreeTransport(WorldPoint source, WorldPoint target, String location) {
+        return new Transport(
+                source,
+                target,
+                Integer.MAX_VALUE,
+                0,
+                () -> {
+                    Widget treeWidget = Widgets.get(187, 3);
+                    if (Widgets.isVisible(treeWidget)) {
+                        Arrays.stream(treeWidget.getDynamicChildren())
+                                .filter(child -> child.getText().contains(location))
+                                .findFirst()
+                                .ifPresent(child -> child.interact(0, WIDGET_TYPE_6.getId(), child.getIndex(), child.getId()));
+                        return;
+                    }
+
+                    TileObject tree = TileObjects.getNearest( "Spirit tree");
+                    if (tree != null) {
+                        tree.interact("Travel");
+                    }
+                });
+    }
+
+    public static class SpiritTree {
+        private final WorldPoint position;
+        private final String location;
+
+        public SpiritTree(WorldPoint position, String location) {
+            this.position = position;
+            this.location = location;
+        }
     }
 }
