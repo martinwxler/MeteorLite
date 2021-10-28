@@ -33,6 +33,8 @@ import java.util.stream.Collectors;
 import static net.runelite.api.MenuAction.WIDGET_TYPE_6;
 
 public class TransportLoader {
+    private static final int TREE_GNOME_VILLAGE_VARBIT = 111;
+    private static final int GRAND_TREE_VARBIT = 150;
     private static final int RFD_VARBIT = 1850;
     private static final int BUILD_DELAY_SECONDS = 5;
     private static Instant lastBuild = Instant.now().minusSeconds(6);
@@ -175,9 +177,9 @@ public class TransportLoader {
             // Port Piscarilius
             transports.add(npcTransport(new WorldPoint(1824, 3691, 0), new WorldPoint(3055, 3242, 1), 10727, "Port Sarim"));
 
-            if (Vars.getVarp(111) == 9) {
+            if (Vars.getVarp(TREE_GNOME_VILLAGE_VARBIT) == 9) {
                 for (var source : SPIRIT_TREES) {
-                    if (source.location.equals("Gnome Stronghold") && Vars.getVarp(150) < 160) {
+                    if (source.location.equals("Gnome Stronghold") && Vars.getVarp(GRAND_TREE_VARBIT) < 160) {
                         continue;
                     }
                     for (var target : SPIRIT_TREES) {
