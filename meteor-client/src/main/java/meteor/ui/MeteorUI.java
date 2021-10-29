@@ -12,6 +12,7 @@ import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ClientShutdown;
 import meteor.eventbus.events.ConfigChanged;
 import meteor.events.ExternalsReloaded;
+import meteor.plugins.api.game.Game;
 import meteor.ui.client.PluginListPanel;
 import meteor.ui.client.RightPanel;
 import meteor.ui.client.Toolbar;
@@ -407,8 +408,12 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 		}
 
 		if (event.getKey().equals("toolbarPosition")) {
-			Dimension prevSize = getSize();
+			if (Game.isOnLoginScreen()) {
+				return;
+			}
 
+			// Save prev size and increase window size to prevent game crashes.
+			Dimension prevSize = getSize();
 			setSize(new Dimension(MeteorConstants.CLIENT_WIDTH + MeteorConstants.PANEL_WIDTH + MeteorConstants.TOOLBAR_SIZE,
 					MeteorConstants.CLIENT_HEIGHT+ MeteorConstants.TOOLBAR_SIZE));
 
