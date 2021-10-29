@@ -2491,4 +2491,17 @@ public interface Client extends GameEngine {
   void setClickCrossX(int x);
 
   void setClickCrossY(int y);
+
+  boolean getCameraPitchRelaxerEnabled();
+
+  /**
+   * Sets local X coord where the camera is pointing when the Oculus orb is active
+   */
+  void setOculusOrbFocalPointX(int xPos);
+
+  /**
+   * Sets local Y coord where the camera is pointing when the Oculus orb is active
+   */
+  void setOculusOrbFocalPointY(int yPos);
+
 }

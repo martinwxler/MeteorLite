@@ -1778,4 +1778,21 @@ public interface RSClient extends RSGameEngine, Client {
 
   @Import("readStringIntParameters")
   RSIterableNodeHashTable readStringIntParameters(RSBuffer buffer, RSIterableNodeHashTable table);
+
+  @Import("isCameraLocked")
+  boolean isCameraLocked();
+
+  boolean getCameraPitchRelaxerEnabled();
+
+  boolean isUnlockedFps();
+
+  void posToCameraAngle(int var0, int var1);
+
+  @Import("oculusOrbFocalPointX")
+  @Override
+  void setOculusOrbFocalPointX(int state);
+
+  @Import("oculusOrbFocalPointY")
+  @Override
+  void setOculusOrbFocalPointY(int state);
 }

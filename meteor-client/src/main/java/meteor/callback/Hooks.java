@@ -215,7 +215,7 @@ public class Hooks implements Callbacks {
   }
 
   @Override
-  public void clientMainLoop() {
+  public void tick() {
     if (shouldProcessGameTick) {
       shouldProcessGameTick = false;
 
@@ -227,7 +227,7 @@ public class Hooks implements Callbacks {
       client.setTickCount(tick + 1);
     }
 
-    eventBus.post(BEFORE_RENDER);
+    frame();
 
     clientThread.invoke();
 
@@ -252,6 +252,11 @@ public class Hooks implements Callbacks {
     } catch (Exception ex) {
       ex.printStackTrace();
     }
+  }
+
+  @Override
+  public void frame() {
+    eventBus.post(BEFORE_RENDER);
   }
 
   /**
