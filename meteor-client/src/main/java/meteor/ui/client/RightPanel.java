@@ -95,7 +95,7 @@ public class RightPanel extends JFXPanel {
 		meteorUI.updateClientSize();
 	}
 
-	private void close() {
+	public void close() {
 		isOpen = false;
 		if (hasToolbar()) {
 			updateScene(MeteorConstants.TOOLBAR_SIZE);

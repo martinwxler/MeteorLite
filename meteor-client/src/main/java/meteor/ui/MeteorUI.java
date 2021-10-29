@@ -336,6 +336,8 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 			rootPanel.add(rightPanel, BorderLayout.EAST);
 		}
 
+		rightPanel.close();
+
 		setMinimumFrameSize();
 		add(rootPanel);
 		rootPanel.setVisible(true);
@@ -405,15 +407,21 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 		}
 
 		if (event.getKey().equals("toolbarPosition")) {
+			Dimension prevSize = getSize();
+
+			setSize(new Dimension(MeteorConstants.CLIENT_WIDTH + MeteorConstants.PANEL_WIDTH + MeteorConstants.TOOLBAR_SIZE,
+					MeteorConstants.CLIENT_HEIGHT+ MeteorConstants.TOOLBAR_SIZE));
+
 			toolbar.setPosition(config.toolbarPosition().getPosition());
 			rootPanel.remove(toolbar);
-			setMinimumFrameSize();
 			if (!toolbar.getPosition().equals(BorderLayout.EAST)) {
 				rootPanel.add(toolbar, toolbar.getPosition());
 				rightPanel.removeToolbar();
 			} else {
 				rightPanel.addToolbar();
 			}
+			setSize(prevSize);
+			setMinimumFrameSize();
 		}
 
 		if (!(event.getKey().equals(CONFIG_OPACITY) ||
