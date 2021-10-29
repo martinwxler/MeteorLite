@@ -3,7 +3,6 @@ package meteor.ui.client;
 import com.jfoenix.controls.JFXButton;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.image.Image;
@@ -41,7 +40,7 @@ public class ToolbarButton extends JFXButton {
 		setAlignment(Pos.CENTER);
 		setTextAlignment(TextAlignment.CENTER);
 		setTextFill(Color.CYAN);
-		setButtonType(JFXButton.ButtonType.RAISED);
+		setButtonType(ButtonType.FLAT);
 		setBackground(new Background(new BackgroundFill(Paint.valueOf("252525"), null, null)));
 	}
 
@@ -64,10 +63,12 @@ public class ToolbarButton extends JFXButton {
 			setText("");
 			setMaxSize(32, 32);
 			setMinSize(32, 32);
+			setButtonType(ButtonType.FLAT);
 			setBackground(new Background(new BackgroundFill(MeteorConstants.GRAY, null, null)));
 		} else {
 			setText(buttonText);
 			setMaxWidth(Double.MAX_VALUE);
+			setButtonType(ButtonType.RAISED);
 			setBackground(new Background(new BackgroundFill(MeteorConstants.GRAY, new CornerRadii(3), null)));
 		}
 	}
