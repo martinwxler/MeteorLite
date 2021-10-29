@@ -53,21 +53,25 @@ public class RightPanel extends JFXPanel {
 	}
 
 	public void addToolbar() {
-		root = new HBox(panel, toolbar.initVerticalToolbar());
-		updateScene(MeteorConstants.PANEL_WIDTH + MeteorConstants.TOOLBAR_SIZE);
+		Platform.runLater(() -> {
+			root = new HBox(panel, toolbar.initVerticalToolbar());
+			updateScene(MeteorConstants.PANEL_WIDTH + MeteorConstants.TOOLBAR_SIZE);
+		});
 	}
 
 	public void removeToolbar() {
-		root = new HBox(panel);
-		toolbar.refresh();
-		updateScene(MeteorConstants.PANEL_WIDTH);
+		Platform.runLater(() -> {
+			root = new HBox(panel);
+			toolbar.refresh();
+			updateScene(MeteorConstants.PANEL_WIDTH);
+		});
 	}
 
 	private boolean hasToolbar() {
 		return toolbar.getPosition().equals(BorderLayout.EAST);
 	}
 
-	public void changePanel(Parent parent) {
+	private void changePanel(Parent parent) {
 		if (parent instanceof ScrollPane) {
 			((ScrollPane) parent).setMinWidth(MeteorConstants.PANEL_WIDTH);
 		}
@@ -94,25 +98,29 @@ public class RightPanel extends JFXPanel {
 	}
 
 	public void close() {
-		isOpen = false;
-		if (hasToolbar()) {
-			updateScene(MeteorConstants.TOOLBAR_SIZE);
-		} else {
-			updateScene(0);
-			meteorUI.hideRightPanel();
-		}
-		meteorUI.updateClientSize();
+		Platform.runLater(() -> {
+			isOpen = false;
+			if (hasToolbar()) {
+				updateScene(MeteorConstants.TOOLBAR_SIZE);
+			} else {
+				updateScene(0);
+				meteorUI.hideRightPanel();
+			}
+			meteorUI.updateClientSize();
+		});
 	}
 
 	public void update(Parent parent) {
-		if (isOpen()) {
-			if (parent.equals(panel)) {
-				close();
+		Platform.runLater(() -> {
+			if (isOpen()) {
+				if (parent.equals(panel)) {
+					close();
+				} else {
+					changePanel(parent);
+				}
 			} else {
-				changePanel(parent);
+				open(parent);
 			}
-		} else {
-			open(parent);
-		}
+		});
 	}
 }

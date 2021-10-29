@@ -412,31 +412,17 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 		}
 
 		if (event.getKey().equals("toolbarPosition")) {
-			if (Game.isOnLoginScreen()) {
-				Alert dialog = new Alert(Alert.AlertType.WARNING);
-				dialog.setTitle("Toolbar Position Warning");
-				dialog.setHeaderText(null);
-				dialog.setGraphic(null);
-				dialog.setContentText("Wait until you are logged in to change the toolbar position.");
-				dialog.show();
-				return;
-			}
-
-			// Save prev size and increase window size to prevent game crashes.
-			Dimension prevSize = getSize();
-			setSize(new Dimension(MeteorConstants.CLIENT_WIDTH + MeteorConstants.PANEL_WIDTH + MeteorConstants.TOOLBAR_SIZE,
-					MeteorConstants.CLIENT_HEIGHT+ MeteorConstants.TOOLBAR_SIZE));
-
-			toolbar.setPosition(config.toolbarPosition().getPosition());
-			rootPanel.remove(toolbar);
-			if (!toolbar.getPosition().equals(BorderLayout.EAST)) {
-				rootPanel.add(toolbar, toolbar.getPosition());
-				rightPanel.removeToolbar();
-			} else {
-				rightPanel.addToolbar();
-			}
-			setSize(prevSize);
-			setMinimumFrameSize();
+			SwingUtilities.invokeLater(() -> {
+				rootPanel.remove(toolbar);
+				toolbar.setPosition(config.toolbarPosition().getPosition());
+				if (!toolbar.getPosition().equals(BorderLayout.EAST)) {
+					rootPanel.add(toolbar, toolbar.getPosition());
+					rightPanel.removeToolbar();
+				} else {
+					rightPanel.addToolbar();
+				}
+				setMinimumFrameSize();
+			});
 		}
 
 		if (!(event.getKey().equals(CONFIG_OPACITY) ||
