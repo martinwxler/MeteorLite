@@ -84,8 +84,6 @@ public class RightPanel extends JFXPanel {
 	}
 
 	private void open(Parent parent) {
-		Platform.runLater(() -> {
-
 		isOpen = true;
 		if (hasToolbar()) {
 			updateScene(MeteorConstants.PANEL_WIDTH + MeteorConstants.TOOLBAR_SIZE);
@@ -95,7 +93,6 @@ public class RightPanel extends JFXPanel {
 		}
 		changePanel(parent);
 		meteorUI.updateClientSize();
-		});
 	}
 
 	private void close() {

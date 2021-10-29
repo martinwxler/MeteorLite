@@ -285,13 +285,8 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 				return;
 			}
 
-
 			if (!config.resizeGame()) {
-				if (toolbar.isVertical()) {
-					setSize(new Dimension(MeteorConstants.CLIENT_WIDTH + MeteorConstants.TOOLBAR_SIZE, getHeight()));
-				} else {
-					setSize(new Dimension(MeteorConstants.CLIENT_WIDTH, getHeight()));
-				}
+				setSize(new Dimension(getWidth() - MeteorConstants.PANEL_WIDTH, getHeight()));
 			}
 
 		}
