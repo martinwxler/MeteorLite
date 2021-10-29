@@ -1,10 +1,8 @@
 package meteor.plugins.api.movement.pathfinder;
 
-import com.questhelper.QuestVarbits;
 import meteor.plugins.api.entities.NPCs;
 import meteor.plugins.api.entities.Players;
 import meteor.plugins.api.entities.TileObjects;
-import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.Skills;
 import meteor.plugins.api.game.Vars;
 import meteor.plugins.api.game.Worlds;
@@ -12,6 +10,7 @@ import meteor.plugins.api.items.Inventory;
 import meteor.plugins.api.movement.Movement;
 import meteor.plugins.api.movement.Reachable;
 import meteor.plugins.api.widgets.Dialog;
+import meteor.plugins.api.widgets.Widgets;
 import net.runelite.api.Item;
 import net.runelite.api.NPC;
 import net.runelite.api.Skill;
@@ -19,6 +18,8 @@ import net.runelite.api.TileObject;
 import net.runelite.api.coords.Direction;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,12 +31,32 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static net.runelite.api.MenuAction.WIDGET_TYPE_6;
+
 public class TransportLoader {
+    private static final int TREE_GNOME_VILLAGE_VARBIT = 111;
+    private static final int GRAND_TREE_VARBIT = 150;
+    private static final int RFD_VARBIT = 1850;
     private static final int BUILD_DELAY_SECONDS = 5;
     private static Instant lastBuild = Instant.now().minusSeconds(6);
     private static List<Transport> LAST_TRANSPORT_LIST = Collections.emptyList();
 
     private static final WorldArea MLM = new WorldArea(3714, 5633, 60, 62, 0);
+
+    public static final List<SpiritTree> SPIRIT_TREES = List.of(
+            new SpiritTree(new WorldPoint(2542, 3170, 0), "Tree gnome Village"),
+            new SpiritTree(new WorldPoint(2461, 3444, 0), "Gnome Stronghold"),
+            new SpiritTree(new WorldPoint(2555, 3259, 0), "Battlefield of Khazard"),
+            new SpiritTree(new WorldPoint(3185, 3508, 0), "Grand Exchange"),
+            new SpiritTree(new WorldPoint(2488, 2850, 0), "Feldip Hills")
+    );
+
+    public static final List<MagicMushtree> MUSHTREES = List.of(
+            new MagicMushtree(new WorldPoint(3676, 3871, 0), WidgetInfo.FOSSIL_MUSHROOM_MEADOW),
+            new MagicMushtree(new WorldPoint(3764, 3879, 0), WidgetInfo.FOSSIL_MUSHROOM_HOUSE),
+            new MagicMushtree(new WorldPoint(3676, 3755, 0), WidgetInfo.FOSSIL_MUSHROOM_SWAMP),
+            new MagicMushtree(new WorldPoint(3760, 3758, 0), WidgetInfo.FOSSIL_MUSHROOM_VALLEY)
+    );
 
     public static List<Transport> buildTransports() {
         if (lastBuild.plusSeconds(BUILD_DELAY_SECONDS).isAfter(Instant.now())) {
@@ -89,7 +110,7 @@ public class TransportLoader {
         }
 
         // Lumbridge castle dining room, ignore if RFD is in progress.
-        if (Vars.getBit(QuestVarbits.QUEST_RECIPE_FOR_DISASTER.getId()) == -1) {
+        if (Vars.getBit(RFD_VARBIT) == -1) {
             transports.add(objectTransport(new WorldPoint(3213, 3221, 0), new WorldPoint(3212, 3221, 0), 12349, "Open"));
             transports.add(objectTransport(new WorldPoint(3212, 3221, 0), new WorldPoint(3213, 3221, 0), 12349, "Open"));
             transports.add(objectTransport(new WorldPoint(3213, 3222, 0), new WorldPoint(3212, 3222, 0), 12350, "Open"));
@@ -163,6 +184,25 @@ public class TransportLoader {
 
             // Port Piscarilius
             transports.add(npcTransport(new WorldPoint(1824, 3691, 0), new WorldPoint(3055, 3242, 1), 10727, "Port Sarim"));
+
+            // Spirit Trees
+            if (Vars.getVarp(TREE_GNOME_VILLAGE_VARBIT) == 9) {
+                for (var source : SPIRIT_TREES) {
+                    if (source.location.equals("Gnome Stronghold") && Vars.getVarp(GRAND_TREE_VARBIT) < 160) {
+                        continue;
+                    }
+                    for (var target : SPIRIT_TREES) {
+                        transports.add(spritTreeTransport(source.position, target.position, target.location));
+                    }
+                }
+            }
+
+            // Magic Mushtrees
+            for (var source : MUSHTREES) {
+                for (var target : MUSHTREES) {
+                    transports.add(mushtreeTransport(source.position, target.position, target.widget));
+                }
+            }
 
             // Gnome stronghold
             transports.add(objectDialogTransport(new WorldPoint(2461, 3382, 0),
@@ -385,5 +425,68 @@ public class TransportLoader {
                 transport.interact(action);
             }
         });
+    }
+
+    private static Transport spritTreeTransport(WorldPoint source, WorldPoint target, String location) {
+        return new Transport(
+                source,
+                target,
+               5,
+                0,
+                () -> {
+                    Widget treeWidget = Widgets.get(187, 3);
+                    if (Widgets.isVisible(treeWidget)) {
+                        Arrays.stream(treeWidget.getDynamicChildren())
+                                .filter(child -> child.getText().contains(location))
+                                .findFirst()
+                                .ifPresent(child -> child.interact(0, WIDGET_TYPE_6.getId(), child.getIndex(), child.getId()));
+                        return;
+                    }
+
+                    TileObject tree = TileObjects.getNearest( "Spirit tree");
+                    if (tree != null) {
+                        tree.interact("Travel");
+                    }
+                });
+    }
+
+    private static Transport mushtreeTransport(WorldPoint source, WorldPoint target, WidgetInfo widget) {
+        return new Transport(
+                source,
+                target,
+                5,
+                0,
+                () -> {
+                    Widget treeWidget = Widgets.get(widget);
+                    if (Widgets.isVisible(treeWidget)) {
+                        treeWidget.interact(0, WIDGET_TYPE_6.getId(), treeWidget.getIndex(), treeWidget.getId());
+                        return;
+                    }
+
+                    TileObject tree = TileObjects.getNearest( "Magic Mushtree");
+                    if (tree != null) {
+                        tree.interact("Use");
+                    }
+                });
+    }
+
+    public static class MagicMushtree {
+        private final WorldPoint position;
+        private final WidgetInfo widget;
+
+        public MagicMushtree(WorldPoint position, WidgetInfo widget) {
+            this.position = position;
+            this.widget = widget;
+        }
+    }
+
+    public static class SpiritTree {
+        private final WorldPoint position;
+        private final String location;
+
+        public SpiritTree(WorldPoint position, String location) {
+            this.position = position;
+            this.location = location;
+        }
     }
 }

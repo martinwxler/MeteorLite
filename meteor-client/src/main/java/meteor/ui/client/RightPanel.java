@@ -1,9 +1,7 @@
 package meteor.ui.client;
 
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
