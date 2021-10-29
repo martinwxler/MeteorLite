@@ -44,8 +44,13 @@ public class Pathfinder {
                 bestDistance = distance;
             }
 
-            if (distance == bestDistance && distance == 1 && !Reachable.isWalled(current, destination)) {
-                nearest = current;
+            try {
+                if (distance == bestDistance && distance == 1 && !Reachable.isWalled(current, destination)) {
+                    nearest = current;
+                }
+            } catch (NullPointerException e) {
+                Walker.LOCAL_PATH_CACHE.refresh(destination);
+                Walker.PATH_CACHE.refresh(destination);
             }
 
             if ((destination.isInScene(Game.getClient())
