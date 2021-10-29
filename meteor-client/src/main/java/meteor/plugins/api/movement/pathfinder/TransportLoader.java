@@ -19,6 +19,7 @@ import net.runelite.api.coords.Direction;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,6 +49,13 @@ public class TransportLoader {
             new SpiritTree(new WorldPoint(2555, 3259, 0), "Battlefield of Khazard"),
             new SpiritTree(new WorldPoint(3185, 3508, 0), "Grand Exchange"),
             new SpiritTree(new WorldPoint(2488, 2850, 0), "Feldip Hills")
+    );
+
+    public static final List<MagicMushtree> MUSHTREES = List.of(
+            new MagicMushtree(new WorldPoint(3676, 3871, 0), WidgetInfo.FOSSIL_MUSHROOM_MEADOW),
+            new MagicMushtree(new WorldPoint(3764, 3879, 0), WidgetInfo.FOSSIL_MUSHROOM_HOUSE),
+            new MagicMushtree(new WorldPoint(3676, 3755, 0), WidgetInfo.FOSSIL_MUSHROOM_SWAMP),
+            new MagicMushtree(new WorldPoint(3760, 3758, 0), WidgetInfo.FOSSIL_MUSHROOM_VALLEY)
     );
 
     public static List<Transport> buildTransports() {
@@ -177,6 +185,7 @@ public class TransportLoader {
             // Port Piscarilius
             transports.add(npcTransport(new WorldPoint(1824, 3691, 0), new WorldPoint(3055, 3242, 1), 10727, "Port Sarim"));
 
+            // Spirit Trees
             if (Vars.getVarp(TREE_GNOME_VILLAGE_VARBIT) == 9) {
                 for (var source : SPIRIT_TREES) {
                     if (source.location.equals("Gnome Stronghold") && Vars.getVarp(GRAND_TREE_VARBIT) < 160) {
@@ -185,6 +194,13 @@ public class TransportLoader {
                     for (var target : SPIRIT_TREES) {
                         transports.add(spritTreeTransport(source.position, target.position, target.location));
                     }
+                }
+            }
+
+            // Magic Mushtrees
+            for (var source : MUSHTREES) {
+                for (var target : MUSHTREES) {
+                    transports.add(mushtreeTransport(source.position, target.position, target.widget));
                 }
             }
 
@@ -415,7 +431,7 @@ public class TransportLoader {
         return new Transport(
                 source,
                 target,
-                Integer.MAX_VALUE,
+               5,
                 0,
                 () -> {
                     Widget treeWidget = Widgets.get(187, 3);
@@ -432,6 +448,36 @@ public class TransportLoader {
                         tree.interact("Travel");
                     }
                 });
+    }
+
+    private static Transport mushtreeTransport(WorldPoint source, WorldPoint target, WidgetInfo widget) {
+        return new Transport(
+                source,
+                target,
+                5,
+                0,
+                () -> {
+                    Widget treeWidget = Widgets.get(widget);
+                    if (Widgets.isVisible(treeWidget)) {
+                        treeWidget.interact(0, WIDGET_TYPE_6.getId(), treeWidget.getIndex(), treeWidget.getId());
+                        return;
+                    }
+
+                    TileObject tree = TileObjects.getNearest( "Magic Mushtree");
+                    if (tree != null) {
+                        tree.interact("Use");
+                    }
+                });
+    }
+
+    public static class MagicMushtree {
+        private final WorldPoint position;
+        private final WidgetInfo widget;
+
+        public MagicMushtree(WorldPoint position, WidgetInfo widget) {
+            this.position = position;
+            this.widget = widget;
+        }
     }
 
     public static class SpiritTree {
