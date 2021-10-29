@@ -3,6 +3,9 @@ package meteor.ui;
 import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.TextInputDialog;
 import lombok.Getter;
 import meteor.PluginManager;
 import meteor.config.ConfigManager;
@@ -41,6 +44,7 @@ import java.net.URL;
 import java.security.InvalidParameterException;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Optional;
 
 import static meteor.MeteorLiteClientModule.parameters;
 import static meteor.MeteorLiteClientModule.properties;
@@ -409,6 +413,12 @@ public class MeteorUI extends ContainableFrame implements AppletStub, AppletCont
 
 		if (event.getKey().equals("toolbarPosition")) {
 			if (Game.isOnLoginScreen()) {
+				Alert dialog = new Alert(Alert.AlertType.WARNING);
+				dialog.setTitle("Toolbar Position Warning");
+				dialog.setHeaderText(null);
+				dialog.setGraphic(null);
+				dialog.setContentText("Wait until you are logged in to change the toolbar position.");
+				dialog.show();
 				return;
 			}
 
