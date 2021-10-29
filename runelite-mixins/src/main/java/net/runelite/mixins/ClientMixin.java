@@ -645,15 +645,14 @@ public abstract class ClientMixin implements RSClient {
   @Inject
   @MethodHook("draw")
   public void draw$api(boolean var1) {
-//    callbacks.frame();
-    callbacks.tick();
+    callbacks.frame();
     updateCamera();
   }
 
   @Inject
   @MethodHook("doCycle")
-  protected final void doCycle() {
-//    callbacks.tick();
+  protected final void doCycle$api() {
+    callbacks.tick();
   }
 
   @Override
@@ -1952,6 +1951,7 @@ public abstract class ClientMixin implements RSClient {
   }
 
   @Inject
+  @Override
   public void setUnlockedFps(boolean unlocked)
   {
     unlockedFps = unlocked;

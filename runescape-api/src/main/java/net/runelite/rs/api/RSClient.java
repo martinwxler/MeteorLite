@@ -1782,12 +1782,6 @@ public interface RSClient extends RSGameEngine, Client {
   @Import("isCameraLocked")
   boolean isCameraLocked();
 
-  boolean getCameraPitchRelaxerEnabled();
-
-  boolean isUnlockedFps();
-
-  void posToCameraAngle(int var0, int var1);
-
   @Import("oculusOrbFocalPointX")
   @Override
   void setOculusOrbFocalPointX(int state);

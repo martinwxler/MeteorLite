@@ -2504,4 +2504,9 @@ public interface Client extends GameEngine {
    */
   void setOculusOrbFocalPointY(int yPos);
 
+  boolean isUnlockedFps();
+
+  void setUnlockedFps(boolean enabled);
+
+  void posToCameraAngle(int var0, int var1);
 }

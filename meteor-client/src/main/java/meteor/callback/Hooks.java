@@ -227,8 +227,6 @@ public class Hooks implements Callbacks {
       client.setTickCount(tick + 1);
     }
 
-    frame();
-
     clientThread.invoke();
 
     long now = System.nanoTime();
