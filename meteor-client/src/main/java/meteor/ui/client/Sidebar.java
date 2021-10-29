@@ -3,6 +3,7 @@ package meteor.ui.client;
 import com.jfoenix.controls.JFXButton;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.image.Image;
@@ -98,7 +99,7 @@ public class Sidebar extends VBox {
 		button.setAlignment(Pos.CENTER);
 		button.setTextAlignment(TextAlignment.CENTER);
 		button.setTextFill(Color.CYAN);
-		button.setButtonType(JFXButton.ButtonType.RAISED);
+		button.setButtonType(JFXButton.ButtonType.FLAT);
 		button.setBackground(new Background(new BackgroundFill(MeteorConstants.GRAY, null, null)));
 		return button;
 	}
