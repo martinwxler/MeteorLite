@@ -2,6 +2,7 @@ package meteor.plugins.api.movement;
 
 import meteor.plugins.api.game.Game;
 import meteor.plugins.api.game.GameThread;
+import meteor.plugins.api.scene.Tiles;
 import net.runelite.api.*;
 import net.runelite.api.coords.Direction;
 import net.runelite.api.coords.LocalPoint;
@@ -51,6 +52,10 @@ public class Reachable {
             case WEST -> check(startFlag, 0x80);
             case EAST -> check(startFlag, 0x8);
         };
+    }
+
+    public static boolean isWalled(WorldPoint source, WorldPoint destination) {
+        return isWalled(Tiles.getAt(source), Tiles.getAt(destination));
     }
 
     public static boolean isWalled(Tile source, Tile destination) {
