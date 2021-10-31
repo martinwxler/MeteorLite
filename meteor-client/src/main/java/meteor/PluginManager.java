@@ -25,6 +25,7 @@ import meteor.eventbus.events.PluginChanged;
 import meteor.plugins.ExternalPluginClassLoader;
 import meteor.plugins.PluginDescriptor;
 import meteor.plugins.cettitutorial.CettiTutorialPlugin;
+import meteor.plugins.nexus.NexusMapPlugin;
 import meteor.plugins.nightmareHelper.NightmareHelper;
 import meteor.plugins.highalchemy.HighAlchPlugin;
 import meteor.plugins.Plugin;
@@ -316,6 +317,7 @@ public class PluginManager {
 		plugins.add(new MouseTooltipPlugin());
 		plugins.add(new MTAPlugin());
 		plugins.add(new NeverLogoutPlugin());
+		plugins.add(new NexusMapPlugin());
 	  plugins.add(new NightmareHelper());
 		plugins.add(new NightmarePlugin());
 		plugins.add(new NpcAggroAreaPlugin());
