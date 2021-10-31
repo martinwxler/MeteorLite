@@ -24,6 +24,7 @@ import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.PluginChanged;
 import meteor.plugins.ExternalPluginClassLoader;
 import meteor.plugins.PluginDescriptor;
+import meteor.plugins.banktaglayouts.BankTagLayoutsPlugin;
 import meteor.plugins.cettitutorial.CettiTutorialPlugin;
 import meteor.plugins.nexus.NexusMapPlugin;
 import meteor.plugins.nightmareHelper.NightmareHelper;
@@ -235,6 +236,7 @@ public class PluginManager {
 		plugins.add(new AutoLoginPlugin());
 		plugins.add(new BankPlugin());
 		plugins.add(new BankTagsPlugin());
+		plugins.add(new BankTagLayoutsPlugin());
 		plugins.add(new BAPlugin());
 		plugins.add(new BarrowsPlugin());
 		plugins.add(new BetterAntiDragPlugin());
