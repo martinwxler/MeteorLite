@@ -1,11 +1,11 @@
 package meteor.plugins.meteorlite;
 
+import meteor.PluginManager;
 import meteor.config.Config;
 import meteor.config.ConfigManager;
 import meteor.config.MeteorLiteConfig;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ConfigChanged;
-import meteor.events.ExternalsReloaded;
 import meteor.input.MouseManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
@@ -46,6 +46,9 @@ public class MeteorLitePlugin extends Plugin {
     @Inject
     private ConfigManager configManager;
 
+    @Inject
+    private PluginManager pluginManager;
+
     @Override
     public void updateConfig() {
         Logger.setDebugEnabled(config.debugEnabled());
@@ -57,10 +60,6 @@ public class MeteorLitePlugin extends Plugin {
         mouseManager.registerMouseListener(interactionOverlay);
         eventBus.register(interactionManager);
         eventBus.register(meteorLiteLoginScreen);
-
-        if (config.externalsLoadOnStartup()) {
-            Game.getClient().getCallbacks().post(new ExternalsReloaded());
-        }
 
         if (config.meteorLoginScreen()) {
             meteorLiteLoginScreen.setCustom();
@@ -83,7 +82,7 @@ public class MeteorLitePlugin extends Plugin {
         }
 
         if (event.getKey().equals("reloadExternals")) {
-            Game.getClient().getCallbacks().post(new ExternalsReloaded());
+            pluginManager.startExternals();
         }
     }
 
