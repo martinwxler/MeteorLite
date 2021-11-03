@@ -157,7 +157,7 @@ public class class128 extends class132 {
          if (var0.length() == 0) {
             var3 = var3 + "; Expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0";
          } else {
-            var3 = var3 + "; Expires=" + HorizontalAlignment.method3113(class111.method2516() + 94608000000L) + "; Max-Age=" + 94608000L;
+            var3 = var3 + "; Expires=" + HorizontalAlignment.method3113(class111.getServerTime() + 94608000000L) + "; Max-Age=" + 94608000L;
          }
 
          class27.method393(ArchiveLoader.client, "document.cookie=\"" + var3 + "\"");

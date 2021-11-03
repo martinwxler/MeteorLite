@@ -161,7 +161,7 @@ public final class GameObject {
                   }
 
                   NetCache.NetCache_loadTime = 0;
-                  class423.field4436 = class111.method2516();
+                  class423.field4436 = class111.getServerTime();
                   return;
                }
 

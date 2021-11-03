@@ -290,9 +290,9 @@ public class class1 implements Callable {
                int var12 = HealthBarDefinition.localPlayer.y - var10 >> 7;
                PacketBufferNode var13 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2749, Client.packetWriter.isaacCipher);
                var13.packetBuffer.writeByte(18);
-               var13.packetBuffer.method6962(var11 + class19.baseX);
-               var13.packetBuffer.method6993(KeyHandler.KeyHandler_pressedKeys[82] ? (KeyHandler.KeyHandler_pressedKeys[81] ? 2 : 1) : 0);
-               var13.packetBuffer.method7003(var12 + DefaultsGroup.baseY);
+               var13.packetBuffer.writeByteA(var11 + class19.baseX);
+               var13.packetBuffer.writeByteB(KeyHandler.KeyHandler_pressedKeys[82] ? (KeyHandler.KeyHandler_pressedKeys[81] ? 2 : 1) : 0);
+               var13.packetBuffer.writeByteC(var12 + DefaultsGroup.baseY);
                var13.packetBuffer.writeByte(var4);
                var13.packetBuffer.writeByte(var5);
                var13.packetBuffer.writeShort(Client.camAngleY);

@@ -31,7 +31,7 @@ public class MilliClock extends Clock {
    @ObfuscatedGetter(
       longValue = -2827552193639050909L
    )
-   long field1584 = class111.method2516();
+   long field1584 = class111.getServerTime();
    @ObfuscatedName("o")
    @ObfuscatedGetter(
       intValue = 1430749655
@@ -74,7 +74,7 @@ public class MilliClock extends Clock {
       int var4 = this.field1583;
       this.field1585 = 300;
       this.field1583 = 1;
-      this.field1584 = class111.method2516();
+      this.field1584 = class111.getServerTime();
       if (this.field1581[this.field1586] == 0L) {
          this.field1585 = var3;
          this.field1583 = var4;

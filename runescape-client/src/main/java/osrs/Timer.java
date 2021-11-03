@@ -63,7 +63,7 @@ public class Timer {
       garbageValue = "65280"
    )
    public void method5972() {
-      this.field3896 = class111.method2516();
+      this.field3896 = class111.getServerTime();
    }
 
    @ObfuscatedName("w")
@@ -73,7 +73,7 @@ public class Timer {
    )
    public void method5978() {
       if (-1L != this.field3896) {
-         this.field3898 = class111.method2516() - this.field3896;
+         this.field3898 = class111.getServerTime() - this.field3896;
          this.field3896 = -1L;
       }
 
@@ -85,7 +85,7 @@ public class Timer {
       garbageValue = "119"
    )
    public void method5973(int var1) {
-      this.field3895 = class111.method2516();
+      this.field3895 = class111.getServerTime();
       this.field3899 = var1;
    }
 
@@ -96,7 +96,7 @@ public class Timer {
    )
    public void method5974() {
       if (this.field3895 != -1L) {
-         this.field3897 = class111.method2516() - this.field3895;
+         this.field3897 = class111.getServerTime() - this.field3895;
          this.field3895 = -1L;
       }
 
