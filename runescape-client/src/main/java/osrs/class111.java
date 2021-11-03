@@ -24,7 +24,7 @@ public class class111 implements class110 {
       descriptor = "(I)J",
       garbageValue = "-721238808"
    )
-   public static final synchronized long method2516() {
+   public static final synchronized long getServerTime() {
       long var0 = System.currentTimeMillis();
       if (var0 < class397.field4289) {
          class397.field4288 += class397.field4289 - var0;

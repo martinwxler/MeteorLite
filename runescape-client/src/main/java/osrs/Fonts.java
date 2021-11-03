@@ -177,7 +177,7 @@ public class Fonts {
                } else if (var0 == ScriptOpcodes.TRADINGPOST_GETOFFERAGE) {
                   var3 = Interpreter.Interpreter_intStack[--class14.Interpreter_intStackSize];
                   var4 = (GrandExchangeEvent)JagexCache.grandExchangeEvents.events.get(var3);
-                  long var5 = class111.method2516() - GrandExchangeOfferUnitPriceComparator.field3758 - var4.age;
+                  long var5 = class111.getServerTime() - GrandExchangeOfferUnitPriceComparator.field3758 - var4.age;
                   int var7 = (int)(var5 / 3600000L);
                   int var8 = (int)((var5 - (long)(var7 * 3600000)) / 60000L);
                   int var9 = (int)((var5 - (long)(var7 * 3600000) - (long)(var8 * '\uea60')) / 1000L);

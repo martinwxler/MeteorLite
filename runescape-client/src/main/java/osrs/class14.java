@@ -376,10 +376,10 @@ public class class14 {
          var8.packetBuffer.method7001(ReflectionCheck.selectedItemSlot);
          var8.packetBuffer.method7001(DefaultsGroup.baseY + var1);
          var8.packetBuffer.method7010(MouseHandler.selectedItemWidget);
-         var8.packetBuffer.method6962(var0 + class19.baseX);
+         var8.packetBuffer.writeByteA(var0 + class19.baseX);
          var8.packetBuffer.method7001(var3);
-         var8.packetBuffer.method7003(SoundSystem.selectedItemId);
-         var8.packetBuffer.method6993(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
+         var8.packetBuffer.writeByteC(SoundSystem.selectedItemId);
+         var8.packetBuffer.writeByteB(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
          Client.packetWriter.addNode(var8);
       } else if (var2 == 2) {
          Client.mouseCrossX = var6;
@@ -390,12 +390,12 @@ public class class14 {
          Client.destinationY = var1;
          var8 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2738, Client.packetWriter.isaacCipher);
          var8.packetBuffer.method7126(FontName.selectedSpellWidget);
-         var8.packetBuffer.method6962(Client.selectedSpellChildIndex);
-         var8.packetBuffer.method6962(var0 + class19.baseX);
+         var8.packetBuffer.writeByteA(Client.selectedSpellChildIndex);
+         var8.packetBuffer.writeByteA(var0 + class19.baseX);
          var8.packetBuffer.method7001(Client.field627);
          var8.packetBuffer.writeByte(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
-         var8.packetBuffer.method6962(var3);
-         var8.packetBuffer.method7003(DefaultsGroup.baseY + var1);
+         var8.packetBuffer.writeByteA(var3);
+         var8.packetBuffer.writeByteC(DefaultsGroup.baseY + var1);
          Client.packetWriter.addNode(var8);
       } else if (var2 == 3) {
          Client.mouseCrossX = var6;
@@ -407,7 +407,7 @@ public class class14 {
          var8 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2744, Client.packetWriter.isaacCipher);
          var8.packetBuffer.method7001(var0 + class19.baseX);
          var8.packetBuffer.writeShort(DefaultsGroup.baseY + var1);
-         var8.packetBuffer.method6962(var3);
+         var8.packetBuffer.writeByteA(var3);
          var8.packetBuffer.writeByte(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
          Client.packetWriter.addNode(var8);
       } else if (var2 == 4) {
@@ -421,7 +421,7 @@ public class class14 {
          var8.packetBuffer.method7001(var0 + class19.baseX);
          var8.packetBuffer.writeByte(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
          var8.packetBuffer.writeShort(var3);
-         var8.packetBuffer.method7003(DefaultsGroup.baseY + var1);
+         var8.packetBuffer.writeByteC(DefaultsGroup.baseY + var1);
          Client.packetWriter.addNode(var8);
       } else if (var2 == 5) {
          Client.mouseCrossX = var6;
@@ -434,7 +434,7 @@ public class class14 {
          var8.packetBuffer.writeShort(var0 + class19.baseX);
          var8.packetBuffer.writeByte(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
          var8.packetBuffer.writeShort(DefaultsGroup.baseY + var1);
-         var8.packetBuffer.method6962(var3);
+         var8.packetBuffer.writeByteA(var3);
          Client.packetWriter.addNode(var8);
       } else if (var2 == 6) {
          Client.mouseCrossX = var6;
@@ -444,9 +444,9 @@ public class class14 {
          Client.destinationX = var0;
          Client.destinationY = var1;
          var8 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2705, Client.packetWriter.isaacCipher);
-         var8.packetBuffer.method7003(var3);
+         var8.packetBuffer.writeByteC(var3);
          var8.packetBuffer.writeShort(DefaultsGroup.baseY + var1);
-         var8.packetBuffer.method7003(var0 + class19.baseX);
+         var8.packetBuffer.writeByteC(var0 + class19.baseX);
          var8.packetBuffer.method6947(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
          Client.packetWriter.addNode(var8);
       } else {
@@ -463,10 +463,10 @@ public class class14 {
                Client.destinationY = var1;
                var9 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2722, Client.packetWriter.isaacCipher);
                var9.packetBuffer.method7171(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
-               var9.packetBuffer.method6962(SoundSystem.selectedItemId);
+               var9.packetBuffer.writeByteA(SoundSystem.selectedItemId);
                var9.packetBuffer.method7001(ReflectionCheck.selectedItemSlot);
                var9.packetBuffer.method7126(MouseHandler.selectedItemWidget);
-               var9.packetBuffer.method7003(var3);
+               var9.packetBuffer.writeByteC(var3);
                Client.packetWriter.addNode(var9);
             }
          } else if (var2 == 8) {
@@ -480,9 +480,9 @@ public class class14 {
                Client.destinationY = var1;
                var9 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2741, Client.packetWriter.isaacCipher);
                var9.packetBuffer.writeIntME(FontName.selectedSpellWidget);
-               var9.packetBuffer.method6962(Client.selectedSpellChildIndex);
-               var9.packetBuffer.method6993(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
-               var9.packetBuffer.method6962(var3);
+               var9.packetBuffer.writeByteA(Client.selectedSpellChildIndex);
+               var9.packetBuffer.writeByteB(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
+               var9.packetBuffer.writeByteA(var3);
                var9.packetBuffer.writeShort(Client.field627);
                Client.packetWriter.addNode(var9);
             }
@@ -525,7 +525,7 @@ public class class14 {
                Client.destinationY = var1;
                var9 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2723, Client.packetWriter.isaacCipher);
                var9.packetBuffer.method7171(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
-               var9.packetBuffer.method6962(var3);
+               var9.packetBuffer.writeByteA(var3);
                Client.packetWriter.addNode(var9);
             }
          } else if (var2 == 12) {
@@ -539,7 +539,7 @@ public class class14 {
                Client.destinationY = var1;
                var9 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2730, Client.packetWriter.isaacCipher);
                var9.packetBuffer.method7001(var3);
-               var9.packetBuffer.method6993(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
+               var9.packetBuffer.writeByteB(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
                Client.packetWriter.addNode(var9);
             }
          } else if (var2 == 13) {
@@ -568,10 +568,10 @@ public class class14 {
                   Client.destinationX = var0;
                   Client.destinationY = var1;
                   var9 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2678, Client.packetWriter.isaacCipher);
-                  var9.packetBuffer.method6962(var3);
-                  var9.packetBuffer.method6962(SoundSystem.selectedItemId);
+                  var9.packetBuffer.writeByteA(var3);
+                  var9.packetBuffer.writeByteA(SoundSystem.selectedItemId);
                   var9.packetBuffer.writeByte(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
-                  var9.packetBuffer.method6962(ReflectionCheck.selectedItemSlot);
+                  var9.packetBuffer.writeByteA(ReflectionCheck.selectedItemSlot);
                   var9.packetBuffer.writeIntME(MouseHandler.selectedItemWidget);
                   Client.packetWriter.addNode(var9);
                }
@@ -585,9 +585,9 @@ public class class14 {
                   Client.destinationX = var0;
                   Client.destinationY = var1;
                   var9 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2760, Client.packetWriter.isaacCipher);
-                  var9.packetBuffer.method6962(Client.field627);
-                  var9.packetBuffer.method7003(var3);
-                  var9.packetBuffer.method7003(Client.selectedSpellChildIndex);
+                  var9.packetBuffer.writeByteA(Client.field627);
+                  var9.packetBuffer.writeByteC(var3);
+                  var9.packetBuffer.writeByteC(Client.selectedSpellChildIndex);
                   var9.packetBuffer.writeInt(FontName.selectedSpellWidget);
                   var9.packetBuffer.writeByte(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
                   Client.packetWriter.addNode(var9);
@@ -600,12 +600,12 @@ public class class14 {
                Client.destinationX = var0;
                Client.destinationY = var1;
                var8 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2756, Client.packetWriter.isaacCipher);
-               var8.packetBuffer.method7003(var3);
+               var8.packetBuffer.writeByteC(var3);
                var8.packetBuffer.writeShort(DefaultsGroup.baseY + var1);
                var8.packetBuffer.writeShort(SoundSystem.selectedItemId);
                var8.packetBuffer.writeShort(var0 + class19.baseX);
                var8.packetBuffer.method6947(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
-               var8.packetBuffer.method7003(ReflectionCheck.selectedItemSlot);
+               var8.packetBuffer.writeByteC(ReflectionCheck.selectedItemSlot);
                var8.packetBuffer.method7010(MouseHandler.selectedItemWidget);
                Client.packetWriter.addNode(var8);
             } else if (var2 == 17) {
@@ -616,13 +616,13 @@ public class class14 {
                Client.destinationX = var0;
                Client.destinationY = var1;
                var8 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2735, Client.packetWriter.isaacCipher);
-               var8.packetBuffer.method6993(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
-               var8.packetBuffer.method7003(Client.field627);
-               var8.packetBuffer.method6962(var3);
+               var8.packetBuffer.writeByteB(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
+               var8.packetBuffer.writeByteC(Client.field627);
+               var8.packetBuffer.writeByteA(var3);
                var8.packetBuffer.method7001(DefaultsGroup.baseY + var1);
                var8.packetBuffer.writeInt(FontName.selectedSpellWidget);
                var8.packetBuffer.method7001(Client.selectedSpellChildIndex);
-               var8.packetBuffer.method7003(var0 + class19.baseX);
+               var8.packetBuffer.writeByteC(var0 + class19.baseX);
                Client.packetWriter.addNode(var8);
             } else if (var2 == 18) {
                Client.mouseCrossX = var6;
@@ -632,7 +632,7 @@ public class class14 {
                Client.destinationX = var0;
                Client.destinationY = var1;
                var8 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2701, Client.packetWriter.isaacCipher);
-               var8.packetBuffer.method6962(var0 + class19.baseX);
+               var8.packetBuffer.writeByteA(var0 + class19.baseX);
                var8.packetBuffer.writeShort(var3);
                var8.packetBuffer.writeShort(DefaultsGroup.baseY + var1);
                var8.packetBuffer.method7171(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
@@ -645,7 +645,7 @@ public class class14 {
                Client.destinationX = var0;
                Client.destinationY = var1;
                var8 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2768, Client.packetWriter.isaacCipher);
-               var8.packetBuffer.method7003(DefaultsGroup.baseY + var1);
+               var8.packetBuffer.writeByteC(DefaultsGroup.baseY + var1);
                var8.packetBuffer.method7171(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
                var8.packetBuffer.method7001(var3);
                var8.packetBuffer.writeShort(var0 + class19.baseX);
@@ -658,10 +658,10 @@ public class class14 {
                Client.destinationX = var0;
                Client.destinationY = var1;
                var8 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2709, Client.packetWriter.isaacCipher);
-               var8.packetBuffer.method6962(DefaultsGroup.baseY + var1);
+               var8.packetBuffer.writeByteA(DefaultsGroup.baseY + var1);
                var8.packetBuffer.method7171(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
-               var8.packetBuffer.method6962(var0 + class19.baseX);
-               var8.packetBuffer.method6962(var3);
+               var8.packetBuffer.writeByteA(var0 + class19.baseX);
+               var8.packetBuffer.writeByteA(var3);
                Client.packetWriter.addNode(var8);
             } else if (var2 == 21) {
                Client.mouseCrossX = var6;
@@ -671,9 +671,9 @@ public class class14 {
                Client.destinationX = var0;
                Client.destinationY = var1;
                var8 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2763, Client.packetWriter.isaacCipher);
-               var8.packetBuffer.method6962(DefaultsGroup.baseY + var1);
+               var8.packetBuffer.writeByteA(DefaultsGroup.baseY + var1);
                var8.packetBuffer.writeShort(var3);
-               var8.packetBuffer.method7003(var0 + class19.baseX);
+               var8.packetBuffer.writeByteC(var0 + class19.baseX);
                var8.packetBuffer.method7171(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
                Client.packetWriter.addNode(var8);
             } else if (var2 == 22) {
@@ -685,8 +685,8 @@ public class class14 {
                Client.destinationY = var1;
                var8 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2767, Client.packetWriter.isaacCipher);
                var8.packetBuffer.method6947(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
-               var8.packetBuffer.method6962(var0 + class19.baseX);
-               var8.packetBuffer.method7003(var3);
+               var8.packetBuffer.writeByteA(var0 + class19.baseX);
+               var8.packetBuffer.writeByteC(var3);
                var8.packetBuffer.writeShort(DefaultsGroup.baseY + var1);
                Client.packetWriter.addNode(var8);
             } else if (var2 == 23) {
@@ -767,30 +767,30 @@ public class class14 {
                         }
                      } else if (var2 == 31) {
                         var8 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2702, Client.packetWriter.isaacCipher);
-                        var8.packetBuffer.method6962(var3);
+                        var8.packetBuffer.writeByteA(var3);
                         var8.packetBuffer.method7010(var1);
                         var8.packetBuffer.writeShort(var0);
                         var8.packetBuffer.method7010(MouseHandler.selectedItemWidget);
-                        var8.packetBuffer.method7003(SoundSystem.selectedItemId);
-                        var8.packetBuffer.method6962(ReflectionCheck.selectedItemSlot);
+                        var8.packetBuffer.writeByteC(SoundSystem.selectedItemId);
+                        var8.packetBuffer.writeByteA(ReflectionCheck.selectedItemSlot);
                         Client.packetWriter.addNode(var8);
                         Client.field576 = 0;
                         WorldMapSection2.field2037 = UserComparator9.getWidget(var1);
                         Client.field577 = var0;
                      } else if (var2 == 32) {
                         var8 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2695, Client.packetWriter.isaacCipher);
-                        var8.packetBuffer.method7003(var0);
+                        var8.packetBuffer.writeByteC(var0);
                         var8.packetBuffer.writeInt(FontName.selectedSpellWidget);
                         var8.packetBuffer.writeShort(Client.selectedSpellChildIndex);
                         var8.packetBuffer.method7010(var1);
-                        var8.packetBuffer.method6962(var3);
+                        var8.packetBuffer.writeByteA(var3);
                         Client.packetWriter.addNode(var8);
                         Client.field576 = 0;
                         WorldMapSection2.field2037 = UserComparator9.getWidget(var1);
                         Client.field577 = var0;
                      } else if (var2 == 33) {
                         var8 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2706, Client.packetWriter.isaacCipher);
-                        var8.packetBuffer.method7003(var3);
+                        var8.packetBuffer.writeByteC(var3);
                         var8.packetBuffer.method7001(var0);
                         var8.packetBuffer.writeIntME(var1);
                         Client.packetWriter.addNode(var8);
@@ -799,8 +799,8 @@ public class class14 {
                         Client.field577 = var0;
                      } else if (var2 == 34) {
                         var8 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2740, Client.packetWriter.isaacCipher);
-                        var8.packetBuffer.method6962(var3);
-                        var8.packetBuffer.method6962(var0);
+                        var8.packetBuffer.writeByteA(var3);
+                        var8.packetBuffer.writeByteA(var0);
                         var8.packetBuffer.writeIntME(var1);
                         Client.packetWriter.addNode(var8);
                         Client.field576 = 0;
@@ -808,8 +808,8 @@ public class class14 {
                         Client.field577 = var0;
                      } else if (var2 == 35) {
                         var8 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2677, Client.packetWriter.isaacCipher);
-                        var8.packetBuffer.method7003(var3);
-                        var8.packetBuffer.method6962(var0);
+                        var8.packetBuffer.writeByteC(var3);
+                        var8.packetBuffer.writeByteA(var0);
                         var8.packetBuffer.writeIntME(var1);
                         Client.packetWriter.addNode(var8);
                         Client.field576 = 0;
@@ -817,7 +817,7 @@ public class class14 {
                         Client.field577 = var0;
                      } else if (var2 == 36) {
                         var8 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2671, Client.packetWriter.isaacCipher);
-                        var8.packetBuffer.method7003(var3);
+                        var8.packetBuffer.writeByteC(var3);
                         var8.packetBuffer.method7001(var0);
                         var8.packetBuffer.method7126(var1);
                         Client.packetWriter.addNode(var8);
@@ -826,7 +826,7 @@ public class class14 {
                         Client.field577 = var0;
                      } else if (var2 == 37) {
                         var8 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2731, Client.packetWriter.isaacCipher);
-                        var8.packetBuffer.method6962(var0);
+                        var8.packetBuffer.writeByteA(var0);
                         var8.packetBuffer.writeShort(var3);
                         var8.packetBuffer.method7010(var1);
                         Client.packetWriter.addNode(var8);
@@ -871,7 +871,7 @@ public class class14 {
                         } else if (var2 == 41) {
                            var8 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2718, Client.packetWriter.isaacCipher);
                            var8.packetBuffer.writeIntME(var1);
-                           var8.packetBuffer.method7003(var0);
+                           var8.packetBuffer.writeByteC(var0);
                            var8.packetBuffer.writeShort(var3);
                            Client.packetWriter.addNode(var8);
                            Client.field576 = 0;
@@ -890,7 +890,7 @@ public class class14 {
                            var8 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2694, Client.packetWriter.isaacCipher);
                            var8.packetBuffer.writeInt(var1);
                            var8.packetBuffer.writeShort(var0);
-                           var8.packetBuffer.method7003(var3);
+                           var8.packetBuffer.writeByteC(var3);
                            Client.packetWriter.addNode(var8);
                            Client.field576 = 0;
                            WorldMapSection2.field2037 = UserComparator9.getWidget(var1);
@@ -920,7 +920,7 @@ public class class14 {
                               Client.destinationY = var1;
                               var9 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2687, Client.packetWriter.isaacCipher);
                               var9.packetBuffer.writeByte(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
-                              var9.packetBuffer.method6962(var3);
+                              var9.packetBuffer.writeByteA(var3);
                               Client.packetWriter.addNode(var9);
                            }
                         } else if (var2 == 46) {
@@ -947,7 +947,7 @@ public class class14 {
                               Client.destinationX = var0;
                               Client.destinationY = var1;
                               var9 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2769, Client.packetWriter.isaacCipher);
-                              var9.packetBuffer.method6962(var3);
+                              var9.packetBuffer.writeByteA(var3);
                               var9.packetBuffer.method7171(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
                               Client.packetWriter.addNode(var9);
                            }
@@ -961,7 +961,7 @@ public class class14 {
                               Client.destinationX = var0;
                               Client.destinationY = var1;
                               var9 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2692, Client.packetWriter.isaacCipher);
-                              var9.packetBuffer.method7003(var3);
+                              var9.packetBuffer.writeByteC(var3);
                               var9.packetBuffer.method7171(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
                               Client.packetWriter.addNode(var9);
                            }
@@ -976,7 +976,7 @@ public class class14 {
                               Client.destinationY = var1;
                               var9 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2714, Client.packetWriter.isaacCipher);
                               var9.packetBuffer.method7001(var3);
-                              var9.packetBuffer.method6993(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
+                              var9.packetBuffer.writeByteB(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
                               Client.packetWriter.addNode(var9);
                            }
                         } else if (var2 == 50) {
@@ -1004,7 +1004,7 @@ public class class14 {
                               Client.destinationY = var1;
                               var9 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2728, Client.packetWriter.isaacCipher);
                               var9.packetBuffer.writeByte(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
-                              var9.packetBuffer.method7003(var3);
+                              var9.packetBuffer.writeByteC(var3);
                               Client.packetWriter.addNode(var9);
                            }
                         } else {
@@ -1014,12 +1014,12 @@ public class class14 {
                                     var16 = ItemContainer.getWidgetChild(var1, var0);
                                     if (var16 != null) {
                                        var9 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2753, Client.packetWriter.isaacCipher);
-                                       var9.packetBuffer.method6962(var16.itemId);
+                                       var9.packetBuffer.writeByteA(var16.itemId);
                                        var9.packetBuffer.writeInt(FontName.selectedSpellWidget);
-                                       var9.packetBuffer.method6962(var0);
+                                       var9.packetBuffer.writeByteA(var0);
                                        var9.packetBuffer.writeInt(var1);
-                                       var9.packetBuffer.method6962(Client.field627);
-                                       var9.packetBuffer.method6962(Client.selectedSpellChildIndex);
+                                       var9.packetBuffer.writeByteA(Client.field627);
+                                       var9.packetBuffer.writeByteA(Client.selectedSpellChildIndex);
                                        Client.packetWriter.addNode(var9);
                                     }
                                     break label646;
@@ -1033,10 +1033,10 @@ public class class14 {
                                     Client.destinationX = var0;
                                     Client.destinationY = var1;
                                     var8 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2693, Client.packetWriter.isaacCipher);
-                                    var8.packetBuffer.method6962(var0 + class19.baseX);
-                                    var8.packetBuffer.method7003(var3);
-                                    var8.packetBuffer.method7003(DefaultsGroup.baseY + var1);
-                                    var8.packetBuffer.method6993(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
+                                    var8.packetBuffer.writeByteA(var0 + class19.baseX);
+                                    var8.packetBuffer.writeByteC(var3);
+                                    var8.packetBuffer.writeByteC(DefaultsGroup.baseY + var1);
+                                    var8.packetBuffer.writeByteB(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
                                     Client.packetWriter.addNode(var8);
                                     break label646;
                                  }
@@ -1079,7 +1079,7 @@ public class class14 {
                                     Client.mouseCrossColor = 2;
                                     Client.mouseCrossState = 0;
                                     var8 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2755, Client.packetWriter.isaacCipher);
-                                    var8.packetBuffer.method7003(var3);
+                                    var8.packetBuffer.writeByteC(var3);
                                     Client.packetWriter.addNode(var8);
                                     break label646;
                                  }
@@ -1090,7 +1090,7 @@ public class class14 {
                                        class397.addGameMessage(27, "", var16.itemQuantities[var0] + " x " + TaskHandler.ItemDefinition_get(var3).name);
                                     } else {
                                        var9 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2755, Client.packetWriter.isaacCipher);
-                                       var9.packetBuffer.method7003(var3);
+                                       var9.packetBuffer.writeByteC(var3);
                                        Client.packetWriter.addNode(var9);
                                     }
 

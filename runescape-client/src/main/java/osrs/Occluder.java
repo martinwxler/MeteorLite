@@ -12,7 +12,6 @@ import net.runelite.mapping.Implements;
 import net.runelite.mapping.ObfuscatedGetter;
 import net.runelite.mapping.ObfuscatedName;
 import net.runelite.mapping.ObfuscatedSignature;
-import netscape.javascript.JSObject;
 
 @ObfuscatedName("hw")
 @Implements("Occluder")
@@ -274,7 +273,7 @@ public final class Occluder {
       }
 
       if (ClientPreferences.garbageCollector != null) {
-         long var9 = class111.method2516();
+         long var9 = class111.getServerTime();
          long var3 = ClientPreferences.garbageCollector.getCollectionTime();
          if (GameEngine.garbageCollectorLastCollectionTime != -1L) {
             long var5 = var3 - GameEngine.garbageCollectorLastCollectionTime;

@@ -24,7 +24,7 @@ public class FriendLoginUpdate extends Link {
    @ObfuscatedGetter(
       intValue = 1663283777
    )
-   public int field3945 = (int)(class111.method2516() / 1000L);
+   public int field3945 = (int)(class111.getServerTime() / 1000L);
    @ObfuscatedName("w")
    @ObfuscatedSignature(
       descriptor = "Lpb;"

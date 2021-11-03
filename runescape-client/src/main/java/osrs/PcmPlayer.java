@@ -42,7 +42,7 @@ public class PcmPlayer {
       longValue = -139627477628549521L
    )
    @Export("timeMs")
-   long timeMs = class111.method2516();
+   long timeMs = class111.getServerTime();
    @ObfuscatedName("z")
    @ObfuscatedGetter(
       intValue = -964657999
@@ -171,7 +171,7 @@ public class PcmPlayer {
    @Export("run")
    public final synchronized void run() {
       if (this.samples != null) {
-         long var1 = class111.method2516();
+         long var1 = class111.getServerTime();
 
          try {
             if (this.field259 != 0L) {
@@ -278,7 +278,7 @@ public class PcmPlayer {
          this.discard();
       } catch (Exception var2) {
          this.close();
-         this.field259 = class111.method2516() + 2000L;
+         this.field259 = class111.getServerTime() + 2000L;
       }
 
    }
@@ -443,7 +443,7 @@ public class PcmPlayer {
          this.stream.fill(var1, 0, var2);
       }
 
-      this.timeMs = class111.method2516();
+      this.timeMs = class111.getServerTime();
    }
 
    @ObfuscatedName("aq")

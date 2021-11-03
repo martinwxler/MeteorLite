@@ -493,7 +493,7 @@ public class ClientPacket implements class238 {
    @ObfuscatedSignature(
       descriptor = "Lik;"
    )
-   public static final ClientPacket field2703 = new ClientPacket(96, -1);
+   public static final ClientPacket MOVE_GAMECLICK = new ClientPacket(96, -1);
    @ObfuscatedName("cz")
    @ObfuscatedSignature(
       descriptor = "Lik;"

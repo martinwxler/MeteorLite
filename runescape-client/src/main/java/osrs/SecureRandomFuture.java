@@ -84,7 +84,7 @@ public class SecureRandomFuture {
          Login.field865 = 1;
       } else if (var0 == 4) {
          class275.method5201(14);
-         Login.field866 = 0;
+         Login.Login_banType = 0;
       } else if (var0 == 5) {
          Login.field865 = 2;
          class1.setLoginResponseString("Your account has not logged out from its last", "session or the server is too busy right now.", "Please try again in a few minutes.");
@@ -111,7 +111,7 @@ public class SecureRandomFuture {
             class1.setLoginResponseString("You are standing in a members-only area.", "To play on this world move to a free area first", "");
          } else if (var0 == 18) {
             class275.method5201(14);
-            Login.field866 = 1;
+            Login.Login_banType = 1;
          } else if (var0 == 19) {
             class1.setLoginResponseString("This world is running a closed Beta.", "Sorry invited players only.", "Please use a different world.");
          } else if (var0 == 20) {

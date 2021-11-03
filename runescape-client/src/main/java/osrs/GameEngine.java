@@ -541,7 +541,7 @@ public abstract class GameEngine extends Applet implements Runnable, FocusListen
       }
 
       this.isCanvasInvalid = false;
-      this.field195 = class111.method2516();
+      this.field195 = class111.getServerTime();
    }
 
    @ObfuscatedName("z")
@@ -583,7 +583,7 @@ public abstract class GameEngine extends Applet implements Runnable, FocusListen
    )
    @Export("clientTick")
    void clientTick() {
-      long var1 = class111.method2516();
+      long var1 = class111.getServerTime();
       long var3 = clientTickTimes[field178];
       clientTickTimes[field178] = var1;
       field178 = field178 + 1 & 31;
@@ -606,7 +606,7 @@ public abstract class GameEngine extends Applet implements Runnable, FocusListen
    @Export("graphicsTick")
    void graphicsTick() {
       Container var1 = this.container();
-      long var2 = class111.method2516();
+      long var2 = class111.getServerTime();
       long var4 = graphicsTickTimes[class362.field4057];
       graphicsTickTimes[class362.field4057] = var2;
       class362.field4057 = class362.field4057 + 1 & 31;
@@ -873,7 +873,7 @@ public abstract class GameEngine extends Applet implements Runnable, FocusListen
 
    public final void destroy() {
       if (this == gameEngine && !isKilled) {
-         stopTimeMs = class111.method2516();
+         stopTimeMs = class111.getServerTime();
          FloorUnderlayDefinition.method3190(5000L);
          this.kill();
       }
@@ -882,7 +882,7 @@ public abstract class GameEngine extends Applet implements Runnable, FocusListen
    public final synchronized void paint(Graphics var1) {
       if (this == gameEngine && !isKilled) {
          this.fullRedraw = true;
-         if (class111.method2516() - this.field195 > 1000L) {
+         if (class111.getServerTime() - this.field195 > 1000L) {
             Rectangle var2 = var1.getClipBounds();
             if (var2 == null || var2.width >= canvasWidth && var2.height >= KeyHandler.canvasHeight) {
                this.isCanvasInvalid = true;
@@ -922,7 +922,7 @@ public abstract class GameEngine extends Applet implements Runnable, FocusListen
 
    public final void stop() {
       if (this == gameEngine && !isKilled) {
-         stopTimeMs = class111.method2516() + 4000L;
+         stopTimeMs = class111.getServerTime() + 4000L;
       }
    }
 
@@ -982,7 +982,7 @@ public abstract class GameEngine extends Applet implements Runnable, FocusListen
 
          Clock.clock = (Clock)var8;
 
-         while(stopTimeMs == 0L || class111.method2516() < stopTimeMs) {
+         while(stopTimeMs == 0L || class111.getServerTime() < stopTimeMs) {
             class1.gameCyclesToDo = Clock.clock.wait(cycleDurationMillis, fiveOrOne);
 
             for(int var5 = 0; var5 < class1.gameCyclesToDo; ++var5) {
