@@ -1,4 +1,4 @@
-package netscape.javascript;
+package osrs.javascript;
 
 import java.applet.Applet;
 
@@ -12,7 +12,7 @@ public interface JSObjectProvider {
 	 * @param applet The applet.
 	 * @return JSObject for the window containing the given applet or null if we
 	 * are not connected to a browser.
-	 * @throws JSException when an error is encountered.
+	 * @throws osrs.javascript.JSException when an error is encountered.
 	 */
-	public JSObject$api getWindow(Applet applet) throws JSException;
+	public JSObject getWindow(Applet applet) throws JSException;
 }
