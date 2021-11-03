@@ -318,7 +318,7 @@ public class ClientPacket implements class238 {
    @ObfuscatedSignature(
       descriptor = "Lik;"
    )
-   public static final ClientPacket field2725 = new ClientPacket(61, 6);
+   public static final ClientPacket EVENT_MOUSE_CLICK = new ClientPacket(61, 6);
    @ObfuscatedName("br")
    @ObfuscatedSignature(
       descriptor = "Lik;"

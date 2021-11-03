@@ -4036,7 +4036,7 @@ public final class Client extends GameEngine implements Usernamed, OAuthTokens {
                      }
 
                      var5 = (int)var16;
-                     var18 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2725, packetWriter.isaacCipher);
+                     var18 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.EVENT_MOUSE_CLICK, packetWriter.isaacCipher);
                      var18.packetBuffer.writeShort((MouseHandler.MouseHandler_lastButton == 2 ? 1 : 0) + (var5 << 1));
                      var18.packetBuffer.writeShort(var4);
                      var18.packetBuffer.writeShort(var3);
