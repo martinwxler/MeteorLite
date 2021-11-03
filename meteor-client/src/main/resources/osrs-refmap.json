@@ -390,7 +390,7 @@
   "oj": "osrs.PacketBuffer",
   "ok": "osrs.class390",
   "ol": "osrs.BZip2Decompressor",
-  "om": "osrs.class411",
+  "om": "osrs.FillMode",
   "on": "osrs.class393",
   "op": "osrs.Buffer",
   "or": "osrs.class403",
