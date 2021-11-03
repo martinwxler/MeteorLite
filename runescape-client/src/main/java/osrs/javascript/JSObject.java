@@ -23,7 +23,7 @@
  * questions.
  */
 
-package netscape.javascript;
+package osrs.javascript;
 
 import java.applet.Applet;
 import java.security.AccessController;
@@ -52,12 +52,12 @@ import java.util.ServiceLoader;
  *
  */
 @SuppressWarnings("deprecation")
-public abstract class JSObject$api {
+public abstract class JSObject {
 	/**
 	 * Constructs a new JSObject. Users should neither call this method nor
 	 * subclass JSObject.
 	 */
-	protected JSObject$api()  {
+	protected JSObject()  {
 	}
 
 	/**
@@ -67,10 +67,10 @@ public abstract class JSObject$api {
 	 * @param methodName The name of the JavaScript method to be invoked.
 	 * @param args the Java objects passed as arguments to the method.
 	 * @return Result of the method.
-	 * @throws JSException when an error is reported from the browser or
+	 * @throws osrs.javascript.JSException when an error is reported from the browser or
 	 * JavaScript engine.
 	 */
-	public abstract Object call(String methodName, Object... args) throws JSException;
+	public abstract Object call(String methodName, Object... args) throws osrs.javascript.JSException;
 
 	/**
 	 * Evaluates a JavaScript expression. The expression is a string of
@@ -79,10 +79,10 @@ public abstract class JSObject$api {
 	 *
 	 * @param s The JavaScript expression.
 	 * @return Result of the JavaScript evaluation.
-	 * @throws JSException when an error is reported from the browser or
+	 * @throws osrs.javascript.JSException when an error is reported from the browser or
 	 * JavaScript engine.
 	 */
-	public abstract Object eval(String s) throws JSException;
+	public abstract Object eval(String s) throws osrs.javascript.JSException;
 
 	/**
 	 * Retrieves a named member of a JavaScript object. Equivalent to
@@ -90,10 +90,10 @@ public abstract class JSObject$api {
 	 *
 	 * @param name The name of the JavaScript property to be accessed.
 	 * @return The value of the propery.
-	 * @throws JSException when an error is reported from the browser or
+	 * @throws osrs.javascript.JSException when an error is reported from the browser or
 	 * JavaScript engine.
 	 */
-	public abstract Object getMember(String name) throws JSException;
+	public abstract Object getMember(String name) throws osrs.javascript.JSException;
 
 	/**
 	 * Sets a named member of a JavaScript object. Equivalent to
@@ -101,20 +101,20 @@ public abstract class JSObject$api {
 	 *
 	 * @param name The name of the JavaScript property to be accessed.
 	 * @param value The value of the propery.
-	 * @throws JSException when an error is reported from the browser or
+	 * @throws osrs.javascript.JSException when an error is reported from the browser or
 	 * JavaScript engine.
 	 */
-	public abstract void setMember(String name, Object value) throws JSException;
+	public abstract void setMember(String name, Object value) throws osrs.javascript.JSException;
 
 	/**
 	 * Removes a named member of a JavaScript object. Equivalent
 	 * to "delete this.name" in JavaScript.
 	 *
 	 * @param name The name of the JavaScript property to be removed.
-	 * @throws JSException when an error is reported from the browser or
+	 * @throws osrs.javascript.JSException when an error is reported from the browser or
 	 * JavaScript engine.
 	 */
-	public abstract void removeMember(String name) throws JSException;
+	public abstract void removeMember(String name) throws osrs.javascript.JSException;
 
 	/**
 	 * Retrieves an indexed member of a JavaScript object. Equivalent to
@@ -122,10 +122,10 @@ public abstract class JSObject$api {
 	 *
 	 * @param index The index of the array to be accessed.
 	 * @return The value of the indexed member.
-	 * @throws JSException when an error is reported from the browser or
+	 * @throws osrs.javascript.JSException when an error is reported from the browser or
 	 * JavaScript engine.
 	 */
-	public abstract Object getSlot(int index) throws JSException;
+	public abstract Object getSlot(int index) throws osrs.javascript.JSException;
 
 	/**
 	 * Sets an indexed member of a JavaScript object. Equivalent to
@@ -133,10 +133,10 @@ public abstract class JSObject$api {
 	 *
 	 * @param index The index of the array to be accessed.
 	 * @param value The value to set
-	 * @throws JSException when an error is reported from the browser or
+	 * @throws osrs.javascript.JSException when an error is reported from the browser or
 	 * JavaScript engine.
 	 */
-	public abstract void setSlot(int index, Object value) throws JSException;
+	public abstract void setSlot(int index, Object value) throws osrs.javascript.JSException;
 
 	/**
 	 * Returns a JSObject for the window containing the given applet. This
@@ -146,7 +146,7 @@ public abstract class JSObject$api {
 	 * @param applet The applet.
 	 * @return JSObject representing the window containing the given applet or
 	 * {@code null} if we are not connected to a browser.
-	 * @throws JSException when an error is reported from the browser or
+	 * @throws osrs.javascript.JSException when an error is reported from the browser or
 	 * JavaScript engine or if applet is {@code null}
 	 *
 	 * @deprecated  The Applet API is deprecated. See the
@@ -156,7 +156,7 @@ public abstract class JSObject$api {
 
 	@Deprecated(since = "9")
 	@SuppressWarnings("exports")
-	public static JSObject$api getWindow(Applet applet) throws JSException {
+	public static JSObject getWindow(Applet applet) throws JSException {
 		return ProviderLoader.callGetWindow(applet);
 	}
 
@@ -179,7 +179,7 @@ public abstract class JSObject$api {
 			);
 		}
 
-		private static JSObject$api callGetWindow(Applet applet) {
+		private static JSObject callGetWindow(Applet applet) {
 			if (provider != null) {
 				return provider.getWindow(applet);
 			}

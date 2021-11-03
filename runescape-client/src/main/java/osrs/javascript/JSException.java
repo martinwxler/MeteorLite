@@ -23,7 +23,7 @@
  * questions.
  */
 
-package netscape.javascript;
+package osrs.javascript;
 
 /**
  * Thrown when an exception is raised in the JavaScript engine. This is merely
