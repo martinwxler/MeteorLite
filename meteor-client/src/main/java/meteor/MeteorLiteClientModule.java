@@ -51,7 +51,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.*;
 
-import static meteor.MeteorLiteClientLauncher.DEFAULT_CONFIG_FILE;
+import static meteor.MeteorLiteClientLauncher.CONFIG_FILE;
 import static org.sponge.util.Logger.ANSI_RESET;
 import static org.sponge.util.Logger.ANSI_YELLOW;
 
@@ -211,7 +211,7 @@ public class MeteorLiteClientModule extends AbstractModule {
   @Provides
   @javax.inject.Singleton
   File provideConfigFile() {
-    return DEFAULT_CONFIG_FILE;
+    return CONFIG_FILE;
   }
 
   @Provides
