@@ -61,6 +61,11 @@ public class StopWatch {
     }
 
     public double getRate(long value, Duration rate) {
+        long elapsed = getElapsed().toMillis();
+        if (elapsed == 0) {
+            return 0;
+        }
+
         return (double) (value * rate.toMillis() / getElapsed().toMillis());
     }
 
