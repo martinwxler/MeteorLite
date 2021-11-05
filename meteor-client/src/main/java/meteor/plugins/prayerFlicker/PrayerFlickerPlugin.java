@@ -21,8 +21,7 @@ import javax.inject.Inject;
 @PluginDescriptor(
         name = "Prayer Flicker",
         description = "prayer flicker for quick prayers",
-        enabledByDefault = false,
-        disabledOnStartup = true
+        enabledByDefault = false
 )
 public class PrayerFlickerPlugin extends Plugin {
     public int timeout = 0;
