@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2021, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,43 +22,15 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api.kit;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+package net.runelite.api;
 
 /**
- * Represents an equipment slot in a players composition.
- * <p>
- * These values are intended for use with {PlayerAppearance} equipment slots. For obtaining
- * information about equipment in the local players equipment {net.runelite.api.ItemContainer}, use
- * {net.runelite.api.EquipmentInventorySlot}.
+ * A doubly linked list
  */
-@Getter
-@AllArgsConstructor
-public enum KitType {
-  HEAD("Head"),
-  CAPE("Cape"),
-  AMULET("Amulet"),
-  WEAPON("Weapon"),
-  TORSO("Torso"),
-  SHIELD("Shield"),
-  ARMS("Arms"),
-  LEGS("Legs"),
-  HAIR("Hair"),
-  HANDS("Hands"),
-  BOOTS("Boots"),
-  JAW("Jaw"),
-  ;
-
-  private final String name;
-
-  /**
-   * Gets the raw equipment index for use in {@link net.runelite.api.PlayerComposition#getEquipmentIds()}.
-   *
-   * @return raw equipment index
-   */
-  public int getIndex() {
-    return ordinal();
-  }
+public interface Deque<T> extends Iterable<T>
+{
+	/**
+	 * clear the deque
+	 */
+	void clear();
 }

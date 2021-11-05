@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2021, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,43 +22,38 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api.kit;
+package net.runelite.api;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import net.runelite.api.coords.LocalPoint;
 
 /**
- * Represents an equipment slot in a players composition.
- * <p>
- * These values are intended for use with {PlayerAppearance} equipment slots. For obtaining
- * information about equipment in the local players equipment {net.runelite.api.ItemContainer}, use
- * {net.runelite.api.EquipmentInventorySlot}.
+ * An ambient sound effect. These are loaded only at scene load and are used to play ambient
+ * sound effects that are purely client side and not sent from the server.
  */
-@Getter
-@AllArgsConstructor
-public enum KitType {
-  HEAD("Head"),
-  CAPE("Cape"),
-  AMULET("Amulet"),
-  WEAPON("Weapon"),
-  TORSO("Torso"),
-  SHIELD("Shield"),
-  ARMS("Arms"),
-  LEGS("Legs"),
-  HAIR("Hair"),
-  HANDS("Hands"),
-  BOOTS("Boots"),
-  JAW("Jaw"),
-  ;
+public interface AmbientSoundEffect
+{
+	/**
+	 * The id of the sound effect
+	 * @see SoundEffectID
+	 * @return
+	 */
+	int getSoundEffectId();
 
-  private final String name;
+	/**
+	 * The plane the sound effect is on
+	 * @return
+	 */
+	int getPlane();
 
-  /**
-   * Gets the raw equipment index for use in {@link net.runelite.api.PlayerComposition#getEquipmentIds()}.
-   *
-   * @return raw equipment index
-   */
-  public int getIndex() {
-    return ordinal();
-  }
+	/**
+	 * The min x/y position of the area this sound effect is at.
+	 * @return
+	 */
+	LocalPoint getMinPosition();
+
+	/**
+	 * The max x/y position of the area this sound effect is at
+	 * @return
+	 */
+	LocalPoint getMaxPosition();
 }
