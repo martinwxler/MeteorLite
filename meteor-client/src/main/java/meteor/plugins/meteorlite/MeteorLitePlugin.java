@@ -9,7 +9,6 @@ import meteor.eventbus.events.ConfigChanged;
 import meteor.input.MouseManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
-import meteor.plugins.api.game.Game;
 import meteor.plugins.meteorlite.interaction.InteractionManager;
 import meteor.plugins.meteorlite.interaction.InteractionOverlay;
 import net.runelite.api.events.ConfigButtonClicked;

@@ -1,17 +1,15 @@
 package meteor.plugins.prayerFlicker;
 
 import com.google.inject.Provides;
-import lombok.AccessLevel;
-import lombok.Getter;
 import meteor.callback.ClientThread;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.input.KeyManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
-import meteor.plugins.api.packets.MousePackets;
-import meteor.plugins.api.packets.WidgetPackets;
-import meteor.plugins.api.widgets.Prayers;
+import dev.hoot.api.packets.MousePackets;
+import dev.hoot.api.packets.WidgetPackets;
+import dev.hoot.api.widgets.Prayers;
 import meteor.util.HotkeyListener;
 import net.runelite.api.*;
 import net.runelite.api.events.GameStateChanged;
@@ -19,7 +17,6 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.WidgetInfo;
 
 import javax.inject.Inject;
-import java.util.concurrent.ScheduledExecutorService;
 
 @PluginDescriptor(
         name = "Prayer Flicker",
