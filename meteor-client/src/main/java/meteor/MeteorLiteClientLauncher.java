@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.Map;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -30,7 +32,7 @@ public class MeteorLiteClientLauncher extends Application {
   public static final File LOGS_DIR = new File(METEOR_DIR, "logs");
   public static final File ERROR_LOG = new File(LOGS_DIR, "error.txt");
   public static final File DEFAULT_SESSION_FILE = new File(METEOR_DIR, "session");
-  public static final File DEFAULT_CONFIG_FILE = new File(METEOR_DIR, "settings.properties");
+  public static File CONFIG_FILE;
   public static PrintStream consoleStream = null;
   public static LoggerStream verboseFileStream = null;
   public static LoggerStream errorFileStream = null;
@@ -42,6 +44,9 @@ public class MeteorLiteClientLauncher extends Application {
   @Override
   public void start(Stage primaryStage) throws IOException, InterruptedException, InvocationTargetException {
     try {
+      Parameters params = getParameters();
+      Map<String, String> namedPararms = params.getNamed();
+      CONFIG_FILE = new File(METEOR_DIR, namedPararms.getOrDefault("settings", "settings.properties"));
       disableIllegalReflectiveAccessWarning();
       consoleStream = System.out;
       LOGS_DIR.mkdirs();
