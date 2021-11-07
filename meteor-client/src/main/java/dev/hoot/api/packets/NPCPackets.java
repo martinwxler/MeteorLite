@@ -11,40 +11,40 @@ public class NPCPackets {
     public static void queueNPCActionPacket(int NPCIndex, int ctrlDown) {
         PacketWriter writer = Game.getClient().getPacketWriter();
         PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getNPCActionPacket(), writer.getIsaacCipher());
-        packet.getPacketBuffer().writeByteA$api(ctrlDown);
-        packet.getPacketBuffer().writeShort$api(NPCIndex);
+        packet.getPacketBuffer().write2$api(ctrlDown);
+        packet.getPacketBuffer().writeByteB0$api(NPCIndex);
         writer.queuePacket(packet);
     }
 
     public static void queueNPCAction2Packet(int NPCIndex, int ctrlDown) {
         PacketWriter writer = Game.getClient().getPacketWriter();
         PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getNPCAction2Packet(), writer.getIsaacCipher());
-        packet.getPacketBuffer().writeByte01$api(ctrlDown);
-        packet.getPacketBuffer().writeShortA$api(NPCIndex);
+        packet.getPacketBuffer().writeByteB0$api(NPCIndex);
+        packet.getPacketBuffer().writeByte$api(ctrlDown);
         writer.queuePacket(packet);
     }
 
     public static void queueNPCAction3Packet(int NPCIndex, int ctrlDown) {
         PacketWriter writer = Game.getClient().getPacketWriter();
         PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getNPCAction3Packet(), writer.getIsaacCipher());
-        packet.getPacketBuffer().writeByte$api(ctrlDown);
-        packet.getPacketBuffer().writeShort01$api(NPCIndex);
+        packet.getPacketBuffer().write2$api(ctrlDown);
+        packet.getPacketBuffer().writeByteA$api(NPCIndex);
         writer.queuePacket(packet);
     }
 
     public static void queueNPCAction4Packet(int NPCIndex, int ctrlDown) {
         PacketWriter writer = Game.getClient().getPacketWriter();
         PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getNPCAction4Packet(), writer.getIsaacCipher());
-        packet.getPacketBuffer().writeByteA$api(ctrlDown);
-        packet.getPacketBuffer().writeShort$api(NPCIndex);
+        packet.getPacketBuffer().writeByteB0$api(NPCIndex);
+        packet.getPacketBuffer().writeByteB$api(ctrlDown);
         writer.queuePacket(packet);
     }
 
     public static void queueNPCAction5Packet(int NPCIndex, int ctrlDown) {
         PacketWriter writer = Game.getClient().getPacketWriter();
         PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getNPCAction5Packet(), writer.getIsaacCipher());
-        packet.getPacketBuffer().writeShortA$api(NPCIndex);
-        packet.getPacketBuffer().writeByte01A$api(ctrlDown);
+        packet.getPacketBuffer().write1$api(ctrlDown);
+        packet.getPacketBuffer().writeShort$api(NPCIndex);
         writer.queuePacket(packet);
     }
     public static void npcFirstOption(NPC npc, int ctrlDown) {

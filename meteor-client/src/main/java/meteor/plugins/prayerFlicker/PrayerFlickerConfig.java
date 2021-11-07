@@ -9,10 +9,18 @@ import meteor.config.Keybind;
 public interface PrayerFlickerConfig extends Config {
     @ConfigItem(
             keyName = "Toggle",
-            name = "",
+            name = "Toggle Key",
             description = ""
     )
     default Keybind toggle() {
         return Keybind.NOT_SET;
+    }
+    @ConfigItem(
+            keyName = "disable",
+            name = "Disable on toggle",
+            description = ""
+    )
+    default boolean disable() {
+        return false;
     }
 }

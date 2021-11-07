@@ -53,7 +53,7 @@ public class PrayerFlickerPlugin extends Plugin {
             return;
         }
         clientThread.invoke(() -> {
-            if (Prayers.isQuickPrayerEnabled()) {
+            if (Prayers.isQuickPrayerEnabled()&&config.disable()) {
                 MousePackets.queueClickPacket(0, 0);
                 WidgetPackets.queueWidgetActionPacket(WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getPackedId(), -1, -1);
             }
@@ -87,7 +87,7 @@ public class PrayerFlickerPlugin extends Plugin {
             }
             if (!toggle) {
                 clientThread.invoke(() -> {
-                    if (Prayers.isQuickPrayerEnabled()) {
+                    if (Prayers.isQuickPrayerEnabled()&&config.disable()) {
                         MousePackets.queueClickPacket(0, 0);
                         WidgetPackets.queueWidgetActionPacket(WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getPackedId(), -1, -1);
                     }
