@@ -17,6 +17,13 @@ public class WidgetPackets {
         packet.getPacketBuffer().writeShort$api(itemID);
         writer.queuePacket(packet);
     }
+
+    public static void queueResumePauseWidgetPacket(int var1, int var2){
+        PacketWriter writer = Game.getClient().getPacketWriter();
+        PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getResumePauseWidgetPacket(), writer.getIsaacCipher());
+        packet.getPacketBuffer().writeIntME2$api(var1);
+        packet.getPacketBuffer().writeShort(var2);
+    }
     public static void queueWidgetAction2Packet(int widgetID, int itemID, int itemSlot){
         PacketWriter writer = Game.getClient().getPacketWriter();
         PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getWidgetAction2Packet(), writer.getIsaacCipher());
