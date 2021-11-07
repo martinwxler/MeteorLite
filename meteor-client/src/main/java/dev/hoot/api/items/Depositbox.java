@@ -9,24 +9,27 @@ public class Depositbox {
 
     public static void depositInventory() {
         Widget depositInventory = Widgets.get(192, 4);
-        if (depositInventory == null)
+        if (depositInventory == null) {
             return;
+        }
 
         depositInventory.interact(0);
     }
 
     public static void depositEquipment() {
         Widget depositEquipment = Widgets.get(192, 6);
-        if (depositEquipment == null)
+        if (depositEquipment == null) {
             return;
+        }
         depositEquipment.interact(0);
         Time.sleepUntil(() -> Equipment.getAll().size() == 0, 5);
     }
 
     public static void depositLootingbag() {
         Widget depositLootingbag = Widgets.get(192, 8);
-        if (depositLootingbag == null)
+        if (depositLootingbag == null) {
             return;
+        }
         depositLootingbag.interact(0);
     }
 
@@ -37,8 +40,9 @@ public class Depositbox {
 
     public static void close() {
         Widget exitDepositBox = Widgets.get(192, 1, 11);
-        if (exitDepositBox == null)
+        if (exitDepositBox == null) {
             return;
+        }
         exitDepositBox.interact(0);
     }
 }
