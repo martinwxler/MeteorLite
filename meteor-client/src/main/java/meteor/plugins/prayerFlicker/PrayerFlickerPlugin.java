@@ -21,9 +21,7 @@ import javax.inject.Inject;
 @PluginDescriptor(
         name = "Prayer Flicker",
         description = "prayer flicker for quick prayers",
-        tags = {},
-        enabledByDefault = false,
-        disabledOnStartup = true
+        enabledByDefault = false
 )
 public class PrayerFlickerPlugin extends Plugin {
     public int timeout = 0;
@@ -40,6 +38,11 @@ public class PrayerFlickerPlugin extends Plugin {
         return configManager.getConfig(PrayerFlickerConfig.class);
     }
 
+    private void togglePrayer(){
+        MousePackets.queueClickPacket(0, 0);
+        client.invokeMenuAction("","",1, MenuAction.CC_OP.getId(),-1,WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getPackedId());
+    }
+
     @Override
     public void startup() {
         keyManager.registerKeyListener(prayerToggle, this.getClass());
@@ -54,8 +57,7 @@ public class PrayerFlickerPlugin extends Plugin {
         }
         clientThread.invoke(() -> {
             if (Prayers.isQuickPrayerEnabled()) {
-                MousePackets.queueClickPacket(0, 0);
-                WidgetPackets.queueWidgetActionPacket(WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getPackedId(), -1, -1);
+                togglePrayer();
             }
         });
     }
@@ -70,11 +72,9 @@ public class PrayerFlickerPlugin extends Plugin {
         if (toggle) {
             boolean quickPrayer = client.getVar(Varbits.QUICK_PRAYER) == 1;
             if (quickPrayer) {
-                MousePackets.queueClickPacket(0, 0);
-                WidgetPackets.queueWidgetActionPacket(WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getPackedId(), -1, -1);
+                togglePrayer();
             }
-            MousePackets.queueClickPacket(0, 0);
-            WidgetPackets.queueWidgetActionPacket(WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getPackedId(), -1, -1);
+            togglePrayer();
         }
     }
 
@@ -88,8 +88,7 @@ public class PrayerFlickerPlugin extends Plugin {
             if (!toggle) {
                 clientThread.invoke(() -> {
                     if (Prayers.isQuickPrayerEnabled()) {
-                        MousePackets.queueClickPacket(0, 0);
-                        WidgetPackets.queueWidgetActionPacket(WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getPackedId(), -1, -1);
+                        togglePrayer();
                     }
                 });
             }
