@@ -11,10 +11,14 @@ import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.plugins.meteorlite.interaction.InteractionManager;
 import meteor.plugins.meteorlite.interaction.InteractionOverlay;
+import meteor.plugins.meteorlite.regions.RegionManager;
+import net.runelite.api.GameState;
 import net.runelite.api.events.ConfigButtonClicked;
+import net.runelite.api.events.GameStateChanged;
 import org.sponge.util.Logger;
 
 import javax.inject.Inject;
+import java.util.concurrent.ExecutorService;
 
 
 @PluginDescriptor(
@@ -43,6 +47,12 @@ public class MeteorLitePlugin extends Plugin {
 
     @Inject
     private PluginManager pluginManager;
+
+    @Inject
+    private RegionManager regionManager;
+
+    @Inject
+    private ExecutorService executorService;
 
     @Override
     public void updateConfig() {
@@ -79,6 +89,15 @@ public class MeteorLitePlugin extends Plugin {
         if (!event.getGroup().equals(MeteorLiteConfig.GROUP_NAME)) {
             return;
         }
+    }
+
+    @Subscribe
+    public void onGameStateChanged(GameStateChanged e) {
+        if (e.getGameState() != GameState.LOGGED_IN) {
+            return;
+        }
+
+        executorService.execute(() -> regionManager.sendRegion());
     }
 
     @Override
