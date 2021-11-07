@@ -1636,6 +1636,26 @@ public interface RSClient extends RSGameEngine, Client {
   @Override
   RSClientPacket getBankItemActionPacket();
 
+  @Import("groundItem1")
+  @Override
+  RSClientPacket getGroundItemActionPacket();
+
+  @Import("groundItem2")
+  @Override
+  RSClientPacket getGroundItemAction2Packet();
+
+  @Import("groundItem3")
+  @Override
+  RSClientPacket getGroundItemAction3Packet();
+
+  @Import("groundItem4")
+  @Override
+  RSClientPacket getGroundItemAction4Packet();
+
+  @Import("groundItem5")
+  @Override
+  RSClientPacket getGroundItemAction5Packet();
+
   @Import("MOVE_GAMECLICK")
   @Override
   RSClientPacket getWalkPacket();
