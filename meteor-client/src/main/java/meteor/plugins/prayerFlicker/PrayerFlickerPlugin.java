@@ -1,18 +1,17 @@
 package meteor.plugins.prayerFlicker;
 
 import com.google.inject.Provides;
-import dev.hoot.api.packets.MousePackets;
-import dev.hoot.api.widgets.Prayers;
 import meteor.callback.ClientThread;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.input.KeyManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
+import dev.hoot.api.packets.MousePackets;
+import dev.hoot.api.packets.WidgetPackets;
+import dev.hoot.api.widgets.Prayers;
 import meteor.util.HotkeyListener;
-import net.runelite.api.GameState;
-import net.runelite.api.MenuAction;
-import net.runelite.api.Varbits;
+import net.runelite.api.*;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.WidgetInfo;
@@ -26,7 +25,6 @@ import javax.inject.Inject;
 )
 public class PrayerFlickerPlugin extends Plugin {
     public int timeout = 0;
-    public boolean toggle = false;
     @Inject
     private ClientThread clientThread;
 
@@ -58,11 +56,13 @@ public class PrayerFlickerPlugin extends Plugin {
             return;
         }
         clientThread.invoke(() -> {
-            if (Prayers.isQuickPrayerEnabled()&&config.disable()) {
+            if (Prayers.isQuickPrayerEnabled()) {
                 togglePrayer();
             }
         });
     }
+
+    boolean toggle;
 
     @Subscribe
     public void onGameTick(GameTick event) {
@@ -87,7 +87,7 @@ public class PrayerFlickerPlugin extends Plugin {
             }
             if (!toggle) {
                 clientThread.invoke(() -> {
-                    if (Prayers.isQuickPrayerEnabled()&&config.disable()) {
+                    if (Prayers.isQuickPrayerEnabled()) {
                         togglePrayer();
                     }
                 });
