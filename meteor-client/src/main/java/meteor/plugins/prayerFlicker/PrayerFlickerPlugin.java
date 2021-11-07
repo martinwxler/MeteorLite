@@ -22,7 +22,6 @@ import javax.inject.Inject;
 @PluginDescriptor(
         name = "Prayer Flicker",
         description = "prayer flicker for quick prayers",
-        tags = {},
         enabledByDefault = false
 )
 public class PrayerFlickerPlugin extends Plugin {
