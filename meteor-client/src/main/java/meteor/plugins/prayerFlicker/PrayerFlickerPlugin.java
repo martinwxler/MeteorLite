@@ -1,17 +1,18 @@
 package meteor.plugins.prayerFlicker;
 
 import com.google.inject.Provides;
+import dev.hoot.api.packets.MousePackets;
+import dev.hoot.api.widgets.Prayers;
 import meteor.callback.ClientThread;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.input.KeyManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
-import dev.hoot.api.packets.MousePackets;
-import dev.hoot.api.packets.WidgetPackets;
-import dev.hoot.api.widgets.Prayers;
 import meteor.util.HotkeyListener;
-import net.runelite.api.*;
+import net.runelite.api.GameState;
+import net.runelite.api.MenuAction;
+import net.runelite.api.Varbits;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.WidgetInfo;
@@ -22,11 +23,11 @@ import javax.inject.Inject;
         name = "Prayer Flicker",
         description = "prayer flicker for quick prayers",
         tags = {},
-        enabledByDefault = false,
-        disabledOnStartup = true
+        enabledByDefault = false
 )
 public class PrayerFlickerPlugin extends Plugin {
     public int timeout = 0;
+    public boolean toggle = false;
     @Inject
     private ClientThread clientThread;
 
@@ -38,6 +39,11 @@ public class PrayerFlickerPlugin extends Plugin {
     @Provides
     public PrayerFlickerConfig getConfig(ConfigManager configManager) {
         return configManager.getConfig(PrayerFlickerConfig.class);
+    }
+
+    private void togglePrayer(){
+        MousePackets.queueClickPacket(0, 0);
+        client.invokeMenuAction("","",1, MenuAction.CC_OP.getId(),-1,WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getPackedId());
     }
 
     @Override
@@ -54,13 +60,10 @@ public class PrayerFlickerPlugin extends Plugin {
         }
         clientThread.invoke(() -> {
             if (Prayers.isQuickPrayerEnabled()&&config.disable()) {
-                MousePackets.queueClickPacket(0, 0);
-                WidgetPackets.queueWidgetActionPacket(WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getPackedId(), -1, -1);
+                togglePrayer();
             }
         });
     }
-
-    boolean toggle;
 
     @Subscribe
     public void onGameTick(GameTick event) {
@@ -70,11 +73,9 @@ public class PrayerFlickerPlugin extends Plugin {
         if (toggle) {
             boolean quickPrayer = client.getVar(Varbits.QUICK_PRAYER) == 1;
             if (quickPrayer) {
-                MousePackets.queueClickPacket(0, 0);
-                WidgetPackets.queueWidgetActionPacket(WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getPackedId(), -1, -1);
+                togglePrayer();
             }
-            MousePackets.queueClickPacket(0, 0);
-            WidgetPackets.queueWidgetActionPacket(WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getPackedId(), -1, -1);
+            togglePrayer();
         }
     }
 
@@ -88,8 +89,7 @@ public class PrayerFlickerPlugin extends Plugin {
             if (!toggle) {
                 clientThread.invoke(() -> {
                     if (Prayers.isQuickPrayerEnabled()&&config.disable()) {
-                        MousePackets.queueClickPacket(0, 0);
-                        WidgetPackets.queueWidgetActionPacket(WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getPackedId(), -1, -1);
+                        togglePrayer();
                     }
                 });
             }
