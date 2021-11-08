@@ -24,17 +24,16 @@
  */
 package net.runelite.rs.api;
 
-import java.math.BigInteger;
-import java.util.Map;
-
 import net.runelite.api.*;
 import net.runelite.api.clan.ClanRank;
 import net.runelite.api.packets.ClientPacket;
 import net.runelite.api.packets.IsaacCipher;
 import net.runelite.api.widgets.Widget;
 import net.runelite.mapping.Construct;
-import net.runelite.mapping.Export;
 import net.runelite.mapping.Import;
+
+import java.math.BigInteger;
+import java.util.Map;
 
 public interface RSClient extends RSGameEngine, Client {
 
@@ -1499,13 +1498,22 @@ public interface RSClient extends RSGameEngine, Client {
   @Override
   RSClientPacket getNameInputPacket();
 
+  @Import("RESUME_PAUSEBUTTON")
+  @Override
+  RSClientPacket getResumePauseWidgetPacket();
+
   @Import("OPHELD1")
   @Override
   RSClientPacket getItemActionPacket();
 
+  //done
   @Import("OPLOCU")
   @Override
   RSClientPacket getItemUseOnGameObjectPacket();
+
+  @Import("OPNPCU")
+  @Override
+  RSClientPacket getItemUseOnNpcPacket();
 
   @Import("OPLOC1")
   @Override
@@ -1553,13 +1561,13 @@ public interface RSClient extends RSGameEngine, Client {
 
   @Import("OPHELDT")
   @Override
-  RSClientPacket getSpellOnItemPacket();
+  RSClientPacket getItemOnWidgetPacket();
 
   @Import("RESUME_P_COUNTDIALOG")
   @Override
   RSClientPacket getNumberInputPacket();
 
-  @Import("RESUME_P_COUNTDIALOG")
+  @Import("RESUME_P_STRINGDIALOG")
   @Override
   RSClientPacket getTextInputPacket();
 
@@ -1574,6 +1582,7 @@ public interface RSClient extends RSGameEngine, Client {
   @Import("IF_BUTTON3")
   @Override
   RSClientPacket getWidgetAction3Packet();
+
 
   @Import("IF_BUTTON4")
   @Override

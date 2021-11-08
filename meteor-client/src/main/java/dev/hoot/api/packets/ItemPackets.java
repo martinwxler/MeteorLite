@@ -66,70 +66,79 @@ public class ItemPackets {
 		packet.getPacketBuffer().writeShort$api(itemID);
 		writer.queuePacket(packet);
 	}
+	public static void queueItemOnNpcPacket(int npcIndex,int itemWidgetID,int itemID,int itemSlot,int ctrlDown){
+		PacketWriter writer = Game.getClient().getPacketWriter();
+		PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getItemUseOnNpcPacket(), writer.getIsaacCipher());
+		packet.getPacketBuffer().write2$api(ctrlDown);
+		packet.getPacketBuffer().writeByteA$api(itemID);
+		packet.getPacketBuffer().writeByteB0$api(itemSlot);
+		packet.getPacketBuffer().writeIntME3$api(itemWidgetID);
+		packet.getPacketBuffer().writeByteC$api(npcIndex);
+	}
 	public static void queueItemUseOnTileObjectPacket(int objectID, int objectX, int objectY, int itemSlot, int itemID, int itemWidgetID, int ctrlDown){
 		PacketWriter writer = Game.getClient().getPacketWriter();
 		PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getItemUseOnGameObjectPacket(), writer.getIsaacCipher());
-		packet.getPacketBuffer().writeShort01A$api(objectID);
-		packet.getPacketBuffer().writeShort01A$api(itemID);
-		packet.getPacketBuffer().writeByte01$api(ctrlDown);
-		packet.getPacketBuffer().writeShort01$api(objectY);
-		packet.getPacketBuffer().writeShort$api(objectX);
-		packet.getPacketBuffer().writeIntME$api(itemWidgetID);
-		packet.getPacketBuffer().writeShort$api(itemSlot);
+		packet.getPacketBuffer().writeByteB0$api(itemSlot);
+		packet.getPacketBuffer().writeByteB0$api(objectY);
+		packet.getPacketBuffer().writeIntME2$api(itemWidgetID);
+		packet.getPacketBuffer().writeByteA$api(objectX);
+		packet.getPacketBuffer().writeByteB0$api(objectID);
+		packet.getPacketBuffer().writeByteC$api(itemID);
+		packet.getPacketBuffer().writeByteB$api(ctrlDown);
 		writer.queuePacket(packet);
 	}
 	public static void queueItemActionPacket(int inventoryID, int itemID, int itemSlot) {
 		PacketWriter writer = Game.getClient().getPacketWriter();
 		PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getItemActionPacket(), writer.getIsaacCipher());
-		packet.getPacketBuffer().writeInt0123$api(inventoryID);
-		packet.getPacketBuffer().writeShort01$api(itemSlot);
-		packet.getPacketBuffer().writeShort$api(itemID);
+		packet.getPacketBuffer().writeByteC$api(itemID);
+		packet.getPacketBuffer().writeByteB0$api(itemSlot);
+		packet.getPacketBuffer().writeIntME$api(inventoryID);
 		writer.queuePacket(packet);
 	}
 	public static void queueItemAction3Packet(int inventoryID, int itemID, int itemSlot){
 		PacketWriter writer = Game.getClient().getPacketWriter();
 		PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getItemAction3Packet(), writer.getIsaacCipher());
-		packet.getPacketBuffer().writeShortA$api(itemID);
-		packet.getPacketBuffer().writeInt0123$api(inventoryID);
-		packet.getPacketBuffer().writeShortA$api(itemSlot);
+		packet.getPacketBuffer().writeByteA$api(itemID);
+		packet.getPacketBuffer().writeByteA$api(itemSlot);
+		packet.getPacketBuffer().writeIntME$api(inventoryID);
 		writer.queuePacket(packet);
 	}
 	public static void queueItemAction4Packet(int inventoryID, int itemID, int itemSlot){
 		PacketWriter writer = Game.getClient().getPacketWriter();
 		PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getItemAction4Packet(), writer.getIsaacCipher());
-		packet.getPacketBuffer().writeShortA$api(itemSlot);
-		packet.getPacketBuffer().writeShort01A$api(itemID);
-		packet.getPacketBuffer().writeInt2$api(inventoryID);
+		packet.getPacketBuffer().writeByteC$api(itemID);
+		packet.getPacketBuffer().writeByteA$api(itemSlot);
+		packet.getPacketBuffer().writeIntME$api(inventoryID);
 		writer.queuePacket(packet);
 	}
 
 	public static void queueItemAction2Packet(int inventoryID, int itemID, int itemSlot) {
 		PacketWriter writer = Game.getClient().getPacketWriter();
 		PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getItemAction2Packet(), writer.getIsaacCipher());
-		packet.getPacketBuffer().writeShort01A$api(itemSlot);
-		packet.getPacketBuffer().writeShort01$api(itemID);
-		packet.getPacketBuffer().writeIntME$api(inventoryID);
+		packet.getPacketBuffer().writeByteC$api(itemID);
+		packet.getPacketBuffer().writeByteB0$api(itemSlot);
+		packet.getPacketBuffer().writeIntME3$api(inventoryID);
 		writer.queuePacket(packet);
 	}
 	
 	public static void queueItemAction5Packet(int inventoryID, int itemID, int itemSlot) {
 		PacketWriter writer = Game.getClient().getPacketWriter();
 		PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getItemAction5Packet(), writer.getIsaacCipher());
-		packet.getPacketBuffer().writeShort01$api(itemID);
-		packet.getPacketBuffer().writeInt2$api(inventoryID);
-		packet.getPacketBuffer().writeShort$api(itemSlot);
+		packet.getPacketBuffer().writeByteA$api(itemSlot); //var0
+		packet.getPacketBuffer().writeShort$api(itemID); //var3
+		packet.getPacketBuffer().writeIntME2$api(inventoryID); //var1
 		writer.queuePacket(packet);
 	}
 
 	public static void queueItemOnItemPacket(int itemId1, int slot1, int itemId2, int slot2) {
 		PacketWriter writer = Game.getClient().getPacketWriter();
 		PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getItemOnItemPacket(), writer.getIsaacCipher());
-		packet.getPacketBuffer().writeShort$api(itemId1);
-		packet.getPacketBuffer().writeInt0123$api(WidgetInfo.INVENTORY.getPackedId());
-		packet.getPacketBuffer().writeShort$api(slot1);
-		packet.getPacketBuffer().writeShort01A$api(slot2);
-		packet.getPacketBuffer().writeShort01A$api(itemId2);
-		packet.getPacketBuffer().writeIntME$api(WidgetInfo.INVENTORY.getPackedId());
+		packet.getPacketBuffer().writeByteA$api(itemId2);
+		packet.getPacketBuffer().writeIntME2$api(WidgetInfo.INVENTORY.getPackedId());
+		packet.getPacketBuffer().writeShort$api(slot2);
+		packet.getPacketBuffer().writeIntME2$api(WidgetInfo.INVENTORY.getPackedId());
+		packet.getPacketBuffer().writeByteC$api(itemId1);
+		packet.getPacketBuffer().writeByteA$api(slot1);
 		writer.queuePacket(packet);
 	}
 }

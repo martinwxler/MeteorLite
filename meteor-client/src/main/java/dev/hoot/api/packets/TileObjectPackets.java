@@ -15,48 +15,48 @@ public class TileObjectPackets {
     public static void queueTileObjectActionPacket(int objectID, int worldPointX, int worldPointY, int ctrlDown) {
         PacketWriter writer = Game.getClient().getPacketWriter();
         PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getGameObjectActionPacket(), writer.getIsaacCipher());
-        packet.getPacketBuffer().writeShort01A$api(objectID);
-        packet.getPacketBuffer().writeByte01A$api(ctrlDown);
-        packet.getPacketBuffer().writeShort01A$api(worldPointY);
-        packet.getPacketBuffer().writeShort01A$api(worldPointX);
+        packet.getPacketBuffer().writeByteB0$api(worldPointX);
+        packet.getPacketBuffer().writeShort$api(worldPointY);
+        packet.getPacketBuffer().writeByteA$api(objectID);
+        packet.getPacketBuffer().writeByte$api(ctrlDown);
         writer.queuePacket(packet);
     }
 
     public static void queueTileObjectAction2Packet(int objectID, int worldPointX, int worldPointY, int ctrlDown){
         PacketWriter writer = Game.getClient().getPacketWriter();
         PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getGameObjectAction2Packet(), writer.getIsaacCipher());
-        packet.getPacketBuffer().writeShort01A$api(worldPointY);
-        packet.getPacketBuffer().writeShortA$api(worldPointX);
+        packet.getPacketBuffer().writeByteB0$api(worldPointX);
         packet.getPacketBuffer().writeByte$api(ctrlDown);
-        packet.getPacketBuffer().writeShortA$api(objectID);
+        packet.getPacketBuffer().writeShort$api(objectID);
+        packet.getPacketBuffer().writeByteC$api(worldPointY);
         writer.queuePacket(packet);
     }
 
     public static void queueTileObjectAction3Packet(int objectID, int worldPointX, int worldPointY, int ctrlDown) {
         PacketWriter writer = Game.getClient().getPacketWriter();
         PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getGameObjectAction3Packet(), writer.getIsaacCipher());
-        packet.getPacketBuffer().writeShort01$api(worldPointY);
+        packet.getPacketBuffer().writeShort$api(worldPointX);
         packet.getPacketBuffer().writeByte$api(ctrlDown);
-        packet.getPacketBuffer().writeShort01A$api(worldPointX);
-        packet.getPacketBuffer().writeShortA$api(objectID);
+        packet.getPacketBuffer().writeShort$api(worldPointY);
+        packet.getPacketBuffer().writeByteA$api(objectID);
         writer.queuePacket(packet);
     }
     public static void queueTileObjectAction4Packet(int objectID, int worldPointX, int worldPointY, int ctrlDown) {
         PacketWriter writer = Game.getClient().getPacketWriter();
         PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getGameObjectAction4Packet(), writer.getIsaacCipher());
-        packet.getPacketBuffer().writeShortA$api(worldPointY);
-        packet.getPacketBuffer().writeShortA$api(worldPointX);
-        packet.getPacketBuffer().writeByte01A$api(ctrlDown);
-        packet.getPacketBuffer().writeShort01A$api(objectID);
+        packet.getPacketBuffer().writeByteC$api(objectID);
+        packet.getPacketBuffer().writeShort$api(worldPointY);
+        packet.getPacketBuffer().writeByteC$api(worldPointX);
+        packet.getPacketBuffer().write1$api(ctrlDown);
         writer.queuePacket(packet);
     }
     public static void queueTileObjectAction5Packet(int objectID, int worldPointX, int worldPointY, int ctrlDown) {
         PacketWriter writer = Game.getClient().getPacketWriter();
         PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getGameObjectAction5Packet(), writer.getIsaacCipher());
-        packet.getPacketBuffer().writeShort01$api(objectID);
-        packet.getPacketBuffer().writeShort01$api(worldPointY);
-        packet.getPacketBuffer().writeShort01$api(worldPointX);
-        packet.getPacketBuffer().writeByte01$api(ctrlDown);
+        packet.getPacketBuffer().writeByteA$api(worldPointX);
+        packet.getPacketBuffer().writeByteC$api(objectID);
+        packet.getPacketBuffer().writeByteC$api(worldPointY);
+        packet.getPacketBuffer().writeByteB$api(ctrlDown);
         writer.queuePacket(packet);
     }
     public static void tileObjectFirstOption(TileObject object, int ctrlDown){
