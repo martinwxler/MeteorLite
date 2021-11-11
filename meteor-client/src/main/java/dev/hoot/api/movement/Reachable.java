@@ -76,6 +76,28 @@ public class Reachable {
         };
     }
 
+    public static boolean hasDoor(WorldPoint source, Direction direction) {
+        Tile tile = Tiles.getAt(source);
+        if (tile == null) {
+            return false;
+        }
+
+        return hasDoor(tile, direction);
+    }
+
+    public static boolean hasDoor(Tile source, Direction direction) {
+        WallObject wall = source.getWallObject();
+        if (wall == null) {
+            return false;
+        }
+
+        if (!wall.isDefinitionCached()) {
+            GameThread.invokeLater(() -> Game.getClient().getObjectComposition(wall.getId()));
+        }
+
+        return isWalled(direction, getCollisionFlag(source.getWorldLocation())) && wall.hasAction("Open", "Close");
+    }
+
     public static boolean isDoored(Tile source, Tile destination) {
         WallObject wall = source.getWallObject();
         if (wall == null) {

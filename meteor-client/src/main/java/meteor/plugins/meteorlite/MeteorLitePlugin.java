@@ -11,7 +11,7 @@ import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.plugins.meteorlite.interaction.InteractionManager;
 import meteor.plugins.meteorlite.interaction.InteractionOverlay;
-import meteor.plugins.meteorlite.regions.RegionManager;
+import dev.hoot.api.movement.regions.RegionManager;
 import net.runelite.api.GameState;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameStateChanged;
