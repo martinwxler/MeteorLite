@@ -24,11 +24,14 @@ public class BitSet4D {
         this.sizeZ = sizeZ;
         this.sizeW = sizeW;
 
-        var oldLimit = buffer.limit();
-        buffer.limit(buffer.position() + (sizeX * sizeY * sizeZ * sizeW + 7) / 8);
+        int bufferSize = buffer.limit();
+        int regionSize = buffer.position() + (sizeX * sizeY * sizeZ * sizeW + 7) / 8;
+
+        buffer.limit(regionSize);
         bits = BitSet.valueOf(buffer);
+
         buffer.position(buffer.limit());
-        buffer.limit(oldLimit);
+        buffer.limit(bufferSize);
     }
 
     public void write(ByteBuffer buffer) {
@@ -37,19 +40,23 @@ public class BitSet4D {
         buffer.position(startPos + (sizeX * sizeY * sizeZ * sizeW + 7) / 8);
     }
 
+    public boolean get(int index) {
+        return bits.get(index);
+    }
+
     public boolean get(int x, int y, int z, int w) {
-        return bits.get(index(x, y, z, w));
+        return bits.get(getIndex(x, y, z, w));
     }
 
     public void set(int x, int y, int z, int flag, boolean value) {
-        bits.set(index(x, y, z, flag), value);
+        bits.set(getIndex(x, y, z, flag), value);
     }
 
     public void setAll(boolean value) {
         bits.set(0, bits.size(), value);
     }
 
-    private int index(int x, int y, int z, int w) {
+    public int getIndex(int x, int y, int z, int w) {
         if (x < 0 || y < 0 || z < 0 || w < 0 || x >= sizeX || y >= sizeY || z >= sizeZ || w >= sizeW) {
             throw new IndexOutOfBoundsException("(" + x + ", " + y + ", " + z + ", " + w + ")");
         }
@@ -58,6 +65,7 @@ public class BitSet4D {
         index = index * sizeY + y;
         index = index * sizeX + x;
         index = index * sizeW + w;
+
         return index;
     }
 }

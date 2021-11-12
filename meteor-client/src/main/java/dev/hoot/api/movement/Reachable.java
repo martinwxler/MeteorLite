@@ -15,7 +15,7 @@ public class Reachable {
     private static final int MAX_ATTEMPTED_TILES = 1000;
 
     public static boolean check(int flag, int checkFlag) {
-        return (flag & checkFlag) != 0;
+        return flag != 0xFFFFFF && (flag & checkFlag) != 0;
     }
 
     public static boolean isObstacle(int endFlag) {

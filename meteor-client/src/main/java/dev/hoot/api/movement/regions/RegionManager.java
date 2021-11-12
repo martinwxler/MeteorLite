@@ -11,6 +11,7 @@ import net.runelite.api.CollisionDataFlag;
 import net.runelite.api.Player;
 import net.runelite.api.Tile;
 import net.runelite.api.coords.Direction;
+import net.runelite.api.coords.WorldPoint;
 import okhttp3.*;
 import org.sponge.util.Logger;
 
@@ -48,41 +49,63 @@ public class RegionManager {
 		List<TileFlag> tileFlags = new ArrayList<>();
 		int plane = Game.getClient().getPlane();
 		int[][] flags = col[plane].getFlags();
+
 		for (int x = 0; x < flags.length; x++) {
-			for (int y = 0; y < flags[x].length; y++) {
+			for (int y = 0; y < flags.length; y++) {
 				int tileX = x + Game.getClient().getBaseX();
 				int tileY = y + Game.getClient().getBaseY();
 				int flag = flags[x][y];
+
+				if (flag == 0xFFFFFF) {
+					continue;
+				}
 
 				Tile tile = Tiles.getAt(tileX, tileY, plane);
 				if (tile == null) {
 					continue;
 				}
 
-				TileFlag tileFlag = new TileFlag(tileX, tileY, plane, flag, region, x, y);
-				for (Direction direction : Direction.values()) {
-					switch (direction) {
-						case NORTH -> {
-							if (Reachable.hasDoor(tile, direction) || Reachable.hasDoor(tile.getWorldLocation().dy(1), Direction.SOUTH)) {
-								tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_NORTH);
-							}
-						}
+				WorldPoint tileCoords = tile.getWorldLocation();
+				TileFlag tileFlag = new TileFlag(tileX, tileY, plane, flag, tileCoords.getRegionID(), x, y);
+				if (!Reachable.isObstacle(tileCoords)) {
+					WorldPoint northernTile = tileCoords.dy(1);
+					if (Reachable.isObstacle(northernTile)
+									&& !Reachable.isWalled(Direction.NORTH, tileFlag.getFlag())) {
+						tileFlag.setFlag(tileFlag.getFlag() + CollisionDataFlag.BLOCK_MOVEMENT_NORTH);
+					}
 
-						case EAST -> {
-							if (Reachable.hasDoor(tile, direction) || Reachable.hasDoor(tile.getWorldLocation().dx(1), Direction.WEST)) {
-								tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_EAST);
-							}
-						}
-						case WEST -> {
-							if (Reachable.hasDoor(tile, direction) || Reachable.hasDoor(tile.getWorldLocation().dx(-1), Direction.EAST)) {
-								tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_WEST);
-							}
-						}
+					WorldPoint easternTile = tileCoords.dx(1);
+					if (Reachable.isObstacle(easternTile)
+									&& !Reachable.isWalled(Direction.EAST, tileFlag.getFlag())) {
+						tileFlag.setFlag(tileFlag.getFlag() + CollisionDataFlag.BLOCK_MOVEMENT_EAST);
+					}
 
-						case SOUTH -> {
-							if (Reachable.hasDoor(tile, direction) || Reachable.hasDoor(tile.getWorldLocation().dy(-1), Direction.NORTH)) {
-								tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_SOUTH);
-							}
+					for (Direction direction : Direction.values()) {
+						switch (direction) {
+							case NORTH:
+								if (Reachable.hasDoor(tile, direction) || Reachable.hasDoor(northernTile, Direction.SOUTH)) {
+									tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_NORTH);
+								}
+
+								break;
+							case EAST:
+								if (Reachable.hasDoor(tile, direction) || Reachable.hasDoor(easternTile, Direction.WEST)) {
+									tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_EAST);
+								}
+
+								break;
+							case WEST:
+								if (Reachable.hasDoor(tile, direction) || Reachable.hasDoor(tileCoords.dx(-1), Direction.EAST)) {
+									tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_WEST);
+								}
+
+								break;
+							case SOUTH:
+								if (Reachable.hasDoor(tile, direction) || Reachable.hasDoor(tileCoords.dy(-1), Direction.NORTH)) {
+									tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_SOUTH);
+								}
+
+								break;
 						}
 					}
 				}

@@ -1,11 +1,19 @@
 package dev.hoot.api.movement.pathfinder;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.zip.GZIPOutputStream;
 
 public class GlobalCollisionMap implements CollisionMap {
-	private final BitSet4D[] regions = new BitSet4D[256 * 256];
+	public final BitSet4D[] regions = new BitSet4D[256 * 256];
+
+	public GlobalCollisionMap() {
+	}
 
 	public GlobalCollisionMap(byte[] data) {
 		var buffer = ByteBuffer.wrap(data);
@@ -14,6 +22,32 @@ public class GlobalCollisionMap implements CollisionMap {
 			var region = buffer.getShort() & 0xffff;
 			regions[region] = new BitSet4D(buffer, 64, 64, 4, 2);
 		}
+	}
+
+	public File writeToFile() {
+		byte[] bytes = toBytes();
+		File fileLoc = new File("collision-map");
+		if (!fileLoc.isFile()) {
+			try {
+				fileLoc.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream(bytes.length);
+				 GZIPOutputStream gos = new GZIPOutputStream(bos);
+				 FileOutputStream fos = new FileOutputStream(fileLoc)) {
+			gos.write(bytes);
+			gos.finish();
+			fos.write(bos.toByteArray());
+			gos.flush();
+			fos.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return fileLoc;
 	}
 
 	public byte[] toBytes() {
@@ -40,19 +74,27 @@ public class GlobalCollisionMap implements CollisionMap {
 		region.set(x % 64, y % 64, z, w, value);
 	}
 
-	public boolean get(int x, int y, int z, int w) {
-		var region = regions[x / 64 * 256 + y / 64];
-
-		if (region == null) {
-			return false;
-		}
-
-		return region.get(x % 64, y % 64, z, w);
+	public BitSet4D getRegion(int x, int y) {
+		int regionId = x / 64 * 256 + y / 64;
+		return regions[regionId];
 	}
 
 	public void createRegion(int region) {
 		regions[region] = new BitSet4D(64, 64, 4, 2);
 		regions[region].setAll(true);
+	}
+
+	public boolean get(int x, int y, int z, int w) {
+		var region = getRegion(x, y);
+
+		if (region == null) {
+			return true;
+		}
+
+		int regionX = x % 64;
+		int regionY = y % 64;
+
+		return region.get(regionX, regionY, z, w);
 	}
 
 	@Override
@@ -65,3 +107,4 @@ public class GlobalCollisionMap implements CollisionMap {
 		return get(x, y, z, 1);
 	}
 }
+

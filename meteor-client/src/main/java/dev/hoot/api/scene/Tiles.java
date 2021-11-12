@@ -1,6 +1,5 @@
 package dev.hoot.api.scene;
 
-import dev.hoot.api.entities.Players;
 import dev.hoot.api.game.Game;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
@@ -15,17 +14,13 @@ import java.util.function.Predicate;
 @Singleton
 public class Tiles {
     private static final Logger log = new Logger("Tiles");
-    private static final int MAX_RANGE = 50;
     public static List<Tile> getTiles(Predicate<Tile> filter) {
         List<Tile> out = new ArrayList<>();
-        Player local = Players.getLocal();
 
         for (int x = 0; x < Constants.SCENE_SIZE; x++) {
             for (int y = 0; y < Constants.SCENE_SIZE; y++) {
                 Tile tile = Game.getClient().getScene().getTiles()[Game.getClient().getPlane()][x][y];
-                if (tile != null
-                        && tile.getWorldLocation().distanceTo(local.getWorldLocation()) <= MAX_RANGE
-                        && filter.test(tile)) {
+                if (tile != null && filter.test(tile)) {
                     out.add(tile);
                 }
             }

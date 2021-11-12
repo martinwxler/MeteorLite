@@ -146,9 +146,9 @@ public class Movement {
         destination.outline(Game.getClient(), graphics2D, Color.GREEN, "Destination");
     }
 
-    public static void drawCollisions(Graphics2D graphics2D) {
+    public static void drawCollisions(Graphics2D graphics2D, CollisionMap collisionMap) {
         Client client = Game.getClient();
-        java.util.List<Tile> tiles = Tiles.getTiles();
+        List<Tile> tiles = Tiles.getTiles();
 
         if (tiles.isEmpty()) {
             return;
@@ -171,7 +171,6 @@ public class Movement {
             graphics2D.drawLine(center.getX(), center.getY(), linkCenter.getX(), linkCenter.getY());
         }
 
-        CollisionMap collisionMap = Walker.GLOBAL_COLLISION_MAP;
         if (collisionMap == null) {
             return;
         }
@@ -234,6 +233,10 @@ public class Movement {
             graphics2D.setColor(TILE_BLOCKED_COLOR);
             graphics2D.fill(poly);
         }
+    }
+
+    public static void drawCollisions(Graphics2D graphics2D) {
+        drawCollisions(graphics2D, Walker.GLOBAL_COLLISION_MAP);
     }
 
     public static void toggleRun() {
