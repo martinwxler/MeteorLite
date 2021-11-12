@@ -24,10 +24,10 @@ import java.util.Set;
 
 @Singleton
 public class RegionManager {
-	private static final Set<Integer> SENT_REGIONS = new HashSet<>();
 	private static final Logger logger = new Logger("RegionManager");
 	private static final MediaType JSON_MEDIATYPE = MediaType.parse("application/json");
-	private static final String API_URL = "http://20.90.16.60:8080/regions";
+	private static final int VERSION = 1;
+	private static final String API_URL = "http://20.90.16.60:8080/regions/" + VERSION;
 
 	@Inject
 	private OkHttpClient okHttpClient;
@@ -35,12 +35,6 @@ public class RegionManager {
 	private final Gson gson = new GsonBuilder().create();
 
 	public void sendRegion() {
-		Player local = Players.getLocal();
-		int region = local.getWorldLocation().getRegionID();
-		if (SENT_REGIONS.contains(region)) {
-			return;
-		}
-
 		CollisionData[] col = Game.getClient().getCollisionMaps();
 		if (col == null) {
 			return;
@@ -130,7 +124,6 @@ public class RegionManager {
 			}
 
 			logger.debug("Region saved successfully");
-			SENT_REGIONS.add(region);
 		} catch (Exception e) {
 			logger.error("Failed to POST: {}", e.getMessage());
 			e.printStackTrace();
