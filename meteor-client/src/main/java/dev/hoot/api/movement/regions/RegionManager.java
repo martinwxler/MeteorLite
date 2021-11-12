@@ -2,13 +2,11 @@ package dev.hoot.api.movement.regions;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dev.hoot.api.entities.Players;
 import dev.hoot.api.game.Game;
 import dev.hoot.api.movement.Reachable;
 import dev.hoot.api.scene.Tiles;
 import net.runelite.api.CollisionData;
 import net.runelite.api.CollisionDataFlag;
-import net.runelite.api.Player;
 import net.runelite.api.Tile;
 import net.runelite.api.coords.Direction;
 import net.runelite.api.coords.WorldPoint;
@@ -18,16 +16,14 @@ import org.sponge.util.Logger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Singleton
 public class RegionManager {
 	private static final Logger logger = new Logger("RegionManager");
 	private static final MediaType JSON_MEDIATYPE = MediaType.parse("application/json");
 	private static final int VERSION = 1;
-	private static final String API_URL = "http://20.90.16.60:8080/regions/" + VERSION;
+	private static final String API_URL = "http://174.138.15.181:8080/regions/" + VERSION;
 
 	@Inject
 	private OkHttpClient okHttpClient;
