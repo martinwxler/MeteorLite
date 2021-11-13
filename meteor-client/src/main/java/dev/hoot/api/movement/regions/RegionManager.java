@@ -21,7 +21,7 @@ import java.util.List;
 @Singleton
 public class RegionManager {
 	private static final Logger logger = new Logger("RegionManager");
-	private static final int VERSION = 2;
+	private static final int VERSION = 1;
 	private static final MediaType JSON_MEDIATYPE = MediaType.parse("application/json");
 	private static final String API_URL = "http://174.138.15.181:8080/regions/" + VERSION;
 
