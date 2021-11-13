@@ -1,8 +1,9 @@
 package dev.hoot.api.movement.regions;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dev.hoot.api.game.Game;
 import dev.hoot.api.movement.Reachable;
-import dev.hoot.api.movement.pathfinder.GlobalCollisionMap;
 import dev.hoot.api.scene.Tiles;
 import net.runelite.api.CollisionData;
 import net.runelite.api.CollisionDataFlag;
@@ -14,7 +15,6 @@ import org.sponge.util.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +22,10 @@ import java.util.List;
 public class RegionManager {
 	private static final Logger logger = new Logger("RegionManager");
 	private static final int VERSION = 2;
+	private static final MediaType JSON_MEDIATYPE = MediaType.parse("application/json");
 	private static final String API_URL = "http://174.138.15.181:8080/regions/" + VERSION;
-	private final GlobalCollisionMap globalCollisionMap = new GlobalCollisionMap();
+
+	private final Gson gson = new GsonBuilder().create();
 
 	@Inject
 	private OkHttpClient okHttpClient;
@@ -106,37 +108,13 @@ public class RegionManager {
 					tileFlags.add(tileFlag);
 				}
 			}
-
-			for (TileFlag tileFlag : tileFlags) {
-				if (globalCollisionMap.regions[tileFlag.getRegion()] == null) {
-					globalCollisionMap.createRegion(tileFlag.getRegion());
-				}
-
-				if (Reachable.isObstacle(tileFlag.getFlag())) {
-					globalCollisionMap.set(tileFlag.getX(), tileFlag.getY(), tileFlag.getZ(), 0, false);
-					globalCollisionMap.set(tileFlag.getX(), tileFlag.getY(), tileFlag.getZ(), 1, false);
-					continue;
-				}
-
-				if (Reachable.isWalled(Direction.NORTH, tileFlag.getFlag())) {
-					globalCollisionMap.set(tileFlag.getX(), tileFlag.getY(), tileFlag.getZ(), 0, false);
-				}
-
-				if (Reachable.isWalled(Direction.EAST, tileFlag.getFlag())) {
-					globalCollisionMap.set(tileFlag.getX(), tileFlag.getY(), tileFlag.getZ(), 1, false);
-				}
-			}
 		}
 
 		try {
-			File gzip = globalCollisionMap.writeToFile();
-			RequestBody body = new MultipartBody.Builder()
-							.addFormDataPart("file", gzip.getName(), RequestBody.create(MediaType.parse("media/type"), gzip))
-							.setType(MultipartBody.FORM)
-							.build();
-
+			String json = gson.toJson(tileFlags);
+			RequestBody body = RequestBody.create(JSON_MEDIATYPE, json);
 			Request request = new Request.Builder()
-							.put(body)
+							.post(body)
 							.url(API_URL)
 							.build();
 			Response response = okHttpClient.newCall(request)
@@ -147,7 +125,7 @@ public class RegionManager {
 				return;
 			}
 
-			logger.debug("Region cache success");
+			logger.debug("Region saved successfully");
 		} catch (Exception e) {
 			logger.error("Failed to POST: {}", e.getMessage());
 			e.printStackTrace();
