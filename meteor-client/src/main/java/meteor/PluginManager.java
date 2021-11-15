@@ -27,6 +27,7 @@ import meteor.plugins.ExternalPluginClassLoader;
 import meteor.plugins.PluginDescriptor;
 import dev.hoot.api.game.Game;
 import meteor.plugins.banktaglayouts.BankTagLayoutsPlugin;
+import meteor.plugins.birdhouserunner.BirdhouseRunnerPlugin;
 import meteor.plugins.cettitutorial.CettiTutorialPlugin;
 import meteor.plugins.nexus.NexusMapPlugin;
 import meteor.plugins.nightmareHelper.NightmareHelper;
@@ -241,6 +242,7 @@ public class PluginManager {
 		plugins.add(new BarrowsPlugin());
 		plugins.add(new BetterAntiDragPlugin());
 		plugins.add(new BetterRougesDenPlugin());
+		plugins.add(new BirdhouseRunnerPlugin());
 		plugins.add(new BlackjackPlugin());
 		plugins.add(new BlastFurnacePlugin());
 		plugins.add(new BoostsPlugin());
