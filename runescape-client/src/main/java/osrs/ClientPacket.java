@@ -228,7 +228,7 @@ public class ClientPacket implements class238 {
    @ObfuscatedSignature(
       descriptor = "Lik;"
    )
-   public static final ClientPacket field2702 = new ClientPacket(43, 16);
+   public static final ClientPacket OPHELDU = new ClientPacket(43, 16);
    @ObfuscatedName("ap")
    @ObfuscatedSignature(
       descriptor = "Lik;"
@@ -253,7 +253,7 @@ public class ClientPacket implements class238 {
    @ObfuscatedSignature(
       descriptor = "Lik;"
    )
-   public static final ClientPacket field2712 = new ClientPacket(48, 0);
+   public static final ClientPacket CLOSE_MODAL = new ClientPacket(48, 0);
    @ObfuscatedName("ao")
    @ObfuscatedSignature(
       descriptor = "Lik;"
@@ -398,7 +398,7 @@ public class ClientPacket implements class238 {
    @ObfuscatedSignature(
       descriptor = "Lik;"
    )
-   public static final ClientPacket field2741 = new ClientPacket(77, 11);
+   public static final ClientPacket spellOnNpc = new ClientPacket(77, 11);
    @ObfuscatedName("ca")
    @ObfuscatedSignature(
       descriptor = "Lik;"
