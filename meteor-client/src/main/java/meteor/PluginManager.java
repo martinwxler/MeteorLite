@@ -37,6 +37,7 @@ import meteor.plugins.banktaglayouts.BankTagLayoutsPlugin;
 import meteor.plugins.banktags.BankTagsPlugin;
 import meteor.plugins.barbassault.BAPlugin;
 import meteor.plugins.barrows.BarrowsPlugin;
+import meteor.plugins.birdhouserunner.BirdhouseRunnerPlugin;
 import meteor.plugins.blackjack.BlackjackPlugin;
 import meteor.plugins.blastfurnace.BlastFurnacePlugin;
 import meteor.plugins.boosts.BoostsPlugin;
@@ -201,13 +202,8 @@ public class PluginManager {
 	private HashMap<Class<? extends Plugin>, Class<? extends Plugin>> conflicts = new HashMap<>();
 
 	@Inject
-	private EventBus eventBus;
-
-	@Inject
 	private ConfigManager configManager;
 
-	@Inject
-	private MeteorLiteClientModule meteorLiteClientModule;
 	public boolean startedPlugins;
 
 	@Getter
@@ -224,7 +220,7 @@ public class PluginManager {
   private void initPlugins() {
 		// Leave at the top pls, these are not regular plugins
 	  plugins.add(new MeteorLitePlugin());
-	  plugins.add(new RegionPlugin());
+//	  plugins.add(new RegionPlugin());
 	  plugins.add(new AgilityPlugin());
 	  plugins.add(new CettiTutorialPlugin());
 		plugins.add(new HydraPlugin());
