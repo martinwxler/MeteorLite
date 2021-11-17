@@ -232,7 +232,7 @@ public class PluginManager {
 		plugins.add(new BankPlugin());
 		plugins.add(new BankTagsPlugin());
 		plugins.add(new BankTagLayoutsPlugin());
-		plugins.add(new BankSetupsRefactored());
+//		plugins.add(new BankSetupsRefactored());
 		plugins.add(new BAPlugin());
 		plugins.add(new BarrowsPlugin());
 		plugins.add(new BetterAntiDragPlugin());
