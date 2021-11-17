@@ -95,6 +95,8 @@ public abstract class ClientMixin implements RSClient {
   public static double tmpCamAngleX;
   @Inject
   public long lastNanoTime;
+  @Inject
+  public long delayNanoTime;
   
   @Inject
   @FieldHook("gameState")
@@ -1949,6 +1951,30 @@ public abstract class ClientMixin implements RSClient {
     {
       posToCameraAngle(client.getMapAngle(), client.getCameraPitch());
     }
+    else
+    {
+      delayNanoTime = 0L;
+    }
+  }
+
+  @Inject
+  public void setUnlockedFpsTarget(int var1)
+  {
+    if (var1 <= 0)
+    {
+      delayNanoTime = 0L;
+    }
+    else
+    {
+      delayNanoTime = 1000000000L / (long) var1;
+    }
+  }
+
+  @Inject
+  @Override
+  public long getUnlockedFpsTarget()
+  {
+    return delayNanoTime;
   }
 
   @Inject
