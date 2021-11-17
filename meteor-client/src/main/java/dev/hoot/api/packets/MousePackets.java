@@ -1,8 +1,9 @@
 package dev.hoot.api.packets;
 
 import dev.hoot.api.game.Game;
-import net.runelite.api.packets.PacketBufferNode;
-import net.runelite.api.packets.PacketWriter;
+import osrs.ClientPacket;
+
+import static osrs.Client.packetWriter;
 
 public class MousePackets {
 	public static void queueClickPacket(int x, int y) {
@@ -22,11 +23,10 @@ public class MousePackets {
 	}
 
 	public static void queueClickPacket(int mouseinfo, int x, int y){
-		PacketWriter writer = Game.getClient().getPacketWriter();
-		PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getClickPacket(), writer.getIsaacCipher());
-		packet.getPacketBuffer().writeShort$api(mouseinfo);
-		packet.getPacketBuffer().writeShort$api(x);
-		packet.getPacketBuffer().writeShort$api(y);
-		writer.queuePacket(packet);
+		osrs.PacketBufferNode var18 = (osrs.PacketBufferNode) Game.getClient().preparePacket(ClientPacket.EVENT_MOUSE_CLICK, packetWriter.isaacCipher);
+		var18.packetBuffer.writeShort(mouseinfo);
+		var18.packetBuffer.writeShort(x);
+		var18.packetBuffer.writeShort(y);
+		packetWriter.addNode(var18);
 	}
 }

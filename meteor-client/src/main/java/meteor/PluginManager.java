@@ -236,6 +236,7 @@ public class PluginManager {
 		plugins.add(new BankPlugin());
 		plugins.add(new BankTagsPlugin());
 		plugins.add(new BankTagLayoutsPlugin());
+        plugins.add(new BankSetupsRefactored());
 		plugins.add(new BAPlugin());
 		plugins.add(new BarrowsPlugin());
 		plugins.add(new BetterAntiDragPlugin());
@@ -320,7 +321,7 @@ public class PluginManager {
 		plugins.add(new MTAPlugin());
 		plugins.add(new NeverLogoutPlugin());
 		plugins.add(new NexusMapPlugin());
-	  plugins.add(new NightmareHelper());
+	    plugins.add(new NightmareHelper());
 		plugins.add(new NightmarePlugin());
 		plugins.add(new NpcAggroAreaPlugin());
 		plugins.add(new NpcIndicatorsPlugin());

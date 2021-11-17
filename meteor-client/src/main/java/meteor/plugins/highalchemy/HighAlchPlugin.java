@@ -1,6 +1,7 @@
 package meteor.plugins.highalchemy;
 
 import com.google.inject.Provides;
+import dev.hoot.api.game.Game;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
@@ -52,7 +53,7 @@ public class HighAlchPlugin extends Plugin {
         if(client.getGameState()!= GameState.LOGGED_IN){
             return;
         }
-        if(Dialog.isOpen()|| Bank.isOpen()){
+        if(Dialog.isOpen()|| Bank.isOpen()|| Game.isInCutscene()){
             return;
         }
         if(timeout<=-20){

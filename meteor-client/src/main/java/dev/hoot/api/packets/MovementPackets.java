@@ -2,18 +2,18 @@ package dev.hoot.api.packets;
 
 import dev.hoot.api.game.Game;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.packets.PacketBufferNode;
-import net.runelite.api.packets.PacketWriter;
+import osrs.ClientPacket;
+
+import static osrs.Client.packetWriter;
 
 public class MovementPackets {
 	public static void sendMovement(int worldX, int worldY, boolean run) {
-		PacketWriter writer = Game.getClient().getPacketWriter();
-		PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getWalkPacket(), writer.getIsaacCipher());
-		packet.getPacketBuffer().writeByte$api(5);
-		packet.getPacketBuffer().writeByteA$api(worldX);
-		packet.getPacketBuffer().writeByteB$api(run ? 2 : 0);
-		packet.getPacketBuffer().writeByteC$api(worldY);
-		writer.queuePacket(packet);
+		osrs.PacketBufferNode var18 = (osrs.PacketBufferNode) Game.getClient().preparePacket(ClientPacket.MOVE_GAMECLICK, packetWriter.isaacCipher);
+		var18.packetBuffer.writeByte(5);
+		var18.packetBuffer.writeByteA(worldX);
+		var18.packetBuffer.writeByteB(run ? 2 : 0);
+		var18.packetBuffer.writeByteC(worldY);
+		packetWriter.addNode(var18);
 	}
 
 	public static void sendMovement(int worldX, int worldY) {

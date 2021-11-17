@@ -478,7 +478,7 @@ public class class14 {
                Client.mouseCrossState = 0;
                Client.destinationX = var0;
                Client.destinationY = var1;
-               var9 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2741, Client.packetWriter.isaacCipher);
+               var9 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.spellOnNpc, Client.packetWriter.isaacCipher);
                var9.packetBuffer.writeIntME(FontName.selectedSpellWidget);
                var9.packetBuffer.writeByteA(Client.selectedSpellChildIndex);
                var9.packetBuffer.writeByteB(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0);
@@ -766,7 +766,7 @@ public class class14 {
                            class184.invalidateWidget(Client.meslayerContinueWidget);
                         }
                      } else if (var2 == 31) {
-                        var8 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2702, Client.packetWriter.isaacCipher);
+                        var8 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.OPHELDU, Client.packetWriter.isaacCipher);
                         var8.packetBuffer.writeByteA(var3);
                         var8.packetBuffer.writeIntME2(var1);
                         var8.packetBuffer.writeShort(var0);
@@ -1174,7 +1174,7 @@ public class class14 {
       garbageValue = "1351549041"
    )
    static final void method191() {
-      PacketBufferNode var0 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.field2712, Client.packetWriter.isaacCipher);
+      PacketBufferNode var0 = AbstractWorldMapData.getPacketBufferNode(ClientPacket.CLOSE_MODAL, Client.packetWriter.isaacCipher);
       Client.packetWriter.addNode(var0);
 
       for(InterfaceParent var1 = (InterfaceParent)Client.interfaceParents.first(); var1 != null; var1 = (InterfaceParent)Client.interfaceParents.next()) {

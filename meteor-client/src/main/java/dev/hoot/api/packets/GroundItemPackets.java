@@ -2,56 +2,53 @@ package dev.hoot.api.packets;
 
 import dev.hoot.api.game.Game;
 import net.runelite.api.TileItem;
-import net.runelite.api.packets.PacketBufferNode;
-import net.runelite.api.packets.PacketWriter;
+import osrs.Client;
+import osrs.ClientPacket;
 
 import java.util.List;
 
+import static osrs.Client.packetWriter;
+
 public class GroundItemPackets {
     public static void queueGroundItemActionPacket(int itemID,int worldPointX,int worldPointY,boolean ctrlDown){
-        PacketWriter writer = Game.getClient().getPacketWriter();
-        PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getGroundItemActionPacket(), writer.getIsaacCipher());
-        packet.getPacketBuffer().writeByteA$api(worldPointX);
-        packet.getPacketBuffer().writeShort$api(itemID);
-        packet.getPacketBuffer().writeShort$api(worldPointY);
-        packet.getPacketBuffer().write2$api(ctrlDown ? 1 : 0);
-        writer.queuePacket(packet);
+        osrs.PacketBufferNode var8 = (osrs.PacketBufferNode) Game.getClient().preparePacket(ClientPacket.groundItem1, packetWriter.isaacCipher);
+        var8.packetBuffer.writeByteA(worldPointX);
+        var8.packetBuffer.writeShort(itemID);
+        var8.packetBuffer.writeShort(worldPointY);
+        var8.packetBuffer.write2(ctrlDown ? 1 : 0);
+        Client.packetWriter.addNode(var8);
     }
     public static void queueGroundItemAction2Packet(int itemID,int worldPointX,int worldPointY,boolean ctrlDown){
-        PacketWriter writer = Game.getClient().getPacketWriter();
-        PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getGroundItemAction2Packet(), writer.getIsaacCipher());
-        packet.getPacketBuffer().writeByteC$api(worldPointY);
-        packet.getPacketBuffer().write2$api(ctrlDown ? 1 : 0);
-        packet.getPacketBuffer().writeByteB0$api(itemID);
-        packet.getPacketBuffer().writeShort$api(worldPointX);
-        writer.queuePacket(packet);
+        osrs.PacketBufferNode var8 = (osrs.PacketBufferNode) Game.getClient().preparePacket(ClientPacket.groundItem2, packetWriter.isaacCipher);
+        var8.packetBuffer.writeByteC(worldPointY);
+        var8.packetBuffer.write2(ctrlDown ? 1 : 0);
+        var8.packetBuffer.writeByteB0(itemID);
+        var8.packetBuffer.writeShort(worldPointX);
+        Client.packetWriter.addNode(var8);
     }
     public static void queueGroundItemAction3Packet(int itemID,int worldPointX,int worldPointY,boolean ctrlDown){
-        PacketWriter writer = Game.getClient().getPacketWriter();
-        PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getGroundItemAction3Packet(), writer.getIsaacCipher());
-        packet.getPacketBuffer().writeByteA$api(worldPointY);
-        packet.getPacketBuffer().write2$api(ctrlDown ? 1 : 0);
-        packet.getPacketBuffer().writeByteA$api(worldPointX);
-        packet.getPacketBuffer().writeByteA$api(itemID);
-        writer.queuePacket(packet);
+        osrs.PacketBufferNode var8 = (osrs.PacketBufferNode) Game.getClient().preparePacket(ClientPacket.groundItem3, packetWriter.isaacCipher);
+        var8.packetBuffer.writeByteA(worldPointY);
+        var8.packetBuffer.write2(ctrlDown ? 1 : 0);
+        var8.packetBuffer.writeByteA(worldPointX);
+        var8.packetBuffer.writeByteA(itemID);
+        Client.packetWriter.addNode(var8);
     }
     public static void queueGroundItemAction4Packet(int itemID,int worldPointX,int worldPointY,boolean ctrlDown){
-        PacketWriter writer = Game.getClient().getPacketWriter();
-        PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getGroundItemAction4Packet(), writer.getIsaacCipher());
-        packet.getPacketBuffer().writeByteA$api(worldPointY);
-        packet.getPacketBuffer().writeShort$api(itemID);
-        packet.getPacketBuffer().writeByteC$api(worldPointX);
-        packet.getPacketBuffer().write2$api(ctrlDown ? 1 : 0);
-        writer.queuePacket(packet);
+        osrs.PacketBufferNode var8 = (osrs.PacketBufferNode) Game.getClient().preparePacket(ClientPacket.groundItem4, packetWriter.isaacCipher);
+        var8.packetBuffer.writeByteA(worldPointY);
+        var8.packetBuffer.writeShort(itemID);
+        var8.packetBuffer.writeByteC(worldPointX);
+        var8.packetBuffer.write2(ctrlDown ? 1 : 0);
+        Client.packetWriter.addNode(var8);
     }
     public static void queueGroundItemAction5Packet(int itemID,int worldPointX,int worldPointY,boolean ctrlDown){
-        PacketWriter writer = Game.getClient().getPacketWriter();
-        PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getGroundItemAction5Packet(), writer.getIsaacCipher());
-        packet.getPacketBuffer().write1$api(ctrlDown ? 1 : 0);
-        packet.getPacketBuffer().writeByteA$api(worldPointX);
-        packet.getPacketBuffer().writeByteC$api(itemID);
-        packet.getPacketBuffer().writeShort(worldPointY);
-        writer.queuePacket(packet);
+        osrs.PacketBufferNode var8 = (osrs.PacketBufferNode) Game.getClient().preparePacket(ClientPacket.groundItem5, packetWriter.isaacCipher);
+        var8.packetBuffer.write1(ctrlDown ? 1 : 0);
+        var8.packetBuffer.writeByteA(worldPointX);
+        var8.packetBuffer.writeByteC(itemID);
+        var8.packetBuffer.writeShort(worldPointY);
+        Client.packetWriter.addNode(var8);
     }
 
     public static void groundItemFirstOption(TileItem item, boolean runEnabled){
