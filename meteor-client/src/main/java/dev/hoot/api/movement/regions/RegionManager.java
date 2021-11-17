@@ -75,32 +75,34 @@ public class RegionManager {
 							tileFlag.setFlag(tileFlag.getFlag() + CollisionDataFlag.BLOCK_MOVEMENT_EAST);
 						}
 
-						for (Direction direction : Direction.values()) {
-							switch (direction) {
-								case NORTH:
-									if (Reachable.hasDoor(tile, direction) || Reachable.hasDoor(northernTile, Direction.SOUTH)) {
-										tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_NORTH);
-									}
+						if (plane == Game.getClient().getPlane()) {
+							for (Direction direction : Direction.values()) {
+								switch (direction) {
+									case NORTH:
+										if (Reachable.hasDoor(tile, direction) || Reachable.hasDoor(northernTile, Direction.SOUTH)) {
+											tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_NORTH);
+										}
 
-									break;
-								case EAST:
-									if (Reachable.hasDoor(tile, direction) || Reachable.hasDoor(easternTile, Direction.WEST)) {
-										tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_EAST);
-									}
+										break;
+									case EAST:
+										if (Reachable.hasDoor(tile, direction) || Reachable.hasDoor(easternTile, Direction.WEST)) {
+											tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_EAST);
+										}
 
-									break;
-								case WEST:
-									if (Reachable.hasDoor(tile, direction) || Reachable.hasDoor(tileCoords.dx(-1), Direction.EAST)) {
-										tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_WEST);
-									}
+										break;
+									case WEST:
+										if (Reachable.hasDoor(tile, direction) || Reachable.hasDoor(tileCoords.dx(-1), Direction.EAST)) {
+											tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_WEST);
+										}
 
-									break;
-								case SOUTH:
-									if (Reachable.hasDoor(tile, direction) || Reachable.hasDoor(tileCoords.dy(-1), Direction.NORTH)) {
-										tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_SOUTH);
-									}
+										break;
+									case SOUTH:
+										if (Reachable.hasDoor(tile, direction) || Reachable.hasDoor(tileCoords.dy(-1), Direction.NORTH)) {
+											tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_SOUTH);
+										}
 
-									break;
+										break;
+								}
 							}
 						}
 					}

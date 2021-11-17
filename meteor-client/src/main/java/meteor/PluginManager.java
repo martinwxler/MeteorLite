@@ -7,6 +7,7 @@ import com.owain.chinmanager.ChinManagerPlugin;
 import com.questhelper.QuestHelperPlugin;
 import dev.hoot.api.example.deathevent.DeathEventPlugin;
 import dev.hoot.api.game.Game;
+import dev.hoot.api.movement.regions.plugin.RegionPlugin;
 import lombok.Getter;
 import meteor.config.Config;
 import meteor.config.ConfigManager;
@@ -220,7 +221,7 @@ public class PluginManager {
   private void initPlugins() {
 		// Leave at the top pls, these are not regular plugins
 	  plugins.add(new MeteorLitePlugin());
-//	  plugins.add(new RegionPlugin());
+	  plugins.add(new RegionPlugin());
 	  plugins.add(new AgilityPlugin());
 	  plugins.add(new CettiTutorialPlugin());
 		plugins.add(new HydraPlugin());

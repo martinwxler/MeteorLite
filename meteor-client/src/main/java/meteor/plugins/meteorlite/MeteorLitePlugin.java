@@ -6,6 +6,7 @@ import meteor.config.ConfigManager;
 import meteor.config.MeteorLiteConfig;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ConfigChanged;
+import meteor.events.PlaneChanged;
 import meteor.input.MouseManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
@@ -97,6 +98,12 @@ public class MeteorLitePlugin extends Plugin {
             return;
         }
 
+        executorService.execute(() -> regionManager.sendRegion());
+    }
+
+    @Subscribe
+    public void onPlaneChanged(PlaneChanged e) {
+        logger.info("Plane changed {}", e.getPlane());
         executorService.execute(() -> regionManager.sendRegion());
     }
 
