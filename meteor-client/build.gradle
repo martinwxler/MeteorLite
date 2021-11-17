@@ -4,6 +4,9 @@ plugins {
     id 'com.github.johnrengelman.shadow'
     id 'org.beryx.runtime'
     id 'org.openjfx.javafxplugin' version '0.0.10'
+    id "org.jetbrains.kotlin.jvm" version "1.5.31"
+    id 'org.jetbrains.kotlin.plugin.lombok' version '1.5.31'
+    id 'io.freefair.lombok' version '6.2.0'
 }
 
 group 'org.meteorlite'
@@ -70,8 +73,9 @@ dependencies {
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '_'
     implementation group: 'com.google.code.gson', name: 'gson', version: '_'
     implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.9.0'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.21'
-    implementation(group : "net.runelite", name : "discord", version : "1.4")
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.31'
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
+    implementation(group: "net.runelite", name: "discord", version: "1.4")
     implementation 'org.bouncycastle:bcprov-jdk15on:1.52'
     implementation 'org.openjfx:javafx:16'
     implementation 'org.slf4j:slf4j-api:1.7.12'
@@ -170,6 +174,12 @@ shadowJar {
 tasks {
     compileJava.dependsOn project(":fernflower").tasks.getByName("decompileInjected")
     compileJava.dependsOn(":runelite-mixins:compileJava")
+    compileKotlin {
+        kotlinOptions.jvmTarget = "16"
+    }
+    compileTestKotlin {
+        kotlinOptions.jvmTarget = "16"
+    }
 }
 
 processResources {
