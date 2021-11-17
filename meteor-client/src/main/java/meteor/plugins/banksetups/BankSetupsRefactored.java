@@ -75,7 +75,6 @@ public class BankSetupsRefactored extends Plugin {
         }
         bankSetups = gson.fromJson(reader, new TypeToken<ArrayList<BankSetupObject>>() {}.getType());
         if(bankSetups ==null){
-            logger.debug("banksetups was null");
             bankSetups = new ArrayList<BankSetupObject>();
         }
     }
@@ -261,10 +260,8 @@ public class BankSetupsRefactored extends Plugin {
         }
         for (Item item : items) {
             if((item.getSlot()-1)>lastIndex){
-                logger.debug("returned: {}",lastIndex);
                 return lastIndex+1;
             }
-            logger.debug("last index: {} updated to: {}",lastIndex,item.getSlot());
             lastIndex=item.getSlot();
         }
         if(lastIndex!=27){
