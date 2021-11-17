@@ -101,12 +101,6 @@ public class MeteorLitePlugin extends Plugin {
         executorService.execute(() -> regionManager.sendRegion());
     }
 
-    @Subscribe
-    public void onPlaneChanged(PlaneChanged e) {
-        logger.info("Plane changed {}", e.getPlane());
-        executorService.execute(() -> regionManager.sendRegion());
-    }
-
     @Override
     public Config getConfig(ConfigManager configManager) {
         return meteorLiteConfig;
