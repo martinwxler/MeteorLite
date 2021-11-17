@@ -5,15 +5,13 @@ import meteor.ui.overlay.OverlayLayer;
 import meteor.ui.overlay.OverlayPanel;
 import meteor.ui.overlay.OverlayPosition;
 import meteor.ui.overlay.components.ImageComponent;
+import meteor.util.ImageUtil;
 import net.runelite.api.Client;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 public class BankSetupsOverlay extends OverlayPanel {
     BufferedImage img = null;
@@ -30,13 +28,7 @@ public class BankSetupsOverlay extends OverlayPanel {
     {
         panelComponent.getChildren().clear();
         if(img==null) {
-            File f = new File("C:\\Users\\superev\\Downloads\\Blighted.png");
-            img = null;
-            try {
-                img = ImageIO.read(f);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            img = ImageUtil.loadImageResource(getClass(), "setups.png");
         }
         Widget incinerator = client.getWidget(WidgetInfo.BANK_INCINERATOR);
         if(img!=null&&incinerator!=null){
