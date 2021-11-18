@@ -10,7 +10,7 @@ import java.util.List;
 public class WidgetPackets {
 
     public static void queueResumePauseWidgetPacket(int var0, int var1){
-        osrs.PacketBufferNode var2 = (osrs.PacketBufferNode) Game.getClient().preparePacket(ClientPacket.OPNPC2, Client.packetWriter.isaacCipher);
+        osrs.PacketBufferNode var2 = (osrs.PacketBufferNode) Game.getClient().preparePacket(ClientPacket.RESUME_PAUSEBUTTON, Client.packetWriter.isaacCipher);
         var2.packetBuffer.writeIntME2(var0);
         var2.packetBuffer.writeShort(var1);
         Client.packetWriter.addNode(var2);
