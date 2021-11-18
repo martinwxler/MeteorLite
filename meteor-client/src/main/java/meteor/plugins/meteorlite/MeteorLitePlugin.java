@@ -6,6 +6,7 @@ import meteor.config.ConfigManager;
 import meteor.config.MeteorLiteConfig;
 import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.ConfigChanged;
+import meteor.events.PlaneChanged;
 import meteor.input.MouseManager;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;

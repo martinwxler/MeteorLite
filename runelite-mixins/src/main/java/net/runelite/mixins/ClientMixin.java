@@ -1,6 +1,7 @@
 package net.runelite.mixins;
 
 import com.google.common.primitives.Doubles;
+import meteor.events.PlaneChanged;
 import net.runelite.api.*;
 import net.runelite.api.clan.ClanChannel;
 import net.runelite.api.clan.ClanRank;
@@ -2031,5 +2032,11 @@ public abstract class ClientMixin implements RSClient {
   public static int toCameraPos(double var0)
   {
     return (int) (var0 / Perspective.UNIT) & 2047;
+  }
+
+  @Inject
+  @FieldHook("Client_plane")
+  public static void clientPlaneChanged(int idx) {
+    client.getCallbacks().post(new PlaneChanged(client.getPlane()));
   }
 }
