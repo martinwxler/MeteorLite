@@ -209,7 +209,7 @@ public class PrayerFlickerPlugin extends Plugin
             {
                 toggleFlicker(false);
             }
+            event.consume();
         }
-        event.consume();
     }
 }
