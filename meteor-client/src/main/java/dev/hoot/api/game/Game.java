@@ -59,12 +59,12 @@ public class Game {
         return Vars.getBit(CUTSCENE_VARBIT) > 0;
     }
 
-    public void logout() {
+    public static void logout() {
         int packedId = WidgetInfo.LOGOUT_BUTTON.getPackedId();
         //Can't use the regular logout button if World Switcher is open
-        var logoutButton = client.getWidget(WidgetInfo.WORLD_SWITCHER_LOGOUT_BUTTON);
-        if (logoutButton != null){
-            packedId = logoutButton.getId();
+        var worldSwitcherLogoutButton = client.getWidget(WidgetInfo.WORLD_SWITCHER_LOGOUT_BUTTON);
+        if (worldSwitcherLogoutButton != null){
+            packedId = worldSwitcherLogoutButton.getId();
         }
 
         MousePackets.queueClickPacket();

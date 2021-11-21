@@ -223,7 +223,7 @@ public final class WidgetID
 	static class LogoutPanel
 	{
 		static final int WORLD_SWITCHER_BUTTON = 3;
-		static final int LOGOUT_BUTTON = 6;
+		static final int LOGOUT_BUTTON = 8;
 	}
 
 	static class PestControl
