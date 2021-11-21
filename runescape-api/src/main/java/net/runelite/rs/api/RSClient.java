@@ -1819,4 +1819,6 @@ public interface RSClient extends RSGameEngine, Client {
 
   @Import("objectSounds")
   Deque<AmbientSoundEffect> getAmbientSoundEffects();
+
+  long getUnlockedFpsTarget();
 }

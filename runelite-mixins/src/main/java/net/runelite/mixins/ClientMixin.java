@@ -1,6 +1,7 @@
 package net.runelite.mixins;
 
 import com.google.common.primitives.Doubles;
+import meteor.events.PlaneChanged;
 import net.runelite.api.*;
 import net.runelite.api.clan.ClanChannel;
 import net.runelite.api.clan.ClanRank;
@@ -95,6 +96,8 @@ public abstract class ClientMixin implements RSClient {
   public static double tmpCamAngleX;
   @Inject
   public long lastNanoTime;
+  @Inject
+  public long delayNanoTime;
   
   @Inject
   @FieldHook("gameState")
@@ -1949,6 +1952,30 @@ public abstract class ClientMixin implements RSClient {
     {
       posToCameraAngle(client.getMapAngle(), client.getCameraPitch());
     }
+    else
+    {
+      delayNanoTime = 0L;
+    }
+  }
+
+  @Inject
+  public void setUnlockedFpsTarget(int var1)
+  {
+    if (var1 <= 0)
+    {
+      delayNanoTime = 0L;
+    }
+    else
+    {
+      delayNanoTime = 1000000000L / (long) var1;
+    }
+  }
+
+  @Inject
+  @Override
+  public long getUnlockedFpsTarget()
+  {
+    return delayNanoTime;
   }
 
   @Inject
@@ -2005,5 +2032,11 @@ public abstract class ClientMixin implements RSClient {
   public static int toCameraPos(double var0)
   {
     return (int) (var0 / Perspective.UNIT) & 2047;
+  }
+
+  @Inject
+  @FieldHook("Client_plane")
+  public static void clientPlaneChanged(int idx) {
+    client.getCallbacks().post(new PlaneChanged(client.getPlane()));
   }
 }

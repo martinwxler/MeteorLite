@@ -2,50 +2,45 @@ package dev.hoot.api.packets;
 
 import dev.hoot.api.game.Game;
 import net.runelite.api.NPC;
-import net.runelite.api.packets.PacketBufferNode;
-import net.runelite.api.packets.PacketWriter;
+import osrs.Client;
+import osrs.ClientPacket;
 
 import java.util.List;
 
 public class NPCPackets {
     public static void queueNPCActionPacket(int NPCIndex, int ctrlDown) {
-        PacketWriter writer = Game.getClient().getPacketWriter();
-        PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getNPCActionPacket(), writer.getIsaacCipher());
-        packet.getPacketBuffer().write2$api(ctrlDown);
-        packet.getPacketBuffer().writeByteB0$api(NPCIndex);
-        writer.queuePacket(packet);
+        osrs.PacketBufferNode var9 = (osrs.PacketBufferNode) Game.getClient().preparePacket(ClientPacket.OPNPC1, Client.packetWriter.isaacCipher);
+        var9.packetBuffer.write2(ctrlDown);
+        var9.packetBuffer.writeByteB0(NPCIndex);
+        Client.packetWriter.addNode(var9);
     }
 
     public static void queueNPCAction2Packet(int NPCIndex, int ctrlDown) {
-        PacketWriter writer = Game.getClient().getPacketWriter();
-        PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getNPCAction2Packet(), writer.getIsaacCipher());
-        packet.getPacketBuffer().writeByteB0$api(NPCIndex);
-        packet.getPacketBuffer().writeByte$api(ctrlDown);
-        writer.queuePacket(packet);
+        osrs.PacketBufferNode var9 = (osrs.PacketBufferNode) Game.getClient().preparePacket(ClientPacket.OPNPC2, Client.packetWriter.isaacCipher);
+        var9.packetBuffer.writeByteB0(NPCIndex);
+        var9.packetBuffer.writeByte(ctrlDown);
+        Client.packetWriter.addNode(var9);
     }
 
     public static void queueNPCAction3Packet(int NPCIndex, int ctrlDown) {
-        PacketWriter writer = Game.getClient().getPacketWriter();
-        PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getNPCAction3Packet(), writer.getIsaacCipher());
-        packet.getPacketBuffer().write2$api(ctrlDown);
-        packet.getPacketBuffer().writeByteA$api(NPCIndex);
-        writer.queuePacket(packet);
+        osrs.PacketBufferNode var9 = (osrs.PacketBufferNode) Game.getClient().preparePacket(ClientPacket.OPNPC3, Client.packetWriter.isaacCipher);
+        var9.packetBuffer.write2(ctrlDown);
+        var9.packetBuffer.writeByteA(NPCIndex);
+        Client.packetWriter.addNode(var9);
     }
 
     public static void queueNPCAction4Packet(int NPCIndex, int ctrlDown) {
-        PacketWriter writer = Game.getClient().getPacketWriter();
-        PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getNPCAction4Packet(), writer.getIsaacCipher());
-        packet.getPacketBuffer().writeByteB0$api(NPCIndex);
-        packet.getPacketBuffer().writeByteB$api(ctrlDown);
-        writer.queuePacket(packet);
+        osrs.PacketBufferNode var9 = (osrs.PacketBufferNode) Game.getClient().preparePacket(ClientPacket.OPNPC4, Client.packetWriter.isaacCipher);
+        var9.packetBuffer.writeByteB0(NPCIndex);
+        var9.packetBuffer.writeByteB(ctrlDown);
+        Client.packetWriter.addNode(var9);
     }
 
     public static void queueNPCAction5Packet(int NPCIndex, int ctrlDown) {
-        PacketWriter writer = Game.getClient().getPacketWriter();
-        PacketBufferNode packet = Game.getClient().preparePacket(Game.getClient().getNPCAction5Packet(), writer.getIsaacCipher());
-        packet.getPacketBuffer().write1$api(ctrlDown);
-        packet.getPacketBuffer().writeShort$api(NPCIndex);
-        writer.queuePacket(packet);
+        osrs.PacketBufferNode var9 = (osrs.PacketBufferNode) Game.getClient().preparePacket(ClientPacket.OPNPC5, Client.packetWriter.isaacCipher);
+        var9.packetBuffer.write1(ctrlDown);
+        var9.packetBuffer.writeShort(NPCIndex);
+        Client.packetWriter.addNode(var9);
     }
     public static void npcFirstOption(NPC npc, int ctrlDown) {
         queueNPCActionPacket(npc.getIndex(),ctrlDown);

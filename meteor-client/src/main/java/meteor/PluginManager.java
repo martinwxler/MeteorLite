@@ -1,21 +1,13 @@
 package meteor;
 
-import com.google.inject.Binder;
-import com.google.inject.Inject;
-import com.google.inject.Injector;
 import com.google.inject.Module;
-import com.google.inject.Singleton;
+import com.google.inject.*;
 import com.owain.chinLogin.ChinLoginPlugin;
 import com.owain.chinmanager.ChinManagerPlugin;
 import com.questhelper.QuestHelperPlugin;
-import java.io.File;
-import java.lang.reflect.Modifier;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.jar.JarFile;
-
+import dev.hoot.api.example.deathevent.DeathEventPlugin;
+import dev.hoot.api.game.Game;
+import dev.hoot.api.movement.regions.plugin.RegionPlugin;
 import lombok.Getter;
 import meteor.config.Config;
 import meteor.config.ConfigManager;
@@ -24,38 +16,29 @@ import meteor.eventbus.Subscribe;
 import meteor.eventbus.events.PluginChanged;
 import meteor.events.ExternalsReloaded;
 import meteor.plugins.ExternalPluginClassLoader;
-import meteor.plugins.PluginDescriptor;
-import dev.hoot.api.game.Game;
-import meteor.plugins.banktaglayouts.BankTagLayoutsPlugin;
-import meteor.plugins.birdhouserunner.BirdhouseRunnerPlugin;
-import meteor.plugins.cettitutorial.CettiTutorialPlugin;
-import meteor.plugins.nexus.NexusMapPlugin;
-import meteor.plugins.nightmareHelper.NightmareHelper;
-import meteor.plugins.highalchemy.HighAlchPlugin;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDependency;
+import meteor.plugins.PluginDescriptor;
 import meteor.plugins.PvPKeys.PvPKeys;
 import meteor.plugins.achievementdiary.DiaryRequirementsPlugin;
 import meteor.plugins.agility.AgilityPlugin;
 import meteor.plugins.alchemicalhydra.HydraPlugin;
 import meteor.plugins.ammo.AmmoPlugin;
 import meteor.plugins.animsmoothing.AnimationSmoothingPlugin;
+import meteor.plugins.antidrag.BetterAntiDragPlugin;
 import meteor.plugins.aoewarnings.AoeWarningPlugin;
-import dev.hoot.api.example.deathevent.DeathEventPlugin;
 import meteor.plugins.autobankpin.AutoBankPinPlugin;
-import meteor.plugins.hiscore.HiscorePlugin;
-import meteor.plugins.hiscorewise.HiscoreWisePlugin;
-import meteor.plugins.hootoneclick.HootOneClickPlugin;
 import meteor.plugins.autoclicker.AutoClickerPlugin;
 import meteor.plugins.autologhop.AutoLogHop;
 import meteor.plugins.autologin.AutoLoginPlugin;
 import meteor.plugins.autorun.AutoRun;
 import meteor.plugins.bank.BankPlugin;
+import meteor.plugins.banksetups.BankSetupsRefactored;
+import meteor.plugins.banktaglayouts.BankTagLayoutsPlugin;
 import meteor.plugins.banktags.BankTagsPlugin;
 import meteor.plugins.barbassault.BAPlugin;
 import meteor.plugins.barrows.BarrowsPlugin;
-import meteor.plugins.antidrag.BetterAntiDragPlugin;
-import meteor.plugins.roguesden.BetterRougesDenPlugin;
+import meteor.plugins.birdhouserunner.BirdhouseRunnerPlugin;
 import meteor.plugins.blackjack.BlackjackPlugin;
 import meteor.plugins.blastfurnace.BlastFurnacePlugin;
 import meteor.plugins.boosts.BoostsPlugin;
@@ -64,6 +47,7 @@ import meteor.plugins.camera.CameraPlugin;
 import meteor.plugins.cannon.CannonPlugin;
 import meteor.plugins.cannonreloader.CannonReloaderPlugin;
 import meteor.plugins.cerberus.CerberusPlugin;
+import meteor.plugins.cettitutorial.CettiTutorialPlugin;
 import meteor.plugins.chat.sChatPlugin;
 import meteor.plugins.chatchannel.ChatChannelPlugin;
 import meteor.plugins.chatcommands.ChatCommandsPlugin;
@@ -96,9 +80,13 @@ import meteor.plugins.grotesqueguardians.GrotesqueGuardiansPlugin;
 import meteor.plugins.grounditems.GroundItemsPlugin;
 import meteor.plugins.groundmarkers.sGroundMarkerPlugin;
 import meteor.plugins.herbiboars.HerbiboarPlugin;
+import meteor.plugins.highalchemy.HighAlchPlugin;
+import meteor.plugins.hiscore.HiscorePlugin;
+import meteor.plugins.hiscorewise.HiscoreWisePlugin;
 import meteor.plugins.hootagility.HootAgilityPlugin;
 import meteor.plugins.hootfighter.HootFighterPlugin;
 import meteor.plugins.hootherblore.HootHerblorePlugin;
+import meteor.plugins.hootoneclick.HootOneClickPlugin;
 import meteor.plugins.hunter.HunterPlugin;
 import meteor.plugins.implings.ImplingsPlugin;
 import meteor.plugins.inferno.InfernoPlugin;
@@ -124,7 +112,9 @@ import meteor.plugins.motherlode.MotherlodePlugin;
 import meteor.plugins.mousetooltips.MouseTooltipPlugin;
 import meteor.plugins.mta.MTAPlugin;
 import meteor.plugins.neverlog.NeverLogoutPlugin;
+import meteor.plugins.nexus.NexusMapPlugin;
 import meteor.plugins.nightmare.NightmarePlugin;
+import meteor.plugins.nightmareHelper.NightmareHelper;
 import meteor.plugins.npcindicators.NpcIndicatorsPlugin;
 import meteor.plugins.npcstatus.NpcStatusPlugin;
 import meteor.plugins.npcunaggroarea.NpcAggroAreaPlugin;
@@ -154,6 +144,7 @@ import meteor.plugins.randomevents.RandomEventPlugin;
 import meteor.plugins.regenmeter.RegenMeterPlugin;
 import meteor.plugins.reportbutton.ReportButtonPlugin;
 import meteor.plugins.resourcepacks.ResourcePacksPlugin;
+import meteor.plugins.roguesden.BetterRougesDenPlugin;
 import meteor.plugins.rsnhider.RsnHiderPlugin;
 import meteor.plugins.runecraft.RunecraftPlugin;
 import meteor.plugins.runenergy.RunEnergyPlugin;
@@ -197,6 +188,14 @@ import net.runelite.api.events.GameStateChanged;
 import org.sponge.util.Logger;
 import rs117.hd.GpuHDPlugin;
 
+import java.io.File;
+import java.lang.reflect.Modifier;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.jar.JarFile;
+
 @Singleton
 public class PluginManager {
 	private final Logger logger = new Logger("PluginManager");
@@ -204,13 +203,8 @@ public class PluginManager {
 	private HashMap<Class<? extends Plugin>, Class<? extends Plugin>> conflicts = new HashMap<>();
 
 	@Inject
-	private EventBus eventBus;
-
-	@Inject
 	private ConfigManager configManager;
 
-	@Inject
-	private MeteorLiteClientModule meteorLiteClientModule;
 	public boolean startedPlugins;
 
 	@Getter
@@ -227,6 +221,7 @@ public class PluginManager {
   private void initPlugins() {
 		// Leave at the top pls, these are not regular plugins
 	  plugins.add(new MeteorLitePlugin());
+	  plugins.add(new RegionPlugin());
 	  plugins.add(new AgilityPlugin());
 	  plugins.add(new CettiTutorialPlugin());
 		plugins.add(new HydraPlugin());
@@ -238,6 +233,7 @@ public class PluginManager {
 		plugins.add(new BankPlugin());
 		plugins.add(new BankTagsPlugin());
 		plugins.add(new BankTagLayoutsPlugin());
+		plugins.add(new BankSetupsRefactored());
 		plugins.add(new BAPlugin());
 		plugins.add(new BarrowsPlugin());
 		plugins.add(new BetterAntiDragPlugin());
@@ -322,7 +318,7 @@ public class PluginManager {
 		plugins.add(new MTAPlugin());
 		plugins.add(new NeverLogoutPlugin());
 		plugins.add(new NexusMapPlugin());
-	  plugins.add(new NightmareHelper());
+	    plugins.add(new NightmareHelper());
 		plugins.add(new NightmarePlugin());
 		plugins.add(new NpcAggroAreaPlugin());
 		plugins.add(new NpcIndicatorsPlugin());

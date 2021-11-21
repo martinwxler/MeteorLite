@@ -2483,6 +2483,10 @@ public interface Client extends GameEngine {
 
   void setDestinationY(int sceneY);
 
+  int getDestinationX();
+
+  int getDestinationY();
+
   boolean isWorldSelectOpen();
 
   void setWorldSelectOpen(boolean open);
@@ -2518,6 +2522,8 @@ public interface Client extends GameEngine {
   boolean isUnlockedFps();
 
   void setUnlockedFps(boolean enabled);
+
+  void setUnlockedFpsTarget(int fps);
 
   void posToCameraAngle(int var0, int var1);
 }

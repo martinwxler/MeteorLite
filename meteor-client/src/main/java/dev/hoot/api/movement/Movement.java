@@ -36,6 +36,15 @@ public class Movement {
         Game.getClient().setDestinationY(worldY - Game.getClient().getBaseY());
     }
 
+    public static WorldPoint getDestination() {
+        LocalPoint local = Game.getClient().getLocalDestinationLocation();
+        if (local == null) {
+            return null;
+        }
+
+        return WorldPoint.fromLocal(Game.getClient(), local);
+    }
+
     public static boolean isWalking() {
         Player local = Players.getLocal();
         LocalPoint destination = Game.getClient().getLocalDestinationLocation();
