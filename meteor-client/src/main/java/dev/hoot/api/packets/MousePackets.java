@@ -5,6 +5,10 @@ import net.runelite.api.packets.PacketBufferNode;
 import net.runelite.api.packets.PacketWriter;
 
 public class MousePackets {
+
+	public static void queueClickPacket() {
+		queueClickPacket(0,0);
+	}
 	public static void queueClickPacket(int x, int y) {
 		Game.getClient().setMouseLastPressedMillis(System.currentTimeMillis());
 		int mousePressedTime = (int)((Game.getClient().getMouseLastPressedMillis()) - (Game.getClient().getClientMouseLastPressedMillis()));

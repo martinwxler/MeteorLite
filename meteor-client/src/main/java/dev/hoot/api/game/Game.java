@@ -1,8 +1,10 @@
 package dev.hoot.api.game;
 
+import dev.hoot.api.packets.MousePackets;
 import dev.hoot.api.widgets.Widgets;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.MenuAction;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 
@@ -11,8 +13,7 @@ import javax.inject.Inject;
 public class Game {
     private static final int MEMBER_DAYS_VARP = 1780;
     private static final int CUTSCENE_VARBIT = 542;
-    @Inject
-    private static Client client;
+    @Inject private static Client client;
 
     public static Client getClient() {
         return client;
@@ -23,7 +24,8 @@ public class Game {
     }
 
     public static boolean isOnLoginScreen() {
-        return getState() == GameState.LOGIN_SCREEN || getState() == GameState.LOGIN_SCREEN_AUTHENTICATOR;
+        return getState() == GameState.LOGIN_SCREEN
+                || getState() == GameState.LOGIN_SCREEN_AUTHENTICATOR;
     }
 
     public static GameState getState() {
@@ -37,7 +39,8 @@ public class Game {
         }
 
         // Dmm
-        if (wildyLevelWidget.getText().contains("Guarded") || wildyLevelWidget.getText().contains("Protection")) {
+        if (wildyLevelWidget.getText().contains("Guarded")
+                || wildyLevelWidget.getText().contains("Protection")) {
             return 0;
         }
 
@@ -54,5 +57,17 @@ public class Game {
 
     public static boolean isInCutscene() {
         return Vars.getBit(CUTSCENE_VARBIT) > 0;
+    }
+
+    public void logout() {
+        int packedId = WidgetInfo.LOGOUT_BUTTON.getPackedId();
+        //Can't use the regular logout button if World Switcher is open
+        var logoutButton = client.getWidget(WidgetInfo.WORLD_SWITCHER_LOGOUT_BUTTON);
+        if (logoutButton != null){
+            packedId = logoutButton.getId();
+        }
+
+        MousePackets.queueClickPacket();
+        client.invokeMenuAction("Logout",null,1,MenuAction.CC_OP.getId(),-1, packedId);
     }
 }
