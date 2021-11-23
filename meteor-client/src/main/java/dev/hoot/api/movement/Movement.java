@@ -245,7 +245,7 @@ public class Movement {
     }
 
     public static void drawCollisions(Graphics2D graphics2D) {
-        drawCollisions(graphics2D, Walker.GLOBAL_COLLISION_MAP);
+        drawCollisions(graphics2D, Game.getGlobalCollisionMap());
     }
 
     public static void toggleRun() {

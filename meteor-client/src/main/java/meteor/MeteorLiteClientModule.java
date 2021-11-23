@@ -3,6 +3,8 @@ package meteor;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.*;
 import com.google.inject.name.Names;
+import dev.hoot.api.movement.pathfinder.GlobalCollisionMap;
+import dev.hoot.api.movement.pathfinder.Walker;
 import javafx.scene.paint.Paint;
 import meteor.callback.Hooks;
 import meteor.chat.ChatMessageManager;
@@ -39,6 +41,7 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.applet.Applet;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -50,6 +53,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.*;
+import java.util.zip.GZIPInputStream;
 
 import static meteor.MeteorLiteClientLauncher.CONFIG_FILE;
 import static org.sponge.util.Logger.ANSI_RESET;
@@ -265,5 +269,17 @@ public class MeteorLiteClientModule extends AbstractModule {
   @Singleton
   MeteorLiteConfig provideMeteorConfig(ConfigManager configManager) {
     return configManager.getConfig(MeteorLiteConfig.class);
+  }
+
+  @Provides
+  @Singleton
+  GlobalCollisionMap provideGlobalCollisionMap() throws IOException {
+    return new GlobalCollisionMap(
+            new GZIPInputStream(
+                    new ByteArrayInputStream(
+                            Walker.class.getResourceAsStream("/collision-map").readAllBytes()
+                    )
+            ).readAllBytes()
+    );
   }
 }

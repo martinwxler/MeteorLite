@@ -1,5 +1,6 @@
 package dev.hoot.api.game;
 
+import dev.hoot.api.movement.pathfinder.GlobalCollisionMap;
 import dev.hoot.api.widgets.Tab;
 import dev.hoot.api.widgets.Tabs;
 import dev.hoot.api.widgets.Widgets;
@@ -18,6 +19,9 @@ public class Game {
 
     @Inject
     private static Client client;
+
+    @Inject
+    private static GlobalCollisionMap globalCollisionMap;
 
     public static Client getClient() {
         return client;
@@ -79,5 +83,9 @@ public class Game {
         if (!Tabs.isOpen(Tab.LOG_OUT)) {
             Tabs.open(Tab.LOG_OUT);
         }
+    }
+
+    public static GlobalCollisionMap getGlobalCollisionMap() {
+        return globalCollisionMap;
     }
 }
