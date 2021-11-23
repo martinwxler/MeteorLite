@@ -1,11 +1,12 @@
 package dev.hoot.api.game;
 
-import dev.hoot.api.packets.MousePackets;
+import dev.hoot.api.widgets.Tab;
+import dev.hoot.api.widgets.Tabs;
 import dev.hoot.api.widgets.Widgets;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
-import net.runelite.api.MenuAction;
 import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 
 import javax.inject.Inject;
@@ -13,7 +14,10 @@ import javax.inject.Inject;
 public class Game {
     private static final int MEMBER_DAYS_VARP = 1780;
     private static final int CUTSCENE_VARBIT = 542;
-    @Inject private static Client client;
+    private static final String LOGOUT_ACTION = "Logout";
+
+    @Inject
+	private static Client client;
 
     public static Client getClient() {
         return client;
@@ -60,14 +64,20 @@ public class Game {
     }
 
     public static void logout() {
-        int packedId = WidgetInfo.LOGOUT_BUTTON.getPackedId();
-        //Can't use the regular logout button if World Switcher is open
-        var worldSwitcherLogoutButton = client.getWidget(WidgetInfo.WORLD_SWITCHER_LOGOUT_BUTTON);
-        if (worldSwitcherLogoutButton != null){
-            packedId = worldSwitcherLogoutButton.getId();
-        }
+        Widget logOutHopper = Widgets.get(WidgetID.WORLD_SWITCHER_GROUP_ID, x -> x.hasAction(LOGOUT_ACTION));
+        if (logOutHopper != null) {
+        	logOutHopper.interact(LOGOUT_ACTION);
+        	return;
+		}
 
-        MousePackets.queueClickPacket();
-        client.invokeMenuAction("Logout",null,1,MenuAction.CC_OP.getId(),-1, packedId);
+        Widget logOut = Widgets.get(WidgetID.LOGOUT_PANEL_ID, x -> x.hasAction(LOGOUT_ACTION));
+        if (logOut != null) {
+        	logOut.interact(LOGOUT_ACTION);
+        	return;
+		}
+
+        if (!Tabs.isOpen(Tab.LOG_OUT)) {
+			Tabs.open(Tab.LOG_OUT);
+		}
     }
 }
