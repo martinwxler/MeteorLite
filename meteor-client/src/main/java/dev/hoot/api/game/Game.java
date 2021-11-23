@@ -17,7 +17,7 @@ public class Game {
     private static final String LOGOUT_ACTION = "Logout";
 
     @Inject
-	private static Client client;
+    private static Client client;
 
     public static Client getClient() {
         return client;
@@ -66,18 +66,18 @@ public class Game {
     public static void logout() {
         Widget logOutHopper = Widgets.get(WidgetID.WORLD_SWITCHER_GROUP_ID, x -> x.hasAction(LOGOUT_ACTION));
         if (logOutHopper != null) {
-        	logOutHopper.interact(LOGOUT_ACTION);
-        	return;
-		}
+            logOutHopper.interact(LOGOUT_ACTION);
+            return;
+        }
 
         Widget logOut = Widgets.get(WidgetID.LOGOUT_PANEL_ID, x -> x.hasAction(LOGOUT_ACTION));
         if (logOut != null) {
-        	logOut.interact(LOGOUT_ACTION);
-        	return;
-		}
+            logOut.interact(LOGOUT_ACTION);
+            return;
+        }
 
         if (!Tabs.isOpen(Tab.LOG_OUT)) {
-			Tabs.open(Tab.LOG_OUT);
-		}
+            Tabs.open(Tab.LOG_OUT);
+        }
     }
 }
