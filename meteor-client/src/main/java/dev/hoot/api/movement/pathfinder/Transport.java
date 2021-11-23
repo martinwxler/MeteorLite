@@ -10,4 +10,5 @@ public class Transport {
     int sourceRadius;
     int destinationRadius;
     Runnable handler;
+    String action;
 }

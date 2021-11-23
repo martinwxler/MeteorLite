@@ -12,7 +12,6 @@ import meteor.util.WorldUtil;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.World;
-import net.runelite.api.WorldType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.http.api.worlds.WorldResult;
@@ -140,7 +139,9 @@ public class Worlds {
     }
 
     public static boolean inMembersWorld() {
-        return getCurrentWorld() != null && getCurrentWorld().getTypes().contains(WorldType.MEMBERS);
+        return lookup().stream().filter(x -> x.getId() == getCurrentId())
+                .findFirst()
+                .get().isMembers();
     }
 
     public static void loadWorlds() {

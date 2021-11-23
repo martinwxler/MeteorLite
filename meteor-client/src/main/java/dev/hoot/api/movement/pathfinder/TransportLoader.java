@@ -310,7 +310,7 @@ public class TransportLoader {
             if (closedTrapDoor != null) {
                 closedTrapDoor.interact(0);
             }
-        });
+        }, "");
     }
 
     public static Transport itemUseTransport(
@@ -329,7 +329,7 @@ public class TransportLoader {
             if (transport != null) {
                 item.useOn(transport);
             }
-        });
+        }, "");
     }
 
     public static Transport npcTransport(
@@ -343,7 +343,7 @@ public class TransportLoader {
             if (npc != null) {
                 npc.interact(action);
             }
-        });
+        }, action);
     }
 
     public static Transport npcDialogTransport(
@@ -370,7 +370,7 @@ public class TransportLoader {
             if (npc != null) {
                 npc.interact(0);
             }
-        });
+        }, "");
     }
 
     public static List<Transport> motherloadMineTransport(
@@ -392,7 +392,7 @@ public class TransportLoader {
                         TileObjects.getAt(rockfall, x -> x.getName().equalsIgnoreCase("Rockfall")).stream()
                                 .findFirst()
                                 .ifPresentOrElse(obj -> obj.interact("Mine"), () -> Movement.walk(finalDest));
-                    });
+                    }, "Mine");
                 }
             }
             return null;
@@ -408,7 +408,7 @@ public class TransportLoader {
         return new Transport(source, destination, Integer.MAX_VALUE, 0, () ->
                 TileObjects.getSurrounding(source, 5, x -> x.getId() == objId).stream()
                         .findFirst()
-                        .ifPresent(obj -> obj.interact(action)));
+                        .ifPresent(obj -> obj.interact(action)), action);
     }
 
     public static Transport objectDialogTransport(
@@ -436,7 +436,7 @@ public class TransportLoader {
             if (transport != null) {
                 transport.interact(action);
             }
-        });
+        }, action);
     }
 
     private static Transport spritTreeTransport(WorldPoint source, WorldPoint target, String location) {
@@ -459,7 +459,7 @@ public class TransportLoader {
                     if (tree != null) {
                         tree.interact("Travel");
                     }
-                });
+                }, "");
     }
 
     private static Transport mushtreeTransport(WorldPoint source, WorldPoint target, WidgetInfo widget) {
@@ -475,11 +475,11 @@ public class TransportLoader {
                         return;
                     }
 
-                    TileObject tree = TileObjects.getNearest( "Magic Mushtree");
+                    TileObject tree = TileObjects.getNearest("Magic Mushtree");
                     if (tree != null) {
                         tree.interact("Use");
                     }
-                });
+                }, "Use");
     }
 
     public static class MagicMushtree {
