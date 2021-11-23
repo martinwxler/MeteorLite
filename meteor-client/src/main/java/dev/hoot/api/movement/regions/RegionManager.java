@@ -41,83 +41,81 @@ public class RegionManager {
 
         List<TileFlag> tileFlags = new ArrayList<>();
         Map<WorldPoint, List<Transport>> transportLinks = Walker.buildTransportLinks();
-        logger.info("links: " + transportLinks.size());
-        for (int plane = 0; plane < 4; plane++) {
-            CollisionData data = col[plane];
-            if (data == null) {
-                continue;
-            }
+        int plane = Game.getClient().getPlane();
+        CollisionData data = col[plane];
+        if (data == null) {
+            return;
+        }
 
-            int[][] flags = data.getFlags();
-            for (int x = 0; x < flags.length; x++) {
-                for (int y = 0; y < flags.length; y++) {
-                    int tileX = x + Game.getClient().getBaseX();
-                    int tileY = y + Game.getClient().getBaseY();
-                    int flag = flags[x][y];
+        int[][] flags = data.getFlags();
+        for (int x = 0; x < flags.length; x++) {
+            for (int y = 0; y < flags.length; y++) {
+                int tileX = x + Game.getClient().getBaseX();
+                int tileY = y + Game.getClient().getBaseY();
+                int flag = flags[x][y];
 
-                    if (flag == 0xFFFFFF) {
-                        continue;
+                if (flag == 0xFFFFFF) {
+                    continue;
+                }
+
+                Tile tile = Tiles.getAt(tileX, tileY, plane);
+                if (tile == null) {
+                    continue;
+                }
+
+                WorldPoint tileCoords = tile.getWorldLocation();
+                TileFlag tileFlag = new TileFlag(tileX, tileY, plane, flag, tileCoords.getRegionID(), x, y);
+                if (!Reachable.isObstacle(tileCoords)) {
+                    WorldPoint northernTile = tileCoords.dy(1);
+                    if (Reachable.isObstacle(northernTile)
+                            && !Reachable.isWalled(Direction.NORTH, tileFlag.getFlag())) {
+                        tileFlag.setFlag(tileFlag.getFlag() + CollisionDataFlag.BLOCK_MOVEMENT_NORTH);
                     }
 
-                    Tile tile = Tiles.getAt(tileX, tileY, plane);
-                    if (tile == null) {
-                        continue;
+                    WorldPoint easternTile = tileCoords.dx(1);
+                    if (Reachable.isObstacle(easternTile)
+                            && !Reachable.isWalled(Direction.EAST, tileFlag.getFlag())) {
+                        tileFlag.setFlag(tileFlag.getFlag() + CollisionDataFlag.BLOCK_MOVEMENT_EAST);
                     }
 
-                    WorldPoint tileCoords = tile.getWorldLocation();
-                    TileFlag tileFlag = new TileFlag(tileX, tileY, plane, flag, tileCoords.getRegionID(), x, y);
-                    if (!Reachable.isObstacle(tileCoords)) {
-                        WorldPoint northernTile = tileCoords.dy(1);
-                        if (Reachable.isObstacle(northernTile)
-                                && !Reachable.isWalled(Direction.NORTH, tileFlag.getFlag())) {
-                            tileFlag.setFlag(tileFlag.getFlag() + CollisionDataFlag.BLOCK_MOVEMENT_NORTH);
-                        }
+                    List<Transport> transports = transportLinks.get(tileCoords);
+                    if (plane == Game.getClient().getPlane()) {
+                        for (Direction direction : Direction.values()) {
+                            switch (direction) {
+                                case NORTH:
+                                    if ((Reachable.hasDoor(tile, direction) || Reachable.hasDoor(northernTile, Direction.SOUTH))
+                                            && !isTransport(transports, tileCoords, northernTile)) {
+                                        tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_NORTH);
+                                    }
 
-                        WorldPoint easternTile = tileCoords.dx(1);
-                        if (Reachable.isObstacle(easternTile)
-                                && !Reachable.isWalled(Direction.EAST, tileFlag.getFlag())) {
-                            tileFlag.setFlag(tileFlag.getFlag() + CollisionDataFlag.BLOCK_MOVEMENT_EAST);
-                        }
+                                    break;
+                                case EAST:
+                                    if ((Reachable.hasDoor(tile, direction) || Reachable.hasDoor(easternTile, Direction.WEST))
+                                            && !isTransport(transports, tileCoords, easternTile)) {
+                                        tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_EAST);
+                                    }
 
-                        List<Transport> transports = transportLinks.get(tileCoords);
-                        if (plane == Game.getClient().getPlane()) {
-                            for (Direction direction : Direction.values()) {
-                                switch (direction) {
-                                    case NORTH:
-                                        if ((Reachable.hasDoor(tile, direction) || Reachable.hasDoor(northernTile, Direction.SOUTH))
-                                                && !isTransport(transports, tileCoords, northernTile)) {
-                                            tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_NORTH);
-                                        }
+                                    break;
+                                case WEST:
+                                    if ((Reachable.hasDoor(tile, direction) || Reachable.hasDoor(tileCoords.dx(-1), Direction.EAST))
+                                            && !isTransport(transports, tileCoords, tileCoords.dx(-1))) {
+                                        tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_WEST);
+                                    }
 
-                                        break;
-                                    case EAST:
-                                        if ((Reachable.hasDoor(tile, direction) || Reachable.hasDoor(easternTile, Direction.WEST))
-                                                && !isTransport(transports, tileCoords, easternTile)) {
-                                            tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_EAST);
-                                        }
+                                    break;
+                                case SOUTH:
+                                    if ((Reachable.hasDoor(tile, direction) || Reachable.hasDoor(tileCoords.dy(-1), Direction.NORTH))
+                                            && !isTransport(transports, tileCoords, tileCoords.dy(-1))) {
+                                        tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_SOUTH);
+                                    }
 
-                                        break;
-                                    case WEST:
-                                        if ((Reachable.hasDoor(tile, direction) || Reachable.hasDoor(tileCoords.dx(-1), Direction.EAST))
-                                                && !isTransport(transports, tileCoords, tileCoords.dx(-1))) {
-                                            tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_WEST);
-                                        }
-
-                                        break;
-                                    case SOUTH:
-                                        if ((Reachable.hasDoor(tile, direction) || Reachable.hasDoor(tileCoords.dy(-1), Direction.NORTH))
-                                                && !isTransport(transports, tileCoords, tileCoords.dy(-1))) {
-                                            tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_SOUTH);
-                                        }
-
-                                        break;
-                                }
+                                    break;
                             }
                         }
                     }
-
-                    tileFlags.add(tileFlag);
                 }
+
+                tileFlags.add(tileFlag);
             }
         }
 
