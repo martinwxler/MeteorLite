@@ -13974,6 +13974,7 @@ public final class ObjectID
 	public static final int BROKEN_PILLAR_26421 = 26421;
 	public static final int ROPE_26422 = 26422;
 	public static final int BIRD_SNARE_26457 = 26457;
+    public static final int GOLD_SINK = 26458;
 	public static final int BIG_DOOR = 26461;
 	public static final int BARREL_26462 = 26462;
 	public static final int LARGE_GEYSER_26491 = 26491;

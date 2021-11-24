@@ -1,5 +1,7 @@
 package dev.hoot.api.commons;
 
+import java.io.File;
+
 public class NumericFormat {
     private static final byte COMMAS = 0x1;
     private static final byte THOUSANDS = 0x40;
