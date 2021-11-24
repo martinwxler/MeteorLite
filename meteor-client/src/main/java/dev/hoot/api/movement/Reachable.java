@@ -15,11 +15,11 @@ public class Reachable {
     private static final int MAX_ATTEMPTED_TILES = 1000;
 
     public static boolean check(int flag, int checkFlag) {
-        return flag != 0xFFFFFF && (flag & checkFlag) != 0;
+        return (flag & checkFlag) != 0;
     }
 
     public static boolean isObstacle(int endFlag) {
-        return check(endFlag, 0x100 | 0x20000 | 0x200000 | 0x1000000);
+        return endFlag == 0xFFFFFF || check(endFlag, 0x100 | 0x20000 | 0x200000 | 0x1000000);
     }
 
     public static boolean isObstacle(WorldPoint worldPoint) {
@@ -29,17 +29,17 @@ public class Reachable {
     public static int getCollisionFlag(WorldPoint point) {
         CollisionData[] collisionMaps = Game.getClient().getCollisionMaps();
         if (collisionMaps == null) {
-            return -1;
+            return 0xFFFFFF;
         }
 
         CollisionData collisionData = collisionMaps[Game.getClient().getPlane()];
         if (collisionData == null) {
-            return -1;
+            return 0xFFFFFF;
         }
 
         LocalPoint localPoint = LocalPoint.fromWorld(Game.getClient(), point);
         if (localPoint == null) {
-            return -1;
+            return 0xFFFFFF;
         }
 
         return collisionData.getFlags()[localPoint.getSceneX()][localPoint.getSceneY()];

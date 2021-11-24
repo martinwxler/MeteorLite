@@ -35,7 +35,6 @@ public class Walker {
     private static final int MIN_TILES_LEFT_BEFORE_RECHOOSE = 3;
     private static final int MAX_MIN_ENERGY = 50;
     private static final int MIN_ENERGY = 5;
-    public static final CollisionMap GLOBAL_COLLISION_MAP;
     public static final LoadingCache<WorldPoint, List<WorldPoint>> PATH_CACHE = CacheBuilder.newBuilder()
             .expireAfterWrite(5, TimeUnit.MINUTES)
             .build(new CacheLoader<>() {
@@ -54,24 +53,6 @@ public class Walker {
                     return buildPath(key, true);
                 }
             });
-
-    static {
-        CollisionMap loaded;
-        try {
-            loaded = new GlobalCollisionMap(
-                    new GZIPInputStream(
-                            new ByteArrayInputStream(
-                                    Walker.class.getResourceAsStream("/collision-map").readAllBytes()
-                            )
-                    ).readAllBytes()
-            );
-        } catch (IOException e) {
-            e.printStackTrace();
-            loaded = null;
-        }
-
-        GLOBAL_COLLISION_MAP = loaded;
-    }
 
     public static boolean walkTo(WorldPoint destination, boolean localRegion) {
         Player local = Players.getLocal();
@@ -294,7 +275,7 @@ public class Walker {
             Map<WorldPoint, List<Transport>> transports,
             boolean local
     ) {
-        CollisionMap collisionMap = local ? new LocalCollisionMap() : GLOBAL_COLLISION_MAP;
+        CollisionMap collisionMap = local ? new LocalCollisionMap() : Game.getGlobalCollisionMap();
         if (collisionMap == null) {
             return Collections.emptyList();
         }

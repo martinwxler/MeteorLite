@@ -1,5 +1,6 @@
 package meteor.plugins.meteorlite;
 
+import dev.hoot.api.game.Game;
 import meteor.PluginManager;
 import meteor.config.Config;
 import meteor.config.ConfigManager;
@@ -95,6 +96,15 @@ public class MeteorLitePlugin extends Plugin {
     @Subscribe
     public void onGameStateChanged(GameStateChanged e) {
         if (e.getGameState() != GameState.LOGGED_IN) {
+            return;
+        }
+
+        executorService.execute(() -> regionManager.sendRegion());
+    }
+
+    @Subscribe
+    public void onPlaneChanged(PlaneChanged e) {
+        if (Game.getState() != GameState.LOGGED_IN) {
             return;
         }
 
