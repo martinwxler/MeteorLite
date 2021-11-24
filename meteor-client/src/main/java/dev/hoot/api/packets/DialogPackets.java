@@ -8,11 +8,17 @@ import osrs.ClientPacket;
 import static osrs.Client.packetWriter;
 
 public class DialogPackets {
+
 	public static void sendNumberInput(int number) {
+		sendNumberInput(number,true);
+	}
+
+	public static void sendNumberInput(int number, boolean closeDialog) {
 		osrs.PacketBufferNode var14 = (osrs.PacketBufferNode) Game.getClient().preparePacket(ClientPacket.RESUME_P_COUNTDIALOG, packetWriter.isaacCipher);
 		var14.packetBuffer.writeInt(number);
 		Client.packetWriter.addNode(var14);
-		GameThread.invoke(() -> Game.getClient().runScript(138)); // closes the input dialog
+		if(closeDialog)
+			GameThread.invoke(() -> Game.getClient().runScript(138)); // closes the input dialog
 	}
 
 	public static void sendTextInput(String text) {
