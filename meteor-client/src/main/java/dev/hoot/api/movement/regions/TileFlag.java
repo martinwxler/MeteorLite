@@ -11,6 +11,4 @@ public class TileFlag {
 	private int z;
 	private int flag;
 	private int region;
-	private int regionX;
-	private int regionY;
 }

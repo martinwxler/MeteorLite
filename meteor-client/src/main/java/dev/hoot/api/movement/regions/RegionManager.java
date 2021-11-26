@@ -58,63 +58,59 @@ public class RegionManager {
                 int tileY = y + Game.getClient().getBaseY();
                 int flag = flags[x][y];
 
+                // Stop if we reach any tiles which dont have collision data loaded
+                // Usually occurs for tiles which are loaded in the 104x104 scene, but are outside the region
                 if (flag == 0xFFFFFF) {
                     continue;
                 }
 
+                int regionId = ((tileX >> 6) << 8) | (tileY >> 6);
+
+                // Set the full block flag in case tiles are null (ex. on upper levels)
+                TileFlag tileFlag = new TileFlag(tileX, tileY, plane, CollisionDataFlag.BLOCK_MOVEMENT_FULL, regionId);
                 Tile tile = Tiles.getAt(tileX, tileY, plane);
                 if (tile == null) {
+                    tileFlags.add(tileFlag);
                     continue;
                 }
 
+                tileFlag.setFlag(flag);
                 WorldPoint tileCoords = tile.getWorldLocation();
-                TileFlag tileFlag = new TileFlag(tileX, tileY, plane, flag, tileCoords.getRegionID(), x, y);
-                if (!Reachable.isObstacle(tileCoords)) {
-                    WorldPoint northernTile = tileCoords.dy(1);
-                    if (Reachable.isObstacle(northernTile)
-                            && !Reachable.isWalled(Direction.NORTH, tileFlag.getFlag())) {
-                        tileFlag.setFlag(tileFlag.getFlag() + CollisionDataFlag.BLOCK_MOVEMENT_NORTH);
-                    }
 
-                    WorldPoint easternTile = tileCoords.dx(1);
-                    if (Reachable.isObstacle(easternTile)
-                            && !Reachable.isWalled(Direction.EAST, tileFlag.getFlag())) {
-                        tileFlag.setFlag(tileFlag.getFlag() + CollisionDataFlag.BLOCK_MOVEMENT_EAST);
-                    }
+                // Check if we are blocked by objects
+                // We don't need to parse west/south because they're checked by parsing adjacent tiles for north/east
+                WorldPoint northernTile = tileCoords.dy(1);
+                if (Reachable.isObstacle(northernTile)
+                        && !Reachable.isWalled(Direction.NORTH, tileFlag.getFlag())
+                ) {
+                    tileFlag.setFlag(tileFlag.getFlag() + CollisionDataFlag.BLOCK_MOVEMENT_NORTH);
+                }
 
-                    List<Transport> transports = transportLinks.get(tileCoords);
-                    if (plane == Game.getClient().getPlane()) {
-                        for (Direction direction : Direction.values()) {
-                            switch (direction) {
-                                case NORTH:
-                                    if ((Reachable.hasDoor(tile, direction) || Reachable.hasDoor(northernTile, Direction.SOUTH))
-                                            && !isTransport(transports, tileCoords, northernTile)) {
-                                        tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_NORTH);
-                                    }
+                WorldPoint easternTile = tileCoords.dx(1);
+                if (Reachable.isObstacle(easternTile)
+                        && !Reachable.isWalled(Direction.EAST, tileFlag.getFlag())
+                ) {
+                    tileFlag.setFlag(tileFlag.getFlag() + CollisionDataFlag.BLOCK_MOVEMENT_EAST);
+                }
 
-                                    break;
-                                case EAST:
-                                    if ((Reachable.hasDoor(tile, direction) || Reachable.hasDoor(easternTile, Direction.WEST))
-                                            && !isTransport(transports, tileCoords, easternTile)) {
-                                        tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_EAST);
-                                    }
+                List<Transport> transports = transportLinks.get(tileCoords);
+                if (plane == Game.getClient().getPlane()) {
+                    for (Direction direction : Direction.values()) {
+                        switch (direction) {
+                            case NORTH:
+                                if ((Reachable.hasDoor(tile, direction) || Reachable.hasDoor(northernTile, Direction.SOUTH))
+                                        && !isTransport(transports, tileCoords, northernTile)) {
+                                    tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_NORTH);
+                                }
 
-                                    break;
-                                case WEST:
-                                    if ((Reachable.hasDoor(tile, direction) || Reachable.hasDoor(tileCoords.dx(-1), Direction.EAST))
-                                            && !isTransport(transports, tileCoords, tileCoords.dx(-1))) {
-                                        tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_WEST);
-                                    }
+                                break;
+                            case EAST:
+                                if ((Reachable.hasDoor(tile, direction) || Reachable.hasDoor(easternTile, Direction.WEST))
+                                        && !isTransport(transports, tileCoords, easternTile)) {
+                                    tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_EAST);
+                                }
 
-                                    break;
-                                case SOUTH:
-                                    if ((Reachable.hasDoor(tile, direction) || Reachable.hasDoor(tileCoords.dy(-1), Direction.NORTH))
-                                            && !isTransport(transports, tileCoords, tileCoords.dy(-1))) {
-                                        tileFlag.setFlag(tileFlag.getFlag() - CollisionDataFlag.BLOCK_MOVEMENT_SOUTH);
-                                    }
-
-                                    break;
-                            }
+                                break;
                         }
                     }
                 }

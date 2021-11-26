@@ -23,6 +23,11 @@ public class Reachable {
     }
 
     public static boolean isObstacle(WorldPoint worldPoint) {
+        Tile tile = Tiles.getAt(worldPoint);
+        if (tile == null) {
+            return true;
+        }
+
         return isObstacle(getCollisionFlag(worldPoint));
     }
 
