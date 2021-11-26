@@ -12,6 +12,7 @@ import net.runelite.api.events.ConfigButtonClicked;
 import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.zip.GZIPInputStream;
 
@@ -29,13 +30,7 @@ public class RegionPlugin extends Plugin {
 
     @Override
     public void startup() {
-        try {
-            collisionMap = new GlobalCollisionMap(
-                    readGzip(new URL(URL).openStream().readAllBytes())
-            );
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        updateCollisionMap();
 
         overlayManager.add(overlay);
     }
@@ -51,14 +46,16 @@ public class RegionPlugin extends Plugin {
             return;
         }
 
-        logger.info("downloading new data");
+        updateCollisionMap();
+    }
 
-        try {
+    private void updateCollisionMap() {
+        try (InputStream is = new URL(URL).openStream()) {
             collisionMap = new GlobalCollisionMap(
-                    readGzip(new URL(URL).openStream().readAllBytes())
+                    readGzip(is.readAllBytes())
             );
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (IOException e) {
+            logger.error("Error downloading collision data: {}", e.getMessage());
         }
     }
 
@@ -66,6 +63,7 @@ public class RegionPlugin extends Plugin {
         return new GZIPInputStream(new ByteArrayInputStream(input)).readAllBytes();
     }
 
+    @Override
     @Provides
     public RegionConfig getConfig(ConfigManager configManager) {
         return configManager.getConfig(RegionConfig.class);
