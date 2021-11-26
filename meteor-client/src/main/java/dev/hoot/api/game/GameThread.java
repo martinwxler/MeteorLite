@@ -39,7 +39,7 @@ public class GameThread {
             return futureTask.get(TIMEOUT, TimeUnit.MILLISECONDS);
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
             e.printStackTrace();
-            throw new RuntimeException("GameThread couldn't return result");
+            throw new RuntimeException("Lookup on client thread timed out after " + TIMEOUT + " ms");
         }
     }
 }
