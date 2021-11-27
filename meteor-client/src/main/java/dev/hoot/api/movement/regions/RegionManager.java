@@ -39,7 +39,9 @@ public class RegionManager {
     public void sendRegion() {
         if (Game.getClient().isInInstancedRegion()) {
             try {
-                new URL(API_URL + "instance/" + Players.getLocal().getWorldLocation().getRegionID()).openConnection();
+                new URL(API_URL + "instance/" + Players.getLocal().getWorldLocation().getRegionID())
+                        .openConnection()
+                        .connect();
             } catch (IOException e) {
                 e.printStackTrace();
             }
