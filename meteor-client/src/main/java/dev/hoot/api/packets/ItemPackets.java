@@ -3,7 +3,9 @@ package dev.hoot.api.packets;
 import dev.hoot.api.game.Game;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
+import net.runelite.api.Point;
 import net.runelite.api.TileObject;
+import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.WidgetInfo;
 import osrs.Client;
@@ -55,7 +57,9 @@ public class ItemPackets {
 	}
 
 	public static void useItemOnTileObject(Item item, TileObject object) {
-		WorldPoint wp = object.getWorldLocation();
+		Point p = object.menuPoint();
+		LocalPoint lp = new LocalPoint(p.getX(),p.getY());
+		WorldPoint wp = WorldPoint.fromScene(Game.getClient(),lp.getX(),lp.getY(),object.getPlane());
 		queueItemUseOnTileObjectPacket(object.getId(), wp.getX(), wp.getY(), item.getSlot(), item.getId(), item.getWidgetId(), 0);
 	}
 	public static void queueBankItemActionPacket(int inventoryID, int itemID, int itemSlot){

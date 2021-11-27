@@ -24,6 +24,7 @@ import net.runelite.api.Item;
 import net.runelite.api.KeyCode;
 import net.runelite.api.Point;
 import net.runelite.api.events.ClientTick;
+import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.queries.BankItemQuery;
 import net.runelite.api.widgets.Widget;
@@ -50,7 +51,7 @@ public class BankSetupsRefactored extends Plugin {
     @Inject
     ItemManager itemManager;
     GsonBuilder builder;
-    boolean shouldClose;
+    int dialogCloseTickCounter;
     Gson gson;
     Reader reader=null;
     ArrayList<BankSetupObject> bankSetups;
@@ -88,11 +89,6 @@ public class BankSetupsRefactored extends Plugin {
             e.printStackTrace();
         }
     }
-    public void closeWithdrawX(int timer){
-        shouldClose=true;
-        Time.sleep(timer);
-        shouldClose=false;
-    }
     @Subscribe
     public void onMenuOptionClicked(MenuOptionClicked e){
         if(e.getMenuOption().equals("save-current")){
@@ -108,6 +104,7 @@ public class BankSetupsRefactored extends Plugin {
         }
         if(e.getMenuOption().contains("Gear: ")){
             e.consume();
+            int numActions = 0;
             BankSetupObject setup = bankSetups.get(e.getId());
             if(setup.equipment!=null){
                 int firstFree = getFirstEmptySlot();
@@ -126,11 +123,13 @@ public class BankSetupsRefactored extends Plugin {
                         DialogPackets.sendNumberInput(equipment[1]);
                         MousePackets.queueClickPacket(0,0);
                         ItemPackets.queueBankItemActionPacket(WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER.getPackedId(), item.getItemId(), firstFree);
+                        numActions += 3;
                         continue;
                     }
                     WidgetPackets.widgetAction(item,"Withdraw-1");
                     MousePackets.queueClickPacket(0,0);
                     ItemPackets.queueBankItemActionPacket(WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER.getPackedId(), item.getItemId(), firstFree);
+                    numActions += 2;
                 }
             }
             for (int[] ints : setup.inventory) {
@@ -142,18 +141,14 @@ public class BankSetupsRefactored extends Plugin {
                 if(ints[1]!=1){
                     WidgetPackets.widgetAction(item,"Withdraw-X");
                     DialogPackets.sendNumberInput(ints[1]);
+                    numActions += 2;
                     continue;
                 }
                 WidgetPackets.widgetAction(item,"Withdraw-1");
+                numActions += 1;
             }
-            int timeout = 0;
-            if(setup.equipment!=null){
-                timeout+=setup.equipment.size()/5;
-            }
-            timeout+=setup.inventory.size()/5;
-            timeout*=650;
-            int finalTimeout = timeout;
-            executor.submit(()-> closeWithdrawX(finalTimeout));
+            int numTicks = ((int) Math.ceil(numActions / 10.0)) + 1;
+            dialogCloseTickCounter = numTicks;
         }
         if(e.getMenuOption().contains("Remove: ")){
             e.consume();
@@ -187,9 +182,18 @@ public class BankSetupsRefactored extends Plugin {
     }
 
     @Subscribe
-    public void onClientTick(ClientTick e){
-        if(Dialog.isEnterInputOpen()&&shouldClose){
-            GameThread.invoke(() -> Game.getClient().runScript(138));
+    public void onGameTick(GameTick e) {
+        if(dialogCloseTickCounter > 0){
+            dialogCloseTickCounter--;
+        }
+    }
+
+    @Subscribe
+    public void onClientTick(ClientTick e) {
+        if(dialogCloseTickCounter > 0){
+            if (Dialog.isEnterInputOpen()){
+                GameThread.invoke(() -> client.runScript(138));
+            }
         }
         Widget incinerator = client.getWidget(WidgetInfo.BANK_INCINERATOR);
         if (incinerator != null) {
