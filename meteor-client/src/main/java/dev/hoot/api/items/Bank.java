@@ -210,27 +210,30 @@ public class Bank extends Items {
 		WithdrawOption withdrawOption = WithdrawOption.ofAmount(item, amount);
 		if (withdrawMode == WithdrawMode.NOTED && !isNotedWithdrawMode()) {
 			setWithdrawMode(true);
+			Time.sleepUntil(Bank::isNotedWithdrawMode, 1200);
 		}
 
 		if (withdrawMode == WithdrawMode.ITEM && isNotedWithdrawMode()) {
 			setWithdrawMode(false);
+			Time.sleepUntil(() -> !isNotedWithdrawMode(), 1200);
 		}
 
 		item.interact(withdrawOption.getMenuIndex());
 
 		if (withdrawOption == WithdrawOption.X) {
-			DialogPackets.sendNumberInput(amount,false);
+			Time.sleepUntil(Dialog::isEnterInputOpen, 1200);
+			Dialog.enterInput(amount);
 		}
 	}
 
 	public static void withdrawLastQuantity(String name, WithdrawMode withdrawMode) {
         withdrawLastQuantity(x -> Objects.equals(name,x.getName()), withdrawMode);
 	}
-	
+
 	public static void withdrawLastQuantity(int id, WithdrawMode withdrawMode) {
 		withdrawLastQuantity(x -> x.getId() == id,withdrawMode);
 	}
-	
+
 	public static void withdrawLastQuantity(Predicate<Item> filter, WithdrawMode withdrawMode) {
 		Item item = getFirst(filter.and(x -> !x.isPlaceholder()));
 
