@@ -99,7 +99,7 @@ public class Movement {
             }
             losPoints.add(point);
         }
-        WorldPoint walkPoint = losPoints.get(Rand.nextInt(0, walkPointList.size()));
+        WorldPoint walkPoint = losPoints.get(Rand.nextInt(0, walkPointList.size()-1));
         Movement.walk(walkPoint);
     }
 
@@ -117,7 +117,7 @@ public class Movement {
 
     public static boolean walkTo(WorldArea worldArea) {
         List<WorldPoint> wpList = worldArea.toWorldPointList();
-        WorldPoint wp = wpList.get(Rand.nextInt(0, wpList.size()));
+        WorldPoint wp = wpList.get(Rand.nextInt(0, wpList.size()-1));
         return Walker.walkTo(wp, false);
     }
 
