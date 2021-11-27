@@ -21,6 +21,8 @@ import org.sponge.util.Logger;
 
 import javax.inject.Inject;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 @PluginDescriptor(
@@ -54,7 +56,7 @@ public class MeteorLitePlugin extends Plugin {
     private RegionManager regionManager;
 
     @Inject
-    private ExecutorService executorService;
+    private ScheduledExecutorService executorService;
 
     @Override
     public void updateConfig() {
@@ -99,7 +101,7 @@ public class MeteorLitePlugin extends Plugin {
             return;
         }
 
-        executorService.execute(() -> regionManager.sendRegion());
+        executorService.schedule(() -> regionManager.sendRegion(), 5, TimeUnit.SECONDS);
     }
 
     @Subscribe
@@ -108,7 +110,7 @@ public class MeteorLitePlugin extends Plugin {
             return;
         }
 
-        executorService.execute(() -> regionManager.sendRegion());
+        executorService.schedule(() -> regionManager.sendRegion(), 5, TimeUnit.SECONDS);
     }
 
     @Override
