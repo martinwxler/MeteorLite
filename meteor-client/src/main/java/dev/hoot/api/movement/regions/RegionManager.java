@@ -2,6 +2,7 @@ package dev.hoot.api.movement.regions;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dev.hoot.api.entities.Players;
 import dev.hoot.api.game.Game;
 import dev.hoot.api.movement.Reachable;
 import dev.hoot.api.movement.pathfinder.Transport;
@@ -17,6 +18,8 @@ import org.sponge.util.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +29,7 @@ public class RegionManager {
     private static final Logger logger = new Logger("RegionManager");
     private static final int VERSION = 2;
     private static final MediaType JSON_MEDIATYPE = MediaType.parse("application/json");
-    private static final String API_URL = "http://174.138.15.181:8080/regions/" + VERSION;
+    private static final String API_URL = "http://174.138.15.181:8080/regions/";
 
     private final Gson gson = new GsonBuilder().create();
 
@@ -35,6 +38,12 @@ public class RegionManager {
 
     public void sendRegion() {
         if (Game.getClient().isInInstancedRegion()) {
+            try {
+                new URL(API_URL + "instance/" + Players.getLocal().getWorldLocation().getRegionID()).openConnection();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             return;
         }
 
@@ -124,7 +133,7 @@ public class RegionManager {
             RequestBody body = RequestBody.create(JSON_MEDIATYPE, json);
             Request request = new Request.Builder()
                     .post(body)
-                    .url(API_URL)
+                    .url(API_URL + VERSION)
                     .build();
             Response response = okHttpClient.newCall(request)
                     .execute();
