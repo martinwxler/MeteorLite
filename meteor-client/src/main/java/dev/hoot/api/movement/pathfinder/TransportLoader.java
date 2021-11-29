@@ -9,6 +9,7 @@ import dev.hoot.api.game.Worlds;
 import dev.hoot.api.items.Inventory;
 import dev.hoot.api.movement.Movement;
 import dev.hoot.api.movement.Reachable;
+import dev.hoot.api.movement.regions.RegionManager;
 import dev.hoot.api.widgets.Dialog;
 import dev.hoot.api.widgets.Widgets;
 import net.runelite.api.Item;
@@ -23,6 +24,7 @@ import net.runelite.api.widgets.WidgetInfo;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,8 +40,8 @@ public class TransportLoader {
     private static final int GRAND_TREE_VARBIT = 150;
     private static final int RFD_VARBIT = 1850;
     private static final int BUILD_DELAY_SECONDS = 5;
-    public static final List<Transport> ADDED_TRANSPORTS = new ArrayList<>();
     private static Instant lastBuild = Instant.now().minusSeconds(6);
+    private static final List<Transport> STATIC_TRANSPORTS = new ArrayList<>();
     private static List<Transport> LAST_TRANSPORT_LIST = Collections.emptyList();
 
     private static final WorldArea MLM = new WorldArea(3714, 5633, 60, 62, 0);
@@ -59,15 +61,17 @@ public class TransportLoader {
             new MagicMushtree(new WorldPoint(3760, 3758, 0), WidgetInfo.FOSSIL_MUSHROOM_VALLEY)
     );
 
-    public static List<Transport> buildTransports() {
-        if (lastBuild.plusSeconds(BUILD_DELAY_SECONDS).isAfter(Instant.now())) {
-            return List.copyOf(LAST_TRANSPORT_LIST);
+    static {
+        // Try to initialize the static transports before usage
+        loadStaticTransports();
+    }
+
+    private static List<Transport> loadStaticTransports() {
+        if (!STATIC_TRANSPORTS.isEmpty()) {
+            return STATIC_TRANSPORTS;
         }
 
-        lastBuild = Instant.now();
-        List<Transport> transports = new ArrayList<>();
-        try {
-            InputStream txt = TransportLoader.class.getResourceAsStream("/transports.txt");
+        try (InputStream txt = new URL(RegionManager.API_URL + "/transports").openStream()) {
             String[] lines = new String(txt.readAllBytes()).split("\n");
             for (String l : lines) {
                 String line = l.trim();
@@ -75,14 +79,22 @@ public class TransportLoader {
                     continue;
                 }
 
-                transports.add(parseTransportLine(line));
+                STATIC_TRANSPORTS.add(parseTransportLine(line));
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        transports.addAll(ADDED_TRANSPORTS);
+        return STATIC_TRANSPORTS;
+    }
+
+    public static List<Transport> buildTransports() {
+        if (lastBuild.plusSeconds(BUILD_DELAY_SECONDS).isAfter(Instant.now())) {
+            return List.copyOf(LAST_TRANSPORT_LIST);
+        }
+
+        lastBuild = Instant.now();
+        List<Transport> transports = new ArrayList<>(loadStaticTransports());
 
         int gold = Inventory.getFirst(995) != null ? Inventory.getFirst(995).getQuantity() : 0;
         if (gold >= 10) {

@@ -148,7 +148,7 @@ public class AddTransportDialog extends JFrame {
                 logger.error("Failed to POST: {}", e.getMessage());
                 e.printStackTrace();
             }
-        }, 5_000, TimeUnit.MILLISECONDS);
+        }, 1_000, TimeUnit.MILLISECONDS);
     }
 
     public void display() {
