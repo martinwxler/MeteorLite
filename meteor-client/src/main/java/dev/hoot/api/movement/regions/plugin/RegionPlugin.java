@@ -2,12 +2,17 @@ package dev.hoot.api.movement.regions.plugin;
 
 import com.google.inject.Provides;
 import dev.hoot.api.movement.pathfinder.GlobalCollisionMap;
+import lombok.Getter;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.ui.overlay.OverlayManager;
+import net.runelite.api.MenuEntry;
+import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.ConfigButtonClicked;
+import net.runelite.api.events.MenuOptionClicked;
+import okhttp3.OkHttpClient;
 
 import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
@@ -24,12 +29,27 @@ public class RegionPlugin extends Plugin {
     @Inject
     private RegionOverlay overlay;
 
+    @Inject
+    private OkHttpClient okHttpClient;
+
     public GlobalCollisionMap collisionMap = new GlobalCollisionMap();
+
+    public static boolean selectingSourceTile = false;
+    public static boolean selectingDestinationTile = false;
+    public static boolean selectingObject = false;
 
     private static final String URL = "http://174.138.15.181:8080/regions";
 
+    private AddTransportDialog transportDialog;
+
     @Override
     public void startup() {
+        if (transportDialog == null) {
+            transportDialog = new AddTransportDialog(okHttpClient);
+        }
+
+        eventBus.register(transportDialog);
+
         updateCollisionMap();
 
         overlayManager.add(overlay);
@@ -38,15 +58,48 @@ public class RegionPlugin extends Plugin {
     @Override
     public void shutdown() {
         overlayManager.remove(overlay);
+        eventBus.unregister(transportDialog);
+    }
+
+    @Subscribe
+    public void onClientTick(ClientTick e) {
+        if (selectingSourceTile) {
+            client.setLeftClickMenuEntry(new MenuEntry("Set", "<col=00ff00>Source tile", TileSelection.SOURCE.id, -1, -1,
+                    -1, false));
+            return;
+        }
+
+        if (selectingDestinationTile) {
+            client.setLeftClickMenuEntry(new MenuEntry("Set", "<col=00ff00>Destination tile",
+                    TileSelection.DESTINATION.id, -1, -1, -1, false));
+            return;
+        }
+
+        if (selectingObject) {
+            client.setLeftClickMenuEntry(new MenuEntry("Select", "<col=00ff00>Transport object",
+                    TileSelection.OBJECT.id, -1, -1, -1, false));
+        }
     }
 
     @Subscribe
     public void onConfigButtonClicked(ConfigButtonClicked e) {
-        if (!e.getGroup().equals("region-debug") && !e.getKey().equals("download")) {
+        if (!e.getGroup().equals("region-debug")) {
             return;
         }
 
-        updateCollisionMap();
+        switch (e.getKey()) {
+            case "download":
+                updateCollisionMap();
+                break;
+            case "transport":
+                if (transportDialog == null) {
+                    logger.error("Add transport UI was not loaded somehow");
+                    return;
+                }
+
+                transportDialog.display();
+                break;
+        }
     }
 
     private void updateCollisionMap() {
@@ -67,5 +120,18 @@ public class RegionPlugin extends Plugin {
     @Provides
     public RegionConfig getConfig(ConfigManager configManager) {
         return configManager.getConfig(RegionConfig.class);
+    }
+
+    enum TileSelection {
+        SOURCE(-420),
+        DESTINATION(-421),
+        OBJECT(-422);
+
+        @Getter
+        private final int id;
+
+        TileSelection(int id) {
+            this.id = id;
+        }
     }
 }

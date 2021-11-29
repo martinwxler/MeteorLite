@@ -28,10 +28,9 @@ import java.util.Map;
 public class RegionManager {
     private static final Logger logger = new Logger("RegionManager");
     private static final int VERSION = 2;
-    private static final MediaType JSON_MEDIATYPE = MediaType.parse("application/json");
-    private static final String API_URL = "http://174.138.15.181:8080/regions/";
-
-    private final Gson gson = new GsonBuilder().create();
+    public static final MediaType JSON_MEDIATYPE = MediaType.parse("application/json");
+    public static final String API_URL = "http://174.138.15.181:8080";
+    public static final Gson GSON = new GsonBuilder().create();
 
     @Inject
     private OkHttpClient okHttpClient;
@@ -39,7 +38,7 @@ public class RegionManager {
     public void sendRegion() {
         if (Game.getClient().isInInstancedRegion()) {
             try {
-                new URL(API_URL + "instance/" + Players.getLocal().getWorldLocation().getRegionID())
+                new URL(API_URL + "/regions/instance/" + Players.getLocal().getWorldLocation().getRegionID())
                         .openConnection()
                         .connect();
             } catch (IOException e) {
@@ -131,11 +130,11 @@ public class RegionManager {
         }
 
         try {
-            String json = gson.toJson(tileFlags);
+            String json = GSON.toJson(tileFlags);
             RequestBody body = RequestBody.create(JSON_MEDIATYPE, json);
             Request request = new Request.Builder()
                     .post(body)
-                    .url(API_URL + VERSION)
+                    .url(API_URL + "/regions/" + VERSION)
                     .build();
             Response response = okHttpClient.newCall(request)
                     .execute();

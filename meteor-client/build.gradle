@@ -82,6 +82,7 @@ dependencies {
     implementation 'xerces:xercesImpl:2.12.1'
     implementation("com.formdev:flatlaf:_")
     implementation("com.formdev:flatlaf-intellij-themes:_")
+    implementation 'com.miglayout:miglayout:3.7.4'
 }
 
 task createJavadocs (type: Javadoc)

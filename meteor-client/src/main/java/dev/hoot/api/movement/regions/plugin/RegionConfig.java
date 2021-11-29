@@ -17,4 +17,14 @@ public interface RegionConfig extends Config {
     default Button download() {
         return new Button();
     }
+
+    @Icon
+    @ConfigItem(
+            keyName = "transport",
+            name = "Add new transport",
+            description = "Add new transport"
+    )
+    default Button transport() {
+        return new Button();
+    }
 }

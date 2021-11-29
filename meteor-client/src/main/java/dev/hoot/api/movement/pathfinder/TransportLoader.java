@@ -38,6 +38,7 @@ public class TransportLoader {
     private static final int GRAND_TREE_VARBIT = 150;
     private static final int RFD_VARBIT = 1850;
     private static final int BUILD_DELAY_SECONDS = 5;
+    public static final List<Transport> ADDED_TRANSPORTS = new ArrayList<>();
     private static Instant lastBuild = Instant.now().minusSeconds(6);
     private static List<Transport> LAST_TRANSPORT_LIST = Collections.emptyList();
 
@@ -80,6 +81,8 @@ public class TransportLoader {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        transports.addAll(ADDED_TRANSPORTS);
 
         int gold = Inventory.getFirst(995) != null ? Inventory.getFirst(995).getQuantity() : 0;
         if (gold >= 10) {
