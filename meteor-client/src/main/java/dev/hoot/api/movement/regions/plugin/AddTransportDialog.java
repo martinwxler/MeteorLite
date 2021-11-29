@@ -19,6 +19,7 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
@@ -120,8 +121,9 @@ public class AddTransportDialog extends JFrame {
 
     private void submit() {
         List<TransportLink> out = new ArrayList<>();
-        while (listModel.elements().hasMoreElements()) {
-            out.add(listModel.elements().nextElement());
+        Enumeration<TransportLink> links = listModel.elements();
+        while (links.hasMoreElements()) {
+            out.add(links.nextElement());
         }
 
         EXECUTOR.schedule(() -> {
