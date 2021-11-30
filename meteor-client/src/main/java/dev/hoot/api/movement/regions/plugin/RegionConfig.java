@@ -9,6 +9,15 @@ import meteor.config.Icon;
 @ConfigGroup("region-debug")
 public interface RegionConfig extends Config {
     @ConfigItem(
+            keyName = "apiKey",
+            name = "API Key",
+            description = "API Key used for contributing collision data to our backend."
+    )
+    default String apiKey() {
+        return "";
+    }
+
+    @ConfigItem(
             keyName = "overlay",
             name = "Show collision overlay",
             description = "Show collision overlay"

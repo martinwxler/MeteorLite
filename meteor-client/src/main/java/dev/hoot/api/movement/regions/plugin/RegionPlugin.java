@@ -32,6 +32,9 @@ public class RegionPlugin extends Plugin {
     @Inject
     private OkHttpClient okHttpClient;
 
+    @Inject
+    private RegionConfig regionConfig;
+
     public GlobalCollisionMap collisionMap = new GlobalCollisionMap();
 
     public static boolean selectingSourceTile = false;
@@ -43,7 +46,7 @@ public class RegionPlugin extends Plugin {
     @Override
     public void startup() {
         if (transportDialog == null) {
-            transportDialog = new AddTransportDialog(okHttpClient);
+            transportDialog = new AddTransportDialog(okHttpClient, regionConfig);
         }
 
         eventBus.register(transportDialog);

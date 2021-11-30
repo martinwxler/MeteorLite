@@ -55,9 +55,6 @@ public class MeteorLitePlugin extends Plugin {
     @Inject
     private RegionManager regionManager;
 
-    @Inject
-    private ScheduledExecutorService executorService;
-
     @Override
     public void updateConfig() {
         Logger.setDebugEnabled(config.debugEnabled());
@@ -101,7 +98,7 @@ public class MeteorLitePlugin extends Plugin {
             return;
         }
 
-        executorService.schedule(() -> regionManager.sendRegion(), 5, TimeUnit.SECONDS);
+        regionManager.sendRegion();
     }
 
     @Subscribe
@@ -110,7 +107,7 @@ public class MeteorLitePlugin extends Plugin {
             return;
         }
 
-        executorService.schedule(() -> regionManager.sendRegion(), 5, TimeUnit.SECONDS);
+        regionManager.sendRegion();
     }
 
     @Override

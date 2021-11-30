@@ -1,10 +1,12 @@
 package dev.hoot.api.movement.regions.plugin;
 
 import dev.hoot.api.entities.TileObjects;
+import dev.hoot.api.game.Game;
 import dev.hoot.api.movement.regions.RegionManager;
 import dev.hoot.api.scene.Tiles;
 import meteor.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import net.runelite.api.GameState;
 import net.runelite.api.Tile;
 import net.runelite.api.TileObject;
 import net.runelite.api.coords.WorldPoint;
@@ -25,7 +27,6 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class AddTransportDialog extends JFrame {
     private static final ScheduledExecutorService EXECUTOR = Executors.newSingleThreadScheduledExecutor();
@@ -43,9 +44,11 @@ public class AddTransportDialog extends JFrame {
     private final JList<TransportLink> transportLinks;
 
     private final OkHttpClient okHttpClient;
+    private final RegionConfig regionConfig;
 
-    public AddTransportDialog(OkHttpClient okHttpClient) {
+    public AddTransportDialog(OkHttpClient okHttpClient, RegionConfig regionConfig) {
         this.okHttpClient = okHttpClient;
+        this.regionConfig = regionConfig;
 
         setLayout(new GridLayout(1, 2));
         setMinimumSize(new Dimension(550, 350));
@@ -120,6 +123,10 @@ public class AddTransportDialog extends JFrame {
     }
 
     private void submit() {
+        if (Game.getState() != GameState.LOGGED_IN || regionConfig.apiKey().isBlank()) {
+            return;
+        }
+
         List<TransportLink> out = new ArrayList<>();
         Enumeration<TransportLink> links = listModel.elements();
         while (links.hasMoreElements()) {
@@ -132,6 +139,7 @@ public class AddTransportDialog extends JFrame {
                 RequestBody body = RequestBody.create(RegionManager.JSON_MEDIATYPE, json);
                 Request request = new Request.Builder()
                         .post(body)
+                        .header("api-key", regionConfig.apiKey())
                         .url(RegionManager.API_URL + "/transports")
                         .build();
                 Response response = okHttpClient.newCall(request)

@@ -7,9 +7,11 @@ import dev.hoot.api.game.Game;
 import dev.hoot.api.movement.Reachable;
 import dev.hoot.api.movement.pathfinder.Transport;
 import dev.hoot.api.movement.pathfinder.Walker;
+import dev.hoot.api.movement.regions.plugin.RegionConfig;
 import dev.hoot.api.scene.Tiles;
 import net.runelite.api.CollisionData;
 import net.runelite.api.CollisionDataFlag;
+import net.runelite.api.GameState;
 import net.runelite.api.Tile;
 import net.runelite.api.coords.Direction;
 import net.runelite.api.coords.WorldPoint;
@@ -23,7 +25,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Singleton
 public class RegionManager {
@@ -36,15 +39,39 @@ public class RegionManager {
     @Inject
     private OkHttpClient okHttpClient;
 
+    @Inject
+    private RegionConfig regionConfig;
+
+    @Inject
+    private ScheduledExecutorService executorService;
+
     public void sendRegion() {
+        if (Game.getState() != GameState.LOGGED_IN || regionConfig.apiKey().isBlank()) {
+            return;
+        }
+
         if (Game.getClient().isInInstancedRegion()) {
-            try {
-                new URL(API_URL + "/regions/instance/" + Players.getLocal().getWorldLocation().getRegionID())
-                        .openConnection()
-                        .connect();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            executorService.schedule(() -> {
+                try {
+                    Request request = new Request.Builder()
+                            .get()
+                            .header("api-key", regionConfig.apiKey())
+                            .url(API_URL + "/regions/instance/" + Players.getLocal().getWorldLocation().getRegionID())
+                            .build();
+                    Response response = okHttpClient.newCall(request)
+                            .execute();
+                    int code = response.code();
+                    if (code != 200) {
+                        logger.error("Instance store request was unsuccessful: {}", code);
+                        return;
+                    }
+
+                    logger.debug("Instanced region stored successfully");
+                } catch (Exception e) {
+                    logger.error("Failed to POST: {}", e.getMessage());
+                    e.printStackTrace();
+                }
+            }, 5_000, TimeUnit.MILLISECONDS);
 
             return;
         }
@@ -130,30 +157,29 @@ public class RegionManager {
             }
         }
 
-        try {
-            if (Game.getClient().getPlane() > 0) {
-                logger.info(tileFlags.stream().filter(x -> x.getZ() == 0).collect(Collectors.toList()));
-            }
+        executorService.schedule(() -> {
+            try {
+                String json = GSON.toJson(tileFlags);
+                RequestBody body = RequestBody.create(JSON_MEDIATYPE, json);
+                Request request = new Request.Builder()
+                        .post(body)
+                        .header("api-key", regionConfig.apiKey())
+                        .url(API_URL + "/regions/" + VERSION)
+                        .build();
+                Response response = okHttpClient.newCall(request)
+                        .execute();
+                int code = response.code();
+                if (code != 200) {
+                    logger.error("Request was unsuccessful: {}", code);
+                    return;
+                }
 
-            String json = GSON.toJson(tileFlags);
-            RequestBody body = RequestBody.create(JSON_MEDIATYPE, json);
-            Request request = new Request.Builder()
-                    .post(body)
-                    .url(API_URL + "/regions/" + VERSION)
-                    .build();
-            Response response = okHttpClient.newCall(request)
-                    .execute();
-            int code = response.code();
-            if (code != 200) {
-                logger.error("Request was unsuccessful: {}", code);
-                return;
+                logger.debug("Region saved successfully");
+            } catch (Exception e) {
+                logger.error("Failed to POST: {}", e.getMessage());
+                e.printStackTrace();
             }
-
-            logger.debug("Region saved successfully");
-        } catch (Exception e) {
-            logger.error("Failed to POST: {}", e.getMessage());
-            e.printStackTrace();
-        }
+        }, 5, TimeUnit.SECONDS);
     }
 
     public boolean isTransport(List<Transport> transports, WorldPoint from, WorldPoint to) {
