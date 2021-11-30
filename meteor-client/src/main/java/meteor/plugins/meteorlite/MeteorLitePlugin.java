@@ -52,9 +52,6 @@ public class MeteorLitePlugin extends Plugin {
     @Inject
     private PluginManager pluginManager;
 
-    @Inject
-    private RegionManager regionManager;
-
     @Override
     public void updateConfig() {
         Logger.setDebugEnabled(config.debugEnabled());
@@ -90,24 +87,6 @@ public class MeteorLitePlugin extends Plugin {
         if (!event.getGroup().equals(MeteorLiteConfig.GROUP_NAME)) {
             return;
         }
-    }
-
-    @Subscribe
-    public void onGameStateChanged(GameStateChanged e) {
-        if (e.getGameState() != GameState.LOGGED_IN) {
-            return;
-        }
-
-        regionManager.sendRegion();
-    }
-
-    @Subscribe
-    public void onPlaneChanged(PlaneChanged e) {
-        if (Game.getState() != GameState.LOGGED_IN) {
-            return;
-        }
-
-        regionManager.sendRegion();
     }
 
     @Override

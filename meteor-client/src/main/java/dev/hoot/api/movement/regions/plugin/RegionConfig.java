@@ -6,12 +6,14 @@ import meteor.config.ConfigGroup;
 import meteor.config.ConfigItem;
 import meteor.config.Icon;
 
-@ConfigGroup("region-debug")
+@ConfigGroup("regions")
 public interface RegionConfig extends Config {
     @ConfigItem(
             keyName = "apiKey",
             name = "API Key",
-            description = "API Key used for contributing collision data to our backend."
+            description = "API Key used for contributing collision data to our backend.",
+            textField = true,
+            secret = true
     )
     default String apiKey() {
         return "";

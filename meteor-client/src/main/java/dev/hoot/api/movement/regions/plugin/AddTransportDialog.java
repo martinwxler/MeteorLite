@@ -17,6 +17,8 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.sponge.util.Logger;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
@@ -28,6 +30,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+@Singleton
 public class AddTransportDialog extends JFrame {
     private static final ScheduledExecutorService EXECUTOR = Executors.newSingleThreadScheduledExecutor();
     private static final Logger logger = new Logger("AddTransportDialog");
@@ -43,12 +46,13 @@ public class AddTransportDialog extends JFrame {
     private final DefaultListModel<TransportLink> listModel;
     private final JList<TransportLink> transportLinks;
 
-    private final OkHttpClient okHttpClient;
-    private final RegionConfig regionConfig;
+    @Inject
+    private OkHttpClient okHttpClient;
 
-    public AddTransportDialog(OkHttpClient okHttpClient, RegionConfig regionConfig) {
-        this.okHttpClient = okHttpClient;
-        this.regionConfig = regionConfig;
+    @Inject
+    private RegionConfig regionConfig;
+
+    public AddTransportDialog() {
 
         setLayout(new GridLayout(1, 2));
         setMinimumSize(new Dimension(550, 350));

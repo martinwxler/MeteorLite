@@ -1,18 +1,21 @@
 package dev.hoot.api.movement.regions.plugin;
 
 import com.google.inject.Provides;
+import dev.hoot.api.game.Game;
 import dev.hoot.api.movement.pathfinder.GlobalCollisionMap;
 import dev.hoot.api.movement.regions.RegionManager;
 import lombok.Getter;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
+import meteor.events.PlaneChanged;
 import meteor.plugins.Plugin;
 import meteor.plugins.PluginDescriptor;
 import meteor.ui.overlay.OverlayManager;
+import net.runelite.api.GameState;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.ConfigButtonClicked;
-import okhttp3.OkHttpClient;
+import net.runelite.api.events.GameStateChanged;
 
 import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
@@ -21,7 +24,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.zip.GZIPInputStream;
 
-@PluginDescriptor(name = "Region debug")
+@PluginDescriptor(name = "Regions")
 public class RegionPlugin extends Plugin {
     @Inject
     private OverlayManager overlayManager;
@@ -30,10 +33,10 @@ public class RegionPlugin extends Plugin {
     private RegionOverlay overlay;
 
     @Inject
-    private OkHttpClient okHttpClient;
+    private AddTransportDialog transportDialog;
 
     @Inject
-    private RegionConfig regionConfig;
+    private RegionManager regionManager;
 
     public GlobalCollisionMap collisionMap = new GlobalCollisionMap();
 
@@ -41,14 +44,8 @@ public class RegionPlugin extends Plugin {
     public static boolean selectingDestinationTile = false;
     public static boolean selectingObject = false;
 
-    private AddTransportDialog transportDialog;
-
     @Override
     public void startup() {
-        if (transportDialog == null) {
-            transportDialog = new AddTransportDialog(okHttpClient, regionConfig);
-        }
-
         eventBus.register(transportDialog);
 
         updateCollisionMap();
@@ -84,7 +81,7 @@ public class RegionPlugin extends Plugin {
 
     @Subscribe
     public void onConfigButtonClicked(ConfigButtonClicked e) {
-        if (!e.getGroup().equals("region-debug")) {
+        if (!e.getGroup().equals("regions")) {
             return;
         }
 
@@ -101,6 +98,24 @@ public class RegionPlugin extends Plugin {
                 transportDialog.display();
                 break;
         }
+    }
+
+    @Subscribe
+    public void onGameStateChanged(GameStateChanged e) {
+        if (e.getGameState() != GameState.LOGGED_IN) {
+            return;
+        }
+
+        regionManager.sendRegion();
+    }
+
+    @Subscribe
+    public void onPlaneChanged(PlaneChanged e) {
+        if (Game.getState() != GameState.LOGGED_IN) {
+            return;
+        }
+
+        regionManager.sendRegion();
     }
 
     private void updateCollisionMap() {
