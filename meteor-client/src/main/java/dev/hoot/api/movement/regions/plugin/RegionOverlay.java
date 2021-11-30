@@ -11,10 +11,12 @@ import java.awt.*;
 
 public class RegionOverlay extends Overlay {
 	private final RegionPlugin regionPlugin;
+	private final RegionConfig regionConfig;
 
 	@Inject
-	public RegionOverlay(RegionPlugin regionPlugin) {
+	public RegionOverlay(RegionPlugin regionPlugin, RegionConfig regionConfig) {
 		this.regionPlugin = regionPlugin;
+		this.regionConfig = regionConfig;
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
 		setPriority(OverlayPriority.LOW);
@@ -22,6 +24,10 @@ public class RegionOverlay extends Overlay {
 
 	@Override
 	public Dimension render(Graphics2D graphics) {
+		if (!regionConfig.overlay()) {
+			return null;
+		}
+
 		Movement.drawCollisions(graphics, regionPlugin.collisionMap);
 		return null;
 	}

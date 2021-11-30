@@ -2,6 +2,7 @@ package dev.hoot.api.movement.regions.plugin;
 
 import com.google.inject.Provides;
 import dev.hoot.api.movement.pathfinder.GlobalCollisionMap;
+import dev.hoot.api.movement.regions.RegionManager;
 import lombok.Getter;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
@@ -11,7 +12,6 @@ import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.ConfigButtonClicked;
-import net.runelite.api.events.MenuOptionClicked;
 import okhttp3.OkHttpClient;
 
 import javax.inject.Inject;
@@ -37,8 +37,6 @@ public class RegionPlugin extends Plugin {
     public static boolean selectingSourceTile = false;
     public static boolean selectingDestinationTile = false;
     public static boolean selectingObject = false;
-
-    private static final String URL = "http://174.138.15.181:8080/regions";
 
     private AddTransportDialog transportDialog;
 
@@ -103,10 +101,8 @@ public class RegionPlugin extends Plugin {
     }
 
     private void updateCollisionMap() {
-        try (InputStream is = new URL(URL).openStream()) {
-            collisionMap = new GlobalCollisionMap(
-                    readGzip(is.readAllBytes())
-            );
+        try (InputStream is = new URL(RegionManager.API_URL + "/regions").openStream()) {
+            collisionMap = new GlobalCollisionMap(readGzip(is.readAllBytes()));
         } catch (IOException e) {
             logger.error("Error downloading collision data: {}", e.getMessage());
         }

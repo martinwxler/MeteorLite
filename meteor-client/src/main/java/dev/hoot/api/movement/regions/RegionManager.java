@@ -23,11 +23,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Singleton
 public class RegionManager {
     private static final Logger logger = new Logger("RegionManager");
-    private static final int VERSION = 2;
+    private static final int VERSION = 3;
     public static final MediaType JSON_MEDIATYPE = MediaType.parse("application/json");
     public static final String API_URL = "http://174.138.15.181:8080";
     public static final Gson GSON = new GsonBuilder().create();
@@ -130,6 +131,10 @@ public class RegionManager {
         }
 
         try {
+            if (Game.getClient().getPlane() > 0) {
+                logger.info(tileFlags.stream().filter(x -> x.getZ() == 0).collect(Collectors.toList()));
+            }
+
             String json = GSON.toJson(tileFlags);
             RequestBody body = RequestBody.create(JSON_MEDIATYPE, json);
             Request request = new Request.Builder()

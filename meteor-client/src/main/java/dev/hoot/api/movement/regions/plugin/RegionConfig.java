@@ -8,6 +8,15 @@ import meteor.config.Icon;
 
 @ConfigGroup("region-debug")
 public interface RegionConfig extends Config {
+    @ConfigItem(
+            keyName = "overlay",
+            name = "Show collision overlay",
+            description = "Show collision overlay"
+    )
+    default boolean overlay() {
+        return false;
+    }
+
     @Icon
     @ConfigItem(
             keyName = "download",
