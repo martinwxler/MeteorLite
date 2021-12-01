@@ -77,9 +77,7 @@ public class EventBus {
     builder.putAll(subscribers);
     builder.orderValuesBy(Comparator.comparingDouble(Subscriber::getPriority).reversed()
         .thenComparing(s -> s.object.getClass().getName()));
-    for (Class<?> clazz = object.getClass(); clazz != null; clazz = clazz.getSuperclass()) {
 
-    }
     for (Class<?> clazz = object.getClass(); clazz != null; clazz = clazz.getSuperclass()) {
       for (final Method method : clazz.getDeclaredMethods()) {
         final Subscribe sub = method.getAnnotation(Subscribe.class);
@@ -111,10 +109,7 @@ public class EventBus {
                 + "\"");
           }
         }
-        for (Class<?> psc = parameterClazz.getSuperclass(); psc != null;
-             psc = psc.getSuperclass()) {
 
-        }
         method.setAccessible(true);
         Consumer<Object> lambda = null;
 
