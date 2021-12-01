@@ -114,7 +114,12 @@ public class RegionManager {
 
                 // Check if we are blocked by objects
                 // We don't need to parse west/south because they're checked by parsing adjacent tiles for north/east
+                // We also skip the current tile if an adjacent tile does not have their flags loaded
                 WorldPoint northernTile = tileCoords.dy(1);
+                if (Reachable.getCollisionFlag(northernTile) == 0xFFFFFF) {
+                    continue;
+                }
+
                 if (Reachable.isObstacle(northernTile)
                         && !Reachable.isWalled(Direction.NORTH, tileFlag.getFlag())
                 ) {
@@ -122,6 +127,10 @@ public class RegionManager {
                 }
 
                 WorldPoint easternTile = tileCoords.dx(1);
+                if (Reachable.getCollisionFlag(easternTile) == 0xFFFFFF) {
+                    continue;
+                }
+
                 if (Reachable.isObstacle(easternTile)
                         && !Reachable.isWalled(Direction.EAST, tileFlag.getFlag())
                 ) {
