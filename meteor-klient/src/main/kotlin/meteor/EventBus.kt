@@ -20,12 +20,11 @@ class EventBus<T>(override val coroutineContext: CoroutineContext
     }
 
     fun subscribe(subs: (event:T)-> Unit,
-                  scheduler: CoroutineDispatcher = Dispatchers.Main,
                   filter: ((event: T) -> Boolean)? = null){
         this.launch {
             channel.asFlow().collect {item ->
                 if(filter?.invoke(item) != false){
-                    withContext(scheduler){
+                    withContext(Dispatchers.Main){
                         subs.invoke(item)
                     }
                 }
@@ -41,6 +40,10 @@ class EventBus<T>(override val coroutineContext: CoroutineContext
 
         fun subscribe(unit: (Event) -> Unit) {
             instance.subscribe(unit)
+        }
+
+        fun subscribe(unit: (Event) -> Unit, filter: ((event: Event) -> Boolean)? = null) {
+            instance.subscribe(unit, filter)
         }
     }
 }

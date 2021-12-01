@@ -22,25 +22,36 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api;
+package meteor.input
 
-/**
- * Represents a chat entity that has a name.
- */
-public interface Nameable extends Comparable {
-	/**
-	 * The name of the player.
-	 *
-	 * @return the name
-	 */
-	String getName$api();
+import java.awt.event.MouseEvent
 
-	/**
-	 * The previous name the player had.
-	 *
-	 * @return the previous name
-	 */
-	String getPrevName();
+abstract class MouseAdapter : MouseListener {
+    override fun mouseClicked(mouseEvent: MouseEvent?): MouseEvent? {
+        return mouseEvent
+    }
 
-	int getCurrentWorld();
+    override fun mousePressed(mouseEvent: MouseEvent?): MouseEvent? {
+        return mouseEvent
+    }
+
+    override fun mouseReleased(mouseEvent: MouseEvent?): MouseEvent? {
+        return mouseEvent
+    }
+
+    override fun mouseEntered(mouseEvent: MouseEvent?): MouseEvent? {
+        return mouseEvent
+    }
+
+    override fun mouseExited(mouseEvent: MouseEvent?): MouseEvent? {
+        return mouseEvent
+    }
+
+    override fun mouseDragged(mouseEvent: MouseEvent?): MouseEvent? {
+        return mouseEvent
+    }
+
+    override fun mouseMoved(mouseEvent: MouseEvent?): MouseEvent? {
+        return mouseEvent
+    }
 }

@@ -22,25 +22,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api;
+package meteor.input
 
-/**
- * Represents a chat entity that has a name.
- */
-public interface Nameable extends Comparable {
-	/**
-	 * The name of the player.
-	 *
-	 * @return the name
-	 */
-	String getName$api();
+import java.awt.event.KeyListener
 
-	/**
-	 * The previous name the player had.
-	 *
-	 * @return the previous name
-	 */
-	String getPrevName();
-
-	int getCurrentWorld();
+interface KeyListener : KeyListener {
+    val isEnabledOnLoginScreen: Boolean
+        get() = false
 }

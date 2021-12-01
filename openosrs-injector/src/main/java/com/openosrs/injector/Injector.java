@@ -62,6 +62,8 @@ public class Injector extends InjectData implements InjectTaskHandler {
     OptionSet options = parser.parse(args);
     oprsVer = "1.0-SNAPSHOT";
 
+    log.info("Injecting Client");
+
     injector.vanilla = load(
         new File("../runescape-client/build/libs/runescape-client-" + oprsVer + ".jar"));
     injector.deobfuscated = load(
@@ -72,16 +74,28 @@ public class Injector extends InjectData implements InjectTaskHandler {
     injector.mixins = load(
         new File("../runelite-mixins/build/libs/runelite-mixins-" + oprsVer + ".jar"));
 
-    File oldInjected = new File(
-        "../runelite-client/src/main/resources/net/runelite/client/injected-client.oprs");
-    if (oldInjected.exists()) {
-      oldInjected.delete();
-    }
-
     injector.initToVanilla();
     injector.injectVanilla();
     save(injector.getVanilla(), new File("./build/injected/injected-client.jar"),
         options.valueOf(outModeOption));
+
+    log.info("Injecting Klient");
+    HOOKS = "meteor/Hooks";
+
+    injector.vanilla = load(
+            new File("../runescape-client/build/libs/runescape-client-" + oprsVer + ".jar"));
+    injector.deobfuscated = load(
+            new File("../runescape-client/build/libs/runescape-client-" + oprsVer + ".jar"));
+    injector.rsApi = new RSApi(Objects.requireNonNull(
+            new File("../runescape-api/build/classes/java/main/net/runelite/rs/api/")
+                    .listFiles()));
+    injector.mixins = load(
+            new File("../klient-mixins/build/libs/klient-mixins-" + oprsVer + ".jar"));
+
+    injector.initToVanilla();
+    injector.injectVanilla();
+    save(injector.getVanilla(), new File("./build/injected/injected-klient.jar"),
+            options.valueOf(outModeOption));
   }
 
   private static void save(ClassGroup group, File output, OutputMode mode) {
@@ -120,13 +134,13 @@ public class Injector extends InjectData implements InjectTaskHandler {
 
     inject(new CreateAnnotations(this));
 
-    inject(new GraphicsObject(this));
+    //inject(new GraphicsObject(this));
 
     inject(new CopyRuneLiteClasses(this));
 
     inject(new RuneLiteIterableHashTable(this));
 
-    inject(new RuneliteObject(this));
+    //inject(new RuneliteObject(this));
 
     //Injects initial RSAPI
     inject(new InterfaceInjector(this));

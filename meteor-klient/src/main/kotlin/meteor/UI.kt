@@ -1,24 +1,30 @@
 package meteor
 
+import net.runelite.api.Client
 import java.applet.Applet
 import java.applet.AppletContext
 import java.applet.AppletStub
+import java.applet.AudioClip
 import java.awt.Desktop
 import java.awt.Dimension
-import java.lang.Exception
-import java.lang.RuntimeException
-import java.net.URL
-import javax.swing.JFrame
-import java.applet.AudioClip
 import java.awt.Image
 import java.io.InputStream
+import java.net.URL
 import java.util.*
+import javax.swing.JFrame
 
 class UI: AppletStub, AppletContext {
-    private var properties: Map<String, String> = AppletConfiguration.properties!!
-    private var parameters: Map<String, String> = AppletConfiguration.parameters!!
+    companion object {
+        lateinit var applet: Applet
+
+        fun getClient(applet: Applet?): Client {
+            return applet as Client
+        }
+    }
+    private var properties: Map<String, String> = AppletConfiguration.properties
+    private var parameters: Map<String, String> = AppletConfiguration.parameters
     private var frame: JFrame = JFrame("Meteor Klient")
-    private lateinit var applet: Applet
+
 
     fun init() {
         applet = configureApplet()

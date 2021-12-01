@@ -32,9 +32,9 @@ dependencies {
     implementation(project(":http-api"))
     implementation(project(":runelite-annotations"))
     //Deob
-    implementation(project(":runescape-client"))
+    //implementation(project(":runescape-client"))
     //Injected
-    //implementation(files("../openosrs-injector/build/injected/injected-client.jar"))
+    implementation(files("../openosrs-injector/build/injected/injected-klient.jar"))
     implementation group: 'de.jensd', name: 'fontawesomefx-commons', version: '_'
     implementation group: 'de.jensd', name: 'fontawesomefx-fontawesome', version: '_'
     implementation 'de.jensd:fontawesomefx-materialicons:2.2.0-9.1.2'
@@ -88,6 +88,7 @@ dependencies {
     implementation 'com.miglayout:miglayout:3.7.4'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-javafx:1.5.2'
+    implementation 'io.insert-koin:koin-core:3.1.4'
 
 }
 
@@ -102,7 +103,7 @@ runtime {
     jpackage {
         imageOptions += [
                 "--icon", "src/main/resources/MeteorLite.ico", "--win-console"]
-        mainClass = "meteor.MeteorLiteClientLauncher"
+        mainClass = "meteor.Main"
         installerOptions += [
                 "--name", "MeteorLite",
                 "--description", "Open source OSRS toolkit",
@@ -121,7 +122,7 @@ javafx {
 }
 
 application {
-    mainClassName = 'meteor.MeteorLiteClientLauncher'
+    mainClass = 'meteor.Main'
 }
 
 compileJava.options.encoding = 'UTF-8'
@@ -180,7 +181,7 @@ shadowJar {
 }
 tasks {
     compileJava.dependsOn project(":fernflower").tasks.getByName("decompileInjected")
-    compileJava.dependsOn(":runelite-mixins:compileJava")
+    compileJava.dependsOn(":klient-mixins:compileJava")
     compileKotlin {
         kotlinOptions.jvmTarget = "16"
     }
@@ -199,10 +200,15 @@ task bootstrap(type: JavaExec) {
     main = "meteor.util.bootstrap.Bootstrapper"
 }
 
+task klient(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = "meteor.Main"
+}
+
 jar {
     manifest {
         attributes(
-                'Main-Class': 'meteor.MeteorLiteClientLauncher'
+                'Main-Class': 'meteor.Main'
         )
     }
 }
