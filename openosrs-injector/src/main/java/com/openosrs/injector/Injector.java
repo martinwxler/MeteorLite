@@ -134,13 +134,13 @@ public class Injector extends InjectData implements InjectTaskHandler {
 
     inject(new CreateAnnotations(this));
 
-    //inject(new GraphicsObject(this));
+    inject(new GraphicsObject(this));
 
     inject(new CopyRuneLiteClasses(this));
 
     inject(new RuneLiteIterableHashTable(this));
 
-    //inject(new RuneliteObject(this));
+    inject(new RuneliteObject(this));
 
     //Injects initial RSAPI
     inject(new InterfaceInjector(this));
@@ -169,13 +169,13 @@ public class Injector extends InjectData implements InjectTaskHandler {
     inject(new ScriptVM(this));
 
     // All GPU raw injectors should probably be combined, especially RenderDraw and Occluder
-    inject(new ClearColorBuffer(this));
+    inject(new ClearColorBuffer(this, HOOKS));
 
-    inject(new RenderDraw(this));
+    inject(new RenderDraw(this, HOOKS));
 
     //inject(new Occluder(this));
 
-    inject(new DrawMenu(this));
+    inject(new DrawMenu(this, HOOKS));
 
 
 

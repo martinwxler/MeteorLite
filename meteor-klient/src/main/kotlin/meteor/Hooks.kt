@@ -6,6 +6,7 @@ import meteor.input.MouseManager
 import net.runelite.api.BufferProvider
 import net.runelite.api.MainBufferProvider
 import net.runelite.api.Renderable
+import net.runelite.api.events.BeforeMenuRender
 import net.runelite.api.hooks.Callbacks
 import net.runelite.api.hooks.DrawCallbacks
 import net.runelite.api.widgets.Widget
@@ -128,6 +129,13 @@ class Hooks: Callbacks {
             } else {
                 renderable.`draw$api`(orientation, pitchSin, pitchCos, yawSin, yawCos, x, y, z, hash)
             }
+        }
+
+        @JvmStatic
+        fun drawMenu(): Boolean {
+            val event = BeforeMenuRender()
+            client.callbacks.post(event)
+            return event.isConsumed
         }
     }
 }
