@@ -1,9 +1,9 @@
-package dev.hoot.api.movement.regions.plugin;
+package meteor.plugins.regions;
 
 import com.google.inject.Provides;
 import dev.hoot.api.game.Game;
 import dev.hoot.api.movement.pathfinder.GlobalCollisionMap;
-import dev.hoot.api.movement.regions.RegionManager;
+import dev.hoot.api.movement.pathfinder.RegionManager;
 import lombok.Getter;
 import meteor.config.ConfigManager;
 import meteor.eventbus.Subscribe;
@@ -38,7 +38,8 @@ public class RegionPlugin extends Plugin {
     @Inject
     private RegionManager regionManager;
 
-    public GlobalCollisionMap collisionMap = new GlobalCollisionMap();
+    @Inject
+    private GlobalCollisionMap collisionMap;
 
     public static boolean selectingSourceTile = false;
     public static boolean selectingDestinationTile = false;
@@ -120,7 +121,7 @@ public class RegionPlugin extends Plugin {
 
     private void updateCollisionMap() {
         try (InputStream is = new URL(RegionManager.API_URL + "/regions").openStream()) {
-            collisionMap = new GlobalCollisionMap(readGzip(is.readAllBytes()));
+            collisionMap.overwrite(new GlobalCollisionMap(readGzip(is.readAllBytes())));
         } catch (IOException e) {
             logger.error("Error downloading collision data: {}", e.getMessage());
         }

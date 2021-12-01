@@ -1,10 +1,11 @@
-package dev.hoot.api.movement.regions.plugin;
+package meteor.plugins.regions;
 
 import dev.hoot.api.entities.TileObjects;
 import dev.hoot.api.game.Game;
-import dev.hoot.api.movement.regions.RegionManager;
+import dev.hoot.api.movement.pathfinder.RegionManager;
 import dev.hoot.api.scene.Tiles;
 import meteor.eventbus.Subscribe;
+import meteor.plugins.regions.model.TransportLink;
 import net.miginfocom.swing.MigLayout;
 import net.runelite.api.GameState;
 import net.runelite.api.Tile;
@@ -44,7 +45,6 @@ public class AddTransportDialog extends JFrame {
     private final JTextField objIdText;
 
     private final DefaultListModel<TransportLink> listModel;
-    private final JList<TransportLink> transportLinks;
 
     @Inject
     private OkHttpClient okHttpClient;
@@ -94,7 +94,7 @@ public class AddTransportDialog extends JFrame {
         JButton addLink = new JButton("Add link");
         configPanel.add(addLink, "growx, skip");
 
-        JScrollPane listScroll = new JScrollPane(transportLinks = new JList<>(listModel));
+        JScrollPane listScroll = new JScrollPane(new JList<>(listModel));
 
         listPanel.add(listScroll, "grow, push, wrap");
         JButton submit = new JButton("Submit");

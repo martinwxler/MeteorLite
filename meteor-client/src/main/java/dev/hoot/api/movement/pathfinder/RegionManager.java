@@ -1,14 +1,13 @@
-package dev.hoot.api.movement.regions;
+package dev.hoot.api.movement.pathfinder;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.hoot.api.entities.Players;
 import dev.hoot.api.game.Game;
 import dev.hoot.api.movement.Reachable;
-import dev.hoot.api.movement.pathfinder.Transport;
-import dev.hoot.api.movement.pathfinder.Walker;
-import dev.hoot.api.movement.regions.plugin.RegionConfig;
 import dev.hoot.api.scene.Tiles;
+import meteor.plugins.regions.RegionConfig;
+import meteor.plugins.regions.model.TileFlag;
 import net.runelite.api.CollisionData;
 import net.runelite.api.CollisionDataFlag;
 import net.runelite.api.GameState;

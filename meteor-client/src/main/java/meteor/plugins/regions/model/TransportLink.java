@@ -1,4 +1,4 @@
-package dev.hoot.api.movement.regions.plugin;
+package meteor.plugins.regions.model;
 
 import lombok.Value;
 

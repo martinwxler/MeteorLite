@@ -5,6 +5,7 @@ import com.google.inject.*;
 import com.google.inject.name.Names;
 import dev.hoot.api.movement.pathfinder.GlobalCollisionMap;
 import dev.hoot.api.movement.pathfinder.Walker;
+import dev.hoot.api.movement.pathfinder.RegionManager;
 import javafx.scene.paint.Paint;
 import meteor.callback.Hooks;
 import meteor.chat.ChatMessageManager;
@@ -44,6 +45,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
@@ -274,12 +276,17 @@ public class MeteorLiteClientModule extends AbstractModule {
   @Provides
   @Singleton
   GlobalCollisionMap provideGlobalCollisionMap() throws IOException {
-    return new GlobalCollisionMap(
-            new GZIPInputStream(
-                    new ByteArrayInputStream(
-                            Walker.class.getResourceAsStream("/collision-map").readAllBytes()
-                    )
-            ).readAllBytes()
-    );
+    try (InputStream is = new URL(RegionManager.API_URL + "/regions").openStream()) {
+      return new GlobalCollisionMap(new GZIPInputStream(new ByteArrayInputStream(is.readAllBytes())).readAllBytes());
+    } catch (IOException e) {
+      // Fallback to old map
+      return new GlobalCollisionMap(
+              new GZIPInputStream(
+                      new ByteArrayInputStream(
+                              Walker.class.getResourceAsStream("/collision-map").readAllBytes()
+                      )
+              ).readAllBytes()
+      );
+    }
   }
 }
