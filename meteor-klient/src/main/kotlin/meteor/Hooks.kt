@@ -1,6 +1,8 @@
 package meteor
 
 import meteor.Main.client
+import meteor.eventbus.Event
+import meteor.eventbus.EventBus
 import meteor.input.KeyManager
 import meteor.input.MouseManager
 import net.runelite.api.BufferProvider
@@ -18,9 +20,9 @@ import java.awt.event.MouseWheelEvent
 
 class Hooks: Callbacks {
 
-    override fun post(event: Any?) {
-        if (event is Event)
-            EventBus.post(event)
+    override fun post(obj: Any?) {
+        if (obj is Event)
+            EventBus.post(obj)
     }
 
     override fun postDeferred(event: Any?) {
@@ -133,9 +135,9 @@ class Hooks: Callbacks {
 
         @JvmStatic
         fun drawMenu(): Boolean {
-            val event = BeforeMenuRender()
+            val event = meteor.events.BeforeMenuRender()
             client.callbacks.post(event)
-            return event.isConsumed
+            return event.consumed
         }
     }
 }

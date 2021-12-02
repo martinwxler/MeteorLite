@@ -1,5 +1,7 @@
 package meteor
 
+import meteor.eventbus.EventBus
+import meteor.events.AppletLoaded
 import net.runelite.api.Client
 import java.applet.Applet
 import java.applet.AppletContext
@@ -34,7 +36,7 @@ class UI: AppletStub, AppletContext {
         frame.isVisible = true
         applet.init()
         applet.start()
-        EventBus.post(Event.APPLET_LOADED)
+        EventBus.post(AppletLoaded())
     }
 
     private fun configureApplet(): Applet {
