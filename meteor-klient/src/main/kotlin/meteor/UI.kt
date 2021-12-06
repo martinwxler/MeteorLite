@@ -3,6 +3,7 @@ package meteor
 import meteor.eventbus.EventBus
 import meteor.events.AppletLoaded
 import net.runelite.api.Client
+import themes.MeteorliteTheme
 import java.applet.Applet
 import java.applet.AppletContext
 import java.applet.AppletStub
@@ -13,6 +14,7 @@ import java.awt.Image
 import java.io.InputStream
 import java.net.URL
 import java.util.*
+import javax.swing.ImageIcon
 import javax.swing.JFrame
 
 class UI: AppletStub, AppletContext {
@@ -23,14 +25,17 @@ class UI: AppletStub, AppletContext {
             return applet as Client
         }
     }
+    var icon = ImageIcon(UI::class.java.getResource("/Meteor_icon.png")).image
     private var properties: Map<String, String> = AppletConfiguration.properties
     private var parameters: Map<String, String> = AppletConfiguration.parameters
     private var frame: JFrame = JFrame("Meteor Klient")
 
 
     fun init() {
+
         applet = configureApplet()
         frame.add(applet)
+        frame.iconImage = icon
         applet.size = applet.minimumSize
         frame.size = applet.minimumSize
         frame.isVisible = true
@@ -100,35 +105,35 @@ class UI: AppletStub, AppletContext {
         return this
     }
 
-    override fun getAudioClip(url: URL?): AudioClip {
-        TODO("Not yet implemented")
+    override fun getAudioClip(url: URL): AudioClip {
+      throw UnsupportedOperationException()
     }
 
-    override fun getImage(url: URL?): Image {
-        TODO("Not yet implemented")
+    override fun getImage(url: URL): Image {
+        throw UnsupportedOperationException()
     }
 
-    override fun getApplet(name: String?): Applet {
-        TODO("Not yet implemented")
+    override fun getApplet(name: String): Applet {
+        throw UnsupportedOperationException()
     }
 
     override fun getApplets(): Enumeration<Applet> {
-        TODO("Not yet implemented")
+        throw UnsupportedOperationException()
     }
 
-    override fun showStatus(status: String?) {
-        TODO("Not yet implemented")
+    override fun showStatus(status: String) {
+        throw UnsupportedOperationException()
     }
 
-    override fun setStream(key: String?, stream: InputStream?) {
-        TODO("Not yet implemented")
+    override fun setStream(key: String, stream: InputStream) {
+        throw UnsupportedOperationException()
     }
 
-    override fun getStream(key: String?): InputStream {
-        TODO("Not yet implemented")
+    override fun getStream(key: String): InputStream {
+        throw UnsupportedOperationException()
     }
 
     override fun getStreamKeys(): MutableIterator<String> {
-        TODO("Not yet implemented")
+        throw UnsupportedOperationException()
     }
 }
