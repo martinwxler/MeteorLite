@@ -1,5 +1,6 @@
 package meteor.plugins.regions;
 
+import dev.hoot.api.entities.Entities;
 import dev.hoot.api.entities.TileObjects;
 import dev.hoot.api.game.Game;
 import dev.hoot.api.movement.pathfinder.RegionManager;
@@ -8,6 +9,7 @@ import meteor.eventbus.Subscribe;
 import meteor.plugins.regions.model.TransportLink;
 import net.miginfocom.swing.MigLayout;
 import net.runelite.api.GameState;
+import net.runelite.api.SceneEntity;
 import net.runelite.api.Tile;
 import net.runelite.api.TileObject;
 import net.runelite.api.coords.WorldPoint;
@@ -202,13 +204,14 @@ public class AddTransportDialog extends JFrame {
 
         if (e.getId() == RegionPlugin.TileSelection.OBJECT.getId()) {
             e.consume();
-            Tile hovered = Tiles.getHoveredTile();
-            if (hovered == null) {
+            List<? extends SceneEntity> entities = Entities.getHoveredEntities();
+            if (entities.isEmpty()) {
                 return;
             }
 
-            TileObject transport = TileObjects.getFirstAt(hovered, o -> o.getActions() != null
-                    && o.getActions().stream().anyMatch(Objects::nonNull));
+            SceneEntity transport = entities.stream().filter(o -> o.getActions() != null
+                    && o.getActions().stream().anyMatch(Objects::nonNull))
+                    .findFirst().orElse(null);
             if (transport == null) {
                 return;
             }
