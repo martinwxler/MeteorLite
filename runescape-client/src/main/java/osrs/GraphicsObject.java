@@ -73,7 +73,10 @@ public class GraphicsObject extends Renderable {
 	@Export("isFinished")
 	boolean isFinished;
 
-	GraphicsObject(int var1, int var2, int var3, int var4, int var5, int var6, int var7) {
+	public GraphicsObject() {
+	}
+
+	public GraphicsObject(int var1, int var2, int var3, int var4, int var5, int var6, int var7) {
 		this.frame = 0; // L: 16
 		this.frameCycle = 0; // L: 17
 		this.isFinished = false; // L: 18
@@ -197,7 +200,4 @@ public class GraphicsObject extends Renderable {
 			class328.drawModelComponents(MouseRecorder.Widget_interfaceComponents[var0], -1); // L: 12071
 		}
 	} // L: 12072
-
-	public GraphicsObject() {
-	}
 }
