@@ -1,16 +1,8 @@
 package osrs;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import net.runelite.mapping.Export;
-import net.runelite.mapping.Implements;
-import net.runelite.mapping.ObfuscatedGetter;
-import net.runelite.mapping.ObfuscatedName;
-import net.runelite.mapping.ObfuscatedSignature;
+import net.runelite.mapping.*;
+
+import java.util.*;
 
 @ObfuscatedName("ov")
 @Implements("WorldMap")
@@ -475,7 +467,7 @@ public class WorldMap {
 					}
 
 					if (var9) { // L: 229
-						PacketBufferNode var12 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2825, Client.packetWriter.isaacCipher); // L: 230
+						PacketBufferNode var12 = HitSplatDefinition.getPacketBufferNode(ClientPacket.CLICKWORLDMAP, Client.packetWriter.isaacCipher); // L: 230
 						var12.packetBuffer.writeIntME(this.mouseCoord.packed()); // L: 231
 						Client.packetWriter.addNode(var12); // L: 232
 						this.field4311 = 0L; // L: 233

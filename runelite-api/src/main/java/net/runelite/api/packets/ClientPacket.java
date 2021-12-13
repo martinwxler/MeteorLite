@@ -1,14 +1,12 @@
 package net.runelite.api.packets;
 
-import net.runelite.mapping.Import;
-
 public interface ClientPacket {
     int getId();
     int getLength();
 
     ClientPacket OPHELDT();
 
-    ClientPacket spellOnNpc();
+    ClientPacket OPNPCT();
 
     ClientPacket EVENT_MOUSE_CLICK();
 
@@ -56,15 +54,15 @@ public interface ClientPacket {
 
     ClientPacket OPLOC5();
 
-    ClientPacket grounditem1();
+    ClientPacket OPOBJ1();
 
-    ClientPacket grounditem2();
+    ClientPacket OPOBJ2();
 
-    ClientPacket grounditem3();
+    ClientPacket OPOBJ3();
 
-    ClientPacket grounditem4();
+    ClientPacket OPOBJ4();
 
-    ClientPacket grounditem5();
+    ClientPacket OPOBJ5();
 
     ClientPacket MOVE_GAMECLICK();
 

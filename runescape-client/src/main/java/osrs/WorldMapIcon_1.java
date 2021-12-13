@@ -133,7 +133,7 @@ public class WorldMapIcon_1 extends AbstractWorldMapIcon {
 	)
 	@Export("Clan_leaveChat")
 	static final void Clan_leaveChat() {
-		PacketBufferNode var0 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2857, Client.packetWriter.isaacCipher); // L: 12504
+		PacketBufferNode var0 = HitSplatDefinition.getPacketBufferNode(ClientPacket.CLAN_JOINCHAT_LEAVECHAT, Client.packetWriter.isaacCipher); // L: 12504
 		var0.packetBuffer.writeByte(0); // L: 12505
 		Client.packetWriter.addNode(var0); // L: 12506
 	} // L: 12507

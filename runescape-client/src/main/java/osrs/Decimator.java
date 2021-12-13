@@ -279,7 +279,7 @@ public class Decimator {
 			Client.mouseCrossState = 0; // L: 9453
 			Client.destinationX = var0; // L: 9454
 			Client.destinationY = var1; // L: 9455
-			var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2831, Client.packetWriter.isaacCipher); // L: 9457
+			var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPLOCU, Client.packetWriter.isaacCipher); // L: 9457
 			var8.packetBuffer.method7390(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9458
 			var8.packetBuffer.writeShort(var3); // L: 9459
 			var8.packetBuffer.writeShort(class139.selectedItemId); // L: 9460
@@ -295,14 +295,14 @@ public class Decimator {
 			Client.mouseCrossState = 0; // L: 9209
 			Client.destinationX = var0; // L: 9210
 			Client.destinationY = var1; // L: 9211
-			var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2850, Client.packetWriter.isaacCipher); // L: 9212
-			var8.packetBuffer.writeByteA(Client.selectedSpellChildIndex); // L: 9213
+			var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPLOCT, Client.packetWriter.isaacCipher); // L: 9212
+			var8.packetBuffer.writeShortLE(Client.selectedSpellChildIndex); // L: 9213
 			var8.packetBuffer.method7390(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9214
 			var8.packetBuffer.method7527(class20.selectedSpellWidget); // L: 9215
 			var8.packetBuffer.method7398(Client.field633); // L: 9216
-			var8.packetBuffer.writeByteA(var0 + class131.baseX); // L: 9217
-			var8.packetBuffer.writeByteA(var3); // L: 9218
-			var8.packetBuffer.writeByteA(TileItem.baseY + var1); // L: 9219
+			var8.packetBuffer.writeShortLE(var0 + class131.baseX); // L: 9217
+			var8.packetBuffer.writeShortLE(var3); // L: 9218
+			var8.packetBuffer.writeShortLE(TileItem.baseY + var1); // L: 9219
 			Client.packetWriter.addNode(var8); // L: 9220
 		} else if (var2 == 3) {
 			Client.mouseCrossX = var6; // L: 9389
@@ -311,10 +311,10 @@ public class Decimator {
 			Client.mouseCrossState = 0; // L: 9392
 			Client.destinationX = var0; // L: 9393
 			Client.destinationY = var1; // L: 9394
-			var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2883, Client.packetWriter.isaacCipher); // L: 9396
+			var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPLOC1, Client.packetWriter.isaacCipher); // L: 9396
 			var8.packetBuffer.method7398(var0 + class131.baseX); // L: 9397
 			var8.packetBuffer.writeShort(var3); // L: 9398
-			var8.packetBuffer.writeByteA(TileItem.baseY + var1); // L: 9399
+			var8.packetBuffer.writeShortLE(TileItem.baseY + var1); // L: 9399
 			var8.packetBuffer.method7390(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9400
 			Client.packetWriter.addNode(var8); // L: 9401
 		} else if (var2 == 4) {
@@ -324,7 +324,7 @@ public class Decimator {
 			Client.mouseCrossState = 0; // L: 9332
 			Client.destinationX = var0; // L: 9333
 			Client.destinationY = var1; // L: 9334
-			var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2896, Client.packetWriter.isaacCipher); // L: 9336
+			var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPLOC2, Client.packetWriter.isaacCipher); // L: 9336
 			var8.packetBuffer.method7398(TileItem.baseY + var1); // L: 9337
 			var8.packetBuffer.writeByte(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9338
 			var8.packetBuffer.writeByteC(var0 + class131.baseX); // L: 9339
@@ -337,9 +337,9 @@ public class Decimator {
 			Client.mouseCrossState = 0; // L: 9667
 			Client.destinationX = var0; // L: 9668
 			Client.destinationY = var1; // L: 9669
-			var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2856, Client.packetWriter.isaacCipher); // L: 9671
-			var8.packetBuffer.writeByteA(var3); // L: 9672
-			var8.packetBuffer.writeByteA(TileItem.baseY + var1); // L: 9673
+			var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPLOC3, Client.packetWriter.isaacCipher); // L: 9671
+			var8.packetBuffer.writeShortLE(var3); // L: 9672
+			var8.packetBuffer.writeShortLE(TileItem.baseY + var1); // L: 9673
 			var8.packetBuffer.writeShort(var0 + class131.baseX); // L: 9674
 			var8.packetBuffer.method7343(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9675
 			Client.packetWriter.addNode(var8); // L: 9676
@@ -350,11 +350,11 @@ public class Decimator {
 			Client.mouseCrossState = 0; // L: 9630
 			Client.destinationX = var0; // L: 9631
 			Client.destinationY = var1; // L: 9632
-			var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2870, Client.packetWriter.isaacCipher); // L: 9634
-			var8.packetBuffer.writeByteA(var3); // L: 9635
+			var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPLOC4, Client.packetWriter.isaacCipher); // L: 9634
+			var8.packetBuffer.writeShortLE(var3); // L: 9635
 			var8.packetBuffer.method7390(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9636
-			var8.packetBuffer.writeByteA(TileItem.baseY + var1); // L: 9637
-			var8.packetBuffer.writeByteA(var0 + class131.baseX); // L: 9638
+			var8.packetBuffer.writeShortLE(TileItem.baseY + var1); // L: 9637
+			var8.packetBuffer.writeShortLE(var0 + class131.baseX); // L: 9638
 			Client.packetWriter.addNode(var8); // L: 9639
 		} else {
 			PacketBufferNode var9;
@@ -368,7 +368,7 @@ public class Decimator {
 					Client.mouseCrossState = 0; // L: 9093
 					Client.destinationX = var0; // L: 9094
 					Client.destinationY = var1; // L: 9095
-					var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2840, Client.packetWriter.isaacCipher); // L: 9097
+					var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPNPCU, Client.packetWriter.isaacCipher); // L: 9097
 					var9.packetBuffer.method7398(class139.selectedItemId); // L: 9098
 					var9.packetBuffer.method7362(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9099
 					var9.packetBuffer.method7398(var3); // L: 9100
@@ -385,7 +385,7 @@ public class Decimator {
 					Client.mouseCrossState = 0; // L: 9697
 					Client.destinationX = var0; // L: 9698
 					Client.destinationY = var1; // L: 9699
-					var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2901, Client.packetWriter.isaacCipher); // L: 9700
+					var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPNPCT, Client.packetWriter.isaacCipher); // L: 9700
 					var9.packetBuffer.method7407(class20.selectedSpellWidget); // L: 9701
 					var9.packetBuffer.method7398(Client.field633); // L: 9702
 					var9.packetBuffer.writeShort(Client.selectedSpellChildIndex); // L: 9703
@@ -402,7 +402,7 @@ public class Decimator {
 					Client.mouseCrossState = 0; // L: 9616
 					Client.destinationX = var0; // L: 9617
 					Client.destinationY = var1; // L: 9618
-					var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2839, Client.packetWriter.isaacCipher); // L: 9620
+					var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPNPC1, Client.packetWriter.isaacCipher); // L: 9620
 					var9.packetBuffer.writeByteC(var3); // L: 9621
 					var9.packetBuffer.method7343(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9622
 					Client.packetWriter.addNode(var9); // L: 9623
@@ -416,7 +416,7 @@ public class Decimator {
 					Client.mouseCrossState = 0; // L: 9244
 					Client.destinationX = var0; // L: 9245
 					Client.destinationY = var1; // L: 9246
-					var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2865, Client.packetWriter.isaacCipher); // L: 9248
+					var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPNPC2, Client.packetWriter.isaacCipher); // L: 9248
 					var9.packetBuffer.method7362(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9249
 					var9.packetBuffer.method7398(var3); // L: 9250
 					Client.packetWriter.addNode(var9); // L: 9251
@@ -430,8 +430,8 @@ public class Decimator {
 					Client.mouseCrossState = 0; // L: 9773
 					Client.destinationX = var0; // L: 9774
 					Client.destinationY = var1; // L: 9775
-					var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2812, Client.packetWriter.isaacCipher); // L: 9777
-					var9.packetBuffer.writeByteA(var3); // L: 9778
+					var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPNPC3, Client.packetWriter.isaacCipher); // L: 9777
+					var9.packetBuffer.writeShortLE(var3); // L: 9778
 					var9.packetBuffer.method7343(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9779
 					Client.packetWriter.addNode(var9); // L: 9780
 				}
@@ -444,7 +444,7 @@ public class Decimator {
 					Client.mouseCrossState = 0; // L: 9270
 					Client.destinationX = var0; // L: 9271
 					Client.destinationY = var1; // L: 9272
-					var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2872, Client.packetWriter.isaacCipher); // L: 9274
+					var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPNPC4, Client.packetWriter.isaacCipher); // L: 9274
 					var9.packetBuffer.writeShort(var3); // L: 9275
 					var9.packetBuffer.writeByte(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9276
 					Client.packetWriter.addNode(var9); // L: 9277
@@ -458,7 +458,7 @@ public class Decimator {
 					Client.mouseCrossState = 0; // L: 9514
 					Client.destinationX = var0; // L: 9515
 					Client.destinationY = var1; // L: 9516
-					var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2876, Client.packetWriter.isaacCipher); // L: 9518
+					var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPNPC5, Client.packetWriter.isaacCipher); // L: 9518
 					var9.packetBuffer.method7398(var3); // L: 9519
 					var9.packetBuffer.method7362(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9520
 					Client.packetWriter.addNode(var9); // L: 9521
@@ -474,11 +474,11 @@ public class Decimator {
 						Client.mouseCrossState = 0; // L: 9541
 						Client.destinationX = var0; // L: 9542
 						Client.destinationY = var1; // L: 9543
-						var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2864, Client.packetWriter.isaacCipher); // L: 9545
+						var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPPLAYERU, Client.packetWriter.isaacCipher); // L: 9545
 						var9.packetBuffer.method7398(class139.selectedItemId); // L: 9546
 						var9.packetBuffer.method7527(MidiPcmStream.selectedItemWidget); // L: 9547
 						var9.packetBuffer.method7343(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9548
-						var9.packetBuffer.writeByteA(Calendar.selectedItemSlot); // L: 9549
+						var9.packetBuffer.writeShortLE(Calendar.selectedItemSlot); // L: 9549
 						var9.packetBuffer.method7398(var3); // L: 9550
 						Client.packetWriter.addNode(var9); // L: 9551
 					}
@@ -491,7 +491,7 @@ public class Decimator {
 						Client.mouseCrossState = 0; // L: 9360
 						Client.destinationX = var0; // L: 9361
 						Client.destinationY = var1; // L: 9362
-						var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2820, Client.packetWriter.isaacCipher); // L: 9363
+						var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPPLAYERT, Client.packetWriter.isaacCipher); // L: 9363
 						var9.packetBuffer.method7407(class20.selectedSpellWidget); // L: 9364
 						var9.packetBuffer.writeShort(Client.field633); // L: 9365
 						var9.packetBuffer.method7343(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9366
@@ -506,14 +506,14 @@ public class Decimator {
 					Client.mouseCrossState = 0; // L: 9041
 					Client.destinationX = var0; // L: 9042
 					Client.destinationY = var1; // L: 9043
-					var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2882, Client.packetWriter.isaacCipher); // L: 9045
+					var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPOBJU, Client.packetWriter.isaacCipher); // L: 9045
 					var8.packetBuffer.writeShort(class139.selectedItemId); // L: 9046
 					var8.packetBuffer.writeShort(Calendar.selectedItemSlot); // L: 9047
 					var8.packetBuffer.writeShort(TileItem.baseY + var1); // L: 9048
-					var8.packetBuffer.writeByteA(var3); // L: 9049
+					var8.packetBuffer.writeShortLE(var3); // L: 9049
 					var8.packetBuffer.method7527(MidiPcmStream.selectedItemWidget); // L: 9050
 					var8.packetBuffer.method7343(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9051
-					var8.packetBuffer.writeByteA(var0 + class131.baseX); // L: 9052
+					var8.packetBuffer.writeShortLE(var0 + class131.baseX); // L: 9052
 					Client.packetWriter.addNode(var8); // L: 9053
 				} else if (var2 == 17) {
 					Client.mouseCrossX = var6; // L: 9189
@@ -522,13 +522,13 @@ public class Decimator {
 					Client.mouseCrossState = 0; // L: 9192
 					Client.destinationX = var0; // L: 9193
 					Client.destinationY = var1; // L: 9194
-					var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2835, Client.packetWriter.isaacCipher); // L: 9195
+					var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPOBJT, Client.packetWriter.isaacCipher); // L: 9195
 					var8.packetBuffer.method7398(TileItem.baseY + var1); // L: 9196
 					var8.packetBuffer.writeShort(Client.selectedSpellChildIndex); // L: 9197
 					var8.packetBuffer.method7343(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9198
 					var8.packetBuffer.writeInt(class20.selectedSpellWidget); // L: 9199
 					var8.packetBuffer.writeShort(var0 + class131.baseX); // L: 9200
-					var8.packetBuffer.writeByteA(var3); // L: 9201
+					var8.packetBuffer.writeShortLE(var3); // L: 9201
 					var8.packetBuffer.writeShort(Client.field633); // L: 9202
 					Client.packetWriter.addNode(var8); // L: 9203
 				} else if (var2 == 18) {
@@ -538,7 +538,7 @@ public class Decimator {
 					Client.mouseCrossState = 0; // L: 9558
 					Client.destinationX = var0; // L: 9559
 					Client.destinationY = var1; // L: 9560
-					var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2836, Client.packetWriter.isaacCipher); // L: 9562
+					var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPOBJ1, Client.packetWriter.isaacCipher); // L: 9562
 					var8.packetBuffer.method7398(var0 + class131.baseX); // L: 9563
 					var8.packetBuffer.writeByteC(var3); // L: 9564
 					var8.packetBuffer.writeByteC(TileItem.baseY + var1); // L: 9565
@@ -551,10 +551,10 @@ public class Decimator {
 					Client.mouseCrossState = 0; // L: 9719
 					Client.destinationX = var0; // L: 9720
 					Client.destinationY = var1; // L: 9721
-					var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2838, Client.packetWriter.isaacCipher); // L: 9723
+					var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPOBJ2, Client.packetWriter.isaacCipher); // L: 9723
 					var8.packetBuffer.method7362(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9724
-					var8.packetBuffer.writeByteA(TileItem.baseY + var1); // L: 9725
-					var8.packetBuffer.writeByteA(var3); // L: 9726
+					var8.packetBuffer.writeShortLE(TileItem.baseY + var1); // L: 9725
+					var8.packetBuffer.writeShortLE(var3); // L: 9726
 					var8.packetBuffer.writeByteC(var0 + class131.baseX); // L: 9727
 					Client.packetWriter.addNode(var8); // L: 9728
 				} else if (var2 == 20) {
@@ -564,8 +564,8 @@ public class Decimator {
 					Client.mouseCrossState = 0; // L: 9121
 					Client.destinationX = var0; // L: 9122
 					Client.destinationY = var1; // L: 9123
-					var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2818, Client.packetWriter.isaacCipher); // L: 9125
-					var8.packetBuffer.writeByteA(var0 + class131.baseX); // L: 9126
+					var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPOBJ3, Client.packetWriter.isaacCipher); // L: 9125
+					var8.packetBuffer.writeShortLE(var0 + class131.baseX); // L: 9126
 					var8.packetBuffer.writeShort(var3); // L: 9127
 					var8.packetBuffer.writeByte(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9128
 					var8.packetBuffer.writeByteC(TileItem.baseY + var1); // L: 9129
@@ -577,7 +577,7 @@ public class Decimator {
 					Client.mouseCrossState = 0; // L: 9414
 					Client.destinationX = var0; // L: 9415
 					Client.destinationY = var1; // L: 9416
-					var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2823, Client.packetWriter.isaacCipher); // L: 9418
+					var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPOBJ4, Client.packetWriter.isaacCipher); // L: 9418
 					var8.packetBuffer.writeByteC(TileItem.baseY + var1); // L: 9419
 					var8.packetBuffer.method7343(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9420
 					var8.packetBuffer.writeShort(var3); // L: 9421
@@ -590,7 +590,7 @@ public class Decimator {
 					Client.mouseCrossState = 0; // L: 9745
 					Client.destinationX = var0; // L: 9746
 					Client.destinationY = var1; // L: 9747
-					var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2868, Client.packetWriter.isaacCipher); // L: 9749
+					var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPOBJ5, Client.packetWriter.isaacCipher); // L: 9749
 					var8.packetBuffer.method7398(var0 + class131.baseX); // L: 9750
 					var8.packetBuffer.writeByteC(TileItem.baseY + var1); // L: 9751
 					var8.packetBuffer.method7398(var3); // L: 9752
@@ -613,7 +613,7 @@ public class Decimator {
 						}
 
 						if (var11) { // L: 9321
-							var12 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2842, Client.packetWriter.isaacCipher); // L: 9323
+							var12 = HitSplatDefinition.getPacketBufferNode(ClientPacket.WIDGET_TYPE_1, Client.packetWriter.isaacCipher); // L: 9323
 							var12.packetBuffer.writeInt(var1); // L: 9324
 							Client.packetWriter.addNode(var12); // L: 9325
 						}
@@ -645,7 +645,7 @@ public class Decimator {
 							int var10;
 							Widget var14;
 							if (var2 == 28) {
-								var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2842, Client.packetWriter.isaacCipher); // L: 9282
+								var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.WIDGET_TYPE_1, Client.packetWriter.isaacCipher); // L: 9282
 								var8.packetBuffer.writeInt(var1); // L: 9283
 								Client.packetWriter.addNode(var8); // L: 9284
 								var14 = ChatChannel.getWidget(var1); // L: 9285
@@ -655,7 +655,7 @@ public class Decimator {
 									class281.changeGameOptions(var10); // L: 9289
 								}
 							} else if (var2 == 29) {
-								var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2842, Client.packetWriter.isaacCipher); // L: 9496
+								var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.WIDGET_TYPE_1, Client.packetWriter.isaacCipher); // L: 9496
 								var8.packetBuffer.writeInt(var1); // L: 9497
 								Client.packetWriter.addNode(var8); // L: 9498
 								var14 = ChatChannel.getWidget(var1); // L: 9499
@@ -673,7 +673,7 @@ public class Decimator {
 									SecureRandomCallable.invalidateWidget(Client.meslayerContinueWidget); // L: 9407
 								}
 							} else if (var2 == 31) {
-								var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2804, Client.packetWriter.isaacCipher); // L: 9294
+								var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPHELDU, Client.packetWriter.isaacCipher); // L: 9294
 								var8.packetBuffer.writeByteC(var0); // L: 9295
 								var8.packetBuffer.writeShort(class139.selectedItemId); // L: 9296
 								var8.packetBuffer.writeByteC(var3); // L: 9297
@@ -685,10 +685,10 @@ public class Decimator {
 								WorldMapDecoration.field2722 = ChatChannel.getWidget(var1); // L: 9303
 								Client.field599 = var0; // L: 9304
 							} else if (var2 == 32) {
-								var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2886, Client.packetWriter.isaacCipher); // L: 9571
+								var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPHELDT, Client.packetWriter.isaacCipher); // L: 9571
 								var8.packetBuffer.writeShort(var0); // L: 9572
 								var8.packetBuffer.writeIntME(var1); // L: 9573
-								var8.packetBuffer.writeByteA(Client.selectedSpellChildIndex); // L: 9574
+								var8.packetBuffer.writeShortLE(Client.selectedSpellChildIndex); // L: 9574
 								var8.packetBuffer.writeShort(var3); // L: 9575
 								var8.packetBuffer.writeInt(class20.selectedSpellWidget); // L: 9576
 								Client.packetWriter.addNode(var8); // L: 9577
@@ -696,7 +696,7 @@ public class Decimator {
 								WorldMapDecoration.field2722 = ChatChannel.getWidget(var1); // L: 9579
 								Client.field599 = var0; // L: 9580
 							} else if (var2 == 33) {
-								var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2874, Client.packetWriter.isaacCipher); // L: 9308
+								var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPHELD1, Client.packetWriter.isaacCipher); // L: 9308
 								var8.packetBuffer.writeInt(var1); // L: 9309
 								var8.packetBuffer.writeByteC(var0); // L: 9310
 								var8.packetBuffer.writeByteC(var3); // L: 9311
@@ -705,7 +705,7 @@ public class Decimator {
 								WorldMapDecoration.field2722 = ChatChannel.getWidget(var1); // L: 9314
 								Client.field599 = var0; // L: 9315
 							} else if (var2 == 34) {
-								var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2833, Client.packetWriter.isaacCipher); // L: 9427
+								var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPHELD2, Client.packetWriter.isaacCipher); // L: 9427
 								var8.packetBuffer.method7398(var3); // L: 9428
 								var8.packetBuffer.method7398(var0); // L: 9429
 								var8.packetBuffer.method7407(var1); // L: 9430
@@ -714,7 +714,7 @@ public class Decimator {
 								WorldMapDecoration.field2722 = ChatChannel.getWidget(var1); // L: 9433
 								Client.field599 = var0; // L: 9434
 							} else if (var2 == 35) {
-								var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2817, Client.packetWriter.isaacCipher); // L: 9485
+								var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPHELD3, Client.packetWriter.isaacCipher); // L: 9485
 								var8.packetBuffer.writeByteC(var0); // L: 9486
 								var8.packetBuffer.writeByteC(var3); // L: 9487
 								var8.packetBuffer.writeInt(var1); // L: 9488
@@ -723,7 +723,7 @@ public class Decimator {
 								WorldMapDecoration.field2722 = ChatChannel.getWidget(var1); // L: 9491
 								Client.field599 = var0; // L: 9492
 							} else if (var2 == 36) {
-								var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2847, Client.packetWriter.isaacCipher); // L: 9164
+								var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPHELD4, Client.packetWriter.isaacCipher); // L: 9164
 								var8.packetBuffer.method7527(var1); // L: 9165
 								var8.packetBuffer.writeByteC(var0); // L: 9166
 								var8.packetBuffer.method7398(var3); // L: 9167
@@ -732,9 +732,9 @@ public class Decimator {
 								WorldMapDecoration.field2722 = ChatChannel.getWidget(var1); // L: 9170
 								Client.field599 = var0; // L: 9171
 							} else if (var2 == 37) {
-								var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2802, Client.packetWriter.isaacCipher); // L: 9345
+								var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPHELD5, Client.packetWriter.isaacCipher); // L: 9345
 								var8.packetBuffer.writeIntME(var1); // L: 9346
-								var8.packetBuffer.writeByteA(var0); // L: 9347
+								var8.packetBuffer.writeShortLE(var0); // L: 9347
 								var8.packetBuffer.writeShort(var3); // L: 9348
 								Client.packetWriter.addNode(var8); // L: 9349
 								Client.field582 = 0; // L: 9350
@@ -758,25 +758,25 @@ public class Decimator {
 								}
 
 								if (var2 == 39) {
-									var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2844, Client.packetWriter.isaacCipher); // L: 9526
+									var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.IF1_BUTTON1, Client.packetWriter.isaacCipher); // L: 9526
 									var8.packetBuffer.writeIntME(var1); // L: 9527
-									var8.packetBuffer.writeByteA(var0); // L: 9528
+									var8.packetBuffer.writeShortLE(var0); // L: 9528
 									var8.packetBuffer.writeShort(var3); // L: 9529
 									Client.packetWriter.addNode(var8); // L: 9530
 									Client.field582 = 0; // L: 9531
 									WorldMapDecoration.field2722 = ChatChannel.getWidget(var1); // L: 9532
 									Client.field599 = var0; // L: 9533
 								} else if (var2 == 40) {
-									var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2871, Client.packetWriter.isaacCipher); // L: 9732
+									var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.IF1_BUTTON2, Client.packetWriter.isaacCipher); // L: 9732
 									var8.packetBuffer.writeInt(var1); // L: 9733
-									var8.packetBuffer.writeByteA(var3); // L: 9734
-									var8.packetBuffer.writeByteA(var0); // L: 9735
+									var8.packetBuffer.writeShortLE(var3); // L: 9734
+									var8.packetBuffer.writeShortLE(var0); // L: 9735
 									Client.packetWriter.addNode(var8); // L: 9736
 									Client.field582 = 0; // L: 9737
 									WorldMapDecoration.field2722 = ChatChannel.getWidget(var1); // L: 9738
 									Client.field599 = var0; // L: 9739
 								} else if (var2 == 41) {
-									var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2810, Client.packetWriter.isaacCipher); // L: 9758
+									var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.IF1_BUTTON3, Client.packetWriter.isaacCipher); // L: 9758
 									var8.packetBuffer.method7398(var3); // L: 9759
 									var8.packetBuffer.writeInt(var1); // L: 9760
 									var8.packetBuffer.method7398(var0); // L: 9761
@@ -785,8 +785,8 @@ public class Decimator {
 									WorldMapDecoration.field2722 = ChatChannel.getWidget(var1); // L: 9764
 									Client.field599 = var0; // L: 9765
 								} else if (var2 == 42) {
-									var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2803, Client.packetWriter.isaacCipher); // L: 9137
-									var8.packetBuffer.writeByteA(var0); // L: 9138
+									var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.IF1_BUTTON4, Client.packetWriter.isaacCipher); // L: 9137
+									var8.packetBuffer.writeShortLE(var0); // L: 9138
 									var8.packetBuffer.writeIntME(var1); // L: 9139
 									var8.packetBuffer.method7398(var3); // L: 9140
 									Client.packetWriter.addNode(var8); // L: 9141
@@ -794,7 +794,7 @@ public class Decimator {
 									WorldMapDecoration.field2722 = ChatChannel.getWidget(var1); // L: 9143
 									Client.field599 = var0; // L: 9144
 								} else if (var2 == 43) {
-									var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2843, Client.packetWriter.isaacCipher); // L: 9108
+									var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.IF1_BUTTON5, Client.packetWriter.isaacCipher); // L: 9108
 									var8.packetBuffer.writeInt(var1); // L: 9109
 									var8.packetBuffer.writeShort(var0); // L: 9110
 									var8.packetBuffer.writeShort(var3); // L: 9111
@@ -811,7 +811,7 @@ public class Decimator {
 										Client.mouseCrossState = 0; // L: 9077
 										Client.destinationX = var0; // L: 9078
 										Client.destinationY = var1; // L: 9079
-										var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2887, Client.packetWriter.isaacCipher); // L: 9081
+										var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPPLAYER1, Client.packetWriter.isaacCipher); // L: 9081
 										var9.packetBuffer.method7343(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9082
 										var9.packetBuffer.method7398(var3); // L: 9083
 										Client.packetWriter.addNode(var9); // L: 9084
@@ -825,9 +825,9 @@ public class Decimator {
 										Client.mouseCrossState = 0; // L: 9378
 										Client.destinationX = var0; // L: 9379
 										Client.destinationY = var1; // L: 9380
-										var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2813, Client.packetWriter.isaacCipher); // L: 9382
+										var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPPLAYER2, Client.packetWriter.isaacCipher); // L: 9382
 										var9.packetBuffer.method7343(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9383
-										var9.packetBuffer.writeByteA(var3); // L: 9384
+										var9.packetBuffer.writeShortLE(var3); // L: 9384
 										Client.packetWriter.addNode(var9); // L: 9385
 									}
 								} else if (var2 == 46) {
@@ -839,7 +839,7 @@ public class Decimator {
 										Client.mouseCrossState = 0; // L: 9588
 										Client.destinationX = var0; // L: 9589
 										Client.destinationY = var1; // L: 9590
-										var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2827, Client.packetWriter.isaacCipher); // L: 9592
+										var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPPLAYER3, Client.packetWriter.isaacCipher); // L: 9592
 										var9.packetBuffer.method7398(var3); // L: 9593
 										var9.packetBuffer.method7343(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9594
 										Client.packetWriter.addNode(var9); // L: 9595
@@ -853,7 +853,7 @@ public class Decimator {
 										Client.mouseCrossState = 0; // L: 9473
 										Client.destinationX = var0; // L: 9474
 										Client.destinationY = var1; // L: 9475
-										var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2807, Client.packetWriter.isaacCipher); // L: 9477
+										var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPPLAYER4, Client.packetWriter.isaacCipher); // L: 9477
 										var9.packetBuffer.writeByteC(var3); // L: 9478
 										var9.packetBuffer.writeByte(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9479
 										Client.packetWriter.addNode(var9); // L: 9480
@@ -867,7 +867,7 @@ public class Decimator {
 										Client.mouseCrossState = 0; // L: 9152
 										Client.destinationX = var0; // L: 9153
 										Client.destinationY = var1; // L: 9154
-										var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2892, Client.packetWriter.isaacCipher); // L: 9156
+										var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPPLAYER5, Client.packetWriter.isaacCipher); // L: 9156
 										var9.packetBuffer.writeShort(var3); // L: 9157
 										var9.packetBuffer.method7362(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9158
 										Client.packetWriter.addNode(var9); // L: 9159
@@ -881,7 +881,7 @@ public class Decimator {
 										Client.mouseCrossState = 0; // L: 9061
 										Client.destinationX = var0; // L: 9062
 										Client.destinationY = var1; // L: 9063
-										var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2863, Client.packetWriter.isaacCipher); // L: 9065
+										var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPPLAYER6, Client.packetWriter.isaacCipher); // L: 9065
 										var9.packetBuffer.method7390(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9066
 										var9.packetBuffer.method7398(var3); // L: 9067
 										Client.packetWriter.addNode(var9); // L: 9068
@@ -895,9 +895,9 @@ public class Decimator {
 										Client.mouseCrossState = 0; // L: 9228
 										Client.destinationX = var0; // L: 9229
 										Client.destinationY = var1; // L: 9230
-										var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2906, Client.packetWriter.isaacCipher); // L: 9232
+										var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPPLAYER7, Client.packetWriter.isaacCipher); // L: 9232
 										var9.packetBuffer.method7362(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9233
-										var9.packetBuffer.writeByteA(var3); // L: 9234
+										var9.packetBuffer.writeShortLE(var3); // L: 9234
 										Client.packetWriter.addNode(var9); // L: 9235
 									}
 								} else if (var2 == 51) {
@@ -909,7 +909,7 @@ public class Decimator {
 										Client.mouseCrossState = 0; // L: 9027
 										Client.destinationX = var0; // L: 9028
 										Client.destinationY = var1; // L: 9029
-										var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2885, Client.packetWriter.isaacCipher); // L: 9031
+										var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPPLAYER8, Client.packetWriter.isaacCipher); // L: 9031
 										var9.packetBuffer.writeByte(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9032
 										var9.packetBuffer.method7398(var3); // L: 9033
 										Client.packetWriter.addNode(var9); // L: 9034
@@ -918,10 +918,10 @@ public class Decimator {
 									if (var2 == 58) {
 										var16 = class126.getWidgetChild(var1, var0); // L: 9650
 										if (var16 != null) { // L: 9651
-											var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2809, Client.packetWriter.isaacCipher); // L: 9653
+											var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.IF_BUTTONT, Client.packetWriter.isaacCipher); // L: 9653
 											var9.packetBuffer.writeShort(var16.itemId); // L: 9654
 											var9.packetBuffer.method7527(var1); // L: 9655
-											var9.packetBuffer.writeByteA(Client.selectedSpellChildIndex); // L: 9656
+											var9.packetBuffer.writeShortLE(Client.selectedSpellChildIndex); // L: 9656
 											var9.packetBuffer.method7398(var0); // L: 9657
 											var9.packetBuffer.writeIntME(class20.selectedSpellWidget); // L: 9658
 											var9.packetBuffer.writeShort(Client.field633); // L: 9659
@@ -934,10 +934,10 @@ public class Decimator {
 										Client.mouseCrossState = 0; // L: 9177
 										Client.destinationX = var0; // L: 9178
 										Client.destinationY = var1; // L: 9179
-										var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2826, Client.packetWriter.isaacCipher); // L: 9181
+										var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPLOC5, Client.packetWriter.isaacCipher); // L: 9181
 										var8.packetBuffer.method7398(TileItem.baseY + var1); // L: 9182
 										var8.packetBuffer.method7390(KeyHandler.KeyHandler_pressedKeys[82] ? 1 : 0); // L: 9183
-										var8.packetBuffer.writeByteA(var0 + class131.baseX); // L: 9184
+										var8.packetBuffer.writeShortLE(var0 + class131.baseX); // L: 9184
 										var8.packetBuffer.writeByteC(var3); // L: 9185
 										Client.packetWriter.addNode(var8); // L: 9186
 									} else if (var2 == 1002) {
@@ -945,7 +945,7 @@ public class Decimator {
 										Client.mouseCrossY = var7; // L: 9256
 										Client.mouseCrossColor = 2; // L: 9257
 										Client.mouseCrossState = 0; // L: 9258
-										var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2815, Client.packetWriter.isaacCipher); // L: 9260
+										var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPLOC6, Client.packetWriter.isaacCipher); // L: 9260
 										var8.packetBuffer.writeByteC(var3); // L: 9261
 										Client.packetWriter.addNode(var8); // L: 9262
 									} else if (var2 == 1003) {
@@ -961,7 +961,7 @@ public class Decimator {
 											}
 
 											if (var17 != null) { // L: 9792
-												var12 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2829, Client.packetWriter.isaacCipher); // L: 9794
+												var12 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPNPC6, Client.packetWriter.isaacCipher); // L: 9794
 												var12.packetBuffer.method7398(var17.id); // L: 9795
 												Client.packetWriter.addNode(var12); // L: 9796
 											}
@@ -971,7 +971,7 @@ public class Decimator {
 										Client.mouseCrossY = var7; // L: 9441
 										Client.mouseCrossColor = 2; // L: 9442
 										Client.mouseCrossState = 0; // L: 9443
-										var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2902, Client.packetWriter.isaacCipher); // L: 9445
+										var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPOBJ6, Client.packetWriter.isaacCipher); // L: 9445
 										var8.packetBuffer.method7398(var3); // L: 9446
 										Client.packetWriter.addNode(var8); // L: 9447
 									} else if (var2 == 1005) {
@@ -979,7 +979,7 @@ public class Decimator {
 										if (var16 != null && var16.itemQuantities[var0] >= 100000) { // L: 9680
 											class194.addGameMessage(27, "", var16.itemQuantities[var0] + " x " + UserComparator6.ItemDefinition_get(var3).name);
 										} else {
-											var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2902, Client.packetWriter.isaacCipher); // L: 9683
+											var9 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPOBJ6, Client.packetWriter.isaacCipher); // L: 9683
 											var9.packetBuffer.method7398(var3); // L: 9684
 											Client.packetWriter.addNode(var9); // L: 9685
 										}

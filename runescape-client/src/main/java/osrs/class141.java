@@ -127,7 +127,7 @@ public class class141 extends class126 {
 	@Export("Clan_joinChat")
 	static final void Clan_joinChat(String var0) {
 		if (!var0.equals("")) { // L: 12494
-			PacketBufferNode var1 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2857, Client.packetWriter.isaacCipher); // L: 12496
+			PacketBufferNode var1 = HitSplatDefinition.getPacketBufferNode(ClientPacket.CLAN_JOINCHAT_LEAVECHAT, Client.packetWriter.isaacCipher); // L: 12496
 			var1.packetBuffer.writeByte(class116.stringCp1252NullTerminatedByteSize(var0)); // L: 12497
 			var1.packetBuffer.writeStringCp1252NullTerminated(var0); // L: 12498
 			Client.packetWriter.addNode(var1); // L: 12499

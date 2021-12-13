@@ -43,7 +43,7 @@ public class SpellPackets {
 	public static void queueSpellOnNpcPacket(int spellWidgetID,int spellWidgetIndex,int ctrlDown,int npcIndex,int idk){
 		Client client = Game.getClient();
 		ClientPacket clientPacket = Game.getClientPacket();
-		PacketBufferNode var9 = Game.getClient().preparePacket(clientPacket.spellOnNpc(), client.getPacketWriter().getIsaacCipher());
+		PacketBufferNode var9 = Game.getClient().preparePacket(clientPacket.OPNPCT(), client.getPacketWriter().getIsaacCipher());
 		var9.getPacketBuffer().writeIntME(spellWidgetID);
 		var9.getPacketBuffer().writeByteA(spellWidgetIndex);
 		var9.getPacketBuffer().writeByteB(ctrlDown);

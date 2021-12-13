@@ -56,7 +56,7 @@ public class class167 {
 			}
 
 			Client.tradeChatMode = Interpreter.Interpreter_intStack[IsaacCipher.Interpreter_intStackSize + 2]; // L: 3323
-			PacketBufferNode var13 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2855, Client.packetWriter.isaacCipher); // L: 3325
+			PacketBufferNode var13 = HitSplatDefinition.getPacketBufferNode(ClientPacket.CHAT_SETMODE, Client.packetWriter.isaacCipher); // L: 3325
 			var13.packetBuffer.writeByte(Client.publicChatMode); // L: 3326
 			var13.packetBuffer.writeByte(Projectile.privateChatMode.field4597); // L: 3327
 			var13.packetBuffer.writeByte(Client.tradeChatMode); // L: 3328
@@ -72,7 +72,7 @@ public class class167 {
 				IsaacCipher.Interpreter_intStackSize -= 2; // L: 3334
 				var7 = Interpreter.Interpreter_intStack[IsaacCipher.Interpreter_intStackSize]; // L: 3335
 				var9 = Interpreter.Interpreter_intStack[IsaacCipher.Interpreter_intStackSize + 1]; // L: 3336
-				var6 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2851, Client.packetWriter.isaacCipher); // L: 3338
+				var6 = HitSplatDefinition.getPacketBufferNode(ClientPacket.PLAYER_REPORT, Client.packetWriter.isaacCipher); // L: 3338
 				var6.packetBuffer.writeByte(class116.stringCp1252NullTerminatedByteSize(var8) + 2); // L: 3339
 				var6.packetBuffer.writeStringCp1252NullTerminated(var8); // L: 3340
 				var6.packetBuffer.writeByte(var7 - 1); // L: 3341
@@ -146,7 +146,7 @@ public class class167 {
 							class13.Interpreter_stringStackSize -= 2; // L: 3403
 							var8 = Interpreter.Interpreter_stringStack[class13.Interpreter_stringStackSize]; // L: 3404
 							String var11 = Interpreter.Interpreter_stringStack[class13.Interpreter_stringStackSize + 1]; // L: 3405
-							var12 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2849, Client.packetWriter.isaacCipher); // L: 3407
+							var12 = HitSplatDefinition.getPacketBufferNode(ClientPacket.MESSAGE_PRIVATE, Client.packetWriter.isaacCipher); // L: 3407
 							var12.packetBuffer.writeShort(0); // L: 3408
 							int var10 = var12.packetBuffer.offset; // L: 3409
 							var12.packetBuffer.writeStringCp1252NullTerminated(var8); // L: 3410

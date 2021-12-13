@@ -305,7 +305,7 @@ public final class class4 {
 		garbageValue = "-5742457"
 	)
 	static final void method28() {
-		PacketBufferNode var0 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2898, Client.packetWriter.isaacCipher); // L: 12251
+		PacketBufferNode var0 = HitSplatDefinition.getPacketBufferNode(ClientPacket.CLOSE_MODAL, Client.packetWriter.isaacCipher); // L: 12251
 		Client.packetWriter.addNode(var0); // L: 12252
 		Interpreter.field816 = true; // L: 12253
 

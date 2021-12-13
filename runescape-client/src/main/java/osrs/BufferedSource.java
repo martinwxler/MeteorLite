@@ -1,14 +1,11 @@
 package osrs;
 
+import net.runelite.mapping.*;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
-import net.runelite.mapping.Export;
-import net.runelite.mapping.Implements;
-import net.runelite.mapping.ObfuscatedGetter;
-import net.runelite.mapping.ObfuscatedName;
-import net.runelite.mapping.ObfuscatedSignature;
 
 @ObfuscatedName("mr")
 @Implements("BufferedSource")
@@ -259,7 +256,7 @@ public class BufferedSource implements Runnable {
 		garbageValue = "821161285"
 	)
 	public static PacketBufferNode method6527(int var0, String var1, Language var2, int var3) {
-		PacketBufferNode var4 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2897, Client.packetWriter.isaacCipher); // L: 17
+		PacketBufferNode var4 = HitSplatDefinition.getPacketBufferNode(ClientPacket.MESSAGE_PUBLIC, Client.packetWriter.isaacCipher); // L: 17
 		var4.packetBuffer.writeByte(0); // L: 18
 		int var5 = var4.packetBuffer.offset; // L: 19
 		var4.packetBuffer.writeByte(var0); // L: 20

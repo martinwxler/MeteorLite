@@ -1,10 +1,11 @@
 package osrs;
 
-import java.security.SecureRandom;
-import java.util.concurrent.Future;
 import net.runelite.mapping.Export;
 import net.runelite.mapping.ObfuscatedName;
 import net.runelite.mapping.ObfuscatedSignature;
+
+import java.security.SecureRandom;
+import java.util.concurrent.Future;
 
 @ObfuscatedName("f")
 public class class19 {
@@ -164,7 +165,7 @@ public class class19 {
 			}
 
 			if (var1 == 326) { // L: 12313
-				PacketBufferNode var4 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2904, Client.packetWriter.isaacCipher); // L: 12315
+				PacketBufferNode var4 = HitSplatDefinition.getPacketBufferNode(ClientPacket.UPDATE_APPEARANCE, Client.packetWriter.isaacCipher); // L: 12315
 				Client.playerAppearance.write(var4.packetBuffer); // L: 12316
 				Client.packetWriter.addNode(var4); // L: 12317
 				return true; // L: 12318

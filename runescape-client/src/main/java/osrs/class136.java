@@ -1,10 +1,11 @@
 package osrs;
 
-import java.awt.Component;
 import net.runelite.mapping.Export;
 import net.runelite.mapping.ObfuscatedGetter;
 import net.runelite.mapping.ObfuscatedName;
 import net.runelite.mapping.ObfuscatedSignature;
+
+import java.awt.*;
 
 @ObfuscatedName("ep")
 public class class136 extends class126 {
@@ -113,24 +114,24 @@ public class class136 extends class126 {
 			if (var7 != null && var7 != class340.localPlayer && var7.username != null && var7.username.equals(var5)) { // L: 9828
 				PacketBufferNode var8;
 				if (var0 == 1) { // L: 9829
-					var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2887, Client.packetWriter.isaacCipher); // L: 9831
+					var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPPLAYER1, Client.packetWriter.isaacCipher); // L: 9831
 					var8.packetBuffer.method7343(0); // L: 9832
 					var8.packetBuffer.method7398(var3[var6]); // L: 9833
 					Client.packetWriter.addNode(var8); // L: 9834
 				} else if (var0 == 4) { // L: 9836
-					var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2807, Client.packetWriter.isaacCipher); // L: 9838
+					var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPPLAYER4, Client.packetWriter.isaacCipher); // L: 9838
 					var8.packetBuffer.writeByteC(var3[var6]); // L: 9839
 					var8.packetBuffer.writeByte(0); // L: 9840
 					Client.packetWriter.addNode(var8); // L: 9841
 				} else if (var0 == 6) { // L: 9843
-					var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2863, Client.packetWriter.isaacCipher); // L: 9845
+					var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPPLAYER6, Client.packetWriter.isaacCipher); // L: 9845
 					var8.packetBuffer.method7390(0); // L: 9846
 					var8.packetBuffer.method7398(var3[var6]); // L: 9847
 					Client.packetWriter.addNode(var8); // L: 9848
 				} else if (var0 == 7) { // L: 9850
-					var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2906, Client.packetWriter.isaacCipher); // L: 9852
+					var8 = HitSplatDefinition.getPacketBufferNode(ClientPacket.OPPLAYER7, Client.packetWriter.isaacCipher); // L: 9852
 					var8.packetBuffer.method7362(0); // L: 9853
-					var8.packetBuffer.writeByteA(var3[var6]); // L: 9854
+					var8.packetBuffer.writeShortLE(var3[var6]); // L: 9854
 					Client.packetWriter.addNode(var8); // L: 9855
 				}
 

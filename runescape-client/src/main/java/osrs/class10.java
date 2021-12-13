@@ -1,22 +1,19 @@
 package osrs;
 
+import net.runelite.mapping.Export;
+import net.runelite.mapping.ObfuscatedGetter;
+import net.runelite.mapping.ObfuscatedName;
+import net.runelite.mapping.ObfuscatedSignature;
+
+import javax.net.ssl.HttpsURLConnection;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.ProtocolException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import javax.net.ssl.HttpsURLConnection;
-import net.runelite.mapping.Export;
-import net.runelite.mapping.ObfuscatedGetter;
-import net.runelite.mapping.ObfuscatedName;
-import net.runelite.mapping.ObfuscatedSignature;
 
 @ObfuscatedName("o")
 public class class10 {
@@ -264,7 +261,7 @@ public class class10 {
 		garbageValue = "1542275516"
 	)
 	static final void method123(String var0) {
-		PacketBufferNode var1 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2895, Client.packetWriter.isaacCipher); // L: 123
+		PacketBufferNode var1 = HitSplatDefinition.getPacketBufferNode(ClientPacket.FRIENDLIST_ADD, Client.packetWriter.isaacCipher); // L: 123
 		var1.packetBuffer.writeByte(class116.stringCp1252NullTerminatedByteSize(var0)); // L: 124
 		var1.packetBuffer.writeStringCp1252NullTerminated(var0); // L: 125
 		Client.packetWriter.addNode(var1); // L: 126

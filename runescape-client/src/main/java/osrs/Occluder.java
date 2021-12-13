@@ -135,7 +135,7 @@ public final class Occluder {
 		}
 
 		if (Client.gameState >= 25) { // L: 4982
-			PacketBufferNode var1 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2824, Client.packetWriter.isaacCipher); // L: 4984
+			PacketBufferNode var1 = HitSplatDefinition.getPacketBufferNode(ClientPacket.WINDOW_STATUS, Client.packetWriter.isaacCipher); // L: 4984
 			var1.packetBuffer.writeByte(class143.getWindowedMode()); // L: 4985
 			var1.packetBuffer.writeShort(class186.canvasWidth); // L: 4986
 			var1.packetBuffer.writeShort(BoundaryObject.canvasHeight); // L: 4987
