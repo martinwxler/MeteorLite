@@ -136,7 +136,6 @@ shadowJar {
     minimize {
         it.exclude(it.dependency {'net.runelite.jogl:.*:.*'} as Spec<? super ResolvedDependency>)
     }
-    minimize()
     applicationDefaultJvmArgs = [
             "-noverify",
             "-Xmx512m",
