@@ -16,9 +16,9 @@ public interface RSClientPacket extends ClientPacket {
     @Override
     RSClientPacket OPHELDT();
 
-    @Import("spellOnNpc")
+    @Import("OPNPCT")
     @Override
-    RSClientPacket spellOnNpc();
+    RSClientPacket OPNPCT();
 
     @Import("EVENT_MOUSE_CLICK")
     @Override
@@ -112,25 +112,25 @@ public interface RSClientPacket extends ClientPacket {
     @Override
     RSClientPacket OPLOC5();
 
-    @Import("grounditem1")
+    @Import("OPOBJ1")
     @Override
-    RSClientPacket grounditem1();
+    RSClientPacket OPOBJ1();
 
-    @Import("grounditem2")
+    @Import("OPOBJ2")
     @Override
-    RSClientPacket grounditem2();
+    RSClientPacket OPOBJ2();
 
-    @Import("grounditem3")
+    @Import("OPOBJ3")
     @Override
-    RSClientPacket grounditem3();
+    RSClientPacket OPOBJ3();
 
-    @Import("grounditem4")
+    @Import("OPOBJ4")
     @Override
-    RSClientPacket grounditem4();
+    RSClientPacket OPOBJ4();
 
-    @Import("grounditem5")
+    @Import("OPOBJ5")
     @Override
-    RSClientPacket grounditem5();
+    RSClientPacket OPOBJ5();
 
     @Import("MOVE_GAMECLICK")
     @Override

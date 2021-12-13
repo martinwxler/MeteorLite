@@ -1,11 +1,8 @@
 package osrs;
 
+import net.runelite.mapping.*;
+
 import java.math.BigInteger;
-import net.runelite.mapping.Export;
-import net.runelite.mapping.Implements;
-import net.runelite.mapping.ObfuscatedGetter;
-import net.runelite.mapping.ObfuscatedName;
-import net.runelite.mapping.ObfuscatedSignature;
 
 @ObfuscatedName("pi")
 @Implements("Buffer")
@@ -243,7 +240,7 @@ public class Buffer extends Node {
 		descriptor = "(Lpi;B)V",
 		garbageValue = "55"
 	)
-	public void method7356(Buffer var1) {
+	public void writeBuffer(Buffer var1) {
 		this.writeBytes(var1.array, 0, var1.offset); // L: 159
 	} // L: 160
 
@@ -866,7 +863,7 @@ public class Buffer extends Node {
 		descriptor = "(II)V",
 		garbageValue = "719222907"
 	)
-	public void writeByteA(int var1) {
+	public void writeShortLE(int var1) {
 		this.array[++this.offset - 1] = (byte)(var1 + 128); // L: 500
 		this.array[++this.offset - 1] = (byte)(var1 >> 8); // L: 501
 	} // L: 502

@@ -1,11 +1,8 @@
 package osrs;
 
+import net.runelite.mapping.*;
+
 import java.util.LinkedHashMap;
-import net.runelite.mapping.Export;
-import net.runelite.mapping.Implements;
-import net.runelite.mapping.ObfuscatedGetter;
-import net.runelite.mapping.ObfuscatedName;
-import net.runelite.mapping.ObfuscatedSignature;
 
 @ObfuscatedName("bl")
 @Implements("FriendSystem")
@@ -245,7 +242,7 @@ public class FriendSystem {
 			if (var2.hasCleanName()) { // L: 199
 				if (this.friendsList.removeByUsername(var2)) { // L: 200
 					class409.method7267(); // L: 201
-					PacketBufferNode var3 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2854, Client.packetWriter.isaacCipher); // L: 203
+					PacketBufferNode var3 = HitSplatDefinition.getPacketBufferNode(ClientPacket.FRIENDLIST_DEL, Client.packetWriter.isaacCipher); // L: 203
 					var3.packetBuffer.writeByte(class116.stringCp1252NullTerminatedByteSize(var1)); // L: 204
 					var3.packetBuffer.writeStringCp1252NullTerminated(var1); // L: 205
 					Client.packetWriter.addNode(var3); // L: 206
@@ -268,7 +265,7 @@ public class FriendSystem {
 			if (var2.hasCleanName()) { // L: 214
 				if (this.ignoreList.removeByUsername(var2)) { // L: 215
 					class409.method7267(); // L: 216
-					PacketBufferNode var3 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2805, Client.packetWriter.isaacCipher); // L: 218
+					PacketBufferNode var3 = HitSplatDefinition.getPacketBufferNode(ClientPacket.IGNORELIST_DEL, Client.packetWriter.isaacCipher); // L: 218
 					var3.packetBuffer.writeByte(class116.stringCp1252NullTerminatedByteSize(var1)); // L: 219
 					var3.packetBuffer.writeStringCp1252NullTerminated(var1); // L: 220
 					Client.packetWriter.addNode(var3); // L: 221

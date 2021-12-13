@@ -45,7 +45,7 @@ public class BuddyRankComparator extends AbstractUserComparator {
 		garbageValue = "1683360444"
 	)
 	public static void method2547(int var0, int var1, int var2, boolean var3) {
-		PacketBufferNode var4 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2819, Client.packetWriter.isaacCipher); // L: 12675
+		PacketBufferNode var4 = HitSplatDefinition.getPacketBufferNode(ClientPacket.CLICKWORLDMAP_TELEPORT, Client.packetWriter.isaacCipher); // L: 12675
 		var4.packetBuffer.method7527(var3 ? Client.field607 * 1420477321 * -1761828167 : 0); // L: 12676
 		var4.packetBuffer.writeByteC(var0); // L: 12677
 		var4.packetBuffer.method7343(var2); // L: 12678

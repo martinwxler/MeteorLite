@@ -12,7 +12,7 @@ public class GroundItemPackets {
     public static void queueGroundItemActionPacket(int itemID,int worldPointX,int worldPointY,boolean ctrlDown){
         net.runelite.api.Client client = Game.getClient();
         net.runelite.api.packets.ClientPacket clientPacket = Game.getClientPacket();
-        PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.grounditem1(), client.getPacketWriter().getIsaacCipher());
+        PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.OPOBJ1(), client.getPacketWriter().getIsaacCipher());
         var8.getPacketBuffer().writeByteA(worldPointX);
         var8.getPacketBuffer().writeShort(itemID);
         var8.getPacketBuffer().writeShort(worldPointY);
@@ -22,7 +22,7 @@ public class GroundItemPackets {
     public static void queueGroundItemAction2Packet(int itemID,int worldPointX,int worldPointY,boolean ctrlDown){
         Client client = Game.getClient();
         ClientPacket clientPacket = Game.getClientPacket();
-        PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.grounditem2(), client.getPacketWriter().getIsaacCipher());
+        PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.OPOBJ2(), client.getPacketWriter().getIsaacCipher());
         var8.getPacketBuffer().writeByteC(worldPointY);
         var8.getPacketBuffer().write2(ctrlDown ? 1 : 0);
         var8.getPacketBuffer().writeByteB0(itemID);
@@ -32,7 +32,7 @@ public class GroundItemPackets {
     public static void queueGroundItemAction3Packet(int itemID,int worldPointX,int worldPointY,boolean ctrlDown){
         Client client = Game.getClient();
         ClientPacket clientPacket = Game.getClientPacket();
-        PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.grounditem3(), client.getPacketWriter().getIsaacCipher());
+        PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.OPOBJ3(), client.getPacketWriter().getIsaacCipher());
         var8.getPacketBuffer().writeByteA(worldPointY);
         var8.getPacketBuffer().write2(ctrlDown ? 1 : 0);
         var8.getPacketBuffer().writeByteA(worldPointX);
@@ -42,7 +42,7 @@ public class GroundItemPackets {
     public static void queueGroundItemAction4Packet(int itemID,int worldPointX,int worldPointY,boolean ctrlDown){
         Client client = Game.getClient();
         ClientPacket clientPacket = Game.getClientPacket();
-        PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.grounditem4(), client.getPacketWriter().getIsaacCipher());
+        PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.OPOBJ4(), client.getPacketWriter().getIsaacCipher());
         var8.getPacketBuffer().writeByteA(worldPointY);
         var8.getPacketBuffer().writeShort(itemID);
         var8.getPacketBuffer().writeByteC(worldPointX);
@@ -52,7 +52,7 @@ public class GroundItemPackets {
     public static void queueGroundItemAction5Packet(int itemID,int worldPointX,int worldPointY,boolean ctrlDown){
         Client client = Game.getClient();
         ClientPacket clientPacket = Game.getClientPacket();
-        PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.grounditem5(), client.getPacketWriter().getIsaacCipher());
+        PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.OPOBJ5(), client.getPacketWriter().getIsaacCipher());
         var8.getPacketBuffer().write1(ctrlDown ? 1 : 0);
         var8.getPacketBuffer().writeByteA(worldPointX);
         var8.getPacketBuffer().writeByteC(itemID);

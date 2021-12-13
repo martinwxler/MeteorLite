@@ -94,7 +94,7 @@ public class ArchiveLoader {
 					var16 = ClanChannelMember.method2778(var7);
 				}
 
-				PacketBufferNode var14 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2862, Client.packetWriter.isaacCipher); // L: 1430
+				PacketBufferNode var14 = HitSplatDefinition.getPacketBufferNode(ClientPacket.RESUME_P_COUNTDIALOG, Client.packetWriter.isaacCipher); // L: 1430
 				var14.packetBuffer.writeInt(var16); // L: 1431
 				Client.packetWriter.addNode(var14); // L: 1432
 				return 1; // L: 1433
@@ -102,14 +102,14 @@ public class ArchiveLoader {
 				PacketBufferNode var12;
 				if (var0 == ScriptOpcodes.RESUME_NAMEDIALOG) {
 					var7 = Interpreter.Interpreter_stringStack[--class13.Interpreter_stringStackSize]; // L: 1436
-					var12 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2845, Client.packetWriter.isaacCipher); // L: 1438
+					var12 = HitSplatDefinition.getPacketBufferNode(ClientPacket.RESUME_P_NAMEDIALOG, Client.packetWriter.isaacCipher); // L: 1438
 					var12.packetBuffer.writeByte(var7.length() + 1); // L: 1439
 					var12.packetBuffer.writeStringCp1252NullTerminated(var7); // L: 1440
 					Client.packetWriter.addNode(var12); // L: 1441
 					return 1; // L: 1442
 				} else if (var0 == ScriptOpcodes.RESUME_STRINGDIALOG) {
 					var7 = Interpreter.Interpreter_stringStack[--class13.Interpreter_stringStackSize]; // L: 1445
-					var12 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2893, Client.packetWriter.isaacCipher); // L: 1447
+					var12 = HitSplatDefinition.getPacketBufferNode(ClientPacket.RESUME_P_STRINGDIALOG, Client.packetWriter.isaacCipher); // L: 1447
 					var12.packetBuffer.writeByte(var7.length() + 1); // L: 1448
 					var12.packetBuffer.writeStringCp1252NullTerminated(var7); // L: 1449
 					Client.packetWriter.addNode(var12); // L: 1450
@@ -154,7 +154,7 @@ public class ArchiveLoader {
 						return 1; // L: 1493
 					} else if (var0 == ScriptOpcodes.RESUME_OBJDIALOG) {
 						var10 = Interpreter.Interpreter_intStack[--IsaacCipher.Interpreter_intStackSize]; // L: 1496
-						var12 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2808, Client.packetWriter.isaacCipher); // L: 1498
+						var12 = HitSplatDefinition.getPacketBufferNode(ClientPacket.RESUME_P_OBJDIALOG, Client.packetWriter.isaacCipher); // L: 1498
 						var12.packetBuffer.writeShort(var10); // L: 1499
 						Client.packetWriter.addNode(var12); // L: 1500
 						return 1; // L: 1501
@@ -168,7 +168,7 @@ public class ArchiveLoader {
 						} else if (var5.length() > 500) { // L: 1509
 							return 1;
 						} else {
-							PacketBufferNode var6 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2841, Client.packetWriter.isaacCipher); // L: 1510
+							PacketBufferNode var6 = HitSplatDefinition.getPacketBufferNode(ClientPacket.BUG_REPORT, Client.packetWriter.isaacCipher); // L: 1510
 							var6.packetBuffer.writeShort(1 + class116.stringCp1252NullTerminatedByteSize(var4) + class116.stringCp1252NullTerminatedByteSize(var5)); // L: 1511
 							var6.packetBuffer.writeStringCp1252NullTerminated(var4); // L: 1512
 							var6.packetBuffer.method7343(var10); // L: 1513

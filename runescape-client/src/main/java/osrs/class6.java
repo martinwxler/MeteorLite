@@ -62,7 +62,7 @@ public enum class6 implements MouseWheel {
 		garbageValue = "-760591386"
 	)
 	static final void method55(String var0) {
-		PacketBufferNode var1 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2905, Client.packetWriter.isaacCipher); // L: 183
+		PacketBufferNode var1 = HitSplatDefinition.getPacketBufferNode(ClientPacket.IGNORELIST_ADD, Client.packetWriter.isaacCipher); // L: 183
 		var1.packetBuffer.writeByte(class116.stringCp1252NullTerminatedByteSize(var0)); // L: 184
 		var1.packetBuffer.writeStringCp1252NullTerminated(var0); // L: 185
 		Client.packetWriter.addNode(var1); // L: 186

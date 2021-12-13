@@ -238,7 +238,7 @@ public class SoundCache {
 				if (var7) { // L: 9922
 					PacketBufferNode var10;
 					if (var0 == 1) { // L: 9925
-						var10 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2891, Client.packetWriter.isaacCipher); // L: 9927
+						var10 = HitSplatDefinition.getPacketBufferNode(ClientPacket.IF_BUTTON1, Client.packetWriter.isaacCipher); // L: 9927
 						var10.packetBuffer.writeInt(var1); // L: 9928
 						var10.packetBuffer.writeShort(var2); // L: 9929
 						var10.packetBuffer.writeShort(var3); // L: 9930
@@ -246,7 +246,7 @@ public class SoundCache {
 					}
 
 					if (var0 == 2) { // L: 9933
-						var10 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2880, Client.packetWriter.isaacCipher); // L: 9935
+						var10 = HitSplatDefinition.getPacketBufferNode(ClientPacket.IF_BUTTON2, Client.packetWriter.isaacCipher); // L: 9935
 						var10.packetBuffer.writeInt(var1); // L: 9936
 						var10.packetBuffer.writeShort(var2); // L: 9937
 						var10.packetBuffer.writeShort(var3); // L: 9938
@@ -254,7 +254,7 @@ public class SoundCache {
 					}
 
 					if (var0 == 3) { // L: 9941
-						var10 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2834, Client.packetWriter.isaacCipher); // L: 9943
+						var10 = HitSplatDefinition.getPacketBufferNode(ClientPacket.IF_BUTTON3, Client.packetWriter.isaacCipher); // L: 9943
 						var10.packetBuffer.writeInt(var1); // L: 9944
 						var10.packetBuffer.writeShort(var2); // L: 9945
 						var10.packetBuffer.writeShort(var3); // L: 9946
@@ -262,7 +262,7 @@ public class SoundCache {
 					}
 
 					if (var0 == 4) { // L: 9949
-						var10 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2821, Client.packetWriter.isaacCipher); // L: 9951
+						var10 = HitSplatDefinition.getPacketBufferNode(ClientPacket.IF_BUTTON4, Client.packetWriter.isaacCipher); // L: 9951
 						var10.packetBuffer.writeInt(var1); // L: 9952
 						var10.packetBuffer.writeShort(var2); // L: 9953
 						var10.packetBuffer.writeShort(var3); // L: 9954
@@ -270,7 +270,7 @@ public class SoundCache {
 					}
 
 					if (var0 == 5) { // L: 9957
-						var10 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2877, Client.packetWriter.isaacCipher); // L: 9959
+						var10 = HitSplatDefinition.getPacketBufferNode(ClientPacket.IF_BUTTON5, Client.packetWriter.isaacCipher); // L: 9959
 						var10.packetBuffer.writeInt(var1); // L: 9960
 						var10.packetBuffer.writeShort(var2); // L: 9961
 						var10.packetBuffer.writeShort(var3); // L: 9962
@@ -278,7 +278,7 @@ public class SoundCache {
 					}
 
 					if (var0 == 6) { // L: 9965
-						var10 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2866, Client.packetWriter.isaacCipher); // L: 9967
+						var10 = HitSplatDefinition.getPacketBufferNode(ClientPacket.IF_BUTTON6, Client.packetWriter.isaacCipher); // L: 9967
 						var10.packetBuffer.writeInt(var1); // L: 9968
 						var10.packetBuffer.writeShort(var2); // L: 9969
 						var10.packetBuffer.writeShort(var3); // L: 9970
@@ -286,7 +286,7 @@ public class SoundCache {
 					}
 
 					if (var0 == 7) { // L: 9973
-						var10 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2822, Client.packetWriter.isaacCipher); // L: 9975
+						var10 = HitSplatDefinition.getPacketBufferNode(ClientPacket.IF_BUTTON7, Client.packetWriter.isaacCipher); // L: 9975
 						var10.packetBuffer.writeInt(var1); // L: 9976
 						var10.packetBuffer.writeShort(var2); // L: 9977
 						var10.packetBuffer.writeShort(var3); // L: 9978
@@ -294,7 +294,7 @@ public class SoundCache {
 					}
 
 					if (var0 == 8) { // L: 9981
-						var10 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2884, Client.packetWriter.isaacCipher); // L: 9983
+						var10 = HitSplatDefinition.getPacketBufferNode(ClientPacket.IF_BUTTON8, Client.packetWriter.isaacCipher); // L: 9983
 						var10.packetBuffer.writeInt(var1); // L: 9984
 						var10.packetBuffer.writeShort(var2); // L: 9985
 						var10.packetBuffer.writeShort(var3); // L: 9986
@@ -302,7 +302,7 @@ public class SoundCache {
 					}
 
 					if (var0 == 9) { // L: 9989
-						var10 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2830, Client.packetWriter.isaacCipher); // L: 9991
+						var10 = HitSplatDefinition.getPacketBufferNode(ClientPacket.IF_BUTTON9, Client.packetWriter.isaacCipher); // L: 9991
 						var10.packetBuffer.writeInt(var1); // L: 9992
 						var10.packetBuffer.writeShort(var2); // L: 9993
 						var10.packetBuffer.writeShort(var3); // L: 9994
@@ -310,7 +310,7 @@ public class SoundCache {
 					}
 
 					if (var0 == 10) { // L: 9997
-						var10 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2853, Client.packetWriter.isaacCipher); // L: 9999
+						var10 = HitSplatDefinition.getPacketBufferNode(ClientPacket.IF_BUTTON10, Client.packetWriter.isaacCipher); // L: 9999
 						var10.packetBuffer.writeInt(var1); // L: 10000
 						var10.packetBuffer.writeShort(var2); // L: 10001
 						var10.packetBuffer.writeShort(var3); // L: 10002

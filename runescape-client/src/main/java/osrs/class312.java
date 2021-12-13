@@ -1,10 +1,11 @@
 package osrs;
 
-import java.util.HashMap;
 import net.runelite.mapping.Export;
 import net.runelite.mapping.ObfuscatedGetter;
 import net.runelite.mapping.ObfuscatedName;
 import net.runelite.mapping.ObfuscatedSignature;
+
+import java.util.HashMap;
 
 @ObfuscatedName("lw")
 public class class312 {
@@ -255,10 +256,10 @@ public class class312 {
 					int var10 = var8 * var5 - var7 * var4 >> 11; // L: 4457
 					int var11 = var9 + class340.localPlayer.x >> 7; // L: 4458
 					int var12 = class340.localPlayer.y - var10 >> 7; // L: 4459
-					PacketBufferNode var13 = HitSplatDefinition.getPacketBufferNode(ClientPacket.field2860, Client.packetWriter.isaacCipher); // L: 4461
+					PacketBufferNode var13 = HitSplatDefinition.getPacketBufferNode(ClientPacket.MOVE_MINIMAP_CLICK, Client.packetWriter.isaacCipher); // L: 4461
 					var13.packetBuffer.writeByte(18); // L: 4462
 					var13.packetBuffer.writeByte(KeyHandler.KeyHandler_pressedKeys[82] ? (KeyHandler.KeyHandler_pressedKeys[81] ? 2 : 1) : 0); // L: 4463
-					var13.packetBuffer.writeByteA(var12 + TileItem.baseY); // L: 4464
+					var13.packetBuffer.writeShortLE(var12 + TileItem.baseY); // L: 4464
 					var13.packetBuffer.writeByteC(var11 + class131.baseX); // L: 4465
 					var13.packetBuffer.writeByte(var4); // L: 4466
 					var13.packetBuffer.writeByte(var5); // L: 4467

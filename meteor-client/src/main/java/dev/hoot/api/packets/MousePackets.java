@@ -14,7 +14,7 @@ public class MousePackets {
 		Game.getClient().setMouseLastPressedMillis(System.currentTimeMillis());
 		int mousePressedTime = (int)((Game.getClient().getMouseLastPressedMillis()) - (Game.getClient().getClientMouseLastPressedMillis()));
 		if (mousePressedTime < 0) {
-			return;
+			mousePressedTime = 0;
 		}
 
 		if (mousePressedTime > 32767) {
