@@ -21,26 +21,17 @@ class UI: AppletStub, AppletContext {
     companion object {
         lateinit var applet: Applet
 
-        fun getClient(applet: Applet?): Client {
+        fun getClient(applet: Applet): Client {
             return applet as Client
         }
     }
     var icon = ImageIcon(UI::class.java.getResource("/Meteor_icon.png")).image
     private var properties: Map<String, String> = AppletConfiguration.properties
     private var parameters: Map<String, String> = AppletConfiguration.parameters
-    private var frame: JFrame = JFrame("Meteor Klient")
-
 
     fun init() {
-
         applet = configureApplet()
-        frame.add(applet)
-        frame.iconImage = icon
         applet.size = applet.minimumSize
-        frame.size = applet.minimumSize
-        frame.isVisible = true
-        applet.init()
-        applet.start()
         EventBus.post(AppletLoaded())
     }
 

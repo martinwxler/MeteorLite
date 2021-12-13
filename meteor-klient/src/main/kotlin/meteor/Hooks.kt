@@ -1,6 +1,6 @@
 package meteor
 
-import meteor.Main.client
+import Main.client
 import meteor.eventbus.Event
 import meteor.eventbus.EventBus
 import meteor.input.KeyManager
@@ -8,7 +8,6 @@ import meteor.input.MouseManager
 import net.runelite.api.BufferProvider
 import net.runelite.api.MainBufferProvider
 import net.runelite.api.Renderable
-import net.runelite.api.events.BeforeMenuRender
 import net.runelite.api.hooks.Callbacks
 import net.runelite.api.hooks.DrawCallbacks
 import net.runelite.api.widgets.Widget

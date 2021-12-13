@@ -16,8 +16,8 @@ import java.lang.Exception
  */
 
 open class Keybind @JvmOverloads constructor(keyCode: Int, modifiers: Int, ignoreModifiers: Boolean = false) {
-    private var keyCode = 0
-    private var modifiers = 0
+    var keyCode = 0
+    var modifiers = 0
 
     /**
      * Constructs a keybind with that matches the passed KeyEvent
