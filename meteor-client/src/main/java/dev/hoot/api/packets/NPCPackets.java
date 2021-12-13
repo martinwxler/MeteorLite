@@ -32,7 +32,7 @@ public class NPCPackets {
         ClientPacket clientPacket = Game.getClientPacket();
         PacketBufferNode var9 = Game.getClient().preparePacket(clientPacket.OPNPC3(), client.getPacketWriter().getIsaacCipher());
         var9.getPacketBuffer().write2(ctrlDown);
-        var9.getPacketBuffer().writeByteA(NPCIndex);
+        var9.getPacketBuffer().writeShortLE(NPCIndex);
         client.getPacketWriter().queuePacket(var9);
     }
 

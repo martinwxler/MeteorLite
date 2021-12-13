@@ -29,7 +29,7 @@ public class SpellPackets {
 		var8.getPacketBuffer().writeInt(spellWidgetID);
 		var8.getPacketBuffer().writeShort(spellWidgetIndex);
 		var8.getPacketBuffer().writeIntME2(inventoryID);
-		var8.getPacketBuffer().writeByteA(itemID);
+		var8.getPacketBuffer().writeShortLE(itemID);
 		client.getPacketWriter().queuePacket(var8);
 	}
 	public static void spellOnNpc(int spellWidgetID, net.runelite.api.NPC npc){
@@ -45,9 +45,9 @@ public class SpellPackets {
 		ClientPacket clientPacket = Game.getClientPacket();
 		PacketBufferNode var9 = Game.getClient().preparePacket(clientPacket.OPNPCT(), client.getPacketWriter().getIsaacCipher());
 		var9.getPacketBuffer().writeIntME(spellWidgetID);
-		var9.getPacketBuffer().writeByteA(spellWidgetIndex);
+		var9.getPacketBuffer().writeShortLE(spellWidgetIndex);
 		var9.getPacketBuffer().writeByteB(ctrlDown);
-		var9.getPacketBuffer().writeByteA(npcIndex);
+		var9.getPacketBuffer().writeShortLE(npcIndex);
 		var9.getPacketBuffer().writeShort(idk);
 		client.getPacketWriter().queuePacket(var9);
 	}

@@ -21,6 +21,7 @@ import com.openosrs.injector.injectors.InterfaceInjector;
 import com.openosrs.injector.injectors.MixinInjector;
 import com.openosrs.injector.injectors.RSApiInjector;
 import com.openosrs.injector.injectors.raw.*;
+import com.openosrs.injector.net.DecodeNet;
 import com.openosrs.injector.rsapi.RSApi;
 import com.openosrs.injector.transformers.InjectTransformer;
 import com.openosrs.injector.transformers.Java8Ifier;
@@ -181,7 +182,7 @@ public class Injector extends InjectData implements InjectTaskHandler {
 
     inject(new DrawMenu(this, HOOKS));
 
-
+    inject(new DecodeNet(this));
 
     //inject(new AddPlayerToMenu(this));
 

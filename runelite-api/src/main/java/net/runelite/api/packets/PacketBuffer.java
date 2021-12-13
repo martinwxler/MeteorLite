@@ -13,7 +13,7 @@ public interface PacketBuffer extends Buffer {
 
     void write1(int i);
 
-    void writeByteA(int i);
+    void writeShortLE(int i);
 
     void writeStringCp1252NullTerminated(String s);
 

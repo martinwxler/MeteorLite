@@ -73,7 +73,7 @@ public class ItemPackets {
 		ClientPacket clientPacket = Game.getClientPacket();
 		PacketBufferNode var9 = Game.getClient().preparePacket(clientPacket.OPNPCU(), client.getPacketWriter().getIsaacCipher());
 		var9.getPacketBuffer().write2(ctrlDown);
-		var9.getPacketBuffer().writeByteA(itemID);
+		var9.getPacketBuffer().writeShortLE(itemID);
 		var9.getPacketBuffer().writeByteB0(itemSlot);
 		var9.getPacketBuffer().writeIntME3(itemWidgetID);
 		var9.getPacketBuffer().writeByteC(npcIndex);
@@ -86,7 +86,7 @@ public class ItemPackets {
 		var8.getPacketBuffer().writeByteB0(itemSlot);
 		var8.getPacketBuffer().writeByteB0(objectY);
 		var8.getPacketBuffer().writeIntME2(itemWidgetID);
-		var8.getPacketBuffer().writeByteA(objectX);
+		var8.getPacketBuffer().writeShortLE(objectX);
 		var8.getPacketBuffer().writeByteB0(objectID);
 		var8.getPacketBuffer().writeByteC(itemID);
 		var8.getPacketBuffer().writeByteB(ctrlDown);
@@ -104,8 +104,8 @@ public class ItemPackets {
 	public static void queueItemAction2Packet(int inventoryID, int itemID, int itemSlot) {
 		Client client = Game.getClient();
 		PacketBufferNode var8 = Game.getClient().preparePacket(Game.getClient().getItemAction2Packet(), client.getPacketWriter().getIsaacCipher());
-		var8.getPacketBuffer().writeByteA(itemID);
-		var8.getPacketBuffer().writeByteA(itemSlot);
+		var8.getPacketBuffer().writeShortLE(itemID);
+		var8.getPacketBuffer().writeShortLE(itemSlot);
 		var8.getPacketBuffer().writeIntME(inventoryID);
 		client.getPacketWriter().queuePacket(var8);
 	}
@@ -114,7 +114,7 @@ public class ItemPackets {
 		Client client = Game.getClient();
 		PacketBufferNode var8 = Game.getClient().preparePacket(Game.getClient().getItemAction3Packet(), client.getPacketWriter().getIsaacCipher());
 		var8.getPacketBuffer().writeByteC(itemID);
-		var8.getPacketBuffer().writeByteA(itemSlot);
+		var8.getPacketBuffer().writeShortLE(itemSlot);
 		var8.getPacketBuffer().writeIntME(inventoryID);
 		client.getPacketWriter().queuePacket(var8);
 	}
@@ -132,7 +132,7 @@ public class ItemPackets {
 		Client client = Game.getClient();
 		ClientPacket clientPacket = Game.getClientPacket();
 		PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.OPHELD5(), client.getPacketWriter().getIsaacCipher());
-		var8.getPacketBuffer().writeByteA(itemSlot);
+		var8.getPacketBuffer().writeShortLE(itemSlot);
 		var8.getPacketBuffer().writeShort(itemID);
 		var8.getPacketBuffer().writeIntME2(inventoryID);
 		client.getPacketWriter().queuePacket(var8);
@@ -142,12 +142,12 @@ public class ItemPackets {
 		Client client = Game.getClient();
 		ClientPacket clientPacket = Game.getClientPacket();
 		PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.OPHELDU(), client.getPacketWriter().getIsaacCipher());
-		var8.getPacketBuffer().writeByteA(itemId2);
+		var8.getPacketBuffer().writeShortLE(itemId2);
 		var8.getPacketBuffer().writeIntME2(WidgetInfo.INVENTORY.getPackedId());
 		var8.getPacketBuffer().writeShort(slot2);
 		var8.getPacketBuffer().writeIntME2(WidgetInfo.INVENTORY.getPackedId());
 		var8.getPacketBuffer().writeByteC(itemId1);
-		var8.getPacketBuffer().writeByteA(slot1);
+		var8.getPacketBuffer().writeShortLE(slot1);
 		client.getPacketWriter().queuePacket(var8);
 	}
 }

@@ -13,7 +13,7 @@ public class GroundItemPackets {
         net.runelite.api.Client client = Game.getClient();
         net.runelite.api.packets.ClientPacket clientPacket = Game.getClientPacket();
         PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.OPOBJ1(), client.getPacketWriter().getIsaacCipher());
-        var8.getPacketBuffer().writeByteA(worldPointX);
+        var8.getPacketBuffer().writeShortLE(worldPointX);
         var8.getPacketBuffer().writeShort(itemID);
         var8.getPacketBuffer().writeShort(worldPointY);
         var8.getPacketBuffer().write2(ctrlDown ? 1 : 0);
@@ -33,17 +33,17 @@ public class GroundItemPackets {
         Client client = Game.getClient();
         ClientPacket clientPacket = Game.getClientPacket();
         PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.OPOBJ3(), client.getPacketWriter().getIsaacCipher());
-        var8.getPacketBuffer().writeByteA(worldPointY);
+        var8.getPacketBuffer().writeShortLE(worldPointY);
         var8.getPacketBuffer().write2(ctrlDown ? 1 : 0);
-        var8.getPacketBuffer().writeByteA(worldPointX);
-        var8.getPacketBuffer().writeByteA(itemID);
+        var8.getPacketBuffer().writeShortLE(worldPointX);
+        var8.getPacketBuffer().writeShortLE(itemID);
         client.getPacketWriter().queuePacket(var8);
     }
     public static void queueGroundItemAction4Packet(int itemID,int worldPointX,int worldPointY,boolean ctrlDown){
         Client client = Game.getClient();
         ClientPacket clientPacket = Game.getClientPacket();
         PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.OPOBJ4(), client.getPacketWriter().getIsaacCipher());
-        var8.getPacketBuffer().writeByteA(worldPointY);
+        var8.getPacketBuffer().writeShortLE(worldPointY);
         var8.getPacketBuffer().writeShort(itemID);
         var8.getPacketBuffer().writeByteC(worldPointX);
         var8.getPacketBuffer().write2(ctrlDown ? 1 : 0);
@@ -54,7 +54,7 @@ public class GroundItemPackets {
         ClientPacket clientPacket = Game.getClientPacket();
         PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.OPOBJ5(), client.getPacketWriter().getIsaacCipher());
         var8.getPacketBuffer().write1(ctrlDown ? 1 : 0);
-        var8.getPacketBuffer().writeByteA(worldPointX);
+        var8.getPacketBuffer().writeShortLE(worldPointX);
         var8.getPacketBuffer().writeByteC(itemID);
         var8.getPacketBuffer().writeShort(worldPointY);
         client.getPacketWriter().queuePacket(var8);

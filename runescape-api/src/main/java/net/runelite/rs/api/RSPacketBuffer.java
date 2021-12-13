@@ -24,9 +24,9 @@ public interface RSPacketBuffer extends RSBuffer, PacketBuffer {
     @Override
     void write1(int i);
 
-    @Import("writeByteA")
+    @Import("writeShortLE")
     @Override
-    void writeByteA(int i);
+    void writeShortLE(int i);
 
     @Import("writeStringCp1252NullTerminated")
     @Override
