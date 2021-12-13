@@ -29,3 +29,5 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - uses: gradle/gradle-build-action@v2
+        with: 
+          arguments: build
