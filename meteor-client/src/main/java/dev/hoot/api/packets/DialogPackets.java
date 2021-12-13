@@ -27,7 +27,7 @@ public class DialogPackets {
 		ClientPacket clientPacket = Game.getClientPacket();
 		PacketBufferNode var12 = Game.getClient().preparePacket(clientPacket.RESUME_P_STRINGDIALOG(), client.getPacketWriter().getIsaacCipher());
 		var12.getPacketBuffer().writeByte(text.length()+1);
-		var12.getPacketBuffer().writeStringCp1252NullTerminated(text);
+		var12.getPacketBuffer().writeStringCp1252NullTerminated$api(text);
 		client.getPacketWriter().queuePacket(var12);
 		GameThread.invoke(() -> Game.getClient().runScript(138));
 	}
@@ -37,7 +37,7 @@ public class DialogPackets {
 		ClientPacket clientPacket = Game.getClientPacket();
 		PacketBufferNode var12 = Game.getClient().preparePacket(clientPacket.RESUME_P_NAMEDIALOG(), client.getPacketWriter().getIsaacCipher());
 		var12.getPacketBuffer().writeByte(name.length() + 1);
-		var12.getPacketBuffer().writeStringCp1252NullTerminated(name);
+		var12.getPacketBuffer().writeStringCp1252NullTerminated$api(name);
 		client.getPacketWriter().queuePacket(var12);
 		GameThread.invoke(() -> Game.getClient().runScript(138));
 	}

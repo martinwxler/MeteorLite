@@ -51,10 +51,6 @@ public interface RSBuffer extends Buffer, RSNode {
   @Override
   void writeByteA$api(int var1);
 
-  @Import("writeByteB")
-  @Override
-  void writeByteB$api(int var1);
-
   @Import("writeByteC")
   @Override
   void writeByteC$api(int var1);
@@ -127,4 +123,12 @@ public interface RSBuffer extends Buffer, RSNode {
 
   @Import("readStringCp1252NullTerminated")
   String readStringCp1252NullTerminated$api();
+
+  @Import("writeByteB")
+  @Override
+  void writeByteB$api(int i);
+
+  @Import("writeShortLE")
+  @Override
+  void writeShortLE$api(int i);
 }

@@ -72,59 +72,59 @@ public class ItemPackets {
 		Client client = Game.getClient();
 		ClientPacket clientPacket = Game.getClientPacket();
 		PacketBufferNode var9 = Game.getClient().preparePacket(clientPacket.OPNPCU(), client.getPacketWriter().getIsaacCipher());
-		var9.getPacketBuffer().write2(ctrlDown);
-		var9.getPacketBuffer().writeShortLE(itemID);
-		var9.getPacketBuffer().writeByteB0(itemSlot);
-		var9.getPacketBuffer().writeIntME3(itemWidgetID);
-		var9.getPacketBuffer().writeByteC(npcIndex);
+		var9.getPacketBuffer().write2$api(ctrlDown);
+		var9.getPacketBuffer().writeShortLE$api(itemID);
+		var9.getPacketBuffer().writeByteB0$api(itemSlot);
+		var9.getPacketBuffer().writeIntME3$api(itemWidgetID);
+		var9.getPacketBuffer().writeByteC$api(npcIndex);
 		client.getPacketWriter().queuePacket(var9);
 	}
 	public static void queueItemUseOnTileObjectPacket(int objectID, int objectX, int objectY, int itemSlot, int itemID, int itemWidgetID, int ctrlDown){
 		Client client = Game.getClient();
 		ClientPacket clientPacket = Game.getClientPacket();
 		PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.OPLOCU(), client.getPacketWriter().getIsaacCipher());
-		var8.getPacketBuffer().writeByteB0(itemSlot);
-		var8.getPacketBuffer().writeByteB0(objectY);
-		var8.getPacketBuffer().writeIntME2(itemWidgetID);
-		var8.getPacketBuffer().writeShortLE(objectX);
-		var8.getPacketBuffer().writeByteB0(objectID);
-		var8.getPacketBuffer().writeByteC(itemID);
-		var8.getPacketBuffer().writeByteB(ctrlDown);
+		var8.getPacketBuffer().writeByteB0$api(itemSlot);
+		var8.getPacketBuffer().writeByteB0$api(objectY);
+		var8.getPacketBuffer().writeIntME2$api(itemWidgetID);
+		var8.getPacketBuffer().writeShortLE$api(objectX);
+		var8.getPacketBuffer().writeByteB0$api(objectID);
+		var8.getPacketBuffer().writeByteC$api(itemID);
+		var8.getPacketBuffer().writeByteB$api(ctrlDown);
 		client.getPacketWriter().queuePacket(var8);
 	}
 	public static void queueItemActionPacket(int inventoryID, int itemID, int itemSlot) {
 		Client client = Game.getClient();
 		ClientPacket clientPacket = Game.getClientPacket();
 		PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.OPHELD1(), client.getPacketWriter().getIsaacCipher());
-		var8.getPacketBuffer().writeByteC(itemID);
-		var8.getPacketBuffer().writeByteB0(itemSlot);
-		var8.getPacketBuffer().writeIntME(inventoryID);
+		var8.getPacketBuffer().writeByteC$api(itemID);
+		var8.getPacketBuffer().writeByteB0$api(itemSlot);
+		var8.getPacketBuffer().writeIntME$api(inventoryID);
 		client.getPacketWriter().queuePacket(var8);
 	}
 	public static void queueItemAction2Packet(int inventoryID, int itemID, int itemSlot) {
 		Client client = Game.getClient();
 		PacketBufferNode var8 = Game.getClient().preparePacket(Game.getClient().getItemAction2Packet(), client.getPacketWriter().getIsaacCipher());
-		var8.getPacketBuffer().writeShortLE(itemID);
-		var8.getPacketBuffer().writeShortLE(itemSlot);
-		var8.getPacketBuffer().writeIntME(inventoryID);
+		var8.getPacketBuffer().writeShortLE$api(itemID);
+		var8.getPacketBuffer().writeShortLE$api(itemSlot);
+		var8.getPacketBuffer().writeIntME$api(inventoryID);
 		client.getPacketWriter().queuePacket(var8);
 	}
 	
 	public static void queueItemAction3Packet(int inventoryID, int itemID, int itemSlot){
 		Client client = Game.getClient();
 		PacketBufferNode var8 = Game.getClient().preparePacket(Game.getClient().getItemAction3Packet(), client.getPacketWriter().getIsaacCipher());
-		var8.getPacketBuffer().writeByteC(itemID);
-		var8.getPacketBuffer().writeShortLE(itemSlot);
-		var8.getPacketBuffer().writeIntME(inventoryID);
+		var8.getPacketBuffer().writeByteC$api(itemID);
+		var8.getPacketBuffer().writeShortLE$api(itemSlot);
+		var8.getPacketBuffer().writeIntME$api(inventoryID);
 		client.getPacketWriter().queuePacket(var8);
 	}
 	public static void queueItemAction4Packet(int inventoryID, int itemID, int itemSlot){
 		Client client = Game.getClient();
 		ClientPacket clientPacket = Game.getClientPacket();
 		PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.OPHELD4(), client.getPacketWriter().getIsaacCipher());
-		var8.getPacketBuffer().writeByteC(itemID);
-		var8.getPacketBuffer().writeByteB0(itemSlot);
-		var8.getPacketBuffer().writeIntME3(inventoryID);
+		var8.getPacketBuffer().writeByteC$api(itemID);
+		var8.getPacketBuffer().writeByteB0$api(itemSlot);
+		var8.getPacketBuffer().writeIntME3$api(inventoryID);
 		client.getPacketWriter().queuePacket(var8);
 	}
 	
@@ -132,9 +132,9 @@ public class ItemPackets {
 		Client client = Game.getClient();
 		ClientPacket clientPacket = Game.getClientPacket();
 		PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.OPHELD5(), client.getPacketWriter().getIsaacCipher());
-		var8.getPacketBuffer().writeShortLE(itemSlot);
+		var8.getPacketBuffer().writeShortLE$api(itemSlot);
 		var8.getPacketBuffer().writeShort(itemID);
-		var8.getPacketBuffer().writeIntME2(inventoryID);
+		var8.getPacketBuffer().writeIntME2$api(inventoryID);
 		client.getPacketWriter().queuePacket(var8);
 	}
 
@@ -142,12 +142,12 @@ public class ItemPackets {
 		Client client = Game.getClient();
 		ClientPacket clientPacket = Game.getClientPacket();
 		PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.OPHELDU(), client.getPacketWriter().getIsaacCipher());
-		var8.getPacketBuffer().writeShortLE(itemId2);
-		var8.getPacketBuffer().writeIntME2(WidgetInfo.INVENTORY.getPackedId());
+		var8.getPacketBuffer().writeShortLE$api(itemId2);
+		var8.getPacketBuffer().writeIntME2$api(WidgetInfo.INVENTORY.getPackedId());
 		var8.getPacketBuffer().writeShort(slot2);
-		var8.getPacketBuffer().writeIntME2(WidgetInfo.INVENTORY.getPackedId());
-		var8.getPacketBuffer().writeByteC(itemId1);
-		var8.getPacketBuffer().writeShortLE(slot1);
+		var8.getPacketBuffer().writeIntME2$api(WidgetInfo.INVENTORY.getPackedId());
+		var8.getPacketBuffer().writeByteC$api(itemId1);
+		var8.getPacketBuffer().writeShortLE$api(slot1);
 		client.getPacketWriter().queuePacket(var8);
 	}
 }

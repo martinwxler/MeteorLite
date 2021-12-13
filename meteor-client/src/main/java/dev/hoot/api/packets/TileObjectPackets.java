@@ -17,9 +17,9 @@ public class TileObjectPackets {
         Client client = Game.getClient();
         ClientPacket clientPacket = Game.getClientPacket();
         PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.OPLOC1(), client.getPacketWriter().getIsaacCipher());
-        var8.getPacketBuffer().writeByteB0(worldPointX);
+        var8.getPacketBuffer().writeByteB0$api(worldPointX);
         var8.getPacketBuffer().writeShort(worldPointY);
-        var8.getPacketBuffer().writeShortLE(objectID);
+        var8.getPacketBuffer().writeShortLE$api(objectID);
         var8.getPacketBuffer().writeByte(ctrlDown);
         client.getPacketWriter().queuePacket(var8);
     }
@@ -28,10 +28,10 @@ public class TileObjectPackets {
         Client client = Game.getClient();
         ClientPacket clientPacket = Game.getClientPacket();
         PacketBufferNode var8 =  Game.getClient().preparePacket(clientPacket.OPLOC2(), client.getPacketWriter().getIsaacCipher());
-        var8.getPacketBuffer().writeByteB0(worldPointX);
+        var8.getPacketBuffer().writeByteB0$api(worldPointX);
         var8.getPacketBuffer().writeByte(ctrlDown);
         var8.getPacketBuffer().writeShort(objectID);
-        var8.getPacketBuffer().writeByteC(worldPointY);
+        var8.getPacketBuffer().writeByteC$api(worldPointY);
         client.getPacketWriter().queuePacket(var8);
     }
 
@@ -42,27 +42,27 @@ public class TileObjectPackets {
         var8.getPacketBuffer().writeShort(worldPointX);
         var8.getPacketBuffer().writeByte(ctrlDown);
         var8.getPacketBuffer().writeShort(worldPointY);
-        var8.getPacketBuffer().writeShortLE(objectID);
+        var8.getPacketBuffer().writeShortLE$api(objectID);
         client.getPacketWriter().queuePacket(var8);
     }
     public static void queueTileObjectAction4Packet(int objectID, int worldPointX, int worldPointY, int ctrlDown) {
         Client client = Game.getClient();
         ClientPacket clientPacket = Game.getClientPacket();
         PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.OPLOC4(), client.getPacketWriter().getIsaacCipher());
-        var8.getPacketBuffer().writeByteC(objectID);
+        var8.getPacketBuffer().writeByteC$api(objectID);
         var8.getPacketBuffer().writeShort(worldPointY);
-        var8.getPacketBuffer().writeByteC(worldPointX);
-        var8.getPacketBuffer().write1(ctrlDown);
+        var8.getPacketBuffer().writeByteC$api(worldPointX);
+        var8.getPacketBuffer().write1$api(ctrlDown);
         client.getPacketWriter().queuePacket(var8);
     }
     public static void queueTileObjectAction5Packet(int objectID, int worldPointX, int worldPointY, int ctrlDown) {
         Client client = Game.getClient();
         ClientPacket clientPacket = Game.getClientPacket();
         PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.OPLOC5(), client.getPacketWriter().getIsaacCipher());
-        var8.getPacketBuffer().writeShortLE(worldPointX);
-        var8.getPacketBuffer().writeByteC(objectID);
-        var8.getPacketBuffer().writeByteC(worldPointY);
-        var8.getPacketBuffer().writeByteB(ctrlDown);
+        var8.getPacketBuffer().writeShortLE$api(worldPointX);
+        var8.getPacketBuffer().writeByteC$api(objectID);
+        var8.getPacketBuffer().writeByteC$api(worldPointY);
+        var8.getPacketBuffer().writeByteB$api(ctrlDown);
         client.getPacketWriter().queuePacket(var8);
     }
     public static void tileObjectFirstOption(TileObject object, int ctrlDown){

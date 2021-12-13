@@ -14,7 +14,7 @@ public class WidgetPackets {
         Client client = Game.getClient();
         ClientPacket clientPacket = Game.getClientPacket();
         PacketBufferNode var2 = Game.getClient().preparePacket(clientPacket.RESUME_PAUSEBUTTON(), client.getPacketWriter().getIsaacCipher());
-        var2.getPacketBuffer().writeIntME2(var0);
+        var2.getPacketBuffer().writeIntME2$api(var0);
         var2.getPacketBuffer().writeShort(var1);
         client.getPacketWriter().queuePacket(var2);
     }

@@ -13,8 +13,8 @@ public class NPCPackets {
         Client client = Game.getClient();
         ClientPacket clientPacket = Game.getClientPacket();
         PacketBufferNode var9 = Game.getClient().preparePacket(clientPacket.OPNPC1(), client.getPacketWriter().getIsaacCipher());
-        var9.getPacketBuffer().write2(ctrlDown);
-        var9.getPacketBuffer().writeByteB0(NPCIndex);
+        var9.getPacketBuffer().write2$api(ctrlDown);
+        var9.getPacketBuffer().writeByteB0$api(NPCIndex);
         client.getPacketWriter().queuePacket(var9);
     }
 
@@ -22,7 +22,7 @@ public class NPCPackets {
         Client client = Game.getClient();
         ClientPacket clientPacket = Game.getClientPacket();
         PacketBufferNode var9 = Game.getClient().preparePacket(clientPacket.OPNPC2(), client.getPacketWriter().getIsaacCipher());
-        var9.getPacketBuffer().writeByteB0(NPCIndex);
+        var9.getPacketBuffer().writeByteB0$api(NPCIndex);
         var9.getPacketBuffer().writeByte(ctrlDown);
         client.getPacketWriter().queuePacket(var9);
     }
@@ -31,8 +31,8 @@ public class NPCPackets {
         Client client = Game.getClient();
         ClientPacket clientPacket = Game.getClientPacket();
         PacketBufferNode var9 = Game.getClient().preparePacket(clientPacket.OPNPC3(), client.getPacketWriter().getIsaacCipher());
-        var9.getPacketBuffer().write2(ctrlDown);
-        var9.getPacketBuffer().writeShortLE(NPCIndex);
+        var9.getPacketBuffer().write2$api(ctrlDown);
+        var9.getPacketBuffer().writeShortLE$api(NPCIndex);
         client.getPacketWriter().queuePacket(var9);
     }
 
@@ -40,8 +40,8 @@ public class NPCPackets {
         Client client = Game.getClient();
         ClientPacket clientPacket = Game.getClientPacket();
         PacketBufferNode var9 = Game.getClient().preparePacket(clientPacket.OPNPC4(), client.getPacketWriter().getIsaacCipher());
-        var9.getPacketBuffer().writeByteB0(NPCIndex);
-        var9.getPacketBuffer().writeByteB(ctrlDown);
+        var9.getPacketBuffer().writeByteB0$api(NPCIndex);
+        var9.getPacketBuffer().writeByteB$api(ctrlDown);
         client.getPacketWriter().queuePacket(var9);
     }
 
@@ -49,7 +49,7 @@ public class NPCPackets {
         Client client = Game.getClient();
         ClientPacket clientPacket = Game.getClientPacket();
         PacketBufferNode var9 = Game.getClient().preparePacket(clientPacket.OPNPC5(), client.getPacketWriter().getIsaacCipher());
-        var9.getPacketBuffer().write1(ctrlDown);
+        var9.getPacketBuffer().write1$api(ctrlDown);
         var9.getPacketBuffer().writeShort(NPCIndex);
         client.getPacketWriter().queuePacket(var9);
     }

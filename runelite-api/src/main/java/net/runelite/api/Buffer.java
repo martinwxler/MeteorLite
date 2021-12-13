@@ -53,8 +53,6 @@ public interface Buffer extends Node {
 
   void write1$api(int var1);
 
-  void write2$api(int var1);
-
   void writeByte01$api(int var1);
 
   void writeShort$api(int var1);
@@ -82,6 +80,10 @@ public interface Buffer extends Node {
   void writeShortA$api(int var1);
 
   void writeShort01A$api(int var1);
+
+  void write2$api(int i);
+
+  void writeShortLE$api(int i);
 
   void writeStringCp1252NullTerminated$api(String string);
 
