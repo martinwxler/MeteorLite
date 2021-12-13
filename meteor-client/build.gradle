@@ -37,7 +37,6 @@ dependencies {
     implementation 'de.jensd:fontawesomefx-materialicons:2.2.0-9.1.2'
     implementation 'com.jfoenix:jfoenix:_'
     implementation group: 'org.jetbrains', name: 'annotations', version: '21.0.1'
-    runtimeOnly(files("../openosrs-injector/build/injected/injected-client.jar"))
     compileOnly 'org.projectlombok:lombok:_'
     annotationProcessor 'org.projectlombok:lombok:_'
     annotationProcessor group: 'org.jetbrains', name: 'annotations', version: '_'
@@ -65,11 +64,11 @@ dependencies {
     runtimeOnly(group: "net.runelite.jocl", name: "jocl", version: "1.0", classifier: 'macos-x64')
     runtimeOnly(group: "net.runelite.jocl", name: "jocl", version: "1.0", classifier: 'macos-arm64')
     implementation group: 'com.google.guava', name: 'guava', version: '_'
-    implementation(group : "org.apache.commons", name : "commons-text", version : "_")
-    implementation(group : "commons-io", name : "commons-io", version : "_")
-    implementation(group : "net.sf.jopt-simple", name : "jopt-simple", version : "_")
+    implementation(group: "org.apache.commons", name: "commons-text", version: "_")
+    implementation(group: "commons-io", name: "commons-io", version: "_")
+    implementation(group: "net.sf.jopt-simple", name: "jopt-simple", version: "_")
     annotationProcessor group: 'javax.inject', name: 'javax.inject', version: '1'
-    implementation(group : "io.reactivex.rxjava3", name : "rxjava", version : "_")
+    implementation(group: "io.reactivex.rxjava3", name: "rxjava", version: "_")
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '_'
     implementation group: 'com.google.code.gson', name: 'gson', version: '_'
     implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.9.0'
@@ -85,7 +84,7 @@ dependencies {
     implementation 'com.miglayout:miglayout:3.7.4'
 }
 
-task createJavadocs (type: Javadoc)
+task createJavadocs(type: Javadoc)
 {
     source = sourceSets.main.allJava
     classpath = sourceSets.main.getCompileClasspath()
@@ -124,7 +123,7 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
-task copyRunBat (type: Copy) {
+task copyRunBat(type: Copy) {
     from "/"
     into "build/libs/"
     include "run.bat"
@@ -134,7 +133,7 @@ shadowJar {
     finalizedBy(copyRunBat)
     configurations = [project.configurations.runtimeClasspath]
     minimize {
-        it.exclude(it.dependency {'net.runelite.jogl:.*:.*'} as Spec<? super ResolvedDependency>)
+        it.exclude(it.dependency { 'net.runelite.jogl:.*:.*' } as Spec<? super ResolvedDependency>)
     }
     applicationDefaultJvmArgs = [
             "-noverify",
