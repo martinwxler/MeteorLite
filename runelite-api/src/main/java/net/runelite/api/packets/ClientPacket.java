@@ -16,6 +16,10 @@ public interface ClientPacket {
 
     ClientPacket OPHELD1();
 
+    ClientPacket OPHELD2();
+
+    ClientPacket OPHELD3();
+
     ClientPacket OPHELD4();
 
     ClientPacket OPHELD5();
@@ -81,4 +85,6 @@ public interface ClientPacket {
     ClientPacket OPNPC4();
 
     ClientPacket OPNPC5();
+
+    ClientPacket CLOSE_MODAL();
 }

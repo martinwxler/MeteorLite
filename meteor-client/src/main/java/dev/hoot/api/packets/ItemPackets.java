@@ -103,7 +103,8 @@ public class ItemPackets {
 	}
 	public static void queueItemAction2Packet(int inventoryID, int itemID, int itemSlot) {
 		Client client = Game.getClient();
-		PacketBufferNode var8 = Game.getClient().preparePacket(Game.getClient().getItemAction2Packet(), client.getPacketWriter().getIsaacCipher());
+		ClientPacket clientPacket = Game.getClientPacket();
+		PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.OPHELD2(), client.getPacketWriter().getIsaacCipher());
 		var8.getPacketBuffer().writeShortLE$api(itemID);
 		var8.getPacketBuffer().writeShortLE$api(itemSlot);
 		var8.getPacketBuffer().writeIntME$api(inventoryID);
@@ -112,7 +113,8 @@ public class ItemPackets {
 	
 	public static void queueItemAction3Packet(int inventoryID, int itemID, int itemSlot){
 		Client client = Game.getClient();
-		PacketBufferNode var8 = Game.getClient().preparePacket(Game.getClient().getItemAction3Packet(), client.getPacketWriter().getIsaacCipher());
+		ClientPacket clientPacket = Game.getClientPacket();
+		PacketBufferNode var8 = Game.getClient().preparePacket(clientPacket.OPHELD3(), client.getPacketWriter().getIsaacCipher());
 		var8.getPacketBuffer().writeByteC$api(itemID);
 		var8.getPacketBuffer().writeShortLE$api(itemSlot);
 		var8.getPacketBuffer().writeIntME$api(inventoryID);
