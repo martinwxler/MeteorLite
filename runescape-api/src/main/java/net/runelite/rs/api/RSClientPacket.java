@@ -36,6 +36,14 @@ public interface RSClientPacket extends ClientPacket {
     @Override
     RSClientPacket OPHELD1();
 
+    @Import("OPHELD2")
+    @Override
+    RSClientPacket OPHELD2();
+
+    @Import("OPHELD3")
+    @Override
+    RSClientPacket OPHELD3();
+
     @Import("OPHELD4")
     @Override
     RSClientPacket OPHELD4();
@@ -167,4 +175,8 @@ public interface RSClientPacket extends ClientPacket {
     @Import("OPNPC5")
     @Override
     RSClientPacket OPNPC5();
+
+    @Import("CLOSE_MODAL")
+    @Override
+    RSClientPacket CLOSE_MODAL();
 }

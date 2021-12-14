@@ -12,8 +12,8 @@ import dev.hoot.api.game.Skills
 import dev.hoot.api.items.Bank
 import dev.hoot.api.items.Inventory
 import dev.hoot.api.movement.Movement
+import dev.hoot.api.packets.DialogPackets
 import dev.hoot.api.packets.MousePackets
-import dev.hoot.api.packets.Packets
 import dev.hoot.api.widgets.Dialog
 import meteor.eventbus.Subscribe
 import meteor.game.ItemManager
@@ -392,7 +392,7 @@ class BirdhouseRunnerPlugin : Plugin() {
                         bankItem.slot,
                         WidgetInfo.BANK_ITEM_CONTAINER.packedId
                     )
-                    Packets.queuePacket(Game.getClient().numberInputPacket, quantity)
+                    DialogPackets.sendNumberInput(quantity,false);
                 }
                 else {
                     for (x in 0 until quantity) {

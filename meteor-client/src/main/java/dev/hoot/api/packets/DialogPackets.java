@@ -42,6 +42,9 @@ public class DialogPackets {
 		GameThread.invoke(() -> Game.getClient().runScript(138));
 	}
 	public static void closeInterface(){
-		Packets.queuePacket(Game.getClient().getInterfaceClosePacket());
+		Client client = Game.getClient();
+		ClientPacket clientPacket = Game.getClientPacket();
+		PacketBufferNode var12 = Game.getClient().preparePacket(clientPacket.CLOSE_MODAL(), client.getPacketWriter().getIsaacCipher());
+		client.getPacketWriter().queuePacket(var12);
 	}
 }
