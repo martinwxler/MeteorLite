@@ -74,11 +74,11 @@ public class MeteorLiteClientModule extends AbstractModule {
   ClassLoader classLoader;
 
   MeteorLiteClientModule() throws IOException, ClassNotFoundException {
-    File oprsInjected = new File(System.getProperty("user.home") + "/.meteorlite/cache/injected-client.jar");
+    File injected = new File(System.getProperty("user.home") + "/.meteorlite/cache/injected-client.jar");
     InputStream initialStream = ClassLoader.getSystemClassLoader().getResourceAsStream("injected-client.osrs");
-    if (!oprsInjected.exists() || oprsInjected.length() != ClassLoader.getSystemClassLoader().getResource("injected-client.osrs").getFile().length())
-      FileUtils.copyInputStreamToFile(initialStream, oprsInjected);
-    classLoader = JVM.createJarClassLoader(oprsInjected);
+    if (!injected.exists() || injected.length() != ClassLoader.getSystemClassLoader().getResource("injected-client.osrs").getFile().length())
+      FileUtils.copyInputStreamToFile(initialStream, injected);
+    classLoader = JVM.createJarClassLoader(injected);
   }
 
   @Inject
