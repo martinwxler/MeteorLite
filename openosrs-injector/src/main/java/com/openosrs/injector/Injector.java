@@ -78,7 +78,7 @@ public class Injector extends InjectData implements InjectTaskHandler {
 
       injector.initToVanilla();
       injector.injectVanilla();
-      save(injector.getVanilla(), new File("./build/injected/injected-client.jar"),
+      save(injector.getVanilla(), new File("../meteor-client/src/main/resources/injected-client.osrs"),
               options.valueOf(outModeOption));
     }
 

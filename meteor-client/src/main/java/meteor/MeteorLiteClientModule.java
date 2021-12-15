@@ -29,12 +29,14 @@ import meteor.ui.overlay.WidgetOverlay;
 import meteor.ui.overlay.tooltip.TooltipOverlay;
 import meteor.ui.overlay.worldmap.WorldMapOverlay;
 import meteor.util.ExecutorServiceExceptionLogger;
+import meteor.util.JVM;
 import meteor.util.NonScheduledExecutorServiceExceptionLogger;
 import net.runelite.api.Client;
 import net.runelite.api.hooks.Callbacks;
 import net.runelite.api.packets.ClientPacket;
 import net.runelite.http.api.chat.ChatClient;
 import okhttp3.OkHttpClient;
+import org.apache.commons.io.FileUtils;
 import org.sponge.util.Logger;
 
 import javax.annotation.Nullable;
@@ -68,6 +70,16 @@ public class MeteorLiteClientModule extends AbstractModule {
   public static Paint METEOR_FONT_COLOR = Paint.valueOf("AQUA");
 
   public static String uuid = UUID.randomUUID().toString();
+
+  ClassLoader classLoader;
+
+  MeteorLiteClientModule() throws IOException, ClassNotFoundException {
+    File oprsInjected = new File(System.getProperty("user.home") + "/.meteorlite/cache/injected-client.jar");
+    InputStream initialStream = ClassLoader.getSystemClassLoader().getResourceAsStream("injected-client.osrs");
+    if (!oprsInjected.exists() || oprsInjected.length() != ClassLoader.getSystemClassLoader().getResource("injected-client.osrs").getFile().length())
+      FileUtils.copyInputStreamToFile(initialStream, oprsInjected);
+    classLoader = JVM.createJarClassLoader(oprsInjected);
+  }
 
   @Inject
   private EventBus eventBus;
@@ -229,7 +241,7 @@ public class MeteorLiteClientModule extends AbstractModule {
   Applet provideApplet() {
     try {
 
-      return (Applet) ClassLoader.getSystemClassLoader().loadClass("osrs.Client").newInstance();
+      return (Applet) classLoader.loadClass("osrs.Client").newInstance();
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -240,7 +252,7 @@ public class MeteorLiteClientModule extends AbstractModule {
   @Singleton
   ClientPacket provideClientPacket() {
     try {
-      return (ClientPacket) ClassLoader.getSystemClassLoader().loadClass("osrs.ClientPacket").newInstance();
+      return (ClientPacket) classLoader.loadClass("osrs.ClientPacket").newInstance();
     } catch (Exception e) {
       e.printStackTrace();
     }

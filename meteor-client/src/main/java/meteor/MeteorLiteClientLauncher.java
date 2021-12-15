@@ -45,7 +45,7 @@ public class MeteorLiteClientLauncher extends Application {
   public static Injector injector; //this is so bad
 
   @Override
-  public void start(Stage primaryStage) throws IOException, InterruptedException, InvocationTargetException {
+  public void start(Stage primaryStage) throws IOException, InterruptedException, InvocationTargetException, ClassNotFoundException {
     try {
       parseParams();
       disableIllegalReflectiveAccessWarning();
